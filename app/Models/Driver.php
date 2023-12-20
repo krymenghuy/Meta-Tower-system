@@ -272,7 +272,7 @@ static function defaultImage($branch_id){
      $def_nationality_id =13;
      $def_sex = "M";
 
-    $app_id = getDriverAppId();
+    $app_id =  getAppIdByUserClass('driver');
     $result = (object)array('status'=>'OK','error_message'=>null);
     
     //Make sure the app_id supplied is the Merchant Mobile App
@@ -365,7 +365,7 @@ static function defaultImage($branch_id){
 
               //begin::create user profile in table umt_users
                      $otp_code = $this->newOTP(6); 
-                     $app_id = getDriverAppId();
+                     $app_id = getAppIdByUserClass('driver');
                      $login_name = $d->phone_number; // user PHONE NUMBER as login name
                      $hpwd= PASSWORD_HASH($d->password,PASSWORD_DEFAULT);
                      $d->subs_id=null;
@@ -587,6 +587,26 @@ static function defaultImage($branch_id){
       return null; 
   }
 
+  static function resetCodes($branch_id,$prefix){
+    $i = 1;
+    $prefix =$prefix ?? 'HD';
+    $branch_id = $branch_id ?? 1;
+    $rows = DB::table('driver as s')->selectRaw('s.id,s.name')->orderByRaw('s.create_date')->get();
+    foreach($rows as $row){
+        DB::table('driver')->where('id',$row->id)->update(['code'=>$prefix.$branch_id.formatNumber($i,5)]);
+        $i++;
+    }
+    $x = DB::table('driver_code_control')->where('prefix',$prefix)->update(['last_id'=>$i]);
+    if(!$x){
+        DB::table('driver_code_control')->insert(['branch_id'=>$branch_id,'prefix'=>$prefix,'last_id'=>$i]);
+    }
+    return (object)[
+      'status'=>'OK',
+      'message'=>$i. ' driver codes were reset',
+      'last_id'=>$i
+    ];
+  }
+
   function getCurrentLocation($driver_id=null,$ss=null){
       $ss = $ss?$ss:$this->userInfo;
       $driver_id =$driver_id?$driver_id:$this->id;
@@ -595,18 +615,19 @@ static function defaultImage($branch_id){
       return isset($rows[0])?$rows[0]:null;
   }
 
-  function getNextDriverCode($uss,$len =4){
+  function getNextDriverCode($uss,$len =5){
       $branch_id = $uss->branch_id;
-      $prefix='';
-      $rows = DB::table('driver_code_control AS c')->where('branch_id',$branch_id)->limit(1)->selectRaw('TRIM(c.prefix) AS prefix,c.last_driver_number')->get();
-      foreach($rows as $row) {
-          $num = $row->last_driver_number;
+      $prefix='HD';
+      $str_prefix = $prefix? 'c.prefix =\''.$prefix.'\'' : '2=2';
+      $row = DB::table('driver_code_control AS c')->where('c.branch_id',$branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
+      if($row){
+          $num = $row->last_id;
           $prefix = trim($row->prefix);
           $num +=1;
-          DB::table('driver_code_control')->where('branch_id',$branch_id)->update(array('last_driver_number'=>$num));
+          DB::table('driver_code_control')->where('branch_id',$branch_id)->whereRaw($str_prefix)->update(['last_id'=>$num,'prefix'=>$prefix]);
           return $prefix.$branch_id.formatNumber($num,$len);
       }
-      DB::table('driver_code_control')->insert(array('branch_id'=>$branch_id,'last_driver_number'=>1));
+      DB::table('driver_code_control')->insert(['branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix]);
       return $prefix.$branch_id.formatNumber(1,$len);
    }
     
@@ -721,7 +742,7 @@ static function defaultImage($branch_id){
           
         $str_dates = '1=1';
         $str_driver = '2=2';
-        $str_search = '3=3';
+        //$str_search = '3=3';
         $str_pmt_status = 'IFNULL(p.driver_pmt_status_id,0) = 0 AND p.status_id = 8';
         $search_value = isset($d->search_value) ? $d->search_value : null;
         if (!$id) $id = isset($d->driver_id) ? $d->driver_id : null;
@@ -767,7 +788,7 @@ static function defaultImage($branch_id){
             ->whereRaw($str_dates)
             ->whereRaw($str_driver)
             //->whereRaw($str_search)
-            ->selectRaw($driver_trx_id.$date_col.'d.id, d.name AS driver_name, d.code AS driver_code, d.phone_number,\'$\' AS currency_symbol,\''.$currency_code.'\' AS currency_code, COUNT(p.id) AS package_count, SUM(p.driver_total) AS amount')
+            ->selectRaw($driver_trx_id.$date_col.'d.id, d.name AS driver_name, d.code AS driver_code, d.phone_number,\'$\' AS currency_symbol,\''.$currency_code.'\' AS currency_code, COUNT(p.id) AS package_count, SUM(CASE cod_changed WHEN 1 THEN 1 ELSE 0 END) AS cod_change_count, SUM(p.driver_total) AS amount')
             ->groupByRaw($group_by_driver_trx_id.'d.id,driver_code,driver_name,d.phone_number'.$groupByDate)->orderByRaw('driver_trx_id DESC')->get();
        
        $total =0;
@@ -776,6 +797,7 @@ static function defaultImage($branch_id){
        $pending_count =0;
        $unpaid_total = 0;
        $unpaid_count = 0;
+       $cod_change_count =0;
        foreach($rows as $row){
            if($row->driver_trx_id){
             $row->trx_status = 'Pending';
@@ -788,6 +810,7 @@ static function defaultImage($branch_id){
             $unpaid_total += $row->amount;
             $unpaid_count += $row->package_count;
            }
+           $cod_change_count += $row->cod_change_count;
            $total += $row->amount;
            $total_count += $row->package_count;
            if($row->driver_trx_id){
@@ -831,62 +854,131 @@ static function defaultImage($branch_id){
          ]
        ];
     }
-   
-    function getUnpaidPackages($arr = [], $id = null, $ss = null)
-    {
-        $id = $id ? $id : $this->id;
-        $ss = $ss ? $ss : $this->userInfo;
-        $d = (object)$arr;
+  
+    // function getUnpaidPackages($arr = [], $id = null, $ss = null)
+    // {
+    //     $id = $id ? $id : $this->id;
+    //     $ss = $ss ? $ss : $this->userInfo;
+    //     $d = (object)$arr;
           
-        $str_dates = '1=1';
-        $str_driver = '2=2';
-        $str_search = '3=3';
+    //     $str_dates = '1=1';
+    //     $str_driver = '2=2';
+    //     $str_search = '3=3';
     
-        $search_value = isset($d->search_value) ? $d->search_value : null;
-        if (!$id) $id = isset($d->driver_id) ? $d->driver_id : null;
+    //     $search_value = isset($d->search_value) ? $d->search_value : null;
+    //     if (!$id) $id = isset($d->driver_id) ? $d->driver_id : null;
         
-        //View group by finish date or group by Driver regardless of date
-        $view_name = isset($d->view_name)?$d->view_name:'date';
+    //     //View group by finish date or group by Driver regardless of date
+    //     $view_name = isset($d->view_name)?$d->view_name:'date';
 
-        $start_date = convertDate(isset($d->start_date) ? $d->start_date : null);
-        $end_date = convertDate(isset($d->end_date) ? $d->end_date : null);
+    //     $start_date = convertDate(isset($d->start_date) ? $d->start_date : null);
+    //     $end_date = convertDate(isset($d->end_date) ? $d->end_date : null);
         
-        //if Driver ID is provided then DO NOT use search_value
-        if ($id > 0) $search_value = null;
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $str_search = "(d.code = '$search_value' OR d.name LIKE '%$search_value%' OR d.phone_number LIKE '%$search_value%')";
-        } else {
-            if ((bool)strtotime($start_date) && (bool)strtotime($end_date)) {
-                $str_dates = "DATE(p.delivery_time) >= '$start_date' AND DATE(p.delivery_time) <= '$end_date'";
-            }
-            if ($id > 0) $str_driver = 'd.id ='. $id;
-       }
+    //     //if Driver ID is provided then DO NOT use search_value
+    //     if ($id > 0) $search_value = null;
+    //     if ($search_value) {
+    //         $search_value = escape_like_str($search_value);
+    //         $str_search = "(d.code = '$search_value' OR d.name LIKE '%$search_value%' OR d.phone_number LIKE '%$search_value%')";
+    //     } else {
+    //         if ((bool)strtotime($start_date) && (bool)strtotime($end_date)) {
+    //             $str_dates = "DATE(p.delivery_time) >= '$start_date' AND DATE(p.delivery_time) <= '$end_date'";
+    //         }
+    //         if ($id > 0) $str_driver = 'd.id ='. $id;
+    //    }
       
-       $currency_code = 'USD';
+    //    $currency_code = 'USD';
+      
+    //    $cols = 'p.id,p.qr_code as barcode,d.name as driver_name,p.receiver_address,formatTime(p.arrival_time) AS arrival_date,formatTime(p.delivery_time) as finish_date,p.delivery_type,p.receiver_phone,p.cod,p.cod_fee,p.price,p.zone_code,p.zone_name,p.sender_name,p.sender_phone,p.forwarding_cost,p.df_payer,p.zone_code,p.driver_total,p.delivery_fee,p.base_fee,p.cod_changed,p.status_id,CASE p.status_id WHEN 8 THEN \'Success\' WHEN 9 THEN \'Failed\' WHEN 11 THEN \'Returned\' END AS status';
+    //    $rows = DB::table('package as p')
+    //    ->join('driver as d', 'd.id', '=', 'p.driver_id')
+    //    ->whereRaw('IFNULL(p.driver_pmt_status_id,0) = 0 AND p.status_id = 8 AND IFNULL(p.driver_trx_id,\'\') =\'\'')
+    //    ->whereRaw($str_dates)
+    //    ->whereRaw($str_driver)
+    //    ->whereRaw($str_search)
+    //    ->selectRaw($cols)->get();
 
-       $cols = 'p.id,p.qr_code as barcode,d.name as driver_name,p.receiver_address,formatTime(p.arrival_time) AS arrival_date,formatTime(p.delivery_time) as finish_date,p.delivery_type,p.receiver_phone,p.cod,p.cod_fee,p.price,p.zone_code,p.zone_name,p.sender_name,p.sender_phone,p.forwarding_cost,p.df_payer,p.zone_code,p.driver_total,p.delivery_fee,p.base_fee,p.status_id,CASE p.status_id WHEN 8 THEN \'Success\' WHEN 9 THEN \'Failed\' WHEN 11 THEN \'Returned\' END AS status';
-       $rows = DB::table('package as p')
-       ->join('driver as d', 'd.id', '=', 'p.driver_id')
-       ->whereRaw('IFNULL(p.driver_pmt_status_id,0) = 0 AND p.status_id = 8 AND IFNULL(p.driver_trx_id,\'\') =\'\'')
-       ->whereRaw($str_dates)
-       ->whereRaw($str_driver)
-       ->whereRaw($str_search)
-       ->selectRaw($cols)->get();
+    //    $exchange_rate = GeneralSettings::getExchangeRate(date('Y-m-d'));
+    //    $currency_pair = 'USDKHR';
+    //    return (object)[
+    //      'driver_id'=>$id, 
+    //      'currency_code'=>$currency_code,
+    //      'items'=>$rows,
+    //      'exchange_info'=>(object)[
+    //        "currency_pair"=>$currency_pair,
+    //        "buy_rate"=>$exchange_rate->buy_rate
+    //      ]
+    //    ];
+    // }
 
-       $exchange_rate = GeneralSettings::getExchangeRate(date('Y-m-d'));
-       $currency_pair = 'USDKHR';
-       return (object)[
-         'driver_id'=>$id, 
-         'currency_code'=>$currency_code,
-         'items'=>$rows,
-         'exchange_info'=>(object)[
-           "currency_pair"=>$currency_pair,
-           "buy_rate"=>$exchange_rate->buy_rate
-         ]
-       ];
-    }
+  static function getCODNotes($track_rows,$package_id){
+     foreach($track_rows as $row){
+      if($row->package_id == $package_id) return $row->description;
+     }
+     return null;
+  }
 
+function getUnpaidPackages($arr = [], $id = null, $ss = null)
+{
+    $branch_id = 1;
+    // Default values and object conversion
+    $id = $id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
+    $d = (object)$arr;
+
+    // Extract search parameters
+    $search_value = $d->search_value ?? null;
+    $driver_id = ($id > 0) ? $id : ($d->driver_id ?? null);
+
+    // Date conversions
+    $start_date = convertDate($d->start_date ?? null);
+    $end_date = convertDate($d->end_date ?? null);
+
+    // Construct search, date, and driver conditions
+    $str_search = $search_value 
+                  ? "d.code = '" . escape_like_str($search_value) . "' OR d.name LIKE '%" . escape_like_str($search_value) . "%' OR d.phone_number LIKE '%" . escape_like_str($search_value) . "%'" 
+                  : '1=1';
+    
+    $str_dates = ($start_date && $end_date) 
+                 ? "DATE(p.delivery_time) BETWEEN '$start_date' AND '$end_date'" 
+                 : '1=1';
+
+    $str_driver = ($driver_id && $driver_id > 0) 
+                  ? "d.id = $driver_id" 
+                  : '1=1';
+    $cols = 'p.id,p.qr_code as barcode,d.name as driver_name,p.receiver_address,formatTime(p.arrival_time) AS arrival_date,formatTime(p.delivery_time) as finish_date,p.delivery_type,p.receiver_phone,p.cod,p.cod_fee,p.price,p.zone_code,p.zone_name,p.sender_name,p.sender_phone,p.forwarding_cost,p.df_payer,p.zone_code,p.driver_total,p.delivery_fee,p.base_fee,p.cod_changed,p.status_id,CASE p.status_id WHEN 8 THEN \'Success\' WHEN 9 THEN \'Failed\' WHEN 11 THEN \'Returned\' END AS status';
+
+    $rows = DB::table('package as p')
+               ->join('driver as d', 'd.id', '=', 'p.driver_id')
+               ->whereNull('p.driver_pmt_status_id')
+               ->where('p.status_id', 8)
+               ->whereNull('p.driver_trx_id')
+               ->whereRaw($str_dates)
+               ->whereRaw($str_driver)
+               ->whereRaw($str_search)
+               ->selectRaw($cols)
+               ->get();
+     $track_rows = DB::table('package as p')->join('package_tracks as pt','pt.package_id','=','p.id')->join('driver as d','d.id','=','p.driver_id')->where('p.branch_id',$branch_id)->whereRaw($str_dates)->where('action_name','change_cod')->whereRaw($str_driver)->selectRaw('pt.package_id,pt.description')->get();          
+     foreach($rows as $row){
+       $row->cod_notes = null;
+       if($row->cod_changed ==1){
+          $row->cod_notes = self::getCODNotes($track_rows,$row->id);  
+       }
+     }
+    // Currency and exchange rate information
+    $exchange_rate = GeneralSettings::getExchangeRate(date('Y-m-d'));
+    $currency_pair = 'USDKHR';
+
+    return (object)[
+        'driver_id' => $driver_id,
+        'currency_code' => 'USD',
+        'items' => $rows,
+        'exchange_info' => (object)[
+            "currency_pair" => $currency_pair,
+            "buy_rate" => $exchange_rate->buy_rate
+        ]
+    ];
+}
+ 
     /** return settled packages based on $trx_id. This method is used on backend's Driver Payment, when user clicks on Package count to view list of settled or paid packages */
     function getSettledPackages($trx_id, $id = null, $ss = null)
     {
@@ -1029,7 +1121,7 @@ static function defaultImage($branch_id){
 
     static function getOutstandingBalanceError($id){
       if (!$id) return null;
-      $row = DB::table('package as p')->join('driver as s','s.id','=','p.driver_id')->where('s.id',$id)->whereRaw('IFNULL(p.driver_pmt_status_id,0) =0')->selectRaw('COUNT(p.id) AS item_count,SUM(IFNULL(p.driver_total,0)) AS amount')->get()->first();
+      $row = DB::table('package as p')->join('driver as s','s.id','=','p.driver_id')->where('s.id',$id)->whereRaw('IFNULL(p.driver_pmt_status_id,0) =0')->whereRaw('p.driver_id > 0')->selectRaw('COUNT(p.id) AS item_count,SUM(IFNULL(p.driver_total,0)) AS amount')->get()->first();
       if(!$row) return null;
       if ($row->item_count > 0 ) return 'មិន​អាច​លុប ឬ​បិទ​គណនី​នេះ​បាន​ទេ ព្រោះ​មាន​កញ្ចប់ '.$row->item_count.' ដែល​មិន​ទាន់​បាន​ទូទាត់​ប្រាក់';
       return null;
@@ -1374,9 +1466,7 @@ static function defaultImage($branch_id){
       //Generate new 6-digit OTP code
       $otp_code = $this->newOTP(6); 
       //$app_id = isset($d->app_id)? Sanitizer::sanitize($d->app_id):null;
-      $app_id = getAppIdByUserClass($d->user_class);
-      $result = (object)array('status'=>'OK','error_message'=>null);
-      
+      $app_id = getAppIdByUserClass($d->user_class);  
       //Make sure the app_id supplied is the Merchant Mobile App
       if (empty($app_id)) {
          return DV::error('App ID is not valid');
@@ -1398,7 +1488,7 @@ static function defaultImage($branch_id){
       
        $m_result = SMS::send($d->phone_number,$text,null); 
        if ($m_result->status === 'Error') 
-          return DV::error($result->sms_error); 
+          return DV::error($m_result->error_message); 
        else{
             //Save OTP_CODE after successfully sent otp_code sms 
             $expiry_time = Carbon::now()->addSeconds(60);
@@ -1410,7 +1500,7 @@ static function defaultImage($branch_id){
               'otp_code'=>$otp_code,
               'expiry_time'=>$expiry_time
             ));
-            return $result;
+            return DV::depends(1,['otp_code'=>$otp_code]);
          }  
     }
 
@@ -1491,7 +1581,7 @@ static function defaultImage($branch_id){
 
   function newOTP($length=6)
   {
-      return join('', array_map(function($value) { return $value == 1 ? mt_rand(1, 9) : mt_rand(0, 9); }, range(1, $length)));
+    return join('', array_map(function($value) { return $value == 1 ? mt_rand(1, 9) : mt_rand(0, 9); }, range(1, $length)));
   }
 
   function getDriverProps($id,$props){

@@ -90,7 +90,7 @@ class ApiController extends Controller
         }
         return $result;
     }
-     
+  
     function updateSenderProfile(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
@@ -126,7 +126,8 @@ class ApiController extends Controller
     function deleteImageOrder(Request $req){
       $ss = UM::getUserInfoBytoken($req,-1);
       if($ss->status_code !=200) return JDV::raw($ss);
-      $res = $this->pickupRequestModel->deleteImageOrder($ss,$req->all());
+      $order_id = $req->id ?? $req->order_id;
+      $res = $this->pickupRequestModel->deleteImageOrder($order_id,$ss);
       return JDV::raw($res); 
     }
 
@@ -233,7 +234,6 @@ class ApiController extends Controller
       $req['driver_id'] = $ss->official_id;
       $req['user_id'] = $ss->user_id;
       $res = $this->UMModel->setPassword($req->all(),$ss);
-      if($res->status ==='OK') return JDV::success();
       return JDV::raw($res); 
     }
 
@@ -337,11 +337,11 @@ class ApiController extends Controller
       return JDV::result($text);
     }
  
-    function savePickupRequest(Request $request){
-        $ss= UM::getUserInfoByToken($request,-1);
+    function savePickupRequest(Request $req){
+        $ss= UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $d = $request->all();
-        if ($ss->user_class ==='merchant'){
+        $d = $req->all();
+        if (strtolower($ss->user_class) ==='merchant'){
           $d['sender_id'] = $ss->official_id;
         }
         $d['is_from_mobile'] =1;
@@ -351,6 +351,21 @@ class ApiController extends Controller
         }else return JDV::error($res->error_message);
     }
   
+    /** Driver App => create delivery Order by uploading package photos, the "QTY = count of photo"  */
+    function createOrderWithPhotos(Request $req){
+      $ss= UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $d = $req->all();
+      if (strtolower($ss->user_class) !=='driver'){
+        return JDV::error('Only Driver users are allowed to create Order by uploading photos');
+      }
+      $d['is_from_mobile'] =1;
+      $res = $this->pickupRequestModel->createOrderWithPhotos($ss,$d);
+      if($res->status ==='OK'){
+          return JDV::success(['order_id'=>$res->order_id,'tracking_number'=>$res->tracking_number]);
+      }else return JDV::error($res->error_message);
+  }
+
     //returns list of outstanding Delivery Orders to Merchant Mobile App
     function getOutstandingDeliveryOrders(Request $req) {
       $ss= UM::getUserInfoByToken($req,-1);
@@ -1203,7 +1218,6 @@ function getActiveTrips(Request $req){
       $ss = ['branch_id'=>1];
       $req['user_class'] ='driver';
       $res = $this->UMModel->sendOTPCode_phone($req->all(),$ss);
-      if ($res->status ==='OK') return JDV::success(['otp_code'=>$res->otp_code]); 
       return JDV::raw($res);
     }
     
@@ -1212,7 +1226,6 @@ function getActiveTrips(Request $req){
       $ss = ['branch_id'=>1];
       $req['user_class'] ="merchant";
       $res = $this->UMModel->sendOTPCode_phone($req->all(),$ss);
-      if ($res->status ==='OK') return JDV::success(['otp_code'=>$res->otp_code]); 
       return JDV::raw($res);
     }
 

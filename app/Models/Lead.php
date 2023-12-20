@@ -2,48 +2,391 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+//use Illuminate\Database\Eloquent\Factories\HasFactory;
+//use Illuminate\Database\Eloquent\Model;
+ 
+use App\Models\PublicStorage;
+use App\Models\DV;
 use DB;
-
-class Lead extends Model
+use Sanitizer;
+//use Config;
+use Illuminate\Pagination\LengthAwarePaginator; 
+use Illuminate\Support\Facades\Log;
+class Lead //extends Model
 {
-    use HasFactory;
-    protected $table = 'leads';
-    protected $guarded = ['id'];
-    protected $fillable = [];
- 
-    protected $primaryKey = 'id';
-    public $incrementing = true;
-    //protected $keyType = 'string';
-    public $timestamps = true;
-    protected $dateFormat = 'Y-m-d';
+    //use HasFactory;
+    protected $id = null;
+    protected $userInfo = null;
     
-    protected $attributes = [
-        //'inactive' => 0,
-        'branch_id'=>0
-    ];
+    //Merchant Regitration default options | senderDetaultOptions() | merchantDefaultOptions
+    function getDefaultOptions(){
+      //price_list_id =11 (Normal Condition)
+      $data =(object)[
+        'price_list_id'=>DB::table('price_list_names AS l')->where('is_default',1)->take(1)->value('id'),
+        'cod'=>0,
+        'cod_fee'=>0
+      ];
+      return $data;
+    }
+
+    function __construct($id=null,$userInfo=null){
+         $this->id =$id;
+         $this->userInfo = $userInfo;
+    }
  
-    // static function createIfNotExists($ss,$inputs,$key_field=[],$transform_cols=[],$v_rules=null){
-    //      $key_field="";
-    //      $key_value ="";
-    //      foreach($key_field as $f=>$v){
-    //         $key_field =$f;
-    //         $key_value = $v;
-    //      }
-        
-    //      //$prop is the array key within the $inputs array. such as "client_phone".
-    //      //$official_field is official column name in the target database table. such as "phone_number"
-    //      //The code below is to transform "client_phone" to "phone_number" in order to avoid SQL insert error
-    //      foreach($transform_cols as $prop=>$official_field){
-    //         $inputs[$official_field] = $inputs[$prop];
-    //         unset($inputs[$prop]);
-    //      }
-         
-    //      $inputs['create_user']=$ss->full_name;
-    //      $inputs['create_uid']=$ss->user_id;
-    //      $inputs['created_at']=time();
-    //      $m = self::create($inputs);
-    //      if ($m->id>0) return $m->id; 
-    // }
+    function getDetails($id=null,$ss=null,$includeProfilePicture=false,$includeBankAccount=true){
+        $id = $id ?? $this->id;
+        $ss = $ss?? $this->userInfo;
+        $branch_id = $ss->branch_id;
+        $cols = 's.id,s.code,s.name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id,s.phone_number,s.email,s.business_type,s.price_list_id,sales_agent_id,s.category_id,c.`name` AS category,s.status_id,ls.`name` AS status,s.reopen_count,s.closing_status_id,cs.`name` as closing_status';
+       $row = DB::table('leads as s')->join('lead_statuses as ls','ls.id','=','s.status_id')->join('lead_categories as c','c.id','=','s.category_id')->join('closing_statuses cs','=','cs.id','=','s.closing_status_id')->selectRaw($cols)->where('s.branch_id',$branch_id)->where('s.id',$id)->first();
+     if($row){
+         if($includeProfilePicture) $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
+         return $row; 
+       } 
+      return null;
+    }
+
+  static function details($id,$ss,$includeProfilePicture=false,$includeBankAccount=true){
+      $branch_id = $ss->branch_id;
+      $cols = 's.id,s.code,s.name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id,s.phone_number,s.email,s.business_type,s.price_list_id,sales_agent_id,s.category_id,c.`name` AS category,s.status_id,ls.`name` AS status,s.reopen_count,s.closing_status_id,cs.`name` as closing_status';    
+      $row = DB::table('leads as s')->join('lead_statuses as ls','ls.id','=','s.status_id')->join('lead_categories as c','c.id','=','s.category_id')->join('closing_statuses cs','=','cs.id','=','s.closing_status_id')->selectRaw($cols)->where('s.branch_id',$branch_id)->where('s.id',$id)->take(1)->first();
+      if (!$row) return null;
+          if($includeProfilePicture) $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
+          return $row;
+   }
+ 
+    function getRandomNumbers($min, $max, $total) {
+      $temp_arr = array();
+      while(sizeof($temp_arr) < $total) $temp_arr[rand($min, $max)] = true;
+      return $temp_arr;
+    }
+ 
+    function leadCodeExists($uss,$code,$id) {
+        $branch_id = $uss->branch_id;
+        if (!$code) return false;
+        $str_id = $id > 0 ? 's.id <>'.$id : '1=1';
+        $row = DB::table('leads')->where('branch_id',$branch_id)->where('code',$code)->whereRaw($str_id)->selectRaw('id')->take(1)->first();
+        return $row? true:false; 
+    }
+  
+    //   //getSenderAddress()
+    //   function getVendorAddress($d){
+    //     $ss = UM::getUserInfoByToken($d);
+    //     if ($ss->status_code !==200) return $ss; //user not authenticated
+    //     $branch_id = $ss->branch_id;
+    //     $sender_id = isset($d->sender_id)? Sanitizer::sanitize($d->sender_id):0;
+    //     $rows = DB::table('sender AS s')->where('branch_id',$branch_id)->where('id',$sender_id)->selectRaw("s.address")->limit(1)->get();
+    //     foreach($rows as $row) return $row->address;
+    //     return null;
+    //  }
+      
+    function newOTP($length=6)
+    {
+        return join('', array_map(function($value) { return $value == 1 ? mt_rand(1, 9) : mt_rand(0, 9); }, range(1, $length)));
+    }
+
+    function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
+      $id = $id ?? $this->id;
+      $ss = $ss ?? $this->userInfo;
+
+      $sender = DB::table('leads as s')->where('id',$id)->selectRaw('id,branch_id,photo_file_name')->first();
+      $delete_image = (!$photo_data || isImage($photo_data));
+      if(!$sender)return DV::error('Lead identity is not correct!');
+      if($delete_image){
+        PublicStorage::delete($ss->branch_id,'merchant','image',$sender->photo_file_name);
+        DB::table('leads')->where('id',$id)->update(['photo_file_name'=>null]);
+      }
+       return PublicStorage::saveImage($ss->branch_id,'merchant', null,$photo_data,null,['id'=>$id,'store'=>'sender.photo_file_name']);  
+    }
+
+    function deleteProfilePicture($id=null,$ss=null){
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $sender = DB::table('leads as s')->where('id',$id)->selectRaw('id,branch_id,photo_file_name')->first();
+        if(!$sender) return DV::error('Lead identity is not correct!');
+        PublicStorage::delete($ss->branch_id,'merchant','image',$sender->photo_file_name);
+        DB::table('leads AS s')->where('s.id',$id)->update(['photo_file_name'=>null]);
+        return DV::success();
+    }
+
+    static function getProfilePicture($id){
+      $row = DB::table('leads as s')->where('s.id',$id)->selectRaw('s.branch_id,s.photo_file_name')->first();
+      if(!$row){
+         return self::defaultImage(1);
+      }
+      return PublicStorage::getUrl($row->branch_id,'merchant','image').$row->photo_file_name;
+    }
+    
+    static function validateBusinessType($biz_type){
+       $allowed = DB::table('sender_business_types as t')->where('business_type',$biz_type)->take(1)->value('allow_register');
+       if( $allowed ===null) return 'Business Type does not exist';
+       return $allowed ==0? 'Business type '.$biz_type.' is not yet open for registration':null;
+    }    
+    //saveSender()
+    function save($arr=[],$id =null,$ss=null){
+      $ss = $ss ?? $this->userInfo;
+      $branch_id = $ss->branch_id; 
+      $id = $id ?? $this->id;
+      $v_rule =[
+        'id'=>'0|identity=1',
+        'name'=>'1|string|0-100',
+        'name_kh'=>'0|string|0-100',
+        'business_type'=>'1|string|0-150',
+        'email'=>'0|email',
+        'address'=>'0|string|0-400',
+        'phone_number'=>'1|phone|0-50',
+        'sales_agent_id'=>'0|number',
+        'adr_country_id'=>'0|number',
+        'adr_city_id'=>'0|number',
+        'adr_district_id'=>'0|number',
+        'cod'=>'0|choice|0,1|default=1',
+        'cod_fee'=>'0|number|default=0',
+        'price_list_id'=>'0|number',
+        'code'=>'0|string|0-25',
+        'loc_lat'=>'0|number|default=0.00',
+        'loc_lng'=>'0|number|default=0.00',
+        'status_id'=>'1|choice|1,2,3|default=1',
+        'closing_status_id'=>'1|choice|1,2,3,4|default=1',
+        'category_id'=>'1|number|default=1'
+      ];
+    
+      $checkUnque = ["$branch_id|leads|name,phone_number,email|id=id|text=Lead or prospect already exists by name, phone number"];
+      $res = validateObject($arr,$v_rule,true,['email'=>['-','.','@','_']],$ss->lang,false,$checkUnque);
+      if ($res->error) return DV::error($res->error);
+      $id = $res->id;
+      $inputs = $res->values;
+      $biz_type_err = self::validateBusinessType($inputs['business_type']);
+      if($biz_type_err) return DV::error($biz_type_err);
+      if(!$id) $id = $res->id;
+      $inputs['phone_number'] = str_replace(' ','',$inputs['phone_number']);
+ 
+      //if($inputs['cod_fee'] <0) return DV::error("COD fee is not correct!");
+      if ($this->leadCodeExists($ss,$inputs['code'],$id)) return DV::error('Merchant ID already exists');
+      $phone_err = $this->checkUniquePerson($branch_id,$inputs['phone_number'],$id);
+      if ($phone_err) return DV::error( $phone_err);   
+       
+      if(!isset($inputs['name_kh'])) $inputs['name_kh'] = $inputs['name'];
+      $by_sales_agent =  (strtolower($ss->user_class) =='sales_agent');
+      if($by_sales_agent) $inputs['sales_agent_id'] = $ss->official_id;
+
+      $lead_created = $id>0? 0:1;
+      $id = saveData($ss,'leads',['id'=>$id],$inputs,[],1);
+      if($id > 0){
+           $new_code = null;
+           if ($lead_created ===1){
+              $new_code = $this->getNextLeadCode($ss); // formatNumber($sender_id,5);
+              //$inputs['code'] = $new_code;
+              DB::table('leads')->where('id',$id)->update(['code'=>$new_code]);
+           } 
+           $inputs['id']=$id;
+           $inputs['code']=$new_code;
+           return DV::success(['lead'=>$inputs]);
+           //return DV::success(['sender_id'=>$sender_id,'code'=>$sender_code]);
+      }
+      return DV::error('Something went wrong saving lead or prospect profile');
+    }
+ 
+    function checkUniquePerson($branch_id,$phone_number,$id=null){
+      $str_id ="1=1";
+      if(!$phone_number) return 'Phone number cannot be empty';
+      if ($id>0) $str_id="s.id <> $id";
+      $x = DB::table('leads as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+      if ($x) return 'Phone number "'.$phone_number.'" has been used by another registered lead or prospect';
+      $x = DB::table('sender as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+      if ($x) return 'Phone number "'.$phone_number.'" has been used by another registered merchant';
+      $x = DB::table('driver as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+      if($x) return 'Phone number "'.$phone_number.'" has been used by a driver';
+      return null;
+    }
+
+    function getNextLeadCode($uss,$len =4){
+      $branch_id = $uss->branch_id;
+      $prefix ='P';
+      $str_prefix = $prefix? 'c.prefix =\''.$prefix.'\'' : '2=2';
+      $row = DB::table('lead_code_control AS c')->where('branch_id',$branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
+      if($row) {
+          $num = $row->last_id;
+          $prefix = trim($row->prefix);
+          $num +=1;
+          DB::table('lead_code_control')->where('branch_id',$branch_id)->whereRaw($str_prefix)->update(['last_id'=>$num]);
+          return $prefix.$branch_id.formatNumber($num,$len);
+      }
+      DB::table('lead_code_control')->insert(['branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix]);
+      return $prefix.$branch_id.formatNumber(1,$len);
+    }
+   
+  function updateStatus($status_id,$id=null,$ss=null){
+    $ss = $ss ?? $this->userInfo;
+    $id = $id ?? $this->id;
+    $x = DB::table('leads')->where('id',$id)->update([
+        'status_id'=>$status_id
+    ]);
+    return DV::depends($x,null,'Failed to update Lead or prospect status'); 
+  }
+  
+  function deleteSpecial($id=null,$ss=null){
+    $id =$id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
+    return $this->delete($id,$ss); 
+  }
+      
+  function delete($id=null,$ss = null){
+    $id =$id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
+    $x = DB::table('leads')->where('id',$id)->delete();
+    return DV::depends($x,null,'Failed to delete lead or prospect');
+  }
+  
+  function setPriceList($price_list_id,$id=null,$ss =null){
+    $ss = $ss ?? $this->userInfo;
+    $id = $id ?? $this->id;
+    //$branch_id = Sanitizer::sanitize($ss->branch_id);
+    $p = getDataRow('price_list_names',["id"=>$price_list_id],"id,name");
+    if(!$p) return DV::error("Price list ID is not valid");
+    $p_name = $p->name;
+    DB::table('leads')->where('id',$id)->update(array(
+    'price_list_id'=>$price_list_id));
+    return DV::success(['list_name'=>$p_name,'list_id'=>$price_list_id]);
+ }
+   
+ static function list_all($arr,$ss){
+     $d = (object)$arr;
+     $branch_id =$ss->branch_id;
+     $is_from_mobile = (strtolower($ss->user_class) =='sales_agent');
+     $status_id = isset($d->status_id)?$d->status_id:null;
+     $business_type = isset($d->business_type)?$d->business_type:null;
+     $search_value = isset($d->search_value)?$d->search_value:-1;
+     $sales_agent_id = isset($d->sales_agent_id)?$d->sales_agent_id:null;
+     
+     $str_agent = '3=3';
+     if ($is_from_mobile){
+       $str_agent = 's.salges_agent_id ='.$sales_agent_id;
+     }else{
+        if ($sales_agent_id ==-1)
+           $str_agent ='3=3';
+        else if (!$sales_agent_id)
+           $str_agent ='s.sales-agent_id IS NULL';
+        else if ($sales_agent_id > 0)  
+          $str_agent = 's.salges_agent_id ='.$sales_agent_id;
+     }
+
+     $str_business_type =null;
+     $str_status =null; // Active, Inactive
+     $str_search =null;
+     if (!empty($search_value)) 
+     {
+      $str_search = "AND (s.name LIKE '%".escape_like_str($search_value)."%' OR s.phone_number ='".Sanitizer::sanitize($search_value)."' )";
+     }else{
+        if(!empty($business_type)) $str_business_type ="AND s.business_type ='".Sanitizer::sanitize($business_type)."' ";
+        if($status_id > 0) $str_status = ' AND s.status_id ='.$status_id;
+      }
+
+      $str_more_clauses = " 1=1 ".$str_search.$str_business_type.$str_status;
+      $select_referrer_name = ',(SELECT r.`name` FROM sales_agents as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name';
+      $cols = 's.id,s.code,s.name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id,s.phone_number,s.email,s.business_type,s.price_list_id,sales_agent_id,s.category_id,c.`name` AS category,s.status_id,ls.`name` AS status,s.reopen_count,s.closing_status_id,cs.`name` as closing_status,s.sales_agent_id,'.$select_referrer_name;
+      return DB::table('leads as s')->join('lead_statuses as ls','ls.id','=','s.status_id')->join('lead_categories as c','c.id','=','s.category_id')->join('closing_statuses cs','=','cs.id','=','s.closing_status_id')->whereRaw($str_agent)->whereRaw($str_more_clauses)->where('s.branch_id',$branch_id)->selectRaw($cols)->orderByRaw('s.id DESC')->get();
+   }
+ 
+   /** return Sender List paginated */
+   static function list($arr,$ss){
+    $d = (object)$arr;
+    $branch_id =$ss->branch_id;
+
+    $current_page =isset($d->current_page)?$d->current_page:1;
+    $per_page =isset($d->per_page)?$d->per_page:10;
+    if(!is_numeric($current_page)) $current_page=1;
+    $skip_rows = ($current_page -1) * $per_page;
+
+    $status = isset($d->status_id)?$d->status_id:null;
+    //$sender_type_id = isset($d->sender_type_id)? $d->sender_type_id:null;
+    $business_type = isset($d->business_type)?$d->business_type:null;
+    $search_value = isset($d->search_value)?$d->search_value:null;
+    //$sales_agent_id = isset($d->sales_agent_id)?$d->sales_agent_id:-1;
+
+    //$str_sender_type = null;
+    $str_business_type ='1=1';
+    $str_status ='3=3'; // Active, Inactive
+    $str_search ='2=2';
+    //$str_agent = null;
+
+    if ($search_value) 
+    {
+      $search_value = escape_like_str($search_value);
+      $str_search = "(s.name LIKE '%". $search_value."%' OR s.phone_number ='".$search_value."' )";
+    }else{
+       //if($sender_type_id>0) $str_sender_type ="AND s.sender_type_id ='".Sanitizer::sanitize($sender_type_id)."' ";
+       if($business_type) { 
+         $business_type = escape_like_str($business_type);
+         $str_business_type ='s.business_type LIKE \'%'.$business_type.'%\'';
+      }
+       if(in_array(strtolower($status),['active','inactive'])) $str_status = 's.status_code =\''.$status.'\'';
+     }
+     $select_referrer_name = ',(SELECT r.`name` FROM sales_agents as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name'; 
+     $cols = 's.photo_file_name,s.id,s.code,s.name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.phone_number,s.email,s.business_type,s.price_list_id,sales_agent_id,s.category_id,c.`name` AS category,s.status_id,ls.`name` AS status,s.reopen_count,s.closing_status_id,cs.`name` as closing_status,s.sales_agent_id'.$select_referrer_name;
+     $query = DB::table('leads as s')->join('lead_statuses as ls','ls.id','=','s.status_id')->join('lead_categories as c','c.id','=','s.category_id')->join('closing_statuses AS cs','cs.id','=','s.closing_status_id')->where('s.branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->selectRaw($cols)->orderBy('s.id','DESC');
+     
+     $count_query = clone $query;
+     $count = $count_query->count('s.id');
+     $rows = $query->skip($skip_rows)->take($per_page)->get();
+     foreach($rows as $row){
+       $row->image_url = '';
+       if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($row->branch_id,'merchant','image').$row->photo_file_name;
+       unset($row->photo_file_name);
+       if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
+     }
+    
+     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+  }
+ 
+  static function defaultImage($branch_id){
+    return PublicStorage::getUrl($branch_id,'merchant','image').'def-merchant.png';
+  }
+
+   //static method getLeadProp($lead_id,$prop)
+   static function getLeadProp($id,$prop){
+      $rows = DB::table('leads')->where('id',$id)->selectRaw($prop)->take(1)->get();
+      foreach($rows as $row) return $row->{$prop};
+      return null;
+   }
+  
+   /** returns object {"latitude","longitude"} */
+   static function getLocation($googleMapLink) {
+    // Define regular expression patterns for both types of Google Maps links
+    $patterns = [
+        '/@([-0-9.]+),([-0-9.]+)/',  // Matches links with @latitude,longitude
+        '/\/place\/([-0-9.]+),([-0-9.]+)/'  // Matches links with /place/latitude,longitude
+    ];
+
+    foreach ($patterns as $pattern) {
+        // Perform a regular expression match and return the result if successful
+        if (preg_match($pattern, $googleMapLink, $matches)) {
+            return (object)['latitude' => $matches[1], 'longitude' => $matches[2]];
+        }
+    }
+
+    // Return false if no match is found
+    return false;
+}
+
+function leadExists($uss,$name,$id) {
+  $branch_id = $uss->branch_id;
+  $str_id = $id > 0? 's.id <> '.$id : '1=1';
+  $row  = DB::table('leads AS s')->where('s.branch_id',$branch_id)->where('s.name',$name)->whereRaw($str_id)->selectRaw('id')->take(1)->first();
+  return $row? true:false;
+}
+     
+    static function getFormOptions($id,$ss){   
+        $branch_id = $ss->branch_id;
+        $lead_details = null;
+        if($id>0) $lead_details = self::details($id,$ss);
+        $data= (object)[];
+        $data->lead = $lead_details;
+        $data->categories = DB::table('lead_categories as c')->selectRaw('id,name AS category')->get();
+        $data->business_types = DB::table('sender_business_types')->selectRaw('business_type')->get();
+        $data->lead_statuses = DB::table('lead_statuses')->selectRaw('id, name as status')->get();
+        $data->closing_statuses = DB::table('closing_statuses AS cs')->selectRaw('scs.id,cs.name AS closing_status')->get();
+        $data->price_list = DB::table('price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name')->get();
+        return $data;
+    }
 }

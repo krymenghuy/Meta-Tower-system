@@ -5,8 +5,7 @@ namespace App\Models;
 //use Illuminate\Database\Eloquent\Model;
 use App\Models\UM;
 use App\Models\DV;
-use Session;
-use Carbon\Carbon;
+//use Carbon\Carbon;
 use DB;
 use Sanitizer;
 use Config;
@@ -124,97 +123,96 @@ class SMS //extends Model
         return self::formatPhoneNumber_static($d);
     }
 
-    // send() is a static function and is the same as _sendSMS(). But $this->sendSMS() is different in @parameter
-    static function send($phone_number,$text=null,$sender_name= null){
-        //Note that $sender_name or senderID needs to be registered with Plasgate telecom company
-        if (!$sender_name) $sender_name = config::get('app.plasgate_sms_sender_name');
+    // static function send($phone_number, $text = null, $sender_name = null) {
+    //     if (!$sender_name) {
+    //         $sender_name = config::get('app.plasgate_sms_sender_name');
+    //     }
+    //     if (empty($text) || empty($phone_number)) {
+    //         return DV::error("phone_number or text cannot be empty");
+    //     }
+    
+    //     $fields = [
+    //         'to' => self::formatPhoneNumber_static($phone_number),
+    //         'username' => Config::get('app.plasgate_sms_user'),
+    //         'password' => Config::get('app.plasgate_sms_password'),
+    //         'sender' => $sender_name,
+    //         'content' => $text,
+    //         "dlr" => "no",
+    //     ];
+    
+    //     $ch = curl_init();
+    //     curl_setopt($ch, CURLOPT_URL, "https://cloudapi.plasgate.com/api/send");
+    //     curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
+    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+    //     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+    //     $try_timeout = 600;
+    //     curl_setopt($ch, CURLOPT_TIMEOUT, $try_timeout);
+    //     curl_setopt($ch, CURLOPT_FAILONERROR, true);
+    
+    //     $json_string = curl_exec($ch);
+    //     $err_message = null;
+    
+    //     if (curl_errno($ch)) {
+    //         $err_message = curl_error($ch);
+    //         if (strpos($err_message, 'Could not resolve host') !== false) {
+    //             $err_message = "Failed to connect to the SMS server. You may check your internet connection";
+    //         }
+    //     }
+        
+    //     curl_close($ch);
+    //     if ($err_message) {
+    //         return DV::error($err_message);
+    //     }
+        
+    //     return DV::success(['data' => json_decode($json_string, true)]);
+    // }
+    
+    static function send($phone_number, $text = null, $sender_name = null) {
+        $sender_name = $sender_name ?? config::get('app.plasgate_sms_sender_name');
         if (empty($text) || empty($phone_number)) return DV::error("phone_number or text cannot be empty");
-        // $nums = [];
-        // $result = (object)array('status'=>'OK','error_message'=>null);
-        // if (strpos('|',$phone_numbers)) 
-        //      $nums = explode('|',$phone_numbers);
-        // else $nums = explode(',',$phone_numbers);
-        // $numbers = [];
-        // foreach($nums as $num) $numbers[] = self::formatPhoneNumber_static($num);  
-        $fields = [
-          'to'=>self::formatPhoneNumber_static($phone_number),
-          'username'=>Config::get('app.plasgate_sms_user'),
-          'password'=>Config::get('app.plasgate_sms_password'),
-          'sender'=>$sender_name,
-          'content'=>$text,
-          "dlr"=> "no",
-            //"dlr_method"=> "POST",
-            //"dlr_level"=> 2,
-            //"dlr_url"=> "http://example.com/callback"
-        ];
-
-        // $fields = array(
-        //     (object)['globals'=>(object)[
-        //           'sender'=>Config::get('app.plasgate_sms_sender_name'),
-        //           'messages'=>[
-        //             (object)['to'=>$numbers,'content'=>$text] 
-        //           ]
-        //        ]
-        //     ]
-        //   );
+        $private = Config::get('app.plasgate_private_key');
+        $secret = Config::get('app.plasgate_sms_secret');
+        $payload = ['sender'=>$sender_name,'to'=>  self::formatPhoneNumber_static($phone_number),'content'=> $text];
  
-        //$m = self::_getAccessToken();
-        //if ($m->status ==='Error') return DV::error($m->error_message);
-        
         $ch = curl_init();
-        //curl_setopt($ch, CURLOPT_URL, "https://cloudapi.plasgate.com/rest/send");
-        /** { "sender": "SMS Info", "to": "855123456789", "content": "Hello from rest #ma#API#ma#" } **/
-        curl_setopt($ch, CURLOPT_URL, "https://cloudapi.plasgate.com/api/send");
-        /** { "globals": { "sender": "SMS Info" }, "messages": [ { "to": ["855123456780", "855123456781"], "content": "Hello from rest API" } ] } **/
-        // curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-        //     'Content-Type:*.*',
-        //     'X-Secret:'.$sms_secret
-        // ));
-             //curl_setopt($ch, CURLOPT_HTTPHEADER, array('x-api-key: XXXXXX', 'Content-Type: text/plain'));
-             curl_setopt($ch,CURLOPT_POSTFIELDS, $fields);  
+        curl_setopt_array($ch, array(
+            CURLOPT_URL => 'https://cloudapi.plasgate.com/rest/send?private_key=' . $private,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT =>0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_SSL_VERIFYPEER => 2,
+            CURLOPT_FAILONERROR=>true,
+            CURLOPT_CAINFO => storage_path('plasgate/ed4af1b392f59973.pem'), 
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_HTTPHEADER => array(
+                'X-Secret: ' . $secret,
+                'Content-Type: application/json'
+            ),
+        ));
 
-				//curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET");
-				 
-				curl_setopt($ch, CURLOPT_RETURNTRANSFER,1); // Do not send to screen
-				//WHEN SET CURLOPT_RETURNTRANSFER TO FALSE => the resulting json string has '1' at the end of string causing fucking shit error in ajax receiving method.
-				//curl_setopt($ch, CURLOPT_RETURNTRANSFER,false); 
-              //curl_setopt($ch, CURLOPT_HEADER, TRUE);
-              //curl_setopt($ch, CURLOPT_POST, 1);
-             //curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "GET"); 
-            //Following two lines make insecure connection, by neglecting SSL verification
-            curl_setopt($ch,CURLOPT_SSL_VERIFYPEER, 1);
-            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        $json_string = curl_exec($ch);
+        $err_message = null;
+    
+        if (curl_errno($ch)) {
+            $err_message = curl_error($ch);
+            if (strpos($err_message, 'Could not resolve host') !== false) {
+                $err_message = "Failed to connect to the SMS server. You may check your internet connection";
+            }
+        }
         
-             $try_timeout = 600;
-             curl_setopt($ch,CURLOPT_TIMEOUT,$try_timeout); // Set timeout to 60s
-			 curl_setopt($ch, CURLOPT_FAILONERROR, true); // Required for HTTP error codes to be reported via our call to curl_error($ch)
-		 
-				// *** Remember that when you want cURL to connect to SSL and verify the certificate you priorly have to download and save the CA certificate (firefox can do this) to your application and reference it in your cURL call. For example: **//
-
-				// curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
-				// curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-				// curl_setopt($ch, CURLOPT_CAINFO, getcwd() . "/CACertificats/AddTrustExternalCARoot.crt");
-				//curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
-				//curl_setopt($ch,CURLOPT_USERPWD,$user.':'.$pass); // Set uname/pass
-				 
-				// Execute request
-				$json_string = curl_exec($ch);
-
-				// Check if any error occurred
-                $err_message = null;
-				if (curl_errno($ch)) {
-				   $err_message =curl_error($ch); //'Failed to access the source server';
-				   //$info = curl_getinfo($ch);  //$info['total_time'] $info['ssl_verify_result'] = {0,1}
-				   //$err_message = var_dump($info);// 'ssl_verified = '.$info['ssl_verify_result'];
-				   if (strpos($err_message,'Could not resolve host') == true) $err_message ="Failed to connect to the SMS server. You may check your internet connection";
-				   
-				}
         curl_close($ch);
-        if($err_message) return DV::error($err_message);
-        //json_decode($json_string,true);
-        return DV::success(['data'=>json_decode($json_string,true)]);
+        if ($err_message) {
+            return DV::error($err_message);
+        }
+        
+        return DV::success(['data' => json_decode($json_string, true)]);
     }
-
+ 
     function _sendSMS($phone_numbers,$text=null,$sender_name= null){
        self::send($phone_numbers,$text=null,$sender_name= null);
     }

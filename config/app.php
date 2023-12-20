@@ -126,9 +126,10 @@ return [
     /*
       the following are specific variables for DMS system.
     */
-   'app_id'=>env('APP_ID','DFB15FKAEEC611EG2E7C9801A7CXD1HK'),
-   'merchant_app_id'=>env('MERCHANT_APP_ID','38DC051E122D11EC89909801A7B0D1FCH'),
-   'driver_app_id'=>env('DRIVER_APP_ID','584C7FF2122D11EC89909801A8B0D7XKD'),
+   'app_id'=>env('APP_ID',null),
+   'merchant_app_id'=>env('MERCHANT_APP_ID',null),
+   'driver_app_id'=>env('DRIVER_APP_ID',null),
+   'sales_app_id'=>env('SALES_APP_ID',null),
    'cookie_name'=>env('COOKIE_NAME','da337_acctk_1298XA'),
    'allowed_image_types'=>[
       'pdf','heif','png','jpg','jpeg','gif'
@@ -146,8 +147,8 @@ return [
     'plasgate_sms_sender_name'=>'houexpress',
     'plasgate_sms_password'=>'Hou$$168',
     'plasgate_sms_user'=>'neat.houexpress@gmail.com',
-    'plasgate_private_key'=>'uKn0hCJn-x0KdAcbcKNLqGABK-p50ButFKsOETI3EObfrvJjzsEfCAnNAOcDambOmjAFHK920-uh72lMXMqGog',
-    'plasgate_sms_secret'=>'$5$rounds=535000$4QMBtMcrmPOeqsid$pcY96iwyIwixlFdJZFcQgpa8gmzK3LDT6YRAD19bwg2',  
+    'plasgate_private_key'=>'fx8pYrfS9ZX9n_KfEU0XlNPAYaZQ5nCnSwDC7syWieu5HEhAnK70TOd-OC8H4tCBM16OaMQi0LsxNdkMeWmTVg',
+    'plasgate_sms_secret'=>'$5$rounds=535000$ZugAQorq3NWPkKcP$Ub750XTMyTr/YGVa.ECEHXRnRDhprd0Vpwia87cimaA',
     /*
     |--------------------------------------------------------------------------
     | Autoloaded Service Providers

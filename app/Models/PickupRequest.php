@@ -15,22 +15,16 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use function PHPUnit\Framework\fileExists;
+
 class PickupRequest //extends Model
 {
     //use HasFactory;
     protected $id = null;
     protected $userInfo =null;
+    protected static $package_photo_dir ='package';
     function __construct($id=null,$userInfo=null){
         $this->id = $id;
         $this->userInfo = $userInfo;
-    }
-
-    function getId(){  
-        return $this->id;
-    }
-
-    function getUserInfo(){
-        return $this->userInfo;
     }
 
     //$d = {access_token,code} 
@@ -103,33 +97,39 @@ class PickupRequest //extends Model
         }else return DV::error("Failed to create order");
     }
 
-    function getOrderImages($ss,$d){
+    function getOrderImages($arr =[],$id = null,$ss = null){
+        $ss = $ss ?? $this->userInfo;
+        $order_id = $id ?? $this->id;
+        $sender_id = 0;
+        $d = (object)$arr;
         $branch_id = $ss->branch_id;
-       
+   
+        $order_id = isset($d->order_id)?$d->order_id:0;
         if($ss->user_class ==='merchant')  $sender_id =$ss->official_id;
-        
-        $start_date = isset($d['start_date'])? convertDate($d['start_date']):null;
-        $end_date = isset($d['end_date'])? convertDate($d['end_date']):null;
+        else $sender_id = isset($d->sender_id)?$d->sender_id:0;
+        $start_date = isset($d->start_date)? convertDate($d->start_date):null;
+        $end_date = isset($d->end_date)? convertDate($d->end_date):null;
+        $str_dates = '3=3';
+        $str_sender = '4=4';
 
-        $date = date('Y-m-d');
-        if (!(bool)($start_date)) $start_date = date('Y-m-d', strtotime($date. '-3 days'));
-        if (!(bool)($end_date)) $end_date =$date;
-
-        $str_dates = "DATE(img.create_date)>= '$start_date' AND DATE(img.create_date) <='$end_date'";
-
-        $order_id = isset($d['order_id'])?$d['order_id']:0;
-        $str_order ="1=1";
-        if ($order_id > 0){
-            $str_dates ="1=1"; /** neglect start date and end_date when there is $order_id **/
-            $str_order ="order_id =$order_id";
+        $today = date('Y-m-d');
+        if (!$order_id && !$sender_id){
+            //Error: When order_id is NOT provided, we need to have sender_id in order and use start_date and end_date to track Photos of items belonging to their merchant or sender
+            return [];
+        }else if ($sender_id > 0){
+             //If no orderID then use start_date and end_date and Merchant ID
+             if (!(bool)($start_date)) $start_date = date('Y-m-d', strtotime($today. '-3 days'));
+             if (!(bool)($end_date)) $end_date =$today;
+             $str_dates = 'DATE(img.create_date)>= \''.$start_date.'\' AND DATE(img.create_date) <=\''.$end_date.'\'';
+             $str_sender = 's.id = '.$sender_id;
         }
-
-      //->where('sender_id',$sender_id)
-        $rows = DB::table("order_images as img")->join('order as o','o.id','=','img.order_id')->whereRaw($str_order)->whereRaw($str_dates)->where('img.branch_id',$branch_id)->selectRaw("img.id,img.file_name,DATE_FORMAT(img.create_date,'%d %b %Y') as create_date,img.file_type,file_size_kb")->get();
+        
+        $str_order ='o.id ='.($order_id?$order_id:0);
+ 
+        $rows = DB::table('order as o')->join('sender as s','s.id','=','o.sender_id')->join('order_images as img','o.id','=','img.order_id')->whereRaw($str_order)->whereRaw($str_dates)->whereRaw($str_sender)->selectRaw('img.id,img.file_name,formatDate(img.create_date) as create_date,img.file_type,file_size_kb')->get();
         
         //NOTE: event in case Driver is the one who upload order images, all order-images are saved in directory "companies/1_data/merchant"
-        $img_folder = "merchant";
-        $base_url = PublicStorage::getUrl($branch_id,$img_folder,"image");
+        $base_url = PublicStorage::getUrl($branch_id,self::$package_photo_dir,'image');
         foreach($rows as $row){
             $row->image_url = $base_url.$row->file_name;
         }
@@ -137,29 +137,29 @@ class PickupRequest //extends Model
     }
  
     function countImages($order_id){
-       $rows = DB::table('order_images as oi')->where('order_id',$order_id)->selectRaw("COUNT(oi.id) as cnt")->get();
-       return isset($rows[0])?$rows[0]->cnt:0;
+       $count = DB::table('order_images as oi')->where('order_id',$order_id)->count('oi.id');
+       return $count;
     }
 
     function deleteOrderImage_internal($branch_id,$file_name,$file_id=0){
         $x = DB::table('order_images')->where('id',$file_id)->where('branch_id',$branch_id)->delete();
-        $dir = PublicStorage::getDiskPath($branch_id,"merchant","image");
+        $dir = PublicStorage::getDiskPath($branch_id,self::$package_photo_dir,'image');
         $path = $dir.$file_name;
         $err = PublicStorage::deleteFile($path);
         return $x;
      }
 
      //DeleteOrder()|delete image order only
-    function deleteImageOrder($ss,$d){
+    function deleteImageOrder($id=null,$ss =null){
+        $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-        //$user_class = $ss->user_class;
-        $order_id = isset($d['id'])? $d['id']: $d['order_id'];
+        $order_id = $id ?? $this->id;
         $rows = DB::table('order_images')->where('order_id',$order_id)->where('branch_id',$branch_id)->selectRaw("id,file_name,file_type")->get();
         foreach($rows as $file){
             $this->deleteOrderImage_internal($branch_id,$file->file_name,$file->id);
         }
-        DB::table('order')->where('id',$order_id)->where('branch_id',$branch_id)->delete();
-        return DV::success(); 
+        $x = DB::table('order')->where('id',$order_id)->where('branch_id',$branch_id)->delete();
+        return DV::depends($x); 
     }
 
     //Get last image order (o.detail_type ='images')
@@ -237,30 +237,7 @@ class PickupRequest //extends Model
             return DV::success(["notif_error"=>$err,"image_url"=>$image_url,"order_id"=>$order->id,"create_date"=>date('d M Y'),"order_number"=>$order->code,"id"=>$image_id]);
         }else return DV::error($res->error_message);
      }
- 
-    //  //delete all images in one order, or between start_date and end_date. Only if there is no order_id supplied, the start_date is used
-    //  function deleteImageOrder($ss,$d=[]){
-    //     $branch_id = $ss->branch_id;
-    //     $order_id = isset($d['order_id'])?$d['order_id']:null;
-    //     $str_where="1=1";
-    //     if (!$order_id){
-    //         $start_date = isset($d['start_date'])? convertDate($d['start_date']):null;
-    //         $end_date = isset($d['end_date'])? convertDate($d['end_date']):null;
-    //         $str_where ="DATE(img.create_date) >='$start_date' AND DATE(img.end_date) <='$end_date'"; 
-    //     }else $str_where ="img.order_id =$order_id";
-    //     if (!(bool)strtotime($start_date) || !(bool)strtotime($end_date)) return DV::error("Start date and end date are required for deleting images");
-    //     $rows = DB::table('order_images as img')->whereRaw($str_where)->selectRaw("img.id,img.file_name,img.file_type")->get();
-        
-    //     foreach($rows as $row){
-    //        $pfile = PublicStorage::getDiskPath($branch_id,"merchant","image").$row->file_name;
-    //        PublicStorage::deleteFile($pfile);
-    //     }
-    //     //todo: delete order with empty images
-    //     //DB::statement(DB::raw("delete from `order` where id IN (select)"));
-    //     //$x = DB::table('order')->where('id',$order_id)->delete();
-    //     return JDV::success();
-    //  }
-
+  
      //@params $d = {order_id,id}. where $id is image id or file id
      function deleteOrderImage($ss,$file_id){
         $branch_id = $ss->branch_id;
@@ -519,7 +496,7 @@ class PickupRequest //extends Model
             'qty'=>'0|number|default=0',
             'delivery_type'=>'1|choice|Normal,normal,Fast,fast',
             'pickup_address'=>'0|string|0-500',
-            'receivers'=>'0|array',
+            'receivers'=>'0|array', 
             'packages'=>'0|array',
             'loc_lat'=>'0|number',
             'loc_lng'=>'0|number',
@@ -587,8 +564,8 @@ class PickupRequest //extends Model
         }else{
             //If use default location saved in the Merchant's profile
             if ($use_default_location){
-                $inputs['loc_lat'] = $sender->loc_lat;
-                $inputs['loc_lng'] = $sender->loc_lng;
+                $inputs['loc_lat'] = $sender->loc_lat ?? 11.5597855;
+                $inputs['loc_lng'] = $sender->loc_lng ?? 104.9217169;
             }
         }
         
@@ -687,6 +664,181 @@ class PickupRequest //extends Model
         return $result;
     }
  
+    /**
+     * Create Order with images | createImageOrder | createOrderImages | createOrderWithPhotos
+     * Driver uploads a list of photos, and then backend create new Order just like Merchant Ordering delivery services, but the items are photos
+    */
+    function createOrderWithPhotos($ss, $arr=null){
+        $ss = $ss?$ss:$this->userInfo;
+        if(!$ss) return DV::error('It seems authentication failed!');
+        $branch_id = $ss->branch_id;
+        $v_rule = [
+            'sender_id'=>'1|number|exists=sender.id',
+            'product_type'=>'1|string|1-150|exists=product_types.name',
+            'request_vehicle_type'=>'1|string|1-150',
+            //'qty'=>'0|number|default=0',
+            'delivery_type'=>'1|choice|Normal,normal,Fast,fast',
+            'pickup_address'=>'0|string|0-500',
+            'loc_lat'=>'0|number',
+            'loc_lng'=>'0|number',
+            'use_default_location'=>'1|number|default=1',
+            'photos'=>'0|array'
+        ];
+        /** Address_chars contains all chars used in map and normal address */
+        $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%'];
+        $image_char = ['+',':',',',';','=','/','\\','?'];
+        $photos = isset($arr['photos'])?$arr['photos']:[];
+        unset($arr['photos']);
+        $res = validateObject($arr,$v_rule,true,['photos'=>$image_char,'photo'=>$image_char,'image'=>$image_char,'pickup_address'=>$address_map_chars],$ss->lang,false,null);
+        if($res->error) return DV::error($res->error);
+        $inputs =$res->values;
+        $d = (object)$inputs;
+         
+        $w = GeneralSettings::getDefaultWarehouse($ss);
+        if(!$w) return DV::error('Cannot find a correct Branch or warehouse for this order');
+        $warehouse_id = $w->id;
+        $inputs['warehouse_id'] =$warehouse_id;
+        $d->warehouse_id = $warehouse_id;
+        unset($inputs['use_default_location']);  
+        if(!isset($d->order_id)) $d->order_id = 0;
+         
+        //From External source OR $is_from_mobile = isset($d->is_from_mobile)?$d->is_from_mobile:0;
+        $is_from_mobile = in_array(strtolower($ss->user_class),['driver','merchant']);
+        $sender_id = $d->sender_id;
+
+        $sender_id = $is_from_mobile && strtolower($ss->user_class) =='merchant'? $ss->official_id : $d->sender_id;
+        $sender = $this->getSenderInfoById($ss,$sender_id);
+        if (!$sender) return DV::error('Sender identity is not valid');
+        $inputs['sender_id'] = $sender->id;
+  
+        $pickup_address = $d->pickup_address;
+        $use_default_location = $d->use_default_location;
+
+        $request_pickup_time = getNowTime();
+        $booking_channel = $ss->user_class;
+        $inputs['driver_id'] =$ss->official_id;/** This is suppose to be driver ID from Driver Mobile App */
+        $inputs['status_id'] =2; /** Accepted by Driver */
+        $inputs['booking_channel'] = $booking_channel;
+        $inputs['request_pickup_time'] = $request_pickup_time;
+        //Request_date = current server time (by time zone "Asia/Bangkok" )
+        $inputs['request_date'] = $request_pickup_time;
+        //Each Delivery order record is stored 10 days, after which If it is not picked => the Order is automatically deleted
+        $inputs['expiry_date'] = Carbon::now()->addDay(10);
+          
+        if(strtolower($sender->status_code) !=='active') return DV::error('Merchant '.$sender->name.' is not an active merchant!');  
+        if(empty($sender->sender_type_id)) $sender->sender_type_id =1;
+
+        if(!$pickup_address) $pickup_address = $sender->address;
+        $inputs['pickup_address']=$pickup_address;
+
+        if($is_from_mobile || $is_from_mobile == 1){
+            $pickup_address = (isURL($pickup_address))? ' តាមផែនទី':$pickup_address;
+        }
+        
+        if (isURL($pickup_address)){
+            $loc = self::getLocation($pickup_address);
+            if($loc){
+                $inputs['loc_lat'] = $loc->latitude;
+                $inputs['loc_lng'] = $loc->longitude;
+            }
+        }else{
+            //If use default location saved in the Merchant's profile
+            if ($use_default_location){
+                $inputs['loc_lat'] = $sender->loc_lat ?? 11.5597855;
+                $inputs['loc_lng'] = $sender->loc_lng ?? 104.9217169;
+            }
+        }
+        
+        if(!$pickup_address) return DV::error('Pickup address is required');
+        // if ($is_from_mobile && ($d->qty > 0 && $d->qty < 5 && !isset($d->packages[$d->qty-1]))) {
+        //    return DV::error('Please enter the details of each item',$ss->lang);
+        // } 
+        $order = (object)['branch_id'=>$branch_id,'warehouse_id'=>$warehouse_id,'sender_id'=>$sender->id,'delivery_type'=>$d->delivery_type,'product_type'=>$d->product_type];
+        /** processOrderImages| processOrderPhotos */
+        $item_res = self::processItemPhotos($photos);
+        if ($item_res->status ==='Error') return DV::error($item_res->error_message);
+       
+        $v_res = self::processVehicleType($branch_id,$d->request_vehicle_type);
+        if($v_res->status ==='Error') return DV::error($v_res->error_message);
+        $success_photos = $item_res->success_items;
+        $d->qty = count($success_photos);
+        if ($d->qty <=0) return DV::error('No photos provided!');
+        $inputs['qty'] = $d->qty;
+        $inputs['request_vehicle_type'] = $v_res->code;
+        $inputs['sender_type_id'] = $sender->sender_type_id;
+        $inputs['order_canceled'] =0;
+        //$inputs['status_id'] =2; /** Accepted by Driver */
+        unset($inputs['photos']);
+
+        $order_id = null;
+        $order_id = saveData($ss,'order',['id'=>$order_id],$inputs,[],1,false);
+        if($order_id > 0){
+            $tracking_number = $this->getTrackingNumber($ss,$order_id);  
+            DB::table('order')->where('id',$order_id)->where('branch_id',$branch_id)->update(['code'=>$tracking_number]);
+            $order->id = $order_id;
+            $order->sender_id = $sender_id;
+            $order->code = $tracking_number;
+            $order->qty = $d->qty;
+        }
+
+        $c =null;
+        $i =0;  
+        do{
+            if (!isset($success_photos[$i])) break;
+            $c =$success_photos[$i];
+            $img_res = PublicStorage::saveImage($branch_id,self::$package_photo_dir,null,$c['image'],null,null);
+            if($img_res->status =='OK'){
+                $image_id = saveData($ss,'order_images',['id'=>null],['order_id'=>$order_id,'file_name'=>$img_res->file_name,'file_type'=>$img_res->extension],[],1,false);
+            }
+            $i++;
+        }while($c);
+        
+        /** Make sure the getOrderDetails_one() returns one row, but this row bust be exactly the same as those rows returned by getList() or getPickupList() */
+        $order_id = $order->id;
+        if ($i > 0) DB::table('order')->where('id',$order->id)->update(['qty'=>$i,'actual_pkg_count'=>$i]);
+        $result = (object)[
+            'order_id' => $order_id,
+            'tracking_number'=>$tracking_number,
+            'error_message'=>null,
+            'status'=>'OK',
+            'status_code'=>200
+        ];
+
+        $order = self::getOrderDetails_one($order_id);
+        $order->id = $order_id;
+        if ($is_from_mobile==1 || $is_from_mobile==true) {
+            $order->merchant_id = isset($order->sender_id)?$order->sender_id:null;
+            $pickup_address = $pickup_address? 'នៅ '.$pickup_address:''; 
+            $order->title ="Order by Photos";
+            $order->message ="អ្នកដឹកបានបង្ក់ើត order សំរាប់ ".$sender->name.$pickup_address; 
+            Notifier::notify_admin('order_created',$order);
+        }
+
+          //begin:: Notify to mobile app users
+                    $order->event_name ='order_created';
+                    $cdata =[
+                        // [
+                        //     'user_class'=>'driver',
+                        //     'target_user_id'=>$order->driver_id,
+                        //     'title'=>'Available Order',
+                        //     'message'=> "Order $order->order_code created",
+                        //     'persist'=>1,
+                        //     'data'=>$order
+                        // ],
+                        [
+                            'user_class'=>'driver',
+                            'target_user_id'=>$order->sender_id?$order->sender_id:-1,
+                            'title'=>'Order Created',
+                            'message'=> ($is_from_mobile == 1)? 'Order '.$order->order_code.' for '.$order->qty.' items created by '.$ss->user_class.' '.$ss->full_name:'Your delivery order '.$order->order_code.' created by Admin '.$ss->full_name,
+                            'persist'=>1,
+                            'data'=>$order
+                        ]
+                    ];
+                    Notifier::notify_mobile($branch_id,$cdata);
+           //end::Notify to mobile app users
+        return $result;
+    }
+
     //if $cols is NULL => use defeaul cols defined in this method
     //getOrderProps()
     static function getProps($branch_id=null,$id=null,$cols=null){
@@ -715,7 +867,7 @@ class PickupRequest //extends Model
     }
     //getPickupList() | $d = {'request_date','sender_id','status_id',[delivery_type],[driver_id].[sender_id] }
      function getList($arr =[],$ss=null){
-        $ss = $ss?$ss : $this->getUserInfo();
+        $ss = $ss ?? $this->userInfo;
         $d = (object)$arr;
         $branch_id = $ss->branch_id;
         $start_date = isset($d->start_date)?$d->start_date:null;
@@ -766,7 +918,7 @@ class PickupRequest //extends Model
     }
     //getPickupRequests Delivery Order List that not yet completed AT WAREHOUSE
     function getOutstandingDeliveryOrders($sender_id,$ss=null){
-        $ss = $ss?$ss:$this->getUserInfo();  
+        $ss = $ss ?? $this->userInfo;  
         $branch_id = $ss->branch_id;
         $rows = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->selectRaw("o.code AS order_code,o.id AS order_id, formatDate(o.create_date) AS request_date,o.qty,ps.name AS status, (SELECT CONCAT(name,'||',phone_number) FROM driver WHERE id = o.driver_id LIMIT 1) AS driver_info")->where('o.branch_id',$branch_id)->where('sender_id',$sender_id)->whereRaw('IFNULL(completed,0) =0')->whereRaw("o.status_id <5")->orderBy('o.id','DESC')->get(); 
         foreach($rows as $row) {
@@ -812,94 +964,16 @@ class PickupRequest //extends Model
       }
     }   
  
-    //  //return list of available delviery orders for drvier to Accept.
-    //  //Once driver accpets an order, that order will disappear from Recent order list
-    //  //getAvailableDeliveryOrder
-    //  function getAvailableOrders($d) {
-    //     $ss = UM::getUserInfoByToken($d);
-    //     if ($ss->status_code !==200) return $ss; //user not authenticated
-    //     
-
-    //     $branch_id = $ss->branch_id;
-    //     $driver_id = $d->driver_id;
-
-    //     $date = null; // Date('Y-m-d'); //today date
-    //     if (!(bool)strtotime($date)) $date = date('Y-m-d');
-        
-    //     $loc_lat = isset($d->loc_lat)?$d->loc_lat:null;
-    //     $loc_lng = isset($d->loc_lng)?$d->loc_lng:null;
-    //     //optional parameter. show only last 5 orders, etc...
-    //     $show_last_rows = isset($d->show_last_rows)?$d->show_last_rows:null;
-    //     $include_pending_count = isset($d->include_pending_count)?$d->include_pending_count:0;
-    //     $include_pickup_count = isset($d->include_pickup_count)?$d->include_pickup_count:0;
-    //     $include_delivery_count = isset($d->include_delivery_count)?$d->include_delivery_count:0;
-
-    //     $str_dates ="1=1"; //"DATE(o.create_date) = '".$date."' ";
-    //     $data = (object)['items'=>[]];
-
-    //     if ($show_last_rows > 0)
-    //       $data->items = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->selectRaw("o.id AS order_id, NULL AS distance_km, o.code AS order_code,DATE_FORMAT(o.create_date,'%d %b %Y') AS request_date, DATE_FORMAT(o.create_date,'%r') AS request_time, o.delivery_type,o.sender_id,s.name AS sender_name, s.email AS sender_email, s.phone_number AS sender_phone, o.product_type, o.qty, o.request_vehicle_type, o.pickup_address, o.status_id,ps.name AS status" )->where('o.branch_id',$branch_id)->whereRaw($str_dates)->where("o.status_id",1)->limit($show_last_rows)->orderByRaw("o.create_date DESC")->get(); 
-    //     else
-    //       $data->items = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->selectRaw("o.id AS order_id, NULL AS distance_km, o.code AS order_code,DATE_FORMAT(o.create_date,'%d %b %Y') AS request_date, DATE_FORMAT(o.create_date,'%r') AS request_time, o.delivery_type,o.sender_id,s.name AS sender_name, s.email AS sender_email, s.phone_number AS sender_phone, o.product_type, o.qty, o.request_vehicle_type, o.pickup_address, o.status_id,ps.name AS status" )->where('o.branch_id',$branch_id)->where("o.status_id",1)->whereRaw($str_dates)->orderByRaw("o.create_date DESC")->get(); 
-       
-    //     //count available Orders
-    //     if ($include_pending_count ==1){
-    //         $rows = DB::table("order AS o")->where('o.branch_id',$branch_id)->whereRaw($str_dates)->where("o.status_id",1)->selectRaw("COUNT(o.id) AS cnt")->get();
-    //         foreach($rows as $row) $data->pending_orders_count = $row->cnt;
-    //     }
-        
-    //     if ($include_pending_count ==1){
-    //         $rows = DB::table("order AS o")->where('o.branch_id',$branch_id)->whereRaw($str_dates)->where("o.status_id",1)->selectRaw("COUNT(o.id) AS cnt")->get();
-    //         foreach($rows as $row) $data->pending_orders_count = $row->cnt;
-    //     }
-        
-    //     if ($include_pickup_count ==1){
-    //         $rows = DB::table("order AS o")->where('o.branch_id',$branch_id)->where('driver_id',$driver_id)->where("o.status_id",2)->selectRaw("COUNT(o.id) AS cnt")->get();
-    //         foreach($rows as $row) $data->pickup_count = $row->cnt;
-    //     }
-    //     //count number of active delivery trips
-    //     if ($include_delivery_count ==1){
-    //         $rows = DB::table("delivery AS d")->where('d.branch_id',$branch_id)->where('d.driver_id',$driver_id)->where("d.status_id",2)->selectRaw("COUNT(d.id) AS cnt")->get();
-    //         foreach($rows as $row) $data->delivery_count = $row->cnt;
-    //     }
-    //     return $data;
-    // }
- 
+     
     //return count of Pending Orders
     function getPendingOrderCount($ss=null){
-        $ss = $ss?$ss:$this->getUserInfo();
+        $ss = $ss ?? $this->userInfo;
         $rows = DB::table("order AS o")->where('o.branch_id',$ss->branch_id)->where("o.status_id",1)->selectRaw("COUNT(o.id) AS cnt")->get();
         if(!isset($rows[0])) return 0;
         return $rows[0]->cnt;
     }
- 
-    // function getDriverTaskCounts($driver_id){
-    //     $data = (object)['pickup_count'=>0,'delivery_count'=>0];
-    //     $rows = DB::table("order AS o")->where('o.branch_id',$branch_id)->where('driver_id',$driver_id)->where("o.status_id",2)->selectRaw("COUNT(o.id) AS cnt")->get();
-    //     foreach($rows as $row) $data->pickup_count = $row->cnt;
-        
-    //     //count number of active delivery trips
-    //     $rows = DB::table("delivery AS d")->where('d.branch_id',$branch_id)->where('d.driver_id',$driver_id)->where("d.status_id",2)->selectRaw("COUNT(d.id) AS cnt")->get();
-    //     foreach($rows as $row) $data->delivery_count = $row->cnt;
-    //     return $data;
-    // }
-
-    // //return a list of Accepted pickup list accepted by a @driver
-    // function getAcceptedPickupListByDriver($ss,$dd) {
-    //     $d = (object)$dd;
-    //     //$ss = UM::getUserInfoByToken($d);
-    //     //if ($ss->status_code !==200) return $ss; //user not authenticated
-    //     $branch_id = $ss->branch_id;
-    //     $driver_id = $ss->official_id;
-    //     $date = null; // Date('Y-m-d'); //today date
-    //     if (!(bool)strtotime($date)) $date = date('Y-m-d');
-    //     $str_dates ="DATE(o.create_date) = '".$date."' ";
-    //     //Important NOTE: o.status_id <=3 so that after driver picks order => the Accepted pickup list is updated
-    //     $rows = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->selectRaw("o.id AS order_id,o.code AS order_code, o.delivery_type, o.request_date, o.sender_id,s.name AS sender_name, s.email AS sender_email, s.phone_number AS sender_phone, o.product_type, o.qty,o.actual_pkg_count, o.request_vehicle_type, o.pickup_address, o.status_id, ps.name AS status,o.loc_lat,o.loc_lng" )->where('o.branch_id',$branch_id)->whereRaw($str_dates)->where('o.driver_id',$driver_id)->whereRaw('IFNULL(completed,0)=0 AND o.status_id <3')->get(); 
-    //     return $rows;
-    // }
-   
-      function getComboItems_delivery_condition($d){
+  
+   function getComboItems_delivery_condition($d){
         $ss = UM::getUserInfoByToken($d);
         if ($ss->status_code !==200) return $ss; //user not authenticated
         
@@ -1131,6 +1205,27 @@ class PickupRequest //extends Model
              Notifier::notify_mobile($branch_id,$cdata); 
         }
         return DV::depends(1,['driver_id'=>$driver_id,'driver_name'=>$new_driver->name,'statusInfo'=>$orderStatus]);
+    }
+
+    static function processItemPhotos($photos){
+         $success_items =[];
+         $i =0;
+         foreach($photos as $item){
+            $img = isset($item['image'])?$item['image']:null;
+            if(isImage($img)){
+               $success_items[] = $item;
+            }else{
+                $remarks = ': '.isset($item['remarks'])?$item['remarks']:$i;
+                return DV::error('Some image data is not acceptable as photo'.$remarks);
+            }
+            $i++;
+         }
+
+         return (object)[
+             'status'=>'OK',
+             'status_code'=>200,
+             'success_items'=>$success_items
+         ];
     }
 
     function updatePickup($d) {
@@ -1923,7 +2018,7 @@ class PickupRequest //extends Model
         $data->picked_count = $picked_count;
         return $data;
     }
-    
+   
     function createQuickOrder($arr,$ss=null){
         $ss =$ss?$ss:$this->userInfo;
         $v_rule = [
@@ -1936,11 +2031,19 @@ class PickupRequest //extends Model
         'status_id'=>'1|number|default=1',
         'detail_type'=>'0|choice|images|items|default=items'
       ];
-      
-      $res = validateObject($arr,$v_rule,false,[],$ss->lang,false,null);
+      $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%'];
+      $res = validateObject($arr,$v_rule,true,['pickup_address'=>$address_map_chars],$ss->lang,false,null);
       if($res->error) return DV::error($res->error);
       $inputs = $res->values;
       $inputs['request_date'] = getNowTime();
+      $loc = self::getLocation($inputs['pickup_address']);
+      if($loc){
+        $inputs['loc_lat'] = $loc->lattitude;
+        $inputs['loc_lng'] = $loc->longitude;
+      }else{
+        $inputs['loc_lat'] = null;
+        $inputs['loc_lng'] = null;
+      }
       $order_id = saveData($ss,'order',['id'=>null],$inputs,[],1,false);
       if($order_id){
         $order_code = $this->getTrackingNumber($ss,$order_id);
