@@ -618,7 +618,7 @@ static function defaultImage($branch_id){
   function getNextDriverCode($uss,$len =5){
       $branch_id = $uss->branch_id;
       $prefix='HD';
-      $str_prefix = $prefix? 'c.prefix =\''.$prefix.'\'' : '2=2';
+      $str_prefix = $prefix? 'prefix =\''.$prefix.'\'' : '2=2';
       $row = DB::table('driver_code_control AS c')->where('c.branch_id',$branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
       if($row){
           $num = $row->last_id;
