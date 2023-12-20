@@ -100,26 +100,15 @@ Route::get('test-count',function(){
     return response()->json($rows);
 });
 
-Route::get('test-list',function(){
-    $branch_id =1;
-    $sender_id=74;
-    $status_id =5;
-    $last_10_days = convertDate(Carbon::now()->addDay(-3));
-    $rows = DB::select(DB::raw("SELECT p.id,DATE_FORMAT(p.create_date,'%d %b %Y  %r') AS booking_date,p.delivery_type,p.sender_id,p.sender_name, p.receiver_name,p.receiver_phone,p.zone_code,
-      p.receiver_address,
-      p.df_payer,
-      cod,price,
-      IFNULL(p.cod_fee,0) AS cod_fee,
-      get_cod_amount(p.cod,p.price,p.cod_fee) AS cod_amount,
-      (p.base_fee + IFNULL(p.delivery_fee,0)) AS fee,
-      ifnull(p.sender_total,0) AS sender_total,
-      p.failure_notes,
-      p.billed_kg, p.status_id, ps.name AS `status`,NULL AS driver_code, NULL AS driver_name, NULL AS driver_phone FROM `package` AS `p`
-      INNER JOIN  package_statuses AS ps ON ps.id = p.status_id
-      WHERE p.branch_id =$branch_id AND p.sender_id ='$sender_id' AND  p.status_id =$status_id AND DATE(p.arrival_time) >= '$last_10_days'"));
-
-    return response()->json($rows);
-});
+Route::get('reset-merchant-code',function(){
+    $res = \App\Models\Sender::resetCodes(1,'HM'); 
+    echo response()->json($res);
+ });
+ 
+ Route::get('reset-driver-code',function(){
+     $res = \App\Models\Driver::resetCodes(1,'HD'); 
+     echo response()->json($res);
+ });
 
 Route::get('/', function () {
     return view('login.index');

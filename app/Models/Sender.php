@@ -35,20 +35,12 @@ class Sender //extends Model
          $this->id =$id;
          $this->userInfo = $userInfo;
     }
-
-    function getId(){
-      return $this->id;
-    }
-
-    function getUserInfo(){
-      return $this->userInfo;
-    }
-
+    
     function getDetails($id=null,$ss=null,$includeProfilePicture=false,$includeBankAccount=true){
-        $id = $id?$id:$this->getId();
-        $ss = $ss?$ss:$this->getUserInfo();
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-       $row = DB::table('sender as s')->selectRaw("s.id,s.code,s.name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id,s.phone_number,s.email,s.business_type,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.price_list_id,sales_agent_id")->where('s.branch_id',$branch_id)->where('s.id',$id)->first();
+       $row = DB::table('sender as s')->selectRaw('s.id,s.code,s.name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id,s.phone_number,s.email,s.business_type,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.price_list_id,sales_agent_id')->where('s.branch_id',$branch_id)->where('s.id',$id)->first();
      if($row){
          //$accounts = self::bankAccounts($id,1);
          if ($includeBankAccount) $row->bank_accounts = self::bankAccounts($id,null); //isset($accounts[0])?$accounts[0]:null;
@@ -85,39 +77,20 @@ class Sender //extends Model
     //Check if a sender info exists based on the merchant's "name"
     function senderExists($uss,$name,$id) {
         $branch_id = $uss->branch_id;
-        $rows = [];
-        if($id>0)
-          $rows = DB::table('sender')->where('branch_id',$branch_id)->where('name',$name)->where('id','<>',$id)->selectRaw('id')->limit(1)->get();
-        else
-          $rows = DB::table('sender')->where('branch_id',$branch_id)->where('name',$name)->selectRaw('id')->limit(1)->get(); 
-        foreach($rows as $row) return true;
-        return false;
+        $str_id = $id > 0? 's.id <> '.$id : '1=1';
+        $row  = DB::table('sender AS s')->where('s.branch_id',$branch_id)->where('s.name',$name)->whereRaw($str_id)->selectRaw('id')->take(1)->first();
+        return $row? true:false;
     }
 
     function senderCodeExists($uss,$code,$id) {
         $branch_id = $uss->branch_id;
         $rows = [];
         if (!$code) return false;
-        if($id>0)
-          $rows = DB::table('sender')->where('branch_id',$branch_id)->where('code',$code)->where('id','<>',$id)->selectRaw('id')->limit(1)->get();
-        else
-          $rows = DB::table('sender')->where('branch_id',$branch_id)->where('code',$code)->selectRaw('id')->limit(1)->get(); 
-        foreach($rows as $row) return true;
-        return false;
+        $str_id = $id > 0 ? 's.id <> '.$id : '1=1';
+        $row = DB::table('sender')->where('branch_id',$branch_id)->where('code',$code)->whereRaw($str_id)->selectRaw('id')->take(1)->first();
+        return $row? true:false;
     }
-
-    // function getSenderInfoById($data){
-    //     $ss = UM::getUserInfoByToken($data);
-    //     if ($ss->status_code !==200) return $ss; //user not authenticated
-    //      //need permission to do this task
-    //     $branch_id = $ss->branch_id;
-    //     DB::table('um_sessions AS u')->where('ss.access_token',$ss->access_token)->selectRaw("ss.user_id")->limit(1)->get();
-    //     $id = $data->sender_id;
-    //     $rows = DB::table('sender')->where('branch_id',$branch_id)->where('id',$id)->selectRaw('id,code,name,name_kh,status_code,phone_number,email')->limit(1)->get();
-    //     foreach($rows as $row) return $row;
-    //     return null;
-    // }  
-
+ 
       //getSenderAddress()
       function getVendorAddress($d){
         $ss = UM::getUserInfoByToken($d);
@@ -167,6 +140,26 @@ class Sender //extends Model
         return DV::success();
     }
 
+    static function resetCodes($branch_id,$prefix){
+      $i = 1;
+      $prefix =$prefix ?? 'HM';
+      $branch_id = $branch_id ?? 1;
+      $rows = DB::table('sender as s')->selectRaw('s.id,s.name')->orderByRaw('s.create_date')->get();
+      foreach($rows as $row){
+          DB::table('sender')->where('id',$row->id)->update(['code'=>$prefix.$branch_id.formatNumber($i,5)]);
+          $i++;
+      }
+      $x = DB::table('sender_code_control')->where('prefix',$prefix)->update(['last_id'=>$i]);
+      if(!$x){
+          DB::table('sender_code_control')->insert(['branch_id'=>$branch_id,'prefix'=>$prefix,'last_id'=>$i]);
+      }
+      return (object)[
+        'status'=>'OK',
+        'message'=>$i. ' merchant codes were reset',
+        'last_id'=>$i
+      ];
+    }
+
     static function getProfilePicture($id){
       $row = DB::table('sender as s')->where('id',$id)->selectRaw('s.branch_id,s.photo_file_name')->first();
       if(!$row){
@@ -199,8 +192,6 @@ class Sender //extends Model
       $otp_code = $this->newOTP(6); 
       //$app_id = isset($d->app_id)? Sanitizer::sanitize($d->app_id):null;
       $app_id = Config::get('app.merchant_app_id');
-      $result = (object)array('status'=>'OK','error_message'=>null);
-      
       //Make sure the app_id supplied is the Merchant Mobile App
       if (empty($app_id)) {
          return DV::error('App ID is not valid');
@@ -235,7 +226,7 @@ class Sender //extends Model
               'otp_code'=>$otp_code,
               'expiry_time'=>$expiry_time
             ));
-            return $result;
+            return DV::depends(1,['otp_code'=>$otp_code]);
          }  
     }
  
@@ -353,7 +344,7 @@ class Sender //extends Model
                    $d->user_id  = DB::getPdo()->lastInsertId();
                    //$this->UMModel->addRoleMember1($ss,$default_role_id,$d->user_id); 
                    DB::table('um_user_roles')->where('branch_id',$branch_id)->where('role_id',$default_role_id)->where('user_id',$d->user_id)->delete();
-                   DB::table('um_user_roles')->insert(array('branch_id'=>$branch_id,'user_id'=>$d->user_id,'role_id'=>$default_role_id,'app_id'=>$app_id));
+                   DB::table('um_user_roles')->insert(['branch_id'=>$branch_id,'user_id'=>$d->user_id,'role_id'=>$default_role_id,'app_id'=>$app_id,'is_primary_role'=>1]);
                 //end::create user profile
                  //When merchant user is registerred successfully => create bank accounts
                  if ($d->user_id > 0) {
@@ -393,7 +384,7 @@ class Sender //extends Model
     //$arr ={'otp_code','login_name'}
     function activateSender_otp($arr = []){
         $d = (object)$arr;
-        $branch_id = $ss->branch_id;
+        //$branch_id = $ss->branch_id;
         $otp_code = isset($d->otp_code)?$d->otp_code:null;
         //$user_id = $d->user_id;
         $login_name = isset($d->login_name)? $d->login_name:null;
@@ -410,14 +401,14 @@ class Sender //extends Model
 
     //saveSender()
     function save($arr=[],$ss=null){
-      $ss = $ss?$ss:$this->getUserInfo();
+      $ss = $ss ?? $this->userInfo;
       $branch_id = $ss->branch_id; 
       $v_rule =[
         'id'=>'0|identity=1',
         'name'=>'1|string|0-100',
         'name_kh'=>'0|string|0-100',
         'sender_type_id'=>'1|positive|exists=sender_type.id',
-        'business_type'=>'0|string|0-50',
+        'business_type'=>'0|string|0-150',
         'email'=>'0|email',
         'address'=>'0|string|0-250',
         'phone_number'=>'1|phone|0-50',
@@ -479,20 +470,12 @@ class Sender //extends Model
       if($x) return 'Phone number "'.$phone_number.'" has been used by a driver';
       return null;
     }
-
-    // function updatePhoneNumber($phone_number,$id =null,$ss=null){
-    //   $ss = $ss?$ss:$this->getUserInfo();
-    //   $id =$id?$id: $this->getId();
-    //   DB::table('sender')->where('id',$id)->where('branch_id',$ss->branch_id)->update(['phone_number'=>$phone_number]);
-    //   DB::table('um_users')->where('official_id',$id)->update(['phone_number'=>$phone_number]);
-    //   return DV::success();
-    // }
-
+ 
     //updateSenderProfile() is used as api by Merchant mobile app to update merchant's profile
     //$d = {'name','name_kh','phone_number','address','business_type','bank_accounts'=> [{'account_number','account_name','bank_name'},...{}] }
     function updateProfile($arr,$id=null,$ss=null) {
-      $ss = $ss?$ss:$this->getUserInfo();
-      $id =$id?$id: $this->getId();
+      $ss = $ss ?? $this->userInfo;
+      $id =$id ?? $this->id;
       $d = (object)$arr;  
       $branch_id = $ss->branch_id;
       
@@ -515,16 +498,17 @@ class Sender //extends Model
   
     function getNextSenderCode($uss,$len =4){
       $branch_id = $uss->branch_id;
-      $prefix ='';
-      $rows = DB::table('sender_code_control AS c')->where('branch_id',$branch_id)->limit(1)->selectRaw('TRIM(c.prefix) AS prefix,c.last_sender_number')->get();
-      foreach($rows as $row) {
-          $num = $row->last_sender_number;
+      $prefix ='HM';
+      $str_prefix = $prefix? 'c.prefix =\''.$prefix.'\'' : '2=2';
+      $row = DB::table('sender_code_control AS c')->where('branch_id',$branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
+      if($row) {
+          $num = $row->last_id;
           $prefix = trim($row->prefix);
           $num +=1;
-          DB::table('sender_code_control')->where('branch_id',$branch_id)->update(array('last_sender_number'=>$num));
+          DB::table('sender_code_control')->where('branch_id',$branch_id)->whereRaw($str_prefix)->update(['last_id'=>$num]);
           return $prefix.$branch_id.formatNumber($num,$len);
       }
-      DB::table('sender_code_control')->insert(array('branch_id'=>$branch_id,'last_sender_number'=>1));
+      DB::table('sender_code_control')->insert(array('branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix));
       return $prefix.$branch_id.formatNumber(1,$len);
     }
 
@@ -549,8 +533,8 @@ class Sender //extends Model
 
   //Add or update bank accounts. This is used for back end profile update
   function saveBankAccounts($banks=[],$sender_id = null,$ss=null){
-      $ss = $ss?$ss:$this->getUserInfo();
-      $sender_id = $sender_id?$sender_id:$this->getId();
+      $ss = $ss ?? $this->userInfo;
+      $sender_id = $sender_id ?? $this->id;
       $branch_id = $ss->branch_id;
 
       $success_cnt =0;
@@ -669,8 +653,8 @@ class Sender //extends Model
   //used in mobile app, merchant to update their bank account info one by one
   //$d= {'sender_id','id','bank_name','account_name','account_number'}
   function updateBankAccount($arr=[],$id=null, $ss=null){
-    $ss =$ss?$ss:$this->getUserInfo();
-    $id = $id?$id:$this->getId();
+    $ss =$ss ?? $this->userInfo;
+    $id = $id ?? $this->id;
     $branch_id = $ss->branch_id;
     $d = (object)$arr;
     $id = isset($d->id)?$d->id:null;
@@ -705,8 +689,8 @@ class Sender //extends Model
   //Add bank accounts to Sender profile
   //$d = {'sender_id','bank_accounts'=> [{bank_name,account_number, account_name},...]}
   function addBankAccounts($bank_accounts=[],$id=null, $ss=null){
-    $id = $id?$id:$this->getId();
-    $ss = $ss?$ss:$this->getUserInfo();
+    $id = $id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
     $branch_id = $ss->branch_id;
     $result = (object)array('success_count'=>0, 'failed_count'=>0,'status'=>'OK','error_message'=>null);
  
@@ -767,8 +751,8 @@ class Sender //extends Model
   }
  
   function getBankInfo($id=null,$ss= null){
-      $ss = $ss?$ss:$this->getUserInfo();
-      $id = $id?$id:$this->getId();
+      $ss = $ss ?? $this->userInfo;
+      $id = $id ?? $this->id;
       $branch_id = $ss->branch_id;
       $rows = DB::table('sender_bank_accounts AS b')->where('b.branch_id',$branch_id)->where('b.sender_id',$id)->where('b.is_primary',1)->selectRaw("b.id,b.bank_name,b.account_number,b.account_name")->limit(1)->get();
       foreach($rows as $row) return $row;
@@ -777,8 +761,8 @@ class Sender //extends Model
 
   //delete bank account. $d= {'sender_id','bank_name','account_number'}
   function deleteBankAccountByNumber($d,$id=null,$ss=null) {
-      $ss = $ss?$ss:$this->getUserInfo();
-      $id = $id?$id:$this->getId();
+      $ss = $ss ?? $this->userInfo;
+      $id = $id ?? $this->id;
       $branch_id = $ss->branch_id;
     if(!isset($d->sender_id)) $d->sender_id =0;
     $bank_name = isset($d['bank_name'])?$d['bank_name']:null;
@@ -890,8 +874,8 @@ class Sender //extends Model
   }
   
   function setPriceList($price_list_id,$id=null,$ss =null){
-    $ss = $ss?$ss:$this->getUserInfo();
-    $id = $id?$id:$this->getId();
+    $ss = $ss ?? $this->userInfo;
+    $id = $id ?? $this->id;
     $branch_id = Sanitizer::sanitize($ss->branch_id);
     $p = getDataRow('price_list_names',["id"=>$price_list_id],"id,name");
     if(!$p) return DV::error("Price list ID is not valid");
@@ -1035,14 +1019,7 @@ class Sender //extends Model
       foreach($rows as $row) return $row->{$prop};
       return null;
    }
-
-   //non-static method getSenderProp($branch_id,$sender_id,$prop)
-   function getSenderProp1($branch_id,$id,$prop){
-      $rows = DB::table('sender')->where('branch_id',$branch_id)->where('id',$id)->selectRaw($prop)->limit(1)->get();
-      foreach($rows as $row) return $row->{$prop};
-      return null;
-   }
-
+ 
    /** returns object {"latitude","longitude"} */
    static function getLocation($googleMapLink) {
     // Define regular expression patterns for both types of Google Maps links

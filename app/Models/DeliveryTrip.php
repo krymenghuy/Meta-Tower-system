@@ -87,8 +87,7 @@ class DeliveryTrip //extends Model
         if($by_col !='id') $where1 ="p.qr_code ='$id'";
 
         if($branch_id >0) $more_where ="p.branch_id =$branch_id"; 
-        $rows = DB::table('package AS p')->whereRaw($more_where)->whereRaw($where1)->join('package_statuses AS ps','ps.id','=','p.status_id')->join('sender AS s','s.id','=','p.sender_id')->selectRaw($fields)->take(1)->get();
-        return isset($rows[0])? $rows[0]:null;
+        return DB::table('package AS p')->whereRaw($more_where)->whereRaw($where1)->join('package_statuses AS ps','ps.id','=','p.status_id')->join('sender AS s','s.id','=','p.sender_id')->selectRaw($fields)->take(1)->first();
     }
 
     function getComboItems_delivery_status($d){
@@ -1058,9 +1057,7 @@ class DeliveryTrip //extends Model
                     //if need to update cod_amount
                     if($update_cod_amount ===1){
                         $pg = $this->getPackageProps($branch_id,$package_id,"p.id,p.cod,p.price,LOWER(p.df_payer) AS df_payer,IFNULL(p.sender_total,0) AS sender_total, IFNULL(driver_total,0) AS driver_total,IFNULL(p.cod_fee,0) AS cod_fee, IFNULL(p.delivery_fee,0) + IFNULL(p.base_fee,0) AS fees,base_fee,delivery_fee,delivery_id,sender_id",'id');
-                        //$pg = null;
-                        //$rows = DB::table('package AS p')->where('branch_id',$branch_id)->where('p.qr_code',$barcode)->selectRaw("p.sender_id,base_fee,delivery_fee")->take(1)->get();
-                        //foreach($rows as $row) $pg = $row;
+                        $inputs['cod_changed']= 1; 
                         if($pg){
                             $org_total = (float)$pg->driver_total;
                             //$org_price = is_numeric($pg->price)? $pg->price:0;
@@ -1121,32 +1118,14 @@ class DeliveryTrip //extends Model
                                    $update_notes ='ថ្លៃតាក់ស់ី '.abs($amount).' USD. ដោយសារតែអ្នកដឹក driver_name បានដូរ COD ពី '.$org_total.' ទៅ '.$amount.' USD. ទំនិញដឹកបានសំរេចនៅ '.$justNow;
                                 else
                                    $update_notes = 'អ្នកដឹក driver_name បានប្តូរ​ COD ពី '.$org_total.' ទៅ '. $amount.' USD. ទំនិញដឹកបានសំរេចនៅ '.$justNow;
- 
-                                // $total = $org_fees + $new_price;
-                                // $cod_fee_percent =0;
-                                // $cod_fee =0;
-
-                                // if ($pg->cod ==1 && $amount >0){
-                                    // $cod_fee_percent = $this->getCODFeePercentBySender($branch_id,$pg->sender_id);
-                                    // $cod_fee = ROUND($total * $cod_fee_percent/100,2,-1);
-                                    // $inputs['sender_total'] = $pg->fees + $cod_fee;
-                                // }else {
-                                //     $inputs['cod'] =0; 
-                                //     $inputs['sender_total'] = $pg->fees; 
-                                // }   
-                               
-                                //$inputs['cod_fee'] = $cod_fee;
                                 $inputs['failure_notes'] = '';
-                              
-                                // //Set difference in driver_total, and new_driver_total data to send back to Admin for live Update on Fleet list
-                                // $pg->diff_total = $diff;
-                                // $pg->new_driver_total = $new_driver_total;
+ 
                             }  
                         }
                     }  
             }
         } 
-        $inputs['failure_notes']=$notes; 
+        $inputs['failure_notes']=$notes;
         DB::table('package')->where('branch_id',$branch_id)->where('id',$package_id)->update($inputs);
         //keep track of package's update history, espcially updates made by Driver from app
         if($update_notes){
@@ -1156,10 +1135,7 @@ class DeliveryTrip //extends Model
              $xd = (object)['package_id'=>$pg->id,'user_class'=>'driver','action_name'=>'change_cod','description'=>$update_notes];
              Tracker::log($xd,$ss);
         }   
-        // if(!$delivery_id || $delivery_id <=0) {
-        //     $rows = DB::table('package')->where('branch_id',$branch_id)->where('id',$package_id)->selectRaw('delivery_id')->take(1)->get();
-        //     foreach($rows as $row) $delivery_id = $row->delivery_id;
-        // }
+     
         $tripInfo = $this->updateDeliveryTripData($delivery_id,$ss);
 
         // //todo: save photo data attached to this delivery of package, if driver provides it

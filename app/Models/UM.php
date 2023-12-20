@@ -30,6 +30,7 @@ class UM //extends Model
     protected static $profile_tables = [
         'merchant' =>['table'=>'sender','key_field'=>'id','code_field'=>'code','photo_field'=>'photo_file_name'],
         'driver' =>['table'=>'driver','key_field'=>'id','code_field'=>'code','photo_field'=>'photo_file_name'],
+        'sales_agent' =>['table'=>'sales_agents','key_field'=>'id','code_field'=>'code','photo_field'=>'photo_file_name'],
         'admin' =>['table'=>'um_users','key_field'=>'id','code_field'=>'official_code','photo_field'=>'photo_file_name']
     ];
     protected $company_id = null;
@@ -57,7 +58,7 @@ class UM //extends Model
       'driver'=>'phone',
       'merchant'=>'phone',
       'admin'=>'name',
-      //'super_admin'=>'name',
+      'sales_agent'=>'phone',
       //'admin_support'=>'name' /* Backend user's login can be email, phone, or any name */
     ];
 
@@ -66,7 +67,7 @@ class UM //extends Model
       'driver'=>1,
       'merchant'=>1,
       'admin'=>0,
-      //'super_admin'=>0,
+      'sales_agent'=>1,
       //'admin_support'=>0
     ];
 
@@ -74,7 +75,7 @@ class UM //extends Model
       'driver'=>1,
       'merchant'=>1,
       'admin'=>1,
-      //'super_admin'=>1,
+      'sales_agent'=>1,
       //'admin_support'=>1 /* Backend user's login can be email, phone, or any name */
     ];
 
@@ -94,7 +95,8 @@ class UM //extends Model
         self::$user_classes = [
           'admin'=>['used'=>1,'name'=>'Admin','app_id'=>Config::get('app.app_id'),'token_age'=>null],
           'driver'=>['used'=>1,'name'=>'Driver','app_id'=>Config::get('app.driver_app_id'),'token_age'=>0],
-          'merchant'=>['used'=>1,'name'=>'Merchant','app_id'=>Config::get('app.merchant_app_id'),'token_age'=>0]
+          'merchant'=>['used'=>1,'name'=>'Merchant','app_id'=>Config::get('app.merchant_app_id'),'token_age'=>0],
+          'sales_agent'=>['used'=>1,'name'=>'Sales Agent','app_id'=>Config::get('app.sales_app_id'),'token_age'=>0]
         ];
         //parent::__construct($attributes);
     }
@@ -167,7 +169,7 @@ class UM //extends Model
       if(empty($user->login_name)) return DV::error('Failed to create session info',$lang,401);
         DB::table('um_sessions')->where('login_name',$user->login_name)->where('app_id',$app_id)->delete();
 
-        DB::table('um_sessions')->insert(array(
+        DB::table('um_sessions')->insert([
           'branch_id'=>$user->branch_id,
           'app_id'=>$app_id,
           'user_id'=>$user->id, //ineteger user_id
@@ -178,7 +180,7 @@ class UM //extends Model
           'lang'=>$user->lang,
           'session_id'=>$session_id,
           'access_token'=>$access_token
-        ));
+        ]);
         return (object)['status'=>'OK','access_token'=>$access_token,'error_message'=>null];
    }
 
@@ -253,6 +255,7 @@ class UM //extends Model
        if ($user_class ==='driver') return Config::get('app.driver_app_id');
        else  if ($user_class ==='merchant') return Config::get('app.merchant_app_id');
        else  if ($user_class ==='sender') return Config::get('app.merchant_app_id');
+       else  if ($user_class ==='sales_agent') return Config::get('app.sales_app_id');
        else return Config::get('app.app_id');
        //return self::$user_classes[$user_class]['app_id'];
     }
@@ -306,7 +309,7 @@ class UM //extends Model
           DB::table('um_users')->where('login_name',$login_name)->update(['otp_code'=>$new_otp_code]);
           $m = SMS::send($phone_number,$text,null);
           if($m->status =='Error'){
-            $e = (object)["sms_error"=>$m->error_message];
+            $e = (object)['sms_error'=>$m->error_message];
             $e->otp_code = $new_otp_code;
             return $e;
           }
@@ -663,12 +666,13 @@ class UM //extends Model
         //   if($ss->status_code !=200) return $ss; //user not authenticated
           $branch_id = $ss->branch_id;
           //if(!self::allowed(100)) return DV::error("Permission 100 is required");
+          $str_user_classes = implode(',', array_keys(self::$user_classes));
           $validate_rule =[
              'user_id'=>"0|identity=1",
              'login_name'=>'1|string|1-35|text=Login name is between 1 to 35 characters, and no spaces allowed',
              'password'=>'0|string|0-100',
              'email'=>'0|email',
-             'user_class'=>'1|choice|admin,driver,merchant,sender',
+             'user_class'=>'1|choice|'.$str_user_classes,
              'subs_id'=>'0|string',
              'role_id'=>'1|number|exists=um_roles.id|text=User role is missing',
              'official_code'=>'0|string|1-25',
@@ -1112,7 +1116,9 @@ class UM //extends Model
     $user_class = $arr['user_class'];
 
     if ($lifespan === null) {
-        $lifespan = self::$user_classes[strtolower($user_class)]['token_age'];
+        $u_class =strtolower($user_class);  
+        $info = isset(self::$user_classes[$u_class])? self::$user_classes[$u_class]:null;
+        $lifespan = $info?$info['token_age']:0;
     }
 
     if ($lifespan === 0) {
@@ -1249,7 +1255,7 @@ class UM //extends Model
         //if($res->status ==='OK'){
           $x = DB::table('um_users')->where('login_name',$phone_number)->update(['otp_code'=>$new_otp_code]);
           if(!$x) return DV::error("Login name $phone_number does not exist");
-          return DV::success(['otp_code'=>$new_otp_code]);
+          return DV::depends(1,['otp_code'=>$new_otp_code]);
         //}
         //return DV::error("Failed to send OTP code");
     }
@@ -1755,7 +1761,7 @@ class UM //extends Model
 
    //return one first role randomly. role is object {id,name}
     static function firstRole($user_id=0){
-      return DB::table('um_user_roles as ur')->join('um_roles as r','ur.role_id','=','r.id')->where('ur.user_id',$user_id)->selectRaw('ur.user_id,r.id,r.name')->limit(1)->get()->first();
+      return DB::table('um_user_roles as ur')->join('um_roles as r','ur.role_id','=','r.id')->where('ur.user_id',$user_id)->selectRaw('ur.user_id,r.id,r.name')->take(1)->first();
    }
 
     static function getRoleName($id){
@@ -1843,7 +1849,7 @@ class UM //extends Model
         $str_search = '(am.module_name LIKE \'%' . $search_value . '%\' OR am.id = \''.$search_value.'\')';
         $skip_rows = 0;
     }
-    $query = DB::table('um_app_modules as am')->whereRaw($str_search)->where('am.app_id',$app_id)->whereRaw('IFNULL(am.hidden,0) = 0')->selectRaw('am.id,am.ref_code,am.module_name')->orderBy('am.id','asc');
+    $query = DB::table('um_app_modules as am')->whereRaw($str_search)->where('am.app_id',$app_id)->whereRaw('IFNULL(am.hidden,0) =0')->selectRaw('am.id,am.ref_code,am.module_name')->orderBy('am.id','asc');
     $count_query = clone $query;
     $count = $count_query->count('am.id');
     if($search_value && $count > 0) $per_page = $count;

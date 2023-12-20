@@ -126,7 +126,7 @@
 
                     $html_body ='';
                     foreach($rows as $row){
-                        $admin_notes = $row->delivery_notes;
+                        $admin_notes = isset($row->remarks)?$row->remarks:'';
                         $driver_total =0; 
                         $df_payer = strtolower($row->df_payer);
                         $fees = ($row->status_id ==8)? ($row->delivery_fee + $row->base_fee):0;

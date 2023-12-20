@@ -104,7 +104,7 @@ class WebReportController extends Controller{
             $data['items'] = $this->reportModel->getPickupListByMerchant($warehouse_id,$start_date,$end_date, $sender_id,$driver_id);
             $data['title'] ='បញ្ជីទំនិញដែលបានទទួល';
             $data['subtitle'] ='អ្នកលក់ '.$sender->name.' ('.$sender->code.')   Tel: '.$sender->phone_number; //'Print Date: '.Carbon::now();
-            $data['subtitle1'] = 'ចាប់ពីថ្ងៃ '.date('d M Y',$start_date). ' ដល់ '.date('d M Y',  $end_date); 
+            $data['subtitle1'] = 'ចាប់ពីថ្ងៃ '.date('d M Y',strtotime($start_date)). ' ដល់ '.date('d M Y',  strtotime($end_date)); 
             break;
           }
           case 'daily_packages':{
