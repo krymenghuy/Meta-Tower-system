@@ -146,7 +146,9 @@ class Sender //extends Model
       $branch_id = $branch_id ?? 1;
       $rows = DB::table('sender as s')->selectRaw('s.id,s.name')->orderByRaw('s.create_date')->get();
       foreach($rows as $row){
-          DB::table('sender')->where('id',$row->id)->update(['code'=>$prefix.$branch_id.formatNumber($i,5)]);
+          $new_code = $prefix.$branch_id.formatNumber($i,5);
+          DB::table('sender')->where('id',$row->id)->update(['code'=>$new_code]);
+          DB::table('um_users')->where('official_id',$row->id)->where('user_class','merchant')->update(['official_code'=>$new_code]);
           $i++;
       }
       $x = DB::table('sender_code_control')->where('prefix',$prefix)->update(['last_id'=>$i]);

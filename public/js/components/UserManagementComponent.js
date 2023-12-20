@@ -235,7 +235,7 @@ var UserManagementComponent = new function(){
                                         <span class="text-capitalize">${user.phone_number ? user.phone_number : 'N/A'}</span>
                                     </p>
                                     <p class="text-nowrap">
-                                        <span class="text-capitalize text-width-user">${user.user_class ? user.user_class : 'Offical'} ID :</span>
+                                        <span class="text-capitalize text-width-user">${user.user_class ? VSUtil.properCase(user.user_class) : 'Offical'} ID :</span>
                                         <span class="text-capitalize">${user.official_code ? user.official_code : 'N/A'}</span>
                                     </p>
                                 </div>
@@ -526,7 +526,7 @@ var UserManagementComponent = new function(){
             if(res.status_code === 200){
                 const d = res.data,
                 el = mThis.elfilter_userclass;
-                VSUtil.setComboItems(el,d,'user_class','user_class',true,'All',0);
+                VSUtil.setComboItems(el,d,'user_class','user_class_name',true,'All',0);
                 if(typeof onFinish === 'function') onFinish();
             }
         });
@@ -550,6 +550,7 @@ const AddUserDialog = new function(){
     this.self = document.querySelector('#dlg_um_');
     this.elTitle = mThis.self.querySelector('.modal-title');
     this.btnSave = mThis.self.querySelector('#dlg_um_btn_save');
+    this.btnClose = mThis.self.querySelector('#dlg_um_btn_close');
     this.selected_options = {};
     
     /** Set event handlers */
@@ -798,8 +799,8 @@ const AddUserDialog = new function(){
                     <div class="row gy-2">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="offical_id" class="form-label trans-text" data-langprop="titles.${user_class? user_class:'Official'} ID"></label>
-                                <input type="number" class="form-control data-input" data-field="official_code" readonly/>
+                                <label for="offical_id" class="form-label trans-text" data-langprop="titles.${user_class? VSUtil.properCase(user_class):'Official'} ID"></label>
+                                <input type="text" class="form-control data-input" data-field="official_code"/>
                             </div>
                         </div>
                         <div class="col-lg-6">
@@ -861,16 +862,17 @@ const AddUserDialog = new function(){
     this.setUserFormData = (div,d)=>{
         d = d || {};
         const btn_chooser = div.querySelector('#_um_profile_show');
-        const elUserClass  = div.querySelector('select.user-class');
-        const elUserRole  = div.querySelector('select.user-role');
+        // const elUserClass  = div.querySelector('select.user-class');
+        // const elUserRole  = div.querySelector('select.user-role');
         if(d.image_url) mThis.setImage(btn_chooser, d.image_url);
         if(!d.login_name) d.login_name = d.phone_number || d.email;
         div.querySelectorAll('.data-input').forEach(el => {
             const f = el.dataset.field;
             if(el.nodeName.toLowerCase() === 'select'){
-                el.value = d[f] ? d[f] : ''; 
+                el.value = d[f] ? d[f] : '';
+                if(f === 'official_code') el.setAttribute('readOnly',(d[f]?true:false));  
                 /* because when user_class changes then role list also change */
-                if(f ==='user_class') mThis.selected_options.role_id = d.role_id;
+                else if(f ==='user_class') mThis.selected_options.role_id = d.role_id;
                 el.dispatchEvent(new Event('change'));
             }
             else
@@ -1487,6 +1489,7 @@ const AddUserDialog = new function(){
         const open = options.open;
         switch(open){
             case 'add-user':
+                mThis.btnClose.innerHTML = `<span>${LocaleManager.trans('Cancel','buttons')}</span>`;
                 if(options.user_id > 0)
                 {
                     mThis.elTitle.textContent = LocaleManager.trans('Modify User Account','titles');
@@ -1499,9 +1502,11 @@ const AddUserDialog = new function(){
                 }
                 modal.querySelector('.modal-dialog').classList.add('modal-lg');
                 mThis.btnSave.removeAttribute('style');
+                //console.log('def',options.default);
                 mThis.renderCreateUser(modal,options,onFinish); 
                 break;
             case 'reset-password':
+                mThis.btnClose.innerHTML = `<span>${LocaleManager.trans('Cancel','buttons')}</span>`;
                 mThis.elTitle.textContent = LocaleManager.trans('Set New Password','titles');
                 modal.querySelector('.modal-dialog').classList.remove('modal-lg');
                 mThis.btnSave.innerHTML =  `<span>${LocaleManager.trans('OK','buttons')}</span>`;
@@ -1512,6 +1517,7 @@ const AddUserDialog = new function(){
             case 'permissions':
             case 'modules':
             case 'reports':
+                mThis.btnClose.innerHTML = `<span>${LocaleManager.trans('OK','buttons')}</span>`;
                 const purpose = open === 'roles' ? 'Role' : open === 'modules' ? 'Modules' : open === 'reports' ? 'Reports' : 'Permissions';
                 mThis.elTitle.textContent = LocaleManager.trans(`Add/Remove ${purpose} for ${options.user_name ? options.user_name.replace(/^\w/, (c) => c.toUpperCase()) : 'Super Admin'}`,'titles');
                 modal.querySelector('.modal-dialog').classList.add('modal-lg');
