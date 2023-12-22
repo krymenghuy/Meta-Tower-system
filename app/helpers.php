@@ -1637,10 +1637,25 @@ function createUUIDV1()
 
     function getAppIdByUserClass($user_class){
         $user_class = strtolower($user_class);
-        if ($user_class ==='driver') return Config::get('app.driver_app_id');
-        else  if ($user_class ==='merchant') return Config::get('app.merchant_app_id');
-        else  if ($user_class ==='sender') return Config::get('app.merchant_app_id');
-        else return Config::get('app.app_id');
+        if(!$user_class) return null;
+        switch($user_class){
+            case 'admin':
+                return Config::get('app.app_id');
+                break;
+            case 'driver':
+                return Config::get('app.driver_app_id');
+                break;
+            case 'merchant':
+                return Config::get('app.merchant_app_id');
+                break;
+            case 'sales_agent':
+                return Config::get('app.sales_app_id');
+                break;
+            default:
+              return Config::get('app.app_id');
+              break;  
+
+        }
      }
 
     function extendProps($cols=[],$d=null){

@@ -188,7 +188,7 @@ var UserManagementComponent = new function(){
                 const d = res.data.user;
 
                 items.forEach(user => {
-                    html += `<div class="${user.id === d.id ? 'set-half-border ' : ''}w-100 rounded-4 p-3 bg-white mt-2 position-relative">
+                    html = [html,`<div class="${user.id === d.id ? 'set-half-border ' : ''}w-100 rounded-4 p-3 bg-white mt-2 position-relative">
                         <div class="scope-user row gy-2">
                             <div class="col-lg-2">
                                 <div class="d-flex h-100">
@@ -249,27 +249,27 @@ var UserManagementComponent = new function(){
                                 </div>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-center gap-3 w-100 custom-btn">
-                            <button class="btn-um-roles btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
+                        <div class="d-flex justify-content-center gap-3 w-100 custom-btn">`,
+                            `<button class="btn-um-roles btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
                                 <span class="text-nowrap">Roles</span>
                             </button>
                             <button class="btn-um-permissions btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
                                 <span class="text-nowrap">Permissions</span>
-                            </button>
-                            <button class="btn-um-modules btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
+                            </button>`,
+                            `<button class="btn-um-modules btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
                                 <span class="text-nowrap">Modules</span>
-                            </button>
-                            <button class="btn-um-reports btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
+                            </button>`,
+                            `<button class="btn-um-reports btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
                                 <span class="text-nowrap">Reports</span>
-                            </button>
-                            <button class="btn-um-lock btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}" data-lock="${user.is_locked ? 'unlock' : 'lock'}">
+                            </button>`,
+                            `<button class="btn-um-lock btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}" data-lock="${user.is_locked ? 'unlock' : 'lock'}">
                                 <span class="text-nowrap">${user.is_locked ? 'Unlock' : 'Lock'}</span>
-                            </button>
-                            <button class="btn-um-set-password btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
+                            </button>`,
+                            `<button class="btn-um-set-password btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
                                 <span class="text-nowrap">Set Password</span>
-                            </button>
-                        </div>
-                    </div>`;
+                            </button>`,
+                        `</div>
+                    </div>`].join('');
                 });
                 
                 div.innerHTML = html;
@@ -295,7 +295,7 @@ var UserManagementComponent = new function(){
                 is_locked = e.target.parentElement.dataset.lock;
 
                 if(id){
-                    const html = `<ul class="list-unstyled set-bottom-border pb-0 mb-0">
+                    const html = [`<ul class="list-unstyled set-bottom-border pb-0 mb-0">
                         <li class="p-2 text-nowrap btn-um-delete" data-id="${id}" data-user="${user_name}">
                             <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
                             <span class="ps-2">Delete</span>
@@ -315,12 +315,12 @@ var UserManagementComponent = new function(){
                         <li class="p-2 text-nowrap btn-um-permissions" data-id="${id}" data-user="${user_name}">
                             <i class="fa-solid fa-user-pen fs-5 text-warning-emphasis"></i>
                             <span class="ps-2">Permissions</span>
-                        </li>
-                        <li class="p-2 text-nowrap btn-um-reports" data-id="${id}" data-user="${user_name}">
+                        </li>`,
+                        `<li class="p-2 text-nowrap btn-um-reports" data-id="${id}" data-user="${user_name}">
                             <i class="fa-regular fa-rectangle-list fs-5 text-primary"></i>
                             <span class="ps-2">Report</span>
-                        </li>
-                    </ul>`;
+                        </li>`,
+                    `</ul>`].join('');
 
                     DialogFilter(e,{},html,(div) => {
                         div.classList.remove('p-3');
@@ -715,7 +715,8 @@ const AddUserDialog = new function(){
                 const d = res.data;
                 let option = '';
                 let user_id = options.user_id > 0?options.user_id:options.id;
-                let user_class = user_id > 0? 'Official': (def.user_class? def.user_class:' Official')
+                let user_class = user_id > 0? 'Official': (def.user_class? def.user_class:' Official');
+                user_class = user_class.replace(/_/g,' ');
                 let password_fields = '';
                 if(!user_id || user_id == 0){
                     password_fields = `<div class="row gy-2">
@@ -799,7 +800,7 @@ const AddUserDialog = new function(){
                     <div class="row gy-2">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="offical_id" class="form-label trans-text" data-langprop="titles.${user_class? VSUtil.properCase(user_class):'Official'} ID"></label>
+                                <label for="offical_id" class="um_label_official_code form-label trans-text" data-langprop="titles.${user_class? VSUtil.properCase(user_class):'Official'} ID"></label>
                                 <input type="text" class="form-control data-input" data-field="official_code"/>
                             </div>
                         </div>
@@ -813,6 +814,7 @@ const AddUserDialog = new function(){
                     ${password_fields}
                 </form>`;
                 div.innerHTML = html;
+                let labelOfficialId = div.querySelector('.um_label_official_code');
                 let elUserClass = null;
                 let elUserRole = null;
                 const selectList = div.querySelectorAll('select.modal-select2');
@@ -846,6 +848,10 @@ const AddUserDialog = new function(){
                         },null,false).then(res=>{
                             let roles = res.status_code === 200 ? res.data: [];
                             let def_role_id = mThis.selected_options.role_id? mThis.selected_options.role_id: ((roles[0]? roles[0].id:null));
+                            if(labelOfficialId){
+                                let u_class = (elUserClass.value || '').replace(/_/g,' ');
+                                labelOfficialId.textContent = [VSUtil.properCase(u_class),' ID'].join('');
+                            }
                             VSUtil.setComboItems(elUserRole,roles,'id','name',null,null, def_role_id);
                         });
                     }

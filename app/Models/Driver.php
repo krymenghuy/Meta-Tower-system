@@ -633,6 +633,20 @@ static function defaultImage($branch_id){
       return $prefix.$branch_id.formatNumber(1,$len);
    }
     
+   static function updateDriverName($id,$name){
+      DB::table('um_users')->where('user_class','driver')->where('official_id',$id)->update(['full_name'=>$name]);
+      return null;
+   }
+
+  static function updateDriverPhone($id,$phone_number){
+    $user_id = UM::getUserId('driver','official_id',$id);
+    if($user_id){
+      $res = UM::updatePhoneNumber($phone_number,$user_id);
+      if($res->status =='Error') return $res->error_message;
+    }
+    return null;
+  }
+
    //saveDriver() | updateDriver() | createDriver()
     function save($arr=[], $driver_id=null, $ss=null) {
         // $ss = UM::getUserInfoByToken($d);
@@ -678,15 +692,21 @@ static function defaultImage($branch_id){
         //override driver_id with $res->id over the function's param @driver_id
         $driver_id = $res->id;
         $inputs = $res->values;
-        $phone_err = $this->checkUniquePerson($branch_id,$inputs['phone_number'],$driver_id); 
+        $d = (object)$inputs;
+        $d->phone_Number =str_replace(' ','',$d->phone_number);
+        $inputs['phone_number'] = $d->phone_number;
+
+        $phone_err = $this->checkUniquePerson($branch_id,$inputs['phone_number'],$driver_id);
         if ($phone_err) return DV::error($phone_err);
-        
-        $name_kh = $inputs['name_kh']; 
-        if(!$name_kh) $inputs['name_kh'] = $inputs['name'];
-        $inputs['phone_number'] = str_replace(' ','',$inputs['phone_number']);
+
+        if(!$d->name_kh){
+          $d->name_kh = $d->name;
+          $inputs['name_kh'] = $d->name_kh;
+        }
+
         //Set default nationality to "Cambodia"
-        $home_country = (new \App\Models\GeneralSettings())::homeCountry($ss->branch_id);
-        if(!$home_country) return DV::error("Home country is not yet defined");
+        $home_country = GeneralSettings::homeCountry($ss->branch_id);
+        if(!$home_country) return DV::error('Home country is not yet defined');
         $inputs['nationality_id'] = $home_country->id;
     
         $driver_created = ($driver_id > 0)? 0:1;
