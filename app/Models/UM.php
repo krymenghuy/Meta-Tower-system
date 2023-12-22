@@ -25,7 +25,12 @@ class UM //extends Model
 {
     //use HasFactory;
     protected static $app_id = null; /** app_id for Admin Back Office **/
-    protected static $user_classes = [];
+    protected static $user_classes = [
+      'admin'=>['used'=>1,'name'=>'Admin','app_id'=>'to be set in constructor','token_age'=>null],
+      'driver'=>['used'=>1,'name'=>'Driver','app_id'=>'to be set in constructor','token_age'=>0],
+      'merchant'=>['used'=>1,'name'=>'Merchant','app_id'=>'to be set in constructor','token_age'=>0],
+      'sales_agent'=>['used'=>0,'name'=>'Sales Agent','app_id'=>'to be set in constructor','token_age'=>0]
+    ];
 
     protected static $profile_tables = [
         'merchant' =>['table'=>'sender','key_field'=>'id','code_field'=>'code','photo_field'=>'photo_file_name'],
@@ -92,12 +97,10 @@ class UM //extends Model
           "aud"=> $app_url
         ];
 
-        self::$user_classes = [
-          'admin'=>['used'=>1,'name'=>'Admin','app_id'=>Config::get('app.app_id'),'token_age'=>null],
-          'driver'=>['used'=>1,'name'=>'Driver','app_id'=>Config::get('app.driver_app_id'),'token_age'=>0],
-          'merchant'=>['used'=>1,'name'=>'Merchant','app_id'=>Config::get('app.merchant_app_id'),'token_age'=>0],
-          'sales_agent'=>['used'=>1,'name'=>'Sales Agent','app_id'=>Config::get('app.sales_app_id'),'token_age'=>0]
-        ];
+        // Init app_id values in self::$user_classes. use values from .env files
+        foreach(self::$user_classes AS $user_class =>$val){
+          self::$user_classes[$user_class]['app_id'] = getAppIdByUserClass($user_class);
+        }
         //parent::__construct($attributes);
     }
 
@@ -117,15 +120,30 @@ class UM //extends Model
       return self::$user_classes;
     }
 
+    /**
+     * return user_id based on the given "official_id" or "login_name"
+    */
+    static function getUserId($user_class,$col_name,$check_value){
+       if(!in_array($col_name,['official_id','login_name'])) return null;
+       if(!self::correctUserClass($user_class)) return null;
+       \Log::info(DB::table('um_users as u')->where('u.'.$col_name,$check_value)->where('u.user_class',$user_class)->take(1)->toSql());
+       return DB::table('um_users as u')->where('u.'.$col_name,$check_value)->where('u.user_class',$user_class)->take(1)->value('id');
+    }
     //change phone number for a user, and if the user's class also use phone_number as login_name, it also changes lohin_name too
     static function updatePhoneNumber($phone_number,$id){
-      $user = self::getUserProps($id,"user_class");
-      if(!$user) return null;
+      if(!$id) return DV::success();
+      $user = self::getUserProps($id,'user_class');
+      if(!$user) return DV::error('Failed to update user phone number because the given User ID does not exist');
       $loginVia = isset(self::$login_kind[$user->user_class])? self::$login_kind[$user->user_class]:null;
       if ($loginVia ==='phone'){
+         $other_user = DB::table('um_users as u')->where('u.login_name',$phone_number)->whereRaw('u.id <>'.$id)->selectRaw('u.id,u.user_class')->take(1)->first();
+         if($other_user) {
+          $user_class = str_replace('_',' ',$other_user->user_class ?? '');
+          return DV::error('The phone number is being used as login by other '.$user_class);
+         }
          DB::table('um_users')->where('id',$id)->update(['phone_number'=>$phone_number,'login_name'=>$phone_number]);
       }else DB::table('um_users')->where('id',$id)->update(['phone_number'=>$phone_number]);
-      return null;
+      return DV::success();
     }
 
     static function updateEmail($email,$id){
@@ -603,9 +621,7 @@ class UM //extends Model
 
       //$cols = "id,full_name"
       static function getUserProps($user_id,$cols){
-         $rows = DB::table('um_users AS u')->where('id',$user_id)->selectRaw($cols)->take(1)->get();
-        foreach($rows as $row) return $row;
-        return null;
+        return DB::table('um_users AS u')->where('id',$user_id)->selectRaw($cols)->take(1)->first();
       }
       static function updateUserProps($user_id,$inputs=[]){
         return DB::table('um_users')->where('id',$user_id)->update($inputs);
@@ -882,14 +898,8 @@ class UM //extends Model
       //$access_token = self::decryptToken($request);
       $access_token = $request->bearerToken();
       if (!$access_token) return DV::error('User authentication failed', $def_lang, 401);
-
-      // if (!self::allowed($prn_code)) {
-      //   if (!$prn_error_message) $prn_error_message = 'Permission ' . $prn_code . ' is required!';
-      //   return DV::error($prn_error_message, $def_lang);
-      // }
-
       if (self::$use_jwt === 1) {
-        /*
+            /*
                 NOTE: This will now be an object instead of an associative array. To get
                 an associative array, you will need to cast it as such:
             */
@@ -1277,7 +1287,7 @@ class UM //extends Model
         DB::table('um_users')->where('login_name',$login_name)->update(array('hpwd'=>$hpwd));
         return DV::depends(1);
     }
-
+ 
       function changeLoginName($arr,$ss=null){
         $d = (object)$arr;
         if($ss->status_code !=200) return $ss; //user not authenticated
@@ -1764,20 +1774,16 @@ class UM //extends Model
       return DB::table('um_user_roles as ur')->join('um_roles as r','ur.role_id','=','r.id')->where('ur.user_id',$user_id)->selectRaw('ur.user_id,r.id,r.name')->take(1)->first();
    }
 
-    static function getRoleName($id){
-      $row = DB::table('um_roles as r')->where('r.id',$id)->selectRaw("r.name")->limit(1)->get()->first();
-      return isset($row->name)?$row->name:null;
-    }
+  static function getRoleName($id){
+    return DB::table('um_roles as r')->where('r.id',$id)->take(1)->value('name');
+  }
 
-    static function correctUserClass($user_class){
-      foreach(self::$user_classes as $key=>$c){
-           if($key == $user_class) return true;
-      }
-      return false;
-    }
+   static function correctUserClass($user_class) {
+     if(!$user_class) return false;
+     return isset(self::$user_classes[strtolower($user_class)]);
+   }
 
     static function deactivateMySelf($arr, $ss){
-      //$d = (object)$arr;
       $user_id =$ss->user_id;
       DB::table('um_users')->where('id',$user_id)->update(['status'=>'inactive','updated_at'=>getNowTime(),'update_uid'=>$user_id,'update_user'=>$ss->full_name]);
       return DV::success();

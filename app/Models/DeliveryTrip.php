@@ -51,44 +51,63 @@ class DeliveryTrip //extends Model
     }
   
     //@cols can be string or array
-    function getPackageProps($branch_id=null,$id=null,$cols=null,$by_col ='id'){
-       
-        if(!$id) return null;
-        $fields ="p.id,ps.name as status";
-
-        if(!is_string($cols)){
-                if(!isset($cols[0])) 
-                    $cols = ["p.id","p.qr_code AS bar_code","s.`id` AS sender_id","p.driver_id","driver_total","p.delivery_type","s.name AS sender_name","p.receiver_address","(SELECT name FROM driver WHERE id = p.driver_id LIMIT 1) AS driver_name","p.status_id","ps.name AS status","p.outstanding"];
-                else {
-                    $i=0;
-                    $c;
-                    $fields ='';  
-                    do{
-                       if(!isset($cols[$i])) break;
-                       $c = $cols[$i];
-                        if ($c=='status') $c = 'ps.name AS `status`';
-                        else if($c=='sender_name') $c ='s.name AS sender_name';
-                        else if($c=='cod') $c ='p.cod';
-                        else if($c=='cod_fee') $c ='p.cod_fee';
-                        //else if($c=='price') $c ='p.price';
-                        else if ($c =='sender_phone') $c ='s.phone_number AS sender_phone';
-                        $fields .= ($fields?',':'').$c;
-
-                       $i++;
-                    }while($c);
-                }  
-        } else{
-            if(!$cols) $fields = "p.id,p.qr_code AS bar_code,s.`id` AS sender_id,p.driver_id,p.delivery_type, s.name AS sender_name,p.driver_total,p.receiver_address,(SELECT name FROM driver WHERE id = p.driver_id) AS driver_name,p.status_id,ps.name AS status,p.outstanding";
-            else $fields = $cols;
-        }
-         
-        $more_where ="1=1";
-        $where1 ="p.id ='$id'";
-        if($by_col !='id') $where1 ="p.qr_code ='$id'";
-
-        if($branch_id >0) $more_where ="p.branch_id =$branch_id"; 
-        return DB::table('package AS p')->whereRaw($more_where)->whereRaw($where1)->join('package_statuses AS ps','ps.id','=','p.status_id')->join('sender AS s','s.id','=','p.sender_id')->selectRaw($fields)->take(1)->first();
+    function getPackageProps($branch_id = null, $id = null, $cols = null, $by_col = 'id') {
+        if (!$id) return null;
+    
+        // $defaultFields = [
+        //     'p.id',
+        //     'p.qr_code AS bar_code',
+        //     's.`id` AS sender_id',
+        //     'p.driver_id',
+        //     'driver_total',
+        //     'p.delivery_type',
+        //     's.name AS sender_name',
+        //     'p.receiver_address',
+        //     '(SELECT name FROM driver WHERE id = p.driver_id LIMIT 1) AS driver_name',
+        //     'p.status_id',
+        //     'ps.name AS status',
+        //     'p.outstanding'
+        // ];
+     
+        // if (!$cols) {
+        //     $cols = $defaultFields;
+        // } else {
+            foreach ($cols as &$col) {
+                switch (trim(strtolower($col ?? ''))) {
+                    case 'status':
+                        $col = 'ps.name AS \'status\'';
+                        break;
+                    case 'sender_name':
+                        $col = 's.name AS sender_name';
+                        break;
+                    case 'cod':
+                        $col = 'p.cod';
+                        break;
+                    case 'cod_fee':
+                        $col = 'p.cod_fee';
+                        break;
+                    case 'sender_phone':
+                        $col = 's.phone_number AS sender_phone';
+                        break;
+                }
+            }
+        //}
+    
+        $fields = implode(',', $cols);
+    
+        $whereClause = $by_col === 'id' ? 'p.id = ' . ($id?$id:0) : 'p.qr_code = \'' . $id . '\'';
+        $moreWhereClause = $branch_id > 0 ? 'p.branch_id = ' . $branch_id : '1=1';
+    
+        return DB::table('package AS p')
+            ->whereRaw($moreWhereClause)
+            ->whereRaw($whereClause)
+            ->join('package_statuses AS ps', 'ps.id', '=', 'p.status_id')
+            ->join('sender AS s', 's.id', '=', 'p.sender_id')
+            ->selectRaw($fields)
+            ->take(1)
+            ->first();
     }
+    
 
     function getComboItems_delivery_status($d){
         $ss = UM::getUserInfoByToken($d);
@@ -369,21 +388,30 @@ class DeliveryTrip //extends Model
             else return DV::success(['package'=>$this->getPackageDetails($branch_id,$d)]);
          }  
     }
-
+ 
+    //returns object {'delivery_id','depart_time','package_count'}
     function getActiveDeliveryId($ss,$warehouse_id, $driver_id){
         $branch_id = $ss->branch_id;
+        //$warehouse_id = $ss->warehouse_id;
         $trip_status_id = 2; //On Delivery
-        $today = date('Y-m-d');
-        $rows = DB::table('delivery AS d')->where('branch_id',$branch_id)->where('driver_id',$driver_id)->whereRaw("DATE(depart_time) ='$today'")->where('status_id',$trip_status_id)->selectRaw('id AS delivery_id,warehouse_id,fleet_tracking_number,depart_time,package_count')->take(1)->get();
-        foreach($rows as $row) return $row;
-
-        $vehicle_type = $this->getVehicleTypeByDriver($ss,$driver_id); 
+        //$today = date('Y-m-d');
+        $str_today = '5=5'; //'DATE(depart_time) =\''.$today.'\'';
+        $rows = DB::table('delivery AS d')->where('d.branch_id',$branch_id)->where('d.driver_id',$driver_id)->whereRaw($str_today)->where('d.status_id',$trip_status_id)->selectRaw('d.id AS delivery_id,warehouse_id,fleet_tracking_number,depart_time,package_count')->take(2)->get();
+        if(count($rows) > 1){
+           return (object)['status'=>'Error','error_message'=>'អ្នកដឹកម្នាក់នេះមានជើងដឹកច្រើនមិនទាន់បានបញ្ចប់។​ ដូច្នេះមិនអាចទទួលកញ្ចប់ថ្មីបានទេ','trip'=>null]; 
+           \Log::info('Data error: BDelivery::getActiveDeliveryId():61 => Driver '.$driver_id.' has more than one historical trips that are still "on delivery", causing the new package assignment failed by '.$ss->full_name.' at '.getNowTime());
+        }else if(isset($rows[0])){
+           //\Log::info('use last one trip'); 
+           return (object)['trip'=>$rows[0],'status'=>'OK']; 
+        } 
+        
+        $vehicle_type = $this->getVehicleTypeByDriver($branch_id,$driver_id); 
         $on_delivery_status_id = 2; //On Delivery
         $trip_number = $this->getNextFleetNumber($ss);
      
         $depart_time = getNowTime();
         if (!$warehouse_id || $warehouse_id<=0) $warehouse_id =1;
-        DB::table('delivery')->insert(array(
+        DB::table('delivery')->insert([
         'branch_id'=>$branch_id,
         'warehouse_id'=>$warehouse_id,
         'depart_time'=>getNowTime(),   
@@ -396,11 +424,15 @@ class DeliveryTrip //extends Model
         'package_count'=>1,
         'failed_count'=>0,
         'delivered_count'=>0,
-        "update_user"=>$ss->login_name
-        ,'update_date'=>getNowTime()
-      ));
+        'create_date'=>getNowTime(),
+        'create_user'=>$ss->full_name,
+         'update_user'=>$ss->full_name
+        ,'update_date'=>$depart_time
+      ]);
       $new_id = DB::getPdo()->lastInsertId();
-      return (object)array('delivery_id'=>$new_id,'warehouse_id'=>$warehouse_id,'depart_time'=>$depart_time,'fleet_tracking_number'=>$trip_number,'package_count'=>1);
+      \Log::info('new trip id ' . $new_id); 
+      $trip = (object)['delivery_id'=>$new_id,'warehouse_id'=>$warehouse_id,'depart_time'=>$depart_time,'fleet_tracking_number'=>$trip_number,'package_count'=>1];
+      return (object)['trip'=>$trip,'status'=>'OK'];
     }
 
     function requestDriverChange($package,$old_driver,$new_driver){
@@ -994,80 +1026,104 @@ class DeliveryTrip //extends Model
     //param $d = {'driver_id','barcode','status_id','notes',['arrival_time']}
     function updatePackageStatus_driver($arr=[],$ss=null){
         $d = (object)$arr; 
+        $max_cod_amount =3000;
         $branch_id = $ss->branch_id;
         $is_from_mobile = isset($d->is_from_mobile)?$d->is_from_mobile:0;
         $status_id = isset($d->status_id)?Sanitizer::sanitize($d->status_id):null;
-        $delivery_id = null; //isset($d->delivery_id)? Sanitizer::sanitize($d->delivery_id):null;
+        $delivery_id = null;
         $barcode = isset($d->barcode)? Sanitizer::sanitize($d->barcode):null;
         if (!isset($barcode)) $barcode = isset($d->bar_code)?$d->bar_code:null;
 
         $update_cod_amount =0;
-        $amount_str = isset($d->amount)?$d->amount:null;
-        if(is_numeric($amount_str)) $update_cod_amount =1;
-        $amount = floatval(str_replace(",", ".", $amount_str));
+        /** NOTE that  $driver_input_amount is empty when Driver does not change the COD amount */
+        $driver_input_amount = isset($d->amount)?$d->amount:null;
+        if(is_numeric($driver_input_amount)) $update_cod_amount =1;
+        $amount = floatval(str_replace(',', '.', $driver_input_amount));
 
         $photo_data = isset($d->photo_data)?$d->photo_data:null;
         $notes = isset($d->notes)? Sanitizer::sanitize($d->notes):null;
-        //if(empty($notes)) $notes = isset($d->failure_notes)?Sanitizer::sanitize($d->failure_notes):null;
         if(!$notes) $notes = isset($d->remarks)?$d->remarks:null;
 
-        $arrival_time = getNowTime() ; // isset($d->arrival_time)? convertDate($d->arrival_time):null;
-        //if(!(bool)strtotime( $arrival_time))  $arrival_time = getNowTime();
-  
-        //$driver_id = $d->driver_id;
+        $arrival_time = getNowTime();
+
         $result= (object)array('status'=>'OK','error_message'=>null);
-        if (empty($status_id) || ($status_id !=8 && $status_id !=9)) return DV::error('Package status is not allowed'); 
-         //package status => 8 ="Delivered", 9 ="Failed", 10
+        if (!$status_id || !in_array($status_id,[8,9])) return DV::error('Package status is not allowed'); 
+        //NOTE: package status => 8 ="Delivered", 9 ="Failed", 10
         if ($status_id ==9){
-            if (empty($notes)) return DV::error("ត្រូវការហេតុផល!"); 
+            if (!$notes) return DV::error("ត្រូវការហេតុផល!"); 
         } else if ($status_id !=8) {
             return DV::error("Only two status allowed. \"Failed\" or \"Delivered\"");
         }
          
         $package_id = null;
-        $p1 = $this->getPackageProps($branch_id,$barcode,'p.id,p.delivery_id,p.driver_id','barcode');
+        $p1 = $this->getPackageProps($branch_id,$barcode,[
+            'p.id',
+            'p.delivery_notes',
+            'p.delivery_id',
+            'p.driver_id',
+            'IFNULL(p.price,0) AS price',
+            'IFNULL(p.driver_total,0) AS driver_total'],'barcode');
         if(!$p1) return DV::error('barcode does not exist!');
+        if($p1->driver_total <= 0 && $p1->price > 0) $p1->driver_total =$p1->price;
+        $diff_amounts = is_numeric($driver_input_amount) && (round($p1->driver_total, 2) != round($amount, 2)); 
         $package_id = $p1->id;
         $delivery_id = $p1->delivery_id;
-        if(!$delivery_id || $delivery_id <=0) return DV::error('It seems the package is not yet assigned to any trip'); 
+        if(!$delivery_id) return DV::error('It seems the package is not yet assigned to any trip'); 
         if($d->driver_id != $p1->driver_id) return DV::error('Wrong driver identity!');
 
         $outstanding =1;
-        if ($status_id==8 || $status_id==11) $outstanding =0;
-            
+        if (in_array($status_id,[8,11])) $outstanding =0; 
         $inputs =[
             'status_id'=>$status_id,
             'delivery_time'=>$arrival_time,
-            'outstanding'=>$outstanding
-            //,'update_user'=>$ss->login_name,
-            //'update_date'=>$arrival_time
+            'outstanding'=>$outstanding,
+            'cod_changed'=>$diff_amounts
         ];
-        if ($status_id ==8) $inputs['delivery_notes'] = $notes; 
-        $update_notes = null; 
+        
+        if ($status_id ==8){
+            $notes = ($p1->delivery_notes ? $p1->delivery_notes . '. ' : '') . ($notes ?? '');
+            if ($notes !== null && strlen($notes) > 250) {
+                $notes = substr($notes, 0, 250);
+            }
+            $inputs['delivery_notes'] = $notes;
+        }
+        $update_notes = 'driver driver_name change COD from $'.$p1->driver_total.' to $'.$amount; 
 
         if($status_id ==9)
             $inputs['failure_notes'] = $notes;
         else{
             /** NOTE: if Driver enter negative amount => it means taxi fee. Here is to prevent driver from entering greater then $5 for taxi fee **/
-            if ($amount < -5) return DV::error('Taxi fee cannot exceed 5 USD!');
-            if($notes) $inputs["delivery_notes"]= $notes;
+            if ($update_cod_amount ==1 && $amount < -5) return DV::error('Taxi fee cannot exceed 5 USD!');
+            if($notes) $inputs['delivery_notes']= $notes;
             //update_notes cannot be NULL and is used only when Driver update package's COD on delviering to receiver
             
             if($status_id == 8) {
                     //if need to update cod_amount
-                    if($update_cod_amount ===1){
-                        $pg = $this->getPackageProps($branch_id,$package_id,"p.id,p.cod,p.price,LOWER(p.df_payer) AS df_payer,IFNULL(p.sender_total,0) AS sender_total, IFNULL(driver_total,0) AS driver_total,IFNULL(p.cod_fee,0) AS cod_fee, IFNULL(p.delivery_fee,0) + IFNULL(p.base_fee,0) AS fees,base_fee,delivery_fee,delivery_id,sender_id",'id');
-                        $inputs['cod_changed']= 1; 
+                    if($update_cod_amount ==1){
+                        $pg = $this->getPackageProps($branch_id,$package_id,[
+                            'p.id',
+                            'p.cod',
+                            'p.price',
+                            'LOWER(p.df_payer) AS df_payer',
+                            'IFNULL(p.sender_total,0) AS sender_total',
+                            'IFNULL(driver_total,0) AS driver_total',
+                            'IFNULL(p.cod_fee,0) AS cod_fee',
+                            'IFNULL(p.delivery_fee,0) + IFNULL(p.base_fee,0) AS fees',
+                            'base_fee',
+                            'delivery_fee',
+                            'delivery_id',
+                            'sender_id'
+                        ],'id');
                         if($pg){
-                            $org_total = (float)$pg->driver_total;
+                            $org_total =  (float)$pg->driver_total;
                             //$org_price = is_numeric($pg->price)? $pg->price:0;
-                            //protect in case, driver confuse to enter negative COD 
-                            //if($amount<0) $amount =0;
-
                              //Update package's price, cod_fee, and driver_total if driver changes COD amount on delivery
-                             $amount = (float)$amount;
-                             if($org_total != $amount){
-                                $inputs["df_payer"] = 'sender';
+                             $amount =  (float)$amount;
+                             //$update_cod_amount = (round($org_total,2) != round($amount,2));
+                             $diff_amounts = is_numeric($driver_input_amount) && (round( $org_total, 2) != round($amount, 2));
+                             $inputs['cod_changed'] = $diff_amounts;
+                             if($diff_amounts){
+                                $inputs['df_payer'] = 'sender';
                                 //$org_cod_fee = $pg->cod_fee;
                                 $org_fees = 0;
                                 if ($pg->df_payer ==='receiver') $org_fees = $pg->fees;
@@ -1078,53 +1134,56 @@ class DeliveryTrip //extends Model
                                 //$new_driver_total = $amount;
                                 //$new_price = $amount - $org_cod_fee;
                                 //This is to assume that when Driver enter amount upon Delivering items to Receiver then it is always: cod=1 and df_payer ="sender"
-                                if (abs($amount) > 5000) return DV::error('ចំនួន COD ច្រើនពេកហើយ!');
+                                if (abs($amount) > $max_cod_amount) return DV::error('ចំនួន COD ច្រើនពេកហើយ!');
                                 if ($amount == 0){
-                                    $inputs["df_payer"] = 'sender';
-                                    $inputs["cod"]= 0;
-                                    $inputs["price"]= 0;
-                                    $inputs["cod_fee"]= 0;
-                                    $inputs["driver_total"]= 0;
-                                    $inputs["sender_total"]= $pg->fees;
-                                    //$inputs["sender_total"]= $pg->fees;
+                                    $inputs['df_payer'] = 'sender';
+                                    $inputs['cod']= 0;
+                                    $inputs['price']= 0;
+                                    $inputs['cod_fee']= 0;
+                                    $inputs['driver_total']= 0;
+                                    $inputs['sender_total']= $pg->fees;
+                                    //$inputs['sender_total']= $pg->fees;
                                 }else if ($amount > 0) {
-                                    $inputs["df_payer"] = 'sender';
-                                    $inputs["cod"]= 1;
+                                    $inputs['df_payer'] = 'sender';
+                                    $inputs['cod']= 1;
                                     $inputs['price'] = $amount;
                                     $cod_fee_percent = $this->getCODFeePercentBySender($branch_id,$pg->sender_id);
                                     $cod_fee = ROUND($amount * $cod_fee_percent/100,2,-1);
                                   
                                     $inputs['cod_fee'] = $cod_fee;
-                                    $inputs["price"]= $amount;
+                                    $inputs['price']= $amount;
                                     $inputs['sender_total'] = $pg->fees + $cod_fee;
-                                    $inputs["driver_total"]= $amount;
+                                    $inputs['driver_total']= $amount;
                                 }else {
-                                    //This case is "driver enters negative amount"
+                                    //This case is 'driver enters negative amount'
                                     //NOTE: if Driver enters negative amount, it is considered as Taxi Fee. (requested by Chhunheng)
                                     //if (abs($amount) > 5) return DV::error('Taxi amount cannot exceed 5 USD!');
-                                    $inputs["df_payer"]= 'sender';
-                                    //$inputs["driver_adjust_amount"]= $amount;
-                                    //$inputs["sender_adjust_amount"]= abs($amount);
-                                    $inputs["forwarding_cost"]= abs($amount);
+                                    $inputs['df_payer']= 'sender';
+                                    //$inputs['driver_adjust_amount']= $amount;
+                                    //$inputs['sender_adjust_amount']= abs($amount);
+                                    $inputs['forwarding_cost']= abs($amount);
                                     //amount the sender has to pay Express company
-                                    $inputs["sender_total"]= $pg->fees + abs($amount);
-                                    $inputs["price"]= 0;
-                                    $inputs["cod"]= 0;
-                                    $inputs["cod_fee"]= 0;
-                                    $inputs["driver_total"] = $amount;
+                                    $inputs['sender_total']= $pg->fees + abs($amount);
+                                    $inputs['price']= 0;
+                                    $inputs['cod']= 0;
+                                    $inputs['cod_fee']= 0;
+                                    $inputs['driver_total'] = $amount;
                                 } 
                                 $justNow = Date('d M Y h:m:s');
                                 if ($amount < 0)
-                                   $update_notes ='ថ្លៃតាក់ស់ី '.abs($amount).' USD. ដោយសារតែអ្នកដឹក driver_name បានដូរ COD ពី '.$org_total.' ទៅ '.$amount.' USD. ទំនិញដឹកបានសំរេចនៅ '.$justNow;
+                                   $update_notes ='ថ្លៃតាក់ស់ី '.abs($amount).' USD. ដោយសារតែអ្នកដឹក driver_name បានដូរ COD ពី $'.$org_total.' ទៅ $'.$amount.'. ទំនិញដឹកបានសំរេចនៅ '.$justNow;
                                 else
-                                   $update_notes = 'អ្នកដឹក driver_name បានប្តូរ​ COD ពី '.$org_total.' ទៅ '. $amount.' USD. ទំនិញដឹកបានសំរេចនៅ '.$justNow;
+                                   $update_notes = 'អ្នកដឹក driver_name បានប្តូរ​ COD ពី $'.$org_total.' ទៅ $'. $amount.'. ទំនិញដឹកបានសំរេចនៅ '.$justNow;
                                 $inputs['failure_notes'] = '';
- 
+                                if($org_total == $amount){
+                                    $inputs['cod_changed'] = 0;
+                                    $update_notes = null;
+                                }
                             }  
                         }
                     }  
             }
-        } 
+        }
         $inputs['failure_notes']=$notes;
         DB::table('package')->where('branch_id',$branch_id)->where('id',$package_id)->update($inputs);
         //keep track of package's update history, espcially updates made by Driver from app
@@ -1132,7 +1191,7 @@ class DeliveryTrip //extends Model
              $driver_id = $d->driver_id;
              $driver_name = DB::table('driver as d')->where('d.id',$driver_id)->take(1)->value('name');
              $update_notes = str_replace('driver_name',$driver_name,$update_notes); 
-             $xd = (object)['package_id'=>$pg->id,'user_class'=>'driver','action_name'=>'change_cod','description'=>$update_notes];
+             $xd = (object)['package_id'=>$package_id,'user_class'=>'driver','action_name'=>'change_cod','description'=>$update_notes];
              Tracker::log($xd,$ss);
         }   
      
@@ -1153,13 +1212,13 @@ class DeliveryTrip //extends Model
               $data->message ="$p->driver_name កញ្ចប់លេខ $p->receiver_phone ដឹកមិនបាន។ មូលហេតុៈ $notes"; 
             else if ($status_id==8) 
             {
-                $data->message ="$p->driver_name ដឹកបានសំរេច កញ្ចប់លេខ ".$p->receiver_phone;
+                $data->message =$p->driver_name. ' ដឹកបានសំរេច កញ្ចប់លេខ '.$p->receiver_phone;
                 if($update_cod_amount ==1)
                 $data->message .='. '.$update_notes;
             }
-            else $data->message ="ស្ថានភាពកញ្ចប់លេខ​ ".$p->receiver_phone." ផ្លាស់ប្តូរទៅជា ".$p->status;
+            else $data->message =' ស្ថានភាពកញ្ចប់លេខ​ '.$p->receiver_phone.' ផ្លាស់ប្តូរទៅជា '.$p->status;
             
-            $data->title ="Delivery";
+            $data->title ='Delivery';
             $err = Notifier::notify_admin('package_status_changed',$data);
 
             //begin:: notify to Merchant and Driver (in case Admin updated the status)
@@ -1204,19 +1263,11 @@ class DeliveryTrip //extends Model
                 Notifier::notify_mobile($branch_id,$cdata);
             //end:: notify to Merchant and Driver (in case Admin updated the status)
         $driver = new Driver($p->driver_id,$ss);  
+        $p->cod_changed = $diff_amounts;
+        $p->cod_notes = $update_notes;
         return DV::success(['pacakge'=>$p,'on_delivery_count'=>$tripInfo->on_delivery_count,'trip_total'=>$tripInfo->trip_total,'delivered_total'=>$tripInfo->delivered_total,'trip_status'=>$tripInfo->status,'trip_status_id'=>$tripInfo->status_id,'my_tasks'=>$driver->getMyTasks()]);
     }
-    
-    // //getRemarkList() || get notes list \ get Failure reasons
-    // function getRemarksList($d){
-    //     $ss = UM::getUserInfoByToken($d);
-    //     if ($ss->status_code !==200) return $ss; //user not authenticated
-    //      //need permission to do this task
-    //     $branch_id = $ss->branch_id;
-    //     $rows = DB::table('remarks AS r')->where('r.branch_id',$branch_id)->selectRaw('r.remarks')->get();
-    //     return $rows;
-    // }
-
+     
     //if parameter @rows is given => then do not query for rows again
     //$row is pacakge = {delivery_id,status_id,delivery_type,driver_total,failed_num}
     //returns {count for on_delivery, failed,ctd,returned,total (driver_total), delivered_total }
@@ -1338,7 +1389,7 @@ class DeliveryTrip //extends Model
             if(!$delivery_id) return DV::error('Delivery Trip ID is empty or invalid');
 
             $package_id =null;
-            $p = $this->getPackageProps($branch_id,$barcode,"p.id,status_id,delivery_id",'barcode');
+            $p = $this->getPackageProps($branch_id,$barcode,['p.id','status_id','delivery_id'],'barcode');
             if(!$p) return DV::error('Package barcode does not exist!');
             if($p->delivery_id != $delivery_id) return DV::error("This package does not belong to this delivery trip $barcode $delivery_id | $p->delivery_id");
             $package_id = $p->id;

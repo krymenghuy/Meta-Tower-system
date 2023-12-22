@@ -53,13 +53,14 @@ class BDelivery //extends Model
         $branch_id = $ss->branch_id;
         //$warehouse_id = $ss->warehouse_id;
         $trip_status_id = 2; //On Delivery
-        $today = date('Y-m-d');
-        $rows = DB::table('delivery AS d')->where('branch_id',$branch_id)->where('driver_id',$driver_id)->whereRaw('DATE(depart_time) =\''.$today.'\'')->where('status_id',$trip_status_id)->selectRaw('id AS delivery_id,warehouse_id,fleet_tracking_number,depart_time,package_count')->take(2)->get();
+        //$today = date('Y-m-d');
+        $str_today = '5=5'; //'DATE(depart_time) =\''.$today.'\'';
+        $rows = DB::table('delivery AS d')->where('d.branch_id',$branch_id)->where('d.driver_id',$driver_id)->whereRaw($str_today)->where('d.status_id',$trip_status_id)->selectRaw('d.id AS delivery_id,warehouse_id,fleet_tracking_number,depart_time,package_count')->take(2)->get();
         if(count($rows) > 1){
            return (object)['status'=>'Error','error_message'=>'អ្នកដឹកម្នាក់នេះមានជើងដឹកច្រើនមិនទាន់បានបញ្ចប់។​ ដូច្នេះមិនអាចទទួលកញ្ចប់ថ្មីបានទេ','trip'=>null]; 
-           \Log::info('Data error: Driver '.$driver_id.' has more than one historical trips that are still "on delivery", causing the new package assignment failed by '.$ss->full_name.' at '.getNowTime());
+           \Log::info('Data error: BDelivery::getActiveDeliveryId():61 => Driver '.$driver_id.' has more than one historical trips that are still "on delivery", causing the new package assignment failed by '.$ss->full_name.' at '.getNowTime());
         }else if(isset($rows[0])){
-           \Log::info('use last one trip'); 
+           //\Log::info('use last one trip'); 
            return (object)['trip'=>$rows[0],'status'=>'OK']; 
         } 
         

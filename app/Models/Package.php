@@ -2074,7 +2074,10 @@ function getZoneByCode($branch_id, $zone_code) {
     if ($cnt >0){
       $picked_status_id =4; /* Picked and Booked */ 
       $qty = $cnt;
+    }else if(!is_numeric($qty)){
+      return DV::error('Number of packages is not correct.សូមប្រើលេខឡាតាំង'); 
     }
+
     $pickup_time = getNowTime();
     DB::table('order')->where('branch_id',$branch_id)->where('id',$order_id)->update(array('pickup_time'=>$pickup_time,'qty'=>$qty,'status_id'=>$picked_status_id,'driver_id'=>$driver_id,'pickup_notes'=>$notes));
     

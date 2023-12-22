@@ -87,7 +87,7 @@ class Sender //extends Model
         $rows = [];
         if (!$code) return false;
         $str_id = $id > 0 ? 's.id <> '.$id : '1=1';
-        $row = DB::table('sender')->where('branch_id',$branch_id)->where('code',$code)->whereRaw($str_id)->selectRaw('id')->take(1)->first();
+        $row = DB::table('sender AS s')->where('s.branch_id',$branch_id)->where('s.code',$code)->whereRaw($str_id)->selectRaw('s.id')->take(1)->first();
         return $row? true:false;
     }
  
@@ -119,7 +119,6 @@ class Sender //extends Model
     function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
       $id = $id?$id:$this->id;
       $ss = $ss?$ss:$this->userInfo;
-
       $sender = DB::table('sender as s')->where('id',$id)->selectRaw('id,branch_id,photo_file_name')->first();
       $delete_image = (!$photo_data || isImage($photo_data));
       if(!$sender)return DV::error('Merchant identity is not correct!');
@@ -401,6 +400,27 @@ class Sender //extends Model
          return DV::error('Could not find matching otp code');   
     }
 
+    static function updateMerchantName($id,$name){
+        DB::table('package')->where('sender_id',$id)->update(['sender_name'=>$name]);
+        DB::table('order_receivers')->where('sender_id',$id)->update(['sender_name'=>$name]);
+        DB::table('deleted_package')->where('sender_id',$id)->update(['sender_name'=>$name]);
+        DB::table('archived_package')->where('sender_id',$id)->update(['sender_name'=>$name]);
+        DB::table('um_users')->where('user_class','merchant')->where('official_id',$id)->update(['full_name'=>$name]);
+        return null;
+    }
+
+    static function updateMerchantPhone($id,$phone_number){
+      $user_id = UM::getUserId('merchant','official_id',$id);
+      if($user_id){
+        $res = UM::updatePhoneNumber($phone_number,$user_id);
+        if($res->status =='Error') return $res->error_message;
+      }
+      DB::table('package')->where('sender_id',$id)->update(['sender_phone'=>$phone_number]);
+      DB::table('order_receivers')->where('sender_id',$id)->update(['sender_phone'=>$phone_number]);
+      DB::table('deleted_package')->where('sender_id',$id)->update(['sender_phone'=>$phone_number]);
+      DB::table('archived_package')->where('sender_id',$id)->update(['sender_phone'=>$phone_number]);
+      return null;
+   }
     //saveSender()
     function save($arr=[],$ss=null){
       $ss = $ss ?? $this->userInfo;
@@ -433,7 +453,11 @@ class Sender //extends Model
       if ($res->error) return DV::error($res->error);
       $id = $res->id;
       $inputs = $res->values;
-      $inputs['phone_number'] = str_replace(' ','',$inputs['phone_number']);
+      $d = (object)$inputs;
+      $d->phone_number = str_replace(' ','',$inputs['phone_number']);
+      $inputs['phone_number'] = $d->phone_number;
+      if(!$d->phone_number) return DV::error('Phone number is required for valid merchant account');
+
       //Additional check
       if($inputs['cod_fee'] <0) return DV::error("COD fee is not correct!");
       if ($this->senderCodeExists($ss,$inputs['code'],$id)) return DV::error('Merchant ID already exists');
@@ -445,6 +469,20 @@ class Sender //extends Model
       $bank_accounts = $inputs['banks'];
       unset($inputs['banks']);
       $sender_created = $id>0? 0:1;
+      if($id > 0){
+         $org_sender = DB::table('sender as s')->where('s.id',$id)->selectRaw('s.name,s.phone_number')->take(1)->first();
+         if(!$org_sender) return DV::error('Failed to identify existing merchant for upating their information');
+         if ($d->phone_number != $org_sender->phone_number){
+              //Change merchant's phone number in tables "um_users","package","order_receivers", and then notify merchant Mobile App
+              $change_phone_error = self::updateMerchantPhone($id,$d->phone_number);
+              if( $change_phone_error) return DV::error($change_phone_error);
+         }
+         if ($org_sender->name != $d->name){
+           //Change merchant's name in tables "um_users","package","order_receivers", and then notify Merchant mobile App
+           $change_name_error = self::updateMerchantName($id,$d->name);
+           if($change_name_error) return DV::error($change_name_error);
+         }
+      }
       $id = saveData($ss,'sender',['id'=>$id],$inputs,[],1);
       if($id > 0){
            $new_code = null;
