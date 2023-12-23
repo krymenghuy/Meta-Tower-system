@@ -673,6 +673,7 @@ class PickupRequest //extends Model
         if(!$ss) return DV::error('It seems authentication failed!');
         $branch_id = $ss->branch_id;
         $v_rule = [
+            'order_id'=>'0|number',
             'sender_id'=>'1|number|exists=sender.id',
             'product_type'=>'1|string|1-150|exists=product_types.name',
             'request_vehicle_type'=>'1|string|1-150',
@@ -693,14 +694,14 @@ class PickupRequest //extends Model
         if($res->error) return DV::error($res->error);
         $inputs =$res->values;
         $d = (object)$inputs;
-         
+        $order_id = $d->order_id;
         $w = GeneralSettings::getDefaultWarehouse($ss);
         if(!$w) return DV::error('Cannot find a correct Branch or warehouse for this order');
         $warehouse_id = $w->id;
         $inputs['warehouse_id'] =$warehouse_id;
         $d->warehouse_id = $warehouse_id;
-        unset($inputs['use_default_location']);  
-        if(!isset($d->order_id)) $d->order_id = 0;
+        unset($inputs['use_default_location'],$inputs['order_id']);  
+        //if(!isset($d->order_id)) $d->order_id = 0;
          
         //From External source OR $is_from_mobile = isset($d->is_from_mobile)?$d->is_from_mobile:0;
         $is_from_mobile = in_array(strtolower($ss->user_class),['driver','merchant']);
@@ -990,10 +991,8 @@ class PickupRequest //extends Model
         return $rows;
      }
      
-     function getFormData_pickup_request($d){
-        $ss = UM::getUserInfoByToken($d);
-        if ($ss->status_code !==200) return $ss; //user not authenticated
-        
+     function getFormData_pickup_request($ss){
+        $ss = $ss ?? $this->userInfo; 
         $branch_id = $ss->branch_id;
         $data = (object)array();
         $str_status = 's.status_code =\'Active\'';
@@ -1401,13 +1400,9 @@ class PickupRequest //extends Model
         return DV::depends(1,['orders'=>$this->getList($filter)]);        
     } 
 
-    function getComboItems_vehicleType($d){
-        $ss = UM::getUserInfoByToken($d);
-        if ($ss->status_code !==200) return $ss; //user not authenticated
-         
-       $branch_id = $ss->branch_id;
-       $rows = DB::select(DB::raw("SELECT v.id, v.name as vehicle_type FROM `vehicle_type` AS v WHERE v.branch_id ='". Sanitizer::sanitize($branch_id)."' "));
-       return ($rows);
+    function getComboItems_vehicleType($ss=null){  
+       $str_branch = $ss? $ss->branch_id : '1=1';
+       return  DB::select(DB::raw('SELECT v.id, v.name as vehicle_type FROM `vehicle_type` AS v WHERE '.$str_branch));
     }
 
     function getComboItems_sender($data){
@@ -1519,28 +1514,19 @@ class PickupRequest //extends Model
         return null; 
      } 
 
-     function getOrderInfo($d){
-        $ss = UM::getUserInfoByToken($d);
-        if ($ss->status_code !==200) return $ss; //user not authenticated
-         //need permission to do this task
+     function getOrderInfo($id =null,$ss=null){
+        $ss = $ss ?? $this->userInfo;
+        $order_id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
-        $order_id = Sanitizer::sanitize($d->order_id);
-        //$context = isset($d->context)?$d->context:0; //context = {0,1} //0= perform Pickup, 1= Receive Packages (at warehouse)
 
-        $rows = DB::table('order AS o')->where('o.branch_id',$branch_id)->where('o.id',$order_id)->join('sender AS s','s.id','=','o.sender_id')->selectRaw("o.id AS order_id,o.status_id, o.code AS order_code, s.id AS sender_id, s.name AS sender_name, s.code As sender_code, DATE_FORMAT(o.request_date,'%d %b %Y %r') AS request_date")->limit(1)->get();
-        foreach($rows as $row) {
-            $sender_id = $row->sender_id;
+        $row = DB::table('order AS o')->where('o.branch_id',$branch_id)->where('o.id',$order_id)->join('sender AS s','s.id','=','o.sender_id')->selectRaw("o.id AS order_id,o.status_id, o.code AS order_code, s.id AS sender_id, s.name AS sender_name, s.code As sender_code, DATE_FORMAT(o.request_date,'%d %b %Y %r') AS request_date")->take(1)->first();
+        if($row) {
+            //$sender_id = $row->sender_id;
             $status_id = $row->status_id; 
-            if ($status_id <5) // Perform Pickup for a particular Pickup Request (select packages from table "order_receivers")
-               $row->packages = DB::table("order_receivers AS r")->join('sender AS s','s.id','=','r.sender_id')->join('package_statuses AS ps','ps.id','r.status_id')->where('r.branch_id',$branch_id)->where('r.order_id',$order_id)->selectRaw("r.id AS package_id,NULL as barcode,r.sender_id AS sender_id, r.receiver_address,r.receiver_phone,r.receiver_name, r.package_name,r.zone_code,LOWER(r.delivery_type) AS delivery_type,r.zone_name,CONCAT(dim_x,' ',dim_y,' ',dim_h) AS size, r.actual_kg, r.billed_kg, 0 AS base_fee, r.delivery_fee,r.df_payer,r.price,r.cod,r.cod_fee,r.forwarding_cost,ps.name AS status")->get();
+            if ($status_id < 5) // Perform Pickup for a particular Pickup Request (select packages from table "order_receivers")
+               $row->packages = DB::table("order_receivers AS r")->join('sender AS s','s.id','=','r.sender_id')->join('package_statuses AS ps','ps.id','r.status_id')->where('r.branch_id',$branch_id)->where('r.order_id',$order_id)->selectRaw('r.id AS package_id,NULL as barcode,r.sender_id AS sender_id, r.receiver_address,r.receiver_phone,r.receiver_name, r.package_name,r.zone_code,LOWER(r.delivery_type) AS delivery_type,r.zone_name,CONCAT(dim_x,\' \',dim_y,\' \',dim_h) AS size, r.actual_kg, r.billed_kg, 0 AS base_fee, r.delivery_fee,r.df_payer,r.price,r.cod,r.cod_fee,r.forwarding_cost,ps.name AS status')->get();
             else //if ($status_id >=5) //select packages from table "package"
-               $row->packages = DB::table("package AS r")->join('package_statuses AS ps','ps.id','=','r.status_id')->where('r.branch_id',$branch_id)->where('r.order_id',$order_id)->selectRaw("r.id AS package_id,r.qr_code AS barcode,r.sender_id,r.receiver_address,r.receiver_phone,r.receiver_name, r.package_name,r.zone_code,LOWER(r.delivery_type) AS delivery_type,r.zone_name,CONCAT(dim_x,' ', dim_y,' ', dim_h) AS size, r.actual_kg, r.billed_kg, r.base_fee, r.delivery_fee,r.df_payer,r.price,r.cod,r.cod_fee,r.forwarding_cost,r.delivery_notes, ps.name AS status")->get();
-               //get COD_Fee percent
-               //$cod_fee_percent = $this->getCODFeeCharge($ss,$sender_id);
-               //$base_fee_all_zones = $this->getBaseFee($ss,$sender_id,'all'); //Fixed price or base delivery fee
-               //$price_list = $this->getSenderPriceList($ss,$sender_id);
-               //$row->senderInfo = (object)array('sender_id'=>$sender_id,'cod_fee_percent'=>$cod_fee_percent,'base_fee'=>$base_fee_all_zones,'price_list'=>$price_list);
-
+               $row->packages = DB::table("package AS r")->join('package_statuses AS ps','ps.id','=','r.status_id')->where('r.branch_id',$branch_id)->where('r.order_id',$order_id)->selectRaw('r.id AS package_id,r.qr_code AS barcode,r.sender_id,r.receiver_address,r.receiver_phone,r.receiver_name, r.package_name,r.zone_code,LOWER(r.delivery_type) AS delivery_type,r.zone_name,CONCAT(dim_x,\' \', dim_y,\' \', dim_h) AS size, r.actual_kg, r.billed_kg, r.base_fee, r.delivery_fee,r.df_payer,r.price,r.cod,r.cod_fee,r.forwarding_cost,r.delivery_notes, ps.name AS status')->get();
             return $row;
         }
         return null;
@@ -1861,9 +1847,41 @@ class PickupRequest //extends Model
                 return DV::error("Unexpectedly, the order_id $order_id was invalid!");
                 //This case: "driver acceped Order but $order_id is not valid". This should never happens
             }
-         
         //get the accepted Order to display in Driver App's My Task tab
          return DV::success(["order"=>$order]);
+    }
+
+    /** pickItemPhotos */
+    function pickPackagePhotos($photos = [], $id=null,$ss=null){
+        $order_id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id;
+
+        $item_res = self::processItemPhotos($photos);
+        if ($item_res->status ==='Error') return DV::error($item_res->error_message);
+        $success_photos = $item_res->success_items;
+        $qty = count($success_photos);
+        if ($qty <=0) return DV::error('មិនឃើញមានរូបភាពកញ្ចប់ទំនិញ');
+        //$order = self::getOrderDetails_one($order_id);
+        $order = DB::table('order AS o')->where('id',$order_id)->selectRaw('o.id,o.code,o.sender_id,o.loc_lat,o.loc_lng')->take(1)->first();
+        if(!$order) return DV::error('Order ID does not exist');
+        $c =null;
+        $i =0;
+        $success_count = 0;  
+        do{
+            if (!isset($success_photos[$i])) break;
+            $c =$success_photos[$i];
+            $img_res = PublicStorage::saveImage($branch_id,self::$package_photo_dir,null,$c['image'],null,null);
+            if($img_res->status =='OK'){
+                $image_id = saveData($ss,'order_images',['id'=>null],['order_id'=>$order_id,'file_name'=>$img_res->file_name,'file_type'=>$img_res->extension],[],1,false);
+                $success_count++;
+            }
+            $i++;
+        }while($c);
+        
+        /** Make sure the getOrderDetails_one() returns one row, but this row bust be exactly the same as those rows returned by getList() or getPickupList() */
+        if ($i > 0) DB::table('order')->where('id',$order->id)->update(['qty'=>$success_count,'actual_pkg_count'=>$success_count]);
+        return DV::depends(1,['order'=>$order]);
     }
 
     //Pick Order's pacakges. If array "packages" is empty then status =3 ("Picked"), if there are array "packages" then status_id =4 "Pick and booked", but not yet arrived Warehouse  

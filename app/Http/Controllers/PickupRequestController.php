@@ -42,7 +42,7 @@ class PickupRequestController extends Controller
       $data= $order->getFormOptions($ss);
       return JDV::result($data);
     }
-
+    
    function savePickupRequest(Request $req){
       $ss= UM::getUserInfoByToken($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
@@ -130,6 +130,14 @@ class PickupRequestController extends Controller
       return JDV::result($rows);
    } 
 
+   function getOrderPackagePhotos(Request $req) {
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $id = $req->order_id ?? $req->id;
+      $rows = $this->pickupRequestModel->getOrderPackagePhotos($id,$ss);
+      return JDV::result($rows);
+   } 
+
    function assignPickupDriver(Request $req) {
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
@@ -168,12 +176,8 @@ class PickupRequestController extends Controller
     } 
 
     function getComboItems_vehicleType(Request $request){
-         $r = $this->pickupRequestModel->getComboItems_vehicleType($request);
-         if($r =='#350') 
-           return makeJsonResponse($r,350);
-        else if ($r =='@') return makeJsonResponse($r,360);
-
-         return makeJsonResponse($r);
+      $rows = $this->pickupRequestModel->getComboItems_vehicleType(null);
+      return JDV::result($rows);
     }
 
     function getComboItems_sender(Request $request){
@@ -189,28 +193,27 @@ class PickupRequestController extends Controller
         return makeJsonResponse($r);
      }
      
-     function getComboItems_delivery_condition(Request $request){
-      $r = $this->pickupRequestModel->getComboItems_delivery_condition($request);
-      if($r =='#350') 
-         return makeJsonResponse($r,350);
-      else if ($r =='@') return makeJsonResponse($r,360);
-      return makeJsonResponse($r);
+   //   function getComboItems_delivery_condition(Request $request){
+   //    $r = $this->pickupRequestModel->getComboItems_delivery_condition($request);
+   //    if($r =='#350') 
+   //       return makeJsonResponse($r,350);
+   //    else if ($r =='@') return makeJsonResponse($r,360);
+   //    return makeJsonResponse($r);
+   //  }
+
+   function getFormData_pickup_request(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);  
+      if ($ss->status_code !=200) return JDV::raw($ss);
+      $data = $this->pickupRequestModel->getFormData_pickup_request($ss);
+      return JDV::result($data);  
    }
 
-   function getFormData_pickup_request(Request $request){
-      $r = $this->pickupRequestModel->getFormData_pickup_request($request);
-      if($r =='#350') 
-         return makeJsonResponse($r,350);
-      else if ($r =='@') return makeJsonResponse($r,360);
-      return makeJsonResponse($r);
-   }
-
-   function getOrderInfo(Request $request){
-      $r = $this->pickupRequestModel->getOrderInfo($request);
-      if($r =='#350') 
-         return makeJsonResponse($r,350);
-      else if ($r =='@') return makeJsonResponse($r,360);
-      return makeJsonResponse($r);
+   function getOrderInfo(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);  
+      if ($ss->status_code !=200) return JDV::raw($ss);
+      $order_id = $req->id ?? $req->order_id;
+      $order = $this->pickupRequestModel->getOrderInfo($order_id);
+      return JDV::result($order);
    }
    
    function getSenderPriceInfo(Request $req){
@@ -226,7 +229,7 @@ class PickupRequestController extends Controller
       if ($ss->status_code !=200) return JDV::raw($ss);
       $order_id = isset($req->order_id)?$req->order_id:$req->id;
       //retrieve array of images only by $order_id
-      $r = $this->pickupRequestModel->getOrderImages($ss,['order_id'=>$order_id]);
+      $r = $this->pickupRequestModel->getOrderImages(['order_id'=>$order_id],$order_id,$ss);
       return JDV::result($r);
   }
     

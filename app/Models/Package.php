@@ -2556,7 +2556,7 @@ function getZoneByCode($branch_id, $zone_code) {
           $c->order_id = isset($order->id)? $order->id: (isset($order->order_id)? $order->order_id:null); 
           $c->product_type = isset($c->product_type)? $c->product_type: $order->product_type;
           $remarks = isset($c->remarks)?$c->remarks:'';
-         if(!$c->delivery_notes)  $c->delivery_notes = $remarks;
+         if(!isset($c->delivery_notes))  $c->delivery_notes = $remarks;
           $c->warehouse_id = isset($order->warehouse_id)?$order->warehouse_id:null;
           if (!isPhoneNumber($c->receiver_phone)) return DV::error('Receiver phone is not correct');
           if (!isset($c->warehouse_id)) return DV::error('No warehouse ID provided for package with reeiver phone '.$c->receiver_phone);

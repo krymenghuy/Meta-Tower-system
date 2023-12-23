@@ -52,7 +52,7 @@ class Sender //extends Model
 
     static function details($id,$ss,$includeProfilePicture=false,$includeBankAccount=true){
       $branch_id = $ss->branch_id;    
-      $row = DB::table('sender as s')->selectRaw('s.id,s.code,IFNULL(s.name,\'Your Name\') AS name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id,s.phone_number,s.email,s.business_type,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.sales_agent_id AS referrer_id, s.price_list_id,s.sales_agent_id,loc_lat,loc_lng')->where('s.branch_id',$branch_id)->where('s.id',$id)->take(1)->first();
+      $row = DB::table('sender as s')->selectRaw('s.id,s.code,IFNULL(s.name,\'Your Name\') AS name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id,s.phone_number,s.email,s.business_type,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.sales_agent_id AS referrer_id, s.price_list_id,s.sales_agent_id,s.loc_lat,s.loc_lng')->where('s.branch_id',$branch_id)->where('s.id',$id)->take(1)->first();
       if (!$row) return null;
           //$accounts = self::bankAccounts($id,1);
           if($row->loc_lat ==0) $row->loc_lat = null;
@@ -442,14 +442,15 @@ class Sender //extends Model
         'cod_fee'=>'0|number|default=0',
         'price_list_id'=>'0|number',
         'code'=>'0|string|0-25',
-        'loc_lat'=>'0|number|default=0',
-        'loc_lng'=>'0|number|default=0',
+        'address_link'=>'0|string|500',
+        //'loc_lat'=>'0|number|default=0',
+        //'loc_lng'=>'0|number|default=0',
         'sales_agent_id'=>'0|number',
         'banks'=>'0|array'
       ];
-
       $checkUnque = ["$branch_id|sender|name,phone_number,code|id=id|text=Sender or merchant already exists by name, phone number, or email"];
-      $res = validateObject($arr,$v_rule,true,['email'=>['-','.','@','_']],$ss->lang,false,$checkUnque);
+      $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%'];
+      $res = validateObject($arr,$v_rule,true,['address_link'=>$address_map_chars,'email'=>['-','.','@','_']],$ss->lang,false,$checkUnque);
       if ($res->error) return DV::error($res->error);
       $id = $res->id;
       $inputs = $res->values;
@@ -457,6 +458,14 @@ class Sender //extends Model
       $d->phone_number = str_replace(' ','',$inputs['phone_number']);
       $inputs['phone_number'] = $d->phone_number;
       if(!$d->phone_number) return DV::error('Phone number is required for valid merchant account');
+
+      $pinned_address = $d->address_link;
+      $pinned_location = self::getLocation($pinned_address);
+      if ($pinned_location){
+         $inputs['loc_lat'] = $pinned_location->latitude;
+         $inputs['loc_lng'] = $pinned_location->longitude;
+      }
+      unset($inputs['address_link']);
 
       //Additional check
       if($inputs['cod_fee'] <0) return DV::error("COD fee is not correct!");
@@ -492,7 +501,7 @@ class Sender //extends Model
               DB::table('sender')->where('id',$id)->update(['code'=>$new_code]);
            } 
            $this->saveBankAccounts($bank_accounts,$id,$ss);
-           \App\Models\UM::updateUserByOfficialId($id,['full_name'=>$inputs['name']]);
+           UM::updateUserByOfficialId($id,['full_name'=>$inputs['name']]);
            
            return DV::success(['sender'=>$inputs]);
            //return DV::success(['sender_id'=>$sender_id,'code'=>$sender_code]);
@@ -506,8 +515,10 @@ class Sender //extends Model
       if ($id>0) $str_id="s.id <> $id";
       $x = DB::table('sender as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
       if ($x) return 'Phone number "'.$phone_number.'" has been used by another registered merchant';
-      $x = DB::table('driver as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+      $x = DB::table('driver as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->select('id')->take(1)->exists();
       if($x) return 'Phone number "'.$phone_number.'" has been used by a driver';
+      $x = DB::table('sales_agents as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->select('id')->take(1)->exists();
+      if($x) return 'Phone number "'.$phone_number.'" has been used by a sales personnel';
       return null;
     }
  
@@ -841,7 +852,8 @@ class Sender //extends Model
     $row = DB::table('um_users as u')->where('u.official_id',$official_id)->where('user_class',$user_class)->selectRaw('u.login_name, u.id as user_id')->take(1)->first();
     if(!$row) return false;
     $user_id = $row->user_id;
-    \App\Models\UM::delete($user_id);
+    $um = new UM();
+    $um->deleteUser($user_id);
     return true;
   }
   
@@ -963,39 +975,47 @@ class Sender //extends Model
 }
 
  static function list_all($arr,$ss){
-     $d = (object)$arr;
-     $branch_id =$ss->branch_id;
-     $status = $d->status;
-     $sender_type_id = isset($d->sender_type_id)? $d->sender_type_id:null;
-     $business_type = isset($d->business_type)?$d->business_type:null;
-     $search_value = isset($d->search_value)?$d->search_value:null;
-     $sales_agent_id = isset($d->sales_agent_id)?$d->sales_agent_id:-1;
+  $d = (object)$arr;
+  $branch_id =$ss->branch_id;
+ 
+  $status = isset($d->status_code)?$d->status_code:'active';
+  //$sender_type_id = isset($d->sender_type_id)? $d->sender_type_id:null;
+  $business_type = isset($d->business_type)?$d->business_type:null;
+  $search_value = isset($d->search_value)?$d->search_value:null;
+  $sales_agent_id = isset($d->sales_agent_id)?$d->sales_agent_id:-1;
+  $str_agent = '12=12';
+  if ($sales_agent_id > 0 || $sales_agent_id <-1) $str_agent = 's.sales_agent_id ='.$sales_agent_id; 
+  //$str_sender_type = null;
+  $str_business_type ='1=1';
+  $str_status ='3=3'; // Active, Inactive
+  $str_search ='2=2';
+  //$str_agent = null;
 
-     $str_sender_type = null;
-     $str_business_type =null;
-     $str_status =null; // Active, Inactive
-     $str_search =null;
-     $str_agent = null;
-     if (!empty($search_value)) 
-     {
-      $str_search = "AND (s.name LIKE '%".escape_like_str($search_value)."%' OR s.phone_number ='".Sanitizer::sanitize($search_value)."' )";
-     }else{
-        if($sender_type_id>0) $str_sender_type ="AND s.sender_type_id ='".Sanitizer::sanitize($sender_type_id)."' ";
-        if(!empty($business_type)) $str_business_type ="AND s.business_type ='".Sanitizer::sanitize($business_type)."' ";
-        if(!empty($status)) $str_status = "AND s.status_code ='".$status."'";
-              if ($sales_agent_id ==-1)  //Vendors with and without referrrers
-              $str_agent = null;
-            else
-            {
-                if($sales_agent_id > 0) $str_agent =" AND s.sales_agent_id ='".$sales_agent_id."' "; //vendors wit specific referer
-                else  $str_agent =" AND s.sales_agent_id IS NULL"; //Vendors without referrers
-            }
-      }
-      
-      $str_more_clauses = " 1=1 ".$str_search.$str_business_type.$str_sender_type.$str_agent.$str_status;
-      $select_referrer_name = ',(SELECT r.`name` FROM sales_agents as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name'; 
-      return DB::table('sender as s')->whereRaw($str_more_clauses)->selectRaw('s.id,s.code,s.status_code,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.sales_agent_id AS referrer_id'.$select_referrer_name)->where('s.branch_id',$branch_id)->orderBy('s.id','DESC')->get();
+  if ($search_value) 
+  {
+    $search_value = escape_like_str($search_value);
+    $str_search = "(s.name LIKE '%". $search_value."%' OR s.phone_number ='".$search_value."' )";
+  }else{
+     //if($sender_type_id>0) $str_sender_type ="AND s.sender_type_id ='".Sanitizer::sanitize($sender_type_id)."' ";
+     if($business_type) { 
+       $business_type = escape_like_str($business_type);
+       $str_business_type ='s.business_type LIKE \'%'.$business_type.'%\'';
+    }
+     if(in_array(strtolower($status),['active','inactive'])) $str_status = 's.status_code =\''.$status.'\'';
    }
+   $select_referrer_name = ',(SELECT r.`name` FROM sales_agents as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name'; 
+   $query = DB::table('sender as s')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at')->where('s.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
+   $rows = $query->get();
+   foreach($rows as $row){
+     $row->image_url = '';
+     $row->bank_accounts = self::bankAccounts($row->id,null);
+     $row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id','merchant');
+     if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($row->branch_id,'merchant','image').$row->photo_file_name;
+     unset($row->photo_file_name);
+     if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
+   }
+   return $rows;
+  }
  
    /** return Sender List paginated */
    static function list($arr,$ss){
@@ -1011,8 +1031,9 @@ class Sender //extends Model
     //$sender_type_id = isset($d->sender_type_id)? $d->sender_type_id:null;
     $business_type = isset($d->business_type)?$d->business_type:null;
     $search_value = isset($d->search_value)?$d->search_value:null;
-    //$sales_agent_id = isset($d->sales_agent_id)?$d->sales_agent_id:-1;
-
+    $sales_agent_id = isset($d->sales_agent_id)?$d->sales_agent_id:-1;
+    $str_agent = '11=11';
+    if ($sales_agent_id > 0 || $sales_agent_id <-1) $str_agent = 's.sales_agent_id ='.$sales_agent_id; 
     //$str_sender_type = null;
     $str_business_type ='1=1';
     $str_status ='3=3'; // Active, Inactive
@@ -1032,7 +1053,7 @@ class Sender //extends Model
        if(in_array(strtolower($status),['active','inactive'])) $str_status = 's.status_code =\''.$status.'\'';
      }
      $select_referrer_name = ',(SELECT r.`name` FROM sales_agents as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name'; 
-     $query = DB::table('sender as s')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at')->where('s.branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
+     $query = DB::table('sender as s')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at')->where('s.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
      
      $count_query = clone $query;
      $count = $count_query->count('s.id');
@@ -1040,7 +1061,7 @@ class Sender //extends Model
      foreach($rows as $row){
        $row->image_url = '';
        $row->bank_accounts = self::bankAccounts($row->id,null);
-       $row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id','merchant');
+       $row->mobile_login = UM::getAccountInfo($row->id,'official_id','merchant');
        if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($row->branch_id,'merchant','image').$row->photo_file_name;
        unset($row->photo_file_name);
        if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
@@ -1055,13 +1076,12 @@ class Sender //extends Model
 
    //static method getSenderProp($sender_id,$prop)
    static function getSenderProp($id,$prop){
-      $rows = DB::table('sender')->where('id',$id)->selectRaw($prop)->take(1)->get();
-      foreach($rows as $row) return $row->{$prop};
-      return null;
+      return DB::table('sender')->where('id',$id)->selectRaw($prop)->take(1)->first();
    }
  
    /** returns object {"latitude","longitude"} */
    static function getLocation($googleMapLink) {
+    if(!$googleMapLink) return false;
     // Define regular expression patterns for both types of Google Maps links
     $patterns = [
         '/@([-0-9.]+),([-0-9.]+)/',  // Matches links with @latitude,longitude
@@ -1074,7 +1094,6 @@ class Sender //extends Model
             return (object)['latitude' => $matches[1], 'longitude' => $matches[2]];
         }
     }
-
     // Return false if no match is found
     return false;
 }
@@ -1107,7 +1126,8 @@ class Sender //extends Model
         $phone_err = self::checkUniquePerson($branch_id,$d->phone_number,$id);
         if ($phone_err) return DV::error($phone_err);
         if ($this->senderExists($ss,$d->name,$id)) return DV::error('It seems this name is already in use by another merchant');  
-        $org_phone_number = self::getSenderProp($id,'phone_number');
+        $org_sender = self::getSenderProp($id,'phone_number');
+        $org_phone_number = $org_sender? $org_sender->phone_number : null;
         if ($org_phone_number && $d->phone_number && ($org_phone_number != $d->phone_number)){
             unset($inputs['phone_number']);
         }

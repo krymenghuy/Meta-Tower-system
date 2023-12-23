@@ -56,6 +56,7 @@ class BDelivery //extends Model
         //$today = date('Y-m-d');
         $str_today = '5=5'; //'DATE(depart_time) =\''.$today.'\'';
         $rows = DB::table('delivery AS d')->where('d.branch_id',$branch_id)->where('d.driver_id',$driver_id)->whereRaw($str_today)->where('d.status_id',$trip_status_id)->selectRaw('d.id AS delivery_id,warehouse_id,fleet_tracking_number,depart_time,package_count')->take(2)->get();
+        //\Log::info(DB::table('delivery AS d')->where('d.branch_id',$branch_id)->where('d.driver_id',$driver_id)->whereRaw($str_today)->where('d.status_id',$trip_status_id)->selectRaw('d.id AS delivery_id,warehouse_id,fleet_tracking_number,depart_time,package_count')->take(2)->toSQL());
         if(count($rows) > 1){
            return (object)['status'=>'Error','error_message'=>'អ្នកដឹកម្នាក់នេះមានជើងដឹកច្រើនមិនទាន់បានបញ្ចប់។​ ដូច្នេះមិនអាចទទួលកញ្ចប់ថ្មីបានទេ','trip'=>null]; 
            \Log::info('Data error: BDelivery::getActiveDeliveryId():61 => Driver '.$driver_id.' has more than one historical trips that are still "on delivery", causing the new package assignment failed by '.$ss->full_name.' at '.getNowTime());
@@ -89,7 +90,7 @@ class BDelivery //extends Model
         ,'update_date'=>$depart_time
       ]);
       $new_id = DB::getPdo()->lastInsertId();
-      \Log::info('new trip id ' . $new_id); 
+      //\Log::info('new trip id ' . $new_id); 
       $trip = (object)['delivery_id'=>$new_id,'warehouse_id'=>$warehouse_id,'depart_time'=>$depart_time,'fleet_tracking_number'=>$trip_number,'package_count'=>1];
       return (object)['trip'=>$trip,'status'=>'OK'];
     }
@@ -179,7 +180,7 @@ class BDelivery //extends Model
         if ($m_res->status ==='Error') return DV::error($m_res->error_message);
         $m = $m_res->trip;
         $delivery_id = $m->delivery_id;
-        if(empty($m->warehouse_id)) return DV::error("Warehouse ID happens to be invalid!");
+        if(empty($m->warehouse_id)) return DV::error('Warehouse ID happens to be invalid!');
         
         $status_id = 6; //package's status 6 => On Delivery or Delivery Started 
         $inputs = ['warehouse_id'=>$m->warehouse_id,'driver_id'=>$driver_id,'delivery_id'=>$delivery_id,'status_id'=>$status_id];

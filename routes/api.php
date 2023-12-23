@@ -11,6 +11,7 @@ use App\Http\Controllers\PackageController;
 use App\Http\Controllers\LocationController;
 // use App\Http\Controllers\UMController;
 use App\Http\Controllers\SenderController;
+use App\Http\Controllers\LeadController;
 use App\Http\Controllers\DriverController;
 use App\Http\Controllers\CompletedPackageController;
 use App\Http\Controllers\CompanyProfileController;
@@ -71,8 +72,26 @@ Route::post('tell-merchant', function(Request $request){
            'user_class'=>'merchant',
            'target_user_id'=>$id,
            'persist'=>0,
-           'title'=>'Dear Bro Express Merchants',
+           'title'=>'Dear Hou Express Merchants',
            'message'=>'We are ready to offer you special services',
+           'data'=>$custom_data
+        ]
+    ];
+    $res = Notifier::notify_mobile(1,$data);
+    return response()->json($res);
+});
+
+Route::get('tell-agent', function(Request $request){
+    $id = $request->id;
+    //$e=(object)['branch_id'=>1,'target_user_id'=>$id,'title'=>'Tell Merchant','message'=>'Special Offers for delivery services'];
+    $custom_data = ['event_name'=>'deal_won','lead_id'=>0,'phone_number'=>'012565657'];
+    $data =[
+        [
+           'user_class'=>'sales_agent',
+           'target_user_id'=>$id,
+           'persist'=>0,
+           'title'=>$request->title ?? 'Hou Xpress Agent',
+           'message'=>$request->message ?? 'Sample notification to agent',
            'data'=>$custom_data
         ]
     ];
@@ -164,13 +183,15 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
             //Route::post('/merchant-address', [SenderController::class,'getVendorAddress']);
         });
 
-        //Route::post('pickOrderPackages', [PickupRequestController::class, 'pickOrderPackages']);
-        //Route::post('deleteOrderPackage', [PickupRequestController::class, 'deleteOrderPackage']);
-        //Route::post('saveOrderPackageDetails', [PickupRequestController::class, 'saveOrderPackageDetails']);
-        //Route::post('getOrderPackageDetails', [PickupRequestController::class, 'getOrderPackageDetails']);
-        //Route::post('getOrderPackageList', [PickupRequestController::class, 'getOrderPackageList']);
-        //Route::post('getOrderInfo', [PickupRequestController::class, 'getOrderInfo']);
-        //Route::post('getVendorAddress', [SenderController::class,'getVendorAddress']);
+        Route::prefix('lead')->group(function(){
+            Route::post('/save', [LeadController::class,'saveLead']);
+            Route::post('/delete', [LeadController::class,'deleteLead']);
+            Route::post('/delete-special', [LeadController::class,'deleteSpecial']);
+            Route::post('/list-paginate', [LeadController::class,'getList_paginate']);
+            Route::post('/list-all', [LeadController::class,'getList_all']);
+            Route::post('/update-status', [LeadController::class,'updateStatus']);
+        });
+
         Route::post('getMerchantBankInfo', [SenderController::class,'getMerchantBankInfo']);
         Route::post('savePickupRequest', [PickupRequestController::class, 'savePickupRequest']);
         //Route::post('getPickupList', [PickupRequestController::class, 'getPickupList']);
@@ -366,59 +387,7 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
      });
 
     //end::PromotionController
-
-// //um::controller
-// Route::post('createApplication', [UMController::class, 'createApplication']);
-// Route::post('encryptData', [UMController::class, 'encryptData']);
-// Route::post('createPermission', [UMController::class, 'createPermission']);
-// Route::post('getModuleList', [UMController::class, 'getModuleList']);
-// Route::post('saveRole', [UMController::class, 'saveRole']);
-// Route::post('role_exists', [UMController::class, 'role_exists']);
-// Route::post('deleteRole', [UMController::class, 'deleteRole']);
-// Route::post('addRoleMember', [UMController::class, 'addRoleMember']);
-// Route::post('removeRoleMember', [UMController::class, 'removeRoleMember']);
-// Route::post('getUserRoles', [UMController::class, 'getUserRoles']);
-// Route::post('getRoleList', [UMController::class, 'getRoleList']);
-// Route::post('getRoleMembers', [UMController::class, 'getRoleMembers']);
-// Route::post('getRoleById', [UMController::class, 'getRoleById']);
-// Route::post('user/deactivate-me', [UMController::class, 'deactivateMySelf']);
-// // Route::post('getUserList', [UMController::class, 'getUserList']);
-// Route::post('getUserExtendedDetails', [UMController::class, 'getUserExtendedDetails']);
-// Route::post('saveUser', [UMController::class, 'saveUser']);
-// Route::post('getUserInfo', [UMController::class, 'getUserInfo']);
-// Route::post('getUserDetails', [UMController::class, 'getUserDetails']);
-// Route::post('deleteUser', [UMController::class, 'deleteUser']);
-// Route::post('setUserStatus', [UMController::class, 'setUserStatus']);
-// Route::post('unlockUser', [UMController::class, 'unlockUser']);
-// Route::post('setLockStatus', [UMController::class, 'setLockStatus']);
-// Route::post('user_exists', [UMController::class, 'user_exists']);
-// Route::post('verifyUser', [UMController::class, 'verifyUser']);
-// Route::post('changePassword', [UMController::class, 'changePassword']);
-// Route::post('setPassword', [UMController::class, 'setPassword']);
-// Route::post('changeLoginName', [UMController::class, 'changeLoginName']);
-// Route::post('createLoginSession', [UMController::class, 'createLoginSession']);
-// Route::post('getComboItems_user', [UMController::class, 'getComboItems_user']);
-// Route::post('getComboItems_role', [UMController::class, 'getComboItems_role']);
-// Route::post('getComboItems_workloc', [UMController::class, 'getComboItems_workloc']);
-// // Route::post('getAccessibleModules_current_user', [UMController::class, 'getAccessibleModules_current_user']);
-// Route::post('getAccessibleModules', [UMController::class, 'getAccessibleModules_all']);
-// Route::post('addAccessibleModule', [UMController::class, 'addAccessibleModule']);
-// Route::post('getPermissionsByRole', [UMController::class, 'getPermissionsByRole']);
-// Route::post('findPermissions', [UMController::class, 'findPermissions']);
-// Route::post('addPermissionToRole', [UMController::class, 'addPermissionToRole']);
-// Route::post('removePermissionFromRole', [UMController::class, 'removePermissionFromRole']);
-// Route::post('getPermissionsByLoginName', [UMController::class, 'getPermissionsByLoginName']);
-// Route::post('getPermissionsByUserId', [UMController::class, 'getPermissionsByUserId']);
-// Route::post('getPermissionsByRoleId', [UMController::class, 'getPermissionsByRoleId']);
-// Route::post('localizePermissions', [UMController::class, 'localizePermissions']);
-// Route::post('allowed', [UMController::class, 'allowed']);
-// Route::post('accessibleModule', [UMController::class, 'accessibleModule']);
-// Route::post('getComboItems_module', [UMController::class, 'getComboItems_module']);
-// Route::post('removeAccessibleModule', [UMController::class, 'removeAccessibleModule']);
-// Route::post('getComboItems_userclass', [UMController::class, 'getComboItems_userclass']);
-// Route::post('logout', [UMController::class, 'logout']);
-//END::UMCOntroller
-
+ 
 //begin::SenderController
     Route::prefix('merchant')->group(function(){
         Route::post('/delivery-items', [PackageController::class, 'getDeliveryItemsBySender']); 
@@ -561,6 +530,45 @@ Route::prefix('sales-agent')->group(function(){
     //Route::post('updateSalesAgentStatus', [SalesAgentController::class, 'updateSalesAgentStatus']);
 });
 //end::SalesAgentController
+
+Route::prefix('sales-app')->group(function(){
+    Route::post('/banners', [SalesAgentController::class,'getBrandImages_mobile']);
+});
+ 
+Route::prefix('sales-app/agent')->group(function(){
+   Route::post('/login', [SalesAgentController::class, 'login']);
+   Route::post('/profile-info', [SalesAgentController::class, 'getProfileInfo']);
+   Route::post('/update-profile', [SalesAgentController::class, 'updateProfile']);
+   Route::post('update-phone', [SalesAgentController::class,'updatePhoneNumber']);
+   Route::post('/register', [SalesAgentController::class, 'register']);
+   Route::post('/register/send-otp', [SalesAgentController::class,'send_otp_preregister']);
+   Route::post('/register/verify-otp', [SalesAgentController::class,'verify_otp_preregister']);
+   Route::post('/deactivate', [SalesAgentController::class, 'deactivate']);
+
+   Route::post('forget/send-phone-otp', [SalesAgentController::class,'forget_send_otp']);
+   Route::post('forget/verify-otp', [SalesAgentController::class,'forget_verify_otp']);
+   //$d = {phone_number,otp_code,password}
+   Route::post('forget/reset-pwd', [SalesAgentController::class,'forget_reset_password']);
+
+});
+
+Route::prefix('sales-app/merchant')->group(function(){
+    Route::post('/list', [SalesAgentController::class,'getMerchantList']);
+    Route::post('/list-all', [SalesAgentController::class,'getMerchantList_all']);
+});
+
+Route::prefix('sales-app/lead')->group(function(){
+    Route::post('/list', [LeadController::class, 'getList_paginate']);
+    Route::post('/list-all', [LeadController::class, 'getList_all']);
+    Route::post('/details', [LeadController::class, 'getDetails']);
+    Route::post('/delete', [LeadController::class, 'deleteLead']);
+    Route::post('/save', [LeadController::class, 'saveLead']);
+    Route::post('/options-status', [LeadController::class, 'getOptions_status']);
+    Route::post('/options-category', [LeadController::class, 'getOptions_category']);
+    Route::post('/options-business-type', [LeadController::class, 'getOptions_business_type']);
+    Route::post('/submit-for-review', [LeadController::class, 'submitForReview']);
+    Route::post('/update-status', [LeadController::class, 'updateStatus']);
+});
 
 //begin::ReportController
     Route::prefix('rpt')->group(function(){
@@ -717,7 +725,7 @@ Route::get('/test',function(){
         Route::post('login', [ApiController::class, 'externalLogin']);
 
         Route::post('changepassword', [ApiController::class,'changePassword_driver']);
-        //Driver=> after successfuly verifying OTP code, user submit new password. $d = {app_id,otp_code,password}
+        //Driver=> after successfuly verifying OTP code, user submit new password. $d = {login_name,otp_code,password}
         Route::post('setpassword-otp', [ApiController::class,'setPassword_otp']);
 
          //Driver submit otp_code to update phone number
@@ -787,6 +795,8 @@ Route::get('/test',function(){
         Route::post('merchant-list', [ApiController::class, 'getComboItems_merchant_mobile']);
         //Driver creates delivery order for a Merchant
         Route::post('create-delivery-order', [ApiController::class, 'savePickupRequest']);
+        Route::post('create-order-photos', [ApiController::class, 'createOrderWithPhotos']);
+        Route::post('pick-package-photos', [ApiController::class, 'pickPackagePhotos']);
         //amount of cash a driver has to pay to Express company
         Route::post('balance-due', [ApiController::class, 'getTotalDue_driver']);
 
@@ -998,43 +1008,4 @@ Route::post('settings/options-warehouse', [GeneralSettingsController::class, 'ge
 Route::post('settings/options-delivery-status', [GeneralSettingsController::class, 'getComboItems_delivery_status']);
 Route::post('settings/options-pmt-status', [GeneralSettingsController::class, 'getComboItems_pmt_status']);
 Route::post('settings/options-complete-status', [GeneralSettingsController::class, 'getComboItems_complete_status']);
-Route::post('settings/options-sales-agent', [GeneralSettingsController::class, 'getComboItems_sales_agent']);
-
-
-// Route::post('permission/list',[UMController::class, "permissionList"]);
-// Route::prefix('user')->group(function(){
-//     Route::prefix('/role')->group(function(){
-//         Route::post('/list',[UMController::class,'getUserRoleListPaginate']);
-//         Route::post('/add',[UMController::class,'addRoleMember']);
-//         Route::post('/delete', [UMController::class, 'removeRoleMember']);
-//     });
-
-//     Route::prefix('/module')->group(function(){
-//         Route::post('/list',[UMController::class,'getUserModuleListPaginate']);
-//         Route::post('/add',[UMController::class,'addModuleToUser']);
-//         Route::post('/delete',[UMController::class,'removeUserModule']);
-//     });
-
-//     Route::prefix('/permission')->group(function(){
-//         Route::post('/list',[UMController::class,'getUserPermissionListPaginate']);
-//         Route::post('/add',[UMController::class,'addPermissionToUser']);
-//         Route::post('/delete',[UMController::class,'removeUserPermission']);
-//         Route::post('/report/list',[UMController::class,'getUserViewReportPermissionListPaginate']);
-//     });
-
-//     Route::post('/set-lock-status', [UMController::class, 'setLockStatus']);
-
-//     Route::post('/details', [UMController::class, 'getUserDetails']);
-
-//     Route::post('/report/permission',[UMController::class,'getUserViewReportPermissionListPaginate']);
-
-//     Route::post('/form-options', [UMController::class, "getUserFormOption"]);
-
-//     Route::post('/list-paginate',[UMController::class, 'getUserList']);
-
-//     Route::post('/options-user-class', [UMController::class, 'getComboItems_userclass']);
-
-//     Route::post('/save', [UMController::class, 'saveUser']);
-
-//     Route::post('/security/set-pwd', [UMController::class, 'setPassword']);
-// });
+Route::post('settings/options-sales-agent', [GeneralSettingsController::class, 'getComboItems_sales_agent']); 

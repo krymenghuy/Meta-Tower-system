@@ -96,7 +96,6 @@ class UM //extends Model
           "iis"=> $app_url,
           "aud"=> $app_url
         ];
-
         // Init app_id values in self::$user_classes. use values from .env files
         foreach(self::$user_classes AS $user_class =>$val){
           self::$user_classes[$user_class]['app_id'] = getAppIdByUserClass($user_class);
@@ -126,13 +125,12 @@ class UM //extends Model
     static function getUserId($user_class,$col_name,$check_value){
        if(!in_array($col_name,['official_id','login_name'])) return null;
        if(!self::correctUserClass($user_class)) return null;
-       \Log::info(DB::table('um_users as u')->where('u.'.$col_name,$check_value)->where('u.user_class',$user_class)->take(1)->toSql());
        return DB::table('um_users as u')->where('u.'.$col_name,$check_value)->where('u.user_class',$user_class)->take(1)->value('id');
     }
     //change phone number for a user, and if the user's class also use phone_number as login_name, it also changes lohin_name too
     static function updatePhoneNumber($phone_number,$id){
       if(!$id) return DV::success();
-      $user = self::getUserProps($id,'user_class');
+      $user = self::getUserProps($id,'user_class,official_id');
       if(!$user) return DV::error('Failed to update user phone number because the given User ID does not exist');
       $loginVia = isset(self::$login_kind[$user->user_class])? self::$login_kind[$user->user_class]:null;
       if ($loginVia ==='phone'){
@@ -142,16 +140,40 @@ class UM //extends Model
           return DV::error('The phone number is being used as login by other '.$user_class);
          }
          DB::table('um_users')->where('id',$id)->update(['phone_number'=>$phone_number,'login_name'=>$phone_number]);
+         $tableInfo = self::$profile_tables[strtolower($user->user_class)];
+         if($tableInfo){
+             $table =   $tableInfo['table'];
+             $pk_field = $tableInfo['key_field'];
+             if($table !=='um_users'){
+               try{
+                   DB::table($table)->where($pk_field,$user->official_id)->update(['phone_number'=>$phone_number]);  
+               }catch(\Exception $e){
+                  \Log::info('Failed to update phone number for '.$user->user_class.' ID: '.$user->official_id.' new phone number: '.$phone_number);
+               }
+             }
+         }
       }else DB::table('um_users')->where('id',$id)->update(['phone_number'=>$phone_number]);
       return DV::success();
     }
 
     static function updateEmail($email,$id){
-      $user = self::getUserProps($id,"user_class");
+      $user = self::getUserProps($id,'user_class,official_id');
       if(!$user) return null;
       $loginVia = isset(self::$login_kind[$user->user_class])? self::$login_kind[$user->user_class]:null;
       if ($loginVia ==='email'){
          DB::table('um_users')->where('id',$id)->update(['email'=>$email,'login_name'=>$email]);
+         $tableInfo = self::$profile_tables[strtolower($user->user_class)];
+         if($tableInfo){
+             $table =   $tableInfo['table'];
+             $pk_field = $tableInfo['key_field'];
+             if($table !=='um_users'){
+               try{
+                   DB::table($table)->where($pk_field,$user->official_id)->update(['email'=>$email]);  
+               }catch(\Exception $e){
+                  \Log::info('Failed to update email for '.$user->user_class.' ID: '.$user->official_id.' new email: '.$email);
+               }
+             }
+         }
       }else DB::table('um_users')->where('id',$id)->update(['email'=>$email]);
       return null;
     }
@@ -363,25 +385,28 @@ class UM //extends Model
       static function matchOTP($login_name,$otp_code,$user_class=null){
         $str_user_class ="1=1";
         if($user_class) $str_user_class ="u.user_class ='$user_class'";
+        \Log::info('login_name = '.$login_name);
+        \Log::info('user-class = '.$str_user_class);
+        \Log::info('otp_code = '.$otp_code);
         return DB::table('um_users AS u')->where('u.login_name',$login_name)->whereRaw($str_user_class)->where('otp_code',$otp_code)->select("id")->take(1)->exists();
       }
 
-      //verify if otp_code provided by user is correct. If correct then the otp_code is cleared out from table "um_users.otp_code"
-      //$d = {otp_code,[login_name] or [user_id]}. This method returns int as 1  or 0
-      function verify_otp($otp_code,$ss){
-        //in case login_name is email, Sanitizer::sanitize() will mistakenly remove '@' => causing problem
-        //$login_name = $ss->login_name;
-        $user_id = $ss->user_id;
+      // //verify if otp_code provided by user is correct. If correct then the otp_code is cleared out from table "um_users.otp_code"
+      // //$d = {otp_code,[login_name] or [user_id]}. This method returns int as 1  or 0
+      // function verify_otp($otp_code,$ss){
+      //   //in case login_name is email, Sanitizer::sanitize() will mistakenly remove '@' => causing problem
+      //   //$login_name = $ss->login_name;
+      //   $user_id = $ss->user_id;
 
-        //using Sanitizer::sanitize() means that @otp_code cannot contains any special chars
-        $otp_code = Sanitizer::sanitize($otp_code);
-        $rows= [];
-        //if($login_name)
-          //$rows= DB::table('um_users AS u')->where('login_name',$login_name)->where('otp_code',$otp_code)->selectRaw("id")->limit(1)->get();
-        //else
-          $rows= DB::table('um_users AS u')->where('id',$user_id)->where('otp_code',$otp_code)->selectRaw("id")->limit(1)->get();
-        return isset($rows[0])?1:0;
-      }
+      //   //using Sanitizer::sanitize() means that @otp_code cannot contains any special chars
+      //   $otp_code = Sanitizer::sanitize($otp_code);
+      //   $rows= [];
+      //   //if($login_name)
+      //     //$rows= DB::table('um_users AS u')->where('login_name',$login_name)->where('otp_code',$otp_code)->selectRaw("id")->limit(1)->get();
+      //   //else
+      //     $user_id= DB::table('um_users AS u')->where('id',$user_id)->where('otp_code',$otp_code)->take(1)->value('id');
+      //   return $user_id?1:0;
+      // }
 
       function sendSMS($phone_number, $text,$sender_name=null){
          SMS::send($phone_number,$text,$sender_name);

@@ -498,7 +498,7 @@ class WebReportController extends Controller{
       }
 
       $warehouse_id = $p->wid;
-      $sender_id = $p->senderid;
+      $sender_id = isset($p->senderid)?$p->senderid:0;
       $start_date =$p->startdate;
       $end_date = $p->enddate;
       $delivery_status_id =null;

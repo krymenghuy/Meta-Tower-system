@@ -217,4 +217,17 @@ class GeneralSettings //extends Model
         DB::table('sender_base_price')->where('id',$id)->where('branch_id',$branch_id)->delete();
         return null;
     }
+
+   static function options_lead_status($ss =null){
+     $branch_id =1;
+     return DB::table('lead_statuses as ls')->selectRaw('id,`name` as status')->get();
+   } 
+   static function options_lead_category($ss =null){
+    $branch_id =1;
+    return DB::table('lead_categories as c')->selectRaw('c.id,c.`name` as category')->get();
+  } 
+  static function options_business_type($ss =null){
+    $branch_id =1;
+    return DB::table('sender_business_types as b')->selectRaw('b.`business_type` AS code, b.`business_type`, b.allow_register')->get();
+  } 
 }
