@@ -8,11 +8,34 @@ use App\Models\SalesAgent;
 use App\Models\UM;
 use App\Models\JDV;
 use App\Models\PublicStorage;
+use App\Models\PendingTask;
+use App\Models\MobileAppSettings;
+use Config;
 
 class SalesAgentController extends Controller
 {
     protected $salesAgentModel;
     
+    function getMerchantList(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !== 200) return JDV::raw($ss);
+      $id = $ss->official_id;
+      /** if there is no $sale_gent_id provided then do not return any maarchant list */
+      if (!$id) $id = -10;
+      $rows = SalesAgent::merchantList($req->all(),$id,$ss);
+      return JDV::result($rows);
+    }
+
+    function getMerchantList_all(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !== 200) return JDV::raw($ss);
+      $id = $ss->official_id;
+      /** if there is no $sale_gent_id provided then do not return any maarchant list */
+      if (!$id) $id = -10;
+      $rows = SalesAgent::merchantList_all($req->all(),$id,$ss);
+      return JDV::result($rows);
+    }
+
     function saveSalesAgent(Request $req) {
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !== 200) return JDV::raw($ss);
@@ -37,7 +60,35 @@ class SalesAgentController extends Controller
       $res = $um->sendOTPCode_phone($req->all(),$ss); 
       return JDV::raw($res);
    }
-     
+   
+   function getProfileInfo(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if ($ss->status_code !==200) return JDV::raw($ss);
+      $agent_id = $ss->official_id;
+      $data = \App\Models\SalesAgent::details($agent_id,$ss);  
+      if(!$data) return JDV::error('It seems your profile information does not exist or is missing');
+      $data->notif_topic_private= $ss->branch_id.topic_prefix($ss->user_class)."private".$ss->user_id;
+      $data->notif_topic_general=$ss->branch_id.topic_prefix($ss->user_class)."general";
+      return JDV::result($data);
+   }
+  /** {"phone_number","otp_code"} */ 
+  function updatePhoneNumber(Request $req){
+   $ss = UM::getUserInfoByToken($req,-1); 
+   if($ss->status_code !==200) return JDV::raw($ss);
+   $res = PendingTask::finish('change_phone_number',$ss->user_id, $req->otp_code);
+   return JDV::raw($res);
+ }
+   //$d = {name, [phone_number], email, address}
+   function updateProfile(Request $req) {
+      $ss = UM::getUserInfoByToken($req);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      if (strtolower($ss->user_class) !=='sales_agent') return DV::error('It seems you are not a sales agent');
+      $id =  $ss->official_id;
+      $d = new SalesAgent($id,$ss);
+      $res = $d->updateProfile_mobile($req->all(),$id);
+      return JDV::raw($res); 
+   }
+
    function forget_verify_otp(Request $req){
       $user_class ='sales_agent';
       $login_name = $req->phone_number;
@@ -45,7 +96,17 @@ class SalesAgentController extends Controller
       $r = UM::matchOTP($login_name,$otp_code,$user_class);
       return JDV::result($r?'true':'false');
    }
-
+    //Reset password. In case of Forget password
+  //@d = {'phone_number','otp_code','password'};
+  function forget_reset_password(Request $req){
+   $user_class = 'sales_agent';
+   $login_name = $req->login_name?$req->login_name:$req->phone_number;
+   $otp_code = $req->otp_code;
+   $password = $req->password;
+   $res = UM::resetPassword_forget($login_name,$user_class,$otp_code,$password);
+   return JDV::raw($res);
+  }
+ 
    function send_otp_preregister(Request $req) {
       $agent = new SalesAgent();
       $req['user_class']='sales_agent';
@@ -59,18 +120,7 @@ class SalesAgentController extends Controller
       $res = $agent->verify_otp_preregister($req->all());
       return JDV::raw($res);
    }
-   
-  //Reset password. In case of Forget password
-  //@d = {'phone_number','otp_code','password'};
-  function forget_reset_password(Request $req){
-   $user_class = 'sales_agent';
-   $login_name = $req->login_name?$req->login_name:$req->phone_number;
-   $otp_code = $req->otp_code;
-   $password = $req->password;
-   $res = UM::resetPassword_forget($login_name,$user_class,$otp_code,$password);
-   return JDV::raw($res);
- }
-
+  
    /** SaleAgent login */
    function login(Request $req){
       $app_id = $req->app_id;
@@ -122,4 +172,10 @@ class SalesAgentController extends Controller
     $id = $req->id;
     return JDV::result(SalesAgent::details($id,$ss));
   }
+
+  function getBrandImages_mobile(Request $request){
+   $request['branch_id'] = 1;
+   $app_id = Config::get('app.sales_app_id');
+   return JDV::result(MobileAppSettings::getBrandImages($app_id));  
+ }
 }

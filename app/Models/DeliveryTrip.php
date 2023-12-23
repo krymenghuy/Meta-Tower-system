@@ -191,7 +191,7 @@ class DeliveryTrip //extends Model
         if ($status_id ===null) $status_id =-1; //because $status_id = 0 it means 'Canceled'
         //$delivery_type = isset($d->delivery_type)?Sanitizer::sanitize($d->delivery_type):null;
  
-        $str_warehouse = null;
+        $str_warehouse = ' h.id ='.($warehouse_id?$warehouse_id:0);
         $str_status ='';
         $str_date = null;
         $str_driver = null;
@@ -199,24 +199,28 @@ class DeliveryTrip //extends Model
         //$str_delivery_type =null;
 
         if (!$search_value) {
-            if (!(bool)strtotime($start_date)) $start_date = date('Y-m-d'); else $start_date = convertDate($start_date);
-            if (!(bool)strtotime($end_date)) $end_date = date('Y-m-d'); else $end_date = convertDate($end_date);
-            $str_date = " AND (DATE(d.depart_time) >='$start_date' AND DATE(d.depart_time) <='$end_date')";
-
-            $str_warehouse =" AND h.id =$warehouse_id ";
-            if ($driver_id > 0) $str_driver = " AND d.driver_id =$driver_id ";
+            $str_date =null;
+            if (!$start_date && !$end_date){
+                $str_date =null;
+            }else{
+                 if((bool)strtotime($start_date)) $end_date = $start_date;
+                 else if((bool)strtotime($end_date)) $start_date = $end_date;
+                 $str_date = ' AND (DATE(d.depart_time) >=\''.convertDate($start_date).'\' AND DATE(d.depart_time) <=\''.convertDate($end_date).'\')';
+            } 
+            //$str_warehouse =' h.id ='.($warehouse_id?$warehouse_id:0);
+            if ($driver_id > 0) $str_driver = ' AND d.driver_id ='.$driver_id;
             //if (!empty($zone_code)) $str_zone =" AND d.zone_code ='".$zone_code."' ";
             //On Trip List page, if user does not select any status => show ONLY "On Delivery" trips
-            if ($status_id == -1 || !$status_id) $str_status =null;     
-            else if($status_id > 0) $str_status =" AND d.status_id =$status_id ";
-
-            //if (!empty($delivery_type)) $str_delivery_type =" AND d.delivery_type ='".$delivery_type."' ";
-            $more_wheres = "1=1".$str_date.$str_warehouse.$str_status.$str_driver;
+            if ($status_id == -1 || !$status_id) $str_status ='';     
+            else if($status_id > 0) $str_status =' AND d.status_id ='.$status_id;
+            
+            if (!$str_date) $str_status =' AND d.status_id =2';
+            $more_wheres = $str_warehouse.$str_date.$str_status.$str_driver;
         }else{
             $search_value = escape_like_str($search_value);
             $more_wheres ="(d.fleet_tracking_number ='$search_value' OR d.driver_id IN (select id FROM driver WHERE branch_id =$branch_id AND name LIKE '%$search_value%') OR d.id IN (SELECT l.delivery_id FROM package AS l WHERE l.branch_id =$branch_id AND l.qr_code ='$search_value' or l.receiver_phone ='$search_value' OR l.sender_phone='$search_value' OR l.sender_name LIKE '%$search_value%'))";
         }
-        $selectCols ="d.id, d.driver_id, d.fleet_tracking_number, formatDate(d.depart_time) AS depart_date, DATE_FORMAT(d.depart_time,'%r')  AS depart_time, d.package_count, d.delivered_count,d.failed_count,d.status_id, ds.name AS status, dr.`name` AS driver_name,dr.phone_number AS driver_phone_number,(SELECT SUM(IFNULL(p.driver_total,0)) FROM package AS p WHERE p.branch_id = d.branch_id AND p.delivery_id = d.id) AS driver_total";
+        $selectCols ='d.id, d.driver_id, d.fleet_tracking_number, formatDate(d.depart_time) AS depart_date, DATE_FORMAT(d.depart_time,\'%r\')  AS depart_time, d.package_count, d.delivered_count,d.failed_count,d.status_id, ds.name AS status, dr.`name` AS driver_name,dr.phone_number AS driver_phone_number,(SELECT SUM(IFNULL(p.driver_total,0)) FROM package AS p WHERE p.branch_id = d.branch_id AND p.delivery_id = d.id) AS driver_total';
         return DB::table('delivery AS d')->join('driver as dr','dr.id','d.driver_id')->join('delivery_statuses AS ds','ds.id','=','d.status_id')->join('warehouses AS h','h.id','=','d.warehouse_id')->where('d.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw($selectCols)->orderByRaw('d.status_id,d.create_date DESC')->get(); 
     }
 
@@ -430,7 +434,7 @@ class DeliveryTrip //extends Model
         ,'update_date'=>$depart_time
       ]);
       $new_id = DB::getPdo()->lastInsertId();
-      \Log::info('new trip id ' . $new_id); 
+      //\Log::info('new trip id ' . $new_id); 
       $trip = (object)['delivery_id'=>$new_id,'warehouse_id'=>$warehouse_id,'depart_time'=>$depart_time,'fleet_tracking_number'=>$trip_number,'package_count'=>1];
       return (object)['trip'=>$trip,'status'=>'OK'];
     }

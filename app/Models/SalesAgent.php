@@ -3,13 +3,13 @@
 namespace App\Models;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
- 
 use DB;
 use Sanitizer;
 use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator; 
 use App\Models\PublicStorage;
 use Carbon\Carbon;
+use App\Models\Sender;
 use Config;
 class SalesAgent //extends Model
 {
@@ -37,6 +37,7 @@ class SalesAgent //extends Model
          'agent_type'=>'1|choice|Part Time, Full Time, Any',
          'phone_number'=>'1|phone',
          'email'=>'0|email',
+         'agent_type_id'=>'1|number|exists=sales_agent_types.id|default=1',
          'address'=>'0|address',
          'start_date'=>'0|date',
          'photo'=>'0|image',
@@ -168,7 +169,7 @@ class SalesAgent //extends Model
         
         return DV::success(['data'=>($exists)?1:0]);
   }
-  
+   
 
     /** Sales Agent self-register via Sales Mobile App */
     function register($arr = [],$ss){
@@ -178,6 +179,7 @@ class SalesAgent //extends Model
          'name'=>'1|string|1-150',
          'sex'=>'0|choice|M,F',
          'email'=>'0|email|0-100',
+         'agent_type_id'=>'1|number|exists=sales_agent_types.id',
          'password'=>'1|string|0-150',
          'photo'=>'0|image'
       ];
@@ -272,6 +274,75 @@ class SalesAgent //extends Model
         return PublicStorage::getUrl($branch_id,'agent','image').'def-agent.png';
     }
 
+    //Called by Sales mobile app to update user profile quickly
+   function updateProfile_mobile($arr = [],$id= null,$ss =null){
+    $ss =$ss?$ss:$this->userInfo;
+    $id = $id?$id:$this->id; 
+    $branch_id = $ss->branch_id;
+    $v_rule = [
+      'name'=>'1|string|1-250',
+      'phone_number'=>'1|phone',
+      'email'=>'0|email|0-100',
+      'address'=>'0|string|0-300'
+    ];
+    $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%'];
+    $res = validateObject($arr,$v_rule,true,['address'=>$address_map_chars],$ss->lang,false,null);
+    if($res->error) return DV::error($res->error);
+    $inputs = $res->values;
+    $d = (object)$inputs;
+
+    $phone_err = self::checkUniquePerson($branch_id,$d->phone_number,$id);
+    if ($phone_err) return DV::error($phone_err);
+    //if ($this->agentExists($ss,$d->name,$id)) return DV::error('It seems this name is already in use by another merchant');  
+    $org_agent = self::getAgentProp($id,'phone_number');
+    $org_phone_number = $org_agent? $org_agent->phone_number : null;
+    if ($org_phone_number && $d->phone_number && ($org_phone_number != $d->phone_number)){
+        unset($inputs['phone_number']);
+    }
+    $id = saveData($ss,'sales_agents',['id'=>$id],$inputs,[],1,false);
+    if($id){
+      $sms_err = null;
+      //Check if sales changed his phoner number   
+        if ($org_phone_number && $d->phone_number && ($org_phone_number != $d->phone_number)){
+            $new_otp_code = $this->newOTP();
+            $res = PendingTask::create('change_phone_number',$branch_id,$ss->user_id,$org_phone_number,$d->phone_number,$new_otp_code);
+            if ($res->status==='OK'){
+               $m = SMS::send($org_phone_number,"លេខសំងាត់ $new_otp_code សំរាប់ប្តូរលេខទូរសព្ទ័");
+               if ($m->status ==='Error') $sms_err = $m->error_message;
+               return DV::depends(1,['otp_code'=>$new_otp_code,'change_phone_number'=>1,'sms_error'=>$sms_err]);
+            }else return DV::error($res->error_message);
+        }
+      //end of checking Phone number changing
+       return DV::depends(1,['otp_code'=>null,'change_phone_number'=>0,'sms_error'=>$sms_err]); 
+    }else return DV::error('Problem in updating Sales Personel profile');
+}
+
+function agentCodeExists($uss,$code,$id) {
+  $branch_id = $uss->branch_id;
+  $rows = [];
+  if (!$code) return false;
+  $str_id = $id > 0 ? 's.id <> '.$id : '1=1';
+  $row = DB::table('sales_agents AS s')->where('s.branch_id',$branch_id)->where('s.code',$code)->whereRaw($str_id)->selectRaw('s.id')->take(1)->first();
+  return $row? true:false;
+}
+
+static function getAgentProp($id,$prop){
+  return DB::table('sales_agents')->where('id',$id)->selectRaw($prop)->take(1)->first();
+}
+
+function checkUniquePerson($branch_id,$phone_number,$id=null){
+  $str_id ="1=1";
+  if(!$phone_number) return 'Phone number cannot be empty';
+  if ($id>0) $str_id="s.id <> $id";
+  $x = DB::table('sales_agents as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+  if ($x) return 'Phone number "'.$phone_number.'" has been used by another registered sales personnel';
+  $x = DB::table('driver as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->select('id')->take(1)->exists();
+  if($x) return 'Phone number "'.$phone_number.'" has been used by a driver';
+  $x = DB::table('sender as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->select('id')->take(1)->exists();
+  if($x) return 'Phone number "'.$phone_number.'" has been used by a merchant';
+  return null;
+}
+
     static function list($arr,$ss=null){
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
@@ -347,4 +418,18 @@ class SalesAgent //extends Model
         $x = DB::table('sales_agents')->where('id',$id)->update(['status_code'=>$status_code]);
         return DV::depends($x,null,'Failed to update Agent status');
     }
+
+    //$arr = ['status_code'=>'Active|inactive']
+    static function merchantList($arr=[], $id,$ss){
+        if(!$id || $id ==-1) $id =-11;
+        $arr['sales_agent_id'] = $id;
+        $arr['search_value'] =null;  
+        return Sender::list($arr,$ss);
+    }
+    static function merchantList_all($arr=[], $id,$ss){
+      if(!$id || $id ==-1) $id =-11;
+      $arr['sales_agent_id'] = $id;
+      $arr['search_value'] =null;
+      return Sender::list_all($arr,$ss);
+  }
 }

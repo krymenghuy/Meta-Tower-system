@@ -101,14 +101,14 @@ Route::get('test-count',function(){
 });
 
 Route::get('reset-merchant-code',function(){
-    $res = \App\Models\Sender::resetCodes(1,'HM'); 
+   $res = \App\Models\Sender::resetCodes(1,'HM'); 
+   echo response()->json($res);
+});
+
+Route::get('reset-driver-code',function(){
+    $res = \App\Models\Driver::resetCodes(1,'HD'); 
     echo response()->json($res);
- });
- 
- Route::get('reset-driver-code',function(){
-     $res = \App\Models\Driver::resetCodes(1,'HD'); 
-     echo response()->json($res);
- });
+});
 
 Route::get('/', function () {
     return view('login.index');

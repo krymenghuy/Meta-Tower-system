@@ -231,6 +231,7 @@ class ApiController extends Controller
     function setPassword_driver(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
+      $req['user_class'] = $ss->user_class;
       $req['driver_id'] = $ss->official_id;
       $req['user_id'] = $ss->user_id;
       $res = $this->UMModel->setPassword($req->all(),$ss);
@@ -365,6 +366,17 @@ class ApiController extends Controller
           return JDV::success(['order_id'=>$res->order_id,'tracking_number'=>$res->tracking_number]);
       }else return JDV::error($res->error_message);
   }
+
+  function pickPackagePhotos(Request $req){
+    $ss= UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !==200) return JDV::raw($ss);
+    if (strtolower($ss->user_class) !=='driver'){
+      return JDV::error('Only Driver users are allowed to pick order by uploading photos');
+    }
+    $order_id = $req->order_id ?? $req->id;
+    $res = $this->pickupRequestModel->pickPackagePhotos($req->photos, $order_id, $ss);
+    return JDV::raw($res);  
+}
 
     //returns list of outstanding Delivery Orders to Merchant Mobile App
     function getOutstandingDeliveryOrders(Request $req) {
@@ -666,9 +678,9 @@ class ApiController extends Controller
   function updateProfile_sender(Request $req) {
         $ss = UM::getUserInfoByToken($req);
         if($ss->status_code !==200) return JDV::raw($ss);
-        if(strtolower($ss->user_class) !=='merchant') return DV::error('You are not a merchant or sender');
+        if(strtolower($ss->user_class) !='merchant') return DV::error('You are not a merchant or sender');
         $sender = new Sender($ss->official_id,$ss);
-        $res = $sender->updateProfile_mobile($req->all(),$ss->official_id);
+        $res = $sender->updateProfile_mobile($req->all(),$ss->official_id,$ss);
         return JDV::raw($res);
   }
 
@@ -923,24 +935,23 @@ function getMyTaskCounts(Request $req){
       return JDV::result($res);
   }
 
-  //verify otp_code by phone or email
-  //$d= {app_id,otp_code,[login_name]}
-  function verify_otp(Request $req){
-      $ss = UM::getUserInfoByToken($req,-1);
-      if(!$ss->status_code !==200) return JDV::raw($ss);
-      //$user_class =null;
-      //if($req->app_id === Congig::get('app.merchant_app_id')) $user_class ='merchant';
-      //else if ($req->app_id === Config::get('app.driver_app_id')) $user_class ='driver';
-      //else return JDV::error("app_id or user class is not correct!");
+  // //verify otp_code by phone or email
+  // //$d= {app_id,otp_code,[login_name]}
+  // function verify_otp(Request $req){
+  //     $ss = UM::getUserInfoByToken($req,-1);
+  //     if(!$ss->status_code !==200) return JDV::raw($ss);
+  //     //$user_class =null;
+  //     //if($req->app_id === Congig::get('app.merchant_app_id')) $user_class ='merchant';
+  //     //else if ($req->app_id === Config::get('app.driver_app_id')) $user_class ='driver';
+  //     //else return JDV::error("app_id or user class is not correct!");
    
-      //$req->user_id = $user->user_id; //NOTE: $user->id is the sender_id or driver_id, while $user->user_id is "um_users.id"
-      //$req->login_name = $user->login_name;
-      //$request->phone_number = $user->phone_number;
-      $success = $this->UMModel->verify_otp($req->otp_code,$ss);
-      return JDV::result($success);
-  }
-
-
+  //     //$req->user_id = $user->user_id; //NOTE: $user->id is the sender_id or driver_id, while $user->user_id is "um_users.id"
+  //     //$req->login_name = $user->login_name;
+  //     //$request->phone_number = $user->phone_number;
+  //     $success = $this->UMModel->verify_otp($req->otp_code,$ss);
+  //     return JDV::result($success);
+  // }
+ 
   //$d= {'phone_number','password','confirm_pwd',['name'],['address'],['business_type']}
   function registerSender(Request $req) {
     $r = $this->senderModel->registerSender($req->all());
@@ -1060,19 +1071,14 @@ function getActiveTrips(Request $req){
   }
 
   //after successfully verified OTP code, user submit new password with that otp_code in order to set new password
-  //$d = {app_id,password,otp_code}
-  function setPassword_otp(Request $req){
-    //$app_id = $req->app_id;  
-    // if($app_id === Config::get('app.merchant_app_id')()) $user_class= "merchant";
-    // elseif ($app_id === Config::get('app.driver_app_id')) $user_class ="driver";
-    // else return api_response("App ID is not correct!",353); 
-    
+  //$d = {login_name,password,otp_code}
+  function setPassword_otp(Request $req){   
     $ss = UM::getUserInfoByToken($req,-1); 
     if($ss->status_code !==200) return JDV::raw($ss);
-    $req['login_name'] = $ss->login_name;
-
+    $login_name = $req->login_name ?? $req->phone_number;
+    $otp_code = $req->otp_code; 
     //verify_otp() return true if succeeded, otherwise returns error message
-    $success = $this->UMModel->verify_otp($req->all(),$ss);
+    $success = UM::matchOTP($login_name,$otp_code,$ss->user_class);
     if ($success){
       $res = $this->UMModel->setPassword($req->all(),$ss);
       return JDV::raw($res);
@@ -1082,7 +1088,7 @@ function getActiveTrips(Request $req){
   //Reset password. In case of Forget password
   //@d = {'phone_number','otp_code','password'};
   function resetPassword_driver(Request $request){
-    $user_class = "driver";
+    $user_class = 'driver';
     $login_name = $request->login_name?$request->login_name:$request->phone_number;
     //if no login_name supplied => use "phone_number" as login name
     //if(!$login_name) $login_name = $request->phone_number;
@@ -1095,7 +1101,7 @@ function getActiveTrips(Request $req){
   //Reset password. In case of Forget password
   //@d = {'phone_number','otp_code','password'};
   function resetPassword_merchant(Request $request){
-    $user_class = "merchant";
+    $user_class = 'merchant';
     $login_name = $request->login_name?$request->login_name:$request->phone_number;
     $otp_code = $request->otp_code;
     $password = $request->password;
@@ -1196,19 +1202,19 @@ function getActiveTrips(Request $req){
      
     //Check if (phone_number,otp_code) is exists in table um_users (used in forget password case)
     function matchOTP_driver(Request $request){
-      $user_class ="driver";
-      $login_name = $request->phone_number;
+      $user_class ='driver';
+      $login_name = $request->login_name ?? $request->phone_number;
       $otp_code = $request->otp_code;
       $r = UM::matchOTP($login_name,$otp_code,$user_class);
-      return api_response($r?'true':'false');
+      return JDV::result($r?'true':'false');
     }
 
     function matchOTP_merchant(Request $request){
-      $user_class = "merchant";
-      $login_name = $request->phone_number;
+      $user_class = 'merchant';
+      $login_name =  $request->login_name ?? $request->phone_number;
       $otp_code = $request->otp_code;
       $r = $this->UMModel->matchOTP($login_name,$otp_code,$user_class);
-      return api_response($r);
+      return JDV::result($r);
     }
 
     //Send OTP to phone when forgeting password (Driver mobile)

@@ -726,7 +726,7 @@ static function defaultImage($branch_id){
               self::setDefaultWarehouse($ss,$driver_id,$default_warehouse_id);
            }else{
               //Change user's full_name in table um_users accordingly
-              \App\Models\UM::updateUserByOfficialId($driver_id,['full_name'=>$inputs['name']]);
+              UM::updateUserByOfficialId($driver_id,['full_name'=>$inputs['name']]);
            } 
         }      
        return DV::success(['driver_id'=>$driver_id]);  
@@ -1321,7 +1321,7 @@ function getUnpaidPackages($arr = [], $id = null, $ss = null)
          
          foreach($rows as $row){
            $row->image_url = '';
-           $row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id','driver');
+           $row->mobile_login = UM::getAccountInfo($row->id,'official_id','driver');
            if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($row->branch_id,'driver','image').$row->photo_file_name;
            unset($row->photo_file_name);
            if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
@@ -1562,7 +1562,7 @@ function getUnpaidPackages($arr = [], $id = null, $ss = null)
         if ($this->driverExists($ss,$name,$driver_id)) return DV::error('It seems this name is already in use by another driver');
          
         //Check if driver changed his phoner number
-           $dr = self::getDriverProps($driver_id,["phone_number"]);
+           $dr = self::getDriverProps($driver_id,['phone_number']);
            $org_phone_number =null;
            if($dr) $org_phone_number  = $dr->phone_number;
 
@@ -1608,9 +1608,7 @@ function getUnpaidPackages($arr = [], $id = null, $ss = null)
 
   function getDriverProps($id,$props){
     $cols = implode(',',$props);
-    $rows = DB::table('driver')->where('id',$id)->selectRaw($cols)->limit(1)->get();
-    foreach($rows as $row) return $row;
-    return null;
+    return DB::table('driver')->where('id',$id)->selectRaw($cols)->take(1)->first();
   }
  
   function getTermsAndConditions($d){
