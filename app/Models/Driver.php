@@ -948,6 +948,7 @@ function getUnpaidPackages($arr = [], $id = null, $ss = null)
     $d = (object)$arr;
 
     // Extract search parameters
+    $trx_id = $d->trx_id;
     $search_value = $d->search_value ?? null;
     $driver_id = ($id > 0) ? $id : ($d->driver_id ?? null);
 
@@ -966,25 +967,27 @@ function getUnpaidPackages($arr = [], $id = null, $ss = null)
 
     $str_driver = ($driver_id && $driver_id > 0) 
                   ? "d.id = $driver_id" 
-                  : '1=1';
-    $cols = 'p.id,p.qr_code as barcode,d.name as driver_name,p.receiver_address,formatTime(p.arrival_time) AS arrival_date,formatTime(p.delivery_time) as finish_date,p.delivery_type,p.receiver_phone,p.cod,p.cod_fee,p.price,p.zone_code,p.zone_name,p.sender_name,p.sender_phone,p.forwarding_cost,p.df_payer,p.zone_code,p.driver_total,p.delivery_fee,p.base_fee,p.cod_changed,p.status_id,CASE p.status_id WHEN 8 THEN \'Success\' WHEN 9 THEN \'Failed\' WHEN 11 THEN \'Returned\' END AS status';
-
+                  : '1=1';             
+    $cols = 'p.id, CASE IFNULL(p.driver_trx_id,\'\') WHEN \'\' THEN \'\' ELSE HEX(p.driver_trx_id) END AS driver_trx_id,p.driver_pmt_status_id,p.qr_code as barcode,d.name as driver_name,p.receiver_address,formatTime(p.arrival_time) AS arrival_date,formatTime(p.delivery_time) as finish_date,p.delivery_type,p.receiver_phone,p.cod,p.cod_fee,p.price,p.zone_code,p.zone_name,p.sender_name,p.sender_phone,p.forwarding_cost,p.df_payer,p.zone_code,p.driver_total,p.delivery_fee,p.base_fee,p.cod_changed,p.status_id,CASE p.status_id WHEN 8 THEN \'Success\' WHEN 9 THEN \'Failed\' WHEN 11 THEN \'Returned\' END AS status';
+    $str_trx = $trx_id? 'p.driver_trx_id = UNHEX(\''.$trx_id.'\')' : 'p.driver_trx_id IS NULL';
     $rows = DB::table('package as p')
                ->join('driver as d', 'd.id', '=', 'p.driver_id')
-               ->whereNull('p.driver_pmt_status_id')
+               ->whereRaw('IFNULL(p.driver_pmt_status_id,0) =0')
                ->where('p.status_id', 8)
-               ->whereNull('p.driver_trx_id')
+               ->whereRaw($str_trx)
                ->whereRaw($str_dates)
                ->whereRaw($str_driver)
                ->whereRaw($str_search)
                ->selectRaw($cols)
                ->get();
-     $track_rows = DB::table('package as p')->join('package_tracks as pt','pt.package_id','=','p.id')->join('driver as d','d.id','=','p.driver_id')->where('p.branch_id',$branch_id)->whereRaw($str_dates)->where('action_name','change_cod')->whereRaw($str_driver)->selectRaw('pt.package_id,pt.description')->get();          
+     $track_rows = DB::table('package as p')->join('package_tracks as pt','pt.package_id','=','p.id')->join('driver as d','d.id','=','p.driver_id')->where('p.branch_id',$branch_id)->whereRaw($str_dates)->where('action_name','change_cod')->whereRaw($str_driver)->selectRaw('pt.package_id,pt.description')->orderByRaw('pt.id DESC')->get();          
      foreach($rows as $row){
        $row->cod_notes = null;
        if($row->cod_changed ==1){
-          $row->cod_notes = self::getCODNotes($track_rows,$row->id);  
+          if(!$row->cod_notes) $row->cod_notes ='រៀបដូរ COD';
+          $row->cod_notes = self::getCODNotes($track_rows,$row->id);
        }
+       $row->driver_pmt_status = ($row->driver_trx_id && !$row->driver_pmt_status_id)? 'Pending':($row->driver_pmt_status_id ==1? 'Paid':'Unpaid');
      }
     // Currency and exchange rate information
     $exchange_rate = GeneralSettings::getExchangeRate(date('Y-m-d'));

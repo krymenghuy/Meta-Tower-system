@@ -107,15 +107,8 @@ class DeliveryTrip //extends Model
             ->take(1)
             ->first();
     }
-    
-
-    function getComboItems_delivery_status($d){
-        $ss = UM::getUserInfoByToken($d);
-        if ($ss->status_code !==200) return $ss; //user not authenticated
-         //need permission to do this task    
-        $rows =DB::table('delivery_statuses AS ds')->selectRaw('ds.id,ds.name AS status_name')->orderByRaw('ds.display_order ASC')->get();
-    }
-     //various form options data combo items on Package Trail View or "Delivery Trip" view
+     
+     //Various form options data combo items on Package Trail View or "Delivery Trip" view
      function getForm_options_delivery_trip($ss) {
           $branch_id = $ss->branch_id;
           $data = (object)[];
@@ -402,7 +395,7 @@ class DeliveryTrip //extends Model
         $str_today = '5=5'; //'DATE(depart_time) =\''.$today.'\'';
         $rows = DB::table('delivery AS d')->where('d.branch_id',$branch_id)->where('d.driver_id',$driver_id)->whereRaw($str_today)->where('d.status_id',$trip_status_id)->selectRaw('d.id AS delivery_id,warehouse_id,fleet_tracking_number,depart_time,package_count')->take(2)->get();
         if(count($rows) > 1){
-           return (object)['status'=>'Error','error_message'=>'អ្នកដឹកម្នាក់នេះមានជើងដឹកច្រើនមិនទាន់បានបញ្ចប់។​ ដូច្នេះមិនអាចទទួលកញ្ចប់ថ្មីបានទេ','trip'=>null]; 
+           return (object)['trip'=>(object)['delivery_id'=>null],'status'=>'Error','error_message'=>'អ្នកដឹកម្នាក់នេះមានជើងដឹកច្រើនមិនទាន់បានបញ្ចប់។​ ដូច្នេះមិនអាចទទួលកញ្ចប់ថ្មីបានទេ','trip'=>null]; 
            \Log::info('Data error: BDelivery::getActiveDeliveryId():61 => Driver '.$driver_id.' has more than one historical trips that are still "on delivery", causing the new package assignment failed by '.$ss->full_name.' at '.getNowTime());
         }else if(isset($rows[0])){
            //\Log::info('use last one trip'); 
@@ -492,10 +485,10 @@ class DeliveryTrip //extends Model
         if (!$branch_id) $branch_id  = $ss->branch_id;
         $m = $this->getActiveDeliveryId($ss,$package->warehouse_id,$new_driver->id);
         if(!$m) return DV::error('Failed to switch driver because Active Trip ID was not found!'); 
-
+        if ($m->status =='Error') return DV::error($m->error_message);
         $x = DB::table('package')->where('qr_code',$package->barcode)->update(array(
            'driver_id'=>$new_driver->id,
-           'delivery_id'=>$m->delivery_id,
+           'delivery_id'=>$m->trip->delivery_id,
            'status_id'=>6,
            'outstanding'=>1
          ));
@@ -599,10 +592,11 @@ class DeliveryTrip //extends Model
  
         $m = $this->getActiveDeliveryId($ss,$request->warehouse_id,$request->new_driver_id);
         if(!$m) return DV::error('Failed to switch driver'); 
+        if($m->status =='Error') return DV::error($m->error_message);
 
         DB::table('package')->where('qr_code',$request->barcode)->update(array(
            'driver_id'=>$request->new_driver_id,
-           'delivery_id'=>$m->delivery_id
+           'delivery_id'=>$m->trip->delivery_id
            //'status_id'=>8
        ));
        
@@ -1039,10 +1033,15 @@ class DeliveryTrip //extends Model
         if (!isset($barcode)) $barcode = isset($d->bar_code)?$d->bar_code:null;
 
         $update_cod_amount =0;
+        $amount = null;
         /** NOTE that  $driver_input_amount is empty when Driver does not change the COD amount */
         $driver_input_amount = isset($d->amount)?$d->amount:null;
-        if(is_numeric($driver_input_amount)) $update_cod_amount =1;
-        $amount = floatval(str_replace(',', '.', $driver_input_amount));
+        if(is_numeric($driver_input_amount)){
+            $update_cod_amount =1;
+            $amount = floatval($driver_input_amount);
+            //$amount = floatval(str_replace(',', '.', $driver_input_amount));
+        }
+       
 
         $photo_data = isset($d->photo_data)?$d->photo_data:null;
         $notes = isset($d->notes)? Sanitizer::sanitize($d->notes):null;
@@ -1091,8 +1090,7 @@ class DeliveryTrip //extends Model
             }
             $inputs['delivery_notes'] = $notes;
         }
-        $update_notes = 'driver driver_name change COD from $'.$p1->driver_total.' to $'.$amount; 
-
+        $update_notes = $diff_amounts? 'driver driver_name change COD from $'.$p1->driver_total.' to $'.$amount : null; 
         if($status_id ==9)
             $inputs['failure_notes'] = $notes;
         else{
@@ -1191,7 +1189,7 @@ class DeliveryTrip //extends Model
         $inputs['failure_notes']=$notes;
         DB::table('package')->where('branch_id',$branch_id)->where('id',$package_id)->update($inputs);
         //keep track of package's update history, espcially updates made by Driver from app
-        if($update_notes){
+        if($update_notes && $diff_amounts){
              $driver_id = $d->driver_id;
              $driver_name = DB::table('driver as d')->where('d.id',$driver_id)->take(1)->value('name');
              $update_notes = str_replace('driver_name',$driver_name,$update_notes); 
@@ -1496,15 +1494,15 @@ class DeliveryTrip //extends Model
             // if (empty($p_status_name)) {
             //     return DV::error("Failed to add package to the trip because package status is not valid");
             // }
-            if(!$delivery_id) return DV::error("The given Delivery Trip ID is empty or invalid"); 
+            if(!$delivery_id) return DV::error('The given Delivery Trip ID is empty or invalid'); 
             if (!$p_status_id) $p_status_id =6;
             //begin:: get info about the package
                 $rows = DB::table('package AS p')->where('branch_id',$branch_id)->where('qr_code',$barcode)->selectRaw('p.branch_id,p.warehouse_id,p.id,p.qr_code AS barcode,p.status_id,p.outstanding,p.driver_id,p.delivery_id,p.receiver_phone,(SELECT `name` from `driver` WHERE id = p.driver_id LIMIT 1) AS driver_name')->take(1)->get();
                 $current_status_id = null;
                 $pg = null;
                 $pg = isset($rows[0])?$rows[0]:null;
-                if (!$pg) return DV::error("It seems that the provided barcode is not valid");
-                if($pg->delivery_id === $delivery_id) return DV::error("The backage is already in this Delivery Trip");
+                if (!$pg) return DV::error('It seems that the provided barcode is not valid');
+                if($pg->delivery_id === $delivery_id) return DV::error('The backage is already in this Delivery Trip');
             //end:: get info about original package
                  
             $msg =null;
@@ -1512,15 +1510,15 @@ class DeliveryTrip //extends Model
             $prev_delivery_id = $pg->delivery_id;
 
             if ($current_status_id ===8)
-               $msg = "Cannot add this package because it has been already delivered to receiver";
+               $msg = 'Cannot add this package because it has been already delivered to receiver';
             else if ($current_status_id ===11) 
-               $msg = "Failed to add because the package already returned to merchant";
+               $msg = 'Failed to add because the package already returned to merchant';
             else if ($current_status_id ===6 && $pg->driver_id > 0)
             {
                 //switch driver for this package: (take pacakge from one driver and give it to another driver)
                 $old_driver = (object)['name'=>$pg->driver_name,'id'=>$pg->driver_id];
-                $new_trip = $this->getTripProps($branch_id,$delivery_id,"d.id,d.driver_id,(SELECT `name` FROM `driver` WHERE id = d.driver_id LIMIT 1) AS driver_name,d.status_id");
-                if($new_trip->status_id ===3) return DV::error("Cannot add package because the trip is finished already");
+                $new_trip = $this->getTripProps($branch_id,$delivery_id,'d.id,d.driver_id,(SELECT `name` FROM `driver` WHERE id = d.driver_id LIMIT 1) AS driver_name,d.status_id');
+                if($new_trip->status_id ===3) return DV::error('Cannot add package because the trip is finished already');
                 $new_driver =(object)['name'=>null,'id'=>$new_trip->driver_id];
                 //$res = $this->requestDriverChange($package,$old_driver,$new_driver);
                 $res = $this->switchDriver($ss,$pg,$old_driver,$new_driver);
@@ -1552,7 +1550,7 @@ class DeliveryTrip //extends Model
             //     return DV::error("The package with barcode `".$barcode."` already exists in the trip");
             // }
 
-            //todo: Check if we have to allow only  "Delivered" status when adding package to existing trip that has been Done already?
+            //todo: Check if we have to allow only  'Delivered' status when adding package to existing trip that has been Done already?
 
             //$package_id = isset($d->package_id)?$d->package_id:0;
             $rows = DB::table('delivery AS d')->where('branch_id',$branch_id)->where('id',$delivery_id)->selectRaw('d.driver_id,d.status_id,d.depart_time')->take(1)->get();
@@ -1566,7 +1564,7 @@ class DeliveryTrip //extends Model
             }
             //todo: Check for depart_time, How long ago before allowing editing the delivery trip data
             
-            if (!$driver_id || $driver_id <=0) return DV::error("Failed to add package to the trip because driver identity is missing"); 
+            if (!$driver_id || $driver_id <=0) return DV::error('Failed to add package to the trip because driver identity is missing'); 
             if ($trip_status_id ===3) return DV::error('Cannot add pacakage because the delivery trip is finished!');
              
             $input_array =[
@@ -1607,12 +1605,12 @@ class DeliveryTrip //extends Model
         $delivery_id = isset($d->delivery_id)?$d->delivery_id:0;
         $show_all_statuses = isset($d->show_all_statuses)?$d->show_all_statuses:null;
         //By default show only pacakges "On delivery" or "Failed"
-        $str_status = "(p.status_id =6 OR p.status_id =9)";
-        if ($show_all_statuses == 1) $str_status ="1=1";
+        $str_status = '(p.status_id =6 OR p.status_id =9)';
+        if ($show_all_statuses == 1) $str_status ='1=1';
 
-        $rows = DB::table('delivery AS d')->join('delivery_statuses AS ds','ds.id','=','d.status_id')->where('d.branch_id',$branch_id)->where('d.id',$delivery_id)->selectRaw("d.fleet_tracking_number,DATE_FORMAT(d.depart_time,'%d %b %Y') AS depart_date,DATE_FORMAT(d.depart_time,'%r') AS depart_time,ds.name AS status, d.package_count,(SELECT name FROM driver WHERE id = d.driver_id LIMIT 1) AS driver_name")->take(1)->get();
+        $rows = DB::table('delivery AS d')->join('delivery_statuses AS ds','ds.id','=','d.status_id')->where('d.branch_id',$branch_id)->where('d.id',$delivery_id)->selectRaw('d.fleet_tracking_number,formatDate(d.depart_time) AS depart_date,DATE_FORMAT(d.depart_time,\'%r\') AS depart_time,ds.name AS status, d.package_count,(SELECT name FROM driver WHERE id = d.driver_id LIMIT 1) AS driver_name')->take(1)->get();
         foreach($rows as $row) {
-            $selectCols ="'$' AS cur, formatDate(p.create_date) AS booking_date, p.delivery_id,p.id AS package_id,p.qr_code AS barcode, p.delivery_type,s.phone_number AS sender_phone, s.name AS sender_name,p.package_name, p.product_type,p.dim_x, p.dim_y, p.dim_h, p.billed_kg, p.price, (CASE p.cod WHEN 1 THEN p.price ELSE 0 END) AS cod_amount, p.cod, p.cod_fee, p.base_fee,p.delivery_fee,p.receiver_name, p.receiver_phone,p.receiver_address, p.zone_code,p.zone_name, IFNULL(p.forwarding_cost,0) AS forwarding_cost,p.delivery_notes,p.failure_notes, IFNULL(p.driver_total,0) AS driver_total,IFNULL(p.sender_total,0) AS sender_total, IFNULL(p.exchange_rate,1) AS exchange_rate,p.status_id, (SELECT ps.name FROM package_statuses AS ps WHERE ps.id =p.status_id LIMIT 1) AS status,p.delivery_notes";
+            $selectCols ='\'$\' AS cur, formatDate(p.create_date) AS booking_date, p.delivery_id,p.id AS package_id,p.qr_code AS barcode, p.delivery_type,s.phone_number AS sender_phone, s.name AS sender_name,p.package_name, p.product_type,p.dim_x, p.dim_y, p.dim_h, p.billed_kg, p.price, (CASE p.cod WHEN 1 THEN p.price ELSE 0 END) AS cod_amount, p.cod, p.cod_fee, p.base_fee,p.delivery_fee,p.receiver_name, p.receiver_phone,p.receiver_address, p.zone_code,p.zone_name, IFNULL(p.forwarding_cost,0) AS forwarding_cost,p.delivery_notes,p.failure_notes, IFNULL(p.driver_total,0) AS driver_total,IFNULL(p.sender_total,0) AS sender_total, IFNULL(p.exchange_rate,1) AS exchange_rate,p.status_id, (SELECT ps.name FROM package_statuses AS ps WHERE ps.id =p.status_id LIMIT 1) AS status,p.delivery_notes';
             $row->packages = DB::table('package AS p')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->where('p.delivery_id',$delivery_id)->whereRaw($str_status)->selectRaw($selectCols)->orderByRaw('s.id')->get();
             return $row;
         }
@@ -1635,7 +1633,7 @@ class DeliveryTrip //extends Model
         $trip_status = 'Done';
         if ($res->on_delivery > 0){
             $trip_status_id = 2;
-            $trip_status="On Delivery";
+            $trip_status='On Delivery';
         } 
 
         return (object)[
@@ -1654,7 +1652,7 @@ class DeliveryTrip //extends Model
         $delivery_id = $id?$id:$this->id;
         $branch_id = $ss->branch_id;
         //$d = (object)$arr;
-        $selectCols ="formatDate(p.create_date) AS booking_date,formatDate(p.arrival_time) AS arrival_time, p.qr_code AS barcode,p.sender_name,p.sender_phone,p.receiver_phone, p.zone_name, p.product_type,(CASE cod WHEN 1 THEN p.price ELSE 0 END) AS cod_amount, p.cod_fee, p.base_fee,p.delivery_fee,IFNULL(p.forwarding_cost,0) AS forwarding_cost,p.delivery_notes,p.failure_notes,(SELECT ps.name FROM package_statuses AS ps WHERE ps.id =p.status_id LIMIT 1) AS status,p.failure_notes,p.delivery_notes";
+        $selectCols ='formatDate(p.create_date) AS booking_date,formatDate(p.arrival_time) AS arrival_time, p.qr_code AS barcode,p.sender_name,p.sender_phone,p.receiver_phone, p.zone_name, p.product_type,(CASE cod WHEN 1 THEN p.price ELSE 0 END) AS cod_amount, p.cod_fee, p.base_fee,p.delivery_fee,IFNULL(p.forwarding_cost,0) AS forwarding_cost,p.delivery_notes,p.failure_notes,(SELECT ps.name FROM package_statuses AS ps WHERE ps.id =p.status_id LIMIT 1) AS status,p.failure_notes,p.delivery_notes';
         return DB::table('package AS p')->where('p.branch_id',$branch_id)->where('p.delivery_id',$delivery_id)->whereRaw("(p.status_id=6 OR p.status_id =9)")->selectRaw($selectCols)->orderByRaw('p.sender_id')->get();          
      }
 
@@ -1680,11 +1678,11 @@ class DeliveryTrip //extends Model
         //if ($driver_id > 0) $str_driver = " AND d.driver_id ='".$driver_id."' ";
         
         //$str_status = null; //" AND p.status_id IN (8,9,10,11)";
-        $trip_header_cols = "d.id as delivery_id,d.driver_id,d.fleet_tracking_number, d.warehouse_id, (SELECT w.name FROM warehouses AS w WHERE w.branch_id =d.branch_id AND w.id = d.warehouse_id LIMIT 1) AS from_warehouse_name, d.vehicle_type,DATE_FORMAT(d.create_date,'%d %b %Y %r') AS booking_date, DATE_FORMAT(d.depart_time,'%d %b %Y') AS depart_date, DATE_FORMAT(d.depart_time,'%r') AS depart_time, (SELECT name FROM delivery_statuses AS ds WHERE ds.id = d.status_id LIMIT 1) AS trip_status, d.package_count,d.delivered_count, d.failed_count";
+        $trip_header_cols = 'd.id as delivery_id,d.driver_id,d.fleet_tracking_number, d.warehouse_id, (SELECT w.name FROM warehouses AS w WHERE w.branch_id =d.branch_id AND w.id = d.warehouse_id LIMIT 1) AS from_warehouse_name, d.vehicle_type,formatTime(d.create_date) AS booking_date, formatDate(d.depart_time) AS depart_date, DATE_FORMAT(d.depart_time,\'%r\') AS depart_time, (SELECT name FROM delivery_statuses AS ds WHERE ds.id = d.status_id LIMIT 1) AS trip_status, d.package_count,d.delivered_count, d.failed_count';
         $h_row = DB::table('delivery AS d')->where('d.branch_id',$branch_id)->where('d.id',$delivery_id)->selectRaw($trip_header_cols)->take(1)->first();
         if($h_row){
-            $selectCols ="p.delivery_id,p.delivery_type,p.receiver_address,p.receiver_phone,p.qr_code AS barcode,s.`name` AS sender_name,s.phone_number AS sender_phone,p.package_name, p.product_type,p.dim_x, p.dim_y, p.dim_h,p.actual_kg,(IFNULL(p.base_fee,0) + IFNULL(p.delivery_fee,0)) AS fees,p.billed_kg,p.price,p.cod, p.cod_fee, p.base_fee,p.delivery_fee, p.zone_code,p.zone_name, IFNULL(p.forwarding_cost,0) AS forwarding_cost,p.delivery_notes,p.failure_notes, IFNULL(p.driver_total,0) AS driver_total,IFNULL(p.sender_total,0) AS sender_total, p.exchange_rate AS exchange_rate,p.status_id, (SELECT ps.name FROM package_statuses AS ps WHERE ps.id =p.status_id LIMIT 1) AS status, DATE_FORMAT(p.arrival_time,'%d %b %Y %r') AS arrival_time,
-            (CASE p.status_id WHEN 9 THEN p.failure_notes WHEN 11 THEN p.failure_notes ELSE p.delivery_notes END) AS remarks,p.agent_notes";
+            $selectCols ='p.delivery_id,p.delivery_type,p.receiver_address,p.receiver_phone,p.qr_code AS barcode,s.`name` AS sender_name,s.phone_number AS sender_phone,p.package_name, p.product_type,p.dim_x, p.dim_y, p.dim_h,p.actual_kg,(IFNULL(p.base_fee,0) + IFNULL(p.delivery_fee,0)) AS fees,p.billed_kg,p.price,p.cod, p.cod_fee, p.base_fee,p.delivery_fee, p.zone_code,p.zone_name, IFNULL(p.forwarding_cost,0) AS forwarding_cost,p.delivery_notes,p.failure_notes, IFNULL(p.driver_total,0) AS driver_total,IFNULL(p.sender_total,0) AS sender_total, p.exchange_rate AS exchange_rate,p.status_id, (SELECT ps.name FROM package_statuses AS ps WHERE ps.id =p.status_id LIMIT 1) AS status, DATE_FORMAT(p.arrival_time,\'%d %b %Y %r\') AS arrival_time,
+            (CASE p.status_id WHEN 9 THEN p.failure_notes WHEN 11 THEN p.failure_notes ELSE p.delivery_notes END) AS remarks,p.agent_notes';
             $h_row->packages = DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->where('p.delivery_id',$h_row->delivery_id)->where('p.status_id',$on_delivery_status_id)->selectRaw($selectCols)->orderByRaw('p.sender_id')->get();          
             return $h_row;
         } 
@@ -1723,7 +1721,7 @@ class DeliveryTrip //extends Model
             //$rows = DB::table('delivery')->where('branch_id',$branch_id)->where('id',$delivery_id)->selectRaw('status_id')->take(1)->get(); 
             //foreach($rows as $row) $trip_status_id = $row->status_id;
             //if ($trip_status_id ==2) {
-                return "មិនអាចលុបជើងដឹកមាបទេ។​ អ្នកអាចដកទំនិញចេញពីជើងដឹកមួយនេះសិនទើបលុបបាន";
+                return 'មិនអាចលុបជើងដឹកមាបទេ។​ អ្នកអាចដកទំនិញចេញពីជើងដឹកមួយនេះសិនទើបលុបបាន';
             //}
         }
         DB::table('package')->where('branch_id',$branch_id)->where('delivery_id',$delivery_id)->update(array('delivery_id'=>null,'status_id'=>5,'outstanding'=>1));

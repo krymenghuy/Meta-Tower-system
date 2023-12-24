@@ -131,14 +131,15 @@ class WebReportController extends Controller{
             $start_date = isset($p->startdate)?$p->startdate:date('d M Y');
             $end_date = isset($p->enddate)?$p->enddate:date('d M Y');
             $driver_id=isset($p->driverid)?$p->driverid:null;
+            $trx_id=isset($p->trxid)?$p->trxid:null;
             $driver = new \App\Models\Driver();
-            $m_data = $driver->getUnpaidPackages(['driver_id'=>$driver_id,'start_date'=>$start_date,'end_date'=>$end_date],$driver_id);
+            $m_data = $driver->getUnpaidPackages(['trx_id'=>$trx_id,'driver_id'=>$driver_id,'start_date'=>$start_date,'end_date'=>$end_date],$driver_id);
 
             $start_date = (bool)strtotime($start_date)? $start_date:date('d M Y');
             $end_date = (bool)strtotime($end_date)? $end_date:date('d M Y');
             $data['data'] =$m_data;
             //  echo json_encode( $items); return;
-            $data['title'] = 'កញ្ចប់មិនទាន់ទូទាត់';
+            $data['title'] =  $trx_id? 'កញ្ចប់រង់ចាំការអនុម័ត':'កញ្ចប់មិនទាន់ទូទាត់';
             if($driver_id > 0) $driver_name = DB::table('driver as d')->where('id',$driver_id)->take(1)->value('name');
             if(!$driver_name) $driver_name ='Unknown Driver';
             $data['subtitle'] =  'អ្នកដឹក <b>'.$driver_name.'</b> : ចាប់ពី '.date('d M Y',strtotime($start_date))." ដល់ ".date('d M Y',strtotime($end_date));
