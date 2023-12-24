@@ -215,13 +215,13 @@ class DeliveryTripController extends Controller
   }
     
    
-    function getComboItems_delivery_status(Request $request){
-      $r = $this->tripModel->getComboItems_delivery_status($request);
-      if($r =='#350') 
-        return makeJsonResponse($r,350); // user not authenticated
-      else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-      return makeJsonResponse($r);
-  }
+  //   function getComboItems_delivery_status(Request $request){
+  //     $r = $this->tripModel->getComboItems_delivery_status($request);
+  //     if($r =='#350') 
+  //       return makeJsonResponse($r,350); // user not authenticated
+  //     else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
+  //     return makeJsonResponse($r);
+  // }
   
   function getPackageInfoByBarcode(Request $request){
     $r = $this->tripModel->getPackageInfoByBarcode($request);

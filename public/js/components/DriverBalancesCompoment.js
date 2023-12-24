@@ -63,10 +63,11 @@ var DriverBalancesCompoment = new (function () {
             title: "Package Count",
             className: "package-count",
             data: (data, index, tr) => {
+                const cod_change_count = data.cod_change_count> 0? [`<span class="d-block p-1 text-danger">(`,data.cod_change_count,` COD changes)</span>`].join('') : ``;
                 return [
                     '<span class="package-count">',
                     data.package_count,
-                    "</span> pcs",
+                    "</span> pcs",cod_change_count
                 ].join("");
             },
         },
@@ -168,6 +169,10 @@ var DriverBalancesCompoment = new (function () {
                     ""
                 );
                 return d.items;
+            },
+            rowCreated:(data,index,tr)=>{
+                 //tr.dataset.trxid = (data.driver_trx_id || '').toLowerCase() =='null'? '' : data.driver_trx_id;
+                 if(data.driver_trx_id)  tr.dataset.trxid = data.driver_trx_id;
             },
             apiCluster: main_view.apiCluster,
             tableClass: "table header-uppercase",
@@ -296,11 +301,14 @@ var DriverBalancesCompoment = new (function () {
             btn = VSUtil.getElementByClass(e.target, "lnk-view-packages");
             if (btn) {
                 let finish_date = null;
+                const tr = btn.closest('tr');
+                let trx_id = null;
                 if (mThis.view_name === "date") {
-                    finish_date = btn
-                        .closest("tr")
-                        .querySelector("td.finish_date")
-                        .querySelector("span.finish_date").textContent;
+                    finish_date = '';
+                    if(tr){
+                        trx_id = tr.dataset.trxid;
+                        finish_date = tr.querySelector("td.finish_date").querySelector("span.finish_date").textContent;
+                    }
                 }
                 let p = {
                     warehouse_id: 1 /** default static warehouse 1*/,
@@ -312,6 +320,7 @@ var DriverBalancesCompoment = new (function () {
                         ? finish_date
                         : mThis.elFilter_endDate.val(),
                     driver_name: null,
+                    trx_id:trx_id
                 };
                 let params = [
                     "rtype=dr_unpaid_packages&wid=",
@@ -325,6 +334,8 @@ var DriverBalancesCompoment = new (function () {
                     "&driverpmtstatusid=0",
                     "&drivername=",
                     p.driver_name,
+                    "&trxid=",
+                    p.trx_id
                 ].join("");
                 pdfReport.getEncryptData(encodeURI(params), (d) => {
                     window.open(

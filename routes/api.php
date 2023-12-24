@@ -260,7 +260,7 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
 
         Route::post('getComboItems_package_status', [PackageController::class, 'getComboItems_package_status']);
         Route::post('getTripInfo', [DeliveryTripController::class, 'getTripInfo']);
-        Route::post('getComboItems_delivery_status', [DeliveryTripController::class, 'getComboItems_delivery_status']);
+        //Route::post('getComboItems_delivery_status', [GeneralSettingsController::class, 'getComboItems_delivery_status']);
         Route::post('getOrderDetails', [PackageController::class, 'getOrderDetails']);
         Route::post('performPickup', [PackageController::class, 'performPickup']);
         Route::post('getSenderPromotionInfo', [PackageController::class, 'getSenderPromotionInfo']);
