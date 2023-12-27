@@ -5,7 +5,7 @@ namespace App\Models;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use Localization;
-
+use Illuminate\Support\Facades\Log;
 //DV is the Data Valiator class
 class DV
 {
@@ -81,16 +81,16 @@ class DV
        if (!$lang) $lang = Session('lang','en');
        switch($status_code){
         case 401:{
-            $error_message = $error_message?$error_message:"Authentication failed";
+            $error_message = $error_message ?? 'Authentication failed';
             return (object)['status'=>'Error','status_code'=>401,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result];
         }
         //error:402 => Expired token
         case 402:{
-            $error_message = $error_message?$error_message:"Token Expired";
+            $error_message = $error_message ?? 'Token Expired';
             return (object)['status'=>'Error','status_code'=>402,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result];
         }
         case 403:{
-            $err_message = $error_message?$err_message:"Permission required";
+            $err_message = $error_message ?? 'Permission required';
             return (object)['status'=>'Error','status_code'=>403,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result];
         }
         default:
@@ -103,13 +103,16 @@ class DV
     }
 
     //return error object. default status code is 405 for Data Validation error;
-    static function error($err_message=null,$lang ='en',$status_code=405,$err_code=null,$createLogFile=false){
-        $lang = Session('lang','en');
-        if(!$status_code) $status_code=0;
-        if($status_code===200) $status_code =405;// Status_code cannot be 200 for error
-        $err_message=$err_message?$err_message:"The data input is not correct!";
-        return (object)['error_message'=>Localization::translate($lang,$err_message,'validation'),'status'=>'Error','status_code'=>$status_code,"error_code"=>$err_code];
-        //if $createLogFile ==true then todo: create log file to store error message
+    static function error($err_message=null,$lang ='en',$status_code=405,$err_code=null,$log=false){
+        $lang = $lang ?? Session::get('lang','en');
+        $def_langSection = 'validation';
+        $err_message = $err_message? Localization::translate($lang,$err_message,$def_langSection):'There was an error but no error message provided by developer';
+        $response = (object)['status_code'=>$status_code,'error_code'=>$err_code,'error_message'=>$err_message];
+        if(!$status_code) $status_code = 405;
+        else if($status_code == 200) $status_code =405;// Status_code cannot be 200 for error
+        $err_message = $err_message ?? '';
+        if($log) Log::info('Caught Error: '.$err_message);
+        return $response;
     }
 
     // //$return_type = {'text','object','boolean','bool'}

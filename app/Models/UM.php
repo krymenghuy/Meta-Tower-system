@@ -615,7 +615,6 @@ class UM //extends Model
 
             $str_search = '';
             if ($search_value) {
-                $skip_rows=0;
               $search_value = escape_like_str($search_value);
               if ($search_value) {
                 $str_search = " AND u.official_code ='$search_value' OR u.login_name LIKE '%" . $search_value . "%' OR u.full_name LIKE '%" . $search_value . "%' OR u.phone_number = '$search_value'";
@@ -861,46 +860,7 @@ class UM //extends Model
       }
       return null;
     }
-
-    //getUserExtendedInfo() return object as person_info ('name','emp_code' or 'student_code','phone_number','email',etc).
-    //if $official_id <=0 it returns NULL, meaning that the user has no extended details
-    //if $official_id > 0 and there is no matching person profile or no matching employee's profile => it returns '#350', meaning Authentication failed
-    //depending on switch statement code specified here, getUserExtendedInfo()() may returns NULL for some $user_class such as "admin"
-    static function getUserExtendedInfo($user_class,$official_id=0){
-        if ($official_id<=0) return null;
-        $user_class = strtolower($user_class);
-        switch($user_class){
-              case 'borrower':{
-                $rows = DB::table('persons AS p')->where('p.branch_id',$branch_id)->where('p.id',$official_id)->selectRaw("'$user_id' AS user_id, '$login_name' AS login_name,p.id,p.n_id, CONCAT(p.last_name,' ',p.first_name) AS name ,p.phone_number,p.email")->limit(1)->get();
-                foreach($rows as $row) return $row;
-                return '#350';
-                break;
-              }
-              case 'lender':{
-                $rows = DB::table('persons AS p')->where('p.branch_id',$branch_id)->where('p.id',$official_id)->selectRaw("'$user_id' AS user_id, '$login_name' AS login_name,p.id,p.n_id, CONCAT(p.last_name,' ',p.first_name) AS name ,p.phone_number,p.email")->limit(1)->get();
-                foreach($rows as $row) return $row;
-                return '#350';
-                break;
-              }
-              case 'investor':{
-                $rows = DB::table('persons AS p')->where('p.branch_id',$branch_id)->where('p.id',$official_id)->selectRaw("'$user_id' AS user_id, '$login_name' AS login_name,p.id,p.n_id, CONCAT(p.last_name,' ',p.first_name) AS name ,p.phone_number,p.email")->limit(1)->get();
-                foreach($rows as $row) return $row;
-                return '#350';
-                break;
-              }
-              case 'admin':{
-                //admin = "back end users, who may be classififed in different groups. Each group has different permisisons level"
-                return null;
-                break;
-              }
-              default:{
-                return null;
-                break;
-              }
-        }
-
-    }
-
+ 
     static function getUserInfo_quick($user_id, $cols)
     {
         $key = 'userinfo_'.$user_id;
@@ -908,7 +868,7 @@ class UM //extends Model
         if(!$this_user){
             $this_user = DB::table('um_users AS u')->where('id', $user_id)->selectRaw($cols)->take(1)->first();
             /** 60 x 5 = 300 => use 5 minutes cache for this user */
-            cache::put($key,$this_user,300);
+            cache::put($key,$this_user,120);
         }
         return $this_user;
     }
@@ -940,7 +900,7 @@ class UM //extends Model
       if (!isset($decoded->user_id)) $decoded->user_id = $decoded->id;
 
         //#begin:: Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
-        $decoded->status = 'active';
+        $decoded->status = 'inactive';
         $row = self::getUserInfo_quick($decoded->user_id, 'is_locked,status,lang,is_system_admin');
         if ($row) {
           $decoded->lang = $row->lang;
@@ -953,8 +913,14 @@ class UM //extends Model
         $ret = (object)['status_code' => 200, 'status' => 'OK'];
 
         if (!self::allowed($prn_code,null,$decoded->user_id)) {
-          if (!$prn_error_message) $prn_error_message = 'Permission ' . $prn_code . ' is required!';
-          return DV::error($prn_error_message, $def_lang);
+          $prn_error_message = 'Permission ' . $prn_code . ' is required!';
+            try{
+              DV::error($prn_error_message, $def_lang,402);
+            }catch(\throwable $e){
+              \Log::info($e->getMessage());
+              DV::error($e->getMessage(), $def_lang);
+            }
+     
         }
         foreach ((array)$decoded as $prop => $value) $ret->{$prop} = $value;
         return $ret;
@@ -967,7 +933,7 @@ class UM //extends Model
 
         if (!self::allowed($prn_code,null)) {
           if (!$prn_error_message) $prn_error_message = 'Permission ' . $prn_code . ' is required!';
-          return DV::error($prn_error_message, $def_lang);
+          return DV::error($prn_error_message, $def_lang,402);
         }
 
         //Obtain $user_id, $official_id from table "um_users"
@@ -986,27 +952,7 @@ class UM //extends Model
         else return DV::error('User authentication failed', null, 401);
       }
     }
-
-  // //getUserInfo() returns "id, previlege_type, user_class,is_locked,status"
-  // function getUserInfo($d){
-  //         $ss = self::getUserInfoByToken($d,-1);
-  //         if($ss->status_code !=200) return $ss; //user not authenticated
-  //         //$branch_id = $ss->branch_id;
-  //         $id_or_name = $d->id_or_name;
-  //         return $this->getUserInfo1($id_or_name);
-  // }
-
-    // function getUserInfo1($id_or_name){
-    //     $id_or_name = Sanitizer::sanitize($id_or_name);
-    //     $rows = [];
-    //     if ($id_or_name> 0)
-    //       $rows = DB::table('um_users AS u')->where('id',$id_or_name)->selectRaw("u.id, u.previlege_type, u.user_class, u.is_locked,u.status")->limit(1)->get();
-    //     else
-    //      $rows = DB::table('um_users AS u')->where('u.login_name',$id_or_name)->selectRaw("u.id, u.previlege_type, u.user_class, u.is_locked,u.status")->limit(1)->get();
-    //    foreach($rows as $row) return $row;
-    //    return null;
-    // }
-
+ 
     function deleteUser($id){
           //$branch_id = $ss->branch_id;
           //For one Application or one system, => There is one in-app Admin user denoted by his "previlege_type =Admin "
@@ -1022,7 +968,6 @@ class UM //extends Model
 
       function setUserStatus($status_code, $user_id,$updateProfile = true,$ss = null)
       {
-        //$ss = $ss?$ss:$this->user_info;
         $branch_id = $ss ? $ss->branch_id : null;
         $str_branch = "1=1";
         if ($branch_id > 0) $str_branch = "branch_id=$branch_id";
@@ -1246,7 +1191,7 @@ class UM //extends Model
         function changePassword($d){
           $ss = self::getUserInfoByToken($d,-1);
           if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = Sanitizer::sanitize($ss->branch_id);
+          //$branch_id = Sanitizer::sanitize($ss->branch_id);
           $lang = $ss->lang;
 
           $login_name = Sanitizer::sanitize($d->login_name);
@@ -1278,9 +1223,6 @@ class UM //extends Model
       //sendOTP() | sendPhoneOTP()
       function sendOTPCode_phone($arr,$ss=null){
         $branch_id = Session::get('branch_id',1);
-        //$ss = self::getUserInfoByToken($d,-1);
-        //if($ss->status_code !=200) return $ss; //user not authenticated
-        //$branch_id = Sanitizer::sanitize($ss->branch_id);
         $d = (object)$arr;
         $phone_number = isset($d->login_name)?$d->login_name: (isset($d->phone_number)? $d->phone_number:null);
         if(!$phone_number) return DV::error('Phone number is not provided yet');
@@ -1694,7 +1636,7 @@ class UM //extends Model
    {
         if (!$user_id) $user_id = Session::get('user_id');
         if(!$user_id) return false;
-        if (self::isSystemAdmin($user_id)) return true;
+        //if (self::isSystemAdmin($user_id)) return true;
 
         if ($module_id){
         if(!self::access_mod($module_id,$user_id)) return false;
@@ -1720,7 +1662,7 @@ class UM //extends Model
       function accessibleModule($d) {
         $ss = self::getUserInfoByToken($d,-1);
         if($ss->status_code !=200) return $ss; //user not authenticated
-        $branch_id = Sanitizer::sanitize($ss->branch_id);
+        //$branch_id = Sanitizer::sanitize($ss->branch_id);
         $ref_code = Sanitizer::sanitize($d->ref_code);
         $user_id = Sanitizer::sanitize($ss->user_id);
 
@@ -2005,16 +1947,14 @@ class UM //extends Model
   {
     if (!$user_id) $user_id = $ss ? $ss->user_id : null;
     if (!$user_id) return DV::error('User ID not valid');
-    $assign_msg = "User is already assigned";
     $success = 0;
     $user_prn_id = DB::table('um_user_permissions')->where('user_id', $user_id)->where('permission_id', $prn_id)->take(1)->value('id');
     if (!$user_prn_id) {
       $inputs = ['user_id' => $user_id, 'permission_id' => $prn_id, 'role_id' => null, 'start_date' => getNowTime()];
       $user_prn_id = saveData($ss, 'um_user_permissions', ['id' => null], $inputs, [], 0, false);
-      $assign_msg = $user_id == $ss->user_id? ' Self assigned':'Applied by '.$ss->full_name;
       $success=1;
     }
-    return DV::depends($success, $assign_msg, $assign_msg);
+    return DV::depends($success, null, 'Failed assign permission '.$prn_id);
   }
 
   function removeUserPermission($prn_id, $user_id = null, $ss = null)

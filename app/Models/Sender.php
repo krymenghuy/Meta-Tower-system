@@ -1033,7 +1033,11 @@ class Sender //extends Model
     $search_value = isset($d->search_value)?$d->search_value:null;
     $sales_agent_id = isset($d->sales_agent_id)?$d->sales_agent_id:-1;
     $str_agent = '11=11';
-    if ($sales_agent_id > 0 || $sales_agent_id <-1) $str_agent = 's.sales_agent_id ='.$sales_agent_id; 
+    /** $sales_agent_id = -1 means "To query merchants who are not referred by any sales agent " 
+     *  $sales_agent_id = null or zero => means query merchants either refered by agent or no referrer
+    */
+    if ($sales_agent_id ==-1) $str_agent = 's.sales_agent_id IS NULL';
+    else if ($sales_agent_id > 0) $str_agent = 's.sales_agent_id ='.$sales_agent_id; 
     //$str_sender_type = null;
     $str_business_type ='1=1';
     $str_status ='3=3'; // Active, Inactive
@@ -1155,8 +1159,9 @@ class Sender //extends Model
         if($id>0) $sender_details = self::details($id,$ss);
         $data= (object)[];
         $data->sender = $sender_details;
+        $data->branches = [(object)['id'=>1,'branch_name'=>'Head Quarter']];
         $data->sender_types = DB::table('sender_type')->where('branch_id',$branch_id)->selectRaw('id,name AS sender_type')->get();
-        $data->business_types = DB::table('sender_business_types')->selectRaw('business_type')->get();
+        $data->business_types = DB::table('sender_business_types')->selectRaw('business_type AS code,business_type')->get();
         $data->sender_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name AS status_name')->get();
         $data->sales_agents = DB::table('sales_agents AS sa')->where('branch_id',$branch_id)->selectRaw('sa.id,sa.name AS agent_name')->get();
         $data->price_list = DB::table('price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name')->get();

@@ -1,9 +1,6 @@
 <?php
 
 namespace App\Models;
-
-//use Illuminate\Database\Eloquent\Factories\HasFactory;
-//use Illuminate\Database\Eloquent\Model;
 use Localization;
 use Session;
 
@@ -46,36 +43,15 @@ class JDV //extends Model
        if (!$lang) $lang = Session('lang','en');
        if (is_object($status_code)) $status_code = $status_code->status_code;
        $error_message = match($status_code){
-          401 => $error_message? $error_message:"Authentication failed",
-          402 => $error_message?$error_message:"Token Expired",
-          403 => $error_message?$err_message:"Permission required",
+          401 => $error_message ?? 'Authentication failed',
+          402 => $error_message ?? 'Token Expired',
+          403 => $error_message ?? 'Permission required',
           default => function(){
             $status_code =200;
             $error_message="";
           }
        };
        return makeJsonResponse ((object)['status'=>'Error','status_code'=>$status_code,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result]);
-       
-      //  switch($status_code){
-      //           case 401:{
-      //               $error_message = $error_message?$error_message:"Authentication failed";
-      //               return makeJsonResponse((object)['status'=>'Error','status_code'=>401,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result]);
-      //           }
-      //           case 402:{
-      //               $error_message = $error_message?$error_message:"Token Expired";
-      //               return makeJsonResponse((object)['status'=>'Error','status_code'=>402,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result]);
-      //           }
-      //           case 403:{
-      //               $err_message = $error_message?$err_message:"Permission required";
-      //               return makeJsonResponse ((object)['status'=>'Error','status_code'=>403,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result]);
-      //           } 
-      //           default:
-      //           {
-      //               return makeJsonResponse ((object)['status'=>'OK','status_code'=>200,'data'=>$def_result]);
-      //           }
-
-      //  }
-
     }
  
     //return Authentication error, with status_code =401
@@ -87,27 +63,18 @@ class JDV //extends Model
     }
 
     //return error object. default status code is 405 for Data Validation error;
-    static function error($err_message=null,$lang=null,$status_code=405,$err_code=null,$createLogFile=false){
-        if (!$lang) $lang = Session::get('lang','en');
-
-        if(!$status_code) $status_code=0;
-        if($status_code === 200) $status_code =405;// Status_code cannot be 200 for error
-        $err_message=$err_message?$err_message:"There was an error but error message was not supplied by the developer";
-        $langSection ='validation';
-        return makeJsonResponse ((object)['error_message'=>Localization::translate($lang,$err_message,$langSection),'status'=>'Error','status_code'=>$status_code,"error_code"=>$err_code]); 
-        //if $createLogFile ==true then todo: create log file to store error message
+    static function error($err_message=null,$lang=null,$status_code=405,$err_code=null,$log=false){
+      $def_langSection = 'validation';
+      $lang = $lang ?? Session::get('lang','en');
+      $err_message = $err_message? Localization::translate($lang,$err_message,$def_langSection) : 'There was an error but no error message provided by developer';
+      $response = (object)['status_code'=>$status_code,'error_message'=>$err_message];
+      if(!$status_code) $status_code = 405;
+      else if($status_code == 200) $status_code =405;// Status_code cannot be 200 for error
+      if($log) Log::info('JDV => Caught Error: '.$err_message);
+      $response =  (object)['error_message'=>$err_message,'status'=>'Error','status_code'=>$status_code,'error_code'=>$err_code];
+      return makeJsonResponse($response);     
     }
-
-    // //$return_type = {'text','object','boolean','bool'}
-    // static function validate($lang='en',$data_type,$data,$return_type='object'){
-    //    if ($data_type ==='phone' || $data_type ==='phone_number') {
-    //         if (str_len($data) > 20) return self::error($lang,'Phone number is too long');
-    //    }else if ($data_type ==='email'){
-    //         if (str_len($data) > 100) return self::error($lang,'email is too long');
-    //    }
-    //     return (object)['status'=>'OK','error_message'=>null];
-    // }
-
+  
     static function success($arrs =[],$status_code=200){
       //default status_code for create, update, delete is "200"
       if(!$arrs) $arrs = [];
