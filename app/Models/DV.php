@@ -99,7 +99,6 @@ class DV
         }
 
        }
-
     }
 
     //return error object. default status code is 405 for Data Validation error;
@@ -107,7 +106,7 @@ class DV
         $lang = $lang ?? Session::get('lang','en');
         $def_langSection = 'validation';
         $err_message = $err_message? Localization::translate($lang,$err_message,$def_langSection):'There was an error but no error message provided by developer';
-        $response = (object)['status_code'=>$status_code,'error_code'=>$err_code,'error_message'=>$err_message];
+        $response = (object)['status'=>'Error','status_code'=>$status_code,'error_code'=>$err_code,'error_message'=>$err_message];
         if(!$status_code) $status_code = 405;
         else if($status_code == 200) $status_code =405;// Status_code cannot be 200 for error
         $err_message = $err_message ?? '';

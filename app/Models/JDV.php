@@ -67,11 +67,10 @@ class JDV //extends Model
       $def_langSection = 'validation';
       $lang = $lang ?? Session::get('lang','en');
       $err_message = $err_message? Localization::translate($lang,$err_message,$def_langSection) : 'There was an error but no error message provided by developer';
-      $response = (object)['status_code'=>$status_code,'error_message'=>$err_message];
+      $response = (object)['status'=>'Error','status_code'=>$status_code,'error_code'=>$err_code,'error_message'=>$err_message];
       if(!$status_code) $status_code = 405;
       else if($status_code == 200) $status_code =405;// Status_code cannot be 200 for error
       if($log) Log::info('JDV => Caught Error: '.$err_message);
-      $response =  (object)['error_message'=>$err_message,'status'=>'Error','status_code'=>$status_code,'error_code'=>$err_code];
       return makeJsonResponse($response);     
     }
   

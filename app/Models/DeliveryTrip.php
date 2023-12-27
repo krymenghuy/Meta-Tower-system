@@ -402,7 +402,7 @@ class DeliveryTrip //extends Model
            return (object)['trip'=>$rows[0],'status'=>'OK']; 
         } 
         
-        $vehicle_type = $this->getVehicleTypeByDriver($branch_id,$driver_id); 
+        $vehicle_type = $this->getVehicleTypeByDriver($ss,$driver_id); 
         $on_delivery_status_id = 2; //On Delivery
         $trip_number = $this->getNextFleetNumber($ss);
      
@@ -494,7 +494,7 @@ class DeliveryTrip //extends Model
          ));
 
          //Update the new trip info (i.e: the trip that we add the package to). Update information such as Package_count, status, etc
-         $tripInfo = $this->updateDeliveryTripData($m->delivery_id,$ss);
+         $tripInfo = $this->updateDeliveryTripData($m->trip->delivery_id,$ss);
           
          //begin:: update previous trip info. Delete the trip if there are no more package
             $prev_trip_deleted = 0;
