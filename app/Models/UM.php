@@ -29,7 +29,7 @@ class UM //extends Model
       'admin'=>['used'=>1,'name'=>'Admin','app_id'=>'to be set in constructor','token_age'=>null],
       'driver'=>['used'=>1,'name'=>'Driver','app_id'=>'to be set in constructor','token_age'=>0],
       'merchant'=>['used'=>1,'name'=>'Merchant','app_id'=>'to be set in constructor','token_age'=>0],
-      'sales_agent'=>['used'=>0,'name'=>'Sales Agent','app_id'=>'to be set in constructor','token_age'=>0]
+      'sales_agent'=>['used'=>1,'name'=>'Sales Agent','app_id'=>'to be set in constructor','token_age'=>0]
     ];
 
     protected static $profile_tables = [
@@ -732,7 +732,11 @@ class UM //extends Model
           if($res->error) return DV::error($res->error);
           $inputs = $res->values;
           $user_id = $res->user_id;
-
+          if ($user_id > 0){
+             if(!self::allowed(112)) return  DV::error('You need permission number ? to update user information::'.'112');
+          }else{
+            if(!self::allowed(100)) return  DV::error('You need permission number ? to update user information::'.'100');
+          }
           $official_id = null;
           $official_code = null;
           /** Ensure no space, no special characters in login_name */
@@ -1636,7 +1640,7 @@ class UM //extends Model
    {
         if (!$user_id) $user_id = Session::get('user_id');
         if(!$user_id) return false;
-        //if (self::isSystemAdmin($user_id)) return true;
+        if (self::isSystemAdmin($user_id)) return true;
 
         if ($module_id){
         if(!self::access_mod($module_id,$user_id)) return false;
@@ -1839,7 +1843,7 @@ class UM //extends Model
   function addModuleToUser($mod_id, $user_id = null, $ss = null)
   {
     if (!$user_id) $user_id = $ss ? $ss->user_id : null;
-    if(!$mod_id) return DV::error('Module not valid');
+    if(!$mod_id) return DV::error('Module ID does not exist');
     if (!$user_id) return DV::error('User ID not found');
     $exists = DB::table('um_users')->where('id',$user_id)->take(1)->value('id');
     if(!$exists) return DV::error('User ID not not valid');
@@ -1854,9 +1858,7 @@ class UM //extends Model
     }
     return DV::depends($success, null, 'Module is aready assigned');
   }
-
-
-
+ 
   function removeUserModule($mod_id, $user_id = null, $ss = null)
   {
     //if(!$user_id) $user_id = $ss? $ss->user_id:null;
@@ -1864,7 +1866,18 @@ class UM //extends Model
     $isModID = DB::table('um_app_modules')->where('id',$mod_id)->take(1)->value('id');
     if(!$isModID) return DV::error('Module does not exists');
     $x = DB::table('um_user_modules')->where('user_id', $user_id)->where('module_id', $mod_id)->delete();
-    return DV::depends($x, null, 'Failed to remove user module');
+
+    /** start:: Remove all user's permissions that belong to this module */ 
+      DB::table('um_user_permissions')
+      ->where('user_id', $user_id)
+      ->whereIn('permission_id', function ($query) use ($mod_id) {
+          $query->select('id')
+                ->from('um_permissions')
+                ->where('module_id', $mod_id);
+      })
+      ->delete();
+       /** end:: Remove all user's permissions that belong to this module */ 
+      return DV::depends($x, null, 'Failed to remove user module');
   }
 
   static function getUserWithModule($rows,$module_id){
@@ -1940,16 +1953,18 @@ class UM //extends Model
         'label' => 'Add',
     ];
   }
-
-
-
+ 
   function addPermissionToUser($prn_id, $user_id = null, $ss = null)
   {
+    if(!self::allowed(105)) return DV::error('You need permission 105 to do this job');
     if (!$user_id) $user_id = $ss ? $ss->user_id : null;
     if (!$user_id) return DV::error('User ID not valid');
     $success = 0;
     $user_prn_id = DB::table('um_user_permissions')->where('user_id', $user_id)->where('permission_id', $prn_id)->take(1)->value('id');
     if (!$user_prn_id) {
+      $prn = DB::table('um_permissions as p')->where('id',$prn_id)->selectRaw('id,module_id')->take(1)->first();
+      if(!$prn) return DV::error('Permission ID ? does not exists::'.$prn_id);
+      self::addModuleToUser($prn->module_id,$user_id,$ss);
       $inputs = ['user_id' => $user_id, 'permission_id' => $prn_id, 'role_id' => null, 'start_date' => getNowTime()];
       $user_prn_id = saveData($ss, 'um_user_permissions', ['id' => null], $inputs, [], 0, false);
       $success=1;

@@ -9,6 +9,7 @@ use App\Models\DV;
 use Sanitizer;
 //use Carbon\Carbon;
 //use App\Models\UM;
+use Illuminate\Support\Facades\Log;
 use DB;
 
 //BDelivery Model is delivery in which Driver is pre-assigned directly from "Package Trail" and once driver is assigned to delivery trip, the Trip status is changed to "On Delivery" until driver update each package's status to be "Failed" or  "Delivered"
@@ -98,20 +99,14 @@ class BDelivery //extends Model
     //assignDriver ahead of time. pre-assignDriver() pre-assign driver | pre assign driver to a package(s)
     //$d = {driver_id,barcode|pacakge_id};
     function b_assignDeliveryDriver($arr,$ss) {
-        //$ss = UM::getUserInfoByToken($d);
         $ss = $ss?$ss:$this->userInfo;
-        //if ($ss->status_code !==200) return $ss; //user not authenticated
         $d = (object)$arr;
-        //$allowable_statuses = ['pending','delayed','failed','delivered','otw','pd']; 
+       
         $branch_id =Sanitizer::sanitize($ss->branch_id);
         $driver_id = isset($d->driver_id)?$d->driver_id:null;
         $warehouse_id = null; //isset($d->warehouse_id)?$d->warehouse_id:null; //optional or not necessary
         $package_id = isset($d->package_id)?$d->package_id:null;
         $barcode  =isset($d->barcode)?$d->barcode:null;
-        //$result = (object)array('status'=>'OK','error_message'=>null);
-        $admin_assigned = (strtolower($ss->user_class) =='driver')? 0:1;
-
-        //if(!isset($d->is_from_mobile)) $d->is_from_mobile = 0;
         $d->is_from_mobile = in_array(strtolower($ss->user_class),['driver']);
         $continue_to_deliver = 0;
 
@@ -124,24 +119,32 @@ class BDelivery //extends Model
         $package = null;
         //if $package_id is not supplied then use the supplied $barcode to get $package_id
         if(!$package_id || $package_id <=0){
-           $row = DB::table('package AS p')->where('p.branch_id',$branch_id)->where('p.qr_code',$barcode)->selectRaw('p.id,p.warehouse_id,p.delivery_id,p.qr_code AS barcode, p.driver_id, status_id,driver_pmt_status_id, sender_pmt_status_id')->take(1)->first();
+           $row = DB::table('package AS p')->where('p.branch_id',$branch_id)->where('p.qr_code',$barcode)->selectRaw('p.id,p.warehouse_id,p.delivery_id,p.qr_code AS barcode, p.receiver_phone,p.driver_id, status_id,driver_pmt_status_id, sender_pmt_status_id')->take(1)->first();
           if($row) {
              $package = $row;
              $package_id = $row->id; 
            }
         }else {
             //if $barcode is not supplied then use the supplied $package_id to get $barcode
-            $row = DB::table('package AS p')->where('p.branch_id',$branch_id)->where('p.id',$package_id)->selectRaw('p.id,p.warehouse_id,p.delivery_id,qr_code AS barcode, driver_id, status_id,driver_pmt_status_id, sender_pmt_status_id,IFNULL(failed_num,0) AS failed_num')->take(1)->first();
+            $row = DB::table('package AS p')->where('p.branch_id',$branch_id)->where('p.id',$package_id)->selectRaw('p.id,p.warehouse_id,p.delivery_id,qr_code AS barcode,receiver_phone, driver_id, status_id,driver_pmt_status_id, sender_pmt_status_id,IFNULL(failed_num,0) AS failed_num')->take(1)->first();
             if($row){
                 $package = $row;
                 $barcode = $row->barcode;
             }
         }
         if(!$package) return DV::error('Package identity such as barcode or package ID is not valid');
+        if(in_array($package->status_id,[8,11])) return DV::error('Cannot assign a driver to the package that is already "delivered" or "returned" to store');
         $warehouse_id = $package->warehouse_id;
         $continue_to_deliver =  ($package->status_id ==9);
+        $action = null;
+        $old_driver_name = null;
+        if($package->driver_id > 0 ){
+          $old_driver_name = DB::table('driver as d')->where('d.id',$package->driver_id)->take(1)->value('name') ?? 'Invalid Driver '.$package->driver_id;
+        }
         //if no driver is supplied => reset the package's status to "Arrived At Warehouse"
         if (!$driver_id) {
+            if (strtolower($ss->user_class) !='driver') if(!UM::allowed(283)) return DV::error('You need permission number ? to remove a driver::'.'283'); 
+            $action ='remove_delivery_driver';
             DB::table('package')->where('branch_id',$branch_id)->where('id',$package_id)->update([
                 'driver_id'=>null,
                 'status_id'=>5,
@@ -160,8 +163,38 @@ class BDelivery //extends Model
                 }
             }
             return DV::success();
-        } 
-        
+        }
+       
+        if (!$package->driver_id && $driver_id > 0) $action ='assign_delivery_driver';
+        else if ($package->driver_id > 0 && $package->status_id == 6 && $driver_id > 0 && $package->driver_id != $driver_id) $action ='change_delivery_driver';
+        else if ($package->driver_id > 0 && $package->status_id ==9 && $driver_id > 0) $action ='reassign_delivery_driver';
+        else if ($package->status_id ==5) $action ='assign_delivery_driver';
+       
+        if(strtolower($ss->user_class) !='driver'){
+            switch($action)
+            {
+               case 'assign_delivery_driver':{
+                   if(!UM::allowed(227)) return DV::error('You need permission number ? to assign driver::'.'227');
+                   break;
+               }
+               case 'reassign_delivery_driver':{
+                   if(!UM::allowed(227)) return DV::error('You need permission number ? to re-assign driver::'.'227');
+                   break;
+               }
+               case 'change_delivery_driver':{
+                   if(!UM::allowed(284)) return DV::error('You need permission number ? to change driver::'.'284');
+                   break;
+               }
+               case 'remove_delivery_driver':{
+                   if(!UM::allowed(283)) return DV::error('You need permission number ? to remove driver::'.'283');
+                   break;
+               }
+               default:{
+                   break;
+               }
+            }
+        }
+         
         //get driver 's name
         $driver =null;
         $rows = DB::table('driver AS d')->where('id',$driver_id)->selectRaw('name,phone_number')->limit(1)->get();
@@ -169,8 +202,7 @@ class BDelivery //extends Model
         if(!$driver) return DV::error('Driver identity is not correct');
 
         $continue_to_deliver = 0;
-        if($package->status_id ==8) return DV::error('Cannot assign driver because the item is already delivered');
-            
+        if($package->status_id ==8) return DV::error('Cannot assign driver because the item is already delivered');   
         else if($package->status_id ==11) DV::error('Cannot assign driver because the item is already returned to vendor');  
         else if($package->status_id ==9) {
              //if previous status is "Failed" and user assign driver to delviery again => so it means "Continue to Deliver" or try delivery again
@@ -189,7 +221,7 @@ class BDelivery //extends Model
         $x = DB::table('package')->where('branch_id',$branch_id)->where('id',$package_id)->update($inputs);
         $trip_status_id=2;
         $this->updateDelivery_package_count($branch_id,$delivery_id,$trip_status_id);
-
+        self::recordTrack_driver($ss,$action,$old_driver_name,$driver->name,$package);   
         //begin::notify to concerned driver
                 $cols = ['receiver_name','receiver_address','p.status_id','status','driver_name','receiver_phone','sender_name','sender_id','sender_phone'];
                 $p = $this->getPackageProps($branch_id,$package_id,$cols,"id");
@@ -231,15 +263,54 @@ class BDelivery //extends Model
 
                 $res = Notifier::notify_mobile($branch_id,$cdata);
        //end::notify to concerned driver
-
-        $des =null;
-        if($admin_assigned)
-           $des = $ss->full_name. ' បានដាក់កញ្ចប់លេខ '.$barcode.' ទៅអោយអ្នកដឹក '.$driver->name. '។​ លេខអ្នកទទួល '.$p->receiver_phone;
-        else 
-           $des = 'អ្នកដឹកឈ្មោះ '.$driver->name.' បានយកកញ្ចប់លេខ '.$barcode.' ដឹកចេញ ទៅអោយភ្ញៀវ '.$p->receiver_phone;
-        Tracker::log((object)['user_class'=>'driver','package_id'=>$package->id,'action_name'=>'change_driver','description'=>$des,'user_comment'=>''],$ss); 
         return DV::success();
       }
+
+    /** Save tracking info for Change driver case, which can be 
+     * - "driver uses mobile app to scan item out for delivery" 
+     * - "Assign a driver to delivery", 
+     * - "Re-assign or change driver",
+     * - "Remove driver from delivery trip" */
+     static function recordTrack_driver($ss,$action_name, $old_driver_name, $new_driver_name, $package){
+        try{
+            $des =null;
+            if(strtolower($ss->user_class) == 'driver'){
+                //Driver uses Mobile App to scan item out for delivery
+                $des = 'អ្នកដឹកឈ្មោះ '.$new_driver_name.' បានយកកញ្ចប់លេខ '.$package->barcode.' ដឹកចេញ ទៅអោយភ្ញៀវ '.$package->receiver_phone;
+            }else{
+                switch($action_name){
+                    case 'assign_delivery_driver':{
+                        $des = $ss->full_name.' assigned driver '.$new_driver_name. '. to deliver package ID '.$package->id.' barcode '.$package->barcode.' receiver phone '.$package->receiver_phone.' at '.date('d M Y h:i'); 
+                        break;
+                    }
+                    case 'reassign_delivery_driver':{
+                        //Admin changes driver by replacing existing driver with a new driver. Reassign = When package was once failed
+                        $des = $ss->full_name.' reassigned driver from '.$old_driver_name.' to new driver '.$new_driver_name. '. Package ID '.$package->id.' barcode '.$package->barcode.' receiver phone '.$package->receiver_phone.' at '.date('d M Y h:i'); 
+                        break;
+                    }
+                    case 'change_driver':{
+                        //Change driver: happens when the package is On Delivery, but Admin changes Driver to a new driver
+                        $des = $ss->full_name.' changed driver from '.$old_driver_name.' to new driver '.$new_driver_name. '. Package ID '.$package->id.' barcode '.$package->barcode.' receiver phone '.$package->receiver_phone.' at '.date('d M Y h:i'); 
+                        break;
+                    }
+                    case 'remove_delivery_driver':{
+                        $des = $ss->full_name.' removed driver '.$old_driver_name. '. from delivery of package ID '.$package->id.' barcode '.$package->barcode.' receiver phone '.$package->receiver_phone.' at '.date('d M Y h:i'); 
+                        break;
+                    }
+                    default:{
+                        $des = null;
+                        break;
+                    }
+                }
+            }
+            if($des) Tracker::log((object)['user_class'=>'driver','package_id'=>$package->id,'action_name'=>$action_name,'description'=>$des,'user_comment'=>''],$ss); 
+            
+        }catch(\Exception $e){
+            Log::error('Failed to track user action to change driver from '.$old_driver_name.' to new driver '.$new_driver_name);
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+        }
+     }
 
      function getPackageProps($branch_id=null,$id=null,$cols=null,$by_col ='id'){
         if(!$id) return null;

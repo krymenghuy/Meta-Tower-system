@@ -155,11 +155,11 @@ class OrderImageController extends Controller
     $file_id = $request->id;
     $res = $this->pickupRequestModel->deleteOrderImage($ss,$file_id);
     if($res->status ==='OK'){
-          //$order_id = $request->order_id;
+          $order_id = $request->order_id || $request->id;
           $start_date =  $request->start_date;
           $end_date =  $request->end_date;
           //if(!$order_id) $order_id = $request->id;
-          $r = $this->pickupRequestModel->getOrderImages($ss,['start_date'=>$start_date,'end_date'=>$end_date,'order_id'=>null]);
+          $r = $this->pickupRequestModel->getOrderImages(['start_date'=>$start_date,'end_date'=>$end_date,'order_id'=>null],$order_id,$ss);
           return api_response($r);
     }
     return JDV::error($res->error_message);
@@ -173,22 +173,8 @@ class OrderImageController extends Controller
         $start_date =  $request->start_date;
         $end_date =  $request->end_date;
         if(!$order_id) $order_id = $request->id;
-        $r = $this->pickupRequestModel->getOrderImages($ss,['start_date'=>$start_date,'end_date'=>$end_date,'order_id'=>$order_id]);
+        $r = $this->pickupRequestModel->getOrderImages(['start_date'=>$start_date,'end_date'=>$end_date,'order_id'=>$order_id],$order_id,$ss);
         return api_response($r);
     }
-
-  // function getOrderImages_driver(Request $request){
-  //   $ss = UM::getUserInfoByToken($request,-1);  
-  //     if ($ss->status_code !==200) return JDV::raw($ss);
-  //     $request->driver_id = $driver->id;
-  //       $request->decrypted =1;
-  //     $order_id = $request->order_id;
-  //     $start_date =  $request->start_date;
-  //     $end_date =  $request->end_date;
-  //     if(!$order_id) $order_id = $request->id;
-  //     $r = $this->pickupRequestModel->getOrderImages($ss,['start_date'=>$start_date,'end_date'=>$end_date,'order_id'=>$order_id]);
-  //   return api_response($r);
-  // }
-
-
+ 
 }

@@ -145,6 +145,7 @@ class Package //extends Model
       $str_zone =" AND (l.zone_codes LIKE '%|".$zone_code."|%') ";
       ////No need to check Expiry date for price list
       //$str_dates = " AND (l.end_date>='".$today."' OR l.never_expires =1)";
+      $billed_kg = floatval($billed_kg)? $billed_kg:0;
       $str_kg = ' AND kg_within(IFNULL(l.start_kg,0),IFNULL(l.end_kg,'.$billed_kg.'),0)=1'; 
       //if ($sender_id > 0) {
          //$table ="sender_price_list AS l"; // |0| is same as |all| for (All Senders) (All Zones)
@@ -515,7 +516,9 @@ class Package //extends Model
        if(!$p) return DV::error("Package identity is not valid");
        if ($p->sender_pmt_status_id ==1) return DV::error('Cannot modify package information because payment has been settled with merchant');
        if($p->driver_pmt_status_id ==1) return DV::error('Cannot modify package information because payment has been settled with driver');
-       
+       if($p->status_id ==8){
+          unset($inputs['receiver_phone'],$inputs['receiver_address'],$inputs['zone_code'],$inputs['sender_id']);
+       }
        //if($p->status_id ==9) $inputs['failure_notes'] = $d->delivery_notes;
 
        $zone = $this->getZoneByCode($ss->branch_id,$d->zone_code);
@@ -1153,165 +1156,134 @@ class Package //extends Model
           return ($data);
       }
 
-      function updateDelivery($data){
-        $ss = UM::getUserInfoByToken($data);
-        if ($ss->status_code !==200) return $ss; //user not authenticated
+    //   function updateDelivery($arr = [], $ss = null){
+    //     $ss = $ss ?? $this->userInfo;
+    //     $d = (object)$arr;
+    //     $delivery_id = isset($d->delivery_id)?$d->delivery_id:0;  
+    //     $branch_id = $ss->branch_id;
+    //       $result = (object)[];
+    //       if(!isset($d->sender_code)) $d->sender_code =null;
+    //       if (!$delivery_id) {
+    //          return DV::error('Trip ID is not valid or empty');
+    //       }
+   
+    //     if (empty($d->zone_code)) return DV::error('Zone code is not correct'); 
          
-
-        $branch_id = $ss->branch_id;
-          $result = (object)[];
-          if(empty($data->sender_code)) $data->sender_code =null;
-          if (empty($data->delivery_id) || !is_numeric($data->delivery_id) ) {
-              $result->error_message ="Delivery identifier is not correct";
-              $result->status ='Error';
-             return ($result);
-          }
-  
-          $delivery_id = $data->delivery_id;
-  
-          if (empty($data->zone_code)) {
-            $result->error_message ="Zone code is not correct";
-            $result->status ='Error';
-             return ($result);
-          } 
-         
-         $driver_id = null; 
-         $d = $this->getDriverInfoByCode($ss,$data->driver_code);
-          //   if($d ==null) {
-          //     $result->error_message ="Driver information is not correct";
-          //     $result->status ='Error';
-          //     return ($result);
-          //   } 
-         if ($d != null) $driver_id = $d->driver_id;
-         $sender = $this->getSenderInfoByCode($data);
+    //      $driver_id = null; 
+    //      $d = $this->getDriverInfoByCode($ss,$d->driver_code);
+    //      if ($d != null) $driver_id = $d->driver_id;
+    //      $sender = $this->getSenderInfoByCode($ss,$d->sender_code);
    
-         if ($sender==null) {
-           $result->error_message ="Sender or Merchant information is not valid";
-           $result->status ='Error';
-           return ($result);
-         }
-         if (empty($data->receiver_phone)) {
-           $result->error_message ="Receiver phone number cannot be empty";
-           $result->status ='Error';
-           return $result;
-         }
+    //      if ($sender==null) return DV::error('Sender or Merchant information is not valid'); 
+    //      if (!isset($d->receiver_phone)) return DV::error('Receiver phone number cannot be empty');
+    //      if (!isset($d->zone_code)) return DV::error('Destination Zone code cannot be empty'); 
    
-         if (empty($data->zone_code)) {
-           $result->error_message ="Destination Zone code cannot be empty";
-           $result->status ='Error';
-           return $result;
-         }
+    //       $d->depart_time = date('Y-m-d',strtotime(isset($d->depart_time)?$d->depart_time:getNowTime()));
+    //       if(!(bool)strtotime($d->depart_time)) $d->depart_time = getNowTime();
+    //       $order_id = null;
+    //       $def_status ='IP';
+    //       DB::table('delivery')->where('branch_id',$branch_id)->where('id',$d->delivery_id)->update(array(
+    //           'depart_time'=>$d->depart_time,
+    //           'delivery_type'=>$d->delivery_type,
+    //           'sender_id'=>$sender->id,
+    //           'order_id'=>$order_id,
+    //           'driver_id'=>$driver_id,
+    //           'destination_zone_code'=>$d->zone_code,
+    //           'receiver_address'=>$d->receiver_address,
+    //           'destination_map_location'=>$d->destination_map_location,
+    //           'receiver_phone'=>$d->receiver_phone,
+    //           'delivery_notes'=>$d->delivery_notes,
+    //           'status'=>$def_status, //{IP,'Delivered','TBD','Partially Delivered','Returned'}
+    //           'package_count'=>0,
+    //           'delivered_count'=>0,
+    //           'create_user'=>$ss->login_name,
+    //           'create_date'=>getNowTime()
    
-          $data->depart_time = date('Y-m-d',strtotime($data->depart_time));
-          if(!(bool)strtotime($data->depart_time)) $data->depart_time = date('Y-m-d');
-          $order_id = null;
-          $def_status ='IP';
-          DB::table('delivery')->where('branch_id',$branch_id)->where('id',$data->delivery_id)->update(array(
-              'depart_time'=>$data->depart_time,
-              'delivery_type'=>$data->delivery_type,
-              'sender_id'=>$sender->id,
-              'order_id'=>$order_id,
-              'driver_id'=>$driver_id,
-              'destination_zone_code'=>$data->zone_code,
-              'receiver_address'=>$data->receiver_address,
-              'destination_map_location'=>$data->destination_map_location,
-              'receiver_phone'=>$data->receiver_phone,
-              'delivery_notes'=>$data->delivery_notes,
-              'status'=>$def_status, //{IP,'Delivered','TBD','Partially Delivered','Returned'}
-              'package_count'=>0,
-              'delivered_count'=>0,
-              'create_user'=>$ss->login_name,
-              'create_date'=>getNowTime()
-   
-          ));
+    //       ));
            
-          //$c = {'collect_pmt','df_payer_type','dimemsion','billed_kg','cubic_meter-size','delivery_fee','price','qr_code'} 
-          if($delivery_id > 0) {
-              $i= 0;
-              $c = null;
-              do{
-                 if(!isset($data->packages[$i])) break;
-                 $c = (object)$data->packages[$i];
+    //       //$c = {'collect_pmt','df_payer_type','dimemsion','billed_kg','cubic_meter-size','delivery_fee','price','qr_code'} 
+    //       if($delivery_id > 0) {
+    //           $i= 0;
+    //           $c = null;
+    //           do{
+    //              if(!isset($d->packages[$i])) break;
+    //              $c = (object)$d->packages[$i];
    
-                 if (!isset($c->package_name)) $c->package_name =$data->receiver_phone;
-                  if (!isset($c->product_type)) $c->product_type =null;
-                  if (!isset($c->dimension)) $c->dimension =null;
-                  if (!isset($c->billed_kg)) $c->billed_kg =0;
-                  if (!isset($c->price)) $c->price =0;
-                  if (!isset($c->qr_code)) $c->qr_code =null;
+    //              if (!isset($c->package_name)) $c->package_name =$d->receiver_phone;
+    //               if (!isset($c->product_type)) $c->product_type =null;
+    //               if (!isset($c->dimension)) $c->dimension =null;
+    //               if (!isset($c->billed_kg)) $c->billed_kg =0;
+    //               if (!isset($c->price)) $c->price =0;
+    //               if (!isset($c->qr_code)) $c->qr_code =null;
    
-                  if (!isset($c->df_payer_type)) $c->df_payer_type ='merchant';
-                  if (!isset($c->delivery_fee)) $c->delivery_fee =0;
-                  if (!isset($c->cubic_meter_size)) $c->cubic_meter_size =0;
-                  if (!isset($c->collect_pmt)) $c->collect_pmt =0;
+    //               if (!isset($c->df_payer_type)) $c->df_payer_type ='merchant';
+    //               if (!isset($c->delivery_fee)) $c->delivery_fee =0;
+    //               if (!isset($c->cubic_meter_size)) $c->cubic_meter_size =0;
+    //               if (!isset($c->collect_pmt)) $c->collect_pmt =0;
    
-                  if(!is_numeric($c->billed_kg)) $c->billed_kg =0;
-                  $def_status ='IP';
+    //               if(!is_numeric($c->billed_kg)) $c->billed_kg =0;
+    //               $def_status ='IP';
   
-                  $qr_code_exists = DB::table('package')->where('branch_id',$branch_id)->where('qr_code',$c->qr_code)->take(1)->exists();  
-                  if ($c->qr_code ==null || !$qr_code_exists) {
+    //               $qr_code_exists = DB::table('package')->where('branch_id',$branch_id)->where('qr_code',$c->qr_code)->take(1)->exists();  
+    //               if ($c->qr_code ==null || !$qr_code_exists) {
   
                      
-                      DB::table('package')->insert(array(
-                          'branch_id'=>$branch_id,
-                          'delivery_id'=>$delivery_id,
-                          'dimension'=>$c->dimension,
-                          'billed_kg'=>$c->billed_kg,
-                          'price'=>$c->price,
-                          'qr_code'=>"0",
-                          'product_type'=>$c->product_type,
-                          //'df_payer_type'=>$c->df_payer_type,
-                          'delivery_fee'=>$c->delivery_fee,
-                          'cubic_meter_size'=>$c->cubic_meter_size,
-                          'status'=>$def_status,
-                          //'receiver_phone'=>$data->receiver_phone,
-                          //'receiver_address'=>$data->receiver_address,
-                          'cod'=>$c->cod,
-                          'create_user'=>$ss->login_name,
-                          'create_date'=>getNowTime()
-                      ));
-                      self::setBarcode(DB::getPdo()->lastInsertId());  
-                  } else {
-                      DB::table('package')->where('branch_id',$branch_id)->where('qr_code',$c->qr_code)->where('delivery_id',$delivery_id)->update(array(
-                          'dimension'=>$c->dimension,
-                          'billed_kg'=>$c->billed_kg,
-                          'price'=>$c->price,
-                          'product_type'=>$c->product_type,
-                          //'df_payer_type'=>$c->df_payer_type,
-                          'delivery_fee'=>$c->delivery_fee,
-                          'cubic_meter_size'=>$c->cubic_meter_size,
-                          'status'=>$def_status,
-                          //'receiver_phone'=>$data->receiver_phone,
-                          //'receiver_address'=>$data->receiver_address,
-                          'cod'=>$c->cod,
-                          'update_user'=>$ss->login_name,
-                          'update_date'=>getNowTime()
-                      ));    
-                  }
+    //                   DB::table('package')->insert(array(
+    //                       'branch_id'=>$branch_id,
+    //                       'delivery_id'=>$delivery_id,
+    //                       'dimension'=>$c->dimension,
+    //                       'billed_kg'=>$c->billed_kg,
+    //                       'price'=>$c->price,
+    //                       'qr_code'=>"0",
+    //                       'product_type'=>$c->product_type,
+    //                       //'df_payer_type'=>$c->df_payer_type,
+    //                       'delivery_fee'=>$c->delivery_fee,
+    //                       'cubic_meter_size'=>$c->cubic_meter_size,
+    //                       'status'=>$def_status,
+    //                       //'receiver_phone'=>$data->receiver_phone,
+    //                       //'receiver_address'=>$data->receiver_address,
+    //                       'cod'=>$c->cod,
+    //                       'create_user'=>$ss->login_name,
+    //                       'create_date'=>getNowTime()
+    //                   ));
+    //                   self::setBarcode(DB::getPdo()->lastInsertId());  
+    //               } else {
+    //                   DB::table('package')->where('branch_id',$branch_id)->where('qr_code',$c->qr_code)->where('delivery_id',$delivery_id)->update(array(
+    //                       'dimension'=>$c->dimension,
+    //                       'billed_kg'=>$c->billed_kg,
+    //                       'price'=>$c->price,
+    //                       'product_type'=>$c->product_type,
+    //                       //'df_payer_type'=>$c->df_payer_type,
+    //                       'delivery_fee'=>$c->delivery_fee,
+    //                       'cubic_meter_size'=>$c->cubic_meter_size,
+    //                       'status'=>$def_status,
+    //                       //'receiver_phone'=>$data->receiver_phone,
+    //                       //'receiver_address'=>$data->receiver_address,
+    //                       'cod'=>$c->cod,
+    //                       'update_user'=>$ss->login_name,
+    //                       'update_date'=>getNowTime()
+    //                   ));    
+    //               }
   
-                  $i++;
-              }while($c);
+    //               $i++;
+    //           }while($c);
    
-              //begin:: update delviery.package_count, delviered_count
-               $cnt = $this->getPackageCountByStatus($ss,$delivery_id,null);
-               $delivered_status_id =8;
-               $failed_status_id =9;
-               $delivered_cnt = $this->getPackageCountByStatus($ss,$delivery_id,$delivered_status_id);
-               $failed_cnt = $this->getPackageCountByStatus($ss,$delivery_id,$failed_status_id);
-               DB::table('delivery')->where('branch_id',$branch_id)->where('id',$delivery_id)->update(array(
-                   'delivered_count'=>$delivered_cnt,
-                   'failed_count'=>$failed_cnt,
-                   'package_count'=>$cnt
-               ));
-             //end:: update delviery.package_count, delviered_count
-          }
-          $result->status ='OK';
-          $result->error_message =null;
-          $result->delivery_id = $delivery_id;
-          return ($result);
-       }
-
-
+    //           //begin:: update delviery.package_count, delviered_count
+    //            $cnt = $this->getPackageCountByStatus($ss,$delivery_id,null);
+    //            $delivered_status_id =8;
+    //            $failed_status_id =9;
+    //            $delivered_cnt = $this->getPackageCountByStatus($ss,$delivery_id,$delivered_status_id);
+    //            $failed_cnt = $this->getPackageCountByStatus($ss,$delivery_id,$failed_status_id);
+    //            DB::table('delivery')->where('branch_id',$branch_id)->where('id',$delivery_id)->update(array(
+    //                'delivered_count'=>$delivered_cnt,
+    //                'failed_count'=>$failed_cnt,
+    //                'package_count'=>$cnt
+    //            ));
+    //          //end:: update delviery.package_count, delviered_count
+    //       }
+    //       return DV::depends(1,['delivery_id'=>$delivery_id]);
+    //  }
+ 
       //return COUNT of packages for an Order with status = "Picked and Booked" only 
       //NOTE that Order with status =4 (Picked and Booked) has items or packages stored in table "order_receivers" 
       function countPackagesByOrder($order_id){
@@ -1496,15 +1468,17 @@ class Package //extends Model
         $ss = $ss?$ss:$this->userInfo;
 
         if(!$id) return DV::error("Failed to identify pacakge by ID");
-        $cols = "p.id,p.branch_id,p.qr_code AS bar_code,p.status_id,p.sender_pmt_status_id, p.driver_pmt_status_id,UNHEX(p.driver_trx_id) AS driver_trx_id,UNHEX(p.sender_trx_id) AS sender_trx_id,p.outstanding,delivery_id,p.driver_id,order_id";
-        $pInfo = DB::table("package as p")->where("id",$id)->selectRaw($cols)->take(1)->get()->first();
+        $cols = 'p.id,p.branch_id,p.qr_code AS bar_code,p.receiver_phone,p.status_id,p.sender_pmt_status_id, p.driver_pmt_status_id,HEX(p.driver_trx_id) AS driver_trx_id,HEX(p.sender_trx_id) AS sender_trx_id,p.outstanding,delivery_id,p.driver_id,order_id';
+        $pInfo = DB::table('package as p')->where('id',$id)->selectRaw($cols)->take(1)->get()->first();
         ///throw new \Exception("dd = ".$pInfo->status_id);
-        if(!$pInfo) return DV::error("Failed to identify pacakge by its ID");
-        //if($pInfo->status_id ==8) return DV::error('Cannot delete the package because it is already delivered');
-        if($pInfo->sender_pmt_status_id ==1) return DV::error("Cannot delete the package. There is payment transaction with merchant");
-        if($pInfo->driver_pmt_status_id ==1) return DV::error("Cannot delete the package. There is payment transaction with driver");
+        if(!$pInfo) return DV::error('Failed to identify pacakge by its ID');
+        if($pInfo->status_id ==6) return DV::error('Cannot delete the package because it is already "On Delivery"');
+        if($pInfo->sender_pmt_status_id ==1) return DV::error('Cannot delete the package. There is payment transaction with merchant');
+        if($pInfo->driver_pmt_status_id ==1) return DV::error('Cannot delete the package. There is payment transaction with driver');
         if ($pInfo->driver_trx_id) return DV::error('Cannot delete the package because there is Driver Payment waiting for Approval');
         if ($pInfo->sender_trx_id) return DV::error('Cannot delete the package because there is one merchant payment transaction with it'); 
+        if ($pInfo->status_id == 8 && !UM::allowed(280)) return DV::error('You need permission number 280 to delete Delivered package');
+        if ($pInfo->status_id == 11 && !UM::allowed(279)) return DV::error('You need permission number 279 to delete Returned package');
         $delivery_id = $pInfo->delivery_id;
         $branch_id = $pInfo->branch_id;
       $deleted = false;
@@ -1557,7 +1531,7 @@ class Package //extends Model
           DB::statement('UPDATE `order` SET qty =(SELECT COUNT(p.id) FROM package AS p WHERE p.branch_id ='.$branch_id.' AND p.order_id ='.$order_id.') WHERE branch_id ='.$branch_id.' AND id ='.$order_id); 
         }
           
-          $des = $ss->full_name.' deleted package id '.$pInfo->id.' barcode "'.$pInfo->bar_code.'" at '.getNowTime();
+          $des = $ss->full_name.' deleted package id '.$pInfo->id.' receiver phone '.$pInfo->receiver_phone.' barcode "'.$pInfo->bar_code.'" at '.getNowTime();
           $xd = (object)['package_id'=>$pInfo->id,'user_class'=>$ss->user_class,'action_name'=>'delete_package','description'=>$des];
           Tracker::log($xd,$ss);
           return DV::success();
@@ -1568,13 +1542,13 @@ class Package //extends Model
           $ss = $ss?$ss:$this->userInfo;
           if(!$byCol) $byCol="id";
           if($byCol==='barcode'){
-            $id = DB::table("package")->where("qr_code",$barcode_or_id)->take(1)->value("id");
+            $id = DB::table("package")->where("qr_code",$barcode_or_id)->take(1)->value('id');
           }else if ($byCol==='id'){
              $id = $barcode_or_id?$barcode_or_id:$this->id;
           }
          if($id > 0)
             return $this->deleteById($id,$ss);   
-         else return DV::error("The provided barcode or package ID is not correct");   
+         else return DV::error('The provided barcode or package ID is not correct');   
       }
 
       // function deletePackage($data) {
@@ -1636,9 +1610,9 @@ class Package //extends Model
            $ss = $ss?$ss:$this->userInfo;
            $branch_id = $ss->branch_id;
            $d = (object)$arr;
-           $cols = "p.id,p.delivery_id";
+           $cols = 'p.id,p.qr_code as barcode,p.delivery_id,p.status_id,p.driver_pmt_status_id,p.sender_pmt_status_id,p.receiver_phone';
            $pInfo = $this->getPackageProps($branch_id,$id,$cols,"id");
-           if(!$pInfo) return DV::error("Failed to identify package");
+           if(!$pInfo) return DV::error('Failed to identify package ID');
            $delivery_id = $pInfo->delivery_id;
             
            $update_trip_status =$d->update_trip_status?$d->update_trip_status:1;//whether or not to allow updating the trip status 
@@ -1646,6 +1620,9 @@ class Package //extends Model
            $status_id = $d->status_id; //Status code in varchar(20)
            $failure_notes = isset($d->failure_notes)?$d->failure_notes:null;
            $trip_status_id =null;
+           if ($pInfo->status_id == $status_id) return DV::depends(1);
+           if ($status_id ==9  && !UM::allowed(281)) return DV::error('You need permission 281 to change Status to Failed',$ss->lang);
+           else if ($status_id ==8 && !UM::allowed(282)) return DV::error('You need permission 282 to change Status to Delivered',$ss->lang);
            
            $result = (object)array('status'=>'OK','error_message'=>null,'trip_status_id'=>null);
            if (empty($status_id)) return DV::error("Status is not correct");
@@ -1678,7 +1655,7 @@ class Package //extends Model
             //     $rows = DB::table('package_statuses')->where('id',$status_id)->selectRaw('outstanding')->take(1)->get();
             //     foreach($rows as $row) $outstanding = $row->outstanding;
             //  //end of getting outstanding value
-            $nowTime = getNowTime();
+           $nowTime = getNowTime();
            DB::table('package')->where('branch_id',$branch_id)->where('id',$package_id)->update([
                'status_id'=>$status_id,
                'outstanding'=>$outstanding,
@@ -1687,9 +1664,13 @@ class Package //extends Model
                'update_user'=>$ss->login_name,
                'update_date'=>$nowTime
            ]);
- 
+           $p_status = DB::table('package_statuses')->where('id',$status_id)->take(1)->value('name');
+           $des = $ss->full_name.' change package status to '.$p_status.' ('.$status_id.') for package id '.$pInfo->id.' receiver phone '.$pInfo->receiver_phone.' barcode "'.$pInfo->barcode.'" at '.getNowTime(). '. The original status ID was '.$pInfo->status_id;
+           $xd = (object)['package_id'=>$pInfo->id,'user_class'=>$ss->user_class,'action_name'=>'change_package_status','description'=>$des];
+           Tracker::log($xd,$ss);
+           
           //funtion $this->updateDeliveryStatus() returns latest trip's status_id (3) then trip is DONE, otherwise return NULL 
-         //### begin:: Update delivery trip's status based on number of remaining items with "On Delivery" status
+          //### begin:: Update delivery trip's status based on number of remaining items with "On Delivery" status
             if ($update_trip_status ==1 || $update_trip_status==true){
               //$on_delivery_status = 6;
               $cnt = $this->getPackageCountByStatus($ss,$delivery_id,6); //count packages that are "On delivery", if count = 0 => update trip status to DONE
@@ -2568,6 +2549,7 @@ function getZoneByCode($branch_id, $zone_code) {
           $c->dim_y = isset($c->dim_y)?$c->dim_y:0;
           $c->dim_h = isset($c->dim_h)?$c->dim_h:0;
           $c->actual_kg = isset($c->actual_kg)?$c->actual_kg:0;
+          if(!floatval($c->actual_kg)) $c->actual_kg = 0;
           $c->actual_kg = floatval($c->actual_kg); 
           $c->delivery_type = isset($c->delivery_type)?$c->delivery_type:$order->delivery_type;
           if (!in_array(strtolower($c->delivery_type),['normal','fast'])) return DV::error('Service type must be either Normal or Fast'); 
@@ -2584,7 +2566,7 @@ function getZoneByCode($branch_id, $zone_code) {
           /** If no receiver address then use remarks as receiver address */
           if(!isset($c->receiver_address)) $c->receiver_address = $remarks;
           if (!$c->receiver_address) $c->receiver_address = $c->zone_name; 
-          $c->billed_kg = floatval($c->billed_kg);
+          $c->billed_kg = floatval($c->billed_kg)?$c->billed_kg:0;
           if ($c->billed_kg ==null){
               $systematic_billed_kg = $this->getBilledWeight($c->dim_x,$c->dim_y,$c->dim_h, $c->actual_kg);
               $c->billed_kg = $systematic_billed_kg;

@@ -6,17 +6,15 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UM;
 use App\Models\JDV;
-use Illuminate\Contracts\Session\Session;
+use Session;
 // use Sanitizer;
 use Localization;
 use Illuminate\Support\Facades\Response;
-
 use DB;
 
 class UMController extends Controller
 {
   protected $UMModel;
-
   function __construct()
   {
     $this->UMModel = new UM();
@@ -64,7 +62,7 @@ class UMController extends Controller
     return response()->json($m_str);
   }
 
-  function getModuleList(Request $req,$user_id = 0)
+  function getModuleList(Request $req)
   {
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code != 200) return $ss; //user not authenticated
@@ -192,7 +190,7 @@ class UMController extends Controller
 
   function saveUser(Request $req)
   {
-    $prn_code = $req->id?112:100;
+    $prn_code = $req->id? 112:100;
     $ss = UM::getUserInfoByToken($req, $prn_code);
     if ($ss->status_code != 200) return $ss; //user not authenticated
     $res = $this->UMModel->saveUser($req->all(),$ss);
@@ -202,15 +200,15 @@ class UMController extends Controller
     return JDV::raw($res);
   }
 
-  //getUserInfo() returns "id, previlege_type, user_class,is_locked,status"
-  function getUserInfo(Request $req)
-  {
-    $ss = UM::getUserInfoByToken($req, -1);
-    if ($ss->status_code != 200) return $ss; //user not authenticated
-    $user_id = $req->user_id ? $req->user_id : $req->id;
-    $user = $this->UMModel->getUserInfo($user_id);
-    return JDV::result($user);
-  }
+  // //getUserInfo() returns "id, previlege_type, user_class,is_locked,status"
+  // function getUserInfo(Request $req)
+  // {
+  //   $ss = UM::getUserInfoByToken($req, -1);
+  //   if ($ss->status_code != 200) return $ss; //user not authenticated
+  //   $user_id = $req->user_id ? $req->user_id : $req->id;
+  //   $user = $this->UMModel->getUserInfo($user_id);
+  //   return JDV::result($user);
+  // }
 
   /**
    * Add permission to a user directly
@@ -218,7 +216,7 @@ class UMController extends Controller
   function addPermissionToUser(Request $req)
   {
     $ss = UM::getUserInfoByToken($req, 105);
-    if ($ss->status_code != 200) return $ss; //user not authenticated
+    if ($ss->status_code != 200) return JDV::raw($ss); //user not authenticated
     $user_id = $req->user_id ? $req->user_id : $req->id;
     $prn_id = $req->prn_id?$req->prn_id:$req->permission_id;
     $res = $this->UMModel->addPermissionToUser($prn_id,$user_id,$ss);
@@ -388,13 +386,13 @@ class UMController extends Controller
     return JDV::result($res);
   }
 
-  function getRolePermissions_paginate(Request $req)
-  {
-    $ss = UM::getUserInfoByToken($req, -1);
-    if ($ss->status_code !== 200) return JDV::raw($ss);
-    $data = $this->UMModel->getRolePermissions_paginate($req->all(),$ss);
-    return JDV::result($data);
-  }
+  // function getRolePermissions_paginate(Request $req)
+  // {
+  //   $ss = UM::getUserInfoByToken($req, -1);
+  //   if ($ss->status_code !== 200) return JDV::raw($ss);
+  //   $data = $this->UMModel->getRolePermissions_paginate($req->all(),$ss);
+  //   return JDV::result($data);
+  // }
 
   function getUserPermissions_paginate(Request $req)
   {
@@ -533,24 +531,14 @@ class UMController extends Controller
   }
 
   function getLang(Request $req){
-        // $ss = UM::getUserInfoByToken($req,-1);
-        // if($ss->status_code !=200) return $ss; //user not authenticated
-        // $branch_id = $ss->branch_id;
-        //$d = Sanitizer::sanitizeObject($req->all(),[]);
-        $lang = $req->lang; // strtolower(getValue($d,'lang'));
+        $lang = $req->lang;
         //if parameter @lang is NULL then use "lang" set in um_session table based on (app_id,user_id) if the user already logged in
         //if (empty($lang)) $lang = $ss->lang;
-        if (!$lang) $lang = "km"; //if there is no preset lanague for the user then use "khmer" default lang
+        if (!$lang) $lang = 'km'; //if there is no preset lanague for the user then use "khmer" default lang
         $langRoutes = Localization::getLangList();
         $base_path = base_path();
-        // [
-        //   'en'=> $base_path."/storage/locales/en.json",
-        //   'km'=> $base_path."/storage/locales/km.json",
-        //   'kh'=> $base_path."/storage/locales/km.json"
-        // ];
-
       //if no valid file_path => use km language
-      $file_path = isset($langRoutes[$lang])? $langRoutes[$lang]:$base_path."/storage/locales/km.json";
+      $file_path = isset($langRoutes[$lang])? $langRoutes[$lang]: $base_path.'/storage/locales/km.json';
       $data = readFileContent($file_path);
       return JDV::result($data);
   }
@@ -560,11 +548,8 @@ class UMController extends Controller
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code != 200) return $ss; //user not authenticated
     // $d = Sanitizer::sanitizeObject($req->all(), []);
-    $lang = $req->lang;
-
-    if (!$lang) $lang = "km"; //default langauge in case @lang is not supplied
+    $lang = $req->lang ?? 'km'; //default langauge in case @lang is not supplied
     $app_id = getAdminAppId();
-
     DB::table('um_sessions')->where('app_id', $app_id)->where('user_id', $ss->user_id)->update([
       'lang' => $lang
     ]);
@@ -582,16 +567,16 @@ class UMController extends Controller
     $file_path = isset($langRoutes[$lang]) ? $langRoutes[$lang] : $base_path . '/storage/locales/km.json';
     $data = readFileContent($file_path);
     //Save the new langauge code to current session
-    Session('lang', $lang);
+    Session::put('lang', $lang);
 
     //Todo: In case of JWT token => then change user's token and send new JWT token to client again in order to update cookie
     //$new_token = UM::updateJWT(['lang'=>$lang]);
     return JDV::success(['lang_content' => $data]);
   }
+
   function getUserViewReportPermissionListPaginate(Request $req){
     $ss = UM::getUserInfoByToken($req, -1);
     if($ss->status_code !=200) return $ss;
-    $rpt = new UM();
     $list = $this->UMModel->getUserViewReportPermission_paginate($req->all(),$req->user_id,$ss);
     return JDV::result($list);
   }

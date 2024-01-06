@@ -304,8 +304,8 @@ var PackageListComponent = new function () {
                     i++;
                 } while (c);
             }
-            let option = { 'title': 'Assign Driver', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': mThis.drivers1, 'blankErrorMessage': "Please choose one driver", "defaultvalue": def_driver_id };
-            InputBox2.show(option, function (d) {
+            let option = { 'manualClosing':true, 'confirmButtonText':'Assign Now', 'title': 'Assign Driver', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': mThis.drivers1, 'allowBlankValue':true,'blankErrorMessage': "Please choose one driver", "defaultvalue": def_driver_id };
+            InputBox2.show(option, (d,btnAssign) => {
                 if (d) {
                     let p = {};
                     p.driver_id = d.value; /** d.value = driver id and d.text = driver name **/
@@ -319,7 +319,7 @@ var PackageListComponent = new function () {
                     }
 
                     //assignDriver()
-                    vsapi.call([mThis.base_url,'/api/b_assignDeliveryDriver'].join(''),p).then(res=>{
+                    vsapi.call([mThis.base_url,'/api/b_assignDeliveryDriver'].join(''),p,btnAssign).then(res=>{
                         if(res.status_code ===200) {
                             let status = 'On Delivery';
                             let status_id = 6;
@@ -327,6 +327,7 @@ var PackageListComponent = new function () {
                                 status = 'At Warehouse';
                                 status_id = 5;
                             }
+                            if(option.manualClosing) InputBox2.close();
                             mThis.displayDriverData(tr, { "driver_id": p.driver_id, "driver_name": d.text, 'status': status, 'status_id': status_id });
                         } else cv_interact.error(res.error_message);
                     });

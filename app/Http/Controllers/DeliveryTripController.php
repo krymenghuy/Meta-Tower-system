@@ -151,13 +151,14 @@ class DeliveryTripController extends Controller
  }
 
   
-  function changeDeliveryDriver(Request $request) { 
-    $r = $this->tripModel->changeDeliveryDriver($request); 
-    if($r =='#350') 
-     return makeJsonResponse($r,350); // user not authenticated
-    else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-    return makeJsonResponse($r);
+  function changeDeliveryDriver(Request $req) { 
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !==200) return JDV::raw($ss);
+    $id = $req->id ?? $req->delivery_id;
+    $res = $this->tripModel->changeDeliveryDriver($req->all(),$id, $ss); 
+    return JDV::raw($res); 
   }
+
   function removePackageFromTrip(Request $req) {
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !==200) return JDV::raw($ss);
@@ -213,16 +214,7 @@ class DeliveryTripController extends Controller
       else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
       return makeJsonResponse($r);
   }
-    
    
-  //   function getComboItems_delivery_status(Request $request){
-  //     $r = $this->tripModel->getComboItems_delivery_status($request);
-  //     if($r =='#350') 
-  //       return makeJsonResponse($r,350); // user not authenticated
-  //     else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-  //     return makeJsonResponse($r);
-  // }
-  
   function getPackageInfoByBarcode(Request $request){
     $r = $this->tripModel->getPackageInfoByBarcode($request);
     if($r =='#350') 

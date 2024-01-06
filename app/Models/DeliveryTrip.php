@@ -8,8 +8,6 @@ use App\Models\Notifier;
 use App\Models\Driver;
 use App\Models\DV;
 use App\Models\UM;
-//use Carbon\Carbon;
-//use Session;
 use Sanitizer;
 use DB;
 use App\Models\Tracker;
@@ -380,6 +378,7 @@ class DeliveryTrip //extends Model
             
          }else{
             $m = new \App\Models\BDelivery(null,$ss);
+            //make esure the $ss->user_class is a driver to avoid permission check
             $res = $m->b_assignDeliveryDriver($d,$ss);
             if($res->status ==='Error') return DV::error($res->error_message);
             else return DV::success(['package'=>$this->getPackageDetails($branch_id,$d)]);
@@ -514,7 +513,7 @@ class DeliveryTrip //extends Model
 
         if (empty($package->barcode)) return DV::error('Failed to switch driver because the provided barcode is unexpectedly empty!');
        //Notify Admin about driver exchanging items on the road
-            $event_data = (object)['branch_id'=>$branch_id,'delivery_id'=>$m->delivery_id,'barcode'=>$package->barcode,'status_id'=>$package->status_id,'package_id'=>$package->id,'driver_id'=>$new_driver->id,'driver_name'=>$new_driver->name];
+            $event_data = (object)['branch_id'=>$branch_id,'delivery_id'=>$m->trip->delivery_id,'barcode'=>$package->barcode,'status_id'=>$package->status_id,'package_id'=>$package->id,'driver_id'=>$new_driver->id,'driver_name'=>$new_driver->name];
             $event_data->title ="Driver Changed";
             $event_data->message ='ទំនិញ '.$package->receiver_phone.' បានប្រគល់អោយអ្នកដឹកថ្មី '.$new_driver->name;
 
@@ -1729,26 +1728,53 @@ class DeliveryTrip //extends Model
         return null;
     }
 
-    function changeDeliveryDriver($d){
-        $ss = UM::getUserInfoByToken($d);
-        if ($ss->status_code !==200) return $ss; //user not authenticated
-         //need permission to do this task
+    static function trackChange($ss,$action_name,$des,$table_name,$pk_field,$pk_value){
+     try{
+        $inputs= ['target_table'=>$table_name,'pk_field'=>$pk_field,'pk_value'=>$pk_value,'action_name'=>$action_name,'description'=>$des];
+        $id = saveData($ss,'general_tracks',['id'=>null],$inputs,[],1,false);
+        return null;
+     }catch(\Exception $e){
+        Log::error('Failed to create general track of action done by '.$ss->full_name);
+            Log::error($e->getMessage());
+            Log::error($e->getTraceAsString());
+     }
+    }
+
+    function changeDeliveryDriver($arr,$id=null,$ss=null){
+        $ss = $ss ??$this->userInfo;
+        $delivery_id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
-        $delivery_id = isset($d->delivery_id)?$d->delivery_id:null;
+        $d = (object)$arr;
+        $delivery_id = $delivery_id ?? (isset($d->delivery_id)?$d->delivery_id:null);
         $driver_id = isset($d->driver_id)?$d->driver_id:null;
-        DB::table('delivery')->where('branch_id',$branch_id)->where('id',$delivery_id)->update(array(
-            'driver_id'=>$driver_id,
-            'update_user'=>$ss->login_name,
-            'update_date'=>getNowTime()
-        ));
-        DB::table('package')->where('branch_id',$branch_id)->where('delivery_id',$delivery_id)->update(array(
-            'driver_id'=>$driver_id,
-            'update_user'=>$ss->login_name,
-            'update_date'=>getNowTime()
-        ));
-        //todo: create notofication and send it to the responsible driver
+        
+        $trip = DB::table('delivery as d')->where('id',$delivery_id)->selectRaw('id,status_id,driver_id,fleet_tracking_number')->take(1)->first();
+        if(!$trip) return DV::error('Delivery ID does not exist');
+        if (!UM::allowed(284)) return DV::error('You need permission number ? to change driver::'.'284');
+        if($trip->driver_id == $driver_id) return DV::depends(1);
+        if($trip->status_id ==3) return DV::error('Cannot change driver for finished trips');
+        $nowTime = getNowTime();
+        if(!$driver_id) return DV::error('The provided Driver ID is invalid or empty');
+        $driver = DB::table('driver as d')->where('d.id',$driver_id)->selectRaw('id,name,code,LOWER(status_code) AS status_code')->take(1)->first();
+        if(!$driver) return DV::error('Driver ID does not exist');
+        if ($driver->status_code !='active') return DV::error('The driver is not currently active');
        
-        return DV::success();
+        DB::table('delivery')->where('branch_id',$branch_id)->where('id',$delivery_id)->update([
+            'driver_id'=>$driver_id,
+            'update_user'=>$ss->login_name,
+            'update_date'=>$nowTime
+        ]);
+        DB::table('package')->where('branch_id',$branch_id)->where('delivery_id',$delivery_id)->update([
+            'driver_id'=>$driver_id,
+            'update_user'=>$ss->login_name,
+            'update_date'=> $nowTime
+        ]);
+
+        $old_driver_name = DB::table('driver')->where('id',$trip->driver_id)->take(1)->value('name');
+        $des = $ss->full_name.' changed driver from '.$old_driver_name.' to new driver '.$driver->name. '. Trip ID: '.$trip->id.' trip number: '.$trip->fleet_tracking_number.' at '.date('d M Y h:i'); 
+        self::trackChange($ss,'change_delivery_driver',$des,'delivery','id',$delivery_id);
+        //todo: create notofication and send it to the responsible driver
+        return DV::depends(1);
     }
 
     //count number of packges by a given trip id (e.g: @delivery_id). parameter @status_id is optional. If @status_id is not given then this function returns all package belonging to a given trip  
@@ -1758,7 +1784,7 @@ class DeliveryTrip //extends Model
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
         $delivery_id = isset($d['delivery_id'])?$d['delivery_id']:0;
-        $status_id = isset($d['status_id'])?Sanitizer::sanitize($d['status_id']):null;
+        $status_id = isset($d['status_id'])? Sanitizer::sanitize($d['status_id']):null;
         $cnt = $this->getPackageCountByStatus($branch_id,$delivery_id,$status_id);
         return is_numeric($cnt)?$cnt:0;
     }

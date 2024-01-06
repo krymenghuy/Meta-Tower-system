@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class Notifier
 {
-    protected static $admin_user_class ='admin_support';
+    protected static $admin_user_class ='admin';
     /**
      * $d = {branch_id,[user_id or target_user_id],[role_name] and other props such as "img", ...}
      * NOTE: Unlikc mobile users or other users with official_id,  the admin user's target_user_id or user_id is the uid matches with the value of "um_users.id"
@@ -24,8 +24,8 @@ class Notifier
       $role_name = isset($data->role_name)? $data->role_name:null;
 
       if(!$branch_id){
-        //log::error('$branch_id is NULL, so cannot fire event "MessageReceived" ' );
-        return "branch_id and sener_id are required to fire the event";
+        Log::error('Failed to broadcast event '.$event_name. ' from user '.(isset($data->user_id)? $data->user_id : 'Empty'));
+        return 'branch_id and sener_id are required to fire the event';
       }
       $succeeded = true;
       try{
@@ -44,6 +44,14 @@ class Notifier
                     }
                     case 'order_created':{
                       broadcast(new \App\Events\OrderCreated($data))->toOthers();
+                      break;
+                    }
+                    case 'package_photo_picked':{
+                      broadcast(new \App\Events\PackagePhotoPicked($data));
+                      break;
+                    }
+                    case 'package_photo_deleted':{
+                      broadcast(new \App\Events\PackagePhotoDeleted($data));
                       break;
                     }
                     case 'request_status_changed':{
@@ -168,8 +176,10 @@ class Notifier
     ['user_class','target_user_id','title','message','data','persist']
   ]
   notify_mobile() is to send notifications to one or more apps based on the given param @data = array()
+  // static function notify_mobile($branch_id,$data=[]):void{ ... }
 ***/
-static function notify_mobile($branch_id,$data=[]):void{
+
+static function notify_mobile($branch_id,$data=[]){
   $i=0;
   $c = null;
 
@@ -195,7 +205,7 @@ static function notify_mobile($branch_id,$data=[]):void{
           $user_id = self::getUserId($branch_id,$official_id,'official_id');
           if(!$user_id){
             $cancel_notif =true;
-            Log::info("Notify to user_class =$c->user_class, target_user_id = $official_id, user_id = \"No mobile login yet\" , message =$c->message ");
+            //Log::info("Notify to user_class =$c->user_class, target_user_id = $official_id, user_id = \"No mobile login yet\" , message =$c->message ");
           }
 
         }
@@ -234,20 +244,27 @@ static function notify_mobile($branch_id,$data=[]):void{
             $res = self::fcm_send($str_topic,$notification,$custom_data);
             //if(isset($res->message_id) && $res->message_id) $succeeded =1;
             if($persist ==1 || $persist==true){
-                $expiry_time = Carbon::now()->addDay(3);
-                //Save notification in db table
-                DB::table('notifications')->insert(array(
-                  'app_id'=>$app_id,
-                  //"event_name"=>$event_name,
-                  "user_class"=>$user_class,
-                  'user_id'=>$user_id,
-                  'branch_id'=>$branch_id,
-                  'title'=>isset($c->title)?$c->title:'DMS',
-                  'message'=>isset($c->message)?$c->message:'',
-                  'image_url'=>$image_url,
-                  'expiry_time'=>$expiry_time,
-                  'create_date'=>getNowTime()
-                ));
+                try{
+                  $expiry_time = Carbon::now()->addDay(3);
+                  //Save notification in db table
+                  DB::table('notifications')->insert(array(
+                    'app_id'=>$app_id,
+                    //"event_name"=>$event_name,
+                    "user_class"=>$user_class,
+                    'user_id'=>$user_id,
+                    'branch_id'=>$branch_id,
+                    'title'=>isset($c->title)?$c->title:'DMS',
+                    'message'=>isset($c->message)?$c->message:'',
+                    'image_url'=>$image_url,
+                    'expiry_time'=>$expiry_time,
+                    'create_date'=>getNowTime()
+                  ));
+                }catch(\Exception $e){
+                   Log::error('Notifier Error: problem in saving notification message');
+                   Log::error($e->getMessage());
+                   Log::error($e->getTraceAsString());
+                }
+              
             }
 
       }

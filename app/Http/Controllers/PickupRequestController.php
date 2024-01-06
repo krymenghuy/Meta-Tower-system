@@ -19,7 +19,7 @@ class PickupRequestController extends Controller
     }
      
     function createQuickOrder(Request $req){
-      $ss= UM::getUserInfoByToken($req,-1);
+      $ss= UM::getUserInfoByToken($req,220);
       if($ss->status_code !==200) return JDV::raw($ss);
       $order = new PickupRequest(null,$ss);
       $res= $order->createQuickOrder($req->all());
@@ -27,7 +27,7 @@ class PickupRequestController extends Controller
     }
 
     function receivePackages(Request $req){
-      $ss= UM::getUserInfoByToken($req,-1);
+      $ss= UM::getUserInfoByToken($req,222);
       if($ss->status_code !==200) return JDV::raw($ss);
       $id = $req->id?$req->id:$req->order_id;
       $order = new PickupRequest($id,$ss);
@@ -44,7 +44,7 @@ class PickupRequestController extends Controller
     }
     
    function savePickupRequest(Request $req){
-      $ss= UM::getUserInfoByToken($req,-1);
+      $ss= UM::getUserInfoByToken($req,222);
       if($ss->status_code !==200) return JDV::raw($ss);
       $arr = $req->all();
       if ($ss->user_class ==='merchant'){
@@ -138,21 +138,30 @@ class PickupRequestController extends Controller
       return JDV::result($rows);
    } 
 
+   function deletePackagePhotos(Request $req) {
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !==200) return JDV::raw($ss);
+    $id = $req->order_id ?? $req->id;
+    $photo_ids = $req->photo_ids ?? $req->ids;
+    $rows = $this->pickupRequestModel->deletePackagePhotos($photo_ids,$id,$ss);
+    return JDV::result($rows);
+ }
+
    function assignPickupDriver(Request $req) {
-      $ss = UM::getUserInfoByToken($req,-1);
+      $ss = UM::getUserInfoByToken($req,221);
       if($ss->status_code !==200) return JDV::raw($ss);
       $id = $req->order_id ?? $req->id;
       $res = $this->pickupRequestModel->assignPickupDriver($req->all(),$id,$ss); 
       return JDV::raw($res);
    }
 
-     function changePickupDriver(Request $req) {
-      $ss = UM::getUserInfoByToken($req,-1);
-      if($ss->status_code !==200) return JDV::raw($ss);
-      $id = $req->order_id ?? $req->id;
-      $res = $this->pickupRequestModel->changePickupDriver($req->all(),$id,$ss);
-      return JDV::raw($res); 
-  }
+  // function changePickupDriver(Request $req) {
+  //     $ss = UM::getUserInfoByToken($req,-1);
+  //     if($ss->status_code !==200) return JDV::raw($ss);
+  //     $id = $req->order_id ?? $req->id;
+  //     $res = $this->pickupRequestModel->changePickupDriver($req->all(),$id,$ss);
+  //     return JDV::raw($res); 
+  // }
 
     //Update Order status or Pickup status
     function updateOrderStatus(Request $req) {
@@ -167,7 +176,7 @@ class PickupRequestController extends Controller
 
      //Delete Order or Pickup transaction
      function deletePickup(Request $req) {
-        $ss = UM::getUserInfoByToken($req,-1);
+        $ss = UM::getUserInfoByToken($req,229);
         if($ss->status_code !==200) return JDV::raw($ss);
         $id =$req->id?$req->id:$req->order_id;
         $order = New PickupRequest($id,$ss);
@@ -192,15 +201,7 @@ class PickupRequestController extends Controller
         else if ($r =='@') return makeJsonResponse($r,360);
         return makeJsonResponse($r);
      }
-     
-   //   function getComboItems_delivery_condition(Request $request){
-   //    $r = $this->pickupRequestModel->getComboItems_delivery_condition($request);
-   //    if($r =='#350') 
-   //       return makeJsonResponse($r,350);
-   //    else if ($r =='@') return makeJsonResponse($r,360);
-   //    return makeJsonResponse($r);
-   //  }
-
+   
    function getFormData_pickup_request(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);  
       if ($ss->status_code !=200) return JDV::raw($ss);

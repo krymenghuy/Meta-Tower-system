@@ -315,11 +315,7 @@
             </div>
         </div>
         <div id="order_list_wrapper" class="shadow-lg bg-white rounded-3 border p-3 mt-3" style="min-height:43vw">
-            <div class="table-responsive-hover" id="_pkl_div_order_list"></div>
-            <!-- <table id="_pl_tblPickups" class="table">
-                <thead></thead>
-                <tbody id="_pl_tblPickups_body"></tbody>
-            </table> -->
+            <div id="_pkl_div_order_list" class="overflow-hidden w-100"></div>
         </div>
     </div>
 </div>
@@ -818,6 +814,95 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-success" id="_dlgMagicEntry_btnSubmit">Submit</button>
                 <button type="button" class="btn btn-primary" id="_dlgMagicEntry_btnClose">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="pkl_dlgPackage" tabindex="-1" role="dialog" aria-labelledby="pkl_dlgPackageTitle" aria-hidden="true">
+    <div class="vs-modal-dialog modal-xl modal-dialog" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pkl_dlgPackageTitle">Package Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="d-flex flex-row gap-2">
+                 <div class="w-50 border border-secondary shadow-lg rounded-3" style="max-height:65vh;overflow-y:auto">
+                     <img id="pkl_dlgPackage_item_photo" class="w-100 h-100" class="item-photo-view" alt="package photo">
+                 </div>
+                 <div class="w-50 p-2">
+                    <div class="row" style="max-height:65vh;overflow-y:auto">
+                        <div class="form-group col-lg-12">
+                            <label for="" class="form-label trans-text" data-langprop="titles.Zone Code"></label>
+                            <div><select id="pkl_dlgPackage_zone" data-required="1" class="modal-select2 data-input" data-field="zone_code"></select></div>  
+                        </div>
+                        <div class="form-group col-lg-12">
+                            <label for="" class="form-label trans-text" data-langprop="titles.Receiver Phone"></label>
+                            <div><input data-required="1" type="text" class="form-control data-input" data-field="receiver_phone"></div>  
+                        </div>
+                        <div class="form-group col-lg-12">
+                            <label for="" class="form-label trans-text" data-langprop="titles.Price"></label>
+                            <div><input data-required="1" type="number" class="form-control data-input" data-field="price"></div>  
+                        </div>
+                        <div class="form-group col-lg-12">
+                            <label for="df_payer" class="form-label trans-text" data-langprop="titles.Fee Payer"></label>
+                            <div><select data-required="1" class="modal-select2 data-input" data-field="df_payer">
+                                <option value="sender">Sender</option>
+                                <option value="receiver">Receiver</option>
+                            </select></div>
+                        </div>
+                        <div class="form-group col-lg-12">
+                            <label for="remarks" class="form-label trans-text" data-langprop="titles.Remarks"></label>
+                            <div><input type="text" class="form-control" data-field="remarks"></div>  
+                        </div>
+
+                        <div class="form-group col-lg-12">
+                            <label for="" class="form-label modal-select2" data-langprop="titles.Service Type">Service Type</label>
+                            <div><select data-required="1" class="modal-select2 data-input" data-field="delivery_type">
+                                <option value="normal" selected>Normal</option>
+                                <option value="fast">Fast</option>
+                            </select></div>  
+                        </div>
+
+                        <div class="form-group col-lg-12">
+                            <label for="remarks" class="form-label trans-text" data-langprop="titles.Fees"></label>
+                            <div><input type="text" class="form-control" data-field="remarks" readonly></div>  
+                        </div>
+                        <div class="form-group col-lg-12">
+                            <label for="remarks" class="form-label trans-text" data-langprop="titles.Base Fee"></label>
+                            <div><input type="text" class="form-control" data-field="base_fee" readonly></div>  
+                        </div>
+                        <div class="form-group col-lg-12">
+                            <label for="remarks" class="form-label trans-text" data-langprop="titles.Additional"></label>
+                            <div><input type="text" class="form-control" data-field="delivery_fee" readonly></div>  
+                        </div>
+
+                        <div class="form-group col-lg-12">
+                            <label for="size" class="form-label trans-text" data-langprop="titles.Size"></label>
+                            <div><input type="text" class="form-control data-input" data-field="size"></div>  
+                        </div>
+
+                        <div class="form-group col-lg-12">
+                            <label for="actual_kg" class="form-label trans-text" data-langprop="titles.Actual KG"></label>
+                            <div><input type="number" class="form-control data-input" data-field="actual_kg"></div>  
+                        </div>
+
+                        <div class="form-group col-lg-12">
+                            <label for="billed_kg" class="form-label trans-text" data-langprop="titles.Billed KG"></label>
+                            <div><input type="text" class="form-control data-input" data-field="billed_kg" readonly></div>  
+                        </div>
+
+                    </div>
+                 </div>
+              </div>     
+            </div>
+            <div class="modal-footer">
+               <div class="pkl-entry-buttons d-flex fles-row gap-2">
+                    <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
+                    <button id="pkl_dlgPackage_btnSaveAndNext" type="button" class="btn btn-info"><span>Save & Next</span></button>
+                    <button id="pkl_dlgPackage_btnSave" type="button" class="btn btn-info"><span>Save</span></button>
+               </div>
             </div>
         </div>
     </div>
