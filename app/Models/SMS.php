@@ -9,7 +9,7 @@ use App\Models\DV;
 use DB;
 use Sanitizer;
 use Config;
-
+use Illuminate\Support\Facades\Log;
 class SMS //extends Model
 {
     //use HasFactory;
@@ -122,53 +122,9 @@ class SMS //extends Model
     function formatPhoneNumber($d){
         return self::formatPhoneNumber_static($d);
     }
-
-    // static function send($phone_number, $text = null, $sender_name = null) {
-    //     if (!$sender_name) {
-    //         $sender_name = config::get('app.plasgate_sms_sender_name');
-    //     }
-    //     if (empty($text) || empty($phone_number)) {
-    //         return DV::error("phone_number or text cannot be empty");
-    //     }
-    
-    //     $fields = [
-    //         'to' => self::formatPhoneNumber_static($phone_number),
-    //         'username' => Config::get('app.plasgate_sms_user'),
-    //         'password' => Config::get('app.plasgate_sms_password'),
-    //         'sender' => $sender_name,
-    //         'content' => $text,
-    //         "dlr" => "no",
-    //     ];
-    
-    //     $ch = curl_init();
-    //     curl_setopt($ch, CURLOPT_URL, "https://cloudapi.plasgate.com/api/send");
-    //     curl_setopt($ch, CURLOPT_POSTFIELDS, $fields);
-    //     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    //     curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
-    //     curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-    //     $try_timeout = 600;
-    //     curl_setopt($ch, CURLOPT_TIMEOUT, $try_timeout);
-    //     curl_setopt($ch, CURLOPT_FAILONERROR, true);
-    
-    //     $json_string = curl_exec($ch);
-    //     $err_message = null;
-    
-    //     if (curl_errno($ch)) {
-    //         $err_message = curl_error($ch);
-    //         if (strpos($err_message, 'Could not resolve host') !== false) {
-    //             $err_message = "Failed to connect to the SMS server. You may check your internet connection";
-    //         }
-    //     }
-        
-    //     curl_close($ch);
-    //     if ($err_message) {
-    //         return DV::error($err_message);
-    //     }
-        
-    //     return DV::success(['data' => json_decode($json_string, true)]);
-    // }
-    
+ 
     static function send($phone_number, $text = null, $sender_name = null) {
+       try{
         $sender_name = $sender_name ?? config::get('app.plasgate_sms_sender_name');
         if (empty($text) || empty($phone_number)) return DV::error("phone_number or text cannot be empty");
         $private = Config::get('app.plasgate_private_key');
@@ -211,6 +167,11 @@ class SMS //extends Model
         }
         
         return DV::success(['data' => json_decode($json_string, true)]);
+       }catch(\Exception $e){
+         Log::error('Failed to send sms: '.$text. ' to number '.$phone_number);
+         Log::error($e->getMessage());
+         Log::error($e->getTraceAsString());
+       }
     }
  
     function _sendSMS($phone_numbers,$text=null,$sender_name= null){

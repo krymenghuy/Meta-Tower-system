@@ -17,7 +17,7 @@ let PusherClient = new function(){
     //cookie_name are set in main.js, app.js, vsapi.js, loginController.php, Master.blade.php, "login/index.blade.php" 
     
     //*** For Demo DMS */
-    let pusher_app_key = 'e9f577722070bbc52ec2'; //process.env.PUSHER_APP_KEY 
+    const pusher_app_key = 'e9f577722070bbc52ec2'; //process.env.PUSHER_APP_KEY 
 
     //** For HOUExpress */
     //let pusher_app_key = '105a036ea697941d67d1'; //process.env.PUSHER_APP_KEY
@@ -117,8 +117,11 @@ let PusherClient = new function(){
     // });
 
     mThis.pusher_channel.bind('order_created', (d)=>{ 
+        toastr.info(d.data.message, 'Order Created');
         main_view.addNotificationItem({'title':d.data.title,'message':d.data.message});
-        PickupListComponent.orderCreated_eventHandler(d);
+        const tr = PickupListComponent.getExpandedRow_tr();
+        //Automatically prepend new Order Row (TR), only when there is no expanded row being opened
+        if(!tr) PickupListComponent.orderCreated_eventHandler(d);
     });
 
     mThis.pusher_channel.bind('driver_accepted_order',(d) =>{
@@ -126,9 +129,11 @@ let PusherClient = new function(){
         toastr.success(DUtil.escapeHtml(data.message),data.title?data.title:'Order Accepted');
         main_view.addNotificationItem({'title':data.title,'message':data.message});
 
-        if(PickupListComponent.tblPickups.is(':visible')){
-            let tr = PickupListComponent.findRowByOrdderId(data.order_id);
-            PickupListComponent.updatePickupStatus(tr,data);
+        if(PickupListComponent.tblOrders){
+            if(PickupListComponent.tblOrders.style.display !== 'none'){
+                let tr = PickupListComponent.findRowByOrdderId(data.order_id);
+                PickupListComponent.updatePickupStatus(tr,data);
+            }
         }
     });
 
@@ -137,7 +142,7 @@ let PusherClient = new function(){
         toastr.success(DUtil.escapeHtml(data.message),data.title?data.title:'Order Canceled');
         main_view.addNotificationItem({'title':data.title,'message':data.message});
 
-        if(PickupListComponent.tblPickups.is(':visible')){
+        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
             let tr = PickupListComponent.findRowByOrdderId(data.order_id);
             PickupListComponent.updatePickupStatus(tr,data);
         }
@@ -145,10 +150,9 @@ let PusherClient = new function(){
 
     mThis.pusher_channel.bind('pickup_driver_changed',(d) =>{
         let data = d.data;
-        if(PickupListComponent.tblPickups.is(':visible')){
+        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
             toastr.success(DUtil.escapeHtml(data.message),'Pickup Driver Changed',data.title?data.title:'Pickup Driver Changed');
             main_view.addNotificationItem({'title':data.title,'message':data.message});
-
             let tr = PickupListComponent.findRowByOrdderId(data.order_id);
             PickupListComponent.updatePickupStatus(tr,data);
         }
@@ -157,7 +161,7 @@ let PusherClient = new function(){
     mThis.pusher_channel.bind( 'order_status_changed',(d) =>{
         let data = d.data;
 
-        if(PickupListComponent.tblPickups.is(':visible')){
+        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
             main_view.addNotificationItem({'title':data.title,'message':data.message});
             toastr.success(DUtil.escapeHtml(data.message),data.title?data.title:'Order Status');
 
@@ -170,13 +174,38 @@ let PusherClient = new function(){
         let data = d.data;
         toastr.error(DUtil.escapeHtml(data.message),'Order Deleted',data.title?data.title:'Order Deleted');
         main_view.addNotificationItem({'title':data.title,'message':data.message});
-        if(PickupListComponent.tblPickups.is(':visible')){
+        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
             let tr = PickupListComponent.findRowByOrdderId(data.order_id);
-            tr.remove();
-            PickupListComponent.tblPickups.find('tr.package_list[data-orderid="'+data.order_id +'"]').remove();
+            if(tr){
+                const detail_tr = tr.nextElementSibling;
+                if (detail_tr && detail_tr.classList.contains('detail-row')){
+                    detail_tr.remove();
+                }
+                tr.remove();
+            }
         }
     });
-  
+   
+    mThis.pusher_channel.bind('package_photo_picked',(d) =>{
+        let data = d.data;
+        data.title = data.title || 'Photo Picked';
+        toastr.info(DUtil.escapeHtml(data.message),'Photo Picked',data.title);
+        main_view.addNotificationItem({'title':data.title,'message':data.message});
+        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
+            PickupListComponent.setImageCount(data.order_id,data.img_count); 
+        }
+    });
+
+    mThis.pusher_channel.bind('package_photo_deleted',(d) =>{
+        let data = d.data;
+        data.title = data.title || 'Photo Deleted';
+        toastr.warning(DUtil.escapeHtml(data.message),'Photo Deleted',data.title);
+        main_view.addNotificationItem({'title':data.title,'message':data.message});
+        if(PickupListComponent.tblOrders && PickupListComponent.tblOrders.style.display !== 'none'){
+            PickupListComponent.setImageCount(data.order_id,data.img_count); 
+        }
+    });
+
     mThis.pusher_channel.bind('message_received', function(data) {
         Swal.fire({
             position: 'top-end',

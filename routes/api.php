@@ -176,6 +176,7 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
             Route::post('/pick', [PickupRequestController::class, 'pickOrderPackages']);
             Route::post('/package-list', [PickupRequestController::class, 'getOrderPackageList']);
             Route::post('/package-photos', [PickupRequestController::class, 'getOrderPackagePhotos']);
+            Route::post('/delete-photos', [PickupRequestController::class, 'deletePackagePhotos']);
             Route::post('/change-driver', [PickupRequestController::class, 'changePickupDriver']);
             Route::post('/assign-driver', [PickupRequestController::class, 'assignPickupDriver']);
             //User click "Arrive" button to receive items

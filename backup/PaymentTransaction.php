@@ -238,18 +238,14 @@ function getTransactions_driver($arr, $ss){
   if(!is_numeric($current_page)) $current_page=1;
   $skip_rows = ($current_page -1) * $per_page;
 
-  /** NOTE about $status_id
-    * from Frontend:  1= Pending 2= Approved;
-    * Then backedn translate as follows:  1 is translated to 0 for (Pending), and 2 is translated to 1 for (Authorized).
-    * database table contains value 0 = Pending, 1 Authorized   
-  */
+  /* $status_id =>  1= Pending 2= Approved. translated to 1 become 0 (Pending), 2 Becomes 1 (Authorized) in database */
   $status_id = isset($d->status_id)?$d->status_id:null; 
   $driver_id = isset($d->driver_id)?$d->driver_id:null;
   $start_date = isset($d->start_date)?$d->start_date:null;
   $end_date = isset($d->end_date)?$d->end_date:null; 
   
   $use_all_dates = false;
-  $start_date = convertDate($start_date) ?? date('Y-m-d', strtotime('-1 day'));
+  $start_date = convertDate($start_date) ?? date('Y-m-d');
   $end_date = convertDate($end_date) ?? date('Y-m-d');
   // if (!(bool)strtotime($start_date) && !(bool)strtotime($end_date)){
   //    if($status_id ==2){
@@ -265,16 +261,18 @@ function getTransactions_driver($arr, $ss){
   $str_authorize = '';
   $str_payee =null;
   $str_payer =null;
-  /* status_id of 1 is translated to 0 to match the value of ("cash_receipt.authorized") as Pending */
-  if ($status_id == 1) $use_all_dates =true;
   if ($driver_id >0){
     $str_payee =' AND payee_id = '.$driver_id;
     $str_payer =' AND payer_id = '.$driver_id;
-  }
-   
-  if ($status_id >= 1){
-     $authorized = $status_id -1;
+  }else{
+    if ($use_all_dates) $status_id =1;
+  } 
+
+  if ($status_id > 0){
+     $authorized = $status_id ==2? 1:0;
      $str_authorize = ' AND IFNULL(r.authorized,0) = '.$authorized;
+     //If user View Pending transaction, then show trasnaction for All Dates
+     //if (!$authorized) $use_all_dates = true;
   } 
 
   $str_type_out =null;
@@ -293,7 +291,6 @@ function getTransactions_driver($arr, $ss){
   $str_dates =  $use_all_dates? '': ' AND DATE(r.payment_date) >= \''.$start_date.'\' AND DATE(r.payment_date) <=\''.$end_date.'\' ';
   $str_order_by = ' ORDER BY r.payer_name ASC';
   $cols ='HEX(r.trx_id) AS trx_id,\'Receipt\' AS trx_type,r.payer_id AS agent_id,r.payer_name as agent_name, r.payer_type AS agent_type,r.currency_code,formatTime(r.payment_date) AS payment_date,r.package_count, RTRIM(r.breakdown_notes) AS pmt_breakdowns, IFNULL(r.remarks,\'NA\') As remarks,r.cod_amount,r.fees,r.taxi_fees,r.amount,r.update_user,r.update_date,r.create_user,r.create_date,authorized,auth_user,formatTime(auth_date) as auth_date,file_name';
-  
   $sql_in = 'SELECT '.$cols.' FROM `cash_receipts` as `r` '.
   ' WHERE `r`.`branch_id` = \''.$branch_id.'\' AND `r`.`payer_type` = \'driver\''.$str_payer.$str_dates.($str_type_in? ' AND '.$str_type_in:'').$str_authorize.$str_order_by.$str_paginate;
   
@@ -301,7 +298,7 @@ function getTransactions_driver($arr, $ss){
   $cols ='HEX(r.trx_id) AS trx_id,\'Disbursement\' AS trx_type,r.payee_id AS agent_id,r.payee_name as agent_name, r.payee_type AS agent_type,r.currency_code,formatTime(r.payment_date) AS payment_date,r.package_count,RTRIM(r.breakdown_notes) AS pmt_breakdowns, IFNULL(r.remarks,\'NA\') As remarks,r.cod_amount,r.fees,r.taxi_fees,r.amount,r.update_user,r.update_date,r.create_user,r.create_date,authorized,auth_user,formatTime(auth_date) as auth_date,file_name';
   $sql_out = 'SELECT '.$cols.' FROM `cash_disbursements` as `r` '.
   ' WHERE `r`.`branch_id` = \''.$branch_id.'\' and `r`.`payee_type` = \'driver\''. $str_payee.$str_dates.$str_authorize.($str_type_out? ' AND '.$str_type_out:'').$str_order_by;
-  
+   
   $rem_count = 0;
   $a_count = DB::table('cash_receipts as r')->where('r.branch_id',$branch_id)->where('r.payer_type','driver')->whereRaw(($str_payer? '1=1 '.$str_payer:'1=1 ').$str_dates.$str_authorize)->whereRaw($str_type_in?$str_type_in:'7=7')->skip($skip_rows)->take($per_page)->count('r.trx_id');  
   $a_count = is_numeric($a_count)? $a_count:0;
@@ -318,10 +315,8 @@ function getTransactions_driver($arr, $ss){
      else $sql = '('.$sql_in.')'.' UNION ('.$sql_out.')';   
   }
  
-  $sum_row_in = null;
-  if ($trx_type =='all' || $trx_type =='receipt') $sum_row_in = DB::table('cash_receipts as r')->where('r.branch_id',$branch_id)->where('r.payer_type','driver')->whereRaw(($str_payer? '1=1 '.$str_payer:'1=1 ').$str_dates.$str_authorize)->selectRaw('(SUM(CASE IFNULL(r.authorized,0) WHEN 0 THEN 1 ELSE 0 END)) AS unauth_count, SUM(r.amount) As trx_total, COUNT(r.trx_id) AS trx_count')->get()->first(); 
-  $sum_row_out = null;
-  if($trx_type =='all' || $trx_type =='disbursement') $sum_row_out = DB::table('cash_disbursements as r')->where('r.branch_id',$branch_id)->where('r.payee_type','driver')->whereRaw($str_type_out? $str_type_out:'9=9')->whereRaw(($str_payee? '1=1 '.$str_payee: '1=1 ').$str_dates.$str_authorize)->selectRaw('(SUM(CASE IFNULL(r.authorized,0) WHEN 0 THEN 1 ELSE 0 END)) AS unauth_count, SUM(r.amount) As trx_total, COUNT(r.trx_id) AS trx_count')->get()->first();
+  $sum_row_in = DB::table('cash_receipts as r')->where('r.branch_id',$branch_id)->where('r.payer_type','driver')->whereRaw($str_type_in? $str_type_in:'11=11')->whereRaw(($str_payer? '1=1 '.$str_payer:'1=1 ').$str_dates.$str_authorize)->selectRaw('(SUM(CASE IFNULL(r.authorized,0) WHEN 0 THEN 1 ELSE 0 END)) AS unauth_count, SUM(r.amount) As trx_total, COUNT(r.trx_id) AS trx_count')->get()->first(); 
+  $sum_row_out = DB::table('cash_disbursements as r')->where('r.branch_id',$branch_id)->where('r.payee_type','driver')->whereRaw($str_type_out? $str_type_out:'9=9')->whereRaw(($str_payee? '1=1 '.$str_payee: '1=1 ').$str_dates.$str_authorize)->selectRaw('(SUM(CASE IFNULL(r.authorized,0) WHEN 0 THEN 1 ELSE 0 END)) AS unauth_count, SUM(r.amount) As trx_total, COUNT(r.trx_id) AS trx_count')->get()->first();
   $count = ($sum_row_out? $sum_row_out->trx_count:0) + ($sum_row_in?$sum_row_in->trx_count:0);
   $total = ($sum_row_out? $sum_row_out->trx_total:0) + ($sum_row_in? $sum_row_in->trx_total:0);
   $unauth_count = ($sum_row_out?$sum_row_out->unauth_count:0) + ($sum_row_in?$sum_row_in->unauth_count:0);
@@ -330,28 +325,24 @@ function getTransactions_driver($arr, $ss){
   /** BEGIN:: Calculate Overall breakdown items by pmt_method */
       //$str_payee1 = $str_payee?  $str_payee:'';
       //$str_payer1 = $str_payer? $str_payer:'';
-      $bs_sql_in  =null;
-      if($trx_type =='all' || $trx_type =='receipt') $bs_sql_in ='SELECT SUM(b.amount) AS amount,b.currency_code,b.pmt_method FROM  receipt_breakdowns AS b INNER JOIN cash_receipts as r ON r.trx_id = b.trx_id WHERE r.branch_id ='.$branch_id.' AND r.payer_type =\'Driver\' '.($str_type_out? ' AND '.$str_type_out:''). $str_payer.$str_dates.$str_authorize.' GROUP BY b.pmt_method,b.currency_code';
-      $bs_sql_out =null;
-      if($trx_type =='all' || $trx_type =='receipt') $bs_sql_out ='SELECT SUM(b.amount) AS amount,b.currency_code,b.pmt_method FROM  disbursement_breakdowns AS b INNER JOIN cash_disbursements as r ON r.trx_id = b.trx_id WHERE r.branch_id ='.$branch_id.' AND r.payee_type =\'Driver\' '.($str_type_out? ' AND '.$str_type_out:''). $str_payee.$str_dates.$str_authorize.'  GROUP BY b.pmt_method,b.currency_code'; 
+      $bs_sql_in ='SELECT SUM(b.amount) AS amount,b.currency_code,b.pmt_method FROM  receipt_breakdowns AS b INNER JOIN cash_receipts as r ON r.trx_id = b.trx_id WHERE r.branch_id ='.$branch_id.' AND r.payer_type =\'Driver\' '.($str_type_out? ' AND '.$str_type_out:''). $str_payer.$str_dates.$str_authorize.' GROUP BY b.pmt_method,b.currency_code';
+      $bs_sql_out ='SELECT SUM(b.amount) AS amount,b.currency_code,b.pmt_method FROM  disbursement_breakdowns AS b INNER JOIN cash_disbursements as r ON r.trx_id = b.trx_id WHERE r.branch_id ='.$branch_id.' AND r.payee_type =\'Driver\' '.($str_type_out? ' AND '.$str_type_out:''). $str_payee.$str_dates.$str_authorize.'  GROUP BY b.pmt_method,b.currency_code'; 
      
-      $bs_row_in = $bs_sql_in? DB::select(DB::raw($bs_sql_in)) : null;
-      $bs_row_out = $bs_sql_out ? DB::select(DB::raw($bs_sql_out)) : null; 
+      $bs_row_in = DB::select(DB::raw($bs_sql_in));
+      $bs_row_out = DB::select(DB::raw($bs_sql_out)); 
      
       $bds = [];
-      if($bs_row_in){
-        foreach($bs_row_in as $b_row){
-          if(!isset($bds[$b_row->pmt_method])) $bds[$b_row->pmt_method] = [];
-          if (!isset($bds[$b_row->pmt_method][$b_row->currency_code])) $bds[$b_row->pmt_method][$b_row->currency_code] = $b_row->amount;
-        }
+      foreach($bs_row_in as $b_row){
+        if(!isset($bds[$b_row->pmt_method])) $bds[$b_row->pmt_method] = [];
+        if (!isset($bds[$b_row->pmt_method][$b_row->currency_code])) $bds[$b_row->pmt_method][$b_row->currency_code] = $b_row->amount;
       }
-      if($bs_row_out){
-        foreach($bs_row_out as $b_row){
-          if(!isset($bds[$b_row->pmt_method])) $bds[$b_row->pmt_method] = [];
-          if (isset($bds[$b_row->pmt_method][$b_row->currency_code])) $bds[$b_row->pmt_method][$b_row->currency_code] -= abs($b_row->amount);
-          else $bds[$b_row->pmt_method][$b_row->currency_code] = -abs($b_row->amount);
-        }
+
+      foreach($bs_row_out as $b_row){
+        if(!isset($bds[$b_row->pmt_method])) $bds[$b_row->pmt_method] = [];
+        if (isset($bds[$b_row->pmt_method][$b_row->currency_code])) $bds[$b_row->pmt_method][$b_row->currency_code] -= abs($b_row->amount);
+        else $bds[$b_row->pmt_method][$b_row->currency_code] = -abs($b_row->amount);
       }
+
   /** END:: Calculate Overall breakdown items by pmt_method */
 
   foreach($rows as $row){
@@ -368,9 +359,8 @@ function getTransactions_driver($arr, $ss){
   $currency_code = 'USD';
   $dueInfo = self::getDriverDueInfo($driver_id,$start_date,$end_date);
   return (object)[
-      'use_all_dates'=>$use_all_dates,
-      'start_date'=> $use_all_dates? '': date('d-m-Y',strtotime($start_date)),
-      'end_date'=> $use_all_dates? '' : date('d-m-Y',strtotime($end_date)),
+      'start_date'=>date('d-m-Y',strtotime($start_date)),
+      'end_date'=>date('d-m-Y',strtotime($end_date)),
       'balance_due'=>$dueInfo->amount ?? 0,
       'package_count'=>$dueInfo->package_count,
       'total'=>$total?$total:0,
@@ -589,9 +579,11 @@ function makePayment($arr,$ss=null){
     if($row){
        return DV::error('មានកញ្ចប់ទំនិញខ្លះបានធ្លាប់បានទូទាត់ពីមិនរួចហើយ អាចនឺងកំពុងរុងចាំការអនុម័ត!');
     }
-  $bin_trx_id = saveData($ss,'cash_disbursements',['trx_id'=>null],$inputs,[],1,false,false);
-  if($bin_trx_id){
-    
+  $trx_id = saveData($ss,'cash_disbursements',['trx_id'=>null],$inputs,[],1,false,false);
+  if($trx_id){
+    //Update other totals such as COD_amount, taxi, fees in table cash_receipts
+    self::setOtherTotals('disbursement',$trx_id,$agent_type);
+
     $currency_code = isset($d->currency_code)?$d->currency_code:'USD';
     $breakdowns = $x->breakdowns;
     $b_count = 0 ;
@@ -600,7 +592,7 @@ function makePayment($arr,$ss=null){
     foreach($breakdowns as $item){
        $exchange_rate = isset($item->exchange_rate)?$item->exchange_rate:1;
        DB::table('disbursement_breakdowns')->insert([
-        'trx_id'=>$bin_trx_id,
+        'trx_id'=>$trx_id,
         'pmt_method'=>$item->pmt_method,
         'currency_code'=>$item->currency_code,
         'amount'=>$item->amount,
@@ -613,7 +605,8 @@ function makePayment($arr,$ss=null){
         'update_user'=>$ss->full_name,
         'update_uid'=>$ss->user_id
       ]);
-  
+
+      
       if(!isset($bs[$item->pmt_method])) $bs[$item->pmt_method] = '';
       $cur_amount_notes = $bs[$item->pmt_method]; 
       $b_amount = number_format(floatval($item->amount), 2, '.', ',');
@@ -628,31 +621,26 @@ function makePayment($arr,$ss=null){
       //$amount = floatval($cur_amount)!==false ? number_format(floatval($cur_amount), 2, '.', ',') :$cur_amount;
       $bs_notes .= ($bs_notes? ' | ':'').$pmt_method.': '. $cur_amount; 
     }
-    DB::table('cash_disbursements')->where('trx_id',$bin_trx_id)->update(['breakdown_notes'=>$bs_notes]);
+    DB::table('cash_disbursements')->where('trx_id',$trx_id)->update(['breakdown_notes'=>$bs_notes]);
  
     if($b_count > 0){
        $p_ids = explode(',',$d->packages);
        if ($agent_type=='driver'){
         DB::table('package')->whereIn('id',$p_ids)->update([
           'driver_pmt_status_id'=>1, /* For merchant payment => auto authorize */
-          'driver_trx_id'=>$bin_trx_id,
+          'driver_trx_id'=>$trx_id,
           'driver_pmt_notes'=>'Paid by: '.$ss->full_name
          ]);
        }else if($agent_type =='merchant'){
         DB::table('package')->whereIn('id',$p_ids)->update([
           'sender_pmt_status_id'=>1, /* For merchant payment => auto authorize */
-          'sender_trx_id'=>$bin_trx_id,
+          'sender_trx_id'=>$trx_id,
           'sender_pmt_notes'=>'Paid by: '.$ss->full_name
          ]);
        }
      
      }
    }
-
-    //Update other totals such as COD_amount, taxi, fees in table cash_receipts
-    self::setOtherTotals('disbursement',$bin_trx_id,$agent_type);
-
-   $trx_id = bin2hex($bin_trx_id);
    return DV::depends($trx_id,['trx_id'=>$trx_id,'package_count'=>$d->package_count,'trx_breakdown_count'=>$b_count],'Failed to save payment transaction');   
  }
  
@@ -1041,7 +1029,7 @@ function settleZero_sender($arr,$ss){
 }
 
 /** Given a @driver_trx_id or @sender_trx_id, update the "cod_amount","fees","taxi" in table cash_receipts or cash_disbursements accordingly */
-static function setOtherTotals($trx_type,$binary_trx_id,$agent_type){
+static function setOtherTotals($trx_type,$trx_id,$agent_type){
   $trx_type = strtolower($trx_type);
   $agent_type = strtolower($agent_type);
    $table = null;
@@ -1054,14 +1042,10 @@ static function setOtherTotals($trx_type,$binary_trx_id,$agent_type){
    if(!$q_field) return 'invalid @agent_type';
    //NOTE: $trx_id is BINARY(16)
    $fee_col ='';
-   if ($agent_type =='merchant')  $fee_col = ',SUM(CASE LOWER(p.df_payer) WHEN \'sender\' THEN p.base_fee + IFNULL(p.delivery_fee,0) + IFNULL(p.cod_fee,0) ELSE 0 END) AS fees';
-   else if ($agent_type =='driver')  $fee_col = ',SUM(CASE LOWER(p.df_payer) WHEN \'receiver\' THEN p.base_fee + IFNULL(p.delivery_fee,0) ELSE 0 END) AS fees';
-    
-   $row = DB::table('package AS p')
-       ->selectRaw('SUM(p.price) AS cod_amount, SUM(p.forwarding_cost) AS taxi' . $fee_col)
-       ->where($q_field,$binary_trx_id)
-       ->get()
-       ->first();
+   if ($agent_type =='merchant')  $fee_col = ',SUM(CASE LOWER(p.df_payer) WHEN \'sender\' THEN p.base_fee + IFNULL(p.delivery_fee,0) + IFNULL(p.cod_fee,0)) ELSE 0 END AS fees';
+   else if ($agent_type =='driver')  $fee_col = ',SUM(CASE LOWER(p.df_payer) WHEN \'receiver\' THEN p.base_fee + IFNULL(p.delivery_fee,0)) ELSE 0 END AS fees';
+
+   $row = DB::table('package as p')->where($q_field,$trx_id)->selectRaw('SUM(p.price) AS cod_amount,SUM(p.forwarding_cost) AS taxi'.$fee_col)->get()->first(); 
    $cod_amount = 0;
    $fees = 0;
    $taxi =0;
@@ -1070,15 +1054,11 @@ static function setOtherTotals($trx_type,$binary_trx_id,$agent_type){
      $taxi = $row->taxi;
      $fees = $row->fees;
    }
-   $m_inputs = [
+   DB::table($table)->where('trx_id',$trx_id)->update([
     'cod_amount'=>$cod_amount,
     'taxi_fees'=>$taxi,
     'fees'=>$fees
-   ];
-   $x = DB::table($table)->where('trx_id',$binary_trx_id)->update($m_inputs);
-   if(!$x){
-      Log::error('Failed to update table '.$table.' for value of '.json_encode($m_inputs));
-   }
+   ]);
    return null;
 }
 
@@ -1102,17 +1082,11 @@ function receivePayment($arr,$ss=null){
     $res = validateObject($arr,$v_rule,true,['notes' => [':','.','$','-'],'remarks' => [':','.','$','-'],'packages'=>[',','|',';']],$ss->lang,false,null);
     if($res->error) return DV::error($res->error);
     $d = (object)$res->values;
-    if(!$d->packages) return DV::error('No package list provided');    
+    if(!$d->packages) return DV::error('No package list provided');
     $currency_code = isset($d->currency_code)?$d->currency_code:null;
     if(!$currency_code) $currency_code = isset($d->currency)? $d->currency:'USD';
     $agent_type = strtolower($d->agent_type);
 
-    //Check if among the $d->packages profived, there are some package already be part of any previous payment transaction
-    $trx_field = $agent_type =='driver'? 'driver_trx_id':'sender_trx_id';
-    $row = DB::table('package as p')->join('cash_disbursements as r','r.trx_id','=','p.'.$trx_field)->whereIn('p.id',explode(',',$d->packages))->whereRaw('p.'.$trx_field.' IS NOT NULL')->take(1)->first();
-    if($row){
-         return DV::error('មានកញ្ចប់ទំនិញខ្លះបានធ្លាប់បានទូទាត់ពីមិនរួចហើយ អាចនឺងកំពុងរុងចាំការអនុម័ត!');
-    }
     $a_table ='sender';
     if($agent_type =='driver') $a_table ='driver';
     $agent = DB::table($a_table.' as d')->where('id',$d->agent_id)->selectRaw('d.id,d.name,d.code')->first();
@@ -1140,10 +1114,11 @@ function receivePayment($arr,$ss=null){
     if($row){
        return DV::error('មានកញ្ចប់ទំនិញខ្លះបានធ្លាប់បានទូទាត់ពីមិនរួចហើយ អាចនឺងកំពុងរុងចាំការអនុម័ត!');
     }
-    // $err = self::checkDuplicateTransaction($);
-    // if($err) return DV::error($err);
-    $bin_trx_id = saveData($ss,'cash_receipts',['trx_id'=>null],$inputs,[],1,false,false);
-    if($bin_trx_id){
+
+    $trx_id = saveData($ss,'cash_receipts',['trx_id'=>null],$inputs,[],1,false,false);
+    if($trx_id){
+      //Update other totals such as COD_amount, taxi, fees in table cash_receipts
+      self::setOtherTotals('receipt',$trx_id,$agent_type);
       $currency_code = isset($d->currency_code)?$d->currency_code:'USD';
       $breakdowns = $x->breakdowns;
       $b_count = 0 ;
@@ -1152,7 +1127,7 @@ function receivePayment($arr,$ss=null){
       foreach($breakdowns as $item){
          $exchange_rate = isset($item->exchange_rate)?$item->exchange_rate:1;
          DB::table('receipt_breakdowns')->insert([
-          'trx_id'=>$bin_trx_id,
+          'trx_id'=>$trx_id,
           'pmt_method'=>$item->pmt_method,
           'currency_code'=>$item->currency_code,
           'amount'=>$item->amount,
@@ -1179,34 +1154,31 @@ function receivePayment($arr,$ss=null){
         $bs_notes .= ($bs_notes? ' | ':'').$pmt_method.': '. $cur_amount; 
       }
 
-      DB::table('cash_receipts')->where('trx_id',$bin_trx_id)->update(['breakdown_notes'=>$bs_notes]);
+      DB::table('cash_receipts')->where('trx_id',$trx_id)->update(['breakdown_notes'=>$bs_notes]);
 
       if($b_count > 0){
          $p_ids = explode(',',$d->packages);
          if ($agent_type =='driver'){
            DB::table('package')->whereIn('id',$p_ids)->update([
             'driver_pmt_status_id'=>0, /* Pending*/
-            'driver_trx_id'=>$bin_trx_id,
+            'driver_trx_id'=>$trx_id,
             'driver_pmt_notes'=>'Received by: '.$ss->full_name
            ]);
          }else if ($agent_type =='merchant'){
            DB::table('package')->whereIn('id',$p_ids)->update([
             'sender_pmt_status_id'=>1, /* Pending*/
-            'sender_trx_id'=>$bin_trx_id,
+            'sender_trx_id'=>$trx_id,
             'sender_pmt_notes'=>'Received by: '.$ss->full_name
            ]);
          }
       }
     }
-    
-    //Update other totals such as COD_amount, taxi, fees in table cash_receipts
-    self::setOtherTotals('receipt',$bin_trx_id,$agent_type);
-    $trx_id = bin2hex($bin_trx_id);
     return DV::depends($trx_id,['trx_id'=>$trx_id,'package_count'=>$d->package_count,'trx_breakdown_count'=>$b_count],'Failed to save payment transaction');   
   }
 
   static function authorizeReceipts_driver($arr,$ss){
     $currency_code ='USD';
+    
     $branch_id = Sanitizer::sanitize($ss->branch_id); 
     $d = (object)$arr;
 
@@ -1410,7 +1382,7 @@ foreach($rows as $row){
           $orderByDate =',arrival_date DESC';
         }
 
-        $cols = $select_date.'HEX(p.sender_trx_id) AS sener_trx_id, SUM(CASE lower(p.df_payer) WHEN \'sender\' THEN (IFNULL(p.delivery_fee,0) + IFNULL(p.base_fee,0)) ELSE 0 END) AS fees, SUM(IFNULL(p.forwarding_cost,0)) AS forwarding_cost, SUM(IFNULL(p.cod_fee,0)) AS cod_fee, SUM(p.price) AS price, COUNT(p.id) AS package_count, s.id,s.code, s.name as sender_name' 
+        $cols = $select_date.'HEX(p.sender_trx_id) AS sener_trx_id, SUM(CASE lower(p.df_payer) WHEN \'sender\' THEN (IFNULL(p.delivery_fee,0) + IFNULL(p.base_fee,0)) ELSE 0 END) AS fees, SUM(IFNULL(p.forwarding_cost,0)) AS forwarding_cost, SUM(IFNULL(p.cod_fee,0)) AS cod_fee, SUM(CASE p.cod WHEN 1 THEN IFNULL(p.price,0) ELSE 0 END) AS price, COUNT(p.id) AS package_count, s.id,s.code, s.name as sender_name' 
         .',(SELECT CONCAT(acc.account_number,\'|\',acc.account_name,\'|\',acc.bank_name) as account_info FROM sender_bank_accounts AS acc WHERE acc.is_primary =1 AND acc.sender_id = s.id LIMIT 1) AS account_info ';
  
         $rows = DB::table('package as p')->join('sender as s','s.id','=','p.sender_id')
@@ -1429,10 +1401,10 @@ foreach($rows as $row){
         $pg_count_receivable =0;
 
         foreach($rows as $row){
-           $row->cod_amount = $row->price - $row->cod_fee;
+           $row->cod_amount = $row->price;
            $amount = $row->cod_amount - $row->fees - $row->forwarding_cost;
            $row->amount = number_format(floatval($amount),2,'.');
-           $row->total_fees = $row->fees;
+           $row->total_fees = $row->fees - $row->cod_fee;
            $row->total_fees = number_format(floatval($row->total_fees),2,'.');
            $sts = explode('|',$row->account_info ?? '');
 

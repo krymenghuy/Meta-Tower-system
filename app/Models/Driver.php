@@ -55,7 +55,7 @@ function getMyTasks($id=null,$ss=null){
   $data = (object)['deliveries'=>[],'pickups'=>[],'pickup_count'=>0,'delivery_count'=>0];
    
   $selectCols ="d.id AS delivery_id,DATE_FORMAT(d.depart_time,'%r')AS depart_time, formatDate(d.depart_time) AS depart_date,IFNULL(d.package_count,0) AS package_count, IFNULL(d.delivered_count,0) AS delivered_count, IFNULL(d.failed_count,0) AS failed_count,d.fleet_tracking_number,ds.id AS trip_status_id, ds.name AS trip_status";
-  $rows = DB::table('delivery AS d')->join('delivery_statuses AS ds','ds.id','=','d.status_id')->where('d.branch_id',$branch_id)->where("d.status_id",2)->where('d.driver_id',$driver_id)->selectRaw($selectCols)->orderByRaw("d.depart_time DESC")->get();
+  $rows = DB::table('delivery AS d')->join('delivery_statuses AS ds','ds.id','=','d.status_id')->where('d.branch_id',$branch_id)->where('d.status_id',2)->where('d.driver_id',$driver_id)->selectRaw($selectCols)->orderByRaw("d.depart_time DESC")->get();
   $data->deliveries = $rows;
   //count number of trips, NOT packages
   $data->delivery_count = count($rows);
@@ -668,7 +668,7 @@ static function defaultImage($branch_id){
           'address' => '0|string|0-250',
           'emp_type' => '1|choice|full time,part time',
           'vehicle_type' => '1|string|0-150',
-          'vehicle_number' => '0|string|0-100',
+          'vehicle_number' => '0|string|0-35|text=Vehicle number is between 1 to 30 characters',
           'driver_license_number' => '0|string|50',
           'shift' => '1|choice|FD,HD,fd,hd',
           //'national_id'=>'1|number|exists=loc_countries.id|text=Nationality is not correct',
@@ -845,7 +845,7 @@ static function defaultImage($branch_id){
           $p_rows = DB::table('package as p')
           ->join('driver as d', 'd.id', '=', 'p.driver_id')
           ->where('p.warehouse_id',$warehouse_id)
-          ->whereRaw('IFNULL(p.driver_pmt_status_id,0) = 0 AND p.status_id = 8 AND IFNULL(p.driver_trx_id,\'\') =\'\'')
+          ->whereRaw('IFNULL(p.driver_pmt_status_id,0) = 0 AND p.status_id = 8 AND p.driver_trx_id IS NULL')
           ->whereRaw($str_dates)
           ->whereRaw($str_pmt_status)
           ->whereRaw($str_driver)
@@ -1146,7 +1146,7 @@ function getUnpaidPackages($arr = [], $id = null, $ss = null)
 
     static function getOutstandingBalanceError($id){
       if (!$id) return null;
-      $row = DB::table('package as p')->join('driver as s','s.id','=','p.driver_id')->where('s.id',$id)->whereRaw('IFNULL(p.driver_pmt_status_id,0) =0')->whereRaw('p.driver_id > 0')->selectRaw('COUNT(p.id) AS item_count,SUM(IFNULL(p.driver_total,0)) AS amount')->get()->first();
+      $row = DB::table('package as p')->join('driver as s','s.id','=','p.driver_id')->where('p.status_id',8)->where('s.id',$id)->whereRaw('IFNULL(p.driver_pmt_status_id,0) =0')->whereRaw('p.driver_id > 0')->selectRaw('COUNT(p.id) AS item_count,SUM(IFNULL(p.driver_total,0)) AS amount')->get()->first();
       if(!$row) return null;
       if ($row->item_count > 0 ) return 'មិន​អាច​លុប ឬ​បិទ​គណនី​នេះ​បាន​ទេ ព្រោះ​មាន​កញ្ចប់ '.$row->item_count.' ដែល​មិន​ទាន់​បាន​ទូទាត់​ប្រាក់';
       return null;

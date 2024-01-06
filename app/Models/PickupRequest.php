@@ -60,7 +60,7 @@ class PickupRequest //extends Model
         $qty = isset($d['qty'])?$d['qty']:0;
         if ($qty >1000) return DV::error('It seems too many packages');
 
-        $nowTime = getNowTime()();
+        $nowTime = getNowTime();
         DB::table('order')->insert([
              'detail_type'=>$detail_type,
             'branch_id' => $branch_id,
@@ -126,11 +126,12 @@ class PickupRequest //extends Model
         
         $str_order ='o.id ='.($order_id?$order_id:0);
  
-        $rows = DB::table('order as o')->join('sender as s','s.id','=','o.sender_id')->join('order_images as img','o.id','=','img.order_id')->whereRaw($str_order)->whereRaw($str_dates)->whereRaw($str_sender)->selectRaw('img.id,img.file_name,formatDate(img.create_date) as create_date,img.file_type,file_size_kb')->get();
+        $rows = DB::table('order as o')->join('sender as s','s.id','=','o.sender_id')->join('order_images as img','o.id','=','img.order_id')->where('img.inactive',0)->whereRaw($str_order)->whereRaw($str_dates)->whereRaw($str_sender)->selectRaw('img.id,img.file_name,img.package_id,create_user,formatDate(img.create_date) as create_date')->get();
         
         //NOTE: event in case Driver is the one who upload order images, all order-images are saved in directory "companies/1_data/merchant"
         $base_url = PublicStorage::getUrl($branch_id,self::$package_photo_dir,'image');
         foreach($rows as $row){
+            unset($row->file_name);
             $row->image_url = $base_url.$row->file_name;
         }
         return $rows;
@@ -139,6 +140,58 @@ class PickupRequest //extends Model
     function countImages($order_id){
        $count = DB::table('order_images as oi')->where('order_id',$order_id)->count('oi.id');
        return $count;
+    }
+
+    /** $photo_ids is, for example,: "3|67|120|260" */
+    function deletePackagePhotos($photo_ids, $id = null, $ss = null){
+        $ss = $ss?? $this->userInfo;
+        //$order_id = $id ?? $this->id;
+        $ids = explode('|',$photo_ids);
+        $branch_id = $ss->branch_id;
+        $query = DB::table('order_images')->whereIn('id',$ids)->where('branch_id',$branch_id);   
+        $rows = $query->selectRaw('id,order_id,file_name')->get();
+        $errors = [];
+        $order_id = isset($rows[0])? $rows[0]->order_id: null;
+        $sender = null;
+        if($order_id) $sender = DB::table('sender as s')->join('order as o','o.sender_id','=','s.id')->where('o.id',$order_id)->selectRaw('s.name,s.phone_number')->take(1)->first();
+        foreach($rows as $row){
+            $dir = PublicStorage::getDiskPath($branch_id,self::$package_photo_dir,'image');
+            $path = $dir.$row->file_name;
+            $err = PublicStorage::deleteFile($path);
+            if(!$err){
+                 $x = DB::table('order_images')->where('id',$row->id)->update(['inactive'=>1]);
+                 if($x){ 
+                   $sender_name = $sender? ' merchant named '.$sender->name: 'Unknown Merchant'; 
+                   $des = $ss->full_name.' deleted package photo id '.$row->id.' from '.$sender_name.' at '.date('d M Y h:i'); 
+                   self::trackChange($ss,'delete_package_photo',$des,'order_images','id',$row->id);
+                 }
+            }
+            $errors[] = $err;
+        }
+
+        $img_count = DB::table('order_images AS img')->where('img.order_id',$order_id)->where('inactive',0)->count('img.id');
+        $data = (object)[
+            'branch_id'=>$branch_id,
+            'user_id'=>$ss->user_id,
+            'title'=>'Package Photo Deleted',
+            'order_id'=>$order_id,
+            'img_count'=> $img_count,
+            'message'=>$ss->full_name.' បានលុបរូបថត ក្នុងបញ្ជាលេខ '.$order_id.' នៅ '.date('d M Y h:i')
+        ];
+        Notifier::notify_admin('package_photo_deleted',$data);
+        return DV::success();
+    }
+
+    static function trackChange($ss,$action_name,$des,$table_name,$pk_field,$pk_value){
+        try{
+           $inputs= ['target_table'=>$table_name,'pk_field'=>$pk_field,'pk_value'=>$pk_value,'action_name'=>$action_name,'description'=>$des];
+           $id = saveData($ss,'general_tracks',['id'=>null],$inputs,[],1,false);
+           return null;
+        }catch(\Exception $e){
+           Log::error('Failed to create general track of action done by '.$ss->full_name);
+               Log::error($e->getMessage());
+               Log::error($e->getTraceAsString());
+        }
     }
 
     function deleteOrderImage_internal($branch_id,$file_name,$file_id=0){
@@ -369,6 +422,7 @@ class PickupRequest //extends Model
             $c->dim_y = isset($c->dim_y) ? $c->dim_y:  0;
             $c->dim_h = isset($c->dim_h) ? $c->dim_h: 0;
             $c->actual_kg = isset($c->actual_kg) ? $c->actual_kg:  0;
+            if(!floatval($c->actual_kg)) $c->actual_kg = 0 ;
             $c->delivery_type = isset($c->delivery_type) ? $c->delivery_type: $order->delivery_type;
             if (!in_array(strtolower($c->delivery_type),['normal','fast'])) return DV::error('Service type must be either Normal or Fast'); 
             
@@ -384,7 +438,8 @@ class PickupRequest //extends Model
             /** If no receiver address then use remarks as receiver address */
             if(!isset($c->receiver_address)) $c->receiver_address = $c->zone_name;
             if (!$c->receiver_address) $c->receiver_address = $c->zone_name; 
-            if (!$c->delivery_notes) $c->delivery_notes = $remarks; 
+            if (!$c->delivery_notes) $c->delivery_notes = $remarks;
+            $c->billed_kg = floatval($c->billed_kg)?$c->billed_kg:0; 
             if (!$c->billed_kg){
                 $systematic_billed_kg = $this->getBilledWeight($c->dim_x,$c->dim_y,$c->dim_h, $c->actual_kg);
                 $c->billed_kg = $systematic_billed_kg;
@@ -406,7 +461,6 @@ class PickupRequest //extends Model
              }
            //end process pacakge size
             $p = $packageModel->getDeliveryPriceInfo($branch_id,$sender_id,$c->delivery_type,$c->zone_code,$c->billed_kg,$c->cod);
-            
             if($p->status ==='Error'){
                return DV::error($p->error_message.' Zone: '.$c->zone_code);
             }else{
@@ -521,7 +575,7 @@ class PickupRequest //extends Model
         $is_from_mobile = in_array(strtolower($ss->user_class),['driver','merchant']);
         $sender_id = $d->sender_id;
 
-        $sender_id = $is_from_mobile && strtolower($ss->user_class) =='merchant'? $ss->official_id : $d->sender_id;
+        $sender_id = ($is_from_mobile && strtolower($ss->user_class) =='merchant')? $ss->official_id : $d->sender_id;
         $sender = $this->getSenderInfoById($ss,$sender_id);
         if (!$sender) return DV::error('Sender identity is not valid');
         $inputs['sender_id'] = $sender->id;
@@ -633,14 +687,18 @@ class PickupRequest //extends Model
             //$cnt = $i+1;
             //Make merchant_id becomes sender_id (that is ID of merchant)
             $order->merchant_id = isset($order->sender_id)?$order->sender_id:null;
+            $order->user_id = $ss->user_id;
+            $order->role_name = null;
             $pickup_address = $pickup_address? 'នៅ '.$pickup_address:''; 
             $order->title ="Order Created";
-            $order->message ="ត្រូវទៅយកទំនិញពី ".$sender->name.$pickup_address; 
+            $order->message ="ត្រូវទៅយកទំនិញពី ".$sender->name.$pickup_address;
+            //$order->branch_id is a MUST in order for the event "order_created" to broadcast 
+            $order->branch_id = $branch_id;
             Notifier::notify_admin('order_created',$order);
         }
 
           //begin:: Notify to mobile app users
-                    $order->event_name ='order_created';
+                    $order->event_name = strtolower($ss->user_class) =='merchant'? 'merchant_created_order': 'order_created';
                     $cdata =[
                         // [
                         //     'user_class'=>'driver',
@@ -811,7 +869,8 @@ class PickupRequest //extends Model
             $order->merchant_id = isset($order->sender_id)?$order->sender_id:null;
             $pickup_address = $pickup_address? 'នៅ '.$pickup_address:''; 
             $order->title ="Order by Photos";
-            $order->message ="អ្នកដឹកបានបង្ក់ើត order សំរាប់ ".$sender->name.$pickup_address; 
+            $order->message ="អ្នកដឹកបានបង្ក់ើត order សំរាប់ ".$sender->name.$pickup_address;
+            $order->branch_id = $branch_id; 
             Notifier::notify_admin('order_created',$order);
         }
 
@@ -860,8 +919,15 @@ class PickupRequest //extends Model
         return null;  
     }
 
+    static function countPackagePhotos($rows,$order_id){
+        $found_rows = $rows->filter(function($row) use($order_id){
+            return $row->id == $order_id;
+        });
+        return  isset($found_rows[0])? $found_rows[0]->image_count : 0;
+    }
+
     static function getOrderDetails_one($id){
-        $row = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->where('o.id',$id)->selectRaw('o.id as order_id,booking_channel,IFNULL(o.completed,0) AS completed,o.delivery_type, o.code as order_code, o.request_vehicle_type, o.sender_id, s.name AS sender_name, s.phone_number AS sender_phone, formatDate(o.request_date) AS request_date,  DATE_FORMAT(o.request_date,\'%r\') AS request_time,o.qty, o.product_type,o.loc_lat,o.loc_lng, o.pickup_address, o.status_id, ps.name AS order_status, (SELECT d.name FROM driver as d WHERE d.id = o.driver_id LIMIT 1) AS driver_name,o.create_user,formatTime(o.create_date) As create_date')->first();
+        $row = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->where('o.id',$id)->selectRaw('o.id as order_id,booking_channel,IFNULL(o.completed,0) AS completed,o.delivery_type, o.code as order_code, o.request_vehicle_type, o.sender_id, s.code as sender_code,s.name AS sender_name, s.phone_number AS sender_phone, formatDate(o.request_date) AS request_date,  DATE_FORMAT(o.request_date,\'%r\') AS request_time,o.qty, o.product_type,o.loc_lat,o.loc_lng, o.pickup_address, o.status_id, ps.name AS order_status, (SELECT d.name FROM driver as d WHERE d.id = o.driver_id LIMIT 1) AS driver_name,o.create_user,formatTime(o.create_date) As create_date')->first();
         if(!$row) return $row;
         $row->map_url = getLocationUrl($row->loc_lat,$row->loc_lng);
         return $row;
@@ -910,11 +976,79 @@ class PickupRequest //extends Model
             if ($status_id ==5) //NOTE that order.completed =1 also means order.status_id = 5 //if status ="Arrived warehouse" => query includes "Completed" Order as well 
               $more_wheres = " o.completed =1 ".$str_dates.$str_sender.$str_delivery_type.$str_driver;
             else 
-              $more_wheres = " IFNULL(o.completed,0) = 0 ".$str_dates.$str_driver.$str_sender.$str_status.$str_delivery_type;
+              $more_wheres = ' IFNULL(o.completed,0) = 0 '.$str_dates.$str_driver.$str_sender.$str_status.$str_delivery_type;
         }
         //CASE sign(IFNULL(o.status_id,0) -4) WHEN 1 THEN (SELECT COUNT(p.id) FROM package AS p WHERE p.branch_id ='".$branch_id."' AND p.order_id = o.id) ELSE o.qty END AS qty
-        $rows = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->where('o.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw('o.id,booking_channel,IFNULL(o.completed,0) AS completed,o.delivery_type, o.code as order_code, o.request_vehicle_type, o.sender_id, s.name AS sender_name, s.phone_number AS sender_phone, formatDate(o.request_date) AS request_date,DATE_FORMAT(o.request_date,\'%r\') AS request_time,o.qty, o.product_type, o.loc_lat,o.loc_lng, o.pickup_address, o.status_id, ps.name AS order_status,o.driver_id, (SELECT d.name FROM driver as d WHERE d.id = o.driver_id LIMIT 1) AS driver_name,o.create_user,formatTime(o.create_date) As create_date')->orderByRaw('ps.display_order ASC,o.id DESC')->get();
-        foreach($rows as $row) $row->map_url = getLocationUrl($row->loc_lat,$row->loc_lng);
+        $rows = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->where('o.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw('o.id,booking_channel,IFNULL(o.completed,0) AS completed,o.delivery_type, o.code as order_code, o.request_vehicle_type, o.sender_id, s.name AS sender_name,s.code AS sender_code, s.phone_number AS sender_phone, formatDate(o.request_date) AS request_date,DATE_FORMAT(o.request_date,\'%r\') AS request_time,o.qty, o.product_type, o.loc_lat,o.loc_lng, o.pickup_address, o.status_id, ps.name AS order_status,o.driver_id, (SELECT d.name FROM driver as d WHERE d.id = o.driver_id LIMIT 1) AS driver_name,o.create_user,formatTime(o.create_date) As create_date')->orderByRaw('ps.display_order ASC,o.id DESC')->get();
+        $p_rows = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->join('order_images as img','img.order_id','=','o.id')->where('o.branch_id',$branch_id)->whereRaw($more_wheres)->where('img.inactive',0)->selectRaw('o.id,COUNT(img.id) AS image_count')->groupByRaw('o.id')->get();      
+        foreach($rows as $row){
+            $row->map_url = getLocationUrl($row->loc_lat,$row->loc_lng);
+            $row->image_count = self::countPackagePhotos($p_rows,$row->id);
+        }
+
+    //     $rows = DB::table('order AS o')
+    //     ->join('sender AS s', 's.id', '=', 'o.sender_id')
+    //     ->join('package_statuses AS ps', 'ps.id', '=', 'o.status_id')
+    //     ->leftJoin('order_images AS oi', 'o.id', '=', 'oi.order_id')  // Left join to order_images
+    //     ->where('o.branch_id', $branch_id)
+    //     ->whereRaw($more_wheres)
+    //     ->where('oi.inactive',0)
+    //     ->selectRaw('
+    //         o.id,
+    //         booking_channel,
+    //         IFNULL(o.completed, 0) AS completed,
+    //         o.delivery_type,
+    //         o.code as order_code,
+    //         o.request_vehicle_type,
+    //         o.sender_id,
+    //         s.name AS sender_name,
+    //         s.code AS sender_code,
+    //         s.phone_number AS sender_phone,
+    //         formatDate(o.request_date) AS request_date,
+    //         DATE_FORMAT(o.request_date, \'%r\') AS request_time,
+    //         o.qty,
+    //         o.product_type,
+    //         o.loc_lat,
+    //         o.loc_lng,
+    //         o.pickup_address,
+    //         o.status_id,
+    //         ps.name AS order_status,
+    //         o.driver_id,
+    //         (SELECT d.name FROM driver AS d WHERE d.id = o.driver_id LIMIT 1) AS driver_name,
+    //         o.create_user,
+    //         formatTime(o.create_date) AS create_date,
+    //         COUNT(oi.id) AS image_count')
+    //     ->groupBy([
+    //         'o.id',
+    //         'booking_channel',
+    //         'o.delivery_type',
+    //         'o.code',
+    //         'o.request_vehicle_type',
+    //         'o.sender_id',
+    //         's.name',
+    //         's.code',
+    //         's.phone_number',
+    //         'request_time',
+    //         'request_date',
+    //         'o.qty',
+    //         'o.product_type',
+    //         'o.loc_lat',
+    //         'o.loc_lng',
+    //         'o.pickup_address',
+    //         'o.status_id',
+    //         'ps.name',
+    //         'o.driver_id',
+    //         'o.create_user',
+    //         'create_date',
+    //         'completed'
+    //     ])
+    //     ->orderByRaw('ps.display_order ASC, o.id DESC')
+    //     ->get();
+    
+    // foreach ($rows as $row) {
+    //     $row->map_url = getLocationUrl($row->loc_lat, $row->loc_lng);
+    // }
+     
         return $rows;
     }
     //getPickupRequests Delivery Order List that not yet completed AT WAREHOUSE
@@ -1576,12 +1710,11 @@ class PickupRequest //extends Model
         $order_id =$id ?? $this->id;
         $branch_id = $ss->branch_id;
 
-        $rows = DB::table("order_images as img")->join('order as o','o.id','=','img.order_id')->where('o.id',$order_id)->where('img.branch_id',$branch_id)->selectRaw("img.id,img.file_name,img.file_type,file_size_kb")->get();
+        $rows = DB::table("order_images as img")->join('order as o','o.id','=','img.order_id')->where('o.id',$order_id)->where('img.inactive',0)->where('img.branch_id',$branch_id)->selectRaw('img.id,img.file_name,package_id,qr_code as barcode')->get();
         $img_folder = 'package';
         $base_url = PublicStorage::getUrl($branch_id,$img_folder,'image');
         $default_image =$base_url.'/def_image.png';
         $dir = PublicStorage::getDiskPath($branch_id,$img_folder,'image');
-        
         foreach($rows as $row){
             $filePath = $dir.$row->file_name;
             if (fileExists($filePath))   
@@ -1607,7 +1740,8 @@ class PickupRequest //extends Model
         if(empty($status_id)) $order_id =-1;
         $table = 'order_receivers';
         if ($status_id >=5)   $table = 'package';
-        return DB::table($table.' AS r')->join('package_statuses AS ps','ps.id','=','r.status_id')->join('sender as s','s.id','=','r.sender_id')->where('r.branch_id',$branch_id)->where('r.order_id',$order_id)->where('r.id',$package_id)->selectRaw("r.id AS package_id,r.status_id,r.qr_code AS barcode,r.delivery_type,r.zone_code,r.zone_name,r.sender_id,s.name AS sender_name,r.receiver_address,r.delivery_notes AS remarks,r.receiver_phone,r.receiver_name, r.package_name,r.zone_code,LOWER(r.delivery_type) AS delivery_type,r.zone_name,CONCAT(dim_x,' ', dim_y,' ', dim_h) AS size, r.actual_kg, r.billed_kg,r.base_fee, r.delivery_fee,r.df_payer,r.price,r.cod,r.cod_fee,r.forwarding_cost,r.delivery_notes, ps.name AS status,(IFNULL(r.base_fee,0) + IFNULL(r.delivery_fee,0)) AS fees, CASE r.cod WHEN 1 THEN (IFNULL(r.price,0) - IFNULL(r.cod_fee,0)) ELSE 0 END AS cod_amount,r.driver_total,r.sender_total")->take(1)->first(); 
+        $get_image_id = $table === 'order_receivers'? ',(SELECT img.id FROM order_images as img WHERE img.package_id = r.id LIMIT 1) As image_id':'';
+        return DB::table($table.' AS r')->join('package_statuses AS ps','ps.id','=','r.status_id')->join('sender as s','s.id','=','r.sender_id')->where('r.branch_id',$branch_id)->where('r.order_id',$order_id)->where('r.id',$package_id)->selectRaw('r.id AS package_id,r.status_id,r.qr_code AS barcode,r.delivery_type,r.zone_code,r.zone_name,r.sender_id,s.name AS sender_name,r.receiver_address,r.delivery_notes AS remarks,r.receiver_phone,r.receiver_name, r.package_name,r.zone_code,LOWER(r.delivery_type) AS delivery_type,r.zone_name,CONCAT(dim_x,\' \', dim_y,\' \', dim_h) AS size, r.actual_kg, r.billed_kg,r.base_fee, r.delivery_fee,r.df_payer,r.price,r.cod,r.cod_fee,r.forwarding_cost,r.delivery_notes, ps.name AS status,(IFNULL(r.base_fee,0) + IFNULL(r.delivery_fee,0)) AS fees, CASE r.cod WHEN 1 THEN (IFNULL(r.price,0) - IFNULL(r.cod_fee,0)) ELSE 0 END AS cod_amount,r.driver_total,r.sender_total'.$get_image_id)->take(1)->first(); 
      }
  
      function deleteOrderPackage($arr=[],$ss){
@@ -1646,6 +1780,14 @@ class PickupRequest //extends Model
             'qty'=>$count,
             'actual_pkg_count'=>$count
         ]);
+
+        try{
+           DB::table('order_images')->where('package_id',$package_id)->update(['package_id'=>null,'qr_code'=>null]); 
+        }catch(\Throwable $e){
+           Log::error($e->getMessage());
+           Log::error($e->getTraceAsString());
+        }
+
         return DV::depends(1,['package_count'=>$count]);
      }
 
@@ -1670,6 +1812,7 @@ class PickupRequest //extends Model
      function saveOrderPackageDetails($arr,$ss){
         $v_rule= [
             'order_id'=>'1|number|text=Order ID does not exist',
+            'image_id'=>'0|number',
             'sender_id'=>'0|number|sender.id|text=Merchant identity does not exist',
             'package_id'=>'0|number',
             'barcode'=>'0|string|0-50',
@@ -1694,11 +1837,13 @@ class PickupRequest //extends Model
         if($res->error) return DV::error($res->error);
 
         $d = (object)$res->values;
-
+         
         //$branch_id = $ss->branch_id;
         $order_id = $d->order_id;
         //$sender_id = $d->sender_id;
         $package_id = $d->package_id;
+        $image_id = $d->image_id;
+        unset($d->image_id);
         $barcode = $d->barcode;
         $warehouse =  GeneralSettings::getDefaultWarehouse($ss);
         if(!$warehouse) return DV::error('Failed to identify default warehouse');
@@ -1736,6 +1881,12 @@ class PickupRequest //extends Model
               $b = self::setBarcode($package_id);
               $barcode = $b->barcode;
             }
+            if($image_id && $table === 'order_receivers'){
+                DB::table('order_images')->where('order_id',$order_id)->where('id',$image_id)->update([
+                    'package_id'=>$package_id,
+                    'qr_code'=>$barcode
+                ]);
+            }
         }
 
         $item->size = $d->dim_x." ".$d->dim_y." ".$d->dim_h; 
@@ -1752,6 +1903,7 @@ class PickupRequest //extends Model
         return DV::depends($package_id,[
             'package'=>(object)$item, /** Newly created pacakge details **/
             'package_id'=>$package_id,
+            'barcode'=>$barcode,
             'package_count'=>$pkg_count,
             'delivery_type'=>$item->delivery_type
         ],'Failed to save package information');
@@ -1851,20 +2003,21 @@ class PickupRequest //extends Model
          return DV::success(["order"=>$order]);
     }
 
-    /** pickItemPhotos */
+    /** pickItemPhotos | pickOrder with photos */
     function pickPackagePhotos($photos = [], $id=null,$ss=null){
         $order_id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-
+        
         $item_res = self::processItemPhotos($photos);
         if ($item_res->status ==='Error') return DV::error($item_res->error_message);
         $success_photos = $item_res->success_items;
         $qty = count($success_photos);
         if ($qty <=0) return DV::error('មិនឃើញមានរូបភាពកញ្ចប់ទំនិញ');
         //$order = self::getOrderDetails_one($order_id);
-        $order = DB::table('order AS o')->where('id',$order_id)->selectRaw('o.id,o.code,o.sender_id,o.loc_lat,o.loc_lng')->take(1)->first();
+        $order = DB::table('order AS o')->join('sender as s','s.id','=','o.sender_id')->where('o.id',$order_id)->selectRaw('o.id,s.name AS sender_name,o.code,o.status_id,o.sender_id,o.loc_lat,o.loc_lng')->take(1)->first();
         if(!$order) return DV::error('Order ID does not exist');
+        if($order->status_id >=3) return DV::error('Order is already picked');
         $c =null;
         $i =0;
         $success_count = 0;  
@@ -1880,7 +2033,18 @@ class PickupRequest //extends Model
         }while($c);
         
         /** Make sure the getOrderDetails_one() returns one row, but this row bust be exactly the same as those rows returned by getList() or getPickupList() */
-        if ($i > 0) DB::table('order')->where('id',$order->id)->update(['qty'=>$success_count,'actual_pkg_count'=>$success_count]);
+        $picked_status_id =3;
+        if ($i > 0) DB::table('order')->where('id',$order->id)->update(['status_id'=>$picked_status_id,'qty'=>$success_count,'actual_pkg_count'=>$success_count]);
+        $img_count = DB::table('order_images as img')->where('img.order_id',$order_id)->where('img.inactive',0)->count('img.id');
+        $data = (object)[
+            'branch_id'=>$branch_id,
+            'order_id'=>$order_id,
+            'user_id'=>$ss->user_id,
+            'title'=>'Photo Picked',
+            'img_count'=>$img_count,
+            'message'=>$order->code. ': អ្នកដឹក '.$ss->full_name.' បានផ្ញើររូបថត '.$success_count.' កញ្ចប់ពីអ្នកលក់ '.$order->sender_name.' នៅម៉ោង '.date('d M Y h:i')
+        ];
+        Notifier::notify_admin('package_photo_picked',$data);
         return DV::depends(1,['order'=>$order]);
     }
 

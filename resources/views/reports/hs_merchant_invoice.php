@@ -137,7 +137,7 @@
                         if($row->price > 0) $driver_total = $row->price;
                         if($df_payer =='receiver') $driver_total += $fees -$row->forwarding_cost;
                         else $driver_total -= $row->forwarding_cost;  
-                        
+                        $irregular_notes = '<span class="d-block p-1 text-danger">'.((!$row->cod && $row->price > 0)? 'issue 101' : ($row->cod ==1 && $row->price <=0? 'issue 102':'')).'</span>';
                         $sender_settled_amount =$driver_total - $fees; //+ $row->adjustment
                         $receiveable = $sender_settled_amount < 0? $sender_settled_amount:0;  
                         $total_fees += $fees;
@@ -145,6 +145,7 @@
                         $total_receiveable +=$receiveable;
                         $total_prices += $row->price;
                         $total_driver_total += $driver_total;
+                       
                         if($row->status_id ==8) $total_sender_settlement += $sender_settled_amount;
                         // $pg_staus = "<span class=\"text-primary\">$row->status</span>";
                         if($row->status_id ==8)  $pg_staus = "<span class=\"text-success\">$row->status</span>";
@@ -160,7 +161,7 @@
                         '<td>'.$row->delivery_time.'</td>'.
                         '<td>'.$row->delivery_type.'</td>'.
                         //'<td>'.($row->cod==1?'Yes':'No').'</td>'.
-                        '<td>'.$cur.($row->cod ==1? number_format($row->price,2,'.',''):0.00).'</td>'.
+                        '<td><span class="d-block">'.$cur.number_format($row->price,2,'.','').'</span>'.$irregular_notes.'</td>'.
                         '<td><span class="d-block">'.$cur.number_format($fees,2,'.','').'</span><span class="d-block w-100 text-right p-1 text-warning"><small>'.$row->df_payer.'</small></span></td>'.
                         '<td>'.$cur.number_format($row->forwarding_cost,2,'.','').'</td>'.
                          //"<td>".$pg_staus."</td>".

@@ -8,10 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Package;
 use App\Models\JDV;
 use App\Models\UM;
-//use DB;
-//use Session;
-//use Carbon\Carbon;
-
+  
 class PackageController extends Controller
 {
     //protected $branch_id = null;
@@ -271,7 +268,7 @@ class PackageController extends Controller
   // }
   
   function changeSender(Request $req) {
-    $ss = UM::getUserInfoByToken($req,-1);
+    $ss = UM::getUserInfoByToken($req,278);
     if($ss->status_code !==200) return JDV::raw($ss);
       $id = $req->id?$req->id:$req->package_id;
       $p = new Package($id,$ss);

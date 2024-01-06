@@ -302,11 +302,10 @@ var DriverBalancesCompoment = new (function () {
             if (btn) {
                 let finish_date = null;
                 const tr = btn.closest('tr');
-                let trx_id = null;
+                let trx_id = tr? tr.dataset.trxid: null;
                 if (mThis.view_name === "date") {
                     finish_date = '';
                     if(tr){
-                        trx_id = tr.dataset.trxid;
                         finish_date = tr.querySelector("td.finish_date").querySelector("span.finish_date").textContent;
                     }
                 }

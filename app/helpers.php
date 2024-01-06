@@ -425,21 +425,21 @@ function deleteFile($fileName)
   if (file_exists($fileName)) {
      unlink($fileName);
      return null;
-  } else return "File not found for deleting";
-
+  } else return 'File not found for deleting';
 }
 
 function readFileContent($fileName=null)
 {
- if (empty($fileName)) return null;
- if (!file_exists($fileName)) return null;
- $fileSize = filesize($fileName);
- if ($fileSize<=0) return null;
- $handle = fopen($fileName, "r");
- $contents = fread($handle, $fileSize);
- fclose($handle);
- return $contents;
+    if (empty($fileName)) return null;
+    if (!file_exists($fileName)) return null;
+    $fileSize = filesize($fileName);
+    if ($fileSize<=0) return null;
+    $handle = fopen($fileName, 'r');
+    $contents = fread($handle, $fileSize);
+    fclose($handle);
+    return $contents;
 }
+
 // function readFileContentLineByLine($path) {
  // $lines = []; //read lines into array of lines
  // $handle = fopen($path, "r");
@@ -786,17 +786,19 @@ function createUUIDV1()
         $inputs['update_date'] = $nowTime;
 
         $pk_value = null;
-        if(!$primary_key_integer){
-            //pk_value is a binary(16) value ready to be insert into database tabe column of data type BINARY(16)
-            $pk_value = DB::raw("UNHEX(REPLACE('".createUUID()."', '-', ''))");
-            //$pk_value = hex2bin(str_replace('-', '', createUUIDV1()));
-            $inputs[$key_field]= $pk_value;
-        }
-        DB::table($table_name)->insert($inputs);
+
         if($primary_key_integer){
+            DB::table($table_name)->insert($inputs);
             $new_id = DB::getPdo()->lastInsertId();
             return $new_id;
-        }else return $pk_value;
+        }else{
+            //pk_value is a binary(16) value ready to be insert into database tabe column of data type BINARY(16)
+            //$pk_value = DB::raw("UNHEX(REPLACE('".createUUID()."', '-', ''))");
+            $pk_value = hex2bin( str_replace('-','',createUUID())); 
+            $inputs[$key_field]= $pk_value;
+            DB::table($table_name)->insert($inputs);
+            return $pk_value;
+        }
     }
 
  }
