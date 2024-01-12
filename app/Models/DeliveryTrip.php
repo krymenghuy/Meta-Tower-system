@@ -378,10 +378,10 @@ class DeliveryTrip //extends Model
             
          }else{
             $m = new \App\Models\BDelivery(null,$ss);
-            //make esure the $ss->user_class is a driver to avoid permission check
+            //make sure the $ss->user_class is a driver to avoid permission check
             $res = $m->b_assignDeliveryDriver($d,$ss);
             if($res->status ==='Error') return DV::error($res->error_message);
-            else return DV::success(['package'=>$this->getPackageDetails($branch_id,$d)]);
+            else return DV::success(['delivered'=>$res->delivered,'continue_to_deliver'=> (isset($res->continue_to_deliver)? $res->continue_to_deliver:0) ,'package'=>$this->getPackageDetails($branch_id,$d)]);
          }  
     }
  

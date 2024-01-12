@@ -1495,13 +1495,6 @@ function createUUIDV1()
         $result = (object)['error'=>null,'values'=>$outputs];
         if ($identity_field) $result->{$identity_field} = $identity_value;
         return $result;
-
-        // foreach($fields as $field){
-        //    if(isset($d[$field]))
-        //       $outputs[$field] = $sanitize===1? Sanitizer::sanitize($d[$field]):$d[$field];
-        //    else $outputs[$field] = null;
-        // }
-        // return (object)$outputs;
      }
 
      /***
@@ -1520,7 +1513,7 @@ function createUUIDV1()
         $table = $parts[1];
         $field_list = explode(',',$parts[2]);
         $m_where ="";
-        $select_cols =$pk_field_name; //presume a default. That all tables have a "id" column
+        $select_cols =$pk_field_name?$pk_field_name:"id"; //presume a default. That all tables have a "id" column
         //$checking_field_cnt = 0;
         foreach($field_list as $fields){
              $sts = explode('!',$fields);
@@ -1528,7 +1521,7 @@ function createUUIDV1()
              $where_con="";
              $has_or=0;
              foreach($sts as $f){
-                //NOTE: For example, you want to check dulicate Phone_number. If phone_number is NULL or empty => do not check duplicate
+                //NOTE: For example, you want to check duplicate Phone_number. If phone_number is NULL or empty => do not check duplicate
                 if ($f && isset($d[$f])){
                     if (!$has_or || $has_or ===0) $has_or = $where_con?1:0;
                     //if (!isset($d[$f])) return "Error in checking uniqueness because field $f is empty or it is not supplied";
@@ -1547,15 +1540,17 @@ function createUUIDV1()
 
         if($pk_value > 0) $str_pk = " AND $table.$pk_field_name <> $pk_value";
         else if($pk_value) $str_pk =" AND $table.$pk_field_name <> '$pk_value'";
-        $text = getPropValue('text',$parts[3]);
+         $text = getPropValue('text',$parts[3]);
         if (!$text) $text = getPropValue('text',isset($parts[4])?$parts[4]:'');
 
         $str_branch = "1=1 ";
-        if ($branch_id > 0) $str_branch ="branch_id =$branch_id ";
+        if ($branch_id > 0) $str_branch ='branch_id ='.$branch_id;
         $m_where =  $str_branch." AND ".$m_where.$str_pk;
-        $rows = DB::table($table)->whereRaw($m_where)->selectRaw($select_cols)->take(1)->get();
-        if (count($rows)>0)
-          return $text?$text:"$table already exists";
+        $row = DB::table($table)->whereRaw($m_where)->selectRaw($select_cols)->take(1)->first();
+        if ($row)
+        {
+            return $text?$text: $table.' already exists';
+        }
         else return null;
     }
 
@@ -1675,12 +1670,27 @@ function createUUIDV1()
         $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
         return file_exists($localFilePath) && getimagesize($localFilePath);
     }
-    function validateUrl($url,$otherWise="") {
-        $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
-        $exists = file_exists($localFilePath) && getimagesize($localFilePath);
-        return $exists?$url:$otherWise;
-    }
 
+    function validateUrl($url, $otherwise = '') {
+        // Check if URL is empty or null
+        if (!$url) {
+            return $otherwise;
+        }
+        // Get the local file path based on the URL
+        $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
+    
+        // Check if the file exists
+        if (file_exists($localFilePath) && is_file($localFilePath)) {
+            // Check if the file is an image without fetching image size unless needed
+            if (exif_imagetype($localFilePath)) {
+                // File exists and is a valid image
+                return $url;
+            }
+        }
+        // File does not exist or is not a valid image
+        return $otherwise;
+    }
+ 
     function getImageUrl($branch_id,$user_class,$file_name){
         if($file_name !=null){
             return PublicStorage::getURl($branch_id,$user_class,'image').$file_name;

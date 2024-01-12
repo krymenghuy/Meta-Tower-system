@@ -12,7 +12,11 @@ use Sanitizer;
 class GeneralSettings //extends Model
 {
     //use HasFactory;
-
+    public static $email_chars = ['@','-','.','_'], 
+    $address_chars = ['.','#'],
+    $image_chars = ['+',':',',',';','=','/','\\','?'],
+    $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%']; 
+   
     /** Return a warehouse object {"id","name","address", "location":{"lat","lng"} } */
     static function getDefaultWarehouse($ss){
         $row = DB::table('warehouses as w')

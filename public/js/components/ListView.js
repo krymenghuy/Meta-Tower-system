@@ -328,13 +328,13 @@ class ListView {
 			});
  
 			// Introduce a slight delay (e.g., 100ms) before calling createPaginationPanel
-			setTimeout(() => {
+			//setTimeout(() => {
 				const item_count = d[0]? 1 : 0;
 				that.createPaginationPanel(that.pagingInfo,item_count);
 				that.pagination_container.style.display = 'flex';
 				that.card_options.renderComplete(d);
 				//if (typeof onFinish === 'function') onFinish();
-			}, 300);
+			//}, 100);
 		}
 	}
 
@@ -358,14 +358,14 @@ class ListView {
 		   });
 
 		   // Introduce a slight delay (e.g., 100ms) before calling createPaginationPanel
-		   setTimeout(() => {
+		   //setTimeout(() => {
 			   let item_count = 0;
 			   if(res_data.data) item_count = res_data.data[0]?1:0; 
 			   that.createPaginationPanel(res_data,item_count);
 			   that.pagination_container.style.display = 'flex';
 			   that.card_options.renderComplete(res_data);
 			   if (typeof onFinish === 'function') onFinish();
-		   }, 300);
+		   //}, 300);
 	   }
 	}
 

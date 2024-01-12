@@ -4,6 +4,8 @@ namespace App\Models;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
+
+use App\Http\Controllers\GeneralSettingsController;
 use App\Models\UM;
 use App\Models\PublicStorage;
 use App\Models\DV;
@@ -427,6 +429,7 @@ class Sender //extends Model
       $branch_id = $ss->branch_id; 
       $v_rule =[
         'id'=>'0|identity=1',
+        'lead_id'=>'0|number',
         'name'=>'1|string|0-100',
         'name_kh'=>'0|string|0-100',
         'sender_type_id'=>'1|positive|exists=sender_type.id',
@@ -450,7 +453,7 @@ class Sender //extends Model
       ];
       $checkUnque = ["$branch_id|sender|name,phone_number,code|id=id|text=Sender or merchant already exists by name, phone number, or email"];
       $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%'];
-      $res = validateObject($arr,$v_rule,true,['address_link'=>$address_map_chars,'email'=>['-','.','@','_']],$ss->lang,false,$checkUnque);
+      $res = validateObject($arr,$v_rule,true,['address_link'=>$address_map_chars,'email'=>GeneralSettings::$email_chars],$ss->lang,false,$checkUnque);
       if ($res->error) return DV::error($res->error);
       $id = $res->id;
       $inputs = $res->values;
@@ -480,7 +483,7 @@ class Sender //extends Model
       $sender_created = $id>0? 0:1;
       if($id > 0){
          $org_sender = DB::table('sender as s')->where('s.id',$id)->selectRaw('s.name,s.phone_number')->take(1)->first();
-         if(!$org_sender) return DV::error('Failed to identify existing merchant for upating their information');
+         if(!$org_sender) return DV::error('Failed to identify existing merchant for updating their information');
          if ($d->phone_number != $org_sender->phone_number){
               //Change merchant's phone number in tables "um_users","package","order_receivers", and then notify merchant Mobile App
               $change_phone_error = self::updateMerchantPhone($id,$d->phone_number);
@@ -502,11 +505,11 @@ class Sender //extends Model
            } 
            $this->saveBankAccounts($bank_accounts,$id,$ss);
            UM::updateUserByOfficialId($id,['full_name'=>$inputs['name']]);
-           
-           return DV::success(['sender'=>$inputs]);
+           $inputs['id']= $id;
+           return DV::depends(1,['sender'=>$inputs,'id'=>$id]);
            //return DV::success(['sender_id'=>$sender_id,'code'=>$sender_code]);
       }
-      return DV::error('Something went wrong saving sender profile');
+      return DV::error('Something went wrong in saving sender profile');
     }
  
     function checkUniquePerson($branch_id,$phone_number,$id=null){
@@ -571,17 +574,7 @@ class Sender //extends Model
       if(count($rows) >0) return true;
       return false;
   }
-
-  // //saveBankAccounts_sender() is called from Merchant's mobile app to update or add bank accounts
-  // function saveBankAccounts_sender($d){
-  //    $ss = UM::getUserInfoByToken($d);
-  //       if ($ss->status_code !==200) return $ss; //user not authenticated
-  //     //need permission to do this task
-  //    //$branch_id = $ss->branch_id;
-  //    if(!isset($d->bank_accounts)) $d->bank_accounts = [];
-  //    return $this->saveBankAccounts($ss,$d->sender_id,$d->bank_accounts);
-  // }
-
+ 
   //Add or update bank accounts. This is used for back end profile update
   function saveBankAccounts($banks=[],$sender_id = null,$ss=null){
       $ss = $ss ?? $this->userInfo;
@@ -823,7 +816,7 @@ class Sender //extends Model
   } 
 
   static function getOutstandingBalanceError($id){
-     $row = DB::table('package as p')->join('sender as s','s.id','=','p.sender_id')->where('s.id',$id)->whereRaw('IFNULL(p.sender_pmt_status_id,0) =0')->selectRaw('COUNT(p.id) AS item_count,SUM(IFNULL(p.sender_total,0)) AS amount')->get()->first();
+     $row = DB::table('package as p')->join('sender as s','s.id','=','p.sender_id')->where('p.status_id',8)->where('s.id',$id)->whereRaw('IFNULL(p.sender_pmt_status_id,0) =0')->selectRaw('COUNT(p.id) AS item_count,SUM(IFNULL(p.sender_total,0)) AS amount')->get()->first();
      if(!$row) return null;
      if ($row->item_count > 0 ) return 'មិន​អាច​លុប ឬ​បិទ​គណនី​នេះ​បាន​ទេ ព្រោះ​មាន​កញ្ចប់ '.$row->item_count.' ដែល​មិន​ទាន់​បាន​ទូទាត់​ប្រាក់';
      return null;
@@ -1031,7 +1024,7 @@ class Sender //extends Model
     //$sender_type_id = isset($d->sender_type_id)? $d->sender_type_id:null;
     $business_type = isset($d->business_type)?$d->business_type:null;
     $search_value = isset($d->search_value)?$d->search_value:null;
-    $sales_agent_id = isset($d->sales_agent_id)?$d->sales_agent_id:-1;
+    $sales_agent_id = isset($d->sales_agent_id)?$d->sales_agent_id: null;
     $str_agent = '11=11';
     /** $sales_agent_id = -1 means "To query merchants who are not referred by any sales agent " 
      *  $sales_agent_id = null or zero => means query merchants either refered by agent or no referrer

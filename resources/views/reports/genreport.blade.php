@@ -98,6 +98,9 @@
                     @case('daily_packages')
                         @include('reports.daily_packages')
                         @break
+                    @case('package_count_by_merchant')
+                        @include('reports.package_count_by_merchant')
+                        @break    
                     @case('dr_unpaid_packages')
                         @include('reports.dr_unpaid_packages')
                         @break

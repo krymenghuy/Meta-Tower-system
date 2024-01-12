@@ -263,7 +263,7 @@ class BDelivery //extends Model
 
                 $res = Notifier::notify_mobile($branch_id,$cdata);
        //end::notify to concerned driver
-        return DV::success();
+        return DV::success(['continue_to_deliver'=>$continue_to_deliver,'delivered'=>$package->status_id==8? 1:0]);
       }
 
     /** Save tracking info for Change driver case, which can be 

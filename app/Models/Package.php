@@ -976,9 +976,9 @@ class Package //extends Model
         $end_date = isset($data->end_date)? $data->end_date:'';
         $data->delivery_type = isset($data->delivery_type)?$data->delivery_type:null;
         if($data->delivery_type ==0) $data->delivery_type =null;
-        $data->zone_code = Sanitizer::sanitize($data->zone_code);
-        $data->driver_id = Sanitizer::sanitize($data->driver_id);
-        $data->sender_id = Sanitizer::sanitize($data->sender_id);
+        $data->zone_code = Sanitizer::sanitize(isset($data->zone_code)? $data->zone_code:null);
+        $data->driver_id = Sanitizer::sanitize(isset($data->driver_id)? $data->driver_id : null);
+        $data->sender_id = Sanitizer::sanitize(isset($data->sender_id)? $data->sender_id : null);
         $data->status_id = isset($data->status_id)?Sanitizer::sanitize($data->status_id):-1;
         if(!isset($data->status_id)) $data->status_id =-1;
         $search_value =isset($data->search_value)?escape_like_str(Sanitizer::sanitize($data->search_value)):null;
@@ -3941,9 +3941,8 @@ static function getDriverDueInfo($driver_id){
     $delivery_type = isset($d->delivery_type)?$d->delivery_type:null;
 
     /**WHEN $sender_pmt_status_id = 0 or empty => "Unpaid". WHEN $sender_pmt_status_id = -1 => "All Pmt Statuses" */
-    $sender_pmt_status_id = isset($d->sender_pmt_status_id)?$d->sender_pmt_status_id:0;
-    if (!$sender_pmt_status_id) $sender_pmt_status_id = isset($d->pmt_status_id)?$d->pmt_status_id:0;
-
+    $sender_pmt_status_id = isset($d->sender_pmt_status_id)?$d->sender_pmt_status_id:null;
+   
     //$view_type = isset($d->view)?$d->view:'default';
     $is_from_mobile = isset($d->is_from_mobile)?$d->is_from_mobile:0;
 
@@ -3964,8 +3963,8 @@ static function getDriverDueInfo($driver_id){
       if ($default_view){
           $str_pmt_status  ='IFNULL(p.sender_pmt_status_id,0) = 0 AND p.status_id = 8';
       }else{
-          $end_date = convertDate($end_date)?? date('Y-m-d');
-          $start_date = convertDate($start_date)?? convertDate($end_date);
+          $end_date = convertDate($end_date) ?? date('Y-m-d');
+          $start_date = convertDate($start_date) ?? convertDate($end_date);
           $str_delivery_type = $delivery_type? 'p.delivery_type =\''.$delivery_type.'\'' : '3=3';
           if ($status_id > 0) $str_status ='p.status_id = '.$status_id;
           
@@ -3974,7 +3973,7 @@ static function getDriverDueInfo($driver_id){
           }else if ($status_id >= 8){
              $str_dates = 'DATE(p.delivery_time) >= \''.convertDate($start_date).'\' AND DATE(p.delivery_time) <= \''.convertDate($end_date).'\' ';
           }
-          if ($sender_pmt_status_id >=0){
+          if ($sender_pmt_status_id !== null && $sender_pmt_status_id >=0 ){
             $str_pmt_status  ='IFNULL(p.sender_pmt_status_id,0) = '.$sender_pmt_status_id;
           }
       } 
@@ -4014,7 +4013,13 @@ static function getDriverDueInfo($driver_id){
     p.actual_kg,
     p.status_id,ps.name AS `status`';
     $max_row = 2000;
-    //Log::info(DB::table('package AS p')->join('package_statuses AS ps','ps.id','=','p.status_id')->join('driver AS d','d.id','=','p.driver_id')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_sender)->whereRaw($str_delivery_type)->whereRaw($str_pmt_status)->whereRaw($str_dates)->whereRaw($str_status)->selectRaw($selectCols)->take($max_row)->toSql());
+
+    // Log::info('str_date: '.$str_dates); 
+    // Log::info('str_sender: '.$str_sender);
+    // Log::info('delivery: '.$str_delivery_type);
+    // Log::info('str_pmt_status: '.$str_pmt_status);   
+    // Log::info('str_status: '.$str_status);
+    // Log::info('str_search: '.$str_search);    
     $rows = DB::table('package AS p')->join('package_statuses AS ps','ps.id','=','p.status_id')->join('driver AS d','d.id','=','p.driver_id')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_sender)->whereRaw($str_delivery_type)->whereRaw($str_pmt_status)->whereRaw($str_dates)->whereRaw($str_status)->selectRaw($selectCols)->take($max_row)->get();
     $count =0;
     $unpaid_amount  =0;
@@ -4338,7 +4343,7 @@ function getOrderSummarylist_at_warehouse($sender_id,$ss){
       p.billed_kg, p.status_id, ps.name AS `status`,d.code AS driver_code, d.name AS driver_name,d.phone_number as driver_phone FROM `package` AS `p`
     INNER JOIN  package_statuses AS ps ON ps.id = p.status_id
     INNER JOIN `driver` as `d` ON d.id = p.driver_id
-    WHERE p.branch_id = \''.$branch_id.'\' AND p.sender_id = '.($sender_id?$sender_id:0).$str_statuses.' AND DATE(p.arrival_time) = \''.$last_10_days.'\''));
+    WHERE p.branch_id = \''.$branch_id.'\' AND p.sender_id = '.($sender_id >0? $sender_id:0).$str_statuses.' AND DATE(p.arrival_time) = \''.$last_10_days.'\''));
  }
 
     //get list of delviered pacakges (TODAY)
