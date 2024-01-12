@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Login;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UM;
+use App\Services\GarbageCollector;
 use Config;
 use Session;
 //use Cookie;
@@ -61,19 +62,14 @@ class LoginController extends Controller
                 ]);
 
              //*** NOTE: app/http/middleware/EncryptCookies.php (for exception of encryption)
-             $cookie_name =Config::get('app.cookie_name'); //vsmclinic997891zb
-             //$cookie = Cookie::queue($cookie_name, $user->access_token, 60);
-             //$first_role = UM::getFirstRole($user->id);
-             ////Encrypt access token ans store in cookie 
-             //$res = (object)['value'=>'','key'=>'','iv'=>''];
-             //$res = PHPCrypto::encrypt($result->user->access_token,null,null);
-             //$encrypted_token =$res->value;
+             $cookie_name =Config::get('app.cookie_name');
              //$encrypted_token = $result->user->access_token; 
              if (strtolower($user->user_class) === 'admin')
              { 
                 //session::put('secret',$res);
                 $cookie_value = $result->user->access_token;
                 $refreshToken= $result->refresh_token;
+                GarbageCollector::cleanAll();
                 return redirect('dms')->withCookie(cookie($cookie_name,$cookie_value,0,'/',null,true,false))->withCookie(cookie("dmsrefresh",$refreshToken,0,'/',null,true,true));;
                 //->header('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
              }

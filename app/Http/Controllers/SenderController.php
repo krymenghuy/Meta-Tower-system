@@ -21,8 +21,7 @@ class SenderController extends Controller
        $id = $req->Sender_id?$req->sender_id:$req->id;
        $sender = new Sender($id,$ss);
        $res = $sender->save($req->all());
-       if ($res->status ==='OK') return JDV::success(['sender'=>$res->sender]);
-       return JDV::error($res->error_message);
+       return JDV::raw($res);
     }
 
   //getSenderAddress| getFullAddress

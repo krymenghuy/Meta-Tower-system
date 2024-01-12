@@ -932,7 +932,7 @@ class PickupRequest //extends Model
         $row->map_url = getLocationUrl($row->loc_lat,$row->loc_lng);
         return $row;
     }
-    //getPickupList() | $d = {'request_date','sender_id','status_id',[delivery_type],[driver_id].[sender_id] }
+    //getPickupList() | $arr = {'start_date','end_date','sender_id','status_id',[delivery_type],[driver_id].[sender_id] }
      function getList($arr =[],$ss=null){
         $ss = $ss ?? $this->userInfo;
         $d = (object)$arr;
@@ -958,7 +958,8 @@ class PickupRequest //extends Model
         $search_value = isset($d->search_value)?$d->search_value:null;
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search =' AND (o.code =\''.$search_value.'\' OR s.phone_number =\''.$search_value.'\' OR s.name LIKE \'%'.$search_value.'%\') ';
+            $search_by_package = ' OR o.id IN (SELECT order_id FROM order_receivers as r WHERE r.receiver_phone =\''.$search_value.'\')';
+            $str_search =' AND (o.code =\''.$search_value.'\' OR s.phone_number =\''.$search_value.'\' OR s.name LIKE \'%'.$search_value.'%\' '.$search_by_package.') ';
             $more_wheres ="1=1 ".$str_search;
         } else {
             if ($status_id ==-1) 
@@ -970,85 +971,21 @@ class PickupRequest //extends Model
             if($sender_id > 0) $str_sender = " AND o.sender_id ='".$sender_id."' ";
             if($driver_id > 0) $str_driver = " AND o.driver_id ='".$driver_id."' "; 
             if ((bool)strtotime($start_date) && (bool)strtotime($end_date)) {
-                $str_dates = " AND DATE(o.request_date) >='". $start_date."' AND DATE(o.request_date) <= '".$end_date."' ";     
+                $str_dates = ' AND DATE(o.request_date) >=\''.$start_date.'\' AND DATE(o.request_date) <= \''.$end_date.'\' ';     
             }
-            if (!empty($delivery_type)) $str_delivery_type = " AND o.delivery_type ='".$delivery_type."'";
+            if (!empty($delivery_type)) $str_delivery_type = ' AND o.delivery_type =\''.$delivery_type.'\'';
             if ($status_id ==5) //NOTE that order.completed =1 also means order.status_id = 5 //if status ="Arrived warehouse" => query includes "Completed" Order as well 
-              $more_wheres = " o.completed =1 ".$str_dates.$str_sender.$str_delivery_type.$str_driver;
+              $more_wheres = ' o.completed =1 '.$str_dates.$str_sender.$str_delivery_type.$str_driver;
             else 
               $more_wheres = ' IFNULL(o.completed,0) = 0 '.$str_dates.$str_driver.$str_sender.$str_status.$str_delivery_type;
         }
         //CASE sign(IFNULL(o.status_id,0) -4) WHEN 1 THEN (SELECT COUNT(p.id) FROM package AS p WHERE p.branch_id ='".$branch_id."' AND p.order_id = o.id) ELSE o.qty END AS qty
         $rows = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->where('o.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw('o.id,booking_channel,IFNULL(o.completed,0) AS completed,o.delivery_type, o.code as order_code, o.request_vehicle_type, o.sender_id, s.name AS sender_name,s.code AS sender_code, s.phone_number AS sender_phone, formatDate(o.request_date) AS request_date,DATE_FORMAT(o.request_date,\'%r\') AS request_time,o.qty, o.product_type, o.loc_lat,o.loc_lng, o.pickup_address, o.status_id, ps.name AS order_status,o.driver_id, (SELECT d.name FROM driver as d WHERE d.id = o.driver_id LIMIT 1) AS driver_name,o.create_user,formatTime(o.create_date) As create_date')->orderByRaw('ps.display_order ASC,o.id DESC')->get();
-        $p_rows = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->join('order_images as img','img.order_id','=','o.id')->where('o.branch_id',$branch_id)->whereRaw($more_wheres)->where('img.inactive',0)->selectRaw('o.id,COUNT(img.id) AS image_count')->groupByRaw('o.id')->get();      
+        $img_rows = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->join('order_images as img','img.order_id','=','o.id')->where('o.branch_id',$branch_id)->whereRaw($more_wheres)->where('img.inactive',0)->selectRaw('o.id,COUNT(img.id) AS image_count')->groupByRaw('o.id')->get();      
         foreach($rows as $row){
             $row->map_url = getLocationUrl($row->loc_lat,$row->loc_lng);
-            $row->image_count = self::countPackagePhotos($p_rows,$row->id);
-        }
-
-    //     $rows = DB::table('order AS o')
-    //     ->join('sender AS s', 's.id', '=', 'o.sender_id')
-    //     ->join('package_statuses AS ps', 'ps.id', '=', 'o.status_id')
-    //     ->leftJoin('order_images AS oi', 'o.id', '=', 'oi.order_id')  // Left join to order_images
-    //     ->where('o.branch_id', $branch_id)
-    //     ->whereRaw($more_wheres)
-    //     ->where('oi.inactive',0)
-    //     ->selectRaw('
-    //         o.id,
-    //         booking_channel,
-    //         IFNULL(o.completed, 0) AS completed,
-    //         o.delivery_type,
-    //         o.code as order_code,
-    //         o.request_vehicle_type,
-    //         o.sender_id,
-    //         s.name AS sender_name,
-    //         s.code AS sender_code,
-    //         s.phone_number AS sender_phone,
-    //         formatDate(o.request_date) AS request_date,
-    //         DATE_FORMAT(o.request_date, \'%r\') AS request_time,
-    //         o.qty,
-    //         o.product_type,
-    //         o.loc_lat,
-    //         o.loc_lng,
-    //         o.pickup_address,
-    //         o.status_id,
-    //         ps.name AS order_status,
-    //         o.driver_id,
-    //         (SELECT d.name FROM driver AS d WHERE d.id = o.driver_id LIMIT 1) AS driver_name,
-    //         o.create_user,
-    //         formatTime(o.create_date) AS create_date,
-    //         COUNT(oi.id) AS image_count')
-    //     ->groupBy([
-    //         'o.id',
-    //         'booking_channel',
-    //         'o.delivery_type',
-    //         'o.code',
-    //         'o.request_vehicle_type',
-    //         'o.sender_id',
-    //         's.name',
-    //         's.code',
-    //         's.phone_number',
-    //         'request_time',
-    //         'request_date',
-    //         'o.qty',
-    //         'o.product_type',
-    //         'o.loc_lat',
-    //         'o.loc_lng',
-    //         'o.pickup_address',
-    //         'o.status_id',
-    //         'ps.name',
-    //         'o.driver_id',
-    //         'o.create_user',
-    //         'create_date',
-    //         'completed'
-    //     ])
-    //     ->orderByRaw('ps.display_order ASC, o.id DESC')
-    //     ->get();
-    
-    // foreach ($rows as $row) {
-    //     $row->map_url = getLocationUrl($row->loc_lat, $row->loc_lng);
-    // }
-     
+            $row->image_count = self::countPackagePhotos($img_rows,$row->id);
+        }    
         return $rows;
     }
     //getPickupRequests Delivery Order List that not yet completed AT WAREHOUSE
@@ -1341,6 +1278,12 @@ class PickupRequest //extends Model
     }
 
     static function processItemPhotos($photos){
+         if (!$photos)  return (object)[
+            'status'=>'OK',
+            'status_code'=>200,
+            'success_items'=>[]
+        ];
+
          $success_items =[];
          $i =0;
          foreach($photos as $item){

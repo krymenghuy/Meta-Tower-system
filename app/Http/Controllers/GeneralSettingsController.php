@@ -16,6 +16,14 @@ class GeneralSettingsController extends Controller
         $this->settingModel = new GeneralSettings();
     }
 
+    function options_agent_status(){
+      $data = [
+        (object)['status_code'=>'Active'],
+        (object)['status_code'=>'Inactive']
+      ];
+      return JDV::result($data);
+    }
+
     function getComboItems_delivery_zone(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
        if($ss->status_code !== 200) return JDV::result([]); 
@@ -42,6 +50,14 @@ class GeneralSettingsController extends Controller
           $rows = GeneralSettings::options_delivery_status($ss);
           return JDV::result($rows);
     }
+
+    function options_lead_status(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !== 200) return JDV::result([]); 
+      $rows = GeneralSettings::options_lead_status($ss);
+      return JDV::result($rows);
+  }
+
     function getComboItems_pmt_status(Request $req){
      $ss = UM::getUserInfoByToken($req,-1);
      if($ss->status_code !== 200) return JDV::result([]); 

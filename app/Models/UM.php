@@ -385,9 +385,9 @@ class UM //extends Model
       static function matchOTP($login_name,$otp_code,$user_class=null){
         $str_user_class ="1=1";
         if($user_class) $str_user_class ="u.user_class ='$user_class'";
-        \Log::info('login_name = '.$login_name);
-        \Log::info('user-class = '.$str_user_class);
-        \Log::info('otp_code = '.$otp_code);
+        //\Log::info('login_name = '.$login_name);
+        //\Log::info('user-class = '.$str_user_class);
+        //\Log::info('otp_code = '.$otp_code);
         return DB::table('um_users AS u')->where('u.login_name',$login_name)->whereRaw($str_user_class)->where('otp_code',$otp_code)->select("id")->take(1)->exists();
       }
 
@@ -622,13 +622,14 @@ class UM //extends Model
             }
             $more_where = "1=1" . $str_search;
             $get_primary_role = '(SELECT r.`name` FROM um_user_roles AS ur INNER JOIN um_roles AS r ON r.id = ur.role_id WHERE user_id = u.id AND ur.is_primary_role =1 LIMIT 1) AS primary_role,';
-            $query = DB::table('um_users as u')->whereRaw($str_user_class)->whereRaw($more_where)->selectRaw('u.id,u.official_id,u.official_code, u.full_name,u.login_name, LOWER(u.user_class) AS user_class, u.previlege_type,'.$get_primary_role.' formatTime(last_login_date) as last_login_date, is_locked, `status`,u.phone_number,formatDate(u.create_date) as start_date,u.photo_file_name')->orderBy('u.id','DESC')->where('u.branch_id', $branch_id);
+            $query = DB::table('um_users as u')->whereRaw($str_user_class)->whereRaw($more_where)->selectRaw('u.id,u.official_id,u.official_code, u.full_name,u.login_name, LOWER(u.user_class) AS user_class, u.previlege_type,'.$get_primary_role.'formatTime(u.last_login_date) AS last_login_date, is_locked, `status`,u.phone_number,formatDate(u.create_date) as start_date,u.photo_file_name')->orderBy('u.id','DESC')->where('u.branch_id', $branch_id);
 
             $count_query = clone $query;
             $count = $count_query->count('u.id');
             $rows = $query->skip($skip_rows)->take($per_page)->get();
             foreach($rows as $row){
-                $row->image_url = self::getUserImage($branch_id,$row->user_class,$row->id,$row->photo_file_name);
+                $url = self::getUserImage($branch_id,$row->user_class,$row->id,$row->photo_file_name);
+                $row->image_url = validateUrl($url,self::getDefaultUserImage($branch_id));
             }
             return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
 
@@ -700,7 +701,7 @@ class UM //extends Model
 
      //Create or UpdateUser() depending on $d->user_id;
      //@params $d = {login_name,password,email,full_name,phone_number,user_class,role_id,official_id}
-     function saveUser($arr,$ss){
+     function saveUser($arr,$id = null,$ss=null){
          //permission 100 => for Creating new user account
         //   $ss = self::getUserInfoByToken($d,-1);
         //   if($ss->status_code !=200) return $ss; //user not authenticated
@@ -708,7 +709,7 @@ class UM //extends Model
           //if(!self::allowed(100)) return DV::error("Permission 100 is required");
           $str_user_classes = implode(',', array_keys(self::$user_classes));
           $validate_rule =[
-             'user_id'=>"0|identity=1",
+             'id'=>"0|identity=1",
              'login_name'=>'1|string|1-35|text=Login name is between 1 to 35 characters, and no spaces allowed',
              'password'=>'0|string|0-100',
              'email'=>'0|email',
@@ -731,7 +732,7 @@ class UM //extends Model
           $res = validateObject($arr,$validate_rule,true,['email'=>['.','@','-'],'login_name'=>['@','-','.','_'],'photo' => $img_char],$ss->lang,false,$check_unique);
           if($res->error) return DV::error($res->error);
           $inputs = $res->values;
-          $user_id = $res->user_id;
+          $user_id = $id ?? $res->id;
           if ($user_id > 0){
              if(!self::allowed(112)) return  DV::error('You need permission number ? to update user information::'.'112');
           }else{
@@ -807,7 +808,13 @@ class UM //extends Model
          $user_id = saveData($ss,"um_users",["id"=>$user_id],$inputs,[],0);
          if($user_id >0){
             $this->addRoleMember_internal($ss,$role_id,$user_id);
-            PublicStorage::saveImage($branch_id,$user_class,null,$image,null,['id' => $official_id,'store' => $p_table.'.'.$photo_field]);
+            $x = PublicStorage::saveImage($ss->branch_id,$user_class,null,$image,null,[]);
+            if($x->status == 'OK'){     
+                $primary_key = $p_table ==='um_users'? ['id'=>$user_id]: [$pk_field => ($official_id ?? -3)];
+                saveData($ss,$p_table,$primary_key,[
+                  $photo_field => $x->file_name
+                ],[],1);
+            }
             return DV::success(['id'=>$user_id]);
          }else{
              return DV::error("Something went wrong in saving user data");
@@ -912,7 +919,7 @@ class UM //extends Model
           $decoded->status = $row->status;
           $decoded->is_system_admin = $row->is_system_admin; //
         }
-        if (in_array(strtolower($decoded->status),['inactive','disabled','locked']) || $decoded->is_locked == 1) return DV::error('User status is disabled or locked out', $def_lang, 400);
+        if (in_array(strtolower($decoded->status),['inactive','disabled','locked']) || $decoded->is_locked == 1) return DV::error('It seems your token expired or your status is inactive. But you may try login again to verify your credentials', $def_lang, 400);
         //#end::Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
         $ret = (object)['status_code' => 200, 'status' => 'OK'];
 
@@ -2028,13 +2035,19 @@ class UM //extends Model
     ];
   }
 
+  static function getDefaultUserImage($branch_id){
+    return PublicStorage::getUrl($branch_id,'default','image').'default-user.png';
+  }
 
   function getUserDetails($id,$ss){
     $branch_id = $ss->branch_id;
     if(!$id) return DV::error('User identity is required');
-    $selectCols = 'LOWER(u.user_class) AS user_class,u.login_name,u.phone_number,u.last_login_date,u.full_name,u.official_id,u.official_code,ur.role_id,u.id,u.photo_file_name';
+    $selectCols = 'LOWER(u.user_class) AS user_class,u.login_name,u.phone_number,formatTime(u.last_login_date) AS last_login_date,u.full_name,u.official_id,u.official_code,ur.role_id,u.id,u.photo_file_name';
     $row = DB::table('um_users AS u')->join('um_user_roles as ur','ur.user_id','=','u.id')->where('u.id',$id)->where('ur.is_primary_role',1)->selectRaw($selectCols)->first();
-    if($row) $row->image_url = self::getUserImage($branch_id,strtolower($row->user_class),$row->id,$row->photo_file_name);
+    if($row) {
+      $url = self::getUserImage($branch_id,strtolower($row->user_class),$row->id,$row->photo_file_name);
+      $row->image_url = validateUrl($url,self::getDefaultUserImage($branch_id));
+    }
     return $row;
   }
 

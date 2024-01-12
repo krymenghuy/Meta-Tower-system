@@ -192,14 +192,15 @@ class UMController extends Controller
   {
     $prn_code = $req->id? 112:100;
     $ss = UM::getUserInfoByToken($req, $prn_code);
-    if ($ss->status_code != 200) return $ss; //user not authenticated
-    $res = $this->UMModel->saveUser($req->all(),$ss);
+    if ($ss->status_code != 200) return $ss;
+    $id = $req->id ?? $req->user_id;
+    $res = $this->UMModel->saveUser($req->all(),$id, $ss);
     if ($res->status_code === 200) {
       return JDV::success(['id' => $res->id]);
     }
     return JDV::raw($res);
   }
-
+  
   // //getUserInfo() returns "id, previlege_type, user_class,is_locked,status"
   // function getUserInfo(Request $req)
   // {

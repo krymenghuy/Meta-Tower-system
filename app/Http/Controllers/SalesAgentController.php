@@ -26,6 +26,16 @@ class SalesAgentController extends Controller
       return JDV::result($rows);
     }
 
+    function updateStatus(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !== 200) return JDV::raw($ss);
+       $agent = new SalesAgent();
+       $status_code = $req->status_code;
+       $id = $req->id ?? $req->agent_id;
+       $res = $agent->updateStatus($status_code,$id);
+       return JDV::raw($res); 
+    }
+
     function getMerchantList_all(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
@@ -39,9 +49,9 @@ class SalesAgentController extends Controller
     function saveSalesAgent(Request $req) {
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !== 200) return JDV::raw($ss);
-        $id = $req->id;
+        $id = $req->id ?? $req->agent_id;
         $agent = new SalesAgent($id,$ss);
-      return JDV::raw($agent->save($req->all()));
+      return JDV::raw($agent->save($req->all(),$id,$ss));
    }
 
    function deleteSalesAgent(Request $req) {

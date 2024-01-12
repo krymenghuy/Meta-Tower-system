@@ -120,10 +120,31 @@ class WebReportController extends Controller{
             $data['items'] = $group_data;
             $data['title'] = 'សរុបកញ្ចប់ទំនិញ'.($sender_pmt_status_id ==1? 'ដែលបានទូទាត់':($sender_pmt_status_id==0? 'ដែលមិនទាន់ទូទាត់':'ទាំងអស់'));
             $sender_name ='All Merhcants';
-            if($sender_id > 0) $sender_name = DB::table('sender as s')->where('id',$sender_id)->take(1)->value('name');
-            if(!$sender_name) $sender_name ='Invalid Merchant';
+            if($sender_id > 0){
+              $sender_name = DB::table('sender as s')->where('id',$sender_id)->take(1)->value('name');
+              if(!$sender_name) $sender_name ='Invalid Merchant';
+            }
             $data['subtitle'] =  '<b>'.$sender_name.'</b> : ចាប់ពី '.date('d M Y',strtotime($start_date))." ដល់ ".date('d M Y',strtotime($end_date));
+            break;
+          }
+          case 'package_count_by_merchant':{
+            $warehouse_id =isset($p->wid)? $p->wid:null;
+            $start_date = isset($p->startdate)?$p->startdate:date('d M Y');
+            $end_date = isset($p->enddate)?$p->enddate:date('d M Y');
+            $sender_id=isset($p->senderid)?$p->senderid:null;
+            
+            $rows = $this->reportModel->getMonthlyPackageCountByMerchant($branch_id,$warehouse_id,$start_date,$end_date,$sender_id);
 
+            $start_date = (bool)strtotime($start_date)? $start_date:date('d M Y');
+            $end_date = (bool)strtotime($end_date)? $end_date:date('d M Y');
+            $data['items'] = $rows;
+            $data['title'] = 'សរុបកញ្ចប់ទំនិញទាំងអស់';
+            $sender_name ='All Merhcants';
+            if($sender_id > 0){
+              $sender_name = DB::table('sender as s')->where('id',$sender_id)->take(1)->value('name');
+              if(!$sender_name) $sender_name ='Invalid Merchant';
+            }
+            $data['subtitle'] =  '<b>'.$sender_name.'</b> : ចាប់ពី '.date('d M Y',strtotime($start_date))." ដល់ ".date('d M Y',strtotime($end_date)); 
             break;
           }
           case 'dr_unpaid_packages':{
@@ -139,7 +160,7 @@ class WebReportController extends Controller{
             $end_date = (bool)strtotime($end_date)? $end_date:date('d M Y');
             $data['data'] =$m_data;
             //  echo json_encode( $items); return;
-            $data['title'] =  $trx_id? 'កញ្ចប់រង់ចាំការអនុម័ត':'កញ្ចប់មិនទាន់ទូទាត់';
+            $data['title'] =  $trx_id? 'កញ្ចប់រង់ចាំការអនុម័ត':'កញ្ចប់មិនទាន់ទូទាត់ ';
             if($driver_id > 0) $driver_name = DB::table('driver as d')->where('id',$driver_id)->take(1)->value('name');
             if(!$driver_name) $driver_name ='Unknown Driver';
             $data['subtitle'] =  'អ្នកដឹក <b>'.$driver_name.'</b> : ចាប់ពី '.date('d M Y',strtotime($start_date))." ដល់ ".date('d M Y',strtotime($end_date));

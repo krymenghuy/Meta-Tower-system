@@ -22,10 +22,14 @@ class SalesAgent //extends Model
     }
 
     function delete($id=null,$ss =null){
-       $id = $id? $id: $this->id;
+       $id = $id ?? $this->id;
+       $ss = $ss ?? $this->userInfo;
        $x = DB::table('sales_agents')->where('id',$id)->delete();
-       DB::table('sender')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
-       return DV::depends($x,'Failed to delete sales agent'); 
+       if($x){
+        DB::table('sender')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
+        DB::table('leads')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
+       }
+       return DV::depends(1,'Failed to delete sales agent'); 
     }
 
     function save($arr, $id = null, $ss = null){
@@ -34,19 +38,18 @@ class SalesAgent //extends Model
       $v_rule = [
          'name'=>'1|string|1-150',
          'sex'=>'1|choice|M,F,O',
-         'agent_type'=>'1|choice|Part Time, Full Time, Any',
+         'agent_type_id'=>'1|number|exists=sales_agent_types.id',
          'phone_number'=>'1|phone',
          'email'=>'0|email',
-         'agent_type_id'=>'1|number|exists=sales_agent_types.id|default=1',
          'address'=>'0|address',
          'start_date'=>'0|date',
          'photo'=>'0|image',
-         'commission'=>'0|number',
+         'commission'=>'0|number|default=0',
          'status_code' => '0|choice|Active,Inactive|default=Active'
       ];
 
       $branch_id = $ss->branch_id;
-      $res = validateObject($arr,$v_rule,true,['email'=>['@','-','.','_']],$ss->lang,false,null);
+      $res = validateObject($arr,$v_rule,true,['photo'=>GeneralSettings::$image_chars, 'address'=>GeneralSettings::$address_chars,'email'=>GeneralSettings::$email_chars],$ss->lang,false,null);
       if($res->error) return DV::error($res->error);
       $inputs = $res->values;
       $photo = $inputs['photo'];
@@ -89,7 +92,7 @@ class SalesAgent //extends Model
         DB::table('agent_code_control')->insert(['branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix]);
         return $prefix.$branch_id.formatNumber(1,$len);
     }
- 
+    
     static function getFormOptions($id,$ss){
         $d = null;
         if ($id) $d = self::details($id,$ss);
@@ -274,6 +277,11 @@ class SalesAgent //extends Model
         return PublicStorage::getUrl($branch_id,'agent','image').'def-agent.png';
     }
 
+  function updateStatus($status_code,$id=null){
+    if(!in_array(strtolower($status_code),['active','inactive'])) return DV::error('Status code is not correct');
+    DB::table('sales_agents')->where('id',$id)->update(['status_code'=>$status_code]);
+    return DV::depends(1);
+  }
     //Called by Sales mobile app to update user profile quickly
    function updateProfile_mobile($arr = [],$id= null,$ss =null){
     $ss =$ss?$ss:$this->userInfo;
@@ -346,18 +354,28 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
     static function list($arr,$ss=null){
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
+        $search_value = isset($d->search_value)?$d->search_value:null;
+
         $current_page =isset($d->current_page)?$d->current_page:1;
         $per_page =isset($d->per_page)?$d->per_page:10;
         if(!is_numeric($current_page)) $current_page=1;
         $skip_rows = ($current_page -1) * $per_page;
 
-        $status_code = isset($d->status_code)?Sanitizer::sanitize($d->status_code):null;
-        $sales_agent_type =isset($d->sales_agent_type)? Sanitizer::sanitize( $d->sales_agent_type):null;
-
-        $str_agent_type = $sales_agent_type? 's.salges_agent_type ='.$sales_agent_type : '3=3';
-        $str_status = $status_code? 'status_code =\''.$status_code.'\'' : '1=1';
+        $status_code = isset($d->status_code)? Sanitizer::sanitize($d->status_code):null;
+        $agent_type_id =isset($d->agent_type_id)? $d->agent_type_id : null; 
         
-        $query = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.email,d.phone_number,d.address,d.status_code,t.name AS agent_type,photo_file_name'); 
+        $str_agent_type = '3=3';
+        $str_status = '1=1';
+        $str_search = '2=2';
+        if($search_value){
+          $search_value = escape_like_str($search_value);
+           $str_search = ' (d.code =\''.$search_value.'\' OR d.name LIKE \'%'.$search_value.'%\' OR d.phone_number =\''.$search_value.'\')';
+        }else{
+          $str_agent_type = $agent_type_id? 'd.agent_type_id ='.$agent_type_id : '3=3';
+          $str_status = $status_code? 'd.status_code =\''.$status_code.'\'' : '1=1';
+        }
+       
+        $query = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.email,d.phone_number,d.address,d.status_code,t.name AS agent_type,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date,d.create_user,photo_file_name'); 
         $count_query = clone $query;
         $count = $count_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -368,9 +386,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
           unset($row->photo_file_name);
           if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
         }
-       
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-
     }
 
     static function listAll($arr,$ss=null){
@@ -404,7 +420,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
     static function details($id,$ss)
     {
         $branch_id = $ss->branch_id;
-        $row = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('d.id',$id)->selectRaw('d.id,d.name,d.agent_type_id,d.code,d.email,d.phone_number,d.address,d.status_code,d.commission, t.name AS agent_type,d.photo_file_name')->take(1)->first(); 
+        $row = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('d.id',$id)->selectRaw('d.id,d.name,d.agent_type_id,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,d.commission,t.name AS agent_type,d.photo_file_name')->take(1)->first(); 
         if($row){
            $row->image_url = PublicStorage::getUrl($branch_id,'agent','image').$row->photo_file_name;
         } 

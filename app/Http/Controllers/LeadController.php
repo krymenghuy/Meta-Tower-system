@@ -35,6 +35,15 @@ class LeadController extends Controller
         return JDV::raw($res);
     }
 
+    function getLeadDetails(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        $id = $req->id;
+        $lead = new Lead($id,$ss);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $data = $lead->getDetails($id,$ss,true); 
+        return JDV::result($data);
+    }
+
     function saveLead(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         $id = $req->id;
@@ -89,5 +98,23 @@ class LeadController extends Controller
         $lead = new Lead($id,$ss);
         $res =$lead->updateStatus($req->status_id,$id,$ss);
         return JDV::raw($res);
+    }
+
+    function convertToMerchant(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $id = $req->id;
+        $lead = new Lead($id,$ss);
+        $res =$lead->convertToMerchant($id,$ss);
+        return JDV::raw($res);
+    }
+
+    function getFormOptions(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        $id = $req->id;
+        $lead = new Lead($id,$ss);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $data = $lead->getFormOptions($id,$ss,true); 
+        return JDV::result($data);
     }
 }

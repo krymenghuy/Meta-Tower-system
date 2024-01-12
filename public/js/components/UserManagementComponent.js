@@ -182,120 +182,129 @@ var UserManagementComponent = new function(){
 
     this.renderUserList = (div,items) => {
         items = items ? items : [];
-        let html = '';
-        vsapi.call(`${main_view.base_url}/api/auth/auth-data`,null,null).then(res => {
-            if(res.status_code === 200){
-                const d = res.data.user;
+        if (!AuthManager){
+            console.error('Authentication Management does not seems to work properly');
+            return;
+        }
+        //AuthManager() provides current user information
+        AuthManager.init((user_data)=>{
+           mThis.beginRenderUsers(div,items,user_data.user);
+        });
+    }
 
-                items.forEach(user => {
-                    html = [html,`<div class="${user.id === d.id ? 'set-half-border ' : ''}w-100 rounded-4 p-3 bg-white mt-2 position-relative">
-                        <div class="scope-user row gy-2">
-                            <div class="col-lg-2">
-                                <div class="d-flex h-100">
-                                    <div class="width-locked-icon">
-                                        ${user.is_locked ? '<i class="fa-solid fa-lock fs-4 text-warning"></i>' : '<i class="fa-solid fa-lock-open fs-4 text-success"></i>'}
-                                    </div>
-                                    <div class="width-profile-container rounded-4 set-user-profile">
-                                        <img class="object-fit-scale rounded-4" src="${user.image_url ? user.image_url : `${main_view.base_url}/assets/images/logo/default_image_user.avif`}" alt="user-profile"/>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="d-block">
-                                    <p class="text-nowrap">
-                                        <span class="text-capitalize text-width-user">Login :</span>
-                                        <span class="text-capitalize">${user.login_name ? user.login_name.replace(/\s/g,'') : 'N/A'}</span>
-                                    </p>
-                                    <p class="text-nowrap">
-                                        <span class="text-capitalize text-width-user">Full Name :</span>
-                                        <span class="text-capitalize">${user.full_name ? user.full_name : 'N/A'}</span>
-                                    </p>
-                                    <p class="text-nowrap">
-                                        <span class="text-capitalize text-width-user">User Class :</span>
-                                        <span class="text-capitalize">${user.user_class ? user.user_class : 'N/A'}</span>
-                                    </p>
-                                    <p class="text-nowrap">
-                                        <span class="text-capitalize text-width-user">Role :</span>
-                                        <span class="text-capitalize">${user.primary_role ? user.primary_role : 'N/A'}</span>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-lg-4">
-                                <div class="d-block">
-                                    <p class="text-nowrap">
-                                        <span class="text-capitalize text-width-user">Start Date :</span>
-                                        <span class="text-capitalize">${user.start_date ? user.start_date : 'N/A'}</span>
-                                    </p>
-                                    <p class="text-nowrap">
-                                        <span class="text-capitalize text-width-user">Last Login :</span>
-                                        <span class="text-capitalize">${user.last_login_date ? user.last_login_date : 'N/A'}</span>
-                                    </p>
-                                    <p class="text-nowrap">
-                                        <span class="text-capitalize text-width-user">Phone Number :</span>
-                                        <span class="text-capitalize">${user.phone_number ? user.phone_number : 'N/A'}</span>
-                                    </p>
-                                    <p class="text-nowrap">
-                                        <span class="text-capitalize text-width-user">${user.user_class ? VSUtil.properCase(user.user_class) : 'Offical'} ID :</span>
-                                        <span class="text-capitalize">${user.official_code ? user.official_code : 'N/A'}</span>
-                                    </p>
-                                </div>
-                            </div>
-                            <div class="col-lg-2">
-                                <div class="d-flex align-items-center justify-content-end h-100">
-                                    <button class="btn-action btn btn-sm btn-info rounded-3 text-nowrap" type="button" data-id="${user.id}" data-user="${user.login_name}" data-lock="${user.is_locked ? 'unlock' : 'lock'}">
-                                        <span>Action</span>
-                                        <i class="fa-solid fa-caret-down"></i>
-                                    </button>
-                                </div>
+    this.beginRenderUsers = (div,items,current_user)=>{
+        const d = current_user;
+        let html = '';
+        items.forEach(user => {
+            let cls_lock_class = (user.status.toLowerCase() =='active')? '':'border-danger border-2';
+            const login_name_text = current_user.id == user.id? [user.login_name,' <span class="text-danger">(You)</span>'].join('') : user.login_name; 
+            html = [html,`<div class="${user.id === d.id ? 'set-half-border ' : ''}w-100 rounded-2 p-3 shadow-lg bg-white mb-3 position-relative">
+                <div class="scope-user row gy-2">
+                    <div class="col-lg-2">
+                        <div class="d-flex h-100">
+                            <div class="width-profile-container rounded-4 set-user-profile">
+                                <img class="img-user-profile object-fit-scale shadow `,cls_lock_class,`" src="`,user.image_url,`" alt="user-profile"/>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-center gap-3 w-100 custom-btn">`,
-                            `<button class="btn-um-roles btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
-                                <span class="text-nowrap">Roles</span>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="d-block">
+                            <p class="text-nowrap">
+                                <span class="text-capitalize text-width-user">Login :</span>
+                                <span class="text-capitalize">`,login_name_text,`</span>
+                            </p>
+                            <p class="text-nowrap">
+                                <span class="text-capitalize text-width-user">Full Name :</span>
+                                <span class="text-capitalize">${user.full_name ? user.full_name : 'N/A'}</span>
+                            </p>
+                            <p class="text-nowrap">
+                                <span class="text-capitalize text-width-user">User Class :</span>
+                                <span class="text-capitalize">${user.user_class ? user.user_class : 'N/A'}</span>
+                            </p>
+                            <p class="text-nowrap">
+                                <span class="text-capitalize text-width-user">Role :</span>
+                                <span class="text-capitalize">${user.primary_role ? user.primary_role : 'N/A'}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="d-block">
+                            <p class="text-nowrap">
+                                <span class="text-capitalize text-width-user">Start Date :</span>
+                                <span class="text-capitalize">${user.start_date ? user.start_date : 'N/A'}</span>
+                            </p>
+                            <p class="text-nowrap">
+                                <span class="text-capitalize text-width-user">Last Login :</span>
+                                <span class="text-capitalize">${user.last_login_date ? user.last_login_date : 'N/A'}</span>
+                            </p>
+                            <p class="text-nowrap">
+                                <span class="text-capitalize text-width-user">Phone Number :</span>
+                                <span class="text-capitalize">${user.phone_number ? user.phone_number : 'N/A'}</span>
+                            </p>
+                            <p class="text-nowrap">
+                                <span class="text-capitalize text-width-user">${user.user_class ? VSUtil.properCase(user.user_class) : 'Offical'} ID :</span>
+                                <span class="text-capitalize">${user.official_code ? user.official_code : 'N/A'}</span>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-lg-2">
+                        <div class="d-flex align-items-center justify-content-end h-100">
+                        <div class="d-flex flex-row width-locked-icon">
+                          ${user.is_locked ? '<i class="fa-solid fa-ban fs-4 text-danger"></i>' : ''}
+                        </div>
+                            <button class="btn-action btn btn-sm btn-info rounded-5 text-nowrap" type="button" data-id="${user.id}" data-user="${user.login_name}" data-lock="${user.is_locked ? 'unlock' : 'lock'}">
+                                <span class="trans-text" data-langprop="buttons.Action">Action</span>
+                                <i class="fa-solid fa-caret-down"></i>
                             </button>
-                            <button class="btn-um-permissions btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
-                                <span class="text-nowrap">Permissions</span>
-                            </button>`,
-                            `<button class="btn-um-modules btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
-                                <span class="text-nowrap">Modules</span>
-                            </button>`,
-                            `<button class="btn-um-reports btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
-                                <span class="text-nowrap">Reports</span>
-                            </button>`,
-                            `<button class="btn-um-lock btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}" data-lock="${user.is_locked ? 'unlock' : 'lock'}">
-                                <span class="text-nowrap">${user.is_locked ? 'Unlock' : 'Lock'}</span>
-                            </button>`,
-                            `<button class="btn-um-set-password btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
-                                <span class="text-nowrap">Set Password</span>
-                            </button>`,
-                        `</div>
-                    </div>`].join('');
-                });
-                
-                div.innerHTML = html;
-                const parent = div.parentElement;
-                parent.style.height = (window.innerHeight - 240)+'px';
-                window.onresize = function(e){
-                    e.preventDefault();
-                    parent.style.height = (window.innerHeight - 240)+'px';
-                }
-                mThis.setMenuAction(div.querySelectorAll('.btn-action'));
-                div.querySelectorAll('.custom-btn').forEach(contain => {
-                    mThis.setEvent(contain);
-                });
-            }
+                        </div>
+                    </div>
+                </div>
+                <div style="min-height:35px" class="d-flex justify-content-left gap-3 pl-2 pt-2 w-100 custom-btn border-top border-secondary">
+                    <button class="btn-um-roles btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
+                        <span class="text-nowrap">Roles</span>
+                    </button>
+                    <button class="btn-um-permissions btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
+                        <span class="text-nowrap">Permissions</span>
+                    </button>
+                    <button class="btn-um-modules btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
+                        <span class="text-nowrap">Modules</span>
+                    </button>
+                    <button class="btn-um-reports btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
+                        <span class="text-nowrap">Reports</span>
+                    </button>
+                    <button class="btn-um-lock btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}" data-lock="${user.is_locked ? 'unlock' : 'lock'}">
+                        <span class="text-nowrap">${user.is_locked ? 'Unlock' : 'Lock'}</span>
+                    </button>
+                    <button class="btn-um-set-password btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
+                        <span class="text-nowrap">Set Password</span>
+                    </button>
+                </div>
+            </div>`].join('');
+        });
+        
+        div.innerHTML = html;
+        const parent = div.parentElement;
+        parent.style.height = (window.innerHeight - 240)+'px';
+        window.onresize = function(e){
+            e.preventDefault();
+            parent.style.height = (window.innerHeight - 240)+'px';
+        }
+        mThis.setMenuAction(div.querySelectorAll('.btn-action'));
+        div.querySelectorAll('.custom-btn').forEach(contain => {
+            mThis.setEvent(contain);
         });
     }
 
     this.setMenuAction = (buttons) => {
         buttons.forEach(btn => {
             btn.onclick = function(e){
+                e.preventDefault();
                 const id = e.target.parentElement.dataset.id,
                 user_name = e.target.parentElement.dataset.user,
                 is_locked = e.target.parentElement.dataset.lock;
 
                 if(id){
-                    const html = [`<ul class="list-unstyled set-bottom-border pb-0 mb-0">
+                    const html = `<ul class="list-unstyled set-bottom-border pb-0 mb-0">
                         <li class="p-2 text-nowrap btn-um-delete" data-id="${id}" data-user="${user_name}">
                             <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
                             <span class="ps-2">Delete</span>
@@ -305,7 +314,7 @@ var UserManagementComponent = new function(){
                             <span class="ps-2">Edit</span>
                         </li>
                         <li class="p-2 text-nowrap btn-um-lock" data-id="${id}" data-user="${user_name}" data-lock="${is_locked}">
-                            ${is_locked === 'lock' ? '<i class="fa-solid fa-lock-open fs-5"></i>' : '<i class="fa-solid fa-lock fs-5"></i>'}
+                            ${is_locked === 'lock' ? '<i class="fa-solid fa-ban text-danger fs-5"></i>' : '<i class="fa-solid fa-lock-open text-success fs-5"></i>'}
                             <span class="ps-2 text-capitalize">${is_locked}</span>
                         </li>
                         <li class="p-2 text-nowrap btn-um-set-password" data-id="${id}" data-user="${user_name}">
@@ -315,13 +324,13 @@ var UserManagementComponent = new function(){
                         <li class="p-2 text-nowrap btn-um-permissions" data-id="${id}" data-user="${user_name}">
                             <i class="fa-solid fa-user-pen fs-5 text-warning-emphasis"></i>
                             <span class="ps-2">Permissions</span>
-                        </li>`,
-                        `<li class="p-2 text-nowrap btn-um-reports" data-id="${id}" data-user="${user_name}">
+                        </li>
+                        <li class="p-2 text-nowrap btn-um-reports" data-id="${id}" data-user="${user_name}">
                             <i class="fa-regular fa-rectangle-list fs-5 text-primary"></i>
                             <span class="ps-2">Report</span>
-                        </li>`,
-                    `</ul>`].join('');
-
+                        </li>
+                    </ul>`;
+                    //const btn = VSUtil.closestLimited(e.target,'.btn-action');
                     DialogFilter(e,{},html,(div) => {
                         div.classList.remove('p-3');
                         div.classList.add('p-2');
@@ -366,7 +375,9 @@ var UserManagementComponent = new function(){
             if(btn){
                 let op = {
                     user_id: btn.dataset.id,
-                    default:{'user_class':mThis.elfilter_userclass.value},
+                    default:{
+                        user_class: mThis.elfilter_userclass.value
+                    },
                     open: 'add-user',
                     onClose: () => {
                         mThis.userListView.showPage(null);
@@ -411,7 +422,7 @@ var UserManagementComponent = new function(){
             btn = VSUtil.closestLimited(e.target,'.btn-um-set-password');
             if(btn){
                 let op = {
-                    button:btn,
+                    button:null,
                     user_id: btn.dataset.id,
                     user_name: btn.dataset.user,
                     open: 'reset-password',
@@ -428,7 +439,7 @@ var UserManagementComponent = new function(){
             btn = VSUtil.closestLimited(e.target,'.btn-um-roles');
             if(btn){
                 let op = {
-                    button:btn,
+                    button:null,
                     user_id: btn.dataset.id,
                     user_name: btn.dataset.user,
                     open: 'roles'
@@ -441,7 +452,7 @@ var UserManagementComponent = new function(){
             btn = VSUtil.closestLimited(e.target,'.btn-um-permissions');
             if(btn){
                 let op = {
-                    button:btn,
+                    button:null,
                     user_id: btn.dataset.id,
                     user_name: btn.dataset.user,
                     open: 'permissions'
@@ -454,7 +465,7 @@ var UserManagementComponent = new function(){
             btn = VSUtil.getElementByClass(e.target,'btn-um-modules');
             if(btn){
                 let op = {
-                    button:btn,
+                    button:null,
                     user_id: btn.dataset.id,
                     user_name: btn.dataset.user,
                     open: 'modules'
@@ -467,7 +478,7 @@ var UserManagementComponent = new function(){
             btn = VSUtil.getElementByClass(e.target,'btn-um-reports');
             if(btn){
                 let op = {
-                    button:btn,
+                    button:null,
                     user_id: btn.dataset.id,
                     user_name: btn.dataset.user,
                     open: 'reports'
@@ -481,6 +492,7 @@ var UserManagementComponent = new function(){
 
     this.resetUserStatus = (div,btn,options) => {
         const containerIcon = div.querySelector('.width-locked-icon');
+        const img = div.querySelector('img.img-user-profile');
         let btnAction = null;
         if(btn.classList.contains('btn-action')){
             btnAction = div.nextElementSibling.querySelector('.btn-um-lock');
@@ -488,13 +500,15 @@ var UserManagementComponent = new function(){
                 btn.dataset.lock = 'unlock',
                 btnAction.dataset.lock = 'unlock',
                 btnAction.children[0].textContent = 'Unlock';
-                containerIcon.innerHTML = '<i class="fa-solid fa-lock fs-4 text-warning"></i>';
+                containerIcon.innerHTML = '<i class="fa-solid fa-ban fs-4 text-danger"></i>';
+                if(img) img.classList.add('border-2','border-danger');
             }
             else{
                 btn.dataset.lock = 'lock',
                 btnAction.dataset.lock = 'lock',
                 btnAction.children[0].textContent = 'Lock';
-                containerIcon.innerHTML = '<i class="fa-solid fa-lock-open fs-4 text-success"></i>';
+                containerIcon.innerHTML = '';
+                if(img) img.classList.remove('border-danger','border-2');
             }
         }
         else{
@@ -503,13 +517,15 @@ var UserManagementComponent = new function(){
                 btn.dataset.lock = 'unlock',
                 btnAction.dataset.lock = 'unlock';
                 btn.children[0].textContent = 'Unlock';
-                containerIcon.innerHTML = '<i class="fa-solid fa-lock fs-4 text-warning"></i>';
+                containerIcon.innerHTML = '<i class="fa-solid fa-ban fs-4 text-danger"></i>';
+                if(img) img.classList.add('border-2','border-danger');
             }
             else{
                 btn.dataset.lock = 'lock',
                 btnAction.dataset.lock = 'lock';
                 btn.children[0].textContent = 'Lock';
-                containerIcon.innerHTML = '<i class="fa-solid fa-lock-open fs-4 text-success"></i>';
+                containerIcon.innerHTML = '';
+                if(img) img.classList.remove('border-danger','border-2');
             }
         }
     }
@@ -547,7 +563,7 @@ var UserManagementComponent = new function(){
 
 const AddUserDialog = new function(){
     const mThis = this;
-    this.self = document.querySelector('#dlg_um_');
+    this.self = main_view.appContent.children('#dlg_um_')[0];
     this.elTitle = mThis.self.querySelector('.modal-title');
     this.btnSave = mThis.self.querySelector('#dlg_um_btn_save');
     this.btnClose = mThis.self.querySelector('#dlg_um_btn_close');
@@ -560,7 +576,8 @@ const AddUserDialog = new function(){
             let p = null;
             if(options.open === 'add-user'){
                 p = mThis.getDataForm(modal);
-                p.user_id = options.user_id;
+                //p.user_id = options.user_id;
+                p.id = options.user_id;
                 if(p.password === p.confirm_password){
                     delete(p.confirm_password);
                     vsapi.call([main_view.base_url,end_point].join(''),p,btnSave).then(res => {
@@ -718,6 +735,7 @@ const AddUserDialog = new function(){
                 let user_class = user_id > 0? 'Official': (def.user_class? def.user_class:' Official');
                 user_class = user_class.replace(/_/g,' ');
                 let password_fields = '';
+                
                 if(!user_id || user_id == 0){
                     password_fields = `<div class="row gy-2">
                     <div class="col-lg-6">
@@ -868,8 +886,6 @@ const AddUserDialog = new function(){
     this.setUserFormData = (div,d)=>{
         d = d || {};
         const btn_chooser = div.querySelector('#_um_profile_show');
-        // const elUserClass  = div.querySelector('select.user-class');
-        // const elUserRole  = div.querySelector('select.user-role');
         if(d.image_url) mThis.setImage(btn_chooser, d.image_url);
         if(!d.login_name) d.login_name = d.phone_number || d.email;
         div.querySelectorAll('.data-input').forEach(el => {
@@ -884,12 +900,6 @@ const AddUserDialog = new function(){
             else
                 el.value = d[f] ? d[f] : '';
         });
-        
-        // //Set default Role based on if there is default role_id
-        // if (d.role_id > 0 && elUserRole){
-        //    elUserRole.value = d.role_id;
-        //    elUserRole.dispatchEvent(new Event('change'));
-        // }
     }
 
     this.loadFormDetails = (div, options) => {
@@ -897,6 +907,7 @@ const AddUserDialog = new function(){
             user_id: options.user_id
         },null,false).then(res => {
             if(res.status_code === 200){
+                console.log(res);
                 const d = res.data ? res.data : {};
                 mThis.setUserFormData(div,d);
             }
@@ -1072,20 +1083,21 @@ const AddUserDialog = new function(){
         let tbody = '';
         const check_icon = `<i class="fa fa-check text-success fs-5 p-0 m-0"></i>`,
         cross_icon = `<i class="fa fa-times text-danger fs-5 p-0 m-0"></i>`;
+
         switch(options.open){
             case 'roles':
                 (d || []).forEach(item => {
-                    tbody += `<tr>
+                    tbody = [`<tr>
                         <td class="align-middle">
                             <span class="p-2 rounded-3 d-flex align-items-center justify-content-center bg-success-subtle" style="width:33px">${item.allowed ? check_icon : cross_icon}</span>
                         </td>
                         <td class="align-middle text-capitalize">${item.name ? item.name : ''}</td>
-                        <td class="align-middle">
-                            <button class="btn-action btn btn-sm btn-outline-${item.allowed ? 'warning' : 'primary'}" data-id="${item.id}" data-status="${item.allowed}">
-                                <span>${item.allowed ? 'Remove' : 'Add'}</span>
-                            </button>
-                        </td>
-                    </tr>`;
+                        <td class="align-middle">`,
+                          `<button class="btn-action btn btn-sm btn-outline-${item.allowed ? 'warning' : 'primary'}" data-id="${item.id}" data-status="${item.allowed}">
+                             <span>${item.allowed ? 'Remove' : 'Add'}</span>
+                          </button>`,
+                        `</td>
+                    </tr>`].join('');
                 });
                 break;
             case 'permissions':
@@ -1508,7 +1520,6 @@ const AddUserDialog = new function(){
                 }
                 modal.querySelector('.modal-dialog').classList.add('modal-lg');
                 mThis.btnSave.removeAttribute('style');
-                //console.log('def',options.default);
                 mThis.renderCreateUser(modal,options,onFinish); 
                 break;
             case 'reset-password':

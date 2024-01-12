@@ -118,6 +118,7 @@ class Report //extends Model
     }
 
 
+    /** Daily package count by merchant | daily_packages */
     function getDailyPackageCountByMerchant($branch_id,$warehouse_id, $start_date,$end_date,$sender_id = null,$pmt_status_id =null){
        $branch_id = $branch_id?$branch_id : Session::get('branch_id',0);
        $start_date = convertDate($start_date);
@@ -144,9 +145,30 @@ class Report //extends Model
        SUM(CASE p.status_id WHEN 9 THEN 1 ELSE 0 END) AS failed_count,
        SUM(CASE p.status_id WHEN 11 THEN 1 ELSE 0 END) AS returned_count,
        formatDate(p.arrival_time) AS arrival_date,s.id AS sender_id,s.code AS sender_code, s.`name` AS sender_name, s.phone_number';
-       $rows=  DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->whereRaw($str_dates)->whereRaw($str_warehouse)->whereRaw($str_sender)->whereRaw($str_sender_pmt_status)->selectRaw($cols)->orderByRaw('arrival_date DESC')->groupByRaw('arrival_date,s.code,s.id,s.name,s.phone_number')->havingRaw('COUNT(p.id) > 0')->get();
+       $rows = DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->whereRaw($str_dates)->whereRaw($str_warehouse)->whereRaw($str_sender)->whereRaw($str_sender_pmt_status)->selectRaw($cols)->orderByRaw('arrival_date DESC')->groupByRaw('arrival_date,s.code,s.id,s.name,s.phone_number')->havingRaw('COUNT(p.id) > 0')->get();
        return $this->groupRows($rows,'arrival_date');
     }
+
+    /** monthly package count by merchant | package_count_by_merchant*/
+    function getMonthlyPackageCountByMerchant($branch_id,$warehouse_id, $start_date,$end_date,$sender_id = null){
+        $branch_id = $branch_id?$branch_id : Session::get('branch_id',0);
+        $start_date = convertDate($start_date) ?? date('Y-m-d');
+        $end_date = convertDate($end_date) ?? date('Y-m-d');
+        $str_warehouse = 'p.warehouse_id ='.$warehouse_id.' AND p.branch_id ='.$branch_id;
+     
+        $str_dates = 'DATE(p.arrival_time) >=\''.$start_date.'\' AND DATE(p.arrival_time) <=\''.$end_date.'\'';
+        $str_sender= $sender_id > 0? 's.id ='.$sender_id :'1=1';
+         
+        $cols = 'COUNT(p.id) AS package_count,
+        SUM(CASE p.status_id WHEN 5 THEN 1 ELSE 0 END) AS at_warehouse_count,
+        SUM(CASE p.status_id WHEN 6 THEN 1 ELSE 0 END) AS on_delivery_count,
+        SUM(CASE p.status_id WHEN 8 THEN 1 ELSE 0 END) AS delivered_count,
+        SUM(CASE p.status_id WHEN 9 THEN 1 ELSE 0 END) AS failed_count,
+        SUM(CASE p.status_id WHEN 11 THEN 1 ELSE 0 END) AS returned_count,
+        year(p.arrival_time) AS `op_year`, month(p.arrival_time) AS `op_month`,s.id AS sender_id,s.code AS sender_code, s.`name` AS sender_name, s.phone_number';
+        $rows = DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->whereRaw($str_dates)->whereRaw($str_warehouse)->whereRaw($str_sender)->selectRaw($cols)->orderByRaw('op_year DESC, op_month DESC')->groupByRaw('op_year,op_month,s.code,s.id,s.name,s.phone_number')->havingRaw('COUNT(p.id) > 0')->get();
+        return $rows; 
+     }
 
     //getPackageList() returns package list based on start_date and end_date (compared to package's Arrival Dates, not Create Dates )
     //$completed == true => show only completed package list
