@@ -8,9 +8,11 @@ use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
 use App\Models\SMS;
+use App\Models\PublicStorage;
 //use App\Security\Sanitizer as SecuritySanitizer;
 // use App\Security\Sanitizer as SecuritySanitizer;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
 use Session;
 use DB;
 // use Carbon\Carbon;
@@ -590,15 +592,14 @@ class UM //extends Model
 
        }
 
-        function getRoleById($d) {
-          $ss = self::getUserInfoByToken($d,-1);
-        if($ss->status_code !=200) return $ss; //user not authenticated
-          $branch_id = $ss->branch_id;
-          $id = $d->role_id;
-          $rows= DB::table('um_roles')->where('branch_id',$branch_id)->where('id',$id)->selectRaw('id,name,user_class')->limit(1)->get();
-          foreach($rows as $row) return $row;
-          return null;
-      }
+      //   function getRoleById($id,$ss =null) {
+      //     $ss = $ss ?? $this->userInfo;
+      //     $branch_id = $ss->branch_id;
+      //     $id = $d->role_id;
+      //     $rows= DB::table('um_roles')->where('branch_id',$branch_id)->where('id',$id)->selectRaw('id,name,user_class')->limit(1)->get();
+      //     foreach($rows as $row) return $row;
+      //     return null;
+      // }
 
         function getUserList($arr,$ss=null){
             $branch_id = 1;//$ss ? $ss->branch_id : 1;
@@ -621,18 +622,20 @@ class UM //extends Model
               }
             }
             $more_where = "1=1" . $str_search;
-            $get_primary_role = '(SELECT r.`name` FROM um_user_roles AS ur INNER JOIN um_roles AS r ON r.id = ur.role_id WHERE user_id = u.id AND ur.is_primary_role =1 LIMIT 1) AS primary_role,';
-            $query = DB::table('um_users as u')->whereRaw($str_user_class)->whereRaw($more_where)->selectRaw('u.id,u.official_id,u.official_code, u.full_name,u.login_name, LOWER(u.user_class) AS user_class, u.previlege_type,'.$get_primary_role.'formatTime(u.last_login_date) AS last_login_date, is_locked, `status`,u.phone_number,formatDate(u.create_date) as start_date,u.photo_file_name')->orderBy('u.id','DESC')->where('u.branch_id', $branch_id);
-
+            //$get_primary_role = ',(SELECT r.`name` FROM um_user_roles AS ur INNER JOIN um_roles AS r ON r.id = ur.role_id WHERE user_id = u.id AND ur.is_primary_role =1 LIMIT 1) AS primary_role';
+            $query = DB::table('um_users as u')->whereRaw($str_user_class)->whereRaw($more_where)->selectRaw('u.id,u.official_id,u.official_code, u.full_name,u.login_name, LOWER(u.user_class) AS user_class, u.previlege_type,formatTime(u.last_login_date) AS last_login_date, is_locked, `status`,u.phone_number,formatDate(u.create_date) as start_date,u.photo_file_name')->orderBy('u.id','DESC')->where('u.branch_id', $branch_id);
             $count_query = clone $query;
             $count = $count_query->count('u.id');
             $rows = $query->skip($skip_rows)->take($per_page)->get();
             foreach($rows as $row){
-                $url = self::getUserImage($branch_id,$row->user_class,$row->id,$row->photo_file_name);
-                $row->image_url = validateUrl($url,self::getDefaultUserImage($branch_id));
+                $role = self::getPrimaryRole($row->id);
+                if($role){
+                   $row->role_id = $role->id;
+                   $row->role_name = $role->name;
+                } 
+                $row->image_url = self::getUserPhoto($branch_id,$row->user_class,$row->id);
             }
             return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-
         }
 
       static function getUserProp($user_id,$prop){
@@ -727,7 +730,7 @@ class UM //extends Model
              'phone_number' => '0|phone',
           ];
 
-          $check_unique = ["$branch_id|um_users|login_name|id|text=login name is already in use"];
+          $check_unique = ["$branch_id|um_users|login_name|id|text=login name or phone number is already in use by another user"];
           $img_char = ['+',':',',',';','=','/','\\','?'];
           $res = validateObject($arr,$validate_rule,true,['email'=>['.','@','-'],'login_name'=>['@','-','.','_'],'photo' => $img_char],$ss->lang,false,$check_unique);
           if($res->error) return DV::error($res->error);
@@ -758,7 +761,12 @@ class UM //extends Model
              /** Assuming here the $p_table has columns "id", and "code". Example, sender.id and sender.code */
              $official_id = $inputs['official_id'];
              $official_code = $inputs['official_code'];
-             if(!$official_id) $official_id = DB::table($p_table)->where($code_field,$official_code)->take(1)->value($pk_field);
+             if(!$official_id){
+               if($user_id> 0)
+                $official_id = DB::table('um_users')->where('id',$user_id)->take(1)->value('official_id');  
+               else 
+                $official_id = DB::table($p_table)->where($code_field,$official_code)->take(1)->value($pk_field);  
+            }
              $profileInfo = DB::table($p_table)->where($pk_field,$official_id)->select($pk_field,$code_field)->first();
              if (!$profileInfo) return DV::error($p_table.' ID does not exist. The given official ID is not valid');
              $official_id = $profileInfo->$pk_field;
@@ -782,11 +790,8 @@ class UM //extends Model
               if(!isset($inputs['phone_number'])) $inputs['phone_number'] = $inputs['login_name'];
           }
 
-            if($user_id && (!$image || isImage($image))){
-              $file_name = DB::table($p_table)->where($pk_field,$official_id)->take(1)->value($photo_field);
-              if($file_name){
-                  PublicStorage::delete($branch_id,$user_class,'image',$file_name);
-              }
+          if($user_id && (!$image || !isImage($image))){
+            self::deleteUserPhoto($user_id,$user_class); 
           }
          $role_id = $inputs['role_id'];
          unset($inputs['role_id'],$inputs['photo']);
@@ -2035,43 +2040,89 @@ class UM //extends Model
     ];
   }
 
-  static function getDefaultUserImage($branch_id){
+  static function geDefaultUserPhoto($branch_id){
     return PublicStorage::getUrl($branch_id,'default','image').'default-user.png';
+  }
+
+  static function getPrimaryRole($id){
+    return DB::table('um_user_roles AS ur')->join('um_roles as r','r.id','=','ur.role_id')->where('ur.user_id',$id)->where('ur.is_primary_role',1)->selectRaw('r.id,r.name')->first();
+  }
+
+  /**
+   * $rows = [{user_id,role_name,role_id,is_primary_role}]
+  */
+  static function getPrimaryRole_local ($rows,$user_id){
+     $rows->filter(function($row) use($user_id){
+       return $row->user_id ==$user_id && $row->is_primary_role ==1; 
+     });
+    $row = isset($rows[0])? $rows[0]: (object)['role_id'=>null,'role_name'=>null];
+    return (object)[
+      'id'=>$row->role_id,
+      'name'=>$row->role_name
+    ];
   }
 
   function getUserDetails($id,$ss){
     $branch_id = $ss->branch_id;
     if(!$id) return DV::error('User identity is required');
-    $selectCols = 'LOWER(u.user_class) AS user_class,u.login_name,u.phone_number,formatTime(u.last_login_date) AS last_login_date,u.full_name,u.official_id,u.official_code,ur.role_id,u.id,u.photo_file_name';
-    $row = DB::table('um_users AS u')->join('um_user_roles as ur','ur.user_id','=','u.id')->where('u.id',$id)->where('ur.is_primary_role',1)->selectRaw($selectCols)->first();
+    $selectCols = 'LOWER(u.user_class) AS user_class,u.login_name,u.phone_number,formatTime(u.last_login_date) AS last_login_date,u.full_name,u.official_id,u.official_code,\'\' AS role_id,u.id';
+    $row = DB::table('um_users AS u')->where('u.id',$id)->selectRaw($selectCols)->first();
     if($row) {
-      $url = self::getUserImage($branch_id,strtolower($row->user_class),$row->id,$row->photo_file_name);
-      $row->image_url = validateUrl($url,self::getDefaultUserImage($branch_id));
+      $role = self::getPrimaryRole($row->id);
+      if($role){
+        $row->role_id = $role->id;
+        $row->role_name = $role->name;
+      }
+      $row->image_url = self::getUserPhoto($branch_id,$row->user_class,$row->id);
     }
     return $row;
   }
+  
+    static function getUserPhoto($branch_id,$user_class,$user_id,$file_name=null){
+      $key = strtolower($user_class);
+      $p = isset(self::$profile_tables[$key])? self::$profile_tables[$key]:null;
+      if(!$p) return self::geDefaultUserPhoto($branch_id);
+      $p_table = $p['table'];
 
-
-    // static function getUserImage($branch_id,$user_class,$user_id){
-    //     $file_name = DB::table(strtolower(self::$profile_tables[$user_class]))->where('id',$user_id)->take(1)->value('photo_file_name');
-    //     return getImageUrl($branch_id,$user_class,$file_name);
-    // }
-
-    static function getUserImage($branch_id,$user_class,$user_id,$file_name=null){
-      if(!in_array($user_class,['admin','Admin'])){
-          $official_id = DB::table('um_users')->where('id',$user_id)->take(1)->value('official_id');
-          if(!$official_id) \Log::error($user_class.' official_id for user id '.$user_id.' is missing');
-          $key = strtolower($user_class);
-          $p = self::$profile_tables[$key];
-          $table = $p['table'];
-          $pk_field = $p['key_field'];
-          $photo_field = isset($p['photo_field'])?$p['photo_field']:'photo_file_name';
-          $file_name = DB::table($table)->where($pk_field,$official_id)->take(1)->value($photo_field);
-          return getImageUrl($branch_id,$key,$file_name);
+      if($p_table ==='um_users'){
+          $file_name = DB::table('um_users')->where('id',$user_id)->take(1)->value('photo_file_name');
+          $url = PublicStorage::getUrl($branch_id,strtolower($user_class),'image').$file_name;
+          return validateUrl($url,self::geDefaultUserPhoto($branch_id));
+      }else if($p_table){
+        $official_id = DB::table('um_users')->where('id',$user_id)->take(1)->value('official_id');
+        if(!$official_id){
+          Log::error('Failed to retrieve photo file for user id '.$user_id.' (class : '.$user_class.') because his or her official ID is missing. The default photo is used');
+          return self::geDefaultUserPhoto($branch_id);
+        }
+    
+        $pk_field = $p['key_field'];
+        $photo_field = isset($p['photo_field'])?$p['photo_field']:'photo_file_name';
+        $file_name = DB::table($p_table)->where($pk_field,$official_id)->take(1)->value($photo_field);
+        $url = PublicStorage::getUrl($branch_id,strtolower($user_class),'image').$file_name;
+        return validateUrl($url,self::geDefaultUserPhoto($branch_id)); 
       }
-      return getImageUrl($branch_id,strtolower($user_class),$file_name);
+      return self::geDefaultUserPhoto($branch_id);
   }
 
+  static function deleteUserPhoto($user_id,$user_class){
+    $key = strtolower($user_class);
+    $p = isset(self::$profile_tables[$key])?self::$profile_tables[$key]:null;
+    if(!$p) return null;
+    $p_table = $p['table'];
+    $user = DB::table('um_users')->where('id',$user_id)->selectRaw('id,user_class,branch_id,official_id,photo_file_name')->take(1)->first();
+    if(!$user) return null;
+    if($p_table ==='um_users'){
+      $file_name = $user->photo_file_name;
+      if($file_name) PublicStorage::delete($user->branch_id,$user_class,'image',$file_name);
+    }else{
+      $pk_field = $p['key_field'];
+      $photo_field = $p['photo_field'];
+      $file_name = DB::table($p_table)->where($pk_field,$user->official_id)->take(1)->value($photo_field);
+      if($file_name) PublicStorage::delete($user->branch_id,$user_class,'image',$file_name);
+    }
+    return true;
+  }
+ 
   function getUserManagementOptions()
   {
     $user_classes = self::getUserClasses();

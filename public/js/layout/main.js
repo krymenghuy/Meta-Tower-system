@@ -2,6 +2,7 @@
 let main_view = new function(){
     let mThis = this;
     this.apiCluster = 'menus';
+    this.auth_script_version = 2;
     this.onLayoutLoad = null;
     this.elScreenTitle = document.querySelector('#screen_title');
     this.elScreenTitle_mobile =  document.querySelector('#mobile_screen_title');
