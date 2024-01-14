@@ -183,7 +183,7 @@ var UserManagementComponent = new function(){
     this.renderUserList = (div,items) => {
         items = items ? items : [];
         if (!AuthManager){
-            console.error('Authentication Management does not seems to work properly');
+            console.error('Authentication Management does not seems to work properly. You may need to refresh page');
             return;
         }
         //AuthManager() provides current user information
@@ -198,12 +198,12 @@ var UserManagementComponent = new function(){
         items.forEach(user => {
             let cls_lock_class = (user.status.toLowerCase() =='active')? '':'border-danger border-2';
             const login_name_text = current_user.id == user.id? [user.login_name,' <span class="text-danger">(You)</span>'].join('') : user.login_name; 
-            html = [html,`<div class="${user.id === d.id ? 'set-half-border ' : ''}w-100 rounded-2 p-3 shadow-lg bg-white mb-3 position-relative">
+            html = [html,`<div data-roleid="`,(user.role_id || user.primary_role_id),`" class="${user.id === d.id ? 'set-half-border ' : ''}w-100 rounded-2 p-3 shadow-lg bg-white mb-3 position-relative">
                 <div class="scope-user row gy-2">
                     <div class="col-lg-2">
                         <div class="d-flex h-100">
                             <div class="width-profile-container rounded-4 set-user-profile">
-                                <img class="img-user-profile object-fit-scale shadow `,cls_lock_class,`" src="`,user.image_url,`" alt="user-profile"/>
+                                <img style="border-radius:50%" class="img-user-profile object-fit-scale shadow `,cls_lock_class,`" src="`,user.image_url,`" alt="user-profile"/>
                             </div>
                         </div>
                     </div>
@@ -223,7 +223,7 @@ var UserManagementComponent = new function(){
                             </p>
                             <p class="text-nowrap">
                                 <span class="text-capitalize text-width-user">Role :</span>
-                                <span class="text-capitalize">${user.primary_role ? user.primary_role : 'N/A'}</span>
+                                <span class="text-capitalize">${(user.primary_role || user.role_name) || 'N/A'}</span>
                             </p>
                         </div>
                     </div>
@@ -231,19 +231,19 @@ var UserManagementComponent = new function(){
                         <div class="d-block">
                             <p class="text-nowrap">
                                 <span class="text-capitalize text-width-user">Start Date :</span>
-                                <span class="text-capitalize">${user.start_date ? user.start_date : 'N/A'}</span>
+                                <span class="text-capitalize">${user.start_date || 'N/A'}</span>
                             </p>
                             <p class="text-nowrap">
                                 <span class="text-capitalize text-width-user">Last Login :</span>
-                                <span class="text-capitalize">${user.last_login_date ? user.last_login_date : 'N/A'}</span>
+                                <span class="text-capitalize">${user.last_login_date || 'N/A'}</span>
                             </p>
                             <p class="text-nowrap">
                                 <span class="text-capitalize text-width-user">Phone Number :</span>
-                                <span class="text-capitalize">${user.phone_number ? user.phone_number : 'N/A'}</span>
+                                <span class="text-capitalize">${user.phone_number || 'N/A'}</span>
                             </p>
                             <p class="text-nowrap">
                                 <span class="text-capitalize text-width-user">${user.user_class ? VSUtil.properCase(user.user_class) : 'Offical'} ID :</span>
-                                <span class="text-capitalize">${user.official_code ? user.official_code : 'N/A'}</span>
+                                <span class="text-capitalize">${user.official_code || 'N/A'}</span>
                             </p>
                         </div>
                     </div>
@@ -252,7 +252,7 @@ var UserManagementComponent = new function(){
                         <div class="d-flex flex-row width-locked-icon">
                           ${user.is_locked ? '<i class="fa-solid fa-ban fs-4 text-danger"></i>' : ''}
                         </div>
-                            <button class="btn-action btn btn-sm btn-info rounded-5 text-nowrap" type="button" data-id="${user.id}" data-user="${user.login_name}" data-lock="${user.is_locked ? 'unlock' : 'lock'}">
+                            <button class="btn-action btn btn-sm btn-info rounded-5 text-nowrap" type="button" data-roleid = "${(user.role_id || user.primary_role_id) ||''}" data-id="${user.id}" data-user="${user.login_name}" data-lock="${user.is_locked ? 'unlock' : 'lock'}">
                                 <span class="trans-text" data-langprop="buttons.Action">Action</span>
                                 <i class="fa-solid fa-caret-down"></i>
                             </button>
@@ -301,15 +301,16 @@ var UserManagementComponent = new function(){
                 e.preventDefault();
                 const id = e.target.parentElement.dataset.id,
                 user_name = e.target.parentElement.dataset.user,
-                is_locked = e.target.parentElement.dataset.lock;
+                is_locked = e.target.parentElement.dataset.lock,
+                role_id = e.target.parentElement.dataset.roleid;
 
                 if(id){
-                    const html = `<ul class="list-unstyled set-bottom-border pb-0 mb-0">
+                    const html = [`<ul class="list-unstyled set-bottom-border pb-0 mb-0">
                         <li class="p-2 text-nowrap btn-um-delete" data-id="${id}" data-user="${user_name}">
                             <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
                             <span class="ps-2">Delete</span>
                         </li>
-                        <li class="p-2 text-nowrap btn-um-modify" data-id="${id}" data-user="${user_name}">
+                        <li class="p-2 text-nowrap btn-um-modify" data-roleid="${role_id}" data-id="${id}" data-user="${user_name}">
                             <i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>
                             <span class="ps-2">Edit</span>
                         </li>
@@ -320,16 +321,21 @@ var UserManagementComponent = new function(){
                         <li class="p-2 text-nowrap btn-um-set-password" data-id="${id}" data-user="${user_name}">
                             <i class="fa-solid fa-user-lock fs-5 text-primary-emphasis"></i>
                             <span class="ps-2">Set Password</span>
-                        </li>
-                        <li class="p-2 text-nowrap btn-um-permissions" data-id="${id}" data-user="${user_name}">
+                        </li>`,
+                        //`<li role="separator" class="dropdown-divider"></li>`,
+                        `<li class="p-2 text-nowrap btn-um-permissions" data-id="${id}" data-user="${user_name}">
                             <i class="fa-solid fa-user-pen fs-5 text-warning-emphasis"></i>
                             <span class="ps-2">Permissions</span>
                         </li>
+                        <li class="p-2 text-nowrap btn-um-modules" data-id="${id}" data-user="${user_name}">
+                          <i class="fa-solid fa-user-pen fs-5 text-warning-emphasis"></i>
+                          <span class="ps-2">Modules</span>
+                        </li>
                         <li class="p-2 text-nowrap btn-um-reports" data-id="${id}" data-user="${user_name}">
                             <i class="fa-regular fa-rectangle-list fs-5 text-primary"></i>
-                            <span class="ps-2">Report</span>
+                            <span class="ps-2">Reports</span>
                         </li>
-                    </ul>`;
+                    </ul>`].join('');
                     //const btn = VSUtil.closestLimited(e.target,'.btn-action');
                     DialogFilter(e,{},html,(div) => {
                         div.classList.remove('p-3');
@@ -359,7 +365,7 @@ var UserManagementComponent = new function(){
                         if(e){
                             vsapi.call(`${main_view.base_url}/api/user/delete`,op,null).then(res => {
                                 if(res.status_code === 200){
-                                    mThis.userListView.showPage(null);
+                                    mThis.userListView.showPage(mThis.getFilterData());
                                 }
                                 else{
                                     cv_interact.error(res.error_message);
@@ -373,6 +379,12 @@ var UserManagementComponent = new function(){
 
             btn = VSUtil.getElementByClass(e.target,'btn-um-modify');
             if(btn){
+                //get primary role_id. If user does not have primary role_id, then do not allow edit information
+                const role_id = div.dataset.roleid; 
+                // if(!role_id || role_id==0){
+                //   cv_interact.warning('This user must have one role, so that it is possible to view or edit user information');
+                //   return;
+                // } 
                 let op = {
                     user_id: btn.dataset.id,
                     default:{
@@ -380,7 +392,7 @@ var UserManagementComponent = new function(){
                     },
                     open: 'add-user',
                     onClose: () => {
-                        mThis.userListView.showPage(null);
+                        mThis.userListView.showPage(mThis.getFilterData(), mThis.userListView.current_page);
                     }
                 };
                 if(!AuthManager.allowed(112)) return;
@@ -396,8 +408,8 @@ var UserManagementComponent = new function(){
                     action: btn.dataset.lock
                 };
                 if(!AuthManager.allowed(113)) return;
-                const action =(op.action+'').toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
-                cv_interact.confirm(`Do you want to ${op.action+' user '+op.user_name.replace(/^\w/, (c) => c.toUpperCase())}?`,{
+                const action =(op.action || '').toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
+                cv_interact.confirm(['Do you want to ',op.action,' user ',op.user_name.replace(/^\w/, (c) => c.toUpperCase()),'?'].join(''),{
                     title: `${op.action} User`,
                     context: `update`,
                     confirmButtonText:`${action} Now`
@@ -427,7 +439,7 @@ var UserManagementComponent = new function(){
                     user_name: btn.dataset.user,
                     open: 'reset-password',
                     onClose: () => {
-                        mThis.userListView.showPage(null);
+                        mThis.userListView.showPage(mThis.getFilterData());
                     }
                 };
                 if(!AuthManager.allowed(109)) return;
@@ -475,6 +487,19 @@ var UserManagementComponent = new function(){
                 return;
             }
             
+            btn = VSUtil.getElementByClass(e.target,'btn-um-modules');
+            if(btn){
+                let op = {
+                    button:null,
+                    user_id: btn.dataset.id,
+                    user_name: btn.dataset.user,
+                    open: 'modules'
+                };
+                if(op.user_id && op.user_id !== 'undefined')
+                    AddUserDialog.show(op);
+                return;
+            }
+
             btn = VSUtil.getElementByClass(e.target,'btn-um-reports');
             if(btn){
                 let op = {
@@ -904,11 +929,10 @@ const AddUserDialog = new function(){
 
     this.loadFormDetails = (div, options) => {
         vsapi.call(`${main_view.base_url}/api/user/details`,{
-            user_id: options.user_id
+            id: options.id || options.user_id 
         },null,false).then(res => {
             if(res.status_code === 200){
-                console.log(res);
-                const d = res.data ? res.data : {};
+                const d = res.data || {};
                 mThis.setUserFormData(div,d);
             }
         });
@@ -1177,7 +1201,7 @@ const AddUserDialog = new function(){
 
                         if(allowed){
                             if(!AuthManager.allowed(108)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/role/delete`,p, btn,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/role/delete`,p, null,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRowForRole(this,{
                                         btn: previousBtn,
@@ -1208,7 +1232,7 @@ const AddUserDialog = new function(){
                                             role_id: previousRoleId
                                         },btn,false).then(res => {
                                             if(res.status_code === 200){
-                                                vsapi.call(`${main_view.base_url}/api/user/role/add`,p,btn,false).then(res => {
+                                                vsapi.call(`${main_view.base_url}/api/user/role/add`,p,null,false).then(res => {
                                                     if(res.status_code === 200){
                                                         mThis.resetRowForRole(this,{
                                                             btn: previousBtn,
@@ -1267,7 +1291,7 @@ const AddUserDialog = new function(){
 
                         if(allowed){
                             if(!AuthManager.allowed(111)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/permission/delete`,p, btn,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/permission/delete`,p, null,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1278,7 +1302,7 @@ const AddUserDialog = new function(){
                         }
                         else{
                             if(!AuthManager.allowed(105)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/permission/add`,p,btn,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/permission/add`,p,null,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1303,7 +1327,7 @@ const AddUserDialog = new function(){
 
                         if(allowed){
                             if(!AuthManager.allowed(115)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/module/delete`,p,btn,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/module/delete`,p,null,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1314,7 +1338,7 @@ const AddUserDialog = new function(){
                         }
                         else{
                             if(!AuthManager.allowed(114)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/module/add`,p,btn,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/module/add`,p,null,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }
@@ -1339,7 +1363,7 @@ const AddUserDialog = new function(){
 
                         if(allowed){
                             if(!AuthManager.allowed(111)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/permission/delete`,p,btn,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/permission/delete`,p,null,false).then(res => {
                                 if(res.status_code === 200){
                                     mThis.resetRow(this);
                                 }

@@ -1676,21 +1676,27 @@ function createUUIDV1()
         if (!$url) {
             return $otherwise;
         }
-        // Get the local file path based on the URL
-        $localFilePath = $_SERVER['DOCUMENT_ROOT'] . parse_url($url, PHP_URL_PATH);
+        // Construct the local file path based on the provided URL
+        $localFilePath = public_path(parse_url($url, PHP_URL_PATH));
     
         // Check if the file exists
         if (file_exists($localFilePath) && is_file($localFilePath)) {
-            // Check if the file is an image without fetching image size unless needed
-            if (exif_imagetype($localFilePath)) {
-                // File exists and is a valid image
+            // Get the file extension
+            $fileExtension = pathinfo($localFilePath, PATHINFO_EXTENSION);
+    
+            // List of allowed file extensions (add more as needed)
+            $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
+    
+            // Check if the file extension is in the list of allowed extensions
+            if (in_array(strtolower($fileExtension), $allowedExtensions)) {
+                // File exists and has a valid extension
                 return $url;
-            }
+            } 
         }
-        // File does not exist or is not a valid image
+        // File does not exist or does not have a valid extension
         return $otherwise;
     }
- 
+   
     function getImageUrl($branch_id,$user_class,$file_name){
         if($file_name !=null){
             return PublicStorage::getURl($branch_id,$user_class,'image').$file_name;
