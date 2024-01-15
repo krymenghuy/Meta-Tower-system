@@ -81,8 +81,11 @@ class CompanyProfile //extends Model
     $branch_id = $ss->branch_id; 
 	  $file_type = isset($d['file_type'])?$d['file_type']:'png';
     $photo = isset($d['photo_data'])?$d['photo_data']: (isset($d['photoData'])?$d['photoData']:null);
-
+    $delete_photo = (!$photo || isImage($photo));
     $logo_file_name = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name')->take(1)->value('logo_file_name');
+    if ($delete_photo){
+      PublicStorage::delete($branch_id,self::$logo_dir,'image',$logo_file_name);
+    }
     if($logo_file_name) PublicStorage::delete($branch_id,self::$logo_dir,'image',$logo_file_name);
     $maxSize =500;
 	  $res = PublicStorage::saveImage($branch_id,self::$logo_dir,$file_type,$photo,$maxSize);
