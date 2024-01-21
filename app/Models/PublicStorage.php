@@ -116,12 +116,7 @@ class PublicStorage //extends Model
                 if (!file_exists($dir)) {
                     mkdir($dir, 0755, true); //permission
                 }
-
-                
-               
-                    
-                    
-                
+                 
                 # Decode the Base64 string, making sure that it contains only valid characters
                 $bin = base64_decode($fileContent, true);
                 $test = base64_encode($bin);
@@ -159,19 +154,9 @@ class PublicStorage //extends Model
     }
 
     static function getSpecificFolder($user_class,$upload_type ="document"){
-        $folder_name ="general";
-        if($user_class =='person') 
-           $folder_name ="person";
-        else if ($user_class =='identity')
-           $folder_name ="identity";
-        else if ($user_class =='general')
-           $folder_name ="general";
-        else // $user_class ='general' or else
-           $folder_name =$user_class;
-        if ($upload_type =="image" || $upload_type =="photo")   
-          return $folder_name."/images/";
-        else
-          return $folder_name."/documents/";
+        $dir_name = isset(GeneralSettings::$upload_dirs[$user_class])? GeneralSettings::$upload_dirs[$user_class]:'general';
+        if ($upload_type==='image') return $dir_name."/images/";
+        else return $dir_name."/documents/";
     }
 
     static function getDiskPath($branch_id,$user_class,$upload_type="document"){

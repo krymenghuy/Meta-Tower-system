@@ -317,11 +317,11 @@ class Package //extends Model
       //if ($cod ===1) $cod_fee_percent = getCODFeeCharge($ss,$sender->id);
 
       $pInfo = $this->getDeliveryPriceInfo($branch_id,$new_sender_id,$package->delivery_type,$package->zone_code,$package->billed_kg,$cod);
-      if ($pInfo) {
+      if ($pInfo->status === 'OK') {
           $delivery_fee = $pInfo->delivery_fee;
           $base_fee =$pInfo->base_fee;
           $cod_fee_percent = $pInfo->cod_fee_percent;
-      }
+      }else return DV::error('Failed to change merchant. Problem with price list: '.$pInfo->error_message);
  
       if ($cod ==1 || strtolower($cod) =='yes') {
         $cod_amount = $price;
@@ -4332,19 +4332,52 @@ function getOrderSummarylist_at_warehouse($sender_id,$ss){
     $branch_id = $ss->branch_id;
     $last_10_days = date('Y-m-d');
     $str_statuses = ' AND p.status_id IN (5,6) ';
-    return DB::select(DB::raw('SELECT p.id,formatDate(p.arrival_time) As arrival_date, formatDate(p.create_date) AS booking_date,p.delivery_type,p.sender_id,p.sender_name, p.receiver_name,p.receiver_phone,p.zone_code,p.zone_name,
-      p.receiver_address,p.df_payer,p.cod,p.price,
-      IFNULL(p.cod_fee,0) AS cod_fee,
-      (p.base_fee + IFNULL(p.delivery_fee,0)) AS fee,'.
-      'format_amount(\'$\',
-       get_cod_amount(p.cod,p.price,p.cod_fee) - IFNULL(p.forwarding_cost,0) - CASE LOWER(p.df_payer) WHEN \'sender\' THEN  IFNULL(p.base_fee,0) + IFNULL(p.delivery_fee,0) ELSE 0 END
-      ) AS sender_total,'.
-      'CASE p.failed_num >0 WHEN 1 THEN p.failure_notes ELSE p.delivery_notes END AS notes, 
-      p.billed_kg, p.status_id, ps.name AS `status`,d.code AS driver_code, d.name AS driver_name,d.phone_number as driver_phone FROM `package` AS `p`
-    INNER JOIN  package_statuses AS ps ON ps.id = p.status_id
-    INNER JOIN `driver` as `d` ON d.id = p.driver_id
-    WHERE p.branch_id = \''.$branch_id.'\' AND p.sender_id = '.($sender_id >0? $sender_id:0).$str_statuses.' AND DATE(p.arrival_time) = \''.$last_10_days.'\''));
- }
+ return DB::select(DB::raw('
+ SELECT 
+     p.id,
+     formatDate(p.arrival_time) AS arrival_date, 
+     formatDate(p.create_date) AS booking_date,
+     p.delivery_type,
+     p.sender_id,
+     p.sender_name, 
+     p.receiver_name,
+     p.receiver_phone,
+     p.zone_code,
+     p.zone_name,
+     p.receiver_address,
+     p.df_payer,
+     p.cod,
+     p.price,
+     IFNULL(p.cod_fee,0) AS cod_fee,
+     (p.base_fee + IFNULL(p.delivery_fee,0)) AS fee,
+     format_amount(\'$\',
+         get_cod_amount(p.cod,p.price,p.cod_fee) - IFNULL(p.forwarding_cost,0) - 
+         CASE LOWER(p.df_payer) 
+             WHEN \'sender\' THEN IFNULL(p.base_fee,0) + IFNULL(p.delivery_fee,0) 
+             ELSE 0 
+         END
+     ) AS sender_total,
+     CASE 
+         WHEN p.failed_num > 0 THEN p.failure_notes 
+         ELSE p.delivery_notes 
+     END AS notes, 
+     p.billed_kg, 
+     p.status_id, 
+     ps.name AS `status`,
+     COALESCE(d.code, \'NA\') AS driver_code, 
+     COALESCE(d.name, \'មិនទាន់មានអ្នកដឹក\') AS driver_name,
+     COALESCE(d.phone_number, \'NA\') AS driver_phone 
+ FROM 
+     `package` AS `p`
+ INNER JOIN  
+     package_statuses AS ps ON ps.id = p.status_id
+ LEFT JOIN 
+     `driver` as `d` ON d.id = p.driver_id
+ WHERE 
+     p.branch_id = \''.$branch_id.'\' 
+     AND p.sender_id = '.($sender_id > 0 ? $sender_id : 0) . $str_statuses.' 
+     AND DATE(p.arrival_time) = \''.$last_10_days.'\''));
+  }
 
     //get list of delviered pacakges (TODAY)
     function getOrderSummaryList_delivered($sender_id,$ss){  
