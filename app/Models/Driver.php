@@ -54,13 +54,13 @@ function getMyTasks($id=null,$ss=null){
   $driver_id = $id;
   $data = (object)['deliveries'=>[],'pickups'=>[],'pickup_count'=>0,'delivery_count'=>0];
    
-  $selectCols ="d.id AS delivery_id,DATE_FORMAT(d.depart_time,'%r')AS depart_time, formatDate(d.depart_time) AS depart_date,IFNULL(d.package_count,0) AS package_count, IFNULL(d.delivered_count,0) AS delivered_count, IFNULL(d.failed_count,0) AS failed_count,d.fleet_tracking_number,ds.id AS trip_status_id, ds.name AS trip_status";
-  $rows = DB::table('delivery AS d')->join('delivery_statuses AS ds','ds.id','=','d.status_id')->where('d.branch_id',$branch_id)->where('d.status_id',2)->where('d.driver_id',$driver_id)->selectRaw($selectCols)->orderByRaw("d.depart_time DESC")->get();
+  $selectCols ='d.id AS delivery_id,DATE_FORMAT(d.depart_time,\'%r\')AS depart_time, formatDate(d.depart_time) AS depart_date,IFNULL(d.package_count,0) AS package_count, IFNULL(d.delivered_count,0) AS delivered_count, IFNULL(d.failed_count,0) AS failed_count,d.fleet_tracking_number,ds.id AS trip_status_id, ds.name AS trip_status';
+  $rows = DB::table('delivery AS d')->join('delivery_statuses AS ds','ds.id','=','d.status_id')->where('d.branch_id',$branch_id)->where('d.status_id',2)->where('d.driver_id',$driver_id)->selectRaw($selectCols)->orderByRaw('d.depart_time DESC')->get();
   $data->deliveries = $rows;
   //count number of trips, NOT packages
   $data->delivery_count = count($rows);
 
-  $selectCols="o.id AS order_id,o.code AS order_code, o.delivery_type, s.id AS sender_id,s.`name` AS sender_name,s.phone_number AS sender_phone,o.pickup_address,o.loc_lat,o.loc_lng, ps.name AS `status`, o.status_id,formatDate(o.create_date) AS request_date, o.qty,o.actual_pkg_count, o.driver_id,o.completed";
+  $selectCols='o.id AS order_id,o.code AS order_code, o.delivery_type, s.id AS sender_id,s.`name` AS sender_name,s.phone_number AS sender_phone,o.pickup_address,o.loc_lat,o.loc_lng, ps.name AS `status`, o.status_id,formatDate(o.create_date) AS request_date, o.qty,o.actual_pkg_count, o.driver_id,o.completed';
   $rows = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->where('o.branch_id',$branch_id)->where('o.driver_id',$driver_id)->where('o.status_id',2)->selectRaw($selectCols)->orderByRaw("o.create_date DESC")->get();
   $data->pickups = $rows;
   $data->pickup_count = count($rows);

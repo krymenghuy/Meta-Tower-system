@@ -13,10 +13,27 @@ class GeneralSettings //extends Model
 {
     //use HasFactory;
     public static $email_chars = ['@','-','.','_'], 
+    $remark_chars = [':','-','.','?','$','\'','@'],
+    $time_chars = [':','-'],
     $address_chars = ['.','#'],
     $image_chars = ['+',':',',',';','=','/','\\','?'],
     $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%']; 
    
+    public static $upload_dirs =[
+        "package"=>"package", //Package's photos directory
+        "default"=>"default",/** default user's photo '*/
+        "partner"=>"partner",
+        "driver"=>"driver",
+        "merchant"=>"merchant",
+        "sender"=>"merchant",
+        "staff"=>"staff",
+        "employee"=>"staff",
+        "general"=>"general",
+        "person"=>"person",
+        "admin"=>"general",
+        "identity"=>"identity"
+    ];
+
     /** Return a warehouse object {"id","name","address", "location":{"lat","lng"} } */
     static function getDefaultWarehouse($ss){
         $row = DB::table('warehouses as w')

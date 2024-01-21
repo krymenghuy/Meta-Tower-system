@@ -125,9 +125,7 @@ class PickupRequest //extends Model
         }
         
         $str_order ='o.id ='.($order_id?$order_id:0);
- 
-        $rows = DB::table('order as o')->join('sender as s','s.id','=','o.sender_id')->join('order_images as img','o.id','=','img.order_id')->where('img.inactive',0)->whereRaw($str_order)->whereRaw($str_dates)->whereRaw($str_sender)->selectRaw('img.id,img.file_name,img.package_id,create_user,formatDate(img.create_date) as create_date')->get();
-        
+        $rows = DB::table('order as o')->join('sender as s','s.id','=','o.sender_id')->join('order_images as img','o.id','=','img.order_id')->where('img.inactive',0)->whereRaw($str_order)->whereRaw($str_dates)->whereRaw($str_sender)->selectRaw('img.id,img.file_name,img.package_id,img.create_user,formatDate(img.create_date) as create_date')->get();    
         //NOTE: event in case Driver is the one who upload order images, all order-images are saved in directory "companies/1_data/merchant"
         $base_url = PublicStorage::getUrl($branch_id,self::$package_photo_dir,'image');
         foreach($rows as $row){
