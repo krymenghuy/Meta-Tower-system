@@ -11,6 +11,8 @@ use App\Models\UM;
 use Sanitizer;
 use DB;
 use App\Models\Tracker;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class DeliveryTrip //extends Model
 {
@@ -186,8 +188,15 @@ class DeliveryTrip //extends Model
         $str_status ='';
         $str_date = null;
         $str_driver = null;
-        //$str_zone =null;
-        //$str_delivery_type =null;
+          
+        $cache_key = 'triplist_';
+        foreach($d as $key => $val) $cache_key .= $val;
+        $cache_key = str_replace(['/','-','?','@','|'],'',$cache_key);
+        $cache_data = Cache::get($cache_key); 
+        if ($cache_data) {
+          //Log::info('Cached triplist. key = '.$cache_key); 
+          return $cache_data;
+        }
 
         if (!$search_value) {
             $str_date =null;
@@ -212,7 +221,10 @@ class DeliveryTrip //extends Model
             $more_wheres ="(d.fleet_tracking_number ='$search_value' OR d.driver_id IN (select id FROM driver WHERE branch_id =$branch_id AND name LIKE '%$search_value%') OR d.id IN (SELECT l.delivery_id FROM package AS l WHERE l.branch_id =$branch_id AND l.qr_code ='$search_value' or l.receiver_phone ='$search_value' OR l.sender_phone='$search_value' OR l.sender_name LIKE '%$search_value%'))";
         }
         $selectCols ='d.id, d.driver_id, d.fleet_tracking_number, formatDate(d.depart_time) AS depart_date, DATE_FORMAT(d.depart_time,\'%r\')  AS depart_time, d.package_count, d.delivered_count,d.failed_count,d.status_id, ds.name AS status, dr.`name` AS driver_name,dr.phone_number AS driver_phone_number,(SELECT SUM(IFNULL(p.driver_total,0)) FROM package AS p WHERE p.branch_id = d.branch_id AND p.delivery_id = d.id) AS driver_total';
-        return DB::table('delivery AS d')->join('driver as dr','dr.id','d.driver_id')->join('delivery_statuses AS ds','ds.id','=','d.status_id')->join('warehouses AS h','h.id','=','d.warehouse_id')->where('d.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw($selectCols)->orderByRaw('d.status_id,d.create_date DESC')->get(); 
+        $rows = DB::table('delivery AS d')->join('driver as dr','dr.id','d.driver_id')->join('delivery_statuses AS ds','ds.id','=','d.status_id')->join('warehouses AS h','h.id','=','d.warehouse_id')->where('d.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw($selectCols)->orderByRaw('d.status_id,d.create_date DESC')->get(); 
+        Cache::put($cache_key,$rows,5);
+        //Log::info('No cache triplist. key = '.$cache_key); 
+        return $rows;
     }
 
     function getDeliveryTrips_print($d){
@@ -336,7 +348,7 @@ class DeliveryTrip //extends Model
          //need permission to do this task
         $d = (object)$arr; 
         $branch_id = $ss->branch_id;
-        $barcode =  isset($d->barcode)?Sanitizer::sanitize($d->barcode):null;
+        $barcode =  isset($d->barcode)? Sanitizer::sanitize($d->barcode):null;
         $notes = isset($d->notes)?$d->notes:null;
         $d->is_from_mobile =1;
         //$ss->official_id is the driver_id, Assuming driver loged in
@@ -395,9 +407,9 @@ class DeliveryTrip //extends Model
         $rows = DB::table('delivery AS d')->where('d.branch_id',$branch_id)->where('d.driver_id',$driver_id)->whereRaw($str_today)->where('d.status_id',$trip_status_id)->selectRaw('d.id AS delivery_id,warehouse_id,fleet_tracking_number,depart_time,package_count')->take(2)->get();
         if(count($rows) > 1){
            return (object)['trip'=>(object)['delivery_id'=>null],'status'=>'Error','error_message'=>'អ្នកដឹកម្នាក់នេះមានជើងដឹកច្រើនមិនទាន់បានបញ្ចប់។​ ដូច្នេះមិនអាចទទួលកញ្ចប់ថ្មីបានទេ','trip'=>null]; 
-           \Log::info('Data error: BDelivery::getActiveDeliveryId():61 => Driver '.$driver_id.' has more than one historical trips that are still "on delivery", causing the new package assignment failed by '.$ss->full_name.' at '.getNowTime());
+           Log::info('Data error: BDelivery::getActiveDeliveryId():61 => Driver '.$driver_id.' has more than one historical trips that are still "on delivery", causing the new package assignment failed by '.$ss->full_name.' at '.getNowTime());
         }else if(isset($rows[0])){
-           //\Log::info('use last one trip'); 
+           //Log::info('use last one trip'); 
            return (object)['trip'=>$rows[0],'status'=>'OK']; 
         } 
         
@@ -1040,8 +1052,7 @@ class DeliveryTrip //extends Model
             $amount = floatval($driver_input_amount);
             //$amount = floatval(str_replace(',', '.', $driver_input_amount));
         }
-       
-
+ 
         $photo_data = isset($d->photo_data)?$d->photo_data:null;
         $notes = isset($d->notes)? Sanitizer::sanitize($d->notes):null;
         if(!$notes) $notes = isset($d->remarks)?$d->remarks:null;
@@ -1083,11 +1094,14 @@ class DeliveryTrip //extends Model
         ];
         
         if ($status_id ==8){
-            $notes = ($p1->delivery_notes ? $p1->delivery_notes . '. ' : '') . ($notes ?? '');
-            if ($notes !== null && strlen($notes) > 250) {
-                $notes = substr($notes, 0, 250);
+            if($update_cod_amount==1 && !$notes){
+                return DV::error('សូមបញ្ជាក់ហេតុផល ប្តូរទឹកប្រាក់');
             }
-            $inputs['delivery_notes'] = $notes;
+            $d_notes = ($p1->delivery_notes ? $p1->delivery_notes . '. ' : '') . ($notes ?? '');
+            if ($d_notes !== null && strlen($d_notes) > 250) {
+                $d_notes = substr($d_notes, 0, 250);
+            }
+            $inputs['delivery_notes'] = $d_notes;
         }
         $update_notes = $diff_amounts? 'driver driver_name change COD from $'.$p1->driver_total.' to $'.$amount : null; 
         if($status_id ==9)

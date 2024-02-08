@@ -27,7 +27,7 @@ return [
     */
 
     'env' => env('APP_ENV', 'production'),
-
+    'enforce_ssl' => env('ENFORCE_SSL',false),    
     /*
     |--------------------------------------------------------------------------
     | Application Debug Mode
@@ -138,6 +138,9 @@ return [
    'fcm_topic_prefix'=>env('FCM_TOPIC_PREFIX','dms'),
    'fcm_server_key'=>env('FCM_SERVER_KEY',null),
    
+   'fcm_topic_prefix_salesapp'=>env('FCM_TOPIC_PREFIX_SALESAPP',''),
+   'fcm_server_key_salesapp'=>env('FCM_SERVER_KEY_SALESAPP',null),
+
     /* FOR PUSHER USER AUTHENTICATION => Private Channel */
     'pusher_app_key'=>env('PUSHER_APP_KEY',null),
     'pusher_app_secret'=>env('PUSHER_APP_SECRET',null),

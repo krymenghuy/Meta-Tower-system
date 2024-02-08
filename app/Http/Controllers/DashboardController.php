@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Dashboard;
 use App\Models\JDV;
 use App\Models\UM;
+use Illuminate\Support\Facades\Cache;
 //use DB;
 
 class DashboardController extends Controller
@@ -20,8 +21,12 @@ class DashboardController extends Controller
     function getDashboardData(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss);
+        $cache_key = 'dashb_'.$ss->user_class.$ss->user_id;
+        $cache_data = Cache::get($cache_key);
+        if($cache_data !== null) return JDV::result($cache_data);
         $db = new Dashboard(null,$ss);
         $data = $db->getData($req->all(),$ss);
+        Cache::put($cache_key,$data,15);
         return JDV::result($data);
     }
 

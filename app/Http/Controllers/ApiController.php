@@ -1462,14 +1462,7 @@ function getActiveTrips(Request $req){
       $cnt =  Notifier::getUnreadCount($ss->user_id,$ss->user_class);
       return JDV::result($cnt);
     }
-
-    // function getUnreadCount_sender(Request $request){
-    //   $ss = UM::getUserInfoByToken($req,-1);
-    //   if($ss->status_code !==200) return JDV::raw($ss);
-    //   $cnt =  Notifier::getUnreadCount($ss->user_id,$ss->user_class);
-    //   return JDV::result($cnt);
-    // }
-
+ 
     function getComboItems_filter_status_driver(Request $req){
       //$ss = UM::getUserInfoByToken($req,-1);
       //if($ss->status_code !==200) return JDV::raw($ss);

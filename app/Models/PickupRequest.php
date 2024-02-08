@@ -10,7 +10,7 @@ use App\Models\DeliveryZone;
 use App\Models\UM;
 use DB;
 use Sanitizer;
-use Localization;
+//use Localization;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
@@ -36,7 +36,7 @@ class PickupRequest //extends Model
     }
     function getSenderInfoById($user_session,$sender_id){ 
         $branch_id = $user_session->branch_id; 
-        return DB::table('sender AS s')->where('branch_id',$branch_id)->where('id',$sender_id)->selectRaw('s.id,s.name,s.phone_number,s.sender_type_id, s.status_code,s.address,s.loc_lat,s.loc_lng')->limit(1)->first();
+        return DB::table('sender AS s')->where('branch_id',$branch_id)->where('id',$sender_id)->selectRaw('s.id,s.sales_agent_id,s.name,s.phone_number,s.sender_type_id, s.status_code,s.address,s.loc_lat,s.loc_lng')->limit(1)->first();
      }
     //createQuickOrder()| createDeliveryOrder
     /** @d = {sender_id,product_type,vechicle_type,[qty]} **/ 
@@ -414,13 +414,18 @@ class PickupRequest //extends Model
             /** Default df_payer to "sender". NOTE: that mobile app does not send df_payer via "create-delivery-order" */
             $c->df_payer = isset($c->df_payer)? $c->df_payer : 'sender';
             if(!in_array(strtolower($c->df_payer),['sender','receiver'])) return DV::error('Fee payer must be Sender or Receiver. Given value is '.$c->df_payer); 
-            $c->forwarding_cost = isset($c->forwarding_cost) ? $c->forwarding_cost :  0;
-            $c->billed_kg = isset($c->billed_kg) ? $c->billed_kg:0;
-            $c->dim_x = isset($c->dim_x) ? $c->dim_x:  0;
-            $c->dim_y = isset($c->dim_y) ? $c->dim_y:  0;
-            $c->dim_h = isset($c->dim_h) ? $c->dim_h: 0;
-            $c->actual_kg = isset($c->actual_kg) ? $c->actual_kg:  0;
-            if(!floatval($c->actual_kg)) $c->actual_kg = 0 ;
+            $c->forwarding_cost = floatval(isset($c->forwarding_cost)?$c->forwarding_cost:0);
+            $c->forwarding_cost =  $c->forwarding_cost ?? 0;
+            $c->billed_kg = floatval(isset($c->billed_kg) ? $c->billed_kg:0);
+            $c->billed_kg = $c->billed_kg ?? 0;             
+            $c->dim_x = floatval(isset($c->dim_x) ? $c->dim_x:  0);
+            $c->dim_x  =$c->dim_x ?? 0;
+            $c->dim_y = floatval(isset($c->dim_y) ? $c->dim_y:  0);
+            $c->dim_y = $c->dim_y ?? 0;
+            $c->dim_h = floatval(isset($c->dim_h) ? $c->dim_h: 0);
+            $c->dim_h = $c->dim_h ?? 0;
+            $c->actual_kg = floatval(isset($c->actual_kg) ? $c->actual_kg: 0);
+            $c->actual_kg = $c->actual_kg ?? 0;
             $c->delivery_type = isset($c->delivery_type) ? $c->delivery_type: $order->delivery_type;
             if (!in_array(strtolower($c->delivery_type),['normal','fast'])) return DV::error('Service type must be either Normal or Fast'); 
             
@@ -622,9 +627,10 @@ class PickupRequest //extends Model
         }
         
         if(!$pickup_address) return DV::error('Pickup address is required');
-        if ($is_from_mobile && ($d->qty > 0 && $d->qty < 5 && !isset($d->packages[$d->qty-1]))) {
-           return DV::error('Please enter the details of each item',$ss->lang);
-        } 
+        if(!is_numeric($d->qty)) $d->qty =0;
+        // if ($is_from_mobile && ($d->qty > 0 && $d->qty < 5 && !isset($d->packages[$d->qty-1]))) {
+        //    return DV::error('Please enter the details of each item',$ss->lang);
+        // } 
         $order = (object)['branch_id'=>$branch_id,'warehouse_id'=>$warehouse_id,'sender_id'=>$sender->id,'delivery_type'=>$d->delivery_type,'product_type'=>$d->product_type];
         $item_res = $this->validatePackages($ss,$order,$d->packages);
         if ($item_res->status ==='Error') return DV::error($item_res->error_message);
@@ -953,6 +959,12 @@ class PickupRequest //extends Model
         $str_search = null;
         $str_delivery_type =null;
         
+        $cache_key = 'orderlist_';
+        foreach($d as $key => $value) $cache_key .= $value;
+        $cache_key = sha1($cache_key);
+        $cache_data = Cache::get($cache_key);
+        if($cache_data) return $cache_data;
+        
         $search_value = isset($d->search_value)?$d->search_value:null;
         if ($search_value) {
             $search_value = escape_like_str($search_value);
@@ -983,7 +995,8 @@ class PickupRequest //extends Model
         foreach($rows as $row){
             $row->map_url = getLocationUrl($row->loc_lat,$row->loc_lng);
             $row->image_count = self::countPackagePhotos($img_rows,$row->id);
-        }    
+        }
+        if($cache_key) Cache::put($cache_key,$rows,10);    
         return $rows;
     }
     //getPickupRequests Delivery Order List that not yet completed AT WAREHOUSE
@@ -2114,6 +2127,11 @@ class PickupRequest //extends Model
     function getPackageCounts_order($sender_id=null,$ss=null){
          //need permission to do this task
         $branch_id = $ss->branch_id;
+
+        $cache_key = 'ordersummarycounts_'.$branch_id.$sender_id;
+        $cache_data = Cache::get($cache_key);
+        if($cache_data) return $cache_data;
+
         //Assuming that $ss->user_class ='merchant' 
         //$status_id <=4, higher status => use packageModel->getPackageCounts_summary()  
         $data = (object)['available_count'=>0,'accepted_count'=>0,'picked_count'=>0];
@@ -2139,6 +2157,7 @@ class PickupRequest //extends Model
             }
         } 
         $data->picked_count = $picked_count;
+        Cache::put($cache_key,$data,10);
         return $data;
     }
    
@@ -2213,7 +2232,7 @@ class PickupRequest //extends Model
     }
 
 
-    /** When user Click on Arrive button | ReceiveOrderPackages */
+    /** When user Click on Arrive button | ReceiveOrderPackages | arrive at warehouse */
     function receivePackages($arr = [],$id = null, $ss =null){
         $ss = $ss?$ss:$this->userInfo;
         $id = $id?$id:$this->id;
@@ -2254,10 +2273,14 @@ class PickupRequest //extends Model
             //Error in creating default order request 
             if ($mResult->error_message) {
               return DV::error($mResult->error_message);
-            } else $order = $mResult->order;
-            
+            } else $order = $mResult->order;         
         }
-        
+        $sender_id = $sender_id ?? $order->sender_id;
+        if(!$sender_id){
+            Log::error('PickupRequest->receivePackages(): The $sender_id is unexpected empty or NULL so it was not possible to check if the merchant has Sales_agent_id or not');
+            return DV::error('Merchant ID is unexpectedly missing or empty. This issue is now informed to technical team for resolving');
+        } 
+        $sales_agent_id = self::getSalesAgentId($sender_id);
         if(!$driver_id) $driver_id = $order->driver_id;
         $cols = 'zone_name,sender_name,r.branch_id,r.qr_code,r.sender_id,receiver_phone,receiver_address,cod,forwarding_cost,delivery_type,zone_code,df_payer,price,dim_x,dim_y,dim_h,billed_kg,actual_kg,cod_fee,delivery_notes,tax_percent,tax_amount';
         $packages = DB::table('order_receivers as r')->where('r.order_id',$order->id)->selectRaw($cols)->get();
@@ -2283,7 +2306,10 @@ class PickupRequest //extends Model
               $c->arrival_time = getNowTime();
               $last_new_barcode = $c->qr_code;
               $id = saveData($ss,'package',['id'=>null],(array)($c),[],1,false);
-              if ($id) $success_count++;
+              if ($id){
+                $success_count++;
+                if ($sales_agent_id) self::createSalesCommissionItem($ss,$id,$sales_agent_id,$sender_id);
+              }
            $i++;                
         } while($c); 
         
@@ -2301,7 +2327,40 @@ class PickupRequest //extends Model
              ]);
         }
     }
-     
+    
+    static function getSalesAgentId($sender_id){ 
+       return DB::table('sender as s')->where('s.id',$sender_id)->take(1)->value('sales_agent_id');
+    }
+
+    static function getAgentCommission($sales_agent_id){
+       $amount = DB::table('sales_agents')->where('id',$sales_agent_id)->take(1)->value('commission');
+       return $amount ?? 0;  
+    }
+    static function createSalesCommissionItem($ss,$package_id,$sales_agent_id,$sender_id){
+        //if ($sales_agent_id){
+            $nowTime = getNowTime();
+            $inputs = [
+                'package_id'=>$package_id,
+                'branch_id'=>$ss->branch_id,
+                'sales_agent_id'=>$sales_agent_id,
+                'sender_id'=>$sender_id,
+                'comm_amount'=>self::getAgentCommission($sales_agent_id),
+                'comm_pmt_status_id'=>1, /** 0=Pending, 1 = verified and Unpaid 2= Paid */
+                'create_user'=>$ss->full_name,
+                'create_uid'=>$ss->user_id,
+                'update_user'=>$ss->full_name,
+                'update_uid'=>$ss->user_id,
+                'update_date'=>$nowTime,
+                'create_date'=>$nowTime
+            ];
+            $row = DB::table('package_sales_commissions')->where('package_id',$package_id)->selectRaw('comm_pmt_status_id')->first();
+            if ($row) 
+              DB::table('package_sales_commissions')->where('package_id',$package_id)->update($inputs);
+            else DB::table('package_sales_commissions')->insert($inputs); 
+        //}
+        return DV::depends(1);
+    }
+
     function getFormOptions($ss){
         return (object)[
           'warehouses'=>GeneralSettings::options_warehouse($ss),

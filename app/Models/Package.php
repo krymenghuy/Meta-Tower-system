@@ -60,14 +60,20 @@ class Package //extends Model
       $ss = $ss?$ss:$this->userInfo;
       $package_id = $id?$id:$this->id; 
       $branch_id = $ss->branch_id;
+      $cache_key = 'orderdetails_'.$branch_id.$id;
+      $cache_data = Cache::get($cache_key);
+      if($cache_data) return $cache_data;
+
       $p = DB::table('package AS p')->where('p.branch_id',$branch_id)->where('p.id',$package_id)->selectRaw('p.id,p.delivery_id, p.sender_pmt_status_id,p.driver_pmt_status_id, p.qr_code AS barcode, p.sender_id,LOWER(p.df_payer) AS df_payer,p.sender_name,p.sender_phone,p.dim_x,p.dim_y,p.dim_h,LOWER(p.delivery_type) AS delivery_type,p.zone_code,p.zone_name,p.receiver_phone,p.receiver_address, p.cod, 0 AS cod_fee_percent, p.cod_fee, p.base_fee, p.delivery_fee, p.driver_adjust_amount,p.forwarding_cost,p.price,p.actual_kg,p.billed_kg,p.agent_notes,p.delivery_notes AS remarks, p.failure_notes, p.status_id, (SELECT name FROM driver WHERE id = p.driver_id LIMIT 1) AS driver_name, p.driver_total, p.sender_total,IFNULL(p.driver_pmt_status_id,0) AS driver_pmt_status_id,IFNULL(p.sender_pmt_status_id,0) AS sender_pmt_status_id')->take(1)->first(); 
-      return (object)[
+      $data = (object)[
          'details'=>$p,
          'cod'=>[(object)['cod'=>0,'cod_name'=>'No'],(object)['cod'=>1,'cod_name'=>'Yes']],
          'df_payer'=>[(object)['df_payer'=>'sender'],(object)['df_payer'=>'receiver']],
          'delivery_type'=>[(object)['delivery_type'=>'normal'],(object)['delivery_type'=>'fast']],
          'zone_code'=>DB::table('zones as z')->where('branch_id',$branch_id)->whereRaw('IFNULL(inactive,0) =0')->selectRaw('z.zone_code,CONCAT(zone_code,\' \',z.zone_name) AS zone_name')->get()
       ];
+      Cache::put($cache_key,$data,15);
+      return $data;
     } 
 
     //given a @driver_id, returns a default warehouse info (id,name, map_location). Used for Driver mobile app to identify a target warehouse to bring pickup packages to, or to deliver packages from 
@@ -145,7 +151,8 @@ class Package //extends Model
       $str_zone =" AND (l.zone_codes LIKE '%|".$zone_code."|%') ";
       ////No need to check Expiry date for price list
       //$str_dates = " AND (l.end_date>='".$today."' OR l.never_expires =1)";
-      $billed_kg = floatval($billed_kg)? $billed_kg:0;
+      $billed_kg = floatval($billed_kg);
+      $billed_kg = $billed_kg ?? 0;
       $str_kg = ' AND kg_within(IFNULL(l.start_kg,0),IFNULL(l.end_kg,'.$billed_kg.'),0)=1'; 
       //if ($sender_id > 0) {
          //$table ="sender_price_list AS l"; // |0| is same as |all| for (All Senders) (All Zones)
@@ -967,8 +974,8 @@ class Package //extends Model
         return null;
       }
 
-      function getOutstandingPackageList($filter=[],$ss=null) {    
-        $ss = $ss?$ss:$this->userInfo;
+      function getOutstandingPackageList($filter=[],$ss=null) {  
+        $ss = $ss ?? $this->userInfo;
         $data = (object)$filter;  
         $branch_id =$ss->branch_id;
         $data->warehouse_id = isset($data->warehouse_id)?Sanitizer::sanitize($data->warehouse_id):0;
@@ -982,7 +989,16 @@ class Package //extends Model
         $data->status_id = isset($data->status_id)?Sanitizer::sanitize($data->status_id):-1;
         if(!isset($data->status_id)) $data->status_id =-1;
         $search_value =isset($data->search_value)?escape_like_str(Sanitizer::sanitize($data->search_value)):null;
-          
+         
+        $cache_key = 'pglist_';
+        foreach($data as $key => $val) $cache_key .= $val;
+        $cache_key = str_replace(['/','-','?','@','|'],'',$cache_key);
+        $cache_data = Cache::get($cache_key); 
+        if ($cache_data) {
+          //Log::info('Cached pglist. key = '.$cache_key); 
+          return $cache_data;
+        }
+ 
           //$succeeded_status ="delivered"; /* outstanding delvieries => select all packages that has status different from "delivered" */
           $str_driver = null;
           $str_warehouse =null;
@@ -1022,8 +1038,10 @@ class Package //extends Model
           $select_cols ="p.id As package_id,p.delivery_id, p.order_id, DATE_FORMAT(p.pickup_time,'%d %b %Y') AS pickup_time,p.zone_code, p.delivery_type, p.qr_code AS barcode,p.delivery_notes,p.failure_notes, CASE (p.status_id =9 OR p.status_id=11) WHEN 1 THEN p.failure_notes ELSE delivery_notes END AS remarks,p.delivery_condition, 
            DATE_FORMAT(p.arrival_time,'%d %b %Y') AS `arrival_time`, s.sender_type_id, st.name AS sender_type, (select x.name from driver as x WHERE x.id = p.driver_id LIMIT 1) AS driver_name, p.driver_id,
           p.status_id,(SELECT ds.name FROM package_statuses AS ds WHERE ds.id = p.status_id LIMIT 1) AS status, p.sender_id, s.phone_number AS sender_phone, p.receiver_id, p.receiver_address, p.receiver_name, p.receiver_phone,p.zone_name, s.name AS sender_name, IFNULL(p.driver_total,0) AS driver_total, IFNULL(p.sender_total,0) AS sender_total";
-          return DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->join('sender_type AS st','st.id','=','s.sender_type_id')->selectRaw($select_cols)->whereRaw($str_since)->whereRaw($more_wheres)->orderByRaw('p.create_date DESC, p.delivery_id DESC')->get();
-         }
+          $rows = DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->join('sender_type AS st','st.id','=','s.sender_type_id')->selectRaw($select_cols)->whereRaw($str_since)->whereRaw($more_wheres)->orderByRaw('p.create_date DESC, p.delivery_id DESC')->get();
+          if ($cache_key) Cache::put($cache_key,$rows,15);
+          return $rows; 
+        }
   
          //GetOutStandingPackageList_print() returns data for pdf printing only
          function getOutstandingPackageList_print($arr=[],$ss=null) {
@@ -1483,7 +1501,14 @@ class Package //extends Model
         $branch_id = $pInfo->branch_id;
       $deleted = false;
       try{
+          $nowTime = getNowTime();
           $package = DB::table('package')->where('id',$pInfo->id)->first();
+          $package->create_user = $ss->full_name;
+          $package->create_date = $nowTime;
+          $package->update_user = $ss->full_name;
+          $package->update_date = $nowTime;
+          $package->create_uid = $ss->user_id;
+          $package->update_uid = $ss->user_id;
           if($package){
             DB::table('deleted_package')->where('id',$pInfo->id)->delete();
             DB::table('deleted_package')->insert((array) $package);
@@ -2132,12 +2157,16 @@ function getZoneByCode($branch_id, $zone_code) {
 
   function getBilledWeight($dim_x, $dim_y, $dim_h, $actual_weight = 0, $adjusted_kg = 0) {
     // Ensure that the dimensions and weights are valid numbers
-    $dim_x = floatval($dim_x) ?? 0;
-    $dim_y = floatval($dim_y) ?? 0;
-    $dim_h = floatval($dim_h) ?? 0;
-    $actual_weight = floatval($actual_weight) ?? 0;
-    $adjusted_kg = floatval($adjusted_kg) ?? 0;
-
+    $dim_x = floatval($dim_x);
+    $dim_x = $dim_x ?? 0;
+    $dim_y = floatval($dim_y);
+    $dim_y = $dim_y ?? 0;
+    $dim_h = floatval($dim_h);
+    $dim_h = $dim_h ?? 0;
+    $actual_weight = floatval($actual_weight);
+    $actual_weight = $actual_weight ?? 0;
+    $adjusted_kg = floatval($adjusted_kg);
+    $adjusted_kg = $adjusted_kg ?? 0;
     try {
         // Calculate the billed weight
         $billed_weight = ($dim_x * $dim_y * $dim_h) / 6015;
@@ -2235,9 +2264,9 @@ function getZoneByCode($branch_id, $zone_code) {
             if($p->status ==='Error') return DV::error($p->error_message);
             $data->sender_id = $sender_id; 
             $data->cod_fee_percent = $p->cod_fee_percent; //$this->getCODFeeCharge($ss,$sender_id);
-            $data->base_fee = $p->base_fee;  
-            if(floatval($data->price_per_kg) === false) $data->price_per_kg =0;
-
+            $data->base_fee = $p->base_fee;
+            $data->price_per_kg = floatval($data->price_per_kg);
+            $data->price_per_kg = $data->price_per_kg ?? 0;
             //$data->$price =0; //found price that matches when all conditions are specified
             $data->price_list =[];// $this->getSenderPriceList($ss,$sender_id,$zone_code,$delivery_type,null);
             return $data;
@@ -2543,14 +2572,18 @@ function getZoneByCode($branch_id, $zone_code) {
           if (!isset($c->warehouse_id)) return DV::error('No warehouse ID provided for package with reeiver phone '.$c->receiver_phone);
           $c->df_payer = isset($c->df_payer)? $c->df_payer :null;
           if(!in_array(strtolower($c->df_payer),['sender','receiver'])) return DV::error('Fee payer must be Sender or Receiver'); 
-          $c->forwarding_cost = isset($c->forwarding_cost)?$c->forwarding_cost:0;
-          $c->billed_kg = isset($c->billed_kg)? ($c->billed_kg >=0? $c->billed_kg:0) :null;
-          $c->dim_x = isset($c->dim_x)?$c->dim_x:0;
-          $c->dim_y = isset($c->dim_y)?$c->dim_y:0;
-          $c->dim_h = isset($c->dim_h)?$c->dim_h:0;
-          $c->actual_kg = isset($c->actual_kg)?$c->actual_kg:0;
-          if(!floatval($c->actual_kg)) $c->actual_kg = 0;
-          $c->actual_kg = floatval($c->actual_kg); 
+          $c->forwarding_cost = floatval(isset($c->forwarding_cost)?$c->forwarding_cost:0);
+          $c->forwarding_cost =  $c->forwarding_cost ?? 0;
+          $c->billed_kg = floatval(isset($c->billed_kg) ? $c->billed_kg:0);
+            $c->billed_kg = $c->billed_kg ?? 0;             
+            $c->dim_x = floatval(isset($c->dim_x) ? $c->dim_x:  0);
+            $c->dim_x  =$c->dim_x ?? 0;
+            $c->dim_y = floatval(isset($c->dim_y) ? $c->dim_y:  0);
+            $c->dim_y = $c->dim_y ?? 0;
+            $c->dim_h = floatval(isset($c->dim_h) ? $c->dim_h: 0);
+            $c->dim_h = $c->dim_h ?? 0;
+            $c->actual_kg = floatval(isset($c->actual_kg) ? $c->actual_kg: 0);
+            $c->actual_kg = $c->actual_kg ?? 0;
           $c->delivery_type = isset($c->delivery_type)?$c->delivery_type:$order->delivery_type;
           if (!in_array(strtolower($c->delivery_type),['normal','fast'])) return DV::error('Service type must be either Normal or Fast'); 
           
@@ -3652,6 +3685,12 @@ function getZoneByCode($branch_id, $zone_code) {
     $start_date = isset($d->start_date)? convertDate($d->start_date):null;
     $end_date = isset($d->end_date)? convertDate($d->end_date):null;
 
+    $cache_key = 'delivertitemsd_'.$driver_id;
+    foreach($d as $key => $value) $cache_key .= $value;
+    $cache_key = sha1($cache_key);
+    $cache_data = Cache::get($cache_key);
+    if($cache_data !==null) return $cache_data;
+
     /* Initial delivery status_id is -1 (all statuses invluding on delivery, delivered, failed, returned etc ) */
     $status_id = -1;
     if(isset($d->status_id)) $status_id = $d->status_id;
@@ -3746,8 +3785,10 @@ function getZoneByCode($branch_id, $zone_code) {
     $query = DB::table('package AS p')->join('package_statuses AS ps','ps.id','=','p.status_id')->join('driver AS d','d.id','=','p.driver_id')->join('delivery AS trip','trip.id','=','p.delivery_id')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_dates)->whereRaw($str_delivery_type)->whereRaw($str_driver)->whereRaw($str_sender)->whereRaw($str_pmt_status)->selectRaw($selectCols)->take($max_rows);
     //Log::info($query->toSql());
     //$count = $query->count('p.id');
-    return $query->get();
-    
+    $data = $query->get();
+    Cache::put($cache_key,$data,10);
+    return $data;
+
     // $unpaid_amount = 0;
     // $unpaid_count = 0;
     // if ($driver_id > 0){
@@ -3796,7 +3837,7 @@ function getZoneByCode($branch_id, $zone_code) {
     $status_id = -1;
     if(isset($d->status_id)) $status_id = $d->status_id;
     if($status_id == -1) $status_id = null;
-    
+     
     $str_pmt_status ='1=1';
     $str_status ='9=9'; 
     $str_sender = '8=8';
@@ -3805,6 +3846,13 @@ function getZoneByCode($branch_id, $zone_code) {
     $str_driver = '6=6';
  
     $search_value = isset($d->search_value)?$d->search_value:null;
+
+    $cache_key = 'drivdelivertitemmobile_'.$driver_id;
+    foreach($d as $key => $value) $cache_key .= $value;
+    $cache_key = sha1($cache_key);
+    $cache_data = Cache::get($cache_key);
+    if($cache_data !==null) return $cache_data;
+
     $str_search = '2=2';
     if($search_value)
     {
@@ -3881,8 +3929,9 @@ function getZoneByCode($branch_id, $zone_code) {
     $max_rows = 1000;
     $query = DB::table('package AS p')->join('package_statuses AS ps','ps.id','=','p.status_id')->join('driver AS d','d.id','=','p.driver_id')->join('delivery AS trip','trip.id','=','p.delivery_id')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_dates)->whereRaw($str_delivery_type)->whereRaw($str_driver)->whereRaw($str_sender)->whereRaw($str_pmt_status)->selectRaw($selectCols)->take($max_rows);
     // $count = $query->count('p.id');
-    return $query->get();
-    
+    $rows = $query->get();
+    Cache::put($cache_key,$rows,12);
+    return $rows;
     // $unpaid_amount = 0;
     // $unpaid_count = 0;
     // if ($driver_id > 0){
@@ -3947,6 +3996,13 @@ static function getDriverDueInfo($driver_id){
     $is_from_mobile = isset($d->is_from_mobile)?$d->is_from_mobile:0;
 
     $search_value = isset($d->search_value)?$d->search_value:null;
+
+    $cache_key = 'delivitemsendermobile_'.$sender_id;
+    foreach($d as $key => $value) $cache_key .= $value;
+    $cache_key = sha1($cache_key);
+    $cache_data = Cache::get($cache_key);
+    if($cache_data !==null) return $cache_data;
+
     $str_search = '2=2';
     $str_pmt_status ='5=5';
     $str_delivery_type ='3=3';
@@ -4001,7 +4057,7 @@ static function getDriverDueInfo($driver_id){
     0 AS paid_to_sender,
     0 AS paid_by_driver,
     IFNULL(p.driver_total,0) AS driver_total, 
-    IFNULL(p.sender_total,0) AS sender_total,
+    p.sender_total AS sender_total,
     IFNULL(p.sender_pmt_status_id,0) AS sender_pmt_status_id,
     p.sender_pmt_notes,
     d.name AS driver_name,
@@ -4013,28 +4069,28 @@ static function getDriverDueInfo($driver_id){
     p.actual_kg,
     p.status_id,ps.name AS `status`';
     $max_row = 2000;
-
-    // Log::info('str_date: '.$str_dates); 
-    // Log::info('str_sender: '.$str_sender);
-    // Log::info('delivery: '.$str_delivery_type);
-    // Log::info('str_pmt_status: '.$str_pmt_status);   
-    // Log::info('str_status: '.$str_status);
-    // Log::info('str_search: '.$str_search);    
+    
     $rows = DB::table('package AS p')->join('package_statuses AS ps','ps.id','=','p.status_id')->join('driver AS d','d.id','=','p.driver_id')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_sender)->whereRaw($str_delivery_type)->whereRaw($str_pmt_status)->whereRaw($str_dates)->whereRaw($str_status)->selectRaw($selectCols)->take($max_row)->get();
     $count =0;
     $unpaid_amount  =0;
     foreach($rows as $row){
-      if($row->status_id ==8 && !$row->sender_pmt_status_id){
-         $sender_amt = self::getMerchantBalance($row);
+      $sender_amt = self::getMerchantBalance($row);
+      if($row->status_id ==8 && !$row->sender_pmt_status_id){ 
          $unpaid_amount += $sender_amt;
       }
+      //  /** For HOU Merchant App => sender_total is amount to be paid to Sender or merchant */
+      //  $sender_total = $row->price - $row->base_fee - $row->delivery_fee;
+      // $row->sender_total = $sender_total;
+      $row->sender_total =$sender_amt;
       $count++;
     } 
-    return (object)[
+    $data = (object)[
        'unpaid_amount'=>number_format($unpaid_amount,2,'.',''),
        'package_count'=>$count,
        'packages'=>$rows
     ];
+    Cache::put($cache_key,$data,12);
+    return $data;
   }
 
   function getDeliveryItemsBySender($arr,$ss=null){
@@ -4062,6 +4118,13 @@ static function getDriverDueInfo($driver_id){
     $is_from_mobile = isset($d->is_from_mobile)?$d->is_from_mobile:0;
 
     $search_value = isset($d->search_value)?$d->search_value:null;
+
+    $cache_key = 'delivertitemss_'.$sender_id;
+    foreach($d as $key => $value) $cache_key .= $value;
+    $cache_key = sha1($cache_key);
+    $cache_data = Cache::get($cache_key);
+    if($cache_data !==null) return $cache_data;
+
     $str_search = '2=2';
     $str_driver = '5=5';
     $str_pmt_status ='5=5';
@@ -4133,7 +4196,9 @@ static function getDriverDueInfo($driver_id){
     $max_row = 1500;
     $query = DB::table('package AS p')->join('package_statuses AS ps','ps.id','=','p.status_id')->join('driver AS d','d.id','=','p.driver_id')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_sender)->whereRaw($str_dates)->whereRaw($str_driver)->whereRaw($str_sender)->whereRaw($str_delivery_type)->whereRaw($str_pmt_status)->whereRaw($str_status)->selectRaw($selectCols)->take($max_row);
     //Log::info($query->toSql());
-    return $query->get();
+    $rows = $query->get();
+    Cache::put($cache_key,$rows,10);
+    return $rows;
   }
   
   /** calculate sender's balance for settlement */
@@ -4158,6 +4223,10 @@ static function getDriverDueInfo($driver_id){
     */
     function getPackageCounts_summary($sender_id=0, $ss=null){
       $branch_id = $ss->branch_id;
+      $cache_key ='ordersummarycount5_'.$branch_id.$sender_id;
+      $cache_data = Cache::get($cache_key);
+      if($cache_data !== null) return $cache_data;
+
       //$status_id <=4, higher status => use packageModel->getPackageCounts_summary()  
       $data = (object)['at_warehouse_count'=>0,'on_delivery_count'=>0,'failed_count'=>0,'returned_count'=>0,'delivered_count'=>0];
       
@@ -4206,6 +4275,7 @@ static function getDriverDueInfo($driver_id){
       }
        $data->balance_due = number_format($merchant_balance_due,2,'.','');
        $data->currency_code ='USD';
+       Cache::put($cache_key,$data,10);
        return $data;
   }
 
@@ -4310,8 +4380,12 @@ static function getDriverDueInfo($driver_id){
 function getOrderSummarylist_at_warehouse($sender_id,$ss){  
       $branch_id = $ss->branch_id;
       $status_id = 5;
+      $cache_key = 'ordersummarycount_atw_'.$branch_id.$sender_id;
+      $cache_data = Cache::get($cache_key);
+      if($cache_data !==null) return $cache_data;
+
       $last_10_days =  date('Y-m-d');
-      return DB::select(DB::raw('SELECT p.id,formatDate(p.arrival_time) As arrival_date,formatDate(p.create_date) AS booking_date,p.delivery_type,p.sender_id,p.sender_name, p.receiver_name,p.receiver_phone,p.zone_code,p.zone_name, 
+      $rows =  DB::select(DB::raw('SELECT p.id,formatDate(p.arrival_time) As arrival_date,formatDate(p.create_date) AS booking_date,p.delivery_type,p.sender_id,p.sender_name, p.receiver_name,p.receiver_phone,p.zone_code,p.zone_name, 
       p.receiver_address,
       p.df_payer,
       p.cod,p.price,
@@ -4324,7 +4398,8 @@ function getOrderSummarylist_at_warehouse($sender_id,$ss){
       CONCAT(p.billed_kg,\' kg\') AS billed_kg, p.status_id, ps.name AS `status`,NULL AS driver_code, NULL AS driver_name, NULL AS driver_phone FROM `package` AS `p`
       INNER JOIN  package_statuses AS ps ON ps.id = p.status_id
       WHERE p.branch_id =\''.$branch_id.'\' AND p.sender_id ='.$sender_id.' AND  p.status_id ='.$status_id.' AND DATE(p.arrival_time) >= \''.$last_10_days.'\''));
- 
+     Cache::put($cache_key,$rows,15);
+     return $rows;
   }
   
   /** On merchant Mobile App, in Order Summary counts => We combine "At Warehouse Count" with "On-delviery Count" under label "On Delivery" */
@@ -4332,7 +4407,10 @@ function getOrderSummarylist_at_warehouse($sender_id,$ss){
     $branch_id = $ss->branch_id;
     $last_10_days = date('Y-m-d');
     $str_statuses = ' AND p.status_id IN (5,6) ';
- return DB::select(DB::raw('
+    $cache_key = 'ordersummarylist6_'.$branch_id.$sender_id;
+    $cache_data = Cache::get($cache_key);
+    if($cache_data) return $cache_data;
+ $rows = DB::select(DB::raw('
  SELECT 
      p.id,
      formatDate(p.arrival_time) AS arrival_date, 
@@ -4377,11 +4455,17 @@ function getOrderSummarylist_at_warehouse($sender_id,$ss){
      p.branch_id = \''.$branch_id.'\' 
      AND p.sender_id = '.($sender_id > 0 ? $sender_id : 0) . $str_statuses.' 
      AND DATE(p.arrival_time) = \''.$last_10_days.'\''));
+    Cache::put($cache_key,$rows,15);
+    return $rows;  
   }
 
     //get list of delviered pacakges (TODAY)
     function getOrderSummaryList_delivered($sender_id,$ss){  
       $branch_id = $ss->branch_id;
+      $cache_key = 'ordersummarylistd8_'.$branch_id.$sender_id;
+      $cache_data = Cache::get($cache_key);
+      if($cache_data) return $cache_data;
+
       $status_id = 8;
       $last_10_days = date('Y-m-d');
       $cols ='p.id, formatDate(p.arrival_time) AS arrival_date, formatDate(p.delivery_time) AS finish_date, formatDate(p.create_date) AS booking_date,p.delivery_type,p.sender_id,p.sender_name, p.receiver_name,p.receiver_phone,p.zone_code, p.zone_name,'.
@@ -4397,15 +4481,19 @@ function getOrderSummarylist_at_warehouse($sender_id,$ss){
       'p.billed_kg, p.status_id, ps.name AS `status`,d.code AS driver_code, d.name AS driver_name,d.phone_number as driver_phone';
 
       $query = DB::table('package as p')->join('package_statuses as ps','ps.id','=','p.status_id')->join('sender as s','s.id','=','p.sender_id')->join('driver as d','d.id','=','p.driver_id')->selectRaw($cols)->where('s.id',$sender_id)->where('p.branch_id',$branch_id);
-      return $query->where('p.status_id',$status_id)->whereRaw("DATE(p.delivery_time) = '$last_10_days'")->get();
-       
+      $rows = $query->where('p.status_id',$status_id)->whereRaw("DATE(p.delivery_time) = '$last_10_days'")->get();
+      Cache::put($cache_key,$rows,15);
+      return $rows;
     }
 
     //get List of failed packages (LAST 10 DAYS)
     function getOrderSummaryList_failed($sender_id,$ss){  
       $branch_id = $ss->branch_id;
-      $status_id = 9;
+      $cache_key = 'ordersummarylistf9_'.$branch_id.$sender_id;
+      $cache_data = Cache::get($cache_key);
+      if($cache_data) return $cache_data;
 
+      $status_id = 9;
       $last_10_days = date('Y-m-d');
       $cols ='p.id, formatDate(p.arrival_time) AS arrival_date, formatDate(p.delivery_time) AS finish_date, formatDate(p.create_date) AS booking_date,p.delivery_type,p.sender_id,p.sender_name, p.receiver_name,p.receiver_phone,p.zone_code, p.zone_name,'.
       'p.receiver_address,'.
@@ -4420,12 +4508,18 @@ function getOrderSummarylist_at_warehouse($sender_id,$ss){
       'p.billed_kg, p.status_id, ps.name AS `status`,d.code AS driver_code, d.name AS driver_name,d.phone_number as driver_phone';
 
       $query = DB::table('package as p')->join('package_statuses as ps','ps.id','=','p.status_id')->join('sender as s','s.id','=','p.sender_id')->join('driver as d','d.id','=','p.driver_id')->selectRaw($cols)->where('s.id',$sender_id)->where('p.branch_id',$branch_id);
-      return $query->where('p.status_id',$status_id)->whereRaw("DATE(p.delivery_time) = '$last_10_days'")->get();
+      $rows = $query->where('p.status_id',$status_id)->whereRaw("DATE(p.delivery_time) = '$last_10_days'")->get();
+      Cache::put($cache_key,$rows,15);
+      return $rows;
     }
 
     //get List of failed packages (LAST 10 DAYS)
     function getOrderSummaryList_returned($sender_id,$ss){  
       $branch_id = $ss->branch_id;
+      $cache_key = 'ordersummarylistr11_'.$branch_id.$sender_id;
+      $cache_data = Cache::get($cache_key);
+      if($cache_data) return $cache_data;
+
       $status_id = 11;
       $last_10_days = date('Y-m-d');
       $cols ='p.id, formatDate(p.arrival_time) AS arrival_date, formatDate(p.delivery_time) AS finish_date, formatDate(p.create_date) AS booking_date,p.delivery_type,p.sender_id,p.sender_name, p.receiver_name,p.receiver_phone,p.zone_code, p.zone_name,'.
@@ -4441,7 +4535,9 @@ function getOrderSummarylist_at_warehouse($sender_id,$ss){
       'p.billed_kg, p.status_id, ps.name AS `status`,d.code AS driver_code, d.name AS driver_name,d.phone_number as driver_phone';
 
       $query = DB::table('package as p')->join('package_statuses as ps','ps.id','=','p.status_id')->join('sender as s','s.id','=','p.sender_id')->join('driver as d','d.id','=','p.driver_id')->selectRaw($cols)->where('s.id',$sender_id)->where('p.branch_id',$branch_id);
-      return $query->where('p.status_id',$status_id)->whereRaw("DATE(p.delivery_time) = '$last_10_days'")->get();
+      $rows = $query->where('p.status_id',$status_id)->whereRaw("DATE(p.delivery_time) = '$last_10_days'")->get();
+      Cache::put($cache_key,$rows,15);
+      return $rows;
     }
 
 
@@ -4475,6 +4571,7 @@ function getOrderSummarylist_at_warehouse($sender_id,$ss){
         p.df_payer,
         p.cod,p.price,
         IFNULL(p.cod_fee,0) AS cod_fee,
+        p.base_fee,p.delivery_fee,
         get_cod_amount(p.cod,p.price,p.cod_fee) AS cod_amount,
         (p.base_fee + IFNULL(p.delivery_fee,0)) AS fees,
         s.phone_number as sender_phone,
@@ -4483,8 +4580,12 @@ function getOrderSummarylist_at_warehouse($sender_id,$ss){
         ifnull(p.forwarding_cost,0) AS taxi_fee,
         CASE (p.status_id =11 OR p.status_id =9) WHEN 1 THEN p.failure_notes ELSE \'\' END AS failure_notes,
         p.delivery_notes, p.failed_num, p.billed_kg, p.status_id, ps.name AS `status`, (SELECT `name` FROM driver as d WHERE d.id = p.driver_id LIMIT 1) AS driver_name';
-        return DB::table('package as p')->join('package_statuses as ps','ps.id','=','p.status_id')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_owner)->selectRaw($cols)->take($max_rows)->get();
-    }
+        $rows = DB::table('package as p')->join('package_statuses as ps','ps.id','=','p.status_id')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_owner)->selectRaw($cols)->take($max_rows)->get();
+        foreach($rows as $row){
+          $row->sender_total = self::getMerchantBalance($row);
+        }
+        return $rows;
+      }
  
    //$d = {'barcode',id}
    //deletePackagePhoto()
@@ -4507,13 +4608,13 @@ function getOrderSummarylist_at_warehouse($sender_id,$ss){
    //@params @d = {[user_class],[category],package_id,barcode}. Either use "package_id" or "barcode"
    function getPhotos($barcode=null,$ss=null){
         $package_id = $this->getId($barcode);
-        $ss = $ss?$ss:$this->getUserInfo();
+        $ss = $ss?? $this->userInfo;
         $branch_id =$ss->branch_id;
         
         /** if param @user_class  if provided then returns photos that belong to the user_class (i.e: Driver or Merchant) only **/
         $user_class = $ss->user_class;
         //Category = {image,document}
-        $category = isset($d->category)?$d->category:null; 
+        $category = 'image'; // isset($d->category)?$d->category:null; 
  
         $str_cat="1=1";
         $str_user_class ="1=1";

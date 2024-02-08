@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 //use App\Models\SMS;
 use App\Models\Notifier;
+use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\PickupRequestController;
@@ -51,121 +52,211 @@ use App\Models\SystemSetting;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
+// Route::middleware('auth:api')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 Route::post('telegram/send', [ApiController::class, 'sendToTelegram']);
 
-// Route::post('broadcast/auth', [PusherController::class, 'pusherAuth']); //->middleware('auth');
-// Route::post('auth/auth-data', [UMController::class, 'getAuthData']);
-Route::post('auth/login', [ApiController::class, 'externalLogin']);
-Route::post('admin/login', [LoginController::class, 'apiLogin']);
-
-Route::post('tell-merchant', function(Request $request){
-    $id = $request->id;
-    //$e=(object)['branch_id'=>1,'target_user_id'=>$id,'title'=>'Tell Merchant','message'=>'Special Offers for delivery services'];
-
-    $custom_data = ['event_name'=>'order_accepted','order_id'=>873,'prop_name'=>'value of prop','phone_number'=>'012565657'];
-    $data =[
-        [
-           'user_class'=>'merchant',
-           'target_user_id'=>$id,
-           'persist'=>0,
-           'title'=>'Dear Hou Express Merchants',
-           'message'=>'We are ready to offer you special services',
-           'data'=>$custom_data
-        ]
-    ];
-    $res = Notifier::notify_mobile(1,$data);
-    return response()->json($res);
-});
-
-Route::get('tell-agent', function(Request $request){
-    $id = $request->id;
-    //$e=(object)['branch_id'=>1,'target_user_id'=>$id,'title'=>'Tell Merchant','message'=>'Special Offers for delivery services'];
-    $custom_data = ['event_name'=>'deal_won','lead_id'=>0,'phone_number'=>'012565657'];
-    $data =[
-        [
-           'user_class'=>'sales_agent',
-           'target_user_id'=>$id,
-           'persist'=>0,
-           'title'=>$request->title ?? 'Hou Xpress Agent',
-           'message'=>$request->message ?? 'Sample notification to agent',
-           'data'=>$custom_data
-        ]
-    ];
-    $res = Notifier::notify_mobile(1,$data);
-    return response()->json($res);
-});
-
-//Clear trash => to delete expired data such as expired notitifications
-Route::post('trash/clear',function(Request $req){
-    $res = Notifier::clearNotifications(null);
-    return response()->json($res);
-});
-
-Route::get('clear-trash',function(){
-    $res = Notifier::clearNotifications(null);
-    return response()->json($res);
-});
-
-/** begin:: API routes created for testing only */
-Route::post('mobile/notifications/send', [NotificationController::class, 'sendToMobile']);
-Route::get('mobile/notifications/send-get', [NotificationController::class, 'sendToMobile']);
-Route::get('merchant/outstanding-balances1',[TransactionController::class, 'getOutstandingPayments_merchant']);
-/** end:: API routes created for testing only */
-
 //begin:: Admin notifications
-    Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
-    Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
-    //Route::post('notifications',[ApiController::class,'getNotificationList_admin']);
-    Route::post('unread-count',[ApiController::class,'getUnreadCount']);
-    Route::post('mark-read-all',[ApiController::class,'markReadAll']);
-//end:: Admin Notification
+    Route::middleware('auth.api', CustomRateLimiter::class)->group(function(){
+            Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
+            Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
+            //Route::post('notifications',[ApiController::class,'getNotificationList_admin']);
+            Route::post('unread-count',[ApiController::class,'getUnreadCount']);
+            Route::post('mark-read-all',[ApiController::class,'markReadAll']);
+    });
+ //end:: Admin Notification
 
-Route::post('tell-driver', function(Request $request){
-    // $data = array('title'=>"Driver Arrived","body"=>"Driver has arrived for pickup");
-    // Notifier::fcm_send($data);
+ Route::middleware([CustomRateLimiter::class])->group(function(){
+    Route::post('logout', [ApiController::class,'logout_mobile']);
+    Route::post('auth/login', [ApiController::class, 'externalLogin']);
+    Route::post('admin/login', [LoginController::class, 'apiLogin']);
 
-       //$event_name = $request->event_name;
-       $id = $request->id;
-       $e=(object)['branch_id'=>1,'target_user_id'=>$id,'title'=>'Tell Driver','message'=>'Driver Sopha has arrived'];
-       $custom_data = ['order_id'=>7878,'prop_name'=>'value of prop','phone_number'=>'012565657'];
-       $d = Notifier::notify_driver($e,$custom_data);
-       return response()->json($d);
+    Route::post('tell-merchant', function(Request $request){
+        $id = $request->id;
+        //$e=(object)['branch_id'=>1,'target_user_id'=>$id,'title'=>'Tell Merchant','message'=>'Special Offers for delivery services'];
+    
+        $custom_data = ['event_name'=>'order_accepted','order_id'=>873,'prop_name'=>'value of prop','phone_number'=>'012565657'];
+        $data =[
+            [
+               'user_class'=>'merchant',
+               'target_user_id'=>$id,
+               'persist'=>0,
+               'title'=>'Dear Hou Express Merchants',
+               'message'=>'We are ready to offer you special services',
+               'data'=>$custom_data
+            ]
+        ];
+        $res = Notifier::notify_mobile(1,$data);
+        return response()->json($res);
+    });
+    
+    Route::get('tell-agent', function(Request $request){
+        $id = $request->id ?? $request->user_id;
+        $official_id = $request->official_id;
+        //$e=(object)['branch_id'=>1,'target_user_id'=>$id,'title'=>'Tell Merchant','message'=>'Special Offers for delivery services'];
+        $custom_data = ['event_name'=>'deal_won','lead_id'=>0,'phone_number'=>'012565657'];
+        $data =[
+            [
+               'user_class'=>'sales_agent',
+               'user_id'=>$id,
+               'target_user_id'=>$official_id, /** This official_id is optional */
+               'persist'=>0,
+               'title'=>$request->title ?? 'Hou Xpress Agent',
+               'message'=>$request->message ?? 'Sample notification to agent',
+               'data'=>$custom_data
+            ]
+        ];
+        $res = Notifier::notify_mobile(1,$data);
+        return response()->json($res);
+    });
+
+
+     //Clear trash => to delete expired data such as expired notitifications
+     Route::post('trash/clear',function(Request $req){
+        $res = Notifier::clearNotifications(null);
+        return response()->json($res);
+    });
+    Route::get('clear-trash',function(){
+        $res = Notifier::clearNotifications(null);
+        return response()->json($res);
+    });
+
+
+    //     Route::post('notify-mobile', function(Request $request){
+    //         $cdata =[
+    //             [
+    //                 'user_class'=>'driver',
+    //                 'target_user_id'=>28,
+    //                 'title'=>'To Driver',
+    //                 'message'=>'There is new delivery order',
+    //                 'persist'=>0,
+    //                 'data'=>null
+    //             ],
+    //             [
+    //                 'user_class'=>'merchant',
+    //                 'target_user_id'=>67,
+    //                 'title'=>'To Merchant',
+    //                 'message'=>'Available Order created',
+    //                 'persist'=>0,
+    //                 'data'=>null
+    //             ]
+    //         ];
+    //         $res = Notifier::notify_mobile(1,$cdata);
+    //         return $res;
+    //    });
+
+    /** begin:: API routes created for testing only */
+        Route::post('mobile/notifications/send', [NotificationController::class, 'sendToMobile']);
+        Route::get('mobile/notifications/send-get', [NotificationController::class, 'sendToMobile']); 
+    /** end:: API routes created for testing only */
+
+    Route::post('contact-info', [MobileAppSettingsController::class, 'getContactInfo']);
+ });
+//end:: api without Authentication
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
+   Route::post('report-center/report-list', [WebReportController::class, 'getReportList']);
+   Route::post('report-center/filter-options', [WebReportController::class, 'getReportFilterOptions']);
+
+  //*** begin::legacy APIs from previous version
+   Route::post('export/packages', [ReportController::class, 'getPackageList_export']);
+   Route::post('dashboard/data', [DashboardController::class, 'getDashboardData']);
+   Route::post('getPriceInfoByPackage', [PackageController::class, 'getPriceInfoByPackage']);
+   Route::post('getZoneName', [DeliveryZoneController::class, 'getZoneName']);
+   Route::post('getZoneInfo', [DeliveryZoneController::class, 'getZoneInfo']);
+
+   Route::post('getMerchantsByPriceList', [PriceController::class, 'getMerchantsByPriceList']);
+   Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceListIdBySearchValue']);
+
+   Route::post('getMerchantBankInfo', [SenderController::class,'getMerchantBankInfo']);
+   Route::post('savePickupRequest', [PickupRequestController::class, 'savePickupRequest']);
+   //Route::post('getPickupList', [PickupRequestController::class, 'getPickupList']);
+   Route::post('updateOrderStatus', [PickupRequestController::class, 'updateOrderStatus']);
+   //Route::post('deletePickup', [PickupRequestController::class, 'deletePickup']);
+   Route::post('getPickupInfo', [PickupRequestController::class, 'getPickupInfo']);
+   Route::post('getComboItems_vehicleType', [PickupRequestController::class, 'getComboItems_vehicleType']);
+   Route::post('getComboItems_sender', [PickupRequestController::class, 'getComboItems_sender']);
+   Route::post('getForm_options_pickuplist', [PickupRequestController::class, 'getForm_options_pickuplist']);
+   //Route::post('assignPickupDriver', [PickupRequestController::class, 'assignPickupDriver']);
+   //Route::post('changePickupDriver', [PickupRequestController::class, 'changePickupDriver']);
+   Route::post('updatePickup', [PickupRequestController::class, 'updatePickup']);
+   Route::post('getFormData_pickup_request', [PickupRequestController::class, 'getFormData_pickup_request']);
+   Route::post('getSenderPriceInfo', [PickupRequestController::class, 'getSenderPriceInfo']);
+   Route::post('returnPackage', [PackageController::class, 'returnPackage']);
+
+   //Route::post('getBillingTransactions', [PackageController::class, 'getBillingTransactions']); //deliveries list by driver
+   Route::post('getDeliveryPriceInfo', [PackageController::class, 'getDeliveryPriceInfo_api']);
+   
+   Route::post('getPackageDetailsByBarcode', [PackageController::class, 'getPackageDetailsByBarcode']);
+   Route::post('getPackageInfo', [PackageController::class, 'getPackageInfo']);
+
+   Route::post('approveDriverChange', [DeliveryTripController::class, 'approveDriverChange']);
+   Route::post('getPendingRequests', [DeliveryTripController::class, 'getPendingRequests']);
+   Route::post('rejectDriverChange', [DeliveryTripController::class, 'rejectDriverChange']);
+
+   Route::post('getPackageInfoByBarcode', [DeliveryTripController::class, 'getPackageInfoByBarcode']); //For scanning barcode to start Delivery trip
+   Route::post('updatePackageExpandedDetails', [PackageController::class, 'updatePackageExpandedDetails']);
+   Route::post('getOutstandingPackageList', [PackageController::class, 'getOutstandingPackageList']);
+   Route::post('getOutstandingPackageList_print', [PackageController::class, 'getOutstandingPackageList_print']);
+   Route::post('getPackageReceiverInfo', [PackageController::class, 'getPackageReceiverInfo']);
+   Route::post('updatePackageReceiverInfo', [PackageController::class, 'updatePackageReceiverInfo']);
+   Route::post('getPackageDetails', [PackageController::class, 'getPackageDetails']);
+   Route::post('assignDeliveryDriver', [PackageController::class, 'assignDeliveryDriver']); // Assigning Driver also Change package's status automatically to "Delivery Started"
+
+   Route::post('b_assignDeliveryDriver', [DeliveryTripController::class, 'b_assignDeliveryDriver']);
+   Route::post('changeDeliveryDriver', [DeliveryTripController::class, 'changeDeliveryDriver']); //Change driver is for Admin user to change driver for a Fleet or deliver trip. This is for simple update of driver only
+   Route::post('getReceiverInfo', [PackageController::class, 'getReceiverInfo']);
+
+   Route::post('renamePriceList', [PriceController::class, 'renamePriceList']);
+   Route::post('setMerchantPriceList', [PriceController::class, 'setMerchantPriceList']);
+   Route::post('getDeliveryDetails', [PackageController::class, 'getDeliveryDetails']);
+   Route::post('deletePackage', [PackageController::class, 'deletePackage']);
+
+   Route::post('getDriverNameByCode', [PackageController::class, 'getDriverNameByCode']);
+   Route::post('getSenderInfoByCode', [PackageController::class, 'getSenderInfoByCode']);
+   //Route::post('deleteDelivery', [PackageController::class, 'deleteDelivery']);
+   Route::post('getSenderInfoByOrderCode', [PackageController::class, 'getSenderInfoByOrderCode']);
+   Route::post('getComboItems_driver', [PackageController::class, 'getComboItems_driver']);
+ 
+   Route::post('person/find', [PackageController::class, 'findPersons']);
+   Route::post('updatePackageStatus', [PackageController::class, 'updatePackageStatus']);
+   Route::post('updatePackageStatus_driver', [DeliveryTripController::class, 'updatePackageStatus_driver']);
+
+   Route::post('getComboItems_package_status', [PackageController::class, 'getComboItems_package_status']);
+   Route::post('getTripInfo', [DeliveryTripController::class, 'getTripInfo']);
+   //Route::post('getComboItems_delivery_status', [GeneralSettingsController::class, 'getComboItems_delivery_status']);
+   Route::post('getOrderDetails', [PackageController::class, 'getOrderDetails']);
+   Route::post('performPickup', [PackageController::class, 'performPickup']);
+   Route::post('getSenderPromotionInfo', [PackageController::class, 'getSenderPromotionInfo']);
+   Route::post('getSenderPriceByZone', [PackageController::class, 'getSenderPriceByZone']);
+
+   //begin::DeliveryTripController
+        Route::post('getDeliveryTrips_print', [DeliveryTripController::class,'getDeliveryTrips_print']);
+        Route::post('removePackageFromTrip', [DeliveryTripController::class,'removePackageFromTrip']);
+        Route::post('addPackageToTrip', [DeliveryTripController::class,'addPackageToTrip']);
+        Route::post('getPackageListByTripId', [DeliveryTripController::class,'getPackageListByTripId']);
+        Route::post('getPackageListByTripId_print', [DeliveryTripController::class,'getPackageListByTripId_print']);
+        Route::post('getDeliveryTrips', [DeliveryTripController::class,'getDeliveryTrips']);
+        Route::post('getPackagesByTrip', [DeliveryTripController::class, 'getPackagesByTrip']);
+        Route::post('deleteDeliveryTrip', [DeliveryTripController::class, 'deleteDeliveryTrip']);
+        Route::post('deleteNewTrip', [DeliveryTripController::class, 'deleteNewTrip']);
+        Route::post('scanPackageOut', [DeliveryTripController::class, 'scanPackageOut']);
+        Route::post('startDeliveryTrip', [DeliveryTripController::class, 'startDeliveryTrip']);
+        Route::post('finishDeliveryTrip', [DeliveryTripController::class, 'finishDeliveryTrip']);
+        Route::post('createDeliveryTrip', [DeliveryTripController::class, 'createDeliveryTrip']);
+        Route::post('getForm_options_delivery_trip', [DeliveryTripController::class, 'getForm_options_delivery_trip']);
+        Route::post('removeScannedPackage', [DeliveryTripController::class, 'removeScannedPackage']);
+        Route::post('cleanEmptyTrip', [DeliveryTripController::class, 'cleanEmptyTrip']);
+  //end::DeliverytripController
+
+  //*** end::legacy APIs from previous version
 });
-
-Route::post('notify-mobile', function(Request $request){
-    $cdata =[
-        [
-            'user_class'=>'driver',
-            'target_user_id'=>28,
-            'title'=>'To Driver',
-            'message'=>'There is new delivery order',
-            'persist'=>0,
-            'data'=>null
-        ],
-        [
-            'user_class'=>'merchant',
-            'target_user_id'=>67,
-            'title'=>'To Merchant',
-            'message'=>'Available Order created',
-            'persist'=>0,
-            'data'=>null
-        ]
-    ];
-    $res = Notifier::notify_mobile(1,$cdata);
-    return $res;
-});
-
-Route::post('contact-info', [MobileAppSettingsController::class, 'getContactInfo']);
-//No rate limit per minute for ajax search function
-Route::post('getMerchantsByPriceList', [PriceController::class, 'getMerchantsByPriceList']);
-Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceListIdBySearchValue']);
+/** end:: CustomRateLimiter WITHOUT any prefix */
   
 
-        Route::prefix('order')->group(function(){
+ Route::middleware([CustomRateLimiter::class])->prefix('order')->group(function(){
             Route::post('/list', [PickupRequestController::class, 'getPickupList']);
             Route::post('/delete', [PickupRequestController::class, 'deletePickup']);
             Route::post('/package-details', [PickupRequestController::class, 'getOrderPackageDetails']);
@@ -182,64 +273,24 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
             //User click "Arrive" button to receive items
             Route::post('/receive', [PickupRequestController::class, 'receivePackages']);
             //Route::post('/merchant-address', [SenderController::class,'getVendorAddress']);
-        });
+});
 
-        Route::prefix('lead')->group(function(){
+Route::middleware([CustomRateLimiter::class])->prefix('lead')->group(function(){
+            Route::post('/details', [LeadController::class,'getLeaddetails']);
+            Route::post('/form-options', [LeadController::class,'getFormOptions']);
             Route::post('/save', [LeadController::class,'saveLead']);
             Route::post('/delete', [LeadController::class,'deleteLead']);
             Route::post('/delete-special', [LeadController::class,'deleteSpecial']);
             Route::post('/list-paginate', [LeadController::class,'getList_paginate']);
             Route::post('/list-all', [LeadController::class,'getList_all']);
             Route::post('/update-status', [LeadController::class,'updateStatus']);
-        });
+            Route::post('/convert-to-merchant',[LeadController::class,'convertToMerchant']);
+ });
 
-        Route::post('getMerchantBankInfo', [SenderController::class,'getMerchantBankInfo']);
-        Route::post('savePickupRequest', [PickupRequestController::class, 'savePickupRequest']);
-        //Route::post('getPickupList', [PickupRequestController::class, 'getPickupList']);
-        Route::post('updateOrderStatus', [PickupRequestController::class, 'updateOrderStatus']);
-        //Route::post('deletePickup', [PickupRequestController::class, 'deletePickup']);
-        Route::post('getPickupInfo', [PickupRequestController::class, 'getPickupInfo']);
-        Route::post('getComboItems_vehicleType', [PickupRequestController::class, 'getComboItems_vehicleType']);
-        Route::post('getComboItems_sender', [PickupRequestController::class, 'getComboItems_sender']);
-        Route::post('getForm_options_pickuplist', [PickupRequestController::class, 'getForm_options_pickuplist']);
-        //Route::post('assignPickupDriver', [PickupRequestController::class, 'assignPickupDriver']);
-        //Route::post('changePickupDriver', [PickupRequestController::class, 'changePickupDriver']);
-        Route::post('updatePickup', [PickupRequestController::class, 'updatePickup']);
-        Route::post('getFormData_pickup_request', [PickupRequestController::class, 'getFormData_pickup_request']);
-        Route::post('getSenderPriceInfo', [PickupRequestController::class, 'getSenderPriceInfo']);
-        Route::post('returnPackage', [PackageController::class, 'returnPackage']);
-  
-        //Route::post('getBillingTransactions', [PackageController::class, 'getBillingTransactions']); //deliveries list by driver
-        Route::post('getDeliveryPriceInfo', [PackageController::class, 'getDeliveryPriceInfo_api']);
-        
-        Route::post('getPackageDetailsByBarcode', [PackageController::class, 'getPackageDetailsByBarcode']);
-        Route::post('getPackageInfo', [PackageController::class, 'getPackageInfo']);
-
-        Route::post('approveDriverChange', [DeliveryTripController::class, 'approveDriverChange']);
-        Route::post('getPendingRequests', [DeliveryTripController::class, 'getPendingRequests']);
-        Route::post('rejectDriverChange', [DeliveryTripController::class, 'rejectDriverChange']);
-
-        Route::post('getPackageInfoByBarcode', [DeliveryTripController::class, 'getPackageInfoByBarcode']); //For scanning barcode to start Delivery trip
-        Route::post('updatePackageExpandedDetails', [PackageController::class, 'updatePackageExpandedDetails']);
-        Route::post('getOutstandingPackageList', [PackageController::class, 'getOutstandingPackageList']);
-        Route::post('getOutstandingPackageList_print', [PackageController::class, 'getOutstandingPackageList_print']);
-        Route::post('getPackageReceiverInfo', [PackageController::class, 'getPackageReceiverInfo']);
-        Route::post('updatePackageReceiverInfo', [PackageController::class, 'updatePackageReceiverInfo']);
-        Route::post('getPackageDetails', [PackageController::class, 'getPackageDetails']);
-        Route::post('assignDeliveryDriver', [PackageController::class, 'assignDeliveryDriver']); // Assigning Driver also Change package's status automatically to "Delivery Started"
-
-        Route::post('b_assignDeliveryDriver', [DeliveryTripController::class, 'b_assignDeliveryDriver']);
-        Route::post('changeDeliveryDriver', [DeliveryTripController::class, 'changeDeliveryDriver']); //Change driver is for Admin user to change driver for a Fleet or deliver trip. This is for simple update of driver only
-        Route::post('getReceiverInfo', [PackageController::class, 'getReceiverInfo']);
-
-        Route::post('renamePriceList', [PriceController::class, 'renamePriceList']);
-        Route::post('setMerchantPriceList', [PriceController::class, 'setMerchantPriceList']);
-        Route::post('getDeliveryDetails', [PackageController::class, 'getDeliveryDetails']);
-        Route::post('deletePackage', [PackageController::class, 'deletePackage']);
-
+       
 
         //begin::PackageController new
-         Route::prefix('package')->group(function(){
+         Route::middleware([CustomRateLimiter::class])->prefix('package')->group(function(){
             Route::post('/delete', [PackageController::class, 'deletePackage']);
             Route::post('/change-sender', [PackageController::class, 'changeSender']);
             Route::post('/change-merchant', [PackageController::class, 'changeSender']);
@@ -249,24 +300,7 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
         //end::PackageController new
 
 
-        Route::post('getDriverNameByCode', [PackageController::class, 'getDriverNameByCode']);
-        Route::post('getSenderInfoByCode', [PackageController::class, 'getSenderInfoByCode']);
-        //Route::post('deleteDelivery', [PackageController::class, 'deleteDelivery']);
-        Route::post('getSenderInfoByOrderCode', [PackageController::class, 'getSenderInfoByOrderCode']);
-        Route::post('getComboItems_driver', [PackageController::class, 'getComboItems_driver']);
       
-        Route::post('person/find', [PackageController::class, 'findPersons']);
-        Route::post('updatePackageStatus', [PackageController::class, 'updatePackageStatus']);
-        Route::post('updatePackageStatus_driver', [DeliveryTripController::class, 'updatePackageStatus_driver']);
-
-        Route::post('getComboItems_package_status', [PackageController::class, 'getComboItems_package_status']);
-        Route::post('getTripInfo', [DeliveryTripController::class, 'getTripInfo']);
-        //Route::post('getComboItems_delivery_status', [GeneralSettingsController::class, 'getComboItems_delivery_status']);
-        Route::post('getOrderDetails', [PackageController::class, 'getOrderDetails']);
-        Route::post('performPickup', [PackageController::class, 'performPickup']);
-        Route::post('getSenderPromotionInfo', [PackageController::class, 'getSenderPromotionInfo']);
-        Route::post('getSenderPriceByZone', [PackageController::class, 'getSenderPriceByZone']);
-
         //begin:: TransactionController
 
             //Route::post('merchant/transaction/save-photo', [TransactionController::class, 'saveTransactionPhoto']);
@@ -288,38 +322,40 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
         //end::TransactionController
 
     //begin::LocationController
-            Route::post('location/countries', [LocationController::class, 'getCountryList']);
-            Route::post('location/cities', [LocationController::class, 'getCityList']);
-            Route::post('location/districts', [LocationController::class, 'getDistrictList']);
-            Route::post('location/communes', [LocationController::class, 'getCommuneList']);
+    Route::middleware([CustomRateLimiter::class])->prefix('location')->group(function(){
+        Route::post('/countries', [LocationController::class, 'getCountryList']);
+        Route::post('/cities', [LocationController::class, 'getCityList']);
+        Route::post('/districts', [LocationController::class, 'getDistrictList']);
+        Route::post('/communes', [LocationController::class, 'getCommuneList']);
 
-            Route::post('location/options-country',[LocationController::class,'getComboItems_country']);
+        Route::post('/options-country',[LocationController::class,'getComboItems_country']);
 
-            Route::post('location/options-city',[LocationController::class,'getComboItems_city']);
+        Route::post('/options-city',[LocationController::class,'getComboItems_city']);
 
-            Route::post('location/options-district',[LocationController::class,'getComboItems_district']);
+        Route::post('/options-district',[LocationController::class,'getComboItems_district']);
 
-            Route::post('location/options-commune',[LocationController::class,'getComboItems_commune']);
+        Route::post('/options-commune',[LocationController::class,'getComboItems_commune']);
 
-            Route::post('location/country/save',[LocationController::class,'saveCountry']);
+        Route::post('/country/save',[LocationController::class,'saveCountry']);
 
-            Route::post('location/country/delete',[LocationController::class,'deleteCountry']);
+        Route::post('/country/delete',[LocationController::class,'deleteCountry']);
 
-            Route::post('location/city/save',[LocationController::class,'saveCity']);
+        Route::post('/city/save',[LocationController::class,'saveCity']);
 
-            Route::post('location/city/delete',[LocationController::class,'deleteCity']);
+        Route::post('/city/delete',[LocationController::class,'deleteCity']);
 
-            Route::post('location/district/save',[LocationController::class,'saveDistrict']);
+        Route::post('/district/save',[LocationController::class,'saveDistrict']);
 
-            Route::post('location/district/delete',[LocationController::class,'deleteDistrict']);
+        Route::post('/district/delete',[LocationController::class,'deleteDistrict']);
 
-            Route::post('location/commune/save',[LocationController::class,'saveCommune']);
+        Route::post('/commune/save',[LocationController::class,'saveCommune']);
 
-            Route::post('location/commune/delete',[LocationController::class,'deleteCommune']);
-         //end::LocationController
+        Route::post('/commune/delete',[LocationController::class,'deleteCommune']);
+    });      
+    //end::LocationController
 
      //begin:: Delivery ZONE
-     Route::prefix('zone')->group(function(){
+     Route::middleware([CustomRateLimiter::class])->prefix('zone')->group(function(){
             Route::post('form-options', [DeliveryZoneController::class, 'getFormOptions']);
             Route::post('details', [DeliveryZoneController::class, 'getZoneDetails']);
             Route::post('delete', [DeliveryZoneController::class, 'deleteZone']);
@@ -327,19 +363,7 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
             Route::post('list-all', [DeliveryZoneController::class, 'getZoneList_all']);
             Route::post('save', [DeliveryZoneController::class, 'saveZone']);
      });
-        //Route::post('getDeliveryZoneList', [DeliveryZoneController::class, 'getZoneList']);
-        //Route::post('saveDeliveryZone', [DeliveryZoneController::class, 'saveDeliveryZone']);
-
-
-        Route::post('getZoneName', [DeliveryZoneController::class, 'getZoneName']);
-        Route::post('getZoneInfo', [DeliveryZoneController::class, 'getZoneInfo']);
-
-        //getZonePrices() returns senderPriceInfo based on changes in zone_code. getZonePrices() is called on dlgEditReceiverDialog, when user change Destination Zone and prices and fees are adjusted by new @zone_code
-        //Route::post('getZonePrices', [PackageController::class, 'getZonePrices']);
-        //getPriceInfoByPacakge() is used on Package Trail or Package List. When user click begin Edit button, then getPriceInfoByPacakge() is called to retrieve data as "senderPriceInfo" used for package's price and fees calculation
-        Route::post('getPriceInfoByPackage', [PackageController::class, 'getPriceInfoByPackage']);
-     //end:: Delivery ZONE Controller
-
+    
      //begin::PriceController
         Route::post('getSampleScript', [PriceController::class, 'getSampleScript']);
         Route::post('translateScript', [PriceController::class, 'translateScript']);
@@ -380,7 +404,7 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
 
 
      //begin:: PromotionController
-     Route::prefix('promotion')->group(function(){
+     Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('promotion')->group(function(){
         Route::post('/list', [PromotionController::class, 'getPromotionList']);
         Route::post('/save', [PromotionController::class, 'savePromotion']);
         Route::post('/details', [PromotionController::class, 'getPromotionInfo']);
@@ -390,7 +414,7 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
     //end::PromotionController
  
 //begin::SenderController
-    Route::prefix('merchant')->group(function(){
+    Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('merchant')->group(function(){
         Route::post('/delivery-items', [PackageController::class, 'getDeliveryItemsBySender']); 
         Route::post('/save', [SenderController::class, 'saveSender']);
         Route::post('/delete', [SenderController::class, 'deleteSender']);
@@ -416,7 +440,7 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
 //end::SenderController
  
 //begin::DriverController
-    Route::prefix('driver')->group(function(){
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('driver')->group(function(){
         Route::post('/delivery-items', [PackageController::class, 'getDeliveryItemsByDriver']); //deliveries list by driver
         Route::post('/balances', [DriverController::class, 'getDriverBalanceDues']);
         Route::post('/payment/form-options', [TransactionController::class, 'getPaymentFormOptions']);
@@ -455,20 +479,19 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
 //end::SystemSettingController
 
  //begin:: PackageController
-    Route::prefix('package')->group(function(){
-        Route::post('/receiver-info', [PackageController::class, 'getReceiverInfo']);
-        Route::post('/details', [PackageController::class, 'getPackageDetails']);
-        Route::post('/details-with-options', [PackageController::class, 'getPackageDetailsWithOptions']);
-        Route::post('/details-by-barcode', [PackageController::class, 'getPackageDetailsByBarcode']);
-        Route::post('/info', [PackageController::class, 'getPackageInfo']);
-        Route::post('/update', [PackageController::class, 'updatePackageExpandedDetails']);
-        Route::post('/price-info', [PackageController::class, 'getDeliveryPriceInfo_api']);
-        //Route::post('/save', [PackageController::class, 'updatePackageExpandedDetails']);
-    });
+ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('package')->group(function(){
+    Route::post('/receiver-info', [PackageController::class, 'getReceiverInfo']);
+    Route::post('/details', [PackageController::class, 'getPackageDetails']);
+    Route::post('/details-with-options', [PackageController::class, 'getPackageDetailsWithOptions']);
+    Route::post('/details-by-barcode', [PackageController::class, 'getPackageDetailsByBarcode']);
+    Route::post('/info', [PackageController::class, 'getPackageInfo']);
+    Route::post('/update', [PackageController::class, 'updatePackageExpandedDetails']);
+    Route::post('/price-info', [PackageController::class, 'getDeliveryPriceInfo_api']);
+ });
  //end:: packageController
 
 //begin::CompletedPackageController
-   Route::prefix('completed-package')->group(function(){
+   Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('completed-package')->group(function(){
       Route::post('form-options', [CompletedPackageController::class, 'getFormOptions']);
       Route::post('/list-all', [CompletedPackageController::class, 'getListAll']);
       Route::post('/list', [CompletedPackageController::class, 'getList']);
@@ -478,53 +501,29 @@ Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceLis
 //end::CompletedPackageController
 
 //begin::CompanyProfileController
-Route::post('company/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
-Route::post('company/logo-url', [CompanyProfileController::class, 'getCompanyLogo']);
-Route::post('company/delete-logo', [CompanyProfileController::class, 'deleteCompanyLogo']);
-Route::post('company/save-details', [CompanyProfileController::class, 'saveCompanyInfo']);
-Route::post('company/details', [CompanyProfileController::class, 'getCompanyInfo']);
-Route::post('company/info', [CompanyProfileController::class, 'getCompanyInfo']);
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->group(function(){
+    Route::post('/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
+    Route::post('/logo-url', [CompanyProfileController::class, 'getCompanyLogo']);
+    Route::post('/delete-logo', [CompanyProfileController::class, 'deleteCompanyLogo']);
+    Route::post('/save-details', [CompanyProfileController::class, 'saveCompanyInfo']);
+    Route::post('/details', [CompanyProfileController::class, 'getCompanyInfo']);
+    Route::post('/info', [CompanyProfileController::class, 'getCompanyInfo']);
+});
 //end::CompanyProfileController
 
 //begin::MobileAppSettingController
-  Route::post('mobile-settings/brand-images', [MobileAppSettingsController::class, 'getBrandImages']);
-  Route::post('mobile-settings/save-brand-image', [MobileAppSettingsController::class, 'saveBrandImage']);
-  Route::post('mobile-settings/delete-brand-image', [MobileAppSettingsController::class, 'deleteBrandImage']);
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('mobile-settings')->group(function(){
+    Route::post('/brand-images', [MobileAppSettingsController::class, 'getBrandImages']);
+    Route::post('/save-brand-image', [MobileAppSettingsController::class, 'saveBrandImage']);
+    Route::post('/delete-brand-image', [MobileAppSettingsController::class, 'deleteBrandImage']);
+});
 //end::MobileAppsettingsController
-
-//begin::DeliveryTripController
-Route::post('getDeliveryTrips_print', [DeliveryTripController::class,'getDeliveryTrips_print']);
-Route::post('removePackageFromTrip', [DeliveryTripController::class,'removePackageFromTrip']);
-Route::post('addPackageToTrip', [DeliveryTripController::class,'addPackageToTrip']);
-Route::post('getPackageListByTripId', [DeliveryTripController::class,'getPackageListByTripId']);
-Route::post('getPackageListByTripId_print', [DeliveryTripController::class,'getPackageListByTripId_print']);
-  Route::post('getDeliveryTrips', [DeliveryTripController::class,'getDeliveryTrips']);
-  Route::post('getPackagesByTrip', [DeliveryTripController::class, 'getPackagesByTrip']);
-  Route::post('deleteDeliveryTrip', [DeliveryTripController::class, 'deleteDeliveryTrip']);
-  Route::post('deleteNewTrip', [DeliveryTripController::class, 'deleteNewTrip']);
-  Route::post('scanPackageOut', [DeliveryTripController::class, 'scanPackageOut']);
-  Route::post('startDeliveryTrip', [DeliveryTripController::class, 'startDeliveryTrip']);
-  Route::post('finishDeliveryTrip', [DeliveryTripController::class, 'finishDeliveryTrip']);
-  Route::post('createDeliveryTrip', [DeliveryTripController::class, 'createDeliveryTrip']);
-  Route::post('getForm_options_delivery_trip', [DeliveryTripController::class, 'getForm_options_delivery_trip']);
-  Route::post('removeScannedPackage', [DeliveryTripController::class, 'removeScannedPackage']);
-  Route::post('cleanEmptyTrip', [DeliveryTripController::class, 'cleanEmptyTrip']);
-//end::DeliverytripController
-
-//begin::DashboardController
- Route::post('dashboard/data', [DashboardController::class, 'getDashboardData']);
-//  Route::post('dashboard/daily-collections', [DashboardController::class, 'getDailyCollections']);
-//  Route::post('dashboard/table-two', [DashboardController::class, 'getPayableVendors_table']);
-//  Route::post('dashboard/summarized-values', [DashboardController::class, 'getDashboardData_summary']);
-//  Route::post('dashboard/barchart-one', [DashboardController::class, 'getDashboardData_barchart']);
-//  Route::post('dashboard/piechart-one', [DashboardController::class, 'getDashboardData_piechart']);
-//  Route::post('dashboard/table-one', [DashboardController::class, 'getDashboardData_table']);
-//end::DashboardController
-
+  
 //begin::SalesAgentController
-Route::prefix('sales-agent')->group(function(){
+Route::middleware([CustomRateLimiter::class])->prefix('sales-agent')->group(function(){
     Route::post('/save', [SalesAgentController::class, 'saveSalesAgent']);
     Route::post('/delete', [SalesAgentController::class, 'deleteSalesAgent']);
+    Route::post('/update-status', [SalesAgentController::class, 'updateStatus']);
     Route::post('/list', [SalesAgentController::class, 'getList']);
     Route::post('/form-options', [SalesAgentController::class, 'getFormOptions']);
     Route::post('/details', [SalesAgentController::class, 'getDetails']);
@@ -532,12 +531,12 @@ Route::prefix('sales-agent')->group(function(){
 });
 //end::SalesAgentController
 
-Route::prefix('sales-app')->group(function(){
+Route::middleware([CustomRateLimiter::class])->prefix('sales-app')->group(function(){
     Route::post('/banners', [SalesAgentController::class,'getBrandImages_mobile']);
+    Route::post('/login', [SalesAgentController::class, 'login']);
 });
- 
-Route::prefix('sales-app/agent')->group(function(){
-   Route::post('/login', [SalesAgentController::class, 'login']);
+
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('sales-app')->group(function(){
    Route::post('/profile-info', [SalesAgentController::class, 'getProfileInfo']);
    Route::post('/update-profile', [SalesAgentController::class, 'updateProfile']);
    Route::post('update-phone', [SalesAgentController::class,'updatePhoneNumber']);
@@ -553,12 +552,12 @@ Route::prefix('sales-app/agent')->group(function(){
 
 });
 
-Route::prefix('sales-app/merchant')->group(function(){
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('sales-app/merchant')->group(function(){
     Route::post('/list', [SalesAgentController::class,'getMerchantList']);
     Route::post('/list-all', [SalesAgentController::class,'getMerchantList_all']);
 });
 
-Route::prefix('sales-app/lead')->group(function(){
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('sales-app/lead')->group(function(){
     Route::post('/list', [LeadController::class, 'getList_paginate']);
     Route::post('/list-all', [LeadController::class, 'getList_all']);
     Route::post('/details', [LeadController::class, 'getDetails']);
@@ -572,10 +571,10 @@ Route::prefix('sales-app/lead')->group(function(){
 });
 
 //begin::ReportController
-    Route::prefix('rpt')->group(function(){
-        Route::post('rpt_getSummaryData', [ReportController::class, 'getSummaryData']);
+    Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('rpt')->group(function(){
+        Route::post('rpt_getSummaryData', [ReportController::class, 'getSummaryData']); 
     });
-    Route::post('export/packages', [ReportController::class, 'getPackageList_export']);
+   
 //end::ReportController
 
 
@@ -652,23 +651,33 @@ Route::prefix('img-order')->group(function(){
     Route::post('delete-order', [ApiController::class,'deleteImageOrder']);
 
 });
-
-Route::get('/test',function(){
-    $rpt = new \App\Models\Report();
-    $data = $rpt->getDailyPackageCountByMerchant(1,1,'2023-08-10','2023-08-15',null,0);
-    return response()->json($data);
-});
-
+  
  //## begin:: driver app api V2
- Route::prefix('driver/v2')->group(function(){
+ Route::middleware([CustomRateLimiter::class])->prefix('driver/v2')->group(function(){
+    Route::post('login', [ApiController::class, 'externalLogin']);
+    Route::post('verify-otp', [ApiController::class, 'verifyOTP']);
+    Route::post('reg-driver', [ApiController::class, 'registerDriver']);
+    Route::post('reg-send-otp', [ApiController::class,'send_otp_preregister_driver']);
+    Route::post('reg-verify-otp', [ApiController::class,'verify_otp_preregister_driver']);
+
+    Route::post('activate-account-otp', [ApiController::class, 'activateDriver_otp']);
+  
+    Route::post('forget/send-phone-otp', [ApiController::class,'sendOTPCode_phone_driver']);
+    Route::post('forget/verify-otp', [ApiController::class,'matchOTP_driver']);
+    //$d = {phone_number,otp_code,password}
+    Route::post('forget/reset-pwd', [ApiController::class,'resetPassword_driver']);
+    Route::post('send-sms-otp', [ApiController::class,'sendSMS_otp']);
+    Route::post('verify-otp', [ApiController::class,'verify_otp']);
+ });
+
+ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('driver/v2')->group(function(){
     Route::post('user-info', [ApiController::class, 'getOfficialId_driver']);
     Route::post('unread-count', [ApiController::class, 'getUnreadCount']);
     Route::post('mark-read', [ApiController::class, 'markRead_driver']);
     Route::post('mark-read-all', [ApiController::class, 'markReadAll']);
     Route::post('failure-remarks', [ApiController::class, 'getRemarksList']);
 
-//     Route::post('deactivate-me', [ApiController::class, 'deactivateMySelf_driver']);
-
+  // Route::post('deactivate-me', [ApiController::class, 'deactivateMySelf_driver']);
     Route::post('/delivery-remarks', [ApiController::class, 'getDeliveryRemarks']);
     Route::post('deactivate-me', [ApiController::class, 'deactivateMySelf_driver']);
 
@@ -716,15 +725,7 @@ Route::get('/test',function(){
         Route::post('ordder-details', [ApiController::class, 'getOrderDetails']);
 
         Route::post('set-password', [ApiController::class,'setPassword_driver']);
-        Route::post('verify-otp', [ApiController::class, 'verifyOTP']);
-
-        Route::post('reg-driver', [ApiController::class, 'registerDriver']);
-        Route::post('reg-send-otp', [ApiController::class,'send_otp_preregister_driver']);
-        Route::post('reg-verify-otp', [ApiController::class,'verify_otp_preregister_driver']);
-
-        Route::post('activate-account-otp', [ApiController::class, 'activateDriver_otp']);
-        Route::post('login', [ApiController::class, 'externalLogin']);
-
+       
         Route::post('changepassword', [ApiController::class,'changePassword_driver']);
         //Driver=> after successfuly verifying OTP code, user submit new password. $d = {login_name,otp_code,password}
         Route::post('setpassword-otp', [ApiController::class,'setPassword_otp']);
@@ -823,23 +824,36 @@ Route::get('/test',function(){
         Route::post('package-statuses',function(Request $request){
             $r =  SystemSetting::package_statuses($request);
             return makeJsonResponse($r);
-         });
-
-         Route::post('forget/send-phone-otp', [ApiController::class,'sendOTPCode_phone_driver']);
-         Route::post('forget/verify-otp', [ApiController::class,'matchOTP_driver']);
-         //$d = {phone_number,otp_code,password}
-         Route::post('forget/reset-pwd', [ApiController::class,'resetPassword_driver']);
-         Route::post('send-sms-otp', [ApiController::class,'sendSMS_otp']);
-         Route::post('verify-otp', [ApiController::class,'verify_otp']);
-         Route::post('logout', [ApiController::class,'logout_mobile']);
-
+         });   
     });
   //### end:: driver app api V2
 
-   //### begin:: API Mobile Apps Version 2 V2
-            //##begin:: Merchant app api V2
-            Route::prefix('merchant/v2')->group(function(){
-                Route::post('contact-info', [MobileAppSettingsController::class, 'getContactInfo']);
+     //##begin:: Merchant app api V2
+     Route::withoutMiddleware([CustomRateLimiter::class])->prefix('merchant/v2')->group(function(){
+        Route::post('login', [ApiController::class, 'externalLogin']);
+        Route::post('contact-info', [MobileAppSettingsController::class, 'getContactInfo']);
+        Route::post('forget/send-phone-otp', [ApiController::class,'sendOTPCode_phone_merchant']);
+        Route::post('forget/verify-otp', [ApiController::class,'matchOTP_merchant']);
+        //$d = {phone_number,otp_code,password}
+        Route::post('forget/reset-pwd', [ApiController::class,'resetPassword_merchant']);
+
+          //Merchant or Sender downloads App and enter phone number and submit (api/reg-send-otp)
+          Route::post('send-sms', [ApiController::class,'sendSMS']);
+          Route::post('reg-send-otp', [ApiController::class,'send_otp_preregister_sender']);
+          //After receiving otp by code, merchant enter OTP code in Mobile app and submit for verifying otp code
+          Route::post('reg-verify-otp', [ApiController::class,'verify_otp_preregister_sender']);
+          //After successfully verifying OTP code, register merchant by creating login name using his or her phone number
+          Route::post('reg-merchant', [ApiController::class, 'registerSender']);
+
+          Route::post('send-otp', [ApiController::class,'sendOTPCode_phone_merchant']);
+              //$d = {delivery_type,zone_code,billed_kg,price,df_payer} //Merchant
+              Route::post('price-info', [ApiController::class, 'getDeliveryPriceInfo']);
+              Route::post('reg-merchant', [ApiController::class, 'registerSender']);
+
+     });
+
+     Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('merchant/v2')->group(function(){
+              
                 Route::post('user-info', [ApiController::class, 'getOfficialId_merchant']);
                 Route::post('unread-count', [ApiController::class, 'getUnreadCount']);
                 Route::post('mark-read', [ApiController::class, 'markRead_sender']);
@@ -857,11 +871,7 @@ Route::get('/test',function(){
                 Route::post('delete-order-image', [OrderImageController::class, 'deleteOrderImage']);
                 Route::post('order-images', [OrderImageController::class, 'getOrderImages']);
 
-                Route::post('forget/send-phone-otp', [ApiController::class,'sendOTPCode_phone_merchant']);
-                Route::post('forget/verify-otp', [ApiController::class,'matchOTP_merchant']);
-                //$d = {phone_number,otp_code,password}
-                Route::post('forget/reset-pwd', [ApiController::class,'resetPassword_merchant']);
-
+              
                  //return list of filter status for History View on Merchant app
                  Route::post('history-filter-statuses', [ApiController::class, 'getComboItems_filter_status_sender']);
                  Route::post('history-filter-package-statuses', [ApiController::class, 'getComboItems_filter_package_status_sender']);
@@ -870,26 +880,17 @@ Route::get('/test',function(){
                     $d = Notifier::point2point_distance($request->lat1,$request->lon1,$request->lat2,$request->ln2,'K');
                     return response()->json($d."km");
                 });
-
-                /** for testing: sending event from api to Web Admin System **/
-                Route::post('send-event',function(Request $request){
-                    $data = (object)['order_id'=>$request->order_id,'merchant_name'=>$request->merchant_name];
-                    $result = Notifier::notify_admin($request->event_name,$data);
-                    return response()->json($result);
-                });
-
-                    Route::post('public-storage',function(){
-                        return PublicStorage::getUrl(1,'merchant','image');
-                    });
+ 
+                    // Route::post('public-storage',function(){
+                    //     return PublicStorage::getUrl(1,'merchant','image');
+                    // });
 
                     // Route::post('storage-url',function(){
                     //     //$path =  getStorageUrl();
                     //     $path = $_SERVER['SERVER_NAME']; // $_SERVER['PHP_SELF'];
                     //     return $path;
                     // });
-
-                    Route::post('send-sms', [ApiController::class,'sendSMS']);
-
+                  
                     Route::post('changepassword', [ApiController::class,'changePassword_merchant']);
                     //Merchant=> after successfuly verifying OTP code, user submit new password. $d = {app_id,otp_code,password}
                     Route::post('setpassword-otp', [ApiController::class,'setPassword_otp']);
@@ -909,14 +910,7 @@ Route::get('/test',function(){
                     //check if phone_number already in use? if not, send otp and wait to be verified
                     // name "register-send-otp" causes mysterious error of "cookie humans_2190 =1 ...", maybe word "register" is blocked
                     //##Registration merchant V2
-                    //Merchant or Sender downloads App and enter phone number and submit (api/reg-send-otp)
-                    Route::post('reg-send-otp', [ApiController::class,'send_otp_preregister_sender']);
-                    //After receiving otp by code, merchant enter OTP code in Mobile app and submit for verifying otp code
-                    Route::post('reg-verify-otp', [ApiController::class,'verify_otp_preregister_sender']);
-                    //After successfully verifying OTP code, register merchant by creating login name using his or her phone number
-                    Route::post('reg-merchant', [ApiController::class, 'registerSender']);
-
-                    Route::post('send-otp', [ApiController::class,'sendOTPCode_phone_merchant']);
+                  
                     Route::post('outstanding-orders', [ApiController::class,'getOutstandingDeliveryOrders']);
                     /** for old version of Merchant App (HouXpress) */
                     Route::post('merchant-address', [ApiController::class,'getMerchantAddress']);
@@ -948,7 +942,7 @@ Route::get('/test',function(){
                     Route::post('profile-info', [ApiController::class, 'getProfileInfo']);
                     Route::post('bank-accounts', [ApiController::class, 'getBankAccounts_sender']);
 
-                    Route::post('reg-merchant', [ApiController::class, 'registerSender']);
+                 
                     //update bank accounts by submitting array of accounts @bank_accounts
                     Route::post('save-bank-accounts', [ApiController::class, 'saveMerchantProfile_bank']);
 
@@ -962,9 +956,7 @@ Route::get('/test',function(){
                     //Merchant create delivery order from Mobile app
                     Route::post('create-delivery-order', [ApiController::class, 'savePickupRequest']);
                     Route::post('delivery-orders', [ApiController::class, 'getPickupListBySender']);
-
-                     //$d = {delivery_type,zone_code,billed_kg,price,df_payer} //Merchant
-                     Route::post('price-info', [ApiController::class, 'getDeliveryPriceInfo']);
+ 
                      //Merchant to estimate price. $d = {delivery_type,zone_code,billed_kg,price,df_payer} //Merchant
                      Route::post('estimate-price', [ApiController::class, 'estimatePrice']);
 
@@ -973,8 +965,6 @@ Route::get('/test',function(){
 
                     //This method currently avaialble only for driver app
                     //Route::post('vehicle-types', [ApiController::class, 'getComboItems_vehicleType']);
-
-                    Route::post('login', [ApiController::class, 'externalLogin']);
                     Route::post('set-password', [ApiController::class,'setPassword_sender']);
                     Route::post('settled-items', [ApiController::class, 'getSettledPackages_sender']);
                     Route::post('settled-packages', [ApiController::class, 'getSettledPackages_sender_old']);
@@ -984,29 +974,31 @@ Route::get('/test',function(){
                         return makeJsonResponse($r);
                      });
                     Route::post('logout', [ApiController::class,'logout_mobile']);
-
                 });
     //##end:: Merchant app api V2
 
-//begin::OrderImageController APIs
-Route::post('report-center/report-list', [WebReportController::class, 'getReportList']);
-Route::post('report-center/filter-options', [WebReportController::class, 'getReportFilterOptions']);
-// Route::get('settings/lang', [UMController::class, 'getLang']);
-// Route::post('settings/save-lang', [UMController::class, 'saveLang']);
+Route::middleware([CustomRateLimiter::class])->prefix('quick-order')->group(function(){
+    Route::post('/create', [PickupRequestController::class, 'createQuickOrder']);
+    Route::post('/form-options', [PickupRequestController::class, 'getFormOptions']);
+});
+  
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->group(function(){
+    Route::post('/options-driver', [GeneralSettingsController::class, 'getComboItems_driver']);
+    Route::post('/options-delivery-zone', [GeneralSettingsController::class, 'getComboItems_delivery_zone']);
+    Route::post('/options-warehouse', [GeneralSettingsController::class, 'getComboItems_warehouse']);
+    Route::post('/options-delivery-status', [GeneralSettingsController::class, 'getComboItems_delivery_status']);
+    Route::post('/options-pmt-status', [GeneralSettingsController::class, 'getComboItems_pmt_status']);
+    Route::post('/options-complete-status', [GeneralSettingsController::class, 'getComboItems_complete_status']);
+    Route::post('/options-sales-agent', [GeneralSettingsController::class, 'getComboItems_sales_agent']); 
+    Route::post('/options-agent-status', [GeneralSettingsController::class, 'options_agent_status']); 
 
-Route::post('/quick-order/create', [PickupRequestController::class, 'createQuickOrder']);
-Route::post('/quick-order/form-options', [PickupRequestController::class, 'getFormOptions']);
-Route::post('settings/options-sender', [PickupRequestController::class, 'getComboItems_sender']);
-Route::post('settings/options-trxtype', function(){
+    Route::post('/options-sender', [PickupRequestController::class, 'getComboItems_sender']);
+    Route::post('/options-lead-status', [GeneralSettingsController::class, 'options_lead_status']);
+    Route::post('/options-trxtype', function(){
     return [
          (object)['trx_type'=>'disbursement','name'=>'Money Out'],
          (object)['trx_type'=>'receipt','name'=>'Money In'],
     ];
+  });
+    
 });
-Route::post('settings/options-driver', [GeneralSettingsController::class, 'getComboItems_driver']);
-Route::post('settings/options-delivery-zone', [GeneralSettingsController::class, 'getComboItems_delivery_zone']);
-Route::post('settings/options-warehouse', [GeneralSettingsController::class, 'getComboItems_warehouse']);
-Route::post('settings/options-delivery-status', [GeneralSettingsController::class, 'getComboItems_delivery_status']);
-Route::post('settings/options-pmt-status', [GeneralSettingsController::class, 'getComboItems_pmt_status']);
-Route::post('settings/options-complete-status', [GeneralSettingsController::class, 'getComboItems_complete_status']);
-Route::post('settings/options-sales-agent', [GeneralSettingsController::class, 'getComboItems_sales_agent']); 

@@ -3,10 +3,10 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-
+//use Illuminate\Cache\RateLimiter;
 //custom: added line for forcing https url
-//use Illuminate\Support\Facades\URL;
-
+use Illuminate\Support\Facades\URL;
+use Config;
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -26,10 +26,18 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot()
     {
-        // //Added as custom line. The default is no code here
-        // if (env('ENFORCE_SSL', false)) {
-        //     $url->forceScheme('https');
-        //    //  \URL::forceScheme('https');
-        // }
+        if (Config::get('app.enforce_ssl') == true) {
+            URL::forceScheme('https');
+        }
+
+        // // Custom rate limiter based on user ID
+        // $this->app->booted(function (){
+        //     // $request = app('request'); // Capture the request from the container
+        //     // $user = $request->user();
+        //     // if(!$user) return null;
+        //     // $this->app->make(RateLimiter::class)->for('user', function ($request) {
+        //     //   return $request->user()->id;
+        //     // });
+        // });
     }
 }

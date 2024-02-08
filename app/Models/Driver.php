@@ -12,7 +12,9 @@ use Sanitizer;
 //use Data Validator
 use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator; 
+use Illuminate\Support\Facades\Cache;
 //use Illuminate\Support\Facades\Log;
+
 class Driver //extends Model
 {
     //use HasFactory;
@@ -52,6 +54,12 @@ function getMyTasks($id=null,$ss=null){
   $ss = $ss?$ss:$this->userInfo; 
   $branch_id = $ss->branch_id;
   $driver_id = $id;
+  $cache_key =null;
+  if($driver_id){
+     $cache_key = sha1('mytasks_'.$driver_id);
+     $data = Cache::get($cache_key);
+     if ($data !==null) return $data;
+  }
   $data = (object)['deliveries'=>[],'pickups'=>[],'pickup_count'=>0,'delivery_count'=>0];
    
   $selectCols ='d.id AS delivery_id,DATE_FORMAT(d.depart_time,\'%r\')AS depart_time, formatDate(d.depart_time) AS depart_date,IFNULL(d.package_count,0) AS package_count, IFNULL(d.delivered_count,0) AS delivered_count, IFNULL(d.failed_count,0) AS failed_count,d.fleet_tracking_number,ds.id AS trip_status_id, ds.name AS trip_status';
@@ -64,6 +72,9 @@ function getMyTasks($id=null,$ss=null){
   $rows = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->where('o.branch_id',$branch_id)->where('o.driver_id',$driver_id)->where('o.status_id',2)->selectRaw($selectCols)->orderByRaw("o.create_date DESC")->get();
   $data->pickups = $rows;
   $data->pickup_count = count($rows);
+  if($cache_key){
+    Cache::put($cache_key,$data,3);
+  }
   return $data;
 }
 //return warehouse object {'id','name','address'}
@@ -74,10 +85,15 @@ static function defaultWarehouse($driver_id){
 
 //return only COUNTs of taks (delivery and Pickup)
 function getMyTaskCounts($id=null,$ss=null){
-  $id = $id?$id:$this->id;
-  $ss = $ss?$ss:$this->userInfo; 
+  $id = $id ?? $this->id;
+  $ss = $ss ?? $this->userInfo; 
   $branch_id = $ss->branch_id;
   $driver_id =$id;
+  $cache_key = 'mytaskscount_'.$driver_id;
+  if ($driver_id){
+    $data =  Cache::get($cache_key);
+    if($data) return $data;
+  }
   $data = (object)['pickup_count'=>0,'delivery_count'=>0];
    
   $selectCols = "COUNT(d.id) AS cnt";
@@ -85,9 +101,12 @@ function getMyTaskCounts($id=null,$ss=null){
   $rows = DB::table('delivery AS d')->join('delivery_statuses AS ds','ds.id','=','d.status_id')->where('d.branch_id',$branch_id)->where("d.status_id",2)->where('d.driver_id',$driver_id)->selectRaw($selectCols)->get();
   foreach($rows as $row) $data->delivery_count = $row->cnt;
 
-  $selectCols="COUNT(o.id) AS cnt";
+  $selectCols='COUNT(o.id) AS cnt';
   $rows = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->where('o.branch_id',$branch_id)->where('o.driver_id',$driver_id)->where('o.status_id',2)->selectRaw($selectCols)->get();
   foreach($rows as $row) $data->pickup_count = $row->cnt;
+  if($driver_id){
+    Cache::put($cache_key,$data,3);
+  }
   return $data;
 } 
 
@@ -97,9 +116,9 @@ function getMyTaskCounts($id=null,$ss=null){
   $ss = $ss?$ss:$this->userInfo;
   $branch_id = $ss->branch_id;
   $driver_id = $id;
-  $date = null; // Date('Y-m-d'); //today date
+  $date = Date('Y-m-d');
   if (!(bool)strtotime($date)) $date = date('Y-m-d');
-  $str_dates ="DATE(o.create_date) = '$date' ";
+  $str_dates ='DATE(o.create_date) = \''.$date.'\' ';
   //Important NOTE: o.status_id <=3 so that after driver picks order => the Accepted pickup list is updated
   return DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->selectRaw("o.id AS order_id,o.code AS order_code, o.delivery_type, o.request_date, o.sender_id,s.name AS sender_name, s.email AS sender_email, s.phone_number AS sender_phone, o.product_type, o.qty,o.actual_pkg_count, o.request_vehicle_type, o.pickup_address, o.status_id, ps.name AS status,o.loc_lat,o.loc_lng" )->where('o.branch_id',$branch_id)->whereRaw($str_dates)->where('o.driver_id',$driver_id)->whereRaw('IFNULL(completed,0)=0 AND o.status_id <3')->get(); 
 }
@@ -108,17 +127,21 @@ function getMyTaskCounts($id=null,$ss=null){
  //getAvailablePickupList()
  //$dd ['date'=> default to today, 'loc_lat','loc_lng','include_pending_count'=>0|1,'include_pickup_count'=>0|1,'include_delivery_count'=>0|1 ]
  function getAvailableOrders($arr=[],$id=null,$ss=null) {
-        $id = $id?$id:$this->id;
-        $ss = $ss?$ss:$this->userInfo;
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         $d = (object)$arr; 
         $branch_id = $ss->branch_id;
         $driver_id = $id;
-  
-        $date = isset($d->date)?$d->date:null; // Date('Y-m-d'); //today date
+        
+        $cache_key ='available_orders';
+        $data = Cache::get($cache_key);
+        if($data) return $data;
+
+        $date = isset($d->date)?$d->date:null;
         if (!(bool)strtotime($date)) $date = date('Y-m-d');
         
-        $loc_lat = isset($d->loc_lat)?$d->loc_lat:null;
-        $loc_lng = isset($d->loc_lng)?$d->loc_lng:null;
+        // $loc_lat = isset($d->loc_lat)?$d->loc_lat:null;
+        // $loc_lng = isset($d->loc_lng)?$d->loc_lng:null;
         //optional parameter. show only last 5 orders, etc...
         $show_last_rows = isset($d->show_last_rows)?$d->show_last_rows:null;
         $include_pending_count = isset($d->include_pending_count)?$d->include_pending_count:0;
@@ -134,26 +157,25 @@ function getMyTaskCounts($id=null,$ss=null){
        
         //count available Orders
         if ($include_pending_count ==1){
-            $rows = DB::table("order AS o")->where('o.branch_id',$branch_id)->whereRaw($str_dates)->where("o.status_id",1)->selectRaw("COUNT(o.id) AS cnt")->get();
+            $rows = DB::table('order AS o')->where('o.branch_id',$branch_id)->whereRaw($str_dates)->where("o.status_id",1)->selectRaw("COUNT(o.id) AS cnt")->get();
             foreach($rows as $row) $data->pending_orders_count = $row->cnt;
         }
         
         if ($include_pending_count ==1){
-            $rows = DB::table("order AS o")->where('o.branch_id',$branch_id)->whereRaw($str_dates)->where("o.status_id",1)->selectRaw("COUNT(o.id) AS cnt")->get();
+            $rows = DB::table('order AS o')->where('o.branch_id',$branch_id)->whereRaw($str_dates)->where("o.status_id",1)->selectRaw("COUNT(o.id) AS cnt")->get();
             foreach($rows as $row) $data->pending_orders_count = $row->cnt;
         }
         
         if ($include_pickup_count ==1){
-            $rows = DB::table("order AS o")->where('o.branch_id',$branch_id)->where('driver_id',$driver_id)->where("o.status_id",2)->selectRaw("COUNT(o.id) AS cnt")->get();
+            $rows = DB::table('order AS o')->where('o.branch_id',$branch_id)->where('driver_id',$driver_id)->where("o.status_id",2)->selectRaw("COUNT(o.id) AS cnt")->get();
             foreach($rows as $row) $data->pickup_count = $row->cnt;
         }
         //count number of active delivery trips
         if ($include_delivery_count ==1){
-            $rows = DB::table("delivery AS d")->where('d.branch_id',$branch_id)->where('d.driver_id',$driver_id)->where("d.status_id",2)->selectRaw("COUNT(d.id) AS cnt")->get();
+            $rows = DB::table('delivery AS d')->where('d.branch_id',$branch_id)->where('d.driver_id',$driver_id)->where("d.status_id",2)->selectRaw("COUNT(d.id) AS cnt")->get();
             foreach($rows as $row) $data->delivery_count = $row->cnt;
         }
-        //$sql = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->whereRaw($str_owner)->selectRaw('o.id AS order_id, NULL AS distance_km, o.code AS order_code,formatDate(o.create_date) AS request_date, DATE_FORMAT(o.create_date,\'%H:%i\') AS request_time, o.delivery_type,o.sender_id,s.name AS sender_name, s.email AS sender_email, s.phone_number AS sender_phone, o.product_type, o.qty, o.request_vehicle_type, o.pickup_address, o.status_id,ps.name AS status' )->where('o.branch_id',$branch_id)->where("o.status_id",1)->whereRaw($str_dates)->orderByRaw('o.status_id ASC,o.id DESC')->toSQL();
-        //$data->sql = $sql;
+        Cache::put($cache_key,$data,7); 
         return $data;
   }
   
@@ -571,8 +593,8 @@ static function defaultImage($branch_id){
 
   //$d ={'loc_lat','loc_lng','driver_id'}
   function saveCurrentLocation($d=[],$driver_id=null,$ss=null){
-      $ss = $ss?$ss:$this->userInfo;
-      $driver_id = $driver_id?$driver_id:$this->id; 
+      $ss = $ss ?? $this->userInfo;
+      $driver_id = $driver_id ?? $this->id; 
       $branch_id = $ss->branch_id;
       $loc_lat = isset($d['loc_lat'])?$d['loc_lat']:null;
       $loc_lng = isset($d['loc_lng'])?$d['loc_lng']:null;
@@ -760,8 +782,7 @@ static function defaultImage($branch_id){
     {
         $id = $id ? $id : $this->id;
         $ss = $ss ? $ss : $this->userInfo;
-        $d = (object)$arr;
-          
+        $d = (object)$arr;   
         $str_dates = '1=1';
         $str_driver = '2=2';
         //$str_search = '3=3';
@@ -775,7 +796,15 @@ static function defaultImage($branch_id){
 
         $end_date = isset($d->end_date) ? $d->end_date : null;
         $start_date = isset($d->start_date) ? $d->start_date : null;
-       
+        $d->no_cache = isset($d->no_cache)?$d->no_cache:0; 
+        $cache_key = 'driverbaldue_';
+        foreach($d as $key => $value) $cache_key .= $value;
+        $cache_key = sha1($cache_key);
+        if(!$d->no_cache){ 
+          $cache_data = Cache::get($cache_key);
+          if($cache_data) return $cache_data;
+        }
+
         //if Driver ID is provided then DO NOT use search_value
         if ($id > 0) $search_value = null;
         if ($search_value) {
@@ -859,7 +888,7 @@ static function defaultImage($branch_id){
 
        $exchange_rate =  GeneralSettings::getExchangeRate($end_date);
      
-       return (object)[
+       $data = (object)[
          'start_date'=>date('d M Y',strtotime($start_date)),
          'end_date'=>date('d M Y',strtotime($end_date)),
          'driver_id'=>$id,
@@ -875,6 +904,8 @@ static function defaultImage($branch_id){
             "buy_rate"=>$exchange_rate->buy_rate
          ]
        ];
+       Cache::put($cache_key,$data,12);
+       return $data;
     }
   
     // function getUnpaidPackages($arr = [], $id = null, $ss = null)
