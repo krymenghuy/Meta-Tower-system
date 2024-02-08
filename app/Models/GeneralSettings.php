@@ -22,6 +22,7 @@ class GeneralSettings //extends Model
     public static $upload_dirs =[
         "package"=>"package", //Package's photos directory
         "default"=>"default",/** default user's photo '*/
+        "mobile-sildes"=>"mobile-sildes",/** Mobile App banner photo files '*/
         "partner"=>"partner",
         "driver"=>"driver",
         "merchant"=>"merchant",

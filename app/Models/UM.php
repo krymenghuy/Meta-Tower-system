@@ -150,7 +150,7 @@ class UM //extends Model
                try{
                    DB::table($table)->where($pk_field,$user->official_id)->update(['phone_number'=>$phone_number]);  
                }catch(\Exception $e){
-                  \Log::info('Failed to update phone number for '.$user->user_class.' ID: '.$user->official_id.' new phone number: '.$phone_number);
+                  Log::info('Failed to update phone number for '.$user->user_class.' ID: '.$user->official_id.' new phone number: '.$phone_number);
                }
              }
          }
@@ -172,7 +172,7 @@ class UM //extends Model
                try{
                    DB::table($table)->where($pk_field,$user->official_id)->update(['email'=>$email]);  
                }catch(\Exception $e){
-                  \Log::info('Failed to update email for '.$user->user_class.' ID: '.$user->official_id.' new email: '.$email);
+                  Log::info('Failed to update email for '.$user->user_class.' ID: '.$user->official_id.' new email: '.$email);
                }
              }
          }
@@ -790,7 +790,7 @@ class UM //extends Model
               if(!isset($inputs['phone_number'])) $inputs['phone_number'] = $inputs['login_name'];
           }
 
-          if($user_id && (!$image || !isImage($image))){
+          if($user_id && (!$image || isImage($image))){
             self::deleteUserPhoto($user_id,$user_class); 
           }
          $role_id = $inputs['role_id'];
@@ -889,6 +889,9 @@ class UM //extends Model
         return $this_user;
     }
 
+    static function useJWT(){
+       return self::$use_jwt;
+    }
     //getUserInfoByToken() returns user info (user details) based on two factors:
     //1. based on given access_token stored in $request->acc_tk_dms
     //2. based on given @user_class = {driver, or merchant or (admin or NULL) }
@@ -906,13 +909,14 @@ class UM //extends Model
             */
 
         JWT::$leeway = 60; // $leeway in seconds
-        $decoded = null;
-        try {
-          $decoded = JWT::decode($access_token, new Key(self::$jwt_key, self::$jwt_encode));
-        } catch (\Exception $e) {
-            return DV::error($e->getMessage(), $def_lang, 403);
+        $decoded = $request->user;
+        if(!$decoded){ 
+          try {
+            $decoded = JWT::decode($access_token, new Key(self::$jwt_key, self::$jwt_encode));
+          } catch (\Exception $e) {
+              return DV::error($e->getMessage(), $def_lang, 403);
+          }
         }
-
       if (!isset($decoded->user_id)) $decoded->user_id = $decoded->id;
 
         //#begin:: Get special active fields "is_locked,status,lang". These fields need to be updated in the decoded JWT token on every api call
@@ -1648,31 +1652,28 @@ class UM //extends Model
         //session->put(('prns'),$data);
   }
 
-   static function allowed($prn_id, $module_id = null,$user_id=null)
-   {
-        if (!$user_id) $user_id = Session::get('user_id');
-        if(!$user_id) return false;
-        if (self::isSystemAdmin($user_id)) return true;
-
-        if ($module_id){
-        if(!self::access_mod($module_id,$user_id)) return false;
-        }
-        //prn_id = -1 means No need to check for permission
-        if ($prn_id == -1) return true;
-        if (!$prn_id) return false;
-        $key = 'user_prns_'.$user_id;
-        $prns = Cache::get($key,null);
-        if(!$prns){
-            $prns = DB::table('um_user_permissions as p')->where('p.user_id',$user_id)->selectRaw('p.user_id,p.permission_id')->get();
-        //    $prns =DB::table('um_users AS u')->join('um_user_roles AS ur','ur.user_id','=','u.id')->join('um_role_permissions as rp','rp.role_id','=','ur.role_id')->where('u.id',$user_id)->selectRaw('rp.permission_id')->get();
-        //$prns = DB::table('um_user_permissions as p')->where('p.user_id',$user_id)->selectRaw('p.user_id,p.permission_id')->get();
-        Cache::put($key,$prns,20);
-        }
-        $rows = $prns->filter(function($r) use($prn_id){
-        return $r->permission_id == $prn_id;
-        });
-        return count($rows)>0?true:false;
+  static function allowed($prn_id, $module_id = null,$user_id=null)
+  {
+    //prn_id = -1 means No need to check for permission
+    if ($prn_id == -1) return true;
+    if (!$user_id) $user_id = Session::get('user_id');
+    if(!$user_id) return false;
+    if (self::isSystemAdmin($user_id)) return true;
+    // if ($module_id){
+    //   if(!self::access_mod($module_id,$user_id)) return false;
+    // }
+    if (!$prn_id) return false;
+    $key = 'user_prns_'.$user_id;
+    $prns = Cache::get($key,null);
+    if(!$prns){
+       $prns = DB::table('um_user_permissions as p')->where('p.user_id',$user_id)->selectRaw('p.user_id,p.permission_id')->get();
+       Cache::put($key,$prns,20);
     }
+    $rows = $prns->filter(function($r) use($prn_id){
+       return $r->permission_id == $prn_id;
+    });
+     return count($rows)>0?true:false;
+  }
 
     //Check if current user has access to a MODULE refered by module_code or ref_code
       function accessibleModule($d) {

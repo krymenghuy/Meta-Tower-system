@@ -589,6 +589,7 @@ class UMController extends Controller
     $list = $this->UMModel->permissionList($ss);
     return JDV::result($list);
   }
+  
   function reportPrnList(Request $req){
     $ss = UM::getUserInfoByToken($req, -1);
     if($ss->status_code !=200) return $ss;

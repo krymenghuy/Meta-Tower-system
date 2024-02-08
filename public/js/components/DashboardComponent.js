@@ -13,8 +13,12 @@ var DashboardComponent = new function () {
   this.renderDashboard = (d) => {
     d = d || {};
     const div = mThis.self;
-    let card = d.cards;
-
+    let card = d.cards; //|| {"merchant_count":{"count":0,"title":"Active Merchants"}, "driver_count":{"count":0,"title":"Active Drivers"}};
+    if(!card){
+      div.html(`<div class="p-2 m-3"><h5>Dashboard is not loaded properly. You may have to refresh the page</h5></div>`);
+      return;
+    }
+    //div.html(`<div class="p-2 m-3"> <div id="vs_loading"></div></div>`);
     const html = [`<div class="row gy-2">
       <div class="col-sm-12 col-lg-6 col-xl-3">  
         <div class="d-flex flex-column rounded-3 shadow-sm db-card bg-white">
@@ -77,7 +81,7 @@ var DashboardComponent = new function () {
           </div>
           <div class="sub-title">
             <span class="d-block text-center text-muted">
-              <small>${card.package_count.subTitle}</small>
+              <small>${card.package_count.subTitle || ''}</small>
             </span>
           </div>
         </div>
@@ -216,9 +220,11 @@ var DashboardComponent = new function () {
       </div>
     </div>`].join('');
     div.html(html);
-    mThis.renderDoughnutChart(div, d.merchantByCategory);
-    mThis.renderLineChart(div, d.revenuesByCategory);
-
+    if(d.merchantByCategory){
+      mThis.renderDoughnutChart(div, d.merchantByCategory);
+      mThis.renderLineChart(div, d.revenuesByCategory);
+    }
+    
     div.css({
       height: window.innerHeight - 90,
       overflow: 'auto',

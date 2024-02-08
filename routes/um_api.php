@@ -2,17 +2,25 @@
 
 use App\Http\Controllers\UMController;
 use App\Http\Controllers\PusherController;
+use App\Http\Middleware\CustomRateLimiter;
 
-Route::post('logout', [UMController::class, 'logout']);
-Route::get('settings/lang', [UMController::class, 'getLang']);
-Route::post('settings/save-lang', [UMController::class, 'saveLang']);
+Route::middleware([CustomRateLimiter::class])->prefix('settings')->group(function(){
+    Route::get('/lang', [UMController::class, 'getLang']);
+    Route::post('/save-lang', [UMController::class, 'saveLang']);
+});
 
-Route::get('auth/um-options', [UMController::class, 'getUserManagementOptions']);
-Route::post('broadcast/auth', [PusherController::class, 'pusherAuth']); //->middleware('auth');
-Route::post('auth/auth-data', [UMController::class, 'getAuthData']);
-//Route::post('getComboItems_userclass', [UMController::class, 'getComboItems_userclass']);
+Route::middleware([CustomRateLimiter::class])->group(function(){
+    Route::post('logout', [UMController::class, 'logout']);
+    Route::get('auth/um-options', [UMController::class, 'getUserManagementOptions']);
+    Route::post('broadcast/auth', [PusherController::class, 'pusherAuth']); //->middleware('auth');
+    Route::post('auth/auth-data', [UMController::class, 'getAuthData']);
 
-Route::prefix('application')->group(function () {
+    Route::post('encryptData', [UMController::class, 'encryptData']);
+    Route::post('allowed', [UMController::class, 'allowed']);
+    Route::get('csrf-token', [UMController::class, 'refreshCsrfToken']);
+});
+ 
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('application')->group(function(){
     Route::post('/create', [UMController::class, 'createApplication']);
     Route::post('/delete', [UMController::class, "saveUser"]);
     Route::post('/module/create', [UMController::class, 'createModule']);
@@ -20,8 +28,8 @@ Route::prefix('application')->group(function () {
     Route::post('/module/list', [UMController::class, 'getModuleList']);
     Route::post('/module/option-module', [UMController::class, 'getComboItems_module']);
 });
-
-Route::prefix('module')->group(function () {
+ 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('module')->group(function () {
     Route::post('/create', [UMController::class, 'createModule']);
     Route::post('/delete', [UMController::class, "deleteModule"]);
     // Route::post('/list', [UMController::class, 'getModuleList']);
@@ -30,7 +38,7 @@ Route::prefix('module')->group(function () {
     Route::post('/save-module-list', [UMController::class, 'saveModuleList']);
 });
 
-Route::prefix('permission')->group(function () {
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('permission')->group(function () {
     Route::post('/create', [UMController::class, 'createPermission']);
     Route::post('/delete', [UMController::class, "deletePermission"]);
     Route::post('/list',[UMController::class, "permissionList"]);
@@ -48,7 +56,8 @@ Route::post('removePermissionFromRole', [UMController::class, 'removePermissionF
 Route::post('addRoleMember', [UMController::class, 'addRoleMember']);
 Route::post('addAccessibleModule', [UMController::class, 'addAccessibleModule']);
 Route::post('getUserRoles', [UMController::class, 'getUserRoles']);
-Route::prefix('user')->group(function () {
+
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('user')->group(function () {
     Route::post('/form-options', [UMController::class, "getUserFormOption"]);
     Route::post('/list', [UMController::class, "getUserList"]);
     Route::post('/list-paginate', [UMController::class, "getUserList_paginate"]);
@@ -89,7 +98,7 @@ Route::prefix('user')->group(function () {
     Route::post('current/access-modules', [UMController::class, 'getAccessibleModules_current_user']);
 });
 
-Route::prefix('role')->group(function () {
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('role')->group(function () {
     Route::post('/list-paginate', [UMController::class, "getRoleList_paginate"]);
     Route::post('/list', [UMController::class, "getRoleList"]);
     Route::post('/permission/list-paginate', [UMController::class, "getRolePermissions_paginate"]);
@@ -122,7 +131,3 @@ Route::prefix('role')->group(function () {
 
     //Route::post('/permissions', [UMController::class, 'getPermissionsByLoginName']);
 });
-
-Route::post('encryptData', [UMController::class, 'encryptData']);
-Route::post('allowed', [UMController::class, 'allowed']);
-Route::get('csrf-token', [UMController::class, 'refreshCsrfToken']);

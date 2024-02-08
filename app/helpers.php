@@ -57,8 +57,10 @@ function api_response($data,$error_code=300,$error_message=null) {
      }
 }
 
-function escape_like_str($str) {
-    return str_replace(['\\', '%', '_'], ['\\\\', '\%', '\_'], $str);
+function escape_like_str($portion) {
+    $specialChars = ['\\', '%', '_','\''];
+    $escapedPortion = addcslashes($portion, implode('', $specialChars));
+    return $escapedPortion;
 }
 
 //return UNIQUE random  string at a given length
@@ -222,8 +224,12 @@ function getNameParts($name,$name_orienation=0){
 function makeJsonResponse($data) {
     $status_code = intVal(isset($data->status_code)?$data->status_code:0);
     if ($status_code > 0){
-        if ($status_code ===401 || $status_code===402 || $status_code ===403 || $status_code ===405 || $status_code ===200) return response()->json($data);
-        else return response()->json((object)['status'=>'Error','status_code'=>null,'error_message'=>"unexpected or invalid result. Status code $status_code"]);
+      
+        if (in_array($status_code,[200,401,402,403,405])) return response()->json($data);
+        else{
+            $err_message = isset($data->error_message)? $data->error_message: 'Unexpected error '.$status_code;
+            return response()->json((object)['status'=>'Error','status_code'=>$status_code,'error_message'=>$err_message]);
+        }
     } else return response()->json((object)['status'=>'OK','status_code'=>200,'data'=>$data]);
 }
 
@@ -234,13 +240,12 @@ function makeJsonResponse($data) {
  
  function getLastDayOfMonth($mDate)
  {
-     $mDate = $this->convertDate($mDate);
+     $mDate = convertDate($mDate);
      $date = new DateTime($mDate);
      $date->modify('last day of this month');
      $last_date =  $date->format('Y-m-d');
      return $last_date;
  }
-
  function getMonthName($num,$full_name=false){
     switch($num){
         case 1:{
@@ -1623,15 +1628,20 @@ function createUUIDV1()
         return Config::get('app.pusher_channel_prefix');  //return "vsdev.";
     }
 
-    function topic_prefix($user_class){
-        return Config::get('app.fcm_topic_prefix').$user_class;  //return "vsdev".$user_class;
+    function topic_prefix($user_class=null){
+        $user_class = strtolower($user_class);
+        if($user_class ==='sales_agent')
+           return Config::get('app.fcm_topic_prefix_salesapp').$user_class;  //return "vsdev".$user_class;
+        else return Config::get('app.fcm_topic_prefix').$user_class;  //return "vsdev".$user_class;
     }
 
-    function getServerKey(){
-        return Config::get('app.fcm_server_key');
+    function getServerKey($user_class=null){
+        $user_class = strtolower($user_class);
+        if($user_class==='sales_agent')
+        return Config::get('app.fcm_server_key_salesapp');
+        else return Config::get('app.fcm_server_key');
         //return "AAAAsd6RSXs:APA91bH79xi7hY-x1HIpHmwK0GiMq53MVdEc0ruVQt6r60Et8Ww6c1RP1YGs0_Sx_RCUDHvmfI1-Sa4v5KBIVwGha6AC_Q0410CIrwXdJ3KaPx_4c0ftVbfW8FplfJiW52kLbD21WIZT";
     }
-
     function getAppIdByUserClass($user_class){
         $user_class = strtolower($user_class);
         if(!$user_class) return null;
@@ -1674,8 +1684,10 @@ function createUUIDV1()
     function validateUrl($url, $otherwise = '') {
         // Check if URL is empty or null
         if (!$url) {
+            //\Log::info('URL is empty or null');
             return $otherwise;
         }
+    
         // Construct the local file path based on the provided URL
         $localFilePath = public_path(parse_url($url, PHP_URL_PATH));
     
@@ -1692,12 +1704,20 @@ function createUUIDV1()
                 // File exists and has a valid extension
                 return $url;
             } 
-        }
+            // else {
+            //     \Log::info('File extension not allowed: ' . $fileExtension);
+            // }
+        } 
+        // else {
+        //     \Log::info('File does not exist or is not a valid file: ' . $localFilePath);
+        // }
+    
         // File does not exist or does not have a valid extension
         return $otherwise;
     }
-   
+
     function getImageUrl($branch_id,$user_class,$file_name){
+        $user_class = strtolower($user_class);
         if($file_name !=null){
             return PublicStorage::getURl($branch_id,$user_class,'image').$file_name;
         }

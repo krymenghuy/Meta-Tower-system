@@ -2,10 +2,12 @@
 
 namespace App\Exceptions;
 
+use Exception;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Database;
-use League\Flysystem\Exception;
 use Throwable;
+use Illuminate\Support\Facades\Log;
+//use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+//use Symfony\Component\HttpKernel\Exception\FileNotFoundException;
 
 class Handler extends ExceptionHandler
 {
@@ -40,34 +42,32 @@ class Handler extends ExceptionHandler
             //
         });
     }
+    
     public function render($request, Throwable $exception)
     {
-            if ($exception instanceof CustomException) {
-                return response()->view('errors.custom', [], 500);
-            } 
-            else if ($exception instanceof  \PDOException){
-                //405: Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException
-                $data['error'] ="Something went wrong with Database Connection!"; 
-                return response()->view('errors.error',$data);
-            }
-            else {
-                 //other type of exception
-                 return parent::render($request, $exception);
-            }  
+        if ($exception instanceof CustomException) {
+            return response()->view('errors.custom', [], 500);
+        } elseif ($exception instanceof \PDOException) {
+            // Log the error for further investigation without exposing sensitive information
+            Log::error("Database Connection Error: " . $exception->getMessage());
+            Log::error("Stack Trace: " . $exception->getTraceAsString());
+
+            // Return a generic error message without revealing details
+            $data['error'] = 'This is not supposed to happen. We are checking and resolving the issue.'.'(1001)';
+            return response()->view('errors.error', $data);
+        } elseif ($exception instanceof \Symfony\Component\HttpKernel\Exception\NotFoundHttpException) {
+            // Let Laravel handle the 404 response for file not found
+            return parent::render($request, $exception);
+        } else {
+            // For unhandled cases (error 500) that are caught ofguard => Log other types of exceptions for further investigation without exposing sensitive information
+            Log::error("Unhandled Exception: " . $exception->getMessage());
+            Log::error("Request Url: " . $request->fullUrl());
+            Log::error("Stack Trace: " . $exception->getTraceAsString());
+
+            // Return a generic error message without revealing details
+            $data['error'] = 'This is not supposed to happen. We are checking and resolving the issue.'.'(1002)';
+            return response()->view('errors.error', $data);
+        }
     }
- 
-    // public function render($request, Exception $exception)
-    // {
-        
-    //     // Render well-known exceptions here
     
-    //     // Otherwise display internal error message
-    //     if(app()->environment() === 'production') {
-    //         return view('errors.500');
-    //     } else {
-    //         return view('errors.500');
-    //         //return parent::render($request, $exception);
-    //     }
-    // }
 }
- 

@@ -23,7 +23,7 @@ class Kernel extends HttpKernel
         \App\Http\Middleware\PreventRequestsDuringMaintenance::class,
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
-        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class
     ];
 
     /**
@@ -43,9 +43,11 @@ class Kernel extends HttpKernel
         ],
 
         'api' => [
-            'throttle:200,1',
+            //'throttle:user:120,1',
+            'throttle:120,1',
             // 'throttle:api',
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            //\App\Http\Middleware\Cluster::class,
         ],
     ];
 
@@ -59,6 +61,7 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         'cors' => \App\Http\Middleware\CorsMiddleware::class, /** required for allowing exernal api calls **/
         'auth' => \App\Http\Middleware\Authenticate::class,
+        'auth.api'=>\App\Http\Middleware\APIAuthenticate::class,
         'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
         'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
         'can' => \Illuminate\Auth\Middleware\Authorize::class,
@@ -67,6 +70,5 @@ class Kernel extends HttpKernel
         'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'vs-auth' => \App\Http\Middleware\Authorizer::class,
     ];
 }

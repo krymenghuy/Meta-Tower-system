@@ -182,21 +182,12 @@ class Notifier
 static function notify_mobile($branch_id,$data=[]){
   $i=0;
   $c = null;
-
-  //  foreach($data as $f){
-  //   $d = (object)$f;
-  //   $official_id = isset($d->target_user_id)?$d->target_user_id:null;
-  //   $user_id = self::getUserId($branch_id,$official_id,'official_id');
-  //   Log::info("Notify to user_class =$d->user_class, target_user_id = $official_id, user_id = $user_id , message =$d->message ");
-  //  }
-  //return null;
-
+  $res = null;
   do{
       if(!isset($data[$i])) break;
       $c = (object)$data[$i];
       $str_topic = null;
       $user_id = isset($c->user_id)? $c->user_id:null;
-
       //Cancel notification when there is $official_id provided, but the $user_id is not found! => It means that a merchant has profile, but does not have login account on mobile app yet
       $cancel_notif = false;
       if($user_id ===null || $user_id ==''){
@@ -210,6 +201,7 @@ static function notify_mobile($branch_id,$data=[]){
 
         }
       }
+    
       if(!$cancel_notif){
         $user_class = isset($c->user_class)?$c->user_class:'no_user_class';
         $app_id = getAppIdByUserClass($user_class);
@@ -241,7 +233,7 @@ static function notify_mobile($branch_id,$data=[]){
                 //'title_loc_args' => $c->titleLocationArgs,
             ];
             //$succeeded = 0;
-            $res = self::fcm_send($str_topic,$notification,$custom_data);
+            $res = self::fcm_send($user_class,$str_topic,$notification,$custom_data);
             //if(isset($res->message_id) && $res->message_id) $succeeded =1;
             if($persist ==1 || $persist==true){
                 try{
@@ -271,9 +263,10 @@ static function notify_mobile($branch_id,$data=[]){
       $i++;
   }while($c);
 
-  // $x = json_decode($res);
-  // $x->topic = $str_topic;
-  // return $x;
+  $x = json_decode($res);
+  if(!$x || gettype($x) ==='String') return (object)['topic'=>$str_topic,'result'=>$x];
+  $x->topic = $str_topic;
+  return $x;
  }
 
     static function getUnreadCount_admin($d=null){
@@ -314,13 +307,12 @@ static function notify_mobile($branch_id,$data=[]){
     }
 
     //$notification = ['title','body','icon'=>null,'sound'=>'default']
-    static function fcm_send($topic_name,$notification=[],$custom_data=array()) {
+    static function fcm_send($user_class,$topic_name,$notification=[],$custom_data=array()) {
       //$apiKey = 'AIzaSyD5hjn0SeDJTHasyISJhnXIRVrj-0ZUdRU';
-      $apiKey =getServerKey();
+      $apiKey =getServerKey($user_class);
       //if(!is_array($custom_data)) $custom_data = (array)$custom_data;
       $fields = array('to' => '/topics/'.$topic_name, 'notification' => $notification, 'data'=>$custom_data);
       $headers = array('Authorization: key='.$apiKey, 'Content-Type: application/json', 'priority' => 10);
-
       $url = 'https://fcm.googleapis.com/fcm/send';
 
       // var_dump($fields);
@@ -404,9 +396,20 @@ static function notify_mobile($branch_id,$data=[]){
      static function getUnreadCount($user_id,$user_class=null){
         if(!$user_id) return 0;
         $str_user_class ="1=1";
+        $cach_key = 'unreadnotif_'.$user_id;
+        $cnt = Cache::get($cach_key);
+        if($cnt !==null){
+          Log::info('cached unread-count = '.$cnt);
+          return $cnt;
+        }
         if($user_class) $str_user_class ='n.user_class =\''.$user_class.'\'';
         $rows = DB::table('notifications AS n')->whereRaw($str_user_class)->where('n.user_id',$user_id)->whereRaw('is_read(n.id,n.user_id) =0')->selectRaw('COUNT(n.id) AS cnt')->get();
-        foreach($rows as $row) return $row->cnt;
+        foreach($rows as $row){
+          Cache::put($cach_key,$row->cnt,35);
+          Log::info('queried unread-count = '.$row->cnt);
+          return $row->cnt;
+        }
+        Cache::put($cach_key,0,35);
         return 0;
      }
 

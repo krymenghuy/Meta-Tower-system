@@ -10,6 +10,8 @@ use DB;
 use Illuminate\Pagination\LengthAwarePaginator; 
 //use App\Models\PublicStorage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+
 class CompletedPackage //extends Model
 {
     //use HasFactory;
@@ -78,6 +80,15 @@ class CompletedPackage //extends Model
         $d->search_value =isset($d->search_value)?$d->search_value:null;
         $d->search_value = escape_like_str($d->search_value);
  
+        $cache_key = 'cpglist_';
+        foreach($d as $key => $val) $cache_key .= $val;
+        $cache_key = str_replace(['/','-','?','@','|'],'',$cache_key);
+        $cache_data = Cache::get($cache_key); 
+        if ($cache_data) {
+          //Log::info('Cached triplist. key = '.$cache_key); 
+          return $cache_data;
+        }
+
           //$succeeded_status ="delivered"; /* outstanding delvieries => select all packages that has status different from "delivered" */
          
           $str_driver = null;
@@ -129,7 +140,10 @@ class CompletedPackage //extends Model
           $count_query = clone $query;
           $count = $count_query->count('p.id');
           $rows = $query->skip($skip_rows)->take($per_page)->get();
-          return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+          $data = new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+          Cache::put($cache_key,$data,30);
+          //Log::info('No cache cpglist '.$cache_key);
+          return $data;
          }
 
          static function listAll($arr,$ss=null) {   

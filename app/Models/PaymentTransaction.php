@@ -11,6 +11,7 @@ use Carbon\Carbon;
 use App\Models\GeneralSettings;
 use Illuminate\Pagination\LengthAwarePaginator; 
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 class PaymentTransaction //extends Model
 {
     //use HasFactory;
@@ -248,6 +249,12 @@ function getTransactions_driver($arr, $ss){
   $start_date = isset($d->start_date)?$d->start_date:null;
   $end_date = isset($d->end_date)?$d->end_date:null; 
   
+  $cache_key = 'drivertrans_';
+  foreach($d as $key => $value) $cache_key .= $value;
+  $cache_key = sha1($cache_key);
+  $cache_data = Cache::get($cache_key);
+  if($cache_data) return $cache_data;
+
   $use_all_dates = false;
   $start_date = convertDate($start_date) ?? date('Y-m-d', strtotime('-1 day'));
   $end_date = convertDate($end_date) ?? date('Y-m-d');
@@ -367,7 +374,7 @@ function getTransactions_driver($arr, $ss){
    
   $currency_code = 'USD';
   $dueInfo = self::getDriverDueInfo($driver_id,$start_date,$end_date);
-  return (object)[
+  $data = (object)[
       'use_all_dates'=>$use_all_dates,
       'start_date'=> $use_all_dates? '': date('d-m-Y',strtotime($start_date)),
       'end_date'=> $use_all_dates? '' : date('d-m-Y',strtotime($end_date)),
@@ -380,6 +387,8 @@ function getTransactions_driver($arr, $ss){
       'payment_count'=>$count,
       'data'=> ($use_paginate? $paginate_rows: $rows)
   ];
+  Cache::put($cache_key,$data,15);
+  return $data;
 }
 
 /** getTransactions_sender  | merchant transactions V2 */
@@ -404,6 +413,12 @@ function getTransactions_merchant($arr, $ss){
     $end_date = isset($d->end_date)?$d->end_date:null; 
     $start_date = convertDate($start_date) ?? date('Y-m-d');
     $end_date = convertDate($end_date) ?? date('Y-m-d');
+
+    $cache_key = 'merchantrans_';
+    foreach($d as $key => $value) $cache_key .= $value;
+    $cache_key = sha1($cache_key);
+    $cache_data = Cache::get($cache_key);
+    if($cache_data) return $cache_data;
 
     $str_authorize = '';
     $str_payee =null;
@@ -523,7 +538,7 @@ function getTransactions_merchant($arr, $ss){
     if($use_paginate) $paginate_rows = new LengthAwarePaginator($rows, $count, $per_page, $current_page);
      
     $currency_code = 'USD';
-    return (object)[
+    $data = (object)[
         'start_date'=>$start_date,
         'end_date'=>$end_date,
         'total'=>$total?$total:0,
@@ -537,6 +552,8 @@ function getTransactions_merchant($arr, $ss){
         'payment_count'=>$count,
         'data'=> ($use_paginate? $paginate_rows: $rows)
     ];
+    Cache::put($cache_key,$data,12);
+    return $data;
 }
   
 /** Make payment to merchant or driver alike. payToMerchant() payToDriver() */
@@ -1375,7 +1392,14 @@ foreach($rows as $row){
         $type =isset($d->type)?$d->type:'all'; /* payable | receivable*/
         $start_date = isset($d->start_date)?$d->start_date:null;
         $end_date = isset($d->end_date)?$d->end_date:null;
-        
+        $d->no_cache = isset($d->no_cache)? $d->no_cache:0; 
+        $cache_key = 'merchanbaldues_';
+        foreach($d as $key => $value) $cache_key .= $value;
+        $cache_key = sha1($cache_key);
+        if(!$d->no_cache){ 
+          $cache_data = Cache::get($cache_key);
+          if($cache_data) return $cache_data;
+        }
         $str_dates ='2=2';
         if((bool)strtotime($start_date) && (bool)strtotime($end_date)){
             $start_date = convertDate($start_date);
@@ -1473,7 +1497,7 @@ foreach($rows as $row){
         $currency_code = 'USD';
         $exchange_rate = GeneralSettings::getExchangeRate($end_date);
         $net_total = $total_receivable + $total_payable;
-        return (object)[
+        $data = (object)[
           'sender_id'=>$sender_id,
           'total_count'=>($pg_count_payable + $pg_count_receivable),
           'total'=>number_format($net_total,2,'.',''),
@@ -1485,6 +1509,8 @@ foreach($rows as $row){
              'buy_rate'=>$exchange_rate->buy_rate
           ]
         ];
+        Cache::put($cache_key,$data,15);
+        return $data;
      }
 
      static function paymentFormOptions($id=null, $ss=null){
