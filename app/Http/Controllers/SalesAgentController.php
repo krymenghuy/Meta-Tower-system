@@ -7,15 +7,41 @@ use Illuminate\Http\Request;
 use App\Models\SalesAgent;
 use App\Models\UM;
 use App\Models\JDV;
-use App\Models\PublicStorage;
 use App\Models\PendingTask;
 use App\Models\MobileAppSettings;
+use Illuminate\Support\Facades\Cache;
 use Config;
 
 class SalesAgentController extends Controller
 {
     protected $salesAgentModel;
-    
+      
+    function getCommissionSummary(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !== 200) return JDV::raw($ss);
+      $id = strtolower($ss->user_class) =='sales_agent'? $ss->official_id : $req->id;
+      $agent = new SalesAgent($id,$ss);
+      $data = $agent->getCommissionSummary($req->all(),$id,$ss);
+      return JDV::result($data);
+    }
+
+    function getCommissionPolicyDetails(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !== 200) return JDV::raw($ss);
+      $id = strtolower($ss->user_class) =='sales_agent'? $ss->official_id : $req->id;
+      $data = SalesAgent::getCommissionPolicyDetails($id);
+      return JDV::result($data);
+    }
+
+    function getSummaryPackagesByMonth(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !== 200) return JDV::raw($ss);
+      $id = $ss->official_id;
+      $agent = new SalesAgent($id,$ss);
+      $data =  $agent->getSummaryPackagesByMonth($req->all());
+      return JDV::result($data);
+    }
+
     function getMerchantList(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
@@ -24,6 +50,20 @@ class SalesAgentController extends Controller
       if (!$id) $id = -10;
       $rows = SalesAgent::merchantList($req->all(),$id,$ss);
       return JDV::result($rows);
+    }
+  
+    function getActiveAgents(){
+      $today = date('Y-m-d');
+      $year = date('Y');
+      
+      $m = date('m');
+      $months = [$m];
+      for($i=1;$i<4;$i++){
+         $t_month = $m -$i;
+         if($t_month >=1) $months[] = $t_month;
+         else break;
+      }
+      $active_agents = DB::table('package_sales_commissions as c')->join('package as p','p.id','=','c.package_id')->join('sales_agents AS a','a.id','=','c.sales_agent_id')->whereRaw('YEAR(p.delivery_time) = '.$year)->whereRaw('MONTH(p.delivery_time) IN '.$months)->selectRaw('a.id,a.name')->distinct()->get();
     }
 
     function updateStatus(Request $req){
@@ -75,10 +115,14 @@ class SalesAgentController extends Controller
       $ss = UM::getUserInfoByToken($req,-1);
       if ($ss->status_code !==200) return JDV::raw($ss);
       $agent_id = $ss->official_id;
+      $cache_key = $ss->user_class.'profile_'.$ss->user_id;
+      $cache_data = Cache::get($cache_key);
+      if($cache_data !== null) return JDV::result($cache_data);
       $data = \App\Models\SalesAgent::details($agent_id,$ss);  
       if(!$data) return JDV::error('It seems your profile information does not exist or is missing');
       $data->notif_topic_private= $ss->branch_id.topic_prefix($ss->user_class)."private".$ss->user_id;
       $data->notif_topic_general=$ss->branch_id.topic_prefix($ss->user_class)."general";
+      Cache::put($cache_key,$data,10);
       return JDV::result($data);
    }
   /** {"phone_number","otp_code"} */ 
@@ -136,11 +180,11 @@ class SalesAgentController extends Controller
       $app_id = $req->app_id;
       $login_name = $req->login_name;
       $pwd = $req->password;
-      $um = new UM(); 
+      $um = new UM();
       $result = $um->verifyUser($app_id,$login_name,$pwd);
       if($result->status ==='OK'){
         $user =  $result->user;  
-        $result->user->image_url = PublicStorage::getProfilePhoto_url($user->id);
+        $result->user->image_url = UM::getUserPhoto($user->branch_id,$user->user_class,$user->id); //PublicStorage::getProfilePhoto_url($user->id);
         $result->user->notif_topic_private= $user->branch_id.topic_prefix($user->user_class)."private".$user->user_id;
         $result->user->notif_topic_general= $user->branch_id.topic_prefix($user->user_class)."general";
       }
@@ -174,6 +218,14 @@ class SalesAgentController extends Controller
     if($ss->status_code !== 200) return JDV::raw($ss);
     $id = $req->id;
     return JDV::result(SalesAgent::getFormOptions($id,$ss));
+   }
+
+   function getPaymentFormOptions(Request $req) {
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !== 200) return JDV::raw($ss);
+      $agent = new SalesAgent(null,$ss);
+      $data = $agent->getPaymentFormOptions($ss);
+      return JDV::result($data);
    }
 
    function getDetails(Request $req) {

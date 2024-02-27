@@ -11,6 +11,8 @@ use App\Models\PublicStorage;
 use Carbon\Carbon;
 use App\Models\Sender;
 use Config;
+use Illuminate\Support\Facades\Cache;
+
 class SalesAgent //extends Model
 {
     protected $id = null, $userInfo = null;
@@ -28,6 +30,7 @@ class SalesAgent //extends Model
        if($x){
         DB::table('sender')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
         DB::table('leads')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
+        DB::table('um_users')->where('official_id',$id)->where('user_class','sales_agent')->delete();
        }
        return DV::depends(1,'Failed to delete sales agent'); 
     }
@@ -101,6 +104,14 @@ class SalesAgent //extends Model
            'statuses'=>DB::table('sales_agent_statuses AS ss')->selectRaw('ss.code As status_code,ss.name AS status_name')->get(),
            'agent_types'=> DB::table('sales_agent_types')->selectRaw('id,name AS agent_type')->get(),
         ];
+    }
+
+    /** returns filter options. list of agent, and list of agent type*/
+    static function getPaymentFormOptions($ss){
+      return (object)[ 
+         'agents'=>DB::table('sales_agents AS a')->selectRaw('a.id,a.code,a.name AS agent_name')->where('a.status_code','active')->get(),
+         'agent_types'=> DB::table('sales_agent_types')->selectRaw('id,name AS agent_type')->get(),
+      ];
     }
 
     function newOTP($length=6)
@@ -351,7 +362,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
   return null;
 }
 
-    static function list($arr,$ss=null){
+static function list($arr,$ss=null){
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
         $search_value = isset($d->search_value)?$d->search_value:null;
@@ -375,7 +386,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
           $str_status = $status_code? 'd.status_code =\''.$status_code.'\'' : '1=1';
         }
        
-        $query = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.email,d.phone_number,d.address,d.status_code,t.name AS agent_type,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date,d.create_user,photo_file_name'); 
+        $query = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.policy_id,d.email,d.phone_number,d.address,d.status_code,t.name AS agent_type,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date,d.create_user,photo_file_name'); 
         $count_query = clone $query;
         $count = $count_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -384,34 +395,77 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
           //$row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id');
           if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($row->branch_id,'agent','image').$row->photo_file_name;
           unset($row->photo_file_name);
+
+          $pol = self::getPolicyInfo($row->policy_id,$ss);
+          $row->policy_name = $pol? $pol->name: 'NA';
           if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+    
+    static function getPolicyInfo($policy_id,$ss){
+        $branch_id = $ss->branch_id;
+        $key = 'commpolicies';
+        $pols = Cache::get($key);
+        if(!$pols){
+          $pols = DB::table('commission_policies AS p')->where('branch_id',$branch_id)->selectRaw('p.id,p.name')->get();
+          Cache::put($key,$pols,2);
+        }
+        $pols->filter(function($d) use($policy_id){
+           return $d->id ==$policy_id;
+        });
+        return isset($pols[0]) ? $pols[0]: null;
+    }
+
+    function getCommissionSummary($arr,$id=null,$ss=null){
+       $id = $id ?? $this->id;
+       $ss = $ss ?? $this->userInfo;
+
+       $pol = DB::table('sales_agents AS a')->join('commission_policies as c','c.id','=','a.policy_id')->where('a.id',$id)->selectRaw('a.id,c.id as policy_id,c.count_type')->first();
+       if(!$pol) return DV::error('It seems no commission policy assigned, or the agent ID is not valid');
+       if($pol->count_type =='merchant'){
+         return $this->getCommissionsByMerchantCountByMonth($arr,$id,$ss);
+       }else return $this->getCommissionsByPackageCountByMonth($arr,$id,$ss); 
+    }
+
+    /** Given sales_agent_id, return policy details indlucing policy ID , policy name, and detailed items or conditions */
+    static function getCommissionPolicyDetails($id){
+       $agent = DB::table('sales_agents AS a')->where('a.id',$id)->selectRaw('a.branch_id,a.id,a.agent_type_id,a.policy_id')->first();
+       if(!$agent) return null;
+       $cm = new \App\Models\SalesCommissionPolicy($agent->policy_id);
+       $ss = (object)['branch_id'=>$agent->branch_id];
+       $pol = self::getPolicyInfo($agent->policy_id,$ss);
+       if(!$pol) return null;
+       return (object)[
+         'policy_name'=>$pol->name,
+         'policy_id'=>$pol->id,
+         'items'=>$cm->getItems()
+       ];
+    }
 
     static function listAll($arr,$ss=null){
-        $ss =$ss?$ss:$this->userInfo;
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
 
         $current_page =isset($d->current_page)?$d->current_page:1;
         $per_page =isset($d->per_page)?$d->per_page:10;
         if(!is_numeric($current_page)) $current_page=1;
-        $skip_rows = ($current_page -1) * $per_page;
-
+         
         $status_code = isset($d->status_code)?Sanitizer::sanitize($d->status_code):null;
         $agent_type_id =isset( $d->agent_type_id)? Sanitizer::sanitize( $d->agent_type_id):null;
         
         $str_status = $status_code? 'status_code =\''.$status_code.'\'' : '1=1';
         $str_agent_type = $agent_type_id > 0 ? 'agent_type_id ='.$agent_type_id : '2=2';
 
-        $rows = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.email,d.phone_number,d.address,d.status_code,t.name AS agent_type')->get(); 
+        $rows = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.policy_id,d.email,d.phone_number,d.address,d.status_code,t.name AS agent_type')->get(); 
    
         foreach($rows as $row){
           $row->image_url = '';
           //$row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id');
           if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($row->branch_id,'agent','image').$row->photo_file_name;
           unset($row->photo_file_name);
+          $pol = self::getPolicyInfo($row->policy_id,$ss);
+          $row->policy_name = $pol? $pol->name: 'NA';
           if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
         }
         return $rows;
@@ -420,8 +474,10 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
     static function details($id,$ss)
     {
         $branch_id = $ss->branch_id;
-        $row = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('d.id',$id)->selectRaw('d.id,d.name,d.agent_type_id,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,d.commission,t.name AS agent_type,d.photo_file_name')->take(1)->first(); 
+        $row = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('d.id',$id)->selectRaw('d.id,d.name,d.policy_id,d.agent_type_id,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,d.commission,t.name AS agent_type,d.photo_file_name')->take(1)->first(); 
         if($row){
+           $pol = self::getPolicyInfo($row->policy_id,$ss);
+           $row->policy_name = $pol? $pol->name: 'NA';
            $row->image_url = PublicStorage::getUrl($branch_id,'agent','image').$row->photo_file_name;
         } 
         return $row;
@@ -435,17 +491,186 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
         return DV::depends($x,null,'Failed to update Agent status');
     }
 
-    //$arr = ['status_code'=>'Active|inactive']
-    static function merchantList($arr=[], $id,$ss){
+  //$arr = ['status_code'=>'Active|inactive']
+  static function merchantList($arr=[], $id,$ss){
         if(!$id || $id ==-1) $id =-11;
         $arr['sales_agent_id'] = $id;
-        $arr['search_value'] =null;  
-        return Sender::list($arr,$ss);
-    }
-    static function merchantList_all($arr=[], $id,$ss){
+        $arr['search_value'] =null;
+        $rows = DB::table('sender as s')->where('s.sales_agent_id',$id)->where('s.branch_id',$ss->branch_id)->selectRaw('COUNT(s.id) AS cnt, s.status_code')->groupBy('s.status_code')->get();
+        $statusCounts =['active'=>0,'inactive'=>0];
+        foreach($rows as $row){
+          $statusCounts[$row->status_code] = $row->cnt;
+        }
+        return (object)[
+          'status_counts'=>$statusCounts,
+          'paginate_data'=>Sender::list($arr,$ss)
+        ];
+  }
+
+  static function merchantList_all($arr=[], $id,$ss){
       if(!$id || $id ==-1) $id =-11;
       $arr['sales_agent_id'] = $id;
       $arr['search_value'] =null;
       return Sender::list_all($arr,$ss);
+  }
+
+  function getCommissionAmountPerUnit($year,$month,$id =null){
+      $agent = DB::table('sales_agents as a')->where('id',$id)->selectRaw('id,name,policy_id,agent_type_id')->first();
+      if(!$agent) return null;
+      $str_status ='(p.status_id =8 OR p.collectible =1)';
+      $query = DB::table('package as p')->join('sender as s','s.id','=','p.sender_id')->join('package_sales_commissions AS cmm','cmm.package_id','=','p.id')->join('sales_agents AS a','a.id','=','s.sales_agent_id')->where('a.id',$id)->whereRaw($str_status)->where('')->whereRaw('MONTH(p.delivery_date) ='.$month)->whereRaw('YEAR(p.delivery_date) ='.$year);
+      $count = $query->count('p.id');
+      $count = $count ?? 0;
+      $strInterval = $count.' BETWEEN i.lower_count AND i.upper_count';
+      $row = DB::table('commission_policy_items AS i')->where('agent_type_id',$agent->agent_type_id)->where('policy_id',$agent->policy_id)->whereRaw($strInterval)->selectRaw('i.lower_count,i.upper_count,i.amount_per_unit')->first();
+      return $row? $row->amount_per_unit : 0;    
+  }
+ 
+  static function getCommissionPerUnit($agent_id,$package_count =0,$policy_id=null,$month =0, $year=0){
+     if(!$month || !$year || !$package_count) return 0;
+     $str_month= 'MONTH(p.delivery_time) = '.$month.' AND YEAR(p.delivery_time) ='.$year;
+     $row = DB::table('package_sales_commissions AS c')->join('package as p','p.id','=','c.package_id')->where('c.sales_agent_id',$agent_id)->whereRaw($str_month)->where('c.comm_pmt_status_id',1)->selectRaw('c.comm_amount')->first();
+     if($row){
+       return $row->amount_per_unit ?? 0;
+     }else{
+       if(!$policy_id) return 0;
+       $str_interval ='('.$package_count.' BETWEEN i.lower_count AND i.upper_count)';
+       $row = DB::table('commission_policy_items AS i')->where('i.policy_id',$policy_id)->whereRaw($str_interval)->selectRaw('i.amount_per_unit')->first();
+       if(!$row) return 0; /** No matched policy item */
+       return $row->amount_per_unit;
+     }
+  }
+  
+  static function getCommissionAmountByMerchantCount($merchant_count,$policy_id =null){
+     if(!$policy_id || !$merchant_count) return 0;
+     $str_interval = '('.$merchant_count.' BETWEEN i.lower_count AND i.upper_count)';
+     $row = DB::table('commission_policy_items as i')->where('policy_id',$policy_id)->whereRaw($str_interval )->selectRaw('i.amount_per_unit')->first(); 
+     return $row? $row->amount_per_unit : 0;    
+  }
+ 
+ static function getPaidAmount($id, $month,$year){
+   $month = $month?$month : 0;
+   $year = $year? $year : 0;
+   $str_month = '(MONTH(c.create_date) = '.$month.' AND YEAR(c.create_date) = '.$year.')';
+   $rows = DB::table('merchant_sales_commissions as c')->where('c.sales_agent_id',$id)->whereRaw($str_month)->selectRaw('SUM(c.paid_amount) AS paid_amount')->get();
+   foreach($rows as $row) return $row->paid_amount?$row->paid_amount:0;
+   return 0;
+ }
+
+  /** Sales commission for Full-time staff. Count merchants */
+  function getCommissionsByMerchantCountByMonth($arr=[],$id=null,$ss=null){
+    $id = $id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
+     $d = (object)$arr;
+     if(!isset($d->month))  $d->month = date('m');
+     if(!isset($d->year))  $d->year = date('Y');
+      
+     // $x = getMonthYearObject($d->start_date,$d->end_date);
+     //$months = implode(',',$x->months);
+     //$years = implode(',',$x->years);
+     $str_months = 'MONTH(s.create_date) ='.$d->month.' AND YEAR(s.create_date) ='.$d->year;
+     $rows = DB::table('sender as s')->join('sales_agents as a','a.id','=','s.sales_agent_id')->where('a.id',$id)->whereRaw($str_months)->selectRaw('COUNT(s.id) AS merchant_count, MONTH(s.create_date) AS op_month, YEAR(s.create_date) AS op_year')->groupByRaw('op_year,op_month')->get();
+     
+     $error_pol_no_details = false;
+     $error_pol_not_exist = false;
+
+     $pol = DB::table('sales_agents as a')->join('commission_policies as c','c.id','=','a.policy_id')->where('a.id',$id)->selectRaw('c.id,c.name,c.count_type,a.name as agent_name')->first();
+     if(!$pol) $error_pol_not_exist = true ; // return DV::error('Agent ? does not have commission policy::'.$id); 
+     if($pol){
+      $item = DB::table('commission_policy_items as i')->where('i.policy_id',$pol->id)->selectRaw('i.id')->take(1)->first();
+      if(!$item) $error_pol_no_details = true; //return DV::error('Commission policy ? assigned to ? does not have details::'.$pol->name.';'.$pol->agent_name);
+     }     
+
+     $total_amount =0;
+     $merchant_cnt =0;
+     $total_paid =0;
+     foreach($rows as $row){
+       $comm_amount = self::getCommissionAmountByMerchantCount($row->merchant_count,$pol?$pol->id:null);
+       $total = $row->merchant_count * $comm_amount;
+       $row->total = $total;
+       $total_amount += $row->total;
+       $row->paid_amount = self::getPaidAmount($id,$row->op_month,$row->op_year);
+       $total_paid += $row->paid_amount;
+       $merchant_cnt += $row->merchant_count;
+       $row->currency_code ='USD';
+     }
+     
+     /** Issues occur when the commission has not yet paid to Agent, And the commission policy not yet assigned to agent OR commission policy is not yet defined */
+     $issues = [];
+     if ($error_pol_not_exist) $issues[] = 'No assigned commission policy';
+     if($error_pol_no_details) $issues[] = 'No policy details';
+     return (object)[
+       'agent_type_id'=>1,
+       'count_type'=>'merchant',
+       'merchant_count'=>$merchant_cnt,
+       'paid_amount'=>$total_paid,
+       'total_amount'=>$total_amount,
+       'currency'=>'USD',
+       'issues'=>$issues,
+       'list'=>$rows
+     ];
+  }
+
+  function getCommissionsByPackageCountByMonth($arr=[],$id=null,$ss=null){
+    $id = $id ?? $this->id;
+    $ss = $ss ?? $this->userInfo;
+     $d = (object)$arr;
+     if(!isset($d->month))  $d->month = date('m');
+     if(!isset($d->year))  $d->year = date('Y');
+      
+     // $x = getMonthYearObject($d->start_date,$d->end_date);
+     //$months = implode(',',$x->months);
+     //$years = implode(',',$x->years);
+     $str_months = 'MONTH(p.delivery_time) ='.$d->month.' AND YEAR(p.delivery_time) ='.$d->year;
+     $rows = DB::table('sender as s')->join('package as p','s.id','=','p.sender_id')->join('package_sales_commissions as c','c.package_id','=','p.id')->where('c.sales_agent_id',$id)->whereRaw($str_months)->selectRaw('COUNT(p.id) AS package_count, SUM(CASE c.comm_pmt_status_id =1 WHEN 1 THEN c.comm_amount ELSE 0 END) AS verified_amount,SUM(CASE c.comm_pmt_status_id =2 WHEN 1 THEN c.comm_amount ELSE 0 END) AS paid_amount, SUM(c.comm_amount) AS total, MONTH(p.delivery_time) AS op_month, s.id,s.name,s.code,s.phone_number')->groupByRaw('op_month, s.id,s.name,s.code,s.phone_number')->get();
+     
+     $has_verified_commission = false;
+     $error_pol_no_details = false;
+     $error_pol_not_exist = false;
+     $pol = DB::table('sales_agents as a')->join('commission_policies as c','c.id','=','a.policy_id')->where('a.id',$id)->selectRaw('c.id,c.name,a.name as agent_name')->first();
+     if(!$pol) $error_pol_not_exist = true ; // return DV::error('Agent ? does not have commission policy::'.$id); 
+     if($pol){
+      $item = DB::table('commission_policy_items as i')->where('i.policy_id',$pol->id)->selectRaw('i.id')->take(1)->first();
+      if(!$item) $error_pol_no_details = true; //return DV::error('Commission policy ? assigned to ? does not have details::'.$pol->name.';'.$pol->agent_name);
+     }
+     $total_package_count = 0;
+     foreach($rows as $row) $total_package_count += $row->package_count; 
+     $merchant_cnt = 0;
+     $total_paid = 0;
+     $total_amount = 0;
+     foreach($rows as $row){
+        $comm_per_unit = self::getCommissionPerUnit($id,$total_package_count,($pol?$pol->id:null), $d->month,$d->year);
+        $row->month_name = getMonthName($row->op_month);
+        $row->amount_per_unit = $comm_per_unit;
+        $has_verified_commission = $row->verified_amount > 0;
+        if (!$row->paid_amount <=0){
+          $row->total = $row->amount_per_unit * $row->package_count;
+        }else {
+          $total_paid += $row->paid_amount;
+          $has_verified_commission = true;
+        }
+       
+        $total_amount += $row->total;
+        $row->currency_code ='USD';
+        $merchant_cnt++;
+     }
+     
+     /** Issues occur when the commission has not yet paid to Agent, And the commission policy not yet assigned to agent OR commission policy is not yet defined */
+     $issues = [];
+     if (!$has_verified_commission){
+        if ($error_pol_not_exist) $issues[] = 'No assigned commission policy';
+        if($error_pol_no_details) $issues[] = 'No policy details'; 
+     } 
+     return (object)[
+       'agent_type_id'=>2,
+       'count_type'=>'item',
+       'merchant_count'=>$merchant_cnt,
+       'package_count'=>$total_package_count,
+       'paid_amount'=>$total_paid,
+       'total_amount'=>$total_amount,
+       'currency'=>'USD',
+       'issues'=>$issues,
+       'list'=>$rows
+     ];
   }
 }
