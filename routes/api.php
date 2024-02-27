@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Http\Request;
-//use App\Models\SMS;
 use App\Models\Notifier;
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
@@ -18,11 +17,14 @@ use App\Http\Controllers\CompletedPackageController;
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\DeliveryZoneController;
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\PriceController;
+use App\Http\Controllers\PriceController; /** PriceController is for actual delivery prices by zone by service type and by weight */
+use App\Http\Controllers\PriceListController; /** PriceListController is for quoted proce list */
 use App\Http\Controllers\DeliveryTripController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\SalesApp\SalesAppDashboardController;
 use App\Http\Controllers\SalesAgentController;
 use App\Http\Controllers\MobileAppSettingsController;
+use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\PromotionController;
 use App\Http\Controllers\GeneralSettingsController;
 use App\Http\Controllers\TransactionController;
@@ -34,6 +36,7 @@ use App\Http\Controllers\RemarksController;
 use App\Http\Controllers\WebReportController;
 
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\SalesCommissionPolicyController;
 //use App\Http\Controllers\PusherController;
 
 use App\Models\PublicStorage;
@@ -274,22 +277,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
             Route::post('/receive', [PickupRequestController::class, 'receivePackages']);
             //Route::post('/merchant-address', [SenderController::class,'getVendorAddress']);
 });
-
-Route::middleware([CustomRateLimiter::class])->prefix('lead')->group(function(){
-            Route::post('/details', [LeadController::class,'getLeaddetails']);
-            Route::post('/form-options', [LeadController::class,'getFormOptions']);
-            Route::post('/save', [LeadController::class,'saveLead']);
-            Route::post('/delete', [LeadController::class,'deleteLead']);
-            Route::post('/delete-special', [LeadController::class,'deleteSpecial']);
-            Route::post('/list-paginate', [LeadController::class,'getList_paginate']);
-            Route::post('/list-all', [LeadController::class,'getList_all']);
-            Route::post('/update-status', [LeadController::class,'updateStatus']);
-            Route::post('/convert-to-merchant',[LeadController::class,'convertToMerchant']);
- });
-
-       
-
-        //begin::PackageController new
+ 
+  //begin::PackageController new
          Route::middleware([CustomRateLimiter::class])->prefix('package')->group(function(){
             Route::post('/delete', [PackageController::class, 'deletePackage']);
             Route::post('/change-sender', [PackageController::class, 'changeSender']);
@@ -512,44 +501,52 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->gr
 //end::CompanyProfileController
 
 //begin::MobileAppSettingController
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('mobile-settings')->group(function(){
-    Route::post('/brand-images', [MobileAppSettingsController::class, 'getBrandImages']);
-    Route::post('/save-brand-image', [MobileAppSettingsController::class, 'saveBrandImage']);
-    Route::post('/delete-brand-image', [MobileAppSettingsController::class, 'deleteBrandImage']);
-});
+    Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('mobile-settings')->group(function(){
+        Route::post('/brand-images', [MobileAppSettingsController::class, 'getBrandImages']);
+        Route::post('/save-brand-image', [MobileAppSettingsController::class, 'saveBrandImage']);
+        Route::post('/delete-brand-image', [MobileAppSettingsController::class, 'deleteBrandImage']);
+        Route::post('/connect-with-us', [CompanyProfileController::class, 'getConnectWithUsInfo']);
+    });
 //end::MobileAppsettingsController
   
-//begin::SalesAgentController
-Route::middleware([CustomRateLimiter::class])->prefix('sales-agent')->group(function(){
-    Route::post('/save', [SalesAgentController::class, 'saveSalesAgent']);
-    Route::post('/delete', [SalesAgentController::class, 'deleteSalesAgent']);
-    Route::post('/update-status', [SalesAgentController::class, 'updateStatus']);
-    Route::post('/list', [SalesAgentController::class, 'getList']);
-    Route::post('/form-options', [SalesAgentController::class, 'getFormOptions']);
-    Route::post('/details', [SalesAgentController::class, 'getDetails']);
-    //Route::post('updateSalesAgentStatus', [SalesAgentController::class, 'updateSalesAgentStatus']);
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('mobile-settings/social-media')->group(function(){
+    Route::post('/save',[SocialMediaController::class,'save']);
+    Route::post('/list',[SocialMediaController::class,'list']);
+    Route::post('list-all',[SocialMediaController::class,'listAll']);
+    Route::post('/details',[SocialMediaController::class,'details']);
+    Route::post('/delete',[SocialMediaController::class,'delete']);
 });
-//end::SalesAgentController
 
 Route::middleware([CustomRateLimiter::class])->prefix('sales-app')->group(function(){
     Route::post('/banners', [SalesAgentController::class,'getBrandImages_mobile']);
     Route::post('/login', [SalesAgentController::class, 'login']);
 });
 
+Route::middleware(CustomRateLimiter::class)->prefix('sales-app')->group(function(){
+    Route::post('forget/send-phone-otp', [SalesAgentController::class,'forget_send_otp']);
+    Route::post('forget/verify-otp', [SalesAgentController::class,'forget_verify_otp']);
+    //$d = {phone_number,otp_code,password}
+    Route::post('forget/reset-pwd', [SalesAgentController::class,'forget_reset_password']);
+});
+
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('sales-app')->group(function(){
+   Route::post('/home/cards', [SalesAppDashboardController::class, 'getCards']);
+   Route::post('/home/current-month', [SalesAppDashboardController::class, 'getCurrentMonthData']);
+   Route::post('/home/line-chart', [SalesAppDashboardController::class, 'getLineChartData']);
+   Route::post('/commission-policy', [SalesAgentController::class, 'getCommissionPolicyDetails']);
+
    Route::post('/profile-info', [SalesAgentController::class, 'getProfileInfo']);
    Route::post('/update-profile', [SalesAgentController::class, 'updateProfile']);
+   Route::post('/ca', [SalesAgentController::class, 'updateProfile']);
    Route::post('update-phone', [SalesAgentController::class,'updatePhoneNumber']);
    Route::post('/register', [SalesAgentController::class, 'register']);
    Route::post('/register/send-otp', [SalesAgentController::class,'send_otp_preregister']);
    Route::post('/register/verify-otp', [SalesAgentController::class,'verify_otp_preregister']);
    Route::post('/deactivate', [SalesAgentController::class, 'deactivate']);
-
-   Route::post('forget/send-phone-otp', [SalesAgentController::class,'forget_send_otp']);
-   Route::post('forget/verify-otp', [SalesAgentController::class,'forget_verify_otp']);
-   //$d = {phone_number,otp_code,password}
-   Route::post('forget/reset-pwd', [SalesAgentController::class,'forget_reset_password']);
-
+   //Route::post('/package-summary', [SalesAgentController::class, 'getSummaryPackagesByMonth']);
+   Route::post('/commission-summary', [SalesAgentController::class, 'getCommissionSummary']);
+   Route::post('/price-list', [PriceListController::class, 'options_price_list']);
+   Route::post('/price-list-details', [PriceListController::class, 'getItems']);
 });
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('sales-app/merchant')->group(function(){
@@ -853,7 +850,6 @@ Route::prefix('img-order')->group(function(){
      });
 
      Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('merchant/v2')->group(function(){
-              
                 Route::post('user-info', [ApiController::class, 'getOfficialId_merchant']);
                 Route::post('unread-count', [ApiController::class, 'getUnreadCount']);
                 Route::post('mark-read', [ApiController::class, 'markRead_sender']);
@@ -981,7 +977,62 @@ Route::middleware([CustomRateLimiter::class])->prefix('quick-order')->group(func
     Route::post('/create', [PickupRequestController::class, 'createQuickOrder']);
     Route::post('/form-options', [PickupRequestController::class, 'getFormOptions']);
 });
-  
+
+Route::middleware('auth.api',CustomRateLimiter::class)->prefix('sales-module/price-list')->group(function(){
+    Route::post('/form-options', [PriceListController::class, 'getFormOptions']);
+    Route::post('/save-item', [PriceListController::class, 'saveItem']);
+    Route::post('/item-details', [PriceListController::class, 'getItemDetails']);
+    Route::post('/delete-item', [PriceListController::class, 'deleteItem']);
+
+    Route::post('/save', [PriceListController::class, 'savePriceList']);
+    Route::post('/delete', [PriceListController::class, 'deletePriceList']);
+    Route::post('/items', [PriceListController::class, 'getItems']);
+});
+ 
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('sales-module/lead')->group(function(){
+    Route::post('/details', [LeadController::class,'getLeaddetails']);
+    Route::post('/form-options', [LeadController::class,'getFormOptions']);
+    Route::post('/save', [LeadController::class,'saveLead']);
+    Route::post('/delete', [LeadController::class,'deleteLead']);
+    Route::post('/delete-special', [LeadController::class,'deleteSpecial']);
+    Route::post('/list-paginate', [LeadController::class,'getList_paginate']);
+    Route::post('/list-all', [LeadController::class,'getList_all']);
+    Route::post('/update-status', [LeadController::class,'updateStatus']);
+    Route::post('/convert-to-merchant',[LeadController::class,'convertToMerchant']);
+});
+
+Route::middleware('auth.api',CustomRateLimiter::class)->prefix('sales-module/agent')->group(function(){
+    Route::post('/save', [SalesAgentController::class, 'saveSalesAgent']);
+    Route::post('/delete', [SalesAgentController::class, 'deleteSalesAgent']);
+    Route::post('/update-status', [SalesAgentController::class, 'updateStatus']);
+    Route::post('/list', [SalesAgentController::class, 'getList']);
+    Route::post('/form-options', [SalesAgentController::class, 'getFormOptions']);
+    Route::post('/details', [SalesAgentController::class, 'getDetails']);
+    Route::post('/commission-policy', [SalesAgentController::class, 'getCommissionPolicyDetails']);
+});
+
+Route::middleware('auth.api',CustomRateLimiter::class)->prefix('sales-module/commission-policy')->group(function(){
+    Route::post('/save-item', [SalesCommissionPolicyController::class, 'saveItem']);
+    Route::post('/item-details', [SalesCommissionPolicyController::class, 'getItemDetails']);
+    Route::post('/items', [SalesCommissionPolicyController::class, 'getItems']);
+    Route::post('/delete-item', [SalesCommissionPolicyController::class, 'deleteItem']);
+ 
+    Route::post('/delete', [SalesCommissionPolicyController::class, 'deletePolicy']);
+    Route::post('/save', [SalesCommissionPolicyController::class, 'savePolicy']);
+    Route::post('/item-form-options', [SalesCommissionPolicyController::class, 'getItemFormOptions']);
+    Route::post('/form-options', [SalesCommissionPolicyController::class, 'getFormOptions']);
+});
+
+Route::middleware('auth.api',CustomRateLimiter::class)->prefix('sales-module')->group(function(){
+    Route::post('/commission-policy', [SalesAgentController::class, 'getCommissionPolicyDetails']);
+});
+ 
+Route::middleware('auth.api',CustomRateLimiter::class)->prefix('sales-module/commission-payments')->group(function(){
+    Route::post('/form-options', [SalesAgentController::class, 'getPaymentFormOptions']);
+    Route::post('/summary', [SalesAgentController::class, 'getCommissionSummary']);
+    Route::post('/transactions', [SalesAgentController::class, 'getCommissionPayments']);
+});
+
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->group(function(){
     Route::post('/options-driver', [GeneralSettingsController::class, 'getComboItems_driver']);
     Route::post('/options-delivery-zone', [GeneralSettingsController::class, 'getComboItems_delivery_zone']);
