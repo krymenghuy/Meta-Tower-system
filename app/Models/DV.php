@@ -20,7 +20,7 @@ class DV
       else if($len<=0) return false;
       else return true;
    }
-
+   
    static function getFriendlyName($col, $context){
        if($context=='academic_program'){
                 if($col=='name')

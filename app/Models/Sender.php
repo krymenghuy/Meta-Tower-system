@@ -26,18 +26,23 @@ class Sender //extends Model
     function getDefaultOptions(){
       //price_list_id =11 (Normal Condition)
       $data =(object)[
-        'price_list_id'=>DB::table('price_list_names AS l')->where('is_default',1)->take(1)->value('id'),
+        'price_list_id'=>self::getDefaultPriceList()->id,
         'cod'=>0,
         'cod_fee'=>0
       ];
       return $data;
     }
-
+    
     function __construct($id=null,$userInfo=null){
          $this->id =$id;
          $this->userInfo = $userInfo;
     }
     
+    static function getDefaultPriceList(){
+      $row = DB::table('price_list_names AS l')->where('is_default',1)->take(1)->selectRaw('id,name')->first();
+      if($row) return $row;
+      return (object)['id'=>null,'name'=>''];
+    }
     function getDetails($id=null,$ss=null,$includeProfilePicture=false,$includeBankAccount=true){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -128,7 +133,7 @@ class Sender //extends Model
         PublicStorage::delete($ss->branch_id,'merchant','image',$sender->photo_file_name);
         DB::table('sender')->where('id',$id)->update(['photo_file_name'=>null]);
       }
-       return PublicStorage::saveImage($ss->branch_id,'merchant', null,$photo_data,null,['id'=>$id,'store'=>'sender.photo_file_name']);  
+      return PublicStorage::saveImage($ss->branch_id,'merchant', null,$photo_data,null,['id'=>$id,'store'=>'sender.photo_file_name']);  
     }
 
     function deleteProfilePicture($id=null,$ss=null){
@@ -449,7 +454,8 @@ class Sender //extends Model
         //'loc_lat'=>'0|number|default=0',
         //'loc_lng'=>'0|number|default=0',
         'sales_agent_id'=>'0|number',
-        'banks'=>'0|array'
+        'banks'=>'0|array',
+        'bank_account_changed'=>'0|number|default=0'
       ];
       $checkUnque = ["$branch_id|sender|name,phone_number,code|id=id|text=Sender or merchant already exists by name, phone number, or email"];
       $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%'];
@@ -468,7 +474,7 @@ class Sender //extends Model
          $inputs['loc_lat'] = $pinned_location->latitude;
          $inputs['loc_lng'] = $pinned_location->longitude;
       }
-      unset($inputs['address_link']);
+      unset($inputs['address_link'],$inputs['bank_account_changed']);
 
       //Additional check
       if($inputs['cod_fee'] <0) return DV::error("COD fee is not correct!");
@@ -477,7 +483,7 @@ class Sender //extends Model
       if ($phone_err) return DV::error( $phone_err);   
        
       if(!isset($inputs['name_kh'])) $inputs['name_kh'] = $inputs['name'];
-      if($inputs['cod_fee']>0) $inputs['cod'] =1;
+      if($inputs['cod_fee'] > 0) $inputs['cod'] =1;
       $bank_accounts = $inputs['banks'];
       unset($inputs['banks']);
       $sender_created = $id>0? 0:1;
@@ -502,11 +508,21 @@ class Sender //extends Model
               $new_code = $this->getNextSenderCode($ss); // formatNumber($sender_id,5);
               //$inputs['code'] = $new_code;
               DB::table('sender')->where('id',$id)->update(['code'=>$new_code]);
-           } 
-           $this->saveBankAccounts($bank_accounts,$id,$ss);
+           }
+           $can_update_bank_info = false;
+           if(!$id) 
+             $can_update_bank_info = true;
+           else if (UM::allowed(285)){
+              $can_update_bank_info = true;
+           }
+           if ($can_update_bank_info) $this->saveBankAccounts($bank_accounts,$id,$ss);
            UM::updateUserByOfficialId($id,['full_name'=>$inputs['name']]);
            $inputs['id']= $id;
-           return DV::depends(1,['sender'=>$inputs,'id'=>$id]);
+           $info_message = '';
+           if($d->bank_account_changed){
+                $info_message = $can_update_bank_info? '':'You do not have permission to change merchant\'s bank account information';
+           }
+           return DV::depends(1,['sender'=>$inputs,'id'=>$id,'info_message'=>$info_message]);
            //return DV::success(['sender_id'=>$sender_id,'code'=>$sender_code]);
       }
       return DV::error('Something went wrong in saving sender profile');
@@ -1108,7 +1124,8 @@ class Sender //extends Model
           'address_link'=>'0|string|0-800',
           'business_type'=>'0|string|0-150|default=General'
         ];
-        $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%'];
+        $address_map_chars = GeneralSettings::$address_map_chars; 
+        //$address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%'];
         $res = validateObject($arr,$v_rule,true,['address_link'=>$address_map_chars,'address'=>$address_map_chars],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;

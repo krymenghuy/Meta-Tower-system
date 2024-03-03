@@ -1,12 +1,12 @@
 <?php 
     if(!Session::get('login_name')) return view('login.index'); 
-    $role= \App\Models\UM::firstRole(Session::get('user_id'));
-    $role_id = $role?$role->id:null;
+    // $role= \App\Models\UM::firstRole(Session::get('user_id'));
+    // $role_id = $role?$role->id:null;
 
-    if ($role_id != 1 && $role_id != 2){
-        echo "It seems you do not have correct role in this system. Contact administrator to resolve this issue";
-        return;
-    }
+    // if ($role_id != 1 && $role_id != 2){
+    //     echo "It seems you do not have correct role in this system. Contact administrator to resolve this issue";
+    //     return;
+    //}
 ?>
 
 <!DOCTYPE html>
@@ -22,6 +22,7 @@
         <meta name="sess_branch_id" content="{{ sess_company_id() }}" />
         <meta name="sess_user_id" content="{{ sess_user_id() }}" />
         <meta name="base_url" content="{{ url('/') }}" />
+        <meta name="main_route" content="dms" />
         <meta name="asset_url" content="{{ asset('assets/') }}" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,7 +49,7 @@
         <div id="kt_header_mobile" class="kt-header-mobile kt-header-mobile--fixed">
             <div class="kt-header-mobile__logo">
                 <a href="javascript:void(0)">
-                    <img alt="Logo" src="{{ asset('assets/images/logo/ksm-logo.png') }}" />
+                    <img alt="Logo" src="{{ asset('assets/images/logo/logo.png') }}" />
                 </a>
             </div>
             <div class="kt-header-mobile__toolbar">

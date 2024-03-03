@@ -10,13 +10,13 @@ use App\Models\DV;
 use App\Models\UM;
 use Sanitizer;
 use DB;
-use App\Models\Tracker;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use App\Models\GeneralTrack;
+use App\Models\Tracker;
 
-class DeliveryTrip //extends Model
+class DeliveryTrip
 {
-    //use HasFactory;
       protected $id = null;
       protected $userInfo = null;
       function __construct($id=null,$userInfo=null){
@@ -1094,9 +1094,9 @@ class DeliveryTrip //extends Model
         ];
         
         if ($status_id ==8){
-            if($update_cod_amount==1 && !$notes){
-                return DV::error('សូមបញ្ជាក់ហេតុផល ប្តូរទឹកប្រាក់');
-            }
+            // if($update_cod_amount==1 && !$notes){
+            //     return DV::error('សូមបញ្ជាក់ហេតុផល ប្តូរទឹកប្រាក់');
+            // }
             $d_notes = ($p1->delivery_notes ? $p1->delivery_notes . '. ' : '') . ($notes ?? '');
             if ($d_notes !== null && strlen($d_notes) > 250) {
                 $d_notes = substr($d_notes, 0, 250);
@@ -1742,17 +1742,17 @@ class DeliveryTrip //extends Model
         return null;
     }
 
-    static function trackChange($ss,$action_name,$des,$table_name,$pk_field,$pk_value){
-     try{
-        $inputs= ['target_table'=>$table_name,'pk_field'=>$pk_field,'pk_value'=>$pk_value,'action_name'=>$action_name,'description'=>$des];
-        $id = saveData($ss,'general_tracks',['id'=>null],$inputs,[],1,false);
-        return null;
-     }catch(\Exception $e){
-        Log::error('Failed to create general track of action done by '.$ss->full_name);
-            Log::error($e->getMessage());
-            Log::error($e->getTraceAsString());
-     }
-    }
+    // static function trackChange($ss,$action_name,$des,$table_name,$pk_field,$pk_value){
+    //  try{
+    //     $inputs= ['target_table'=>$table_name,'pk_field'=>$pk_field,'pk_value'=>$pk_value,'action_name'=>$action_name,'description'=>$des];
+    //     $id = saveData($ss,'general_tracks',['id'=>null],$inputs,[],1,false);
+    //     return null;
+    //  }catch(\Exception $e){
+    //     Log::error('Failed to create general track of action done by '.$ss->full_name);
+    //         Log::error($e->getMessage());
+    //         Log::error($e->getTraceAsString());
+    //  }
+    // }
 
     function changeDeliveryDriver($arr,$id=null,$ss=null){
         $ss = $ss ??$this->userInfo;
@@ -1786,7 +1786,7 @@ class DeliveryTrip //extends Model
 
         $old_driver_name = DB::table('driver')->where('id',$trip->driver_id)->take(1)->value('name');
         $des = $ss->full_name.' changed driver from '.$old_driver_name.' to new driver '.$driver->name. '. Trip ID: '.$trip->id.' trip number: '.$trip->fleet_tracking_number.' at '.date('d M Y h:i'); 
-        self::trackChange($ss,'change_delivery_driver',$des,'delivery','id',$delivery_id);
+        GeneralTrack::save($ss,'change_delivery_driver',$des,'delivery','id',$delivery_id);
         //todo: create notofication and send it to the responsible driver
         return DV::depends(1);
     }

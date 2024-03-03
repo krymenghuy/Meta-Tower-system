@@ -12,6 +12,8 @@ use App\Models\GeneralSettings;
 use Illuminate\Pagination\LengthAwarePaginator; 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use App\Models\GeneralTrack;
+
 class PaymentTransaction //extends Model
 {
     //use HasFactory;
@@ -59,7 +61,12 @@ class PaymentTransaction //extends Model
      $trx_id = $d->trx_id;
      $prn_id = -1;
      $trx_type = strtolower($d->trx_type);
+     $trx = null;
+     $r_table = null;
      if($trx_type ==='receipt'){
+       $r_table ='cash_receipts';
+       $trx = DB::table('cash_receipts as r')->whereRaw('trx_id = UNHEX(\''.$trx_id.'\')')->selectRaw('HEX(r.trx_id) AS trx_id,r.payer_id AS agent_id,r.payer_name AS agent_name,r.payer_type AS agent_type,r.package_count,formatDate(r.payment_date) AS payment_date,r.amount,r.currency_code,r.create_user')->first();
+       if(!$trx) return DV::error('The money-in transaction does not exist');
        $pmtInfo = DB::table('cash_receipts AS r')->whereRaw('trx_id = UNHEX(\''.$trx_id.'\')')->selectRaw('r.payment_date,create_user,amount,payer_id,Lower(payer_type) AS payer_type')->first();
        if(!$pmtInfo) return DV::error('Cash receipt identity does not exist');
         if ($pmtInfo->payer_type =='driver') $prn_id = 275; else $prn_id = 276;
@@ -70,8 +77,12 @@ class PaymentTransaction //extends Model
            DB::table('package')->whereRaw('driver_trx_id = UNHEX(\''.$trx_id.'\')')->update(['driver_pmt_status_id'=>0,'driver_trx_id'=>null]);
         else
            DB::table('package')->whereRaw('sender_trx_id = UNHEX(\''.$trx_id.'\')')->update(['sender_pmt_status_id'=>0,'sender_trx_id'=>null]);
-        return DV::success();
-     }else{
+        
+     }else if ($trx_type =='disbursement'){
+        $r_table ='cash_disbursements';
+        $trx = DB::table('cash_disbursements as r')->whereRaw('trx_id = UNHEX(\''.$trx_id.'\')')->selectRaw('HEX(r.trx_id) AS trx_id,r.payee_id AS agent_id,r.payee_name AS agent_name,r.payee_type AS agent_type,formatDate(r.payment_date) AS payment_date,r.package_count,r.amount,r.currency_code,r.create_user')->first();
+        if(!$trx) return DV::error('The money-out transaction does not exist');
+
           $pmtInfo = DB::table('cash_disbursements AS r')->whereRaw('trx_id = UNHEX(\''.$trx_id.'\')')->selectRaw('r.payment_date,create_user,amount,payee_id,payee_type')->first();
           if(!$pmtInfo) return DV::error('Cash disbursement identity does not exist');
           if ($pmtInfo->payee_type =='driver') $prn_id = 275; else $prn_id = 276;
@@ -82,8 +93,16 @@ class PaymentTransaction //extends Model
               DB::table('package')->whereRaw('driver_trx_id = UNHEX(\''.$trx_id.'\')')->update(['driver_pmt_status_id'=>0,'driver_trx_id'=>null]);
           else
               DB::table('package')->whereRaw('sender_trx_id = UNHEX(\''.$trx_id.'\')')->update(['sender_pmt_status_id'=>0,'sender_trx_id'=>null]);
-          return DV::success();
+     
+     }else{
+       return DV::error('The given transaction type ? is not correct::'.$trx_type);
      }
+
+     $action ='delete_'.$trx->agent_type.'_payment:'.$trx_type;
+     $to_or_from = $trx_type =='receipt'? ' from ' : ' to '; 
+     $des = $ss->full_name.' deleted '.$trx->agent_type.' payment dated '.$trx->payment_date .' carrying the amount of '.$trx->amount.' '.$trx->currency_code.'. The transaction was created by '.$trx->create_user. ' as payment '.$to_or_from. ' '.$trx->agent_name. ' for '.$trx->package_count.' pcs'; 
+     GeneralTrack::save($ss,$action,$des,$r_table,'trx_id',$trx->trx_id,'binary16');
+     return DV::success();
   }
 
  //NOTE: one settlement can have two transactions of payment. One is in Cash, ther other by Bank Transfer. So settlement_id embraces all transactions within one settlement

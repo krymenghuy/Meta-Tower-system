@@ -882,6 +882,7 @@ var PickupListComponent = new function () {
     }
     /** Returns the instance of package table that is currently being opened, which can be in Edit  Item mode or View Mode */
     this.getActivePackageTable = ()=>{
+        if(!mThis.tblOrders) return null;
         const tbl = mThis.tblOrders.querySelector('table.pkl-package-table');
         if(!tbl) return null;
         else if (tbl.style.display !='none') return tbl; 

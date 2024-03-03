@@ -8,6 +8,7 @@ use App\Models\UM;
 //use Session;
 use DB;
 use Sanitizer;
+use Illuminate\Support\Collection;
 
 class GeneralSettings //extends Model
 {
@@ -22,10 +23,11 @@ class GeneralSettings //extends Model
     public static $upload_dirs =[
         "package"=>"package", //Package's photos directory
         "default"=>"default",/** default user's photo '*/
-        "mobile-sildes"=>"mobile-sildes",/** Mobile App banner photo files '*/
+        "mobile-slides"=>"mobile-slides",/** Mobile App banner photo files '*/
         "partner"=>"partner",
         "driver"=>"driver",
         "merchant"=>"merchant",
+        "sales_agent"=>"sales_agent",
         "sender"=>"merchant",
         "staff"=>"staff",
         "employee"=>"staff",
@@ -101,7 +103,7 @@ class GeneralSettings //extends Model
     }
 
     //For report filter => so need to include (All) option.
-    //used in backend ReportCenter component
+    //Used in backend ReportCenter component
     static function options_delivery_status($ss){ 
        $rows = DB::table('package_statuses as ps')->whereIn('id',[6,8,9,11])->select('name as delivery_status','id')->orderBy('id','ASC')->get();
        $rows->prepend((object)['id'=>null,'delivery_status'=>'(All)']); // ("{'id':'','delivery_status':'(All)'}");
@@ -154,10 +156,63 @@ class GeneralSettings //extends Model
         ];
     }
 
-    static function options_sales_agent($ss){
-        return DB::table("sales_agents as a")->where('branch_id',$ss->branch_id)->select('id','name AS agent_name','code')->get();
+    static function options_sales_agent($ss,$include_all =false,$active_only=true){
+        $str_active = $active_only? 'a.status_code =\'active\'':'2=2';
+        $rows = DB::table("sales_agents as a")->where('branch_id',$ss->branch_id)->whereRaw($str_active)->selectRaw('a.id,CONCAT(a.name,\'(\',a.code,\')\') AS agent_name,a.code')->get();
+        if($include_all){
+           $rows->prepend((object)['id'=>null,'agent_name'=>'(All Agents)']);
+        }
+        return $rows;
+    }
+    static function options_calendar_month($ss=null)
+    {
+        $months = [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ];
+    
+        $monthObjects = collect($months)->map(function ($month, $i) {
+            return (object)['month' => $i + 1, 'month_name' => $month];
+        });
+    
+        return $monthObjects;
     }
  
+    static function options_calendar_year($ss = null)
+    {
+        $currentYear = now()->year;
+        $years = range($currentYear, $currentYear - 19);
+    
+        $yearObjects = collect($years)->map(function ($year) {
+            return (object)['year' => $year];
+        });
+    
+        return $yearObjects;
+    }
+   
+    static function options_calendar_month_year($ss = null)
+    {
+        $currentYear = now()->year;
+        $months = [
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+        ];
+    
+        $monthYearObjects = collect(range(0, 23))->map(function ($index) use ($currentYear, $months) {
+            $year = $currentYear - intval($index / 12);
+            $month = $months[$index % 12];
+            $month_num = ($index % 12) + 1;
+            return (object)['month' => $month_num . '_' . $year, 'month_year' => "{$month} {$year}"];
+        })->sortByDesc(function ($item) {
+            // Sort by year first, then by month_num
+            [$month_num, $year] = explode('_', $item->month);
+            return [$year, $month_num];
+        });
+    
+        return $monthYearObjects->values()->toArray();
+    }
+    
+  
     static function options_country($ss){
         //$branch_id = $ss->branch_id; 
         return DB::table('loc_countries as c')->select('id','name as country')->orderBy('c.name','ASC')->get();

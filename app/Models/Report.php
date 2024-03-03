@@ -56,7 +56,7 @@ class Report //extends Model
        $rows = DB::table('package As p')->where('qr_code',$barcode)->selectRaw('id')->take(1)->get();
        $table ='package as p';
        if(!isset($rows[0])) $table ='order_receivers as p';
-       $rows =DB::table($table)->where('p.branch_id',$branch_id)->where('p.qr_code',$barcode)->join('sender AS s','s.id','=','p.sender_id')->selectRaw("p.qr_code AS barcode,p.delivery_type,p.cod,DATE_FORMAT(p.create_date,'%d %b %Y') as booking_date,
+       $rows =DB::table($table)->where('p.branch_id',$branch_id)->where('p.qr_code',$barcode)->join('sender AS s','s.id','=','p.sender_id')->selectRaw("p.qr_code AS barcode,p.delivery_type,p.cod,p.create_user,formatDate(p.create_date) as booking_date,
        CASE IFNULL(p.cod,0) WHEN 1 THEN p.price ELSE 0 END AS price,
        s.name AS sender_name, s.phone_number AS sender_phone, p.receiver_name, p.receiver_address, p.zone_name, p.delivery_notes,p.zone_code,p.receiver_phone,(SELECT `name` FROM driver WHERE id = p.pickup_driver_id LIMIT 1) AS pickup_driver_name,
        CASE LOWER(p.df_payer) WHEN 'receiver' THEN (IFNULL(p.base_fee,0) + IFNULL(p.delivery_fee,0)) ELSE 0 END AS total_delivery_fee,
