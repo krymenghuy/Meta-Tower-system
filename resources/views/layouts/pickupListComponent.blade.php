@@ -828,10 +828,17 @@
             </div>
             <div class="modal-body">
               <div class="d-flex flex-row gap-2">
-                 <div class="w-50 border border-secondary shadow-lg rounded-3" style="max-height:65vh;overflow-y:auto">
-                     <img id="pkl_dlgPackage_item_photo" class="w-100 h-100" class="item-photo-view" alt="package photo">
+                 <div class="d-flex flex-column justify-content-between w-50 border border-secondary shadow-lg rounded-3">
+                    <div style="max-height:65vh;overflow-y:auto">
+                        <img id="pkl_dlgPackage_item_photo" class="w-100 h-100" class="item-photo-view" alt="package photo">
+                    </div>
+                    <div class="d-flex flex-row gap-2 p-1"> 
+                        <a data-movetype="prev" href="javascript:void(0)" class="btn-move btn btn-sm btn-outline-info"><i class="fas fa-angle-double-left"></i></a> <a data-movetype="next" href="javascript:void(0)" class="btn-move btn btn-sm btn-outline-info"><i class="fas fa-angle-double-right"></i></a>
+                        <span id="nav_info_text" class="fw-semibold text-black text-center"></span>
+                    </div>
                  </div>
-                 <div class="w-50 p-2">
+
+                 <div class="div-item-details w-50 p-2">
                     <div class="row" style="max-height:65vh;overflow-y:auto">
                         <div class="form-group col-lg-12">
                             <label for="" class="form-label trans-text" data-langprop="titles.Zone Code"></label>
@@ -854,7 +861,7 @@
                         </div>
                         <div class="form-group col-lg-12">
                             <label for="remarks" class="form-label trans-text" data-langprop="titles.Remarks"></label>
-                            <div><input type="text" class="form-control" data-field="remarks"></div>  
+                            <div><input type="text" class="form-control data-input" data-field="remarks"></div>  
                         </div>
 
                         <div class="form-group col-lg-12">
@@ -865,30 +872,30 @@
                             </select></div>  
                         </div>
 
-                        <div class="form-group col-lg-12">
+                        <div style="display:none" class="form-group col-lg-12">
                             <label for="remarks" class="form-label trans-text" data-langprop="titles.Fees"></label>
                             <div><input type="text" class="form-control" data-field="remarks" readonly></div>  
                         </div>
-                        <div class="form-group col-lg-12">
+                        <div style="display:none"  class="form-group col-lg-12">
                             <label for="remarks" class="form-label trans-text" data-langprop="titles.Base Fee"></label>
-                            <div><input type="text" class="form-control" data-field="base_fee" readonly></div>  
+                            <div><input type="text" class="form-control data-input" data-field="base_fee" readonly></div>  
                         </div>
-                        <div class="form-group col-lg-12">
+                        <div style="display:none"  class="form-group col-lg-12">
                             <label for="remarks" class="form-label trans-text" data-langprop="titles.Additional"></label>
-                            <div><input type="text" class="form-control" data-field="delivery_fee" readonly></div>  
+                            <div><input type="text" class="form-control data-input" data-field="delivery_fee" readonly></div>  
                         </div>
 
-                        <div class="form-group col-lg-12">
+                        <div style="display:none" class="form-group col-lg-12">
                             <label for="size" class="form-label trans-text" data-langprop="titles.Size"></label>
                             <div><input type="text" class="form-control data-input" data-field="size"></div>  
                         </div>
 
-                        <div class="form-group col-lg-12">
+                        <div style="display:none"  class="form-group col-lg-12">
                             <label for="actual_kg" class="form-label trans-text" data-langprop="titles.Actual KG"></label>
                             <div><input type="number" class="form-control data-input" data-field="actual_kg"></div>  
                         </div>
 
-                        <div class="form-group col-lg-12">
+                        <div style="display:none" class="form-group col-lg-12">
                             <label for="billed_kg" class="form-label trans-text" data-langprop="titles.Billed KG"></label>
                             <div><input type="text" class="form-control data-input" data-field="billed_kg" readonly></div>  
                         </div>
@@ -899,8 +906,9 @@
             </div>
             <div class="modal-footer">
                <div class="pkl-entry-buttons d-flex fles-row gap-2">
-                    <button type="button" class="btn btn-warning" data-dismiss="modal">Close</button>
-                    <button id="pkl_dlgPackage_btnSaveAndNext" type="button" class="btn btn-info"><span>Save & Next</span></button>
+                    <button type="button" id="pkl_dlgPackage_btnClose" class="btn btn-warning">Close</button>
+                    <button id="pkl_dlgPackage_btnPrev" type="button" class="btn btn-info"><span>Pevious</span></button>
+                    <button id="pkl_dlgPackage_btnSaveAndNext" type="button" class="btn btn-primary"><span>Save & Next</span></button>
                     <button id="pkl_dlgPackage_btnSave" type="button" class="btn btn-info"><span>Save</span></button>
                </div>
             </div>
