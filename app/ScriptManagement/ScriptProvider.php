@@ -21,7 +21,7 @@ namespace App\ScriptManagement;
                 'output_file'=>'/dist/js/priority-one.min.js?v=13',
                 'files'=>[
                     '/assets/js/LocaleManager.js',
-                    '/assets/js/vsapi.js',
+                    '/assets/js/vsapi_jto.js',
                     '/assets/js/priority-load.js',
                 ]
             ],
