@@ -13,8 +13,8 @@ class CompanyProfile //extends Model
   //use HasFactory;
    protected $userInfo = null;
    protected static $logo_dir ="identity";
-   protected static $img_dir ='brand-images';
-
+   protected static $img_dir ='brand-images', $soc_media_img_dir ='social_media';
+  
    function __construct($userInfo=null){
       $this->userInfo = $userInfo;
    }
@@ -57,6 +57,27 @@ class CompanyProfile //extends Model
      return DV::depends($id,null,'Failed to update company information');
    }  
 
+   static function socialMediaList($ss){
+      $branch_id = $ss->branch_id;
+      $rows = DB::table('social_media')->where('branch_id',$branch_id)->selectRaw('file_name,title as name,url,id')->get();
+      foreach($rows as $row){
+          if($row->file_name != null){
+              $row->image_url = PublicStorage::getUrl($branch_id,self::$soc_media_img_dir,'image').$row->file_name;
+          }else  $row->image_url = $row->file_name;
+          unset($row->file_name);
+      }
+      return $rows;
+  }
+
+  static function connectWithUs($ss){
+     $row = DB::table('um_branches as b')->where('b.branch_id',$ss->branch_id)->selectRaw('b.phone_number,b.email,b.website,b.address')->first();
+     if(!$row) return null;
+     return (object)[
+          'contact_info'=>$row,
+          'social_media_list'=>self::socialMediaList($ss)
+     ];
+  }
+
    function getDetails($ss) {
       $ss = $ss?$ss:$this->getUserInfo();
       $branch_id = $ss->branch_id;
@@ -84,9 +105,8 @@ class CompanyProfile //extends Model
     $delete_photo = (!$photo || isImage($photo));
     $logo_file_name = DB::table('um_branches')->where('branch_id',$branch_id)->selectRaw('logo_file_name')->take(1)->value('logo_file_name');
     if ($delete_photo){
-      PublicStorage::delete($branch_id,self::$logo_dir,'image',$logo_file_name);
+      PublicStorage::delete ($branch_id,self::$logo_dir,'image',$logo_file_name);
     }
-    if($logo_file_name) PublicStorage::delete($branch_id,self::$logo_dir,'image',$logo_file_name);
     $maxSize =500;
 	  $res = PublicStorage::saveImage($branch_id,self::$logo_dir,$file_type,$photo,$maxSize);
     if($res->status ==='OK'){

@@ -12,7 +12,6 @@ use DB;
 use Config;
 //use Sanitizer;
 //use Carbon\Carbon;
-
 class MobileAppSettings //extends Model
 {
     //use HasFactory;
@@ -43,6 +42,9 @@ class MobileAppSettings //extends Model
         else if ($app_id == Config::get('app.driver_app_id')){
             $file_name ='driver_terms_and_conditions.txt';
         }
+        else if ($app_id == Config::get('app.sales_app_id')){
+          $file_name ='salesapp_terms_and_conditions.txt';
+       }
         else return "Invalid app_id";                  
         $full_path = PublicStorage::getDiskPath($branch_id,$user_class,'document').$file_name; //getcwd()."/storage/companies/common/".$app_id."/".$file_name;
         if (!file_exists($full_path)) return "File not found!";

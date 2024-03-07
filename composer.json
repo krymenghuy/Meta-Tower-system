@@ -23,6 +23,7 @@
         "milon/barcode": "^8.0",
         "mpdf/mpdf": "^8.0",
         "phpoffice/phpspreadsheet": "^1.29",
+        "phpmailer/phpmailer": "^6.9",
         "pusher/pusher-php-server": "^7.2",
         "ramsey/uuid": "^4.7"
     },
