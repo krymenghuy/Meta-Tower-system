@@ -298,7 +298,7 @@ static function notify_mobile($branch_id,$data=[]){
         else $more_wheres .=' AND IFNULL(n.user_id,0) =0)';  //return empty rows if there is user_id supplied
         $str_date = '1=1'; //'DATE(create_date) =\''.date('Y-m-d').'\'';
         $str_read ='1=1';
-        if (in_array(strtolower($user_class),['merchant','driver'])){
+        if (in_array(strtolower($user_class),['merchant','driver','sales_agent'])){
             $str_read = 'is_read(n.id,'.($user_id?$user_id:0).') =0 AND IFNULL(is_read,0)=0';
         }else{
             $str_read ='DATEDIFF(now(),n.create_date) <=30';

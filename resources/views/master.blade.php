@@ -23,6 +23,7 @@
         <meta name="sess_user_id" content="{{ sess_user_id() }}" />
         <meta name="base_url" content="{{ url('/') }}" />
         <meta name="main_route" content="dms" />
+        <meta name="default_component" content="<?php echo $defaultComponent; ?>" />
         <meta name="asset_url" content="{{ asset('assets/') }}" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -189,7 +190,6 @@
                                 @include('layouts.productCategoriesComponent')
                                 @include('layouts.remarksComponent')
                                 @include('layouts.reportCenterComponent')
-                                <input type="hidden" id="defaultComponent" value="<?php echo $defaultComponent; ?>"/>
                             </div>
                         </div>
                     </div>

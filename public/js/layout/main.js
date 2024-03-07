@@ -3,7 +3,7 @@ let main_view = new function(){
     let mThis = this;
     this.apiCluster = 'menus';
     this.auth_script_version = 2;
-    this.main_route ='jto';
+    this.main_route =null;
     this.onLayoutLoad = null;
     this.elScreenTitle = document.querySelector('#screen_title');
     this.elScreenTitle_mobile =  document.querySelector('#mobile_screen_title');
@@ -73,6 +73,13 @@ let main_view = new function(){
         this.displayUserMenus();
         this.displayNotifications();
         this.displayTasks();
+        this.top_right_menus.on('click','.lnk-lang',function(e){
+            let lang = $(this).data('lang');
+            LocaleManager.translateAll(lang);
+            mThis.setLangMenu(lang);
+            $(this).closest('.dropdown-menu').removeClass('show');
+            LocaleManager.saveLang(lang);   
+        });
 
         this.top_right_menus.on('click','.lnk-lang',function(e){
             let lang = $(this).data('lang');
@@ -86,65 +93,42 @@ let main_view = new function(){
             e.preventDefault();
             if(mThis.prev_shown_dropdown_menus) mThis.prev_shown_dropdown_menus.removeClass('show');
             let div =  $(this).parent().find('.dropdown-menu');
-            //let menu_name = ($(this).data('menu')+'').toLowerCase(); 
             div.addClass('show');
             mThis.prev_shown_dropdown_menus = div;
         });
-        
-        // document.onclick =    (e) => {
-        //     let x = document.querySelector('body div.dropdown-menu');
-        //     let container = x.parentElement;
-          
-        //     if (container) {
-        //       if (!container.contains(e.target) && container !== e.target) {
-        //         x.classList.remove('show');
-        //       }
-        //     }
-          
-        //     e.stopPropagation();
-        //   };
 
-        // document.onclick =  (e)=> {
-        //     if (e.target.classList.contains('dropdown-item')) {
-        //       e.target.closest('.dropdown-menu').remove('show');
-        //     }
-        // };
- 
-        $(document).on('click', function (e) {
-                let x = $(this).find('body div.dropdown-menu');
-                let container = x.parent();
-                if (container) {
-                    if (!container.is(e.target) && container.has(e.target).length === 0) {
-                        x.removeClass('show');
-                    }
+        $(document).on('click', function(e){
+            let x = $(this).find('body div.dropdown-menu');
+            let container = x.parent();
+            if(container){
+                if(!container.is(e.target) && container.has(e.target).length === 0){
+                    x.removeClass('show');
                 }
-                e.stopPropagation();
-            });
+            }
+            e.stopPropagation();
+        });
 
         $(document).on('click', '.dropdown-item', function (e) {
             $(this).parent().removeClass('show');
         });
-        
- 
-        this.mnuLogout.onclick = e => {
-            cv_interact.confirm("Do you want to log out?",{"title":"DMS System","confirmButtonText":"Log Out","cancelButtonText":"No, I stay in","context":"delete","translate":true},(e)=>{
+         
+        this.mnuLogout.addEventListener('click',e => {
+            cv_interact.confirm("Do you want to log out?",{
+                title: "MOE Campaign Data Management",
+                confirmButtonText: "Log Out",
+                cancelButtonText: "No, I stay in",
+                context: "delete",
+                translate: true
+            },(e) => {
                 if(e){
                     mThis.logOut();
                 }
             });
-        };
-
-        this.mnuLogout1.onclick =  e=>{
-            e.preventDefault();
-            cv_interact.confirm("Do you want to log out?",{"title":"DMS System","confirmButtonText":"Log Out","cancelButtonText":"No, I stay in","context":"delete","translate":true},(e)=>{
-                if(e){
-                    mThis.logOut();
-                }
-            });
-        };
-       
-        if (typeof mThis.onLayoutLoad ==='function') mThis.onLayoutLoad();
-    }
+      });
+      
+      if (typeof mThis.onLayoutLoad ==='function') mThis.onLayoutLoad();
+   }
+  //end:: main_view.init()
 
     this.logOut = ()=>{
         mThis.deleteAllCookies();

@@ -49,7 +49,7 @@ class SocialMedia //extends Model
         if($newID>0){
             PublicStorage::saveImage($branch_id,self::$img_dir,null,$image,null,['id' => $newID,'store' => 'social_media.file_name']);
         }
-        return DV::depends($newID,'Created');
+        return DV::depends($newID,null,'Failed to save social media');
     }
 
     function listAll($ss){
