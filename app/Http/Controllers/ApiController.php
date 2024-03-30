@@ -76,7 +76,10 @@ class ApiController extends Controller
       $res =  Tracker::sendToTelegram($req->message);
       return JDV::result($res);
     }
-    
+    function OPICall(Request $req){
+      return OPICall($req->prompt ?? $req->data);
+    }
+
     function externalLogin(Request $request){
         $app_id = $request->app_id;
         $login_name = $request->login_name;
@@ -338,6 +341,14 @@ class ApiController extends Controller
       return JDV::result($text);
     }
  
+    function getTermsAndConditions_salesapp(Request $req){
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+      $app_id = Config::get('app.sales_app_id');
+      $text = MobileAppSettings::getTermsAndConditions($app_id,$ss);
+      return JDV::result($text);
+    }
+
     function savePickupRequest(Request $req){
         $ss= UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
@@ -1588,11 +1599,12 @@ function getActiveTrips(Request $req){
             ]
         ];
         $err = Notifier::notify_mobile($branch_id,$cdata);
-        if($err) return JDV::error($err);
+        if(gettype($err) =='string') return JDV::error($err);
         return JDV::success();
   }
 
   function options_package_status(Request $req){
+     $ss = (object)['branch_id'=>1];
      return \App\Models\GeneralSettings::options_package_status($ss);
   }
   
@@ -1600,7 +1612,7 @@ function getActiveTrips(Request $req){
    //return True when logout success, otherwise, returns error message
    //login_mobile() requires $d = {app_id} 
    function logout_mobile(Request $req){
-        $merchant_app_id = COnfig::get('app.merchant_app_id');
+        $merchant_app_id = Config::get('app.merchant_app_id');
         $driver_app_id = Config::get('app.driver_app_id');
         $user_class =null;
         if ($req->app_id === $driver_app_id) $user_class='driver';

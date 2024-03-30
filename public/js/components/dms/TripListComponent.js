@@ -465,6 +465,7 @@ var TripListComponent = new function() {
         let p = {'delivery_id':delivery_id,failure_notes:notes};
         vsapi.call([mThis.base_url,'/api/finishDeliveryTrip'].join(''),p).then(res=>{
             if(res.status_code===200){
+                cv_interact.success('The delivery trip is finished');
                 mThis.displayDeliveryTrips();
             }
             else cv_interact.error(res.error_message);
@@ -1549,8 +1550,8 @@ const PackageStatusDialog = new function(){
             return;
         }
 
-        if (p.status_id ===9 || p.status_id ===11) {
-            if (!p.notes || (p.notes+'').trim() ==''){
+        if (p.status_id ==9 || p.status_id ==11) {
+            if ((p.notes ||'').trim() ==''){
                 mThis.elError.html('ត្រូវការហេតុផលសំរាប់ទំនិញបញ្ជូនមិនបានសំរេច(Failed) និង ទំនិញបញ្ជូនត្រឡប់វិញ(Returned)');
                 return;
             }
