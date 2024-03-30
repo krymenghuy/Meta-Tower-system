@@ -2,13 +2,13 @@
 let main_view = new function(){
     let mThis = this;
     this.apiCluster = 'menus';
-    this.auth_script_version = 2;
-    this.main_route =null;
     this.onLayoutLoad = null;
     this.elScreenTitle = document.querySelector('#screen_title');
     this.elScreenTitle_mobile =  document.querySelector('#mobile_screen_title');
-
+    this.auth_script_version =4; /** Used to automcatically clear cached AuthManager.js script on client browser */
+    
     this.base_url = document.querySelector('meta[name="base_url"]').getAttribute('content'); //$('#__base_url').val();
+    this.mainRoute = document.querySelector('meta[name="main_route"]').getAttribute('content');
     this.asset_url =document.querySelector('meta[name="asset_url"]').getAttribute('content'); 
     this.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
     this.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content'); 
@@ -28,34 +28,10 @@ let main_view = new function(){
     this.MULTI_WAREHOUSE_OP =0;
     this.DEF_TO_WAREHOUSE_ID =1;
     this.DEF_WAREHOUSE_ID =1;
-
-    // this.clickOnClass = (target,cssClass)=>{
-    //     let c = [];
-    //     if(target.parentNode){
-    //         c = target.parentNode.classList?target.parentNode.classList:[];
-    //         if(c.contains(cssClass))
-    //         {
-    //           return target.parentNode;
-    //         }
-    //     }else{
-    //         c = target.classList?target.classList:[];
-    //         if(c.contains(cssClass)){
-    //             return target; 
-    //          }
-    //     }
-    //     return null; 
-    //     //return (target.parentNode.classList.contains(cssClass) || target.classList.contains(cssClass));
-    // }
- 
-   //BEGIN:: process side menus click using VSRoute
-      this.side_menus = document.querySelector('#kt_aside_menu_wrapper');
-      VSRoute.init(this.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent");
-    //END:: process side menus click using VSRoute
-
+   
     this.mnuLogout1 = this.top_right_menus.find('#_main_mnu_logout')[0];
     this.mnuAbout1 = this.top_right_menus.find('#_main_mnu_about')[0];
-    this.mnuLogout = this.side_menus.querySelector('#_main_lnkLogout');
-
+    
     if (!this.branch_id || !this.user_id){
         console.error('branch_id (company_id) and user_id are not found! => so Notifications will not work!');
     }
@@ -70,9 +46,16 @@ let main_view = new function(){
     }
    
     this.init = ()=>{
+     //BEGIN:: process side menus click using VSRoute
+       this.side_menus = document.querySelector('#kt_aside_menu_wrapper');
+       this.mnuLogout = this.side_menus.querySelector('#_main_lnkLogout');
+       VSRoute.init(this.side_menus.querySelectorAll('a.menu-item'),"DashboardComponent");
+     //END:: process side menus click using VSRoute
+
         this.displayUserMenus();
         this.displayNotifications();
         this.displayTasks();
+
         this.top_right_menus.on('click','.lnk-lang',function(e){
             let lang = $(this).data('lang');
             LocaleManager.translateAll(lang);
@@ -80,7 +63,6 @@ let main_view = new function(){
             $(this).closest('.dropdown-menu').removeClass('show');
             LocaleManager.saveLang(lang);   
         });
-
         this.top_right_menus.on('click','.lnk-lang',function(e){
             let lang = $(this).data('lang');
             LocaleManager.translateAll(lang);
@@ -112,6 +94,21 @@ let main_view = new function(){
             $(this).parent().removeClass('show');
         });
          
+        this.mnuLogout1.onclick = e =>{
+            cv_interact.confirm("Do you want to log out?",{
+                title: "MOE Campaign Data Management",
+                confirmButtonText: "Log Out",
+                cancelButtonText: "No, I stay in",
+                context: "delete",
+                translate: true
+            },(e) => {
+                if(e){
+                    mThis.logOut();
+                }
+            });
+        };
+
+        
         this.mnuLogout.addEventListener('click',e => {
             cv_interact.confirm("Do you want to log out?",{
                 title: "MOE Campaign Data Management",
@@ -124,11 +121,12 @@ let main_view = new function(){
                     mThis.logOut();
                 }
             });
-      });
-      
-      if (typeof mThis.onLayoutLoad ==='function') mThis.onLayoutLoad();
-   }
-  //end:: main_view.init()
+        });
+
+       
+        if (typeof mThis.onLayoutLoad ==='function') mThis.onLayoutLoad();
+    }
+    //end::main_view.init()
 
     this.logOut = ()=>{
         mThis.deleteAllCookies();
@@ -335,9 +333,10 @@ let main_view = new function(){
     }  
 };
 
-main_view.init();
+
 
 window.addEventListener('DOMContentLoaded',function(){
+    main_view.init();
     LocaleManager.translateZone(main_view.appContent);
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
 });

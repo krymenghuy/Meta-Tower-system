@@ -59,18 +59,26 @@ class LocaleManager{
 
         //If for example, $text_prop = 'Data must be between ? and ?::5;100' then method translate() will return 'Data must be between 5 and 100'. In this case, the parameter $replacements is not used
         static function translate($lang,$text_prop,$replacements=null,$langSection='validation'){
-            $parts = explode('::',$text_prop);
-            $langSection = $langSection ?? 'validation';
-            if (isset($parts[1])){
-                $text = self::getLangText($lang,$parts[0],$langSection);
-                $arr = explode(';',$parts[1]);
-                return self::replace_marks($text,$arr);   
-            }else {
-                $text = self::getLangText($lang,$text_prop,$langSection);
-                if(!$replacements) 
-                   return $text;
-                else return self::replace_marks($text,$replacements);   
+            try{
+                $parts = explode('::',$text_prop);
+                $langSection = $langSection ?? 'validation';
+                if (isset($parts[1])){
+                    $text = self::getLangText($lang,$parts[0],$langSection);
+                    $arr = explode(';',$parts[1]);
+                    return self::replace_marks($text,$arr);   
+                }else {
+                    $text = self::getLangText($lang,$text_prop,$langSection);
+                    if(!$replacements) 
+                       return $text;
+                    else return self::replace_marks($text,$replacements);   
+                }
+            }catch(\Exception $e){
+                \Log::error($e->getMessage());
+                \Log::error($e->getTraceAsString());
+                if(gettype($text_prop) ==='string') return $text_prop; 
+                return 'There was an problem in Translation of error message. See Server Log for details';
             }
+        
         }
 }
 

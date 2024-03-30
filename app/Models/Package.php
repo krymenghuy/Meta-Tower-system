@@ -1045,7 +1045,7 @@ class Package //extends Model
   
          //GetOutStandingPackageList_print() returns data for pdf printing only
          function getOutstandingPackageList_print($arr=[],$ss=null) {
-          $ss = $ss?$ss:$this->userInfo;   
+          $ss = $ss ?? $this->userInfo;   
           $data = (object)$arr;   
           $branch_id = Sanitizer::sanitize($ss->branch_id);
           $data->warehouse_id = isset($data->warehouse_id)?Sanitizer::sanitize($data->warehouse_id):0;
@@ -1635,6 +1635,8 @@ class Package //extends Model
            $ss = $ss?$ss:$this->userInfo;
            $branch_id = $ss->branch_id;
            $d = (object)$arr;
+           $remarks = $d->failure_notes ?? (isset($d->remarks)? $d->remarks:null);
+
            $cols = 'p.id,p.qr_code as barcode,p.delivery_id,p.status_id,p.driver_pmt_status_id,p.sender_pmt_status_id,p.receiver_phone';
            $pInfo = $this->getPackageProps($branch_id,$id,$cols,"id");
            if(!$pInfo) return DV::error('Failed to identify package ID');
@@ -1643,12 +1645,14 @@ class Package //extends Model
            $update_trip_status =$d->update_trip_status?$d->update_trip_status:1;//whether or not to allow updating the trip status 
            //$barcode = isset($data->barcode)?$data->barcode:null;
            $status_id = $d->status_id; //Status code in varchar(20)
-           $failure_notes = isset($d->failure_notes)?$d->failure_notes:null;
+          //  $failure_notes = isset($d->failure_notes)?$d->failure_notes:null;
            $trip_status_id =null;
            if ($pInfo->status_id == $status_id) return DV::depends(1);
            if ($status_id ==9  && !UM::allowed(281)) return DV::error('You need permission 281 to change Status to Failed',$ss->lang);
            else if ($status_id ==8 && !UM::allowed(282)) return DV::error('You need permission 282 to change Status to Delivered',$ss->lang);
-           
+           else if ($status_id ==9){
+              if(!$remarks) return DV::error('Please provide reason for failed delivery');
+           }
            $result = (object)array('status'=>'OK','error_message'=>null,'trip_status_id'=>null);
            if (empty($status_id)) return DV::error("Status is not correct");
            //if user try to change pacakge status to 6 ="On Delivery"=> This is not allowed if the trip has been Finished. This is allowed only when the Trip is still On Delivery 
@@ -1662,8 +1666,7 @@ class Package //extends Model
            //$org_status_id = null;
 
            if($status_id ==9) {
-            $rows = DB::table('package AS p')->where('branch_id',$branch_id)->where('id',$package_id)->selectRaw('p.failure_notes, p.status_id,p.driver_pmt_status_id, p.sender_pmt_status_id')->take(1)->get();
-            foreach($rows as $row) $the_package = $row;
+            $the_package = DB::table('package AS p')->where('branch_id',$branch_id)->where('id',$package_id)->selectRaw('p.failure_notes, p.status_id,p.driver_pmt_status_id, p.sender_pmt_status_id')->first();
             if(!$the_package) return DV::error('Package identity is not valid');
 
              //$failure_notes = $the_package->failure_notes;
@@ -1671,7 +1674,7 @@ class Package //extends Model
              if ($the_package->sender_pmt_status_id ==1) return DV::error('Cannot change status because it has been settled with the merchant');
              if ($the_package->driver_pmt_status_id ==1) return DV::error('Cannot change status because it has been settled with the driver');
              //if ($org_status_id ==8) return DV::error('Cannot change status of a pacakge that is already delivered to customer');
-             if(empty($failure_notes)) return DV::error("ត្រូវការហេតុផលសំរាប់ Failed Package");
+             if(empty($remarks)) return DV::error("ត្រូវការហេតុផលសំរាប់ Failed Package");
            }
 
            $outstanding =1;
@@ -1684,7 +1687,7 @@ class Package //extends Model
            DB::table('package')->where('branch_id',$branch_id)->where('id',$package_id)->update([
                'status_id'=>$status_id,
                'outstanding'=>$outstanding,
-               'failure_notes'=>$failure_notes, //$failure_notes is NULL when $status_id != 9
+               'failure_notes'=>$remarks, //$failure_notes is NULL when $status_id != 9
                'delivery_time'=>$nowTime,
                'update_user'=>$ss->login_name,
                'update_date'=>$nowTime

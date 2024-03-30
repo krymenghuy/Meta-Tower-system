@@ -129,6 +129,7 @@ var PickupListComponent = new function () {
     }
 
     this.orderCreated_eventHandler = (d) => {
+        if(!mThis.tblOrders) return;
         if (mThis.tblOrders.style.display != 'none') {
             let filter_status_id = FilterDialog_pickup.elFilter_status.val();
             if (filter_status_id == 1 || filter_status_id == -1) mThis.live_addOrderRow(d.data);
@@ -471,6 +472,7 @@ var PickupListComponent = new function () {
               if(btn){
                   if(!AuthManager.allowed(221)) return;
                   let tr = btn.closest('tr');
+                  console.log(tr);
                   mThis.assignDriver(tr,btn);
                   return;
               }

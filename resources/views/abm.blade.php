@@ -22,7 +22,7 @@
         <meta name="sess_branch_id" content="{{ sess_company_id() }}" />
         <meta name="sess_user_id" content="{{ sess_user_id() }}" />
         <meta name="base_url" content="{{ url('/') }}" />
-        <meta name="main_route" content="dms" />
+        <meta name="main_route" content="abm" />
         <meta name="default_component" content="<?php echo $defaultComponent; ?>" />
         <meta name="asset_url" content="{{ asset('assets/') }}" />
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,7 +36,7 @@
             ScriptManager::render('primary',1);
             ScriptManager::render('primary-async',1);
             ScriptManager::render('primary-defer',1);
-            ScriptManager::render('components',1);
+            ScriptManager::render('abm-components',1);
         ?>
     </head>
     <body style="display:none" class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">
@@ -68,7 +68,7 @@
         <div class="kt-grid kt-grid--hor kt-grid--root">
             <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--ver kt-page">
                 <div class="kt-aside kt-aside--fixed kt-grid__item kt-grid kt-grid--desktop kt-grid--hor-desktop" id="kt_aside">
-                    @include('menus.menu')
+                    @include('menus.abm_menu')
                 </div>
                 <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor kt-wrapper" id="kt_wrapper">
                     <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
@@ -164,32 +164,8 @@
                     <div id="_p2" class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content" style="margin-top:-15px">
                         <div id="_p1" class="row">
                             <div class="col-lg-12 shadow-box ps-4" id="_app_content">
-                            @include('layouts.dashboardComponent')
-                                @include('layouts.orderImagesComponent')
-                                @include('layouts.pickupListComponent')
-                                @include('layouts.packageListComponent')
-                                @include('layouts.completedPackageListComponent')
-                                @include('layouts.tripListComponent')
-                                @include('layouts.companyComponent')
-                                @include('layouts.generalSettingsComponent')
-                                @include('layouts.driverPaymentComponent')
-                                @include('layouts.senderPaymentComponent')
-                                @include('layouts.merchantBalancesComponent')
-                                @include('layouts.driverBalancesComponent')
-                                @include('layouts.driverListComponent')
-                                @include('layouts.salesAgentsComponent')
-                                @include('layouts.senderListComponent')
-                                @include('layouts.um.userManagementComponent')
-                                @include('layouts.um.roleManagementComponent')
-                                @include('layouts.locationComponent')
-                                @include('layouts.mobileBrandImagesComponent')
-                                @include('layouts.promotionComponent')
-                                @include('layouts.deliveryZoneComponent')
-                                @include('layouts.priceSettingsComponent')
-                                @include('layouts.exchangeRatesComponent')
-                                @include('layouts.productCategoriesComponent')
-                                @include('layouts.remarksComponent')
-                                @include('layouts.reportCenterComponent')
+                                @include('layouts.abm.dashboardComponent')
+                                @include('layouts.abm.billsComponent')
                             </div>
                         </div>
                     </div>

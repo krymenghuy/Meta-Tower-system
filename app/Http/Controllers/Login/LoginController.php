@@ -70,7 +70,7 @@ class LoginController extends Controller
                 $cookie_value = $result->user->access_token;
                 $refreshToken= $result->refresh_token;
                 GarbageCollector::cleanAll();
-                return redirect('dms')->withCookie(cookie($cookie_name,$cookie_value,0,'/',null,true,false))->withCookie(cookie("dmsrefresh",$refreshToken,0,'/',null,true,true));;
+                return redirect('abm')->withCookie(cookie($cookie_name,$cookie_value,0,'/',null,true,false))->withCookie(cookie("dmsrefresh",$refreshToken,0,'/',null,true,true));;
                 //->header('Cache-Control', 'no-store, no-cache, must-revalidate, post-check=0, pre-check=0');
              }
              else if ($user->user_class === 'customer')
