@@ -78,7 +78,7 @@
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Dashboard"></span>
                 </a>
             </li>
-            
+          
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
                 <a href="CustomersComponent" modid="201" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -87,6 +87,7 @@
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Customers"></span>
                 </a>
             </li>
+
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
                 <a href="SuppliersComponent" modid="202" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
