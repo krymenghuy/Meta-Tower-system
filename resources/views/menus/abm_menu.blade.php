@@ -78,14 +78,7 @@
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Dashboard"></span>
                 </a>
             </li>
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(214); ?>>
-                <a href="PackageListComponent" modid="214" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/order_image.svg') }}" />
-                    </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Package List"></span>
-                </a>
-            </li>
+          
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
                 <a href="CustomersComponent" modid="201" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -94,6 +87,7 @@
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Customers"></span>
                 </a>
             </li>
+
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
                 <a href="SuppliersComponent" modid="202" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
