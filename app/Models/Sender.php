@@ -137,8 +137,8 @@ class Sender //extends Model
     }
 
     function deleteProfilePicture($id=null,$ss=null){
-        $id = $id?$id:$this->id;
-        $ss = $ss?$ss:$this->userInfo;
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         $sender = DB::table('sender as s')->where('id',$id)->selectRaw('id,branch_id,photo_file_name')->first();
         if(!$sender) return DV::error('Merchant identity is not correct!');
         PublicStorage::delete($ss->branch_id,'merchant','image',$sender->photo_file_name);
@@ -173,7 +173,8 @@ class Sender //extends Model
       if(!$row){
          return self::defaultImage(1);
       }
-      return PublicStorage::getUrl($row->branch_id,'merchant','image').$row->photo_file_name;
+      $url = PublicStorage::getUrl($row->branch_id,'merchant','image').$row->photo_file_name;
+      return validateUrl($url,'');
     }
 
     function verify_otp_preregister($arr = []){
@@ -1003,7 +1004,7 @@ class Sender //extends Model
   if ($search_value) 
   {
     $search_value = escape_like_str($search_value);
-    $str_search = "(s.name LIKE '%". $search_value."%' OR s.phone_number ='".$search_value."' )";
+    $str_search = "(s.code ='$search_value' OR s.name LIKE '%". $search_value."%' OR s.phone_number ='".$search_value."' )";
   }else{
      //if($sender_type_id>0) $str_sender_type ="AND s.sender_type_id ='".Sanitizer::sanitize($sender_type_id)."' ";
      if($business_type) { 
@@ -1056,7 +1057,7 @@ class Sender //extends Model
     if ($search_value) 
     {
       $search_value = escape_like_str($search_value);
-      $str_search = "(s.name LIKE '%". $search_value."%' OR s.phone_number ='".$search_value."' )";
+      $str_search = "(s.code ='$search_value' OR s.name LIKE '%". $search_value."%' OR s.phone_number ='".$search_value."' )";
     }else{
        //if($sender_type_id>0) $str_sender_type ="AND s.sender_type_id ='".Sanitizer::sanitize($sender_type_id)."' ";
        if($business_type) { 
