@@ -281,7 +281,7 @@ table.header-uppercase > thead > tr > th{
 
 .kt-menu__link-text {
   font-size: 1.05em !important;
-  color: #0f00af;
+  color: #000000;
 }
 
 .error_text {
@@ -398,7 +398,7 @@ table.header-uppercase > thead > tr > th{
 }
 
 .img-logo {
-  max-width: 85px;
+  max-width: 105px;
 }
 
 .kt-aside__brand .kt-aside__brand-logo {
