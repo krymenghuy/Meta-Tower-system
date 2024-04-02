@@ -133,12 +133,12 @@ class HtmlCompressor{
      //This method will picks only files from resources/views/layouts directory that are included in the master.blade.php and then
      //extract their conents and combine those contents in the right place within master.blade.php file.
      //NOTe that buildMasterView() will use file in folder "/resources/views/master.blade.php" and then create another output compressed file for master.blade.php in a desired directory, or by default, use directory "/views/dist"  
-     function buildMasterView($output_dir=null){
+     function buildMasterView($output_dir=null, $base_name ='master'){
         $base_dir = getCwd(); 
-        $masterFile =  $base_dir.'/resources/views/master.blade.php';
+        $masterFile =  $base_dir.'/resources/views/'.$base_name.'.blade.php';
         //set default Output directory to "/resources/views/dist"
         $output_dir =$output_dir? $output_dir: "/resources/views/dist";
-        $outputFile =  $base_dir.$output_dir.'/master.blade.php';
+        $outputFile =  $base_dir.$output_dir.'/'.$base_name.'.blade.php';
 
         $content = File::get($masterFile);
 
@@ -170,9 +170,9 @@ class HtmlCompressor{
         $c_content = self::compressHtml($content);
         //Switch Style and Scripts to production mode, using the compressed files
         $c_content = self::switchStyleAndScripts($c_content,0);
-        $x = self::createFile($outputDir,"master.blade.php",$c_content);
-        if($x) return (object)['status'=>'OK','file'=>$outputDir."/master.blade.php","error_message"=>null,"error_files"=>$errors];
-        else return (object)['status'=>'Error','error_message'=>"Failed to create the output file master.blade.php in $outputDir","error_files"=>[]];             
+        $x = self::createFile($outputDir,"$base_name.blade.php",$c_content);
+        if($x) return (object)['status'=>'OK','file'=>$outputDir."/$base_name.blade.php","error_message"=>null,"error_files"=>$errors];
+        else return (object)['status'=>'Error','error_message'=>"Failed to create the output file $base_name.blade.php in $outputDir","error_files"=>[]];             
    }
       
 }

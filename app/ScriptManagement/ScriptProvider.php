@@ -77,10 +77,10 @@ namespace App\ScriptManagement;
                 'abm-components'=>[
                     'attr'=>'defer',
                     'single_file'=>1,
-                    'output_file'=>'/dist/js/awm.components.js?v=1',
+                    'output_file'=>'/dist/js/abm.components.js',
                     'files'=>[
                         '/assets/js/VSRoute.js',
-                        '/js/layout/abm/main.js?v=1',
+                        '/js/layout/abm/main.js',
                         '/assets/js/formUtils.js',
                         '/js/components/abm/dms.utils.js',
                         '/js/components/abm/DialogFilter.js',
