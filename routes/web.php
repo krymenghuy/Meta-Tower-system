@@ -150,6 +150,17 @@ Route::get('dms/{componentName?}',function($componentName= null){
     return view('dms',$data);
 });
 
+Route::get('usm/{componentName?}',function($componentName= null){
+    if(!Session('login_name')){
+       // return redirect('/')
+       $base_url =url('/');
+       echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+       return;
+    };
+    $data = ['defaultComponent' => $componentName];
+    return view('usm',$data);
+});
+
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
 

@@ -42,6 +42,7 @@ class AddAuditColumnsToTables extends Command
     private function addAuditColumnsToTable($table)
     {
         $columnsToAdd = [
+            'branch_id' => 'integer',
             'create_user' => 'string',
             'created_at' => 'timestamp',
             'create_uid' => 'integer',
