@@ -1654,27 +1654,28 @@ class Package //extends Model
               if(!$remarks) return DV::error('Please provide reason for failed delivery');
            }
            $result = (object)array('status'=>'OK','error_message'=>null,'trip_status_id'=>null);
-           if (empty($status_id)) return DV::error("Status is not correct");
+           if (empty($status_id)) return DV::error('Status is not correct');
            //if user try to change pacakge status to 6 ="On Delivery"=> This is not allowed if the trip has been Finished. This is allowed only when the Trip is still On Delivery 
             if ($status_id ==6){
-               $rows = DB::table('delivery AS d')->where('d.branch_id',$branch_id)->where('d.id',$delivery_id)->selectRaw('d.status_id')->take(1)->get();
-               foreach($rows as $row) $trip_status_id = $row->status_id;
-               if ($trip_status_id != 2) return DV::error("មិនអាចដូរស្ថានភាពនេះទេ! ព្រោះការដឹកត្រូវបានបញ្ចប់ហើយ");  
+               $row = DB::table('delivery AS d')->where('d.branch_id',$branch_id)->where('d.id',$delivery_id)->selectRaw('d.status_id')->take(1)->first();
+               if($row) $trip_status_id = $row->status_id;
+               if ($trip_status_id != 2) return DV::error('មិនអាចដូរស្ថានភាពនេះទេ! ព្រោះការដឹកត្រូវបានបញ្ចប់ហើយ');
             }
 
            $the_package = null; 
            //$org_status_id = null;
 
            if($status_id ==9) {
-            $the_package = DB::table('package AS p')->where('branch_id',$branch_id)->where('id',$package_id)->selectRaw('p.failure_notes, p.status_id,p.driver_pmt_status_id, p.sender_pmt_status_id')->first();
+            $the_package = DB::table('package AS p')->where('p.branch_id',$branch_id)->where('id',$package_id)->selectRaw('p.failure_notes, p.status_id, HEX(p.driver_trx_id) AS driver_trx_id,p.driver_pmt_status_id, p.sender_pmt_status_id')->first();
             if(!$the_package) return DV::error('Package identity is not valid');
 
              //$failure_notes = $the_package->failure_notes;
              //$org_status_id = $the_package->status_id;
              if ($the_package->sender_pmt_status_id ==1) return DV::error('Cannot change status because it has been settled with the merchant');
+             if ($the_package->driver_trx_id) return DV::error('Cannot change status because driver settlement is in waiting for approval now');
              if ($the_package->driver_pmt_status_id ==1) return DV::error('Cannot change status because it has been settled with the driver');
              //if ($org_status_id ==8) return DV::error('Cannot change status of a pacakge that is already delivered to customer');
-             if(empty($remarks)) return DV::error("ត្រូវការហេតុផលសំរាប់ Failed Package");
+             if(empty($remarks)) return DV::error('ត្រូវការហេតុផលសំរាប់ Failed Package');
            }
 
            $outstanding =1;

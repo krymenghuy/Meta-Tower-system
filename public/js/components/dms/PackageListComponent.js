@@ -304,7 +304,7 @@ var PackageListComponent = new function () {
                     i++;
                 } while (c);
             }
-            let option = { 'manualClosing':true, 'confirmButtonText':'Assign Now', 'title': 'Assign Driver', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': mThis.drivers1, 'allowBlankValue':true,'blankErrorMessage': "Please choose one driver", "defaultvalue": def_driver_id };
+            let option = { 'manualClosing':true, 'confirmButtonText':'Assign Now', 'title': 'Assign Driver', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': mThis.drivers1, 'allowBlankValue':false,'blankErrorMessage': "Please choose one driver", "defaultvalue": def_driver_id };
             InputBox2.show(option, (d,btnAssign) => {
                 if (d) {
                     let p = {};
@@ -327,7 +327,7 @@ var PackageListComponent = new function () {
                                 status = 'At Warehouse';
                                 status_id = 5;
                             }
-                            if(option.manualClosing) InputBox2.close();
+                            if(option.manualClosing) InputBox2.self.modal('hide');
                             mThis.displayDriverData(tr, { "driver_id": p.driver_id, "driver_name": d.text, 'status': status, 'status_id': status_id });
                         } else cv_interact.error(res.error_message);
                     });
