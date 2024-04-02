@@ -98,6 +98,8 @@ namespace App\ScriptManagement;
                         'assets/js/pusher/pusher.min.js',
                         '/js/components/abm/pusher_client_houxpress.js',
                         //'/js/components/abm/pusher_client_dms.js'
+                        '/js/components/abm/DashboardComponent.js',
+
 
 
                         //start Components abm

@@ -229,7 +229,7 @@
                                 @include('layouts.dms.reportCenterComponent')
                             </div>
                         </div>
-                    </div>
+                    </div> 
                 </div>
             </div>
         </div>
