@@ -1,297 +1,426 @@
 'use strict';
-////NOTE in converting from PackageListComponent to CompletedPackageListComponent => seach for "PackageListComponent.tblPackages" and "PackageListComponent.form_data" and replace it with "CompletedPackageListComponent."
 //## begin::PackageListComponent
-var PackageListComponent = new function () {
-    let mThis = this;
-    //this.lang ='kh';
-    this.form_data = {};
+//NOTE in converting from PackageListComponent to PackageListComponent => seach for "PackageListComponent.tblPackages" and "PackageListComponent.form_data" and replace it with "PackageListComponent."
+var PackageListComponent = new function() {
+    const mThis = this;
+    // this.lang ='kh';
     this.title_prop = "Package Trail";
     this.self = main_view.appContent.find('#_main_packageListComponent');
-    this.base_url =main_view.base_url;
-    this.tblPackages = this.self.find('#_dl_tblPackages');
-    this.package_dropdown_menu = mThis.tblPackages.find('.dropdown-menu');
+    this.elFilter_period = this.self.find('#_pgl_filter_period');
+    this.base_url = main_view.base_url; // this.self.find('#__base_url').val();
+      
+    this.div_filter_fields = main_view.appContent.children('#_dl_dlgFilter').find('.modal-body')[0];
 
-    this.lnkReceivePackage = this.self.find('#_dl_lnkReceivePackage');
-    this.btnScanBackIn = this.self.find('#_dl_btnScanBackIn');
-    this.elSearchPackage = this.self.find('#_dl_search');
-    this.btnSearch = this.self.find('#_dl_btnSearch');
-    this.btnToggleFilter = this.self.find('#_dl_btnToggleFilter');
+    //this.package_dropdown_menu = mThis.tblPackages.find('.dropdown-menu');
 
-    this.btnPrint = this.self.find('#_dl_btnPrint');
-    this.btnPDF = this.self.find('#_dl_btnPDF');
-    this.btnExcel = this.self.find('#_dl_btnExcel');
+    //this.lnkReceivePackage = this.self.find('#_pgl_lnkReceivePackage');
+    //this.btnScanBackIn = this.self.find('#_pgl_btnScanBackIn')[0];
+    this.elSearchPackage = this.self.find('#_pgl_search')[0];
+    this.btnSearch = this.self.find('#_pgl_btnSearch')[0];
+    this.btnToggleFilter = this.self.find('#_pgl_btnToggleFilter')[0];
 
-    this.init = function () {
+    this.btnPrint = this.self.find('#_pgl_btnPrint')[0];
+    this.btnPDF = this.self.find('#_pgl_btnPDF');
+    this.btnExcel = this.self.find('#_pgl_btnExcel')[0];
+    
+    this.form_data = {};
+
+    this.cols = [
+                    {
+                        // data:function(data,type,meta) {
+                        //     return cnt++;
+                        // },
+                        // title:'NO.'
+                        className:'col_action',
+                        data:function(data,index,tr) {
+                         let html =['<div class="dropdown">',
+                             '<a href="javascript:void(0)" data-barcode="',data.barcode,'" data-id="',data.id,'" data-did="',data.delivery_id,'" data-statusid="',data.status_id,'" class="btn_pg_action" aria-haspopup="true" aria-expanded="false">',
+                             '<i class="fa fa-cube fs-5 text-warning text-opacity-25"></i>',
+                             //' Action',
+                             '</a>',
+                            '</div>'].join('');
+                            return html;
+                       
+                        } 
+                    },
+                    {
+                        data:function(data,index,tr){
+                            return ['<div class="d-flex flex-row justify-content-between">',
+                             '<div>',
+                              '<span class="pg-barcode">',data.barcode,'</span>',
+                               '<span class="pg-pickup_time d-block">',data.arrival_date,'</span>',
+                               '<span class="d-block text-primary">ថ្ងៃបញ្ចប់ ',data.finish_time,'</span>',
+                             '</div>',
+                             '<a href="javascript:;" style="display:none" data-barcode="',data.barcode,'" class="_pgl_pa_quick_btn_barcode"><i class="fa fa-barcode" style="color:green"></i></a>',
+                            '</div>'].join('');
+                        },
+                        title:'Barcode'
+                    },
+                    {
+                        data:function(data,index,tr) {
+                            if(!data.sender_phone) data.sender_phone ='(Contact not available)';
+                            return ['<div style="display:flex;flex-direction:column;align-items:justify-content"><span class="pg-text pg-sender_name" data-field="sender_name">',data.sender_name,'</span><div style="display:flex;flex-direction:row">',
+                            '<span class="pg-text pg-sender_type" data-field="sender_type">',data.sender_type,'</span>',
+                            '<div style="width:15px"></div>',
+                            '<span class="pg-text pg-sender_phone" data-field="sender_phone">',data.sender_phone,'</span>',
+                            ,'</div></div>'].join('');
+                        },
+                        title:'Merchant'
+                    },
+                    {
+                        data:function(data,index,tr) {
+                            if(!data.product_type) data.product_type ='Generic Product';
+                          
+                            if(!data.receiver_phone || data.receiver_phone =='') 
+                              data.receiver_phone ='<span class="pg-no_customer_phone">Customer phone not avaialable</span>';
+                            else
+                              data.receiver_phone =['<span class="pg-text pg-receiver_phone" data-type="number" data-field="receiver_phone">',data.receiver_phone,'</span>'].join('');  
+                            return ['<div class="d-flex-fex-row">',
+                                 '<div style="display:flex;flex-direction:column;align-items:space-between">',
+                                      '<span class="pg-text pg-product_type text-nowrap" data-field="product_type">',data.product_type,'</span>',
+                                      '<div class="w-100">',data.receiver_phone,'</div>',
+                                 '</div>',
+                            '</div>'].join('');
+                        },
+                        title:'Package Info' 
+                    },
+                    {
+                        data:function(data,index,tr) {
+                            if(!data.zone_code) data.zone_code ='(Zone code)';
+                            if(!data.zone_name) data.zone_name ='(Zone Name)';
+                            return ['<div style="display:flex;flex-direction:column;align-items:justify-content;margin-top:-10px"><span class="pg-text pg-zone_code" data-field="zone_code">',data.zone_code,'</span><span class="pg-text pg-zone_name" data-field="zone_name">',data.zone_name,'</span></div>'].join('');
+              
+                        },
+                        title:'Destination'
+                    },
+                    {
+                        title:'Service Type',
+                        data:(data,index,tr)=>{
+                            let pickup_driver_name = data.pickup_driver_name? ['Picked by: ',data.pickup_driver_name].join(''):'';
+                            return  ['<div class="d-flex flex-column">','<span class="pg-text pg-delivery_type pg-badge-delivery_type" style="margin-left:30%" data-field="delivery_type">',data.delivery_type,'</span>','<span>',pickup_driver_name,'</span>','</div>'].join('');
+                        }
+                    },
+                    {
+                        className:'package-status',
+                        data:function(data,index,tr) {
+                            let str_driver = ['<a href="javascript:void(0)" class="_pol_driver_name">',data.driver_name?data.driver_name:'មិនមានអ្នកដឹក','</a>'].join('');
+                            
+                             //set failure notes | remarks | package ramarks
+                             let notes = (data.status_id==9 || data.status_id==11 || data.status_id ==10)? data.failure_notes:data.delivery_notes;
+                             let cls_status = DUtil.getStatusClass(data.status_id);
+                             const remarks = mThis.sanitizeInput(data.remarks);
+                             const failure_notes = mThis.sanitizeInput(data.failure_notes);
+                             const agent_notes = mThis.sanitizeInput(data.agent_notes);
+                             return ['<div class="d-flex flex-column flex-wrap">','<a data-remarks="',remarks,'" data-failurenotes ="',failure_notes,'" data-agentnotes="',agent_notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">',data.status,'</a>',str_driver, '</div>'].join('');
+                        },
+                        title:'Status'
+                    },
+                    {
+                          className:'total', //css class "total" is used for accessing value and update values of totals in <td>
+                          data:function(data,index,tr){
+                            //let merchant_paid='';
+                            //let driver_paid = '';
+                            //  if(data.status_id ==8){
+                            //     merchant_paid = data.sender_pmt_status_id == 1? `<span class="text-success ml-1" style="font-size:0.8em">(Paid)</span>`:`<span class="ml-1 text-danger" style="font-size:0.8em">(Unpaid)</span>`;
+                            //     driver_paid = data.driver_pmt_status_id == 1? `<span class="text-success ml-1" style="font-size:0.8em">(Paid)</span>`:`<span class="ml-1 text-danger" style="font-size:0.8em">(Unpaid)</span>`;
+                            //  }
+                            //let fees = data.sender_total;
+                            return ['<div style="display:flex;flex-direction:column">',
+                                '<div class="pg-total_driver"><span class="total-label">Driver:</span><span class="total-value driver-total text-danger"> $',data.driver_total,'</span></div>',
+                                '<div class="pg-total_sender"><span class="total-label">Sender:</span><span class="total-value sender-total text-success"> $',data.sender_total,'</span></div>',
+                            '</div>'].join(''); 
+                        },
+                        title:'Totals'
+                    }
+                ];
+ 
+    this.sanitizeInput = (userInput =null) => {
+        userInput = userInput || '';
+       // Remove HTML tags
+       let withoutHTML = userInput.replace(/<\/?[^>]+(>|$)/g, "");
+       // Use DOMParser to decode entities and extract plain text
+       let doc = new DOMParser().parseFromString(withoutHTML, 'text/html');
+       let safeText = doc.body.textContent || "";
+       return safeText;
+    }
+    this.initOnce = function() {
         if(mThis.initAlready) return;
-        if (mThis.initialized == true) return;
+        
+        //FilterDialog_package.loadFilterData();
 
-        FilterDialog_package.loadFilterData();
-        mThis.btnSearch.on('click', function () {
-            mThis.displayOutstandingPackageList();
+        mThis.listView = new ListView('_pgl_package_list', {
+            'columns':mThis.cols,
+            // 'clientSidePagination':true,
+            'processResponse':(res)=>{
+               //display summary data 
+
+               return res.data.list;
+            },
+            //'paginationContainer': document.querySelector('#test_div'),
+            'apiCluster':main_view.apiCluster,
+            'fetchApi': `${main_view.base_url}/api/package/list`,
+            'apiCluster': main_view.apiCluster,
+            'tableClass':'table header-uppercase table',
+            'perPage': 10,
+            'rowCreated':(data,index,tr) =>{
+                tr.classList.add('package_header');
+                tr.dataset.id = data.id;
+                tr.dataset.barcode = data.barcode;
+                tr.dataset.driverid = data.driver_id;
+                tr.dataset.senderpmtstatusid = data.sender_pmt_status_id ==1? data.sender_pmt_status_id :0;
+                tr.dataset.driverpmtstatusid = data.driver_pmt_status_id ==1? data.driver_pmt_status_id:0;
+                tr.dataset.senderid = data.sender_id;
+                tr.dataset.zonecode = data.zone_code || '';
+
+               //begin::init Popover view
+                    const btnStatus = tr.querySelector('._pol_status');
+                    //if(btnStatus){
+                        let remarks = btnStatus.dataset.remarks;
+                        let failure_notes = btnStatus.dataset.failurenotes;
+                        if(failure_notes && failure_notes ==remarks) remarks = '';
+                        const agent_notes = mThis.sanitizeInput(data.agent_notes);
+                        let status_id = btnStatus.dataset.statusid;
+                        let cls = 'pg-remarks';
+                        if (status_id == 9) cls = 'pg-remarks-failed';
+                        //const status_id = btnStatus.dataset.statusid;
+                        if (failure_notes || remarks) {
+                            $(btnStatus).popover({
+                                html: true,
+                                trigger: "hover",
+                                title: ["<span class='pg-remarks-title'>Remarks</span>"].join(''),
+                                content: ['<span class="d-block text-danger">',failure_notes,'</span><span class="d-block text-black">',remarks,'</span><span class="d-block text-success">',agent_notes,'</span>'].join('')
+                            });
+                        }
+                    //} 
+               //end::Init Popover view
+
+
+            },
+            'listContainerClass': null
         });
 
-        mThis.elSearchPackage.on('keyup', function (e) {
-            let search_value = $(this).val();
-            if (!search_value || search_value.trim() === '')
-                mThis.displayOutstandingPackageList();
-            else {
-                if (search_value.length > 2) mThis.displayOutstandingPackageList();
+        mThis.tblPackages = $(mThis.listView.getTable());
+
+        mThis.cfg = new ExpandableRowConfig(mThis.tblPackages.attr('id'), {
+            dontExpandByClickingOn: ['btn_pg_action'],
+            onOpen: (container, detail_tr, parent_tr) => {
+                let pid = parent_tr.dataset.id;
+                let barcode = parent_tr.dataset.barcode;
+                //let sender_pmt_statu_id = parent_tr.dataset.senderpmtstatusid;
+                //let driver_pmt_statu_id = parent_tr.dataset.driverpmtstatusid;
+                container.dataset.id = pid;
+                container.dataset.barcode = barcode;
+                container.dataset.senderid = parent_tr.dataset.senderid;
+                container.dataset.zonecode = parent_tr.dataset.zonecode;
+                container.dataset.driverpmtstatusid = parent_tr.dataset.driverpmtstatusid;
+                container.dataset.senderpmtstatusid = parent_tr.dataset.senderpmtstatusid;
+
+                detail_tr.barcode = barcode;
+                detail_tr.id = pid;
+                mThis.ExpandableDetails.displayPackageDetails(container,pid,true);
+            },
+        });
+
+        mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el => {
+            el.onChange = e =>{
+                e.preventDefault();
+                if(!mThis.filter_disabled){
+                     mThis.listView.showPage(mThis.getFilterData());
+                }
             }
         });
 
-        this.btnToggleFilter.on('click', () => {
-            let op = {};
-            FilterDialog_package.show(op, (d) => {
-                if (d) {
-                    mThis.displayOutstandingPackageList(d);
+         mThis.btnSearch.addEventListener('click', e =>{
+            e.preventDefault();
+            mThis.listView.showPage(mThis.getFilterData());
+         });
+
+         mThis.elSearchPackage.addEventListener('keyup',e => {
+            e.preventDefault();
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(()=>{
+                mThis.listView.showPage(mThis.getFilterData());
+            },250);
+         });
+        
+         this.btnToggleFilter.addEventListener('click',e=>{
+            e.preventDefault();
+             const op = {
+                "onClose": (d) =>{
+                   //Clear Search value when user uses Filter Dialog 
+                   
+                    d.fresh =1;
+                    d.search_value = '';
+                    mThis.elSearchPackage.value = '';
+                    console.log(d);
+                    mThis.listView.showPage(d);
                 }
-            });
-        });
+             };
+             FilterDialog_package.show(op);
+             
+         });
 
-        mThis.btnPrint.on('click', function (e) {
-            let d = FilterDialog_package.getData();
-            let params = ['rtype=package_list&completed=0&wid=', d.warehouse_id, '&date=', d.date, '&search=', mThis.elSearchPackage.val(), '&zonecode=', d.zone_code, '&driverid=', d.driver_id, '&sid=', d.sender_id, '&dtype=', d.delivery_type, '&stid=', d.status_id].join('');
-            pdfReport.getEncryptData(encodeURI(params), (d) => {
-                window.open([mThis.base_url, '/dms-gen-report/', d].join(''), '_blank');
+         mThis.btnPrint.addEventListener('click',e =>{
+            const d = mThis.getFilterData();
+             const param_string = ReportCenterComponent.translateToQueryString(d);
+            let params = ['rtype=package_list&completed=0&',param_string].join('');
+            pdfReport.getEncryptData(encodeURI(params),(d)=>{
+                window.open([mThis.base_url,'/dms-gen-report/',d].join(''),'_blank'); 
             });
-        });
+         }); 
 
-        this.btnPDF.on('click', function (e) {
-            let p = FilterDialog_package.getData();
-            p.search_value = mThis.elSearchPackage.val();
-            let sub_title = null;
-            if (p.start_date && p.end_date) [p.start_date, ' to ', p.end_date].join('');
-            let rpt_title = 'Package List';
-            if (mThis.lang == 'kh') rpt_title = 'បញ្ជីរកញ្ចប់ទំនិញ';
-            try {
-                vsapi.call([mThis.base_url, '/api/getOutstandingPackageList_print'].join(''), p).then(res => {
-                    if (res.status_code === 200) {
+         this.btnPDF.on('click',function(e){
+           let p = mThis.getFilterData() ; // FilterDialog_package.getData();
+           p.search_value = mThis.elSearchPackage.value;
+
+           let sub_title =null;
+
+           let rpt_title = 'Outstanding Package List';
+           if (mThis.lang == 'kh') rpt_title = 'បញ្ជីរកញ្ចប់ទំនិញមិនទានិបញ្ចប់';
+           try {
+                vsapi.call(`${mThis.base_url}/api/package/list-print`,p).then(res => {
+                    if(res.status_code === 200){
                         let data = res.data;
                         //data = StringSanitizer.sanitizeObject(data,'email');
                         //mThis.processPackageList_print() return object @d = {'data':json array,'titles':[]}
-                        let d = mThis.processPackageList_print(res.data);
-                        let op = { 'title': rpt_title, 'title_color': 'blue', 'subTitle': sub_title, 'header_columns': d.titles };
-                        pdfReport.viewPDF_json(d.data, op);
+                        let d = mThis.processPackageList_print(data);
+                        let op = {'title':rpt_title,'title_color':'blue','subTitle':sub_title,'header_columns':d.titles};
+                        pdfReport.viewPDF_json(d.data,op); 
+                    } 
+           });           
+           }catch(e){
+               cv_interact.error(e.toString());
+           } 
+         });
+
+        // this.btnExcel.addEventListener('click',function(e){
+        //     let p = FilterDialog_package.getData();
+        //     p.search_value = mThis.elSearchPackage.val();
+        //          vsapi.call(`${mThis.base_url}/api/completed-package/list-all`,p).then(res => {
+        //              if(res.status_code === 200){
+        //                 let data = res.data;
+        //                  let d = mThis.processPackageList_print(data);
+        //                  JsonToExcel.exportToExcel(d.data,'package_list',d.titles);  
+        //              } 
+        //     });
+        // });
+         
+      //##BEGIN:: tblPackages dropdown menu
+                mThis.tblPackages.on('click', (e) => {
+                    // Check if the clicked element has the class 'btn_pg_action'
+                    let btn = VSUtil.getElementByClass(e.target,'btn_pg_action');
+                    if (btn) {
+                        e.preventDefault();
+
+                        let p = btn.parentElement;
+                     
+                        let package_id = btn.dataset.id;
+                        let barcode = btn.dataset.barcode;
+                        let delivery_id = btn.dataset.did;
+                        let status_id = btn.dataset.statusid;
+
+                        let dropdownMenu = p.querySelector('.dropdown-menu');
+
+                        if (!dropdownMenu || dropdownMenu.length <= 0) {
+                            const dropdownMenuHtml = mThis.createDropdownMenuHtml_package(delivery_id, package_id, barcode, status_id);
+                            p.insertAdjacentHTML('beforeend', dropdownMenuHtml);
+                            dropdownMenu = p.querySelector('.dropdown-menu');
+                        }
+
+                        // Style for "dropdown-menu" class
+                        dropdownMenu.classList.toggle('show');
+
+                        // Remove 'show' class from the previous dropdown menu if it exists
+                        if (mThis.prev_dropdownMenu && mThis.prev_dropdownMenu !== dropdownMenu) {
+                            mThis.prev_dropdownMenu.classList.remove('show');
+                        }
+
+                        // Store the current dropdown menu as the previous one
+                        if (dropdownMenu.classList.contains('show')) {
+                            mThis.prev_dropdownMenu = dropdownMenu;
+                        }
+                        return;
                     }
                 });
-            } catch (e) {
-                cv_interact.error(e.toString());
-            }
-        });
+ 
+                // $(document).on('click',function(e){
+                //     //e.preventDefault();
+                //     let x = mThis.tblPackages.find('div.dropdown-menu'); 
+                //     let container =  x.parent(); 
+                //     //mThis.package_dropdown_menu.parent(); // div.dropdown
+                //     if(container){
+                //         if (!container.is(e.target) && container.has(e.target).length === 0) {
+                //             //mThis.package_dropdown_menu.removeClass('show');
+                //             x.removeClass('show'); 
+                //         } 
+                //     }
+                // });
 
-        this.btnExcel.on('click', function (e) {
-            let p = FilterDialog_package.getData();
-            p.search_value = mThis.elSearchPackage.val();
-            vsapi.call([mThis.base_url, '/api/getOutstandingPackageList_print'].join(''), p).then(res => {
-                if (res.status_code === 200) {
-                    let data = res.data;
-                    let d = mThis.processPackageList_print(data);
-                    JsonToExcel.exportToExcel(d.data, 'package_list', d.titles);
-                }
-            });
-        });
-
-        //##BEGIN:: tblPackages dropdown menu
-        mThis.tblPackages.on('click', 'a.btn_package_action', function (e) {
-            e.preventDefault();
-            let p = $(this).parent();
-            let x = $(this);
-
-            let delivery_id = x.data('id');  /** <div class="dropdown-menu" data-roleid="##"> its parent is <div class="dropdown" ... its parent is <td ... **/
-            let package_id = x.data('pid');
-            let barcode = x.data('barcode');
-            let status_id = x.data('statusid');
-
-            let dropdownMenu = p.find('.dropdown-menu');
-            if (!dropdownMenu || dropdownMenu.length <= 0) {
-
-                p.append(mThis.createDropdownMenuHtml_package(delivery_id, package_id, barcode, status_id));
-                dropdownMenu = p.find('.dropdown-menu');
-            }
-            //style for "dropdown-menu" class style = "position: absolute; transform: translate3d(0px, -184px, 0px); top: 0px; left: 0px; will-change: transform;" 
-            if (mThis.prev_dropdownMenu && mThis.prev_dropdownMenu.is(dropdownMenu) == false) mThis.prev_dropdownMenu.removeClass('show');
-
-            dropdownMenu.toggleClass('show');
-            if (dropdownMenu.hasClass('show')) mThis.prev_dropdownMenu = dropdownMenu;
-
-        });
-
-        $(document).on('click', function (e) {
-            //e.preventDefault();
-            let x = mThis.tblPackages.find('div.dropdown-menu');
-            let container = x.parent();
-            //mThis.package_dropdown_menu.parent(); // div.dropdown
-            if (container) {
-                if (!container.is(e.target) && container.has(e.target).length === 0) {
-                    //mThis.package_dropdown_menu.removeClass('show');
-                    x.removeClass('show');
-                }
-            }
-        });
-
-        mThis.tblPackages.on('mouseover', 'tr', function (e) {
-            let x = $(this);
-            let col_action = x.find('td.col_action');
-            let btn_barcode = x.find('a._dl_pa_quick_btn_barcode');
-            btn_barcode.show();
-            col_action.find('a.btn_package_action>i').addClass('action-button-zoomin');
-        }).on('mouseleave', 'tr', function (e) {
-            let x = $(this);
-            let col_action = x.find('td.col_action');
-            let btn_barcode = x.find('a._dl_pa_quick_btn_barcode');
-            btn_barcode.hide();
-            col_action.find('a.btn_package_action>i').removeClass('action-button-zoomin');
-            col_action.find('div.dropdown-menu').removeClass('show');
-        });
-
-        //##END:: tblPackages dropdown menu
-
-        // mThis.tblPackages.on('mouseover', 'button.btn-status', function (e) {
-        //     let popper_notes = new Popper($(this), mThis.popper_div, {
-        //         placement: 'top'
-        //     });
-        //     popper_notes.show();
-        // }).on('mouseleave', 'button.btn-status', function (e) {
-        //     return;
-        // });
-
-        mThis.tblPackages.on('click', 'a._pl_pa_change_merchant', function (e) {
-            e.preventDefault();
-            let x = $(this).closest('div.dropdown-menu');
-            let tr = $(this).closest('tr');
-
-            let package_id = x.data('pid');
-            let option = { 'title': 'Find Merchant', 'role': 'sender', 'singleSelect': true, 'previousDialog': null };
-            FindPersonDialog.show(option, function (ps) {
-                if (ps[0]) {
-                    let sender = ps[0];
-                    let p = { "id": package_id, 'sender_id': sender.id };
-                    vsapi.call(`${mThis.base_url}/api/package/change-sender`, p).then(res => {
-                        if (res.status_code === 200) {
-                            let d = StringSanitizer.sanitizeObject(res.data);
-                            tr.find('.pg-sender_name').text(d.sender_name);
-                            tr.find('.pg-sender_type').text(d.sender_type);
-                            tr.find('.pg-sender_phone').text(d.sender_phone);
-                            cv_interact.info(['Merchant has been changed to ', ps[0].name].join(''));
-                        } else cv_interact.error(res.error_message);
+                document.addEventListener('click', function (e) {
+                    mThis.tblPackages[0].querySelectorAll('div.dropdown-menu').forEach(dropdownMenu => {
+                        if (!dropdownMenu.parentElement.contains(e.target)) {
+                            dropdownMenu.classList.remove('show');
+                        }
                     });
-                }
-            });
-        });
+                });
+ 
 
-        mThis.tblPackages.on('click', 'a._pl_pa_delete', function (e) {
-            e.preventDefault();
-            let x = $(this).closest('div.dropdown-menu');
-            let package_id = x.data('pid');
-            let barcode = x.data('barcode');
-            //let pid = x.data('pid'); //package id
-            cv_interact.confirm('Delete this package?', { title: 'Delete Package', context: 'delete' }, (e) => {
-                if (e) {
-                    mThis.deletePackage(barcode, package_id);
-                }
-            });
-
-        });
-
-        //print package's barcode
-        mThis.tblPackages.on('click', 'a._pl_pa_print_barcode', function (e) {
-            e.preventDefault();
-            let x = $(this).parent();
-            let barcode = x.data('barcode');
-            window.open([mThis.base_url, '/package_barcode/', barcode].join(''), '_blank');
-        });
-
-        //print package's barcode Quick Button 
-        mThis.tblPackages.on('click', 'tr a._dl_pa_quick_btn_barcode', function (e) {
-            e.preventDefault();
-            let x = $(this);
-            let barcode = x.data('barcode');
-            window.open([mThis.base_url, '/package_barcode/', barcode].join(''), '_blank');
-        });
-
-
-        mThis.tblPackages.on('click', 'tbody>tr.package_header', function (e) {
-            let tr = $(this);
-            let pid = tr.data('pid');
-            let btn_package_action = tr.find('td.col_action .btn_package_action');
-            let dropdown_menu = tr.find('td.col_action div.dropdown-menu');
-            if (!btn_package_action.is(e.target) && btn_package_action.has(e.target).length === 0) {
-                //display package details when user click on row (tr) Except clicking on btn_package_action 
-                if (!dropdown_menu.is(e.target) && dropdown_menu.has(e.target).length === 0) mThis.expanded_detail.displayPackageExpandedDetails(tr, pid, false);
-
-            }
-        });
-
-        //Update Delviery status
-        mThis.tblPackages.on('click', 'a._pl_pa_change_status', function (e) {
-            e.preventDefault();
-            let tr = $(this).closest('tr');
-            let delivery_id = tr.data('did');
-            let pid = tr.data('pid');
-            //let driver_id = tr.data('driverid');
-            let def_status_id = tr.data('statusid');
-            //let sender_id = tr.data('senderid');
-
-            let option = {
-                "title": "Set Package Status",
-                "data": mThis.statuses,
-                "textMember": "status_name", //status code
-                "valueMember": "id",  // status name of delivery. Whereas status_id is used in table order.status_id
-                "dataLabel": "Choose package status",
-                'blankErrorMessage': 'Please select one status',
-                'okBtnText': 'OK',
-                'defaultValue': def_status_id
-            };
-
-            InputBox2.show(option, function (data) {
-                if (data) {
-                    let p = {
-                        "delivery_id": delivery_id,
-                        "package_id": pid,
-                        "status_id": data.value
-                    };
-
-                    vsapi.call([mThis.base_url, '/api/updatePackageStatus'].join(''), p).then(res => {
-                        if (res.status_code === 200) {
-                            let data = res.data;
-                            let td = tr.find('td.package-status');
-                            td.find('a.pg-text').text(data.text);
-                            //mThis.expanded_detail.refreshPackageData(tr,pid);
-                        } else cv_interact.error(res.error_message);
+                //Change merchant
+                mThis.tblPackages.on('click', 'a._pl_pa_change_merchant', function (e) {
+                    e.preventDefault();
+                    let x = $(this).closest('div.dropdown-menu');
+                    let tr = $(this).closest('tr');
+        
+                    let package_id = x.data('id');
+                    let option = { 'title': 'Find Merchant', 'role': 'sender', 'singleSelect': true, 'previousDialog': null };
+                    FindPersonDialog.show(option, function (ps) {
+                        if (ps[0]) {
+                            let sender = ps[0];
+                            let p = { "id": package_id, 'sender_id': sender.id };
+                            vsapi.call(`${mThis.base_url}/api/package/change-sender`, p).then(res => {
+                                if (res.status_code === 200) {
+                                    let d = StringSanitizer.sanitizeObject(res.data);
+                                    tr.find('.pg-sender_name').text(d.sender_name);
+                                    tr.find('.pg-sender_type').text(d.sender_type);
+                                    tr.find('.pg-sender_phone').text(d.sender_phone);
+                                    cv_interact.info(['Merchant has been changed to ', ps[0].name].join(''));
+                                } else cv_interact.error(res.error_message);
+                            });
+                        }
                     });
-                }
-            });
-        });
+                });
 
-        mThis.tblPackages.on('click', 'a._pl_pa_quick_return_package', function (e) {
-            e.preventDefault();
-            let x = $(this);
-            let tr = x.closest('tr');
-            let p = { 'package_id': tr.data('pid') };
-            //let def_driver_id = tr.data('driverid');
-            cv_interact.confirm('Return this package?', { title: 'Return Package', context: 'update' }, function (e) {
-                if (e) {
-                    vsapi.call([mThis.base_url, '/api/returnPackage'].join(''), p).then(res => {
-                        if (res.status_code === 200) {
-                            //update status on package trail | updatePackageStatus() || displayPackageStatus() || displayStatus()
-                            let btn = tr.find('a._pol_status');
-                            btn.data('statusid', 11);
-                            btn.data('status', 'Returned');
-                            btn.text('Returned');
-                        } else cv_interact.error(res.error_message);
+                //Return to store 
+                mThis.tblPackages.on('click', 'a._pl_pa_quick_return_package', function (e) {
+                    e.preventDefault();
+                    let x = $(this);
+                    let tr = x.closest('tr');
+                    let p = { 'package_id': tr.data('id') };
+                    //let def_driver_id = tr.data('driverid');
+                    cv_interact.confirm('Return this package?', { title: 'Return Package', context: 'update' }, function (e) {
+                        if (e) {
+                            vsapi.call([mThis.base_url, '/api/returnPackage'].join(''), p).then(res => {
+                                if (res.status_code === 200) {
+                                    //update status on package trail | updatePackageStatus() || displayPackageStatus() || displayStatus()
+                                    let btn = tr.find('a._pol_status');
+                                    btn.data('statusid', 11);
+                                    btn.data('status', 'Returned');
+                                    btn.text('Returned');
+                                } else cv_interact.error(res.error_message);
+                            });
+                        }
                     });
-                }
-            });
-        });
+                });
 
-        //    //Quick Assign Driver to Delivery
+                
+        //**Quick Assign Driver to Delivery
         mThis.tblPackages.on('click', 'a._pl_pa_quick_assign_driver', function (e) {
             e.preventDefault();
             let x = $(this);
             let tr = x.closest('tr');
             //let delivery_id = tr.data('did');
             let def_driver_id = tr.data('driverid'); //not correct this line yet
-            let pacakge_id = tr.data('pid');
+            let pacakge_id = tr.data('id');
             let no_driver_assigned = LocaleManager.trans('No Driver Assigned');
             if (!mThis.drivers1) {
                 let i = 0, c;
@@ -304,7 +433,7 @@ var PackageListComponent = new function () {
                     i++;
                 } while (c);
             }
-            let option = { 'manualClosing':true, 'confirmButtonText':'Assign Now', 'title': 'Assign Driver', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': mThis.drivers1, 'allowBlankValue':false,'blankErrorMessage': "Please choose one driver", "defaultvalue": def_driver_id };
+            let option = { 'manualClosing':true, 'confirmButtonText':'Assign Now', 'title': 'Assign Driver', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': mThis.drivers1, 'allowBlankValue':false,'blankErrorMessage': "Please choose one driver", "defaultValue": def_driver_id };
             InputBox2.show(option, (d,btnAssign) => {
                 if (d) {
                     let p = {};
@@ -335,73 +464,318 @@ var PackageListComponent = new function () {
             });
         });
 
-        mThis.tblPackages.on('click', 'a.pg-detail_edit_button', function (e) {
-            e.preventDefault();
-            let x = $(this);
-            let btn_cancel_edit = x.parent().find('a.pg-detail_cancel_edit_button');
-            let btn_save = $(this).parent().find('a.pg-detail_save_button');
-            x.hide();
-            btn_cancel_edit.show();
-            btn_save.show();
-            mThis.expanded_detail.beginEdit(x.closest('tr'));
-        });
 
-        mThis.tblPackages.on('click', 'a.pg-detail_cancel_edit_button', function (e) {
-            e.preventDefault();
-            mThis.expanded_detail.cancelEdit($(this).closest('tr'));
-        });
+                mThis.tblPackages.on('mouseover','tr',function(e){
+                    let x = $(this);
+                    let col_action = x.find('td.col_action');
+                    let btn_barcode = x.find('a._pgl_pa_quick_btn_barcode');
+                    btn_barcode.show();
+                    col_action.find('a.btn_pg_action>i').addClass('action-button-zoomin');    
+                }).on('mouseleave','tr',function(e) {
+                    let x = $(this);
+                    let col_action = x.find('td.col_action');
+                    let btn_barcode = x.find('a._pgl_pa_quick_btn_barcode');
+                    btn_barcode.hide();
+                    col_action.find('a.btn_pg_action>i').removeClass('action-button-zoomin');
+                    col_action.find('div.dropdown-menu').removeClass('show');  
+                });
 
-        mThis.tblPackages.on('click', 'a.pg-detail_save_button', function (e) {
-            e.preventDefault();
-            let x = $(this);
-            let btn_modify = x.parent().find('a.pg-detail_edit_button');
-            let btn_cancel_modify = $(this).parent().find('a.pg-detail_cancel_edit_button');
+                // /** NOTE: because mThis.tblPackages is a jQuery object , so we use mThis.tblPackages[0] */
+                // mThis.tblPackages.on('mouseover', function (e) {
+                //     if (e.target.tagName === 'TR') {
+                //         const x = e.target;
+                //         const colAction = x.querySelector('td.col_action');
+                //         const btnBarcode = x.querySelector('a._pgl_pa_quick_btn_barcode');
+                //         if(btnBarcode) console.log(' found btnBarcode');
+                //         btnBarcode.style.display = 'block';
+                //         colAction.querySelector('a.btn_pg_action i').classList.add('action-button-zoomin');
+                //     }
+                // });
+                
+                // mThis.tblPackages.on('mouseleave', function (e) {
+                //     if (e.target.tagName === 'TR') {
+                //         const x = e.target;
+                //         const colAction = x.querySelector('td.col_action');
+                //         const btnBarcode = x.querySelector('a._pgl_pa_quick_btn_barcode');
+                //         btnBarcode.style.display = 'none';
+                //         colAction.querySelector('a.btn_pg_action i').classList.remove('action-button-zoomin');
+                //         colAction.querySelector('div.dropdown-menu').classList.remove('show');
+                //     }
+                // });
+       //##END:: tblPackages dropdown menu
+   
+    //    mThis.tblPackages.on('mouseover', 'button._pol_status', function (e) {
+    //     let popper_notes = new Popper($(this), mThis.popper_div, {
+    //         placement: 'top'
+    //     });
+    //     popper_notes.show();
+    //   }).on('mouseleave', 'button._pol_status', function (e) {
+    //     return;
+    //   });
 
-            let onDone = (succeeded) => {
-                if (succeeded) {
-                    x.hide();
-                    btn_cancel_modify.hide();
-                    btn_modify.show();
+       mThis.tblPackages.on('click',e =>{
+           e.preventDefault();
+
+           //Click on delete menu item
+           let btn = VSUtil.getElementByClass(e.target,'_pl_pa_delete');
+           if(btn){
+                let package_id = btn.dataset.id;
+                let barcode = btn.dataset.barcode;
+                //let delivery_id = btn.dataset.did;
+                cv_interact.confirm('Delete this package?',{'title':'Delete Package','context':'delete'}, e => {
+                    if(e) {
+                        mThis.deletePackage(barcode,package_id);
+                    }
+                });
+                return;
+           }
+
+
+                //Click on barcode menu item
+                btn = VSUtil.getElementByClass(e.target,'_cpl_pa_print_barcode');
+                if(btn){
+                    const barcode = btn.dataset.barcode;
+                    window.open([mThis.base_url,'/package_barcode/',barcode].join(''),'_blank'); 
                 }
-            }
-            mThis.expanded_detail.saveChanges(x.closest('tr'), onDone);
-        });
-        //## end::action buttons for package's expanded detail (Edit, Cancel Edit, and Save)
+               
 
-        //Click to Scan in Failed Packages in order to change status to "CTD = Continue to Delvier"
-        mThis.self.find('#_dl_btnScanBackIn').on('click', function (e) {
-            e.preventDefault();
-            let op = { 'title': 'Scan In' };
-            ScanInDialog.show(op, () => {
-                //alert('closed');
-            });
-        });
+                 //Click on Quick barcode icon
+                 btn = e.target.closest('._pgl_pa_quick_btn_barcode');
+                 if(btn){
+                    const barcode = btn.dataset.barcode;
+                    window.open([mThis.base_url,'/package_barcode/',barcode].join(''),'_blank'); 
+                 }
+       });
+   
+        
+    //    //Update Delviery status
+    //    mThis.tblPackages.on('click','a._cpl_pa_change_status',function(e){
+    //         e.preventDefault();
+    //         let tr = $(this).closest('tr');
+    //         let delivery_id = tr.data('did');
+    //         let pid = tr.data('pid');
+    //         //let driver_id = tr.data('driverid');
+    //         let def_status_id = tr.data('statusid');
+    //         //let sender_id = tr.data('senderid');
+ 
+    //         let option = {
+    //             "title":"Set Package Status",
+    //             "data":mThis.statuses,
+    //             "textMember":"status_name", //status code
+    //             "valueMember":"id",  // status name of delivery. Whereas status_id is used in table order.status_id
+    //             "dataLabel":"Choose package status",
+    //             'blankErrorMessage':'Please select one status',
+    //             'okBtnText':'OK',
+    //             'defaultValue': def_status_id
+    //         };
 
-        //Click to Create new Delivery     
-        mThis.lnkReceivePackage.on('click', function (e) {
-            e.preventDefault();
-            let back_option = { 'title': 'Package Trail' };
-            let op = { 'title': 'Receive Pacakges', 'order_id': null, 'allow_find_sender': true, 'prev_component': mThis, 'prev_component_option': back_option, 'form_data': mThis.form_data };
-            ReceivePackageComponent.show(op, (d) => {
-                if (d) {
-                    mThis.displayPickupList();
-                }
-            });
+    //         InputBox2.show(option,function(data) {
+    //             if(data) {
+    //                 let p = {
+    //                     "delivery_id":delivery_id,
+    //                     "package_id":pid,
+    //                     "status_id":data.value
+    //                 };
+                    
+    //                 vsapi.call(`${mThis.base_url}/api/updatePackageStatus`,p).then(res => {
+    //                     if(res.status_code === 200) {
+    //                         let data = res.data;
+    //                         let td = tr.find('td.package-status');
+    //                         td.find('a.pg-text').text(data.text); 
+    //                         //mThis.ExpandableDetails.refreshPackageData(tr,pid);
+    //                     } else cv_interact.error(res.error_message);
+    //                 });
+    //              }
+    //         });
+    //    });
+ 
+        // mThis.tblPackages.on('click','a._cpl_pa_quick_return_package',function(e){
+        //     e.preventDefault();
+        //     let x =$(this);
+        //     let tr = x.closest('tr');
+        //     let p  = {'package_id':tr.data('pid')};
+        //     //let def_driver_id = tr.data('driverid');
+        //     cv_interact.confirm('Return this package?',{title:'Return Package',context:'update'},function(e){
+        //             if(e){
+        //                 vsapi.call(`${mThis.base_url}/api/returnPackage`,p).then(res => {
+        //                     if(res.status_code === 200){
+        //                        //update status on package trail | updatePackageStatus() || displayPackageStatus() || displayStatus()
+        //                        let btn = tr.find('a._pol_status');
+        //                        btn.data('statusid',11);
+        //                        btn.data('status','Returned');
+        //                        btn.text('Returned');
+        //                     }else cv_interact.error(res.error_message);
+        //                 }); 
+        //             }
+        //     });
 
-            // let option ={'title':'Receive Packages','order_id':null,'allow_find_sender':true};
-            // VerifyPackageDialog.show(option,function(e){
-            //     if(e){
-            //         mThis.displayOutstandingPackageList();
-            //     }
-            // });  
-        });
+          
+        // });
+      
+     // //BEGIN:: listen to private event from backend (private channel)
+        //         window.Echo.private(main_view.backend_channel_name).listen( '.package_status_changed',(d) =>{
+        //             let data = d.data;
+        //             toastr.info(DUtil.escapeHtml(data.message),data.title);
+        //             main_view.addNotificationItem({'title':data.title,'message':data.message});
 
-        //initialize class "expanded_detail", which is the package's dropdown expanded detail
-        mThis.expanded_detail.init();
+        //             if(mThis.tblPackages.is(':visible')){
+        //                 let tr = mThis.findRowByBarcode(data.bar_code);
+        //                 mThis.displayDriverData(tr,{"driver_id":data.driver_id,"driver_name":data.driver_name,'status':data.status,'status_id':data.status_id});
+        //             }
+                
+        //         });
+        //  //END:: listen to private event from backend (private channel)
 
+        // //initialize class "ExpandableDetails", which is the package's dropdown expanded detail
+        // mThis.ExpandableDetails.init();
+        // mThis.initialized = true;
         mThis.initAlready = true;
     }
     //end::PackageListComponent.init() | end::init()
+ 
+    this.findRowByBarcode = (barcode)=>{
+       let tr = null; 
+       mThis.tblPackages.find(`tr.package_header`).each(function(){
+           tr = $(this);
+           if(tr.data('barcode')==barcode) return false; 
+       });
+       return tr?tr:{};
+    }
+    //loadFilterData() on PackageListComponent
+    this.loadFilterData = (onFinish) => {
+        FilterDialog_package.loadFilterData((d)=>{
+            mThis.form_data = d;
+            onFinish();    
+        });
+    }
+
+    this.getFilterData = ()=>{
+       let p = FilterDialog_package.getData(); 
+       p.search_value =  mThis.elSearchPackage.value;
+       return p; 
+       
+    //    mThis.div_filter_fields.querySelectorAll('.dl_filter_field').forEach(el => {
+    //       const f = el.dataset.field;
+    //       p[f] = el.value;
+    //    });
+    //    return p;
+    }
+
+    this.show = (options=null)=>{
+        mThis.initOnce();
+        mThis.loadFilterData(()=>{
+            mThis.listView.showPage(mThis.getFilterData());
+            mThis.self.siblings().hide();
+            main_view.setTitle(mThis.title_prop); 
+            mThis.self.fadeIn(200);
+        });
+    }
+    
+    this.processPackageList_print = (data)=>{
+        let titles =['No','Barcode','Date','Sender','Customer','Driver','Type','COD','Fees','Total','Status'];
+        if (mThis.lang =='kh') titles =['ល.រ','លេខកួដ','កាលបរិច្ចេទ','អ្នកផ្ញើរ','អ្នកទទួល','អ្នកដឹក','សេវា','ថ្លៃទំនិញ','ថ្លៃសេវា','សរុប','ស្ថានភាព'] 
+        let c,i=0;
+        let rows=[];
+        do{
+          c = data[i];
+          if(!c) break;
+             if(!c.cur) c.cur ='$';
+             if(!c.cod_amount) c.cod_amount =0;
+             if(!c.fees) c.fees=0;
+             let row = {'No':(i+1),'barcode':c.barcode,'booking_date':c.booking_date,'sender':[c.sender_name,'\n',c.sender_phone].join(''),'zone_name':[c.zone_name,'\n',c.receiver_phone].join(''),'driver':c.driver_name || 'មិនទាន់មាន','type':c.delivery_type,'cod':[c.cur,c.cod_amount].join(''),'fees':[c.cur,c.fees].join(''),'total':[c.cur,c.driver_total].join(''),'status':c.status};
+              rows.push(row);
+             i++;
+        }while(c);
+        return {'data':rows,'titles':titles};
+    }
+
+    // this.displayDriverData = (tr,d)=>{
+    //      let prev_did =0;
+    //      let cnt =0;
+
+    //    if (tr){
+    //         tr.data('driverid',d.driver_id);
+    //         tr.find('a._pol_driver_name').text(d.driver_name);
+    //         let lnkStatus = tr.find('td.package-status').find('a._pol_status');
+    //         lnkStatus.text(d.status);
+    //         lnkStatus.data('statusid',d.status_id);
+    //         tr.data('statusid',d.status_id);
+             
+    //         let d_tr = tr.next();
+    //         if(d_tr.hasClass('package_detail')) {
+    //             d_tr.find('span.pg-driver').text(d.driver_name);
+    //         }
+
+    //         //Change the look of Status button according to status_id
+    //           let statusClass = DUtil.getStatusClass(d.status_id);
+    //           lnkStatus.attr('class', statusClass + ' pg-text _pol_status');
+    //         return true;
+    //    }  
+
+    //    mThis.tblPackages.find('tr.package_header').each(function(){
+    //         cnt++;
+    //         let x = $(this);
+    //         let this_id = x.data('did');
+    //         let found = false;
+    //         if(this_id === delivery_id) {
+    //             x.data('driverid',d.driver_id);
+    //             x.find('a._pol_driver_name').text(d.driver_name);
+    //             let lnkStatus = x.find('td.package-status').find('a._pol_status');
+    //             lnkStatus.text(d.status);
+    //             lnkStatus.data('statusid',d.status_id);
+    //             x.data('statusid',d.status_id);
+
+    //             let d_tr = x.next();
+    //             if(d_tr.hasClass('package_detail')) {
+    //                 d_tr.find('span.pg-driver').text(d.driver_name);
+    //             }
+    //             prev_did = this_id;
+    //             found = true;
+    //         } else {
+    //             if(found==true) return false;
+    //         }
+    //    });
+         
+    //     // //the following is to update driver in one row only
+    //     //// the following code needs parameter @tr html row
+    //     //     let detail_tr = null;
+    //     //     if(tr.hasClass('package_detail')) 
+    //     //     detail_tr = tr;
+    //     //     else {
+    //     //         detail_tr = tr.next();
+    //     //     }
+        
+    //     //     if(detail_tr){
+    //     //         if(detail_tr.hasClass('package_detail')) {
+    //     //             let span = detail_tr.find('span.pg-driver');  
+    //     //             span.text(driver.driver_name);
+    //     //         } 
+    //     //     }
+    //     // //the above code is to update driver data in one row only
+    // }
+
+    this.localizePackageStatuses = (onFinish)=>{
+        vsapi.call(`${mThis.base_url}/api/getComboItems_package_status`,null).then(res => {
+            if(res.status_code === 200){
+                let rows = res.data;
+                mThis.statuses = StringSanitizer.sanitizeObject(rows);
+                if(typeof onFinish =='function') onFinish();
+            }
+         }); 
+    }
+   
+    this.createDropdownMenuHtml_package =(delivery_id,package_id,barcode,status_id)=> {
+        //cla = 'class_list_action' = > cla_delete, cla_modify,...
+        let html = ['<div class="dropdown-menu bg-white shadow" data-deliveryid="',delivery_id,'" data-id="',package_id,'" data-barcode="',barcode,'" data-statusid="',status_id,'">',
+          '<a class="dropdown-item _pl_pa_quick_assign_driver" data-id ="',package_id,'" href="javascript:void(0)"><i class="fa fa-biking" style="color:green"></i>Assign Driver</a>',
+          '<a data-id="',package_id,'" data-barcode="',barcode,'"  class="dropdown-item _cpl_pa_print_barcode" href="#"><i class="fa fa-barcode" style="color:green"></i> Print Barcode</a>',
+          '<div class="dropdown-divider"></div>',
+          '<a data-id="',package_id,'" class="dropdown-item _pl_pa_delete" href="#"><i class="fa fa-trash-can  text-danger" style="color:red"></i> Delete Package</a>',
+          '<a class="dropdown-item _pl_pa_quick_return_package" href="javascript:void(0)"><i class="fa fa-tasks" style="color:blue"></i>Return To Store</a>',
+          '<a class="dropdown-item _pl_pa_change_merchant" href="javascript:void(0)"><i class="fa fa-user-check"></i> Change Merchant</a>',
+        '</div>'].join('');
+        return html;
+    };
 
     this.findRowByBarcode = (barcode) => {
         let tr = null;
@@ -410,32 +784,6 @@ var PackageListComponent = new function () {
             if (tr.data('barcode') == barcode) return false;
         });
         return tr ? tr : {};
-    }
-
-    this.show = (option=null) => {
-        mThis.init(); //NOTE: InitOnce one time only
-        mThis.displayOutstandingPackageList();
-        mThis.self.siblings().hide();
-        main_view.setTitle(mThis.title_prop);
-        mThis.self.hide().fadeIn(250);
-    }
-
-    this.processPackageList_print = (data) => {
-        let titles = ['No', 'Barcode', 'Date', 'Sender', 'Customer', 'Driver', 'Type', 'COD', 'Fees', 'Total', 'Status'];
-        if (mThis.lang == 'kh') titles = ['ល.រ', 'លេខកួដ', 'កាលបរិច្ចេទ', 'អ្នកផ្ញើរ', 'អ្នកទទួល', 'អ្នកដឹក', 'សេវា', 'ថ្លៃទំនិញ', 'ថ្លៃសេវា', 'សរុប', 'ស្ថានភាព'];
-        let c, i = 0;
-        let rows = [];
-        do {
-            c = data[i];
-            if (!c) break;
-            if (!c.cur) c.cur = '$';
-            if (!c.cod_amount) c.cod_amount = 0;
-            if (!c.fees) c.fees = 0;
-            let row = { 'No': (i + 1), 'barcode': c.barcode, 'booking_date': c.booking_date, 'sender': [c.sender_name, '\n', c.sender_phone].join(''), 'zone_name': [c.zone_name, '\n', c.receiver_phone].join(''), 'driver': c.driver_name, 'type': c.delivery_type, 'cod': [c.cur, c.cod_amount].join(''), 'fees': [c.cur, c.fees].join(''), 'total': [c.cur, c.driver_total].join(''), 'status': c.status };
-            rows.push(row);
-            i++;
-        } while (c);
-        return { 'data': rows, 'titles': titles };
     }
 
     this.displayDriverData = (tr, d) => {
@@ -459,987 +807,694 @@ var PackageListComponent = new function () {
             let statusClass = DUtil.getStatusClass(d.status_id);
             lnkStatus.attr('class', statusClass + ' pg-text _pol_status');
             return true;
-        }
+       }
+   }
 
-        mThis.tblPackages.find('tr.package_header').each(function () {
-            cnt++;
-            let x = $(this);
-            let this_id = x.data('did');
-            let found = false;
-            if (this_id === delivery_id) {
-                x.data('driverid', d.driver_id);
-                x.find('a._pol_driver_name').text(d.driver_name);
-                let lnkStatus = x.find('td.package-status').find('a._pol_status');
-                lnkStatus.text(d.status);
-                lnkStatus.data('statusid', d.status_id);
-                x.data('statusid', d.status_id);
 
-                let d_tr = x.next();
-                if (d_tr.hasClass('package_detail')) {
-                    d_tr.find('span.pg-driver').text(d.driver_name);
-                }
-                prev_did = this_id;
-                found = true;
-            } else {
-                if (found == true) return false;
-            }
-        });
+    this.deletePackage = (barcode,package_id)=>{
+        let p = {'barcode':barcode?barcode:'','id':package_id};
+       vsapi.call(`${mThis.base_url}/api/package/delete`,p).then(res => {
+         if(res.status_code === 200) {
+             let p = mThis.getFilterData();
+             p.fresh =1; // load package list without using cache
+             mThis.listView.showPage(p);
+             cv_interact.success('Package was deleted');
+         } else cv_interact.error(res.error_message);
+       });
     }
+ 
+    //## begin::ExpandableDettails class Package's expanded detail class view 
+    this.ExpandableDetails = new function(){
+       this.is_editing = false;
+       let mThis = this;
+       this.base_url = main_view.base_url;
+       this.inputs = {};
 
-    this.localizePackageStatuses = (onFinish) => {
-        vsapi.call([mThis.base_url, '/api/getComboItems_package_status'].join(''), null).then(res => {
-            if (res.status_code === 200) {
-                mThis.statuses = StringSanitizer.sanitizeObject(res.data);
-                if (typeof onFinish === 'function') onFinish();
-            }
-        });
-    }
-
-    this.createDropdownMenuHtml_package = (delivery_id, package_id, barcode, status_id) => {
-        let html = ['<div class="dropdown-menu shadow bg-white" data-deliveryid="', delivery_id, '" data-pid="', package_id, '" data-barcode="', barcode, '" data-statusid="', status_id, '">',
-        '<a class="dropdown-item _pl_pa_quick_assign_driver" href="javascript:void(0)"><i class="fa fa-biking" style="color:green"></i>Assign Driver</a>',
-        '<a class="dropdown-item _pl_pa_print_barcode" href="javascript:void(0)"><i class="fa fa-barcode" style="color:green"></i> Print Barcode</a>',
-        '<div class="dropdown-divider"></div>',
-        '<a class="dropdown-item _pl_pa_delete" href="javascript:void(0)"><i class="fa fa-trash" style="color:red"></i> Delete Package</a>',
-        '<a class="dropdown-item _pl_pa_quick_return_package" href="javascript:void(0)"><i class="fa fa-tasks" style="color:blue"></i>Return To Store</a>',
-        '<a class="dropdown-item _pl_pa_change_merchant" href="javascript:void(0)"><i class="fa fa-user-check"></i> Change Merchant</a>',
-        '</div>'].join('');
-        return html;
-    };
-
-    this.deletePackage = (barcode, package_id) => {
-        let p = { 'barcode': barcode ? barcode : '', 'package_id': package_id };
-        vsapi.call(`${mThis.base_url}/api/deletePackage`, p).then(res => {
-            if (res.status_code === 200) {
-                cv_interact.success('Package was deleted!','Successful Delete');
-                mThis.displayOutstandingPackageList();
-            } else cv_interact.error(res.error_message);
-        });
-    }
-    
-    this.sanitizeInput = (userInput =null) => {
-        userInput = userInput || '';
-        // Remove HTML tags
-        let withoutHTML = userInput.replace(/<\/?[^>]+(>|$)/g, "");
-        // Use DOMParser to decode entities and extract plain text
-        let doc = new DOMParser().parseFromString(withoutHTML, 'text/html');
-        let safeText = doc.body.textContent || "";
-        return safeText;
-    }
-    this.displayOutstandingPackageList = function (filter) {
-        let p = {};
-        if (filter)
-            p = filter;
-        else {
-            p = FilterDialog_package.getData();
-        }
-        p.search_value = mThis.elSearchPackage.val();
-        vsapi.call(`${mThis.base_url}/api/getOutstandingPackageList`, p,null,null,main_view.apiCluster).then(res => {
-            if (mThis.table) {
-                mThis.tblPackages.DataTable().clear().destroy();
-                //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
-                mThis.tblPackages.empty();
-                //alert('destroyed => '+  mThis.tblPackages.html());
-                mThis.table = null;
-            }
-            let data = StringSanitizer.sanitizeObject(res.data);
-
-            //begin::Set up columns
-            let cnt = 1;
-            let my_columns = [
-                {
-                    className: 'col_action',
-                    data: function (data, row, display) {
-                        let html = ['<div class="dropdown">',
-                            '<a href="javascript:void(0)" data-barcode="', data.barcode, '" data-pid="', data.package_id, '" data-did="', data.delivery_id, '" data-statusid="', data.status_id, '" class="btn_package_action" aria-haspopup="true" aria-expanded="false">',
-                            '<i class="fa fa-cube fs-5 text-warning text-opacity-25"></i>',
-                            '</a>',
-                            '</div>'].join('');
-                        return html;
-                    }
-                },
-                {
-                    data: function (data, a, b) {
-                        return ['<div style="display:flex;flex-direction:row">',
-                            '<div><span class="pg-barcode">', data.barcode, '</span>',
-                            '<span class="pg-pickup_time">', data.arrival_time, '</span></div>',
-                            '<a href="javascript:void(0)" style="display:none" data-barcode="', data.barcode, '" class="_dl_pa_quick_btn_barcode"><i class="fa fa-barcode" style="color:green"></i></a>',
-                            '</div>'].join('');
-                    },
-                    title: 'Barcode'
-                },
-                {
-                    data: function (data, a, b) {
-                        if (!data.sender_phone) data.sender_phone = '(Contact not available)';
-                        return ['<div style="display:flex;flex-direction:column;align-items:justify-content"><span class="pg-text pg-sender_name" data-field="sender_name">', data.sender_name, '</span><div style="display:flex;flex-direction:row">',
-                            '<span class="pg-text pg-sender_type" data-field="sender_type">', data.sender_type, '</span>',
-                            '<div style="width:15px"></div>',
-                            '<span class="pg-text pg-sender_phone" data-field="sender_phone">', data.sender_phone, '</span>',
-                            , '</div></div>'].join('');
-                    },
-                    title: 'Merchant'
-                },
-                {
-                    data: function (data, a, b) {
-                        if (!data.product_type) data.product_type = 'Generic Product';
-                        if (!data.receiver_phone || data.receiver_phone == '')
-                            data.receiver_phone = '<span class="pg-no_customer_phone">Customer phone not avaialable</span>';
-                        else
-                            data.receiver_phone = ['<span class="pg-text pg-receiver_phone" data-type="number" data-field="receiver_phone">', data.receiver_phone, '</span>'].join('');
-                        return ['<div style="display:flex;flex-direction:column">',
-                            '<div style="display:flex;flex-direction:row;align-items:space-between">',
-                            '<span class="pg-text pg-product_type" data-field="product_type">', data.product_type, '</span>',
-                            '<span class="pg-text pg-delivery_type pg-badge-delivery_type" style="margin-left:30%" data-field="delivery_type">', data.delivery_type, '</span>',
-                            '</div>',
-                            '<div style="width:100%">', data.receiver_phone, '</div>',
-                            '</div>'].join('');
-                    },
-                    title: 'Package Info'
-                },
-                {
-                    data: function (data, a, b) {
-                        if (!data.zone_code) data.zone_code = '(Zone code)';
-                        if (!data.zone_name) data.zone_name = '(Zone Name)';
-                        return ['<div style="display:flex;flex-direction:column;align-items:justify-content;margin-top:-10px"><span class="pg-text pg-zone_code" data-field="zone_code">', data.zone_code, '</span><span class="pg-text pg-zone_name" data-field="zone_name">', data.zone_name, '</span></div>'].join('');
-
-                    },
-                    title: 'Destination'
-                },
-                {
-                    className: 'package-status',
-                    data: function (data, type, meta) {
-                        let str_driver = ['<a href="javascript:void(0)" class="_pol_driver_name">', data.driver_name ? data.driver_name : 'មិនមានអ្នកដឹក', '</a>'].join('');
-
-                        //set failure notes | remarks | package ramarks
-                        //let notes = (data.status_id == 9 || data.status_id == 11 || data.status_id == 10) ? data.remarks : data.delivery_notes;
-                        let cls_status = DUtil.getStatusClass(data.status_id);
-                        const remarks = mThis.sanitizeInput(data.remarks);
-                        const failure_notes = mThis.sanitizeInput(data.failure_notes);
-                        const agent_notes = ''; //mThis.sanitizeInput(data.agent_notes); //agent notes is the same as failure notes
-                        return ['<a data-remarks="', remarks, '" data-failurenotes="',failure_notes,'" data-agentnotes ="',agent_notes,'" class="', cls_status, ' pg-text _pol_status" data-field="status" data-statusid="', data.status_id, '" data-status="', data.status, '" data-did="', data.delivery_id, '" data-senderid="', data.sender_id, '" href="javascript:;">', data.status, '</a>', str_driver].join('');
-                    },
-                    title: 'Status'
-                },
-                {
-                    className: 'total', //css class "total" is used for accessing value and update values of totals in <td>
-                    data: function (data, a, b) {
-                        return ['<div style="display:flex;flex-direction:column">',
-                            '<div class="pg-total_driver"><span class="total-label">Driver:</span><span class="total-value driver-total">', data.driver_total, '</span></div>',
-                            '<div class="pg-total_sender"><span class="total-label">Sender:</span><span class="total-value sender-total">', data.sender_total, '</span></div>',
-                            '</div>'].join('');
-                    },
-                    title: 'Totals'
-                }
-            ];
-
-            if (!mThis.table)
-                mThis.table = mThis.tblPackages.DataTable({
-                    searching: false,
-                    destroy: true,
-                    paging: true,
-                    ordering: false,
-                    //dom: 'Bfrtip',
-                    retrieve: true,
-                    //scrollY:390,
-                    //scrollX:500,
-                    //pagingType:'numbers',
-                    info: true,
-                    bLengthChange: false,
-                    saveState: true,
-                    // rowReorder: {
-                    // dataSrc: 'sequence'
-                    // },
-                    'processing': true,
-                    'language': {
-                        'loadingRecords': '&nbsp;',
-                        'processing': 'Loading...',
-                        "emptyTable": "No outstanding packages found"
-                    },
-                    data: data,
-                    columns: my_columns
-                    , "createdRow": function (row, data, dataIndex) {
-                        let tr = $(row);
-
-                        if (!data.package_id) data.package_id = data.id;
-                        tr.addClass('package_header');
-                        tr.data('did', data.delivery_id); //delivery_id
-                        tr.data('pid', data.package_id); //package_id
-                        tr.data('barcode', data.barcode);
-                        tr.data('driverid', data.driver_id); //driver_id
-                        tr.data('statusid', data.status_id);
-
-                        tr.data('senderid', data.sender_id); //(sender_id, delivery_type,zone_code, billed_kg) are important to determine delivery pricing details 
-                        tr.data('dtype', data.delivery_type);//(sender_id, delivery_type,zone_code, billed_kg) are important to determine delivery pricing details
-                        tr.data('zonecode', data.zone_code);//(sender_id, delivery_type,zone_code, billed_kg) are important to determine delivery pricing details
-
-
-                    }
-
-                    //    ,"cellCreated":function(td,data,colIndex) {
-                    //        alert('test');
-                    //      if(colIndex==9){
-                    //         let html = ['<div><a href="#" data-ceid="',data[0], '" data-studentid ="',data[2],'" data-classid="',data[1],'" class="scl_gl_delete_ceid"><i class="fa fa-trash" style="color:red"></i></a></div>'].join('');
-                    //         $(td).html(html); 
-                    //      }
-                    //   }      								
-                });
-
-            // let div = this.self.find('#_dl_d_filter_panel');  
-            // this.self.find('#_dl_tblPackages_wrapper>div.dt-buttons').prepend(div);
-
-            //begin::init Popover view
-                mThis.tblPackages.find('._pol_status').each(function () {
-                    let el = $(this);
-                    let remarks = el.data('remarks');
-                    let failure_notes = el.data('failurenotes');
-                    if(failure_notes && failure_notes ==remarks) remarks = '';
-                    let agent_notes = el.data('agentnotes');
-                    let status_id = el.data('statusid');
-                    let cls = 'pg-remarks';
-                    if (status_id == 9) cls = 'pg-remarks-failed';
-                    if (remarks || failure_notes) {
-                        el.popover({
-                            html: true,
-                            trigger: "hover",
-                            title: ["<span class='pg-remarks-title'>Remarks</span>"].join(''),
-                            content: ['<span class="d-block text-danger">',failure_notes,'</span><span class="d-block text-black">',remarks,'</span><span class="d-block text-success">',agent_notes,'</span>'].join('')
-                        });
-                    }
-
-                });
-            //end::Init Popover view
-
-        }); //close post_ajax()
-
-    };
-
-    //## begin::expanded_detail class Package's expanded detail class view 
-    this.expanded_detail = new function () {
-        this.is_editing = false;
-        let mThis = this;
-        this.base_url =main_view.base_url;
-
-        //begin::expanded_detail.init()
-        this.init = () => {
-            let input_selector = 'tbody>tr.package_detail>td.pd-container div.pd-container ';
-            PackageListComponent.tblPackages.on('change', [input_selector, 'input.size'].join(''), function (e) {
-                let tr = $(this).closest('tr'); //tr.package_detail
-                mThis.setBilledKg_package_detail(tr);
+       this.setBilledKg = (pd_container)=>{
+            let actual_kg = 0, str_size ='';
+            let elBillKg =null;
+            pd_container.querySelectorAll('.data-input').forEach(el =>{
+               let f = el.dataset.field;
+               if(f ==='actual_kg') actual_kg = el.value;
+               else if(f==='size') str_size = el.value;
+               else if(f ==='billed_kg') elBillKg = el;
             });
 
-            PackageListComponent.tblPackages.on('change', [input_selector, 'input.actual_kg'].join(''), function (e) {
-                let tr = $(this).closest('tr'); //tr.package_detail
-                mThis.setBilledKg_package_detail(tr);
-            });
-
-            PackageListComponent.tblPackages.on('change', [input_selector, 'input.billed_kg'].join(''), function (e) {
-                let tr = $(this).closest('tr'); //tr.package_detail
-                //origin is source of change in value
-                let origin = 'billed_kg';
-                //mThis.calculateTotals(tr,origin);
-                mThis.getDeliveryPriceInfo(tr, origin);
-            });
-
-            PackageListComponent.tblPackages.on('change', [input_selector, 'select.cod'].join(''), function (e) {
-                let tr = $(this).closest('tr'); //tr.package_detail
-                mThis.getDeliveryPriceInfo(tr, 'cod');
-            });
-            PackageListComponent.tblPackages.on('change', [input_selector, 'select.zone_code'].join(''), function (e) {
-                let tr = $(this).closest('tr'); //tr.package_detail
-                mThis.getDeliveryPriceInfo(tr, 'zone_code');
-            });
-            PackageListComponent.tblPackages.on('change', [input_selector, 'select.delivery_type'].join(''), function (e) {
-                let tr = $(this).closest('tr'); //tr.package_detail
-                mThis.getDeliveryPriceInfo(tr, 'delivery_type');
-            });
-
-            PackageListComponent.tblPackages.on('change', [input_selector, 'select.df_payer'].join(''), function (e) {
-                let tr = $(this).closest('tr'); //tr.package_detail
-                mThis.getDeliveryPriceInfo(tr, 'df_payer');
-            });
-
-            PackageListComponent.tblPackages.on('change', [input_selector, 'input.price'].join(''), function (e) {
-                let tr = $(this).closest('tr'); //tr.package_detail
-                mThis.getDeliveryPriceInfo(tr, 'price');
-            });
-
-            //   PackageListComponent.tblPackages.on('keyup',[input_selector,'input.base_fee'].join(''),function(e){
-            //     let tr = $(this).closest('tr'); //tr.package_detail
-            //     mThis.getDeliveryPriceInfo(tr,'base_fee');
-            //  });
-
-            //  PackageListComponent.tblPackages.on('keyup',[input_selector,'input.delivery_fee'].join(''),function(e){
-            //     let tr = $(this).closest('tr'); //tr.package_detail
-            //     let origin ='delivery_fee'; //origin of change in other values. Example, change in @delivery_fee causes cahnges in driver $total or sender $total 
-            //     mThis.getDeliveryPriceInfo(tr,'delivery_fee');
-            //  });
-
-            PackageListComponent.tblPackages.on('keyup', [input_selector, 'input.forwarding_cost'].join(''), function (e) {
-                let tr = $(this).closest('tr'); //tr.package_detail
-                mThis.getDeliveryPriceInfo(tr, 'forwarding_cost');
-            });
-
-            //todo: taxi fee, base_fee changes => ???
-        }
-        //end::expanded_detail.int();
-
-        //set value to editor input such as textbox, selectBox, select2 box on pacakge detail panel
-        this.setValue = (tr, col_name, value) => {
-            tr.find(['td.pd-container .', col_name].join('')).val(value);
-        }
-        //get value back from editor input such as textbox, selectBox, select2 box on package Detail panel div.pd-container inside td.pd-container
-        /** NOTE about getValue() method. This method returns value from Editor, but if editor is not yet initiated, it find value from <span> span[data-field="col_name"] instead **/
-        this.getValue = (tr, col_name, is_numeric = true) => {
-            let div = tr.find('td.pd-container');
-            let val = div.find('.' + col_name).val();
-            //let val = tr.find(['td.pd-container .',col_name].join('')).val();
-            if (!val) {
-                div = div.find(['div[data-field="', col_name, '"]'].join(''));
-                val = div.find(['span[data-field="', col_name, '"]'].join('')).data('value');
-            }
-            if (is_numeric == true) return parseFloat(val);
-            else return val;
-        }
-
-        this.setBilledKg_package_detail = (tr) => {
-            let actual_kg = mThis.getValue(tr, 'actual_kg', true);
-            let str_size = mThis.getValue(tr, 'size', false);
             let size = mThis.processPackageSize(str_size);
-            let b = (size.width * size.length * size.height) / 6015;
-            let billed_kg = 0;
+            let b = (size.width * size.length * size.height)/6015;
+            let billed_kg = 0 ;
             if (actual_kg >= b) billed_kg = actual_kg; else billed_kg = b;
-            mThis.setValue(tr, 'billed_kg', Number(billed_kg).toFixed(2));
-            mThis.getDeliveryPriceInfo(tr, 'billed_kg');
+            elBillKg.value = Number(billed_kg).toFixed(2);
+            //mThis.getDeliveryPriceInfo(pd_container);
         }
 
-        //Set package's price details (COD Fee, base_fee, delivery_fee)
-        /** If you want to change package's detail price calcualtion => update these related methods:
-           - PacakgeModel->getDeliveryPriceInfo()
-           - PackageModel->ReceivePackages()
-           - PackageModel->PickOrderPackage()
-           - PackageModel->Receivepackage_fast_delivery() 
-         **/
-        this.getDeliveryPriceInfo = (tr, change_agent) => {
-            change_agent = (change_agent + '').toLowerCase();
-            //cod, price, billed_kg, taxi_fee
-            let cols = ['delivery_type', 'zone_code', 'cod', 'price', 'billed_kg', 'forwarding_cost', 'df_payer'];
-            if (cols.indexOf(change_agent) != -1) {
-                let billed_kg = mThis.getValue(tr, 'billed_kg',true); //tr.find('td.pd-container input.billed_kg').val();
-                if (isNaN(billed_kg)) billed_kg = 0;
-                let prev_tr = tr.prev();
-                if (prev_tr.hasClass('package_header')) {
-                    let sender_id = prev_tr.data('senderid');
-                    let delivery_type = prev_tr.data('dtype');
-                    let zone_code = mThis.getValue(tr, 'zone_code', false); // OR get zone_code from header_tr => "let zone_code =  prev_tr.data('zonecode');
-                    //Do not proceed if the paramer @p is not succifient
-
-                    /** this line is to resolve problem: On first click to Modify Package on Package trail, the zone_code is not retrieved from Select2() box **/
-                    if (!zone_code) zone_code = prev_tr.data('zonecode'); // get zone_code from header row instead
-                    let p = { 'sender_id': sender_id, 'delivery_type': delivery_type, 'zone_code': zone_code, 'billed_kg': billed_kg };
-                    vsapi.call(`${mThis.base_url}/api/getDeliveryPriceInfo`, p).then(res => {
-                        if (res.status_code === 200) {
-                            let d = StringSanitizer.sanitizeObject(res.data);
-                            mThis.setValue(tr, 'base_fee', d.base_fee);
-                            mThis.setValue(tr, 'delivery_fee', Number(d.delivery_fee).toFixed(2));
-                            let driver_total = 0;
-                            let sender_total = 0;
-                            let price = mThis.getValue(tr, 'price', true);
-                            let cod = mThis.getValue(tr, 'cod');
-                            let forwarding_cost = mThis.getValue(tr, 'forwarding_cost', true);
-                            let cod_fee = 0, cod_amount = 0;
-                            if (cod == 1 || cod == 'yes') {
-                                //alert(price + '|' + d.base_fee  + '| ' + d.delivery_fee + ' | ' + d.cod_fee_percent);
-                                cod_fee = (price + parseFloat(d.base_fee) + parseFloat(d.delivery_fee)) * parseFloat(d.cod_fee_percent) / 100;
-                                cod_amount = price;
-                            }
-
-                            driver_total = parseFloat(cod_amount) - forwarding_cost;
-                            sender_total = cod_fee + forwarding_cost; //Seller or sender always has to pay for taxi or forwarding cost
-
-                            mThis.setValue(tr, 'cod_fee', Number(cod_fee).toFixed(2));
-                            let df_payer = mThis.getValue(tr, 'df_payer', false);
-                            if ((df_payer + '').toLowerCase() == 'sender')
-                                sender_total += parseFloat(d.base_fee) + parseFloat(d.delivery_fee);
-                            else
-                                driver_total += parseFloat(d.base_fee) + parseFloat(d.delivery_fee); // + forwarding_cost (if receiver has to pay for taxi fee) 
-                            //begin:: update values on header fields
-                            let receiver_phone = mThis.getValue(tr, 'receiver_phone', false);
-                            let receiver_address = mThis.getValue(tr, 'receiver_address', false);
-                            //let zone_name ???
-                            let u_data = { 'sender_total': sender_total, 'driver_total': driver_total, 'receiver_address': receiver_address, 'receiver_phone': receiver_phone, 'zone_code': zone_code, 'zone_name': '???' };
-                            mThis.setTotals(tr, u_data);
-                            //end::update values on header fields
-                            if (d.status == 'Error')
-                                cv_interact.error(d.error_message);
-                        }
-                    });
+        /** priceFactorInfo = {'sender_id':sender_id,'delivery_type':delivery_type,'zone_code':zone_code,'billed_kg':billed_kg};  */  
+        this.getDeliveryPriceInfo = (pd_container)=>{
+            let pid = pd_container.dataset.id;
+            //let p = {'sender_id':sender_id,'delivery_type':delivery_type,'zone_code':zone_code,'billed_kg':billed_kg};  
+            let p = mThis.getPriceFactors(pd_container);
+            vsapi.call(`${mThis.base_url}/api/package/price-info`,p,false).then(res => {
+               if(res.error_message) {
+                 cv_interact.warning(res.error_message);
+               } 
+               else{
+                let d = StringSanitizer.sanitizeObject(res.data);
+                mThis.inputs.base_fee.value = d.base_fee;
+                mThis.inputs.delivery_fee.value = Number(d.delivery_fee).toFixed(2);
+ 
+                let driver_total =0;
+                let sender_total =0;
+                let price = parseFloat( mThis.inputs.price.value);
+                let cod =   parseFloat( mThis.inputs.cod.value);
+                let zone_code = mThis.inputs.zone_code.value;
+                let forwarding_cost =  parseFloat(mThis.inputs.forwarding_cost.value);
+                let cod_fee = 0, cod_amount = 0;
+                if (cod==1 || cod =='yes') {
+                    //alert(price + '|' + d.base_fee  + '| ' + d.delivery_fee + ' | ' + d.cod_fee_percent);
+                    cod_fee = (price + parseFloat(d.base_fee) + parseFloat(d.delivery_fee)) * parseFloat(d.cod_fee_percent)/100;
+                    cod_amount = price;
                 }
+                
+                driver_total = parseFloat(cod_amount);
+                sender_total = cod_fee + forwarding_cost; //Seller or sender always has to pay for taxi or forwarding cost
 
-            } else {
-                return;
-            }
-        }
-
-        //calculateTotals() on package's "expanded_detail" 
-        //paramter @orinin is in fact the source of change in value that can causes changes in other values. It is same as field name. 
-        //parameter @origin is to avoid cicular event firing causing infinite firing or loops. 
-        //parameter @orgin is IMPORTANT for 3 input fields : base_fee, delivery_fee, billed_kg, where these fields are resulted from changes in other vars, but user can also change these value directly
-        //    this.calculateTotals = (tr,origin=null)=>{
-        //        if (!tr) return;
-        //        let pd_container = tr.find('div.pd-container');
-        //        let priceInfo = mThis.senderPriceInfo?mThis.senderPriceInfo:{}; 
-        //        if(!priceInfo) priceInfo = {'sender_id':null,'price_per_kg':0.15,'base_fee':0,'cod_fee_percent':0.05};
-        //        //let size_str = pd_container.find('input.size').val();
-        //        let actual_kg = parseFloat(pd_container.find('input.actual_kg').val());
-        //        if(!$.isNumeric(actual_kg)) actual_kg=0;
-
-        //         //    let size = mThis.processPackageSize(size_str,true);
-        //         //    let billed_kg =0;
-
-        //         //    let cod =  pd_container.find('select.cod').val();
-        //         //    if(!$.isNumeric(cod)) cod =0;
-
-        //         //    mThis.setTotals(tr,priceInfo);  
-        //    } 
-
-        //keywords: updateDriverTotal(), updateTotals, refreshTotals(), 
-        //Set total columns. "Total Driver", "Total Sender", "Income", "cost","profit"
-        //paramter @tr here is the <tr.package_detail>, which is the detail expanded row, not header row 
-        // @data={'driver_total':0,'sender_total':0} // "sender_total" is amount to be paid by sender, not amount to pay to sender such as COD amount
-        this.setTotals = (tr, data) => {
-            if (!tr) return null;
-            let pid = tr.data('pid');
-            let header_tr = tr.prev(); //header row <tr.package_header> that contains "total" element to be displayed
-
-            if (header_tr.hasClass('package_header')) {
-                //Check to make sure the package_id in detailed row match with the packag_id in header row
-                if (header_tr.data('pid') == pid) {
-                    let td = header_tr.find('td.total'); //tr.package_header>td.totals> contains div and span displaying driver-total, and sender-total 
-                    let span_total_driver = td.find('span.driver-total');
-                    let span_total_sender = td.find('span.sender-total');
-                    data.driver_total = $.isNumeric(data.driver_total) ? data.driver_total : 0;
-                    data.sender_total = $.isNumeric(data.sender_total) ? data.sender_total : 0;
-                    span_total_driver.html(Number(data.driver_total).toFixed(2));
-                    span_total_sender.html(Number(data.sender_total).toFixed(2));
-
-                    //  //by the way, setTotal() method will also update Receiver's phone and Zone code on header row
-                    //  let fields = ['receiver_phone','zone_code','zone_name'];
-                    //  for(let i=0;i<3;i++){
-                    //     let field_name = fields[i]; 
-                    //     let span = header_tr.find(['span.pg-text.pg-',field_name].join(''));
-                    //     span.text(data[field_name]);
-                    //  }
-                }
-            }
-
-        }
-
-        //refresh display of package all data including package's header info and expanded dropdown details
-        //parameter @tr is html row object (jquery object) that represents the package header row <tr.pg-header> 
-        this.refreshPackageData = (tr, pid, force_expand = true) => {
-            if (!tr) return;
-            let p = { 'package_id': pid };
-            //css class "pg-text" refers to every <td> or <span> or <div> that contains data value or text such as sender_name, sender_type, sender_phone, etc... on <"tr.pg-header"> row
-            //css class ="vc-value" refers to very <span> in "tr.pg-detail" row that contains data for each field of the package's expaned details
-            vsapi.call(`${mThis.base_url}/api/getPackageInfo`, p).then(res => {
-                if (res.status_code === 200) {
-                    let d = res.data;
-                    tr.find('td.pg-text').each(function (e) {
-                        let x = $(this);
-                        let data_member = x.data('field');
-                        let itemName = null;
-                        if (data_member == 'email') itemName = 'email'; //anitize email differently by allowing '@' charater
-                        x.html(StringSanitizer.sanitizeOut(d[data_member], itemName));
-                    });
-                    //refresh display of package's dropdown expanded details
-                    let expanded_detail_row = tr.next();
-                    if (!expanded_detail_row.hasClass('package_detail')) expanded_detail_row = mThis.createPackageExpandedDetailRow(tr, pid);
-                    tr.addClass('pg-selected');
-                    mThis.setPackageDetailValues(expanded_detail_row, d);
-                    expanded_detail_row.show();
-                    //mThis.displayPackageExpandedDetails(tr,d,force_expand);  
-                }
+                mThis.inputs.cod_fee.value = Number(cod_fee).toFixed(2);
+                let df_payer =   mThis.inputs.df_payer.value;
+                if((df_payer+'').toLowerCase() =='sender')
+                    sender_total += parseFloat(d.base_fee) + parseFloat(d.delivery_fee);
+                else
+                    driver_total += parseFloat(d.base_fee) + parseFloat(d.delivery_fee) - Math.abs(forwarding_cost); // pay taxi fee back to driver
+                //begin:: update values on header fields
+                  let receiver_phone = mThis.inputs.receiver_phone.value;
+                  let receiver_address = mThis.inputs.receiver_address.value;
+                  //let zone_name ???
+                  mThis.header_totals = {"id": pid,'sender_total':sender_total,'driver_total':driver_total,'receiver_address':receiver_address,'receiver_phone':receiver_phone,'zone_code':zone_code,'zone_name':'???'};    
+                    //let tr = pd_container.closest('tr').previousElementSibling;
+                   //mThis.setTotals(tr,mThis.header_totals );
+                //end::update values on header fields
+               }
             });
+
         }
 
-        //displayPackageDetails() display package's extended details (expanded dropdown details), but not display header info
-        //paramter @tr is <tr.pg-header> package ehader trow
-        this.displayPackageExpandedDetails = (tr, pid = 0, force_expand = false) => {
-            if (!tr) return;
-            if (mThis.editing_detail_row) {
-                mThis.cancelEdit(mThis.editing_detail_row);
-            }
-            // if (mThis.editing_detail_row){
-            //     cv_interact.confirm('You are editing a package information. Do you want to save changes to the package?','Modify Package Information',function(e){
-            //         if(e) mThis.saveChanges(mThis.editing_detail_row); else mThis.cancelEdit(mThis.editing_detail_row);
-            //     });
-            // }
-            let p = { 'package_id': pid };
-            //let d_html = null;
-            //let detail_class = ["pd_",pid].join('');
-            let detail_tr = null;
-            if (mThis.prev_selected_tr) mThis.prev_selected_tr.removeClass('pg-selected');
-            tr.removeClass('pg-selected');
+       //calculateTotals() on package's "ExpandableDetails" 
+       //paramter @orinin is in fact the source of change in value that can causes changes in other values. It is same as field name. 
+       //parameter @origin is to avoid cicular event firing causing infinite firing or loops. 
+       //parameter @orgin is IMPORTANT for 3 input fields : base_fee, delivery_fee, billed_kg, where these fields are resulted from changes in other vars, but user can also change these value directly
+    //    this.calculateTotals = (tr,origin=null)=>{
+    //        if (!tr) return;
+    //        let pd_container = tr.find('div.pd-container');
+    //        let priceInfo = mThis.senderPriceInfo?mThis.senderPriceInfo:{}; 
+    //        if(!priceInfo) priceInfo = {'sender_id':null,'price_per_kg':0.15,'base_fee':0,'cod_fee_percent':0.05};
+    //        //let size_str = pd_container.find('input.size').val();
+    //        let actual_kg = parseFloat(pd_container.find('input.actual_kg').val());
+    //        if(!$.isNumeric(actual_kg)) actual_kg=0;
 
-            //begin:: if details already displayed, then do not load data again
-            let next_tr = tr.next();
-            if (!next_tr)
-                detail_tr = null;
-            else {
-                if (next_tr.hasClass('package_detail')) {
-                    let is_visible = next_tr.is(':visible');
-                    if (is_visible) {
-                        if (force_expand == true) {
-                            tr.addClass('pg-selected');
-                            if (mThis.prev_package_detail_tr) mThis.prev_package_detail_tr.hide();
-                            next_tr.fadeIn(500);
-                            mThis.prev_selected_tr = tr;
-                            //next_tr.css('display','inline-block'); 
-                            mThis.prev_package_detail_tr = next_tr;
+    //         //    let size = mThis.processPackageSize(size_str,true);
+    //         //    let billed_kg =0;
+
+    //         //    let cod =  pd_container.find('select.cod').val();
+    //         //    if(!$.isNumeric(cod)) cod =0;
+
+    //         //    mThis.setTotals(tr,priceInfo);  
+    //    } 
+ 
+       //keywords: updateDriverTotal(), updateTotals, refreshTotals(), 
+       //Set total columns. "Total Driver", "Total Sender", "Income", "cost","profit"
+       //paramter @tr here is the <tr.package_detail>, which is the detail expanded row, not header row 
+       // @data={'driver_total':0,'sender_total':0} // "sender_total" is amount to be paid by sender, not amount to pay to sender such as COD amount
+       this.setTotals = (tr, data)=>{
+          if(!tr) return null; 
+          let pid = tr.dataset.id; 
+          //let header_tr = tr.prev(); //header row <tr.package_header> that contains "total" element to be displayed
+
+          if(tr.classList.contains('package_header')){
+              //Check to make sure the package_id in detailed row match with the packag_id in header row
+              if(data.id == pid){
+                 let td = tr.querySelector('td.total'); //tr.package_header>td.totals> contains div and span displaying driver-total, and sender-total 
+                 let span_total_driver = td.querySelector('span.driver-total');
+                 let span_total_sender = td.querySelector('span.sender-total');
+                 data.driver_total = isNaN(data.driver_total)? 0: data.driver_total; 
+                 data.sender_total = isNaN(data.sender_total)? 0 : data.sender_total;
+                 span_total_driver.textContent =  Number(data.driver_total).toFixed(2);
+                 span_total_sender.textContent =  Number(data.sender_total).toFixed(2);
+              }
+          }
+
+       }
+
+       //refresh display of package all data including package's ehader info and expanded dropdown details
+        //parameter @tr is html row object (jquery object) that represents the package header row <tr.pg-header> 
+        this.refreshPackageData = (tr,pid)=> {
+               if(!tr) return;
+                let p = {'id':pid};
+                //css class "pg-text" refers to every <td> or <span> or <div> that contains data value or text such as sender_name, sender_type, sender_phone, etc... on <"tr.pg-header"> row
+                //css class ="vc-value" refers to very <span> in "tr.pg-detail" row that contains data for each field of the package's expaned details
+                vsapi.call(`${mThis.base_url}/api/pacakge/details`,p).then(res => {
+                    if(res.status_code === 200){
+                        let d = StringSanitizer.sanitizeObject(res.data,null,['email']);
+                        tr.querySelector('td.pg-text').forEach(x => {
+                            let data_member = x.dataset.field;
+                            let itemName =null;
+                            //if(data_member =='email') itemName = 'email'; //anitize email differently by allowing '@' charater
+                            x.textContent =  d[data_member]
+                        });
+                        let next_tr = tr.nextSiblingElement;
+                        if(next_tr){
+                          let container = next_tr.querySelector('div.expandable-row');
+                          mThis.currency_symbol = d.currency_symbol || '$';
+                          if(container) mThis.renderPackageDetails(container,d);
                         }
-                        else {
-                            next_tr.hide();
-                            tr.removeClass('pg-selected');
-                            return;
-                        }
-                    }
-                    else {
-                        if (mThis.prev_package_detail_tr) mThis.prev_package_detail_tr.hide();
-                        next_tr.fadeIn(500);
-                        tr.addClass('pg-selected');
-                        //next_tr.css('display','inline-block'); 
-                        mThis.prev_package_detail_tr = next_tr;
-                        mThis.prev_selected_tr = tr;
+                    }       
+                });
+        } 
+  
+    mThis.displayPackageDetails = (container,id,can_edit=false)=>{
+        //container.style.display ='none';
+        vsapi.call(`${mThis.base_url}/api/package/details`,{"id":id},null).then(res => {
+             let d = res.status_code === 200? StringSanitizer.sanitizeObject(res.data) : {};
+             d = d || {};
+             mThis.currency_symbol = d.currency_symbol || '$';
+             //container.style.display ='block';
+             mThis.renderPackageDetails(container,d,can_edit);
+        });
+    }
+    this.currency_symbol ='$';
+    this.fields = [
+        {
+            "name":"receiver_phone",
+            "label":"Receiver",
+            "required":1,
+            "inputType":"text" 
+        },
+        {
+            "feeFactor":true,
+            "name":"price",
+            "label":"Price",
+            "required":0,
+            "value": (data)=>{
+                return [ mThis.currency_symbol,' ',data.price].join('');
+            },
+            "inputType":"number" 
+        },
+        {
+            "feeFactor":true,
+            "name":"cod",
+            "label":"COD",
+            "value": (data)=>{
+                return data.cod ==1? "Yes":"No";
+            },
+            "required":1,
+            "inputType":"select",
+            "options":{
+                "valueField":"cod",
+                "textField":"cod_name" 
+            } 
+        },
+        {
+            "feeFactor":true,
+            "name":"zone_code",
+            "label":"Zone",
+            "required":1,
+            "value":(data)=>{
+               return [data.zone_name,' (',data.zone_code,')'].join('');
+            },
+            "inputType":"select",
+            "options":{
+                "valueField":"zone_code",
+                "textField":"zone_name" 
+            }  
+        },
+        {
+            "name":"base_fee",
+            "label":"Base fee",
+            "readOnly":true,
+            "value": (data)=>{
+                return [ mThis.currency_symbol,' ',data.base_fee].join('');
+            },
+            "required":0,
+            "inputType":"number" 
+        },
+        {
+            "name":"delivery_fee",
+            "label":"Additional fee",
+            "readOnly":true,
+            "value": (data)=>{
+                return [ mThis.currency_symbol,' ',data.delivery_fee].join('');
+            },
+            "required":0,
+            "inputType":"number" 
+        },
+        {
+            "name":"size",
+            "label":"Size (W x L x H)",
+            "value":(data) =>{
+                return [Number(data.dim_y),' x ',Number(data.dim_x),' x ',Number(data.dim_h),' cm'].join('');
+             },
+            "formattedValue":(data) =>{
+              return [Number(data.dim_y),' ',Number(data.dim_x),' ',Number(data.dim_h)].join('');
+            },
+            "required":0,
+            "inputType":"text" 
+        },
+        {
+            "feeFactor":true,
+            "name":"billed_kg",
+            "label":"Billed kg",
+            //"currency": mThis.currency_symbol,
+            "value":(data) =>{
+              return [data.billed_kg,' kg'].join('');
+            },
+            "required":0,
+            "inputType":"number" 
+        },
+        {
+            "name":"actual_kg",
+            "label":"Actual kg",
+            //"currency": mThis.currency_symbol,
+            "value":(data) =>{
+              return [data.actual_kg,' kg'].join('');
+            },
+            "required":0,
+            "inputType":"number" 
+        },
+        {
+            "feeFactor":true,
+            "name":"df_payer",
+            "label":"Fee Payer",
+            "inputType":"select",
+            "options":{
+                "valueField":"df_payer",
+                "textField":"df_payer" 
+            },
+            "value":(data) =>{
+              return data.df_payer;
+            },
+            "required":0
+        },
+        {
+            "name":"cod_fee",
+            "label":"COD Fee",
+            "readOnly":true,
+            //"currency": mThis.currency_symbol,
+            "value":(data) =>{
+              return [mThis.currency_symbol,' ',data.cod_fee].join('');
+            },
+            "required":0,
+            "inputType":"text" 
+        },
+        {
+            "feeFactor":true,
+            "name":"delivery_type",
+            "label":"Delivery Type",
+            "value":(data) =>{
+              return data.delivery_type;
+            },
+            "required":1,
+            "inputType":"select",
+            "options":{
+                "valueField":"delivery_type",
+                "textField":"delivery_type", 
+            } 
+        },
+        {
+            "name":"receiver_address",
+            "label":"Receiver Address",
+            "required":1,
+            "inputType":"text" 
+        },
+        {
+            "feeFactor":true,
+            "name":"forwarding_cost",
+            "label":"Taxi Fee",
+            "required":0,
+            "inputType":"number" 
+        },
+        {
+            "name":"driver_name",
+            "label":"Driver",
+            "required":0,
+            "inputType":"text",
+            "readOnly":true 
+        },
+        {
+            "name":"remarks",
+            "label":"Remarks",
+            "required":0,
+            "inputType":"text" 
+        }
+    ];
+
+    this.renderPackageDetails = (container,d =null,can_edit=false) => {
+        let html = null;
+        const vertical_col_count =4;
+        d = d || {};
+        container.style.display ='none';
+        let driver_pmt_status_id = container.dataset.driverpmtstatusid;
+        let sender_pmt_status_id = container.dataset.senderpmtstatusid;
+
+        let cnt = 0;
+        let col_html ='';
+        mThis.fields.map(field =>{
+            cnt++;
+            let val = d[field.name];
+            if(field.value) val = field.value(d);
+            col_html = [col_html,
+            `<div class="d-flex">
+                 <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.${field.label}"></p>
+                 <p class="px-2">:</p>
+                 <p class="text-nowrap text-capitalize">`,val,`</p></div>`].join('');
+           
+                if(cnt >= vertical_col_count){
+                    html = [html,`<div class="col">`,col_html,`</div>`].join('');
+                    col_html = '';
+                    cnt = 0;
+                }
+        });
+     
+        html = [`<div class="d-flex flex-column ms-3 w-100 p-2">`,
+          `<div class="action-buttons d-flex flex-row gap-2 mb-2">`,
+            `<a href="javascript:void(0)" data-id="${d.id}" data-barcode="${d.barcode}" class="pg-detail_edit_button" style="display:${can_edit};padding:5px"><i class="fa fa-edit fw-semibold fs-5"></i></a>`,
+            `<a href="javascript:void(0)" data-id="${d.id}" data-barcode="${d.barcode}" class="pg-detail_save_button" style="display:none;padding:5px"><i class="fa fa-save fw-semibold text-success fs-5"></i></a>`,
+            `<a href="javascript:void(0)" data-id="${d.id}" data-barcode="${d.barcode}" class="pg-detail_cancel_edit_button" style="display:none;padding:5px"><span class="text-warning fw-semibold">Cancel</span></a>`,
+          `</div>`,
+          //`<div class="d-block ms-3 w-100">`,
+          `<div class="row pd-container" data-id="${d.id}" data-senderid="${d.sender_id}" data-barcode="${d.barcode}" data-driverpmtstatusid ="${driver_pmt_status_id}" data-senderpmtstatusid ="${sender_pmt_status_id}">`,
+              html,
+          `</div>`,
+          //`</div>`,
+        `</div>`].join('');
+        
+        container.innerHTML = html;
+        mThis.setHandlers_view(container);
+        LocaleManager.translateZone(container,{hide:true},()=>{
+            container.style.display ='block';
+        });
+    }
+  
+    /** Set event handlers in  view Mode*/
+    this.setHandlers_view = (container)=>{
+        const div_actions_buttons = container.querySelector('div.action-buttons');
+        div_actions_buttons.addEventListener('click', e =>{
+            e.preventDefault();
+
+            //Click on Edit Package
+                let btn = VSUtil.getElementByClass(e.target,'pg-detail_edit_button');
+                if(btn){
+                    mThis.beginEdit(container,btn.dataset.id);
+                    return;
+                }
+  
+                //Click on Cancel Edit Package
+                    btn = VSUtil.getElementByClass(e.target,'pg-detail_cancel_edit_button');
+                    if(btn){
+                        mThis.cancelEdit(container,btn.dataset.id);
                         return;
                     }
+ 
+                
+                //Click on Save Edit Package
+                btn = VSUtil.getElementByClass(e.target,'pg-detail_save_button');
+                if(btn){ 
+                    let btn_modify = div_actions_buttons.querySelector('.pg-detail_edit_button');
+                    let btn_cancel_modify = div_actions_buttons.querySelector('.pg-detail_cancel_edit_button');
+                    //let btn_save = div_actions_buttons.querySelector('.pg-detail_save_button');
+           
+                    mThis.saveChanges(container,(d)=>{
+                        //if(d) {
+                            //Display package details in View mode
+                            mThis.renderPackageDetails(container,d);
+                            const tr = container.closest('tr').previousElementSibling;
+                            mThis.setTotals(tr,mThis.header_totals);
+                            btn.style.display ="none"; //Hide self => Save button
+                            btn_cancel_modify.style.display ="none"; //Hide Cancel Edit button
+                            btn_modify.style.display ="inline-block"; //Show Edit button
+                        //}
+                    });
+                    return;
+                }
+           
+         });
+    }
+ 
 
-                } else detail_tr = null;
-            }
+    this.getPriceFactors = (pd_container)=>{
+      let p = {};
+      pd_container.querySelectorAll('.fee-factor').forEach(el =>{
+        const f = el.dataset.field;
+        p[f] = el.value;
+      });
+      p.sender_id = pd_container.dataset.senderid;
+      return p;
+    }
 
-            //end::if details already displayed, then do not load data again
+    /** Set event handlers in Edit Mode */
+    this.setHandlers_edit = (pd_container,feeFactorClass)=>{
+        pd_container.querySelectorAll(['.',feeFactorClass].join('')).forEach(el=>{
+            const f = el.dataset.field;
+            if(el.tagName ==='SELECT'){
+                el.onchange = e =>{
+                    e.preventDefault();
+                    //mThis.getPriaceFactors() will return object that contains all factors that affect the delivery fees
+                    mThis.getDeliveryPriceInfo(pd_container);
+                };
+            }else{
+                el.addEventListener('keyup',e =>{
+                   e.preventDefault();
+                   if(el.value > 0)
+                     mThis.inputs.cod.value =1; 
+                   else mThis.inputs.cod.value =0;
 
-            //    //detail_tr = mThis.tblPackages.find(['tbody>tr.',detail_class].join(''));
-            //    if (force_expand ==true) {
-            //         if(detail_tr.length >0) {
-            //             detail_tr.css('display','block');
-            //             mThis.prev_package_detail_tr = detail_tr; 
-            //             return;
-            //         } 
-            //    }
-
-            if (!detail_tr || detail_tr.length <= 0) {
-                vsapi.call(`${mThis.base_url}/api/package/details`, p).then(res => {
-                    //if (typeof d =='string') alert(d); //in case of unexpected error
-                    if (mThis.prev_selected_tr) mThis.prev_selected_tr.removeClass('pg-selected');
-                    PackageListComponent.tblPackages.find('tbody>tr.package_detail').hide();
-                    if (res.status_code === 200) {
-                        let d = res.data;
-                        //createPackageExpandedDetailRow() is to create expended detail row "<tr.package_detail pd_#>" that contains package's expaneded details 
-                        mThis.prev_package_detail_tr = mThis.createPackageExpandedDetailRow(tr, pid);
-                        tr.addClass('pg-selected');
-                        mThis.prev_selected_tr = tr;
-                        mThis.setPackageDetailValues(mThis.prev_package_detail_tr, d);
-
-                    }
+                     const event = new Event('change',{bubbles:true});
+                     mThis.inputs.cod.dispatchEvent(event);
+                     mThis.inputs.cod.setAttribute('disabled',true);
+                
+                   setTimeout(()=>{
+                    mThis.getDeliveryPriceInfo(pd_container);
+                   },250);
+                  
                 });
-            } else {
-                tr.removeClass('pg-selected');
-                detail_tr.hide();
             }
+        });
+    }
 
-        }
-
-        //createPackageExpandedDetailRow is to create html row that contains expanded package's dteails (or dropdown details)
-        //@tr is <tr.pg-header> package header row
-        this.createPackageExpandedDetailRow = (tr, pid) => {
-            let detail_class = ["pd_", pid].join('');
-            //NOTE: tr data-pid ="" is very IMPORTANT for editing expanded package detail in dropdown view
-            let d_html = ['<tr data-pid="', pid, '" class="package_detail ', detail_class, '"><td class="col_action" style="vertical-align:top">',
-                '<a href="#" class="pg-detail_edit_button" style="display:block;padding:5px"><span style="color:blue;font-weight:bold">Modify</span></a>',
-                '<a href="#" class="pg-detail_save_button" style="display:none;padding:5px"><span style="color:green;font-weight:bold">Save</span></a>',
-                '<a href="#" class="pg-detail_cancel_edit_button" style="display:none;padding:5px"><span style="color:orange;font-weight:bold">Cancel</span></a>',
-                '</td><td class="pd-container" colspan="6">', //css class "pd-container" is very important for element access on user's actions
-                '<div style="width:100%;">',
-                //'<div style="border-bottom:1.5px solid red;width:50%"></div>', 
-                '<div class="row pd-container">',
-                '<div class="col-lg-3">',
-                '<div class="vc-control" data-field="receiver_address">',
-                '<span class="vc-label">Receiver Address</span>',
-                '<span class="vc-value" data-value="" data-field="receiver_address"></span>',
-                '</div>',
-                '<div class="vc-control" data-field="cod">',
-                '<span class="vc-label">COD</span>',
-                '<span class="vc-value" data-field="cod">Yes</span>',
-                '</div>',
-                '<div class="vc-control" data-field="price">',
-                '<span class="vc-label">Price</span>',
-                '<span class="vc-value" data-field="price" data-type="number">$25</span>',
-                '</div>',
-                '<div class="vc-control" data-field="base_fee">',
-                '<span class="vc-label">Base Fee</span>',
-                '<span class="vc-value" data-field="base_fee" data-type="number">$1</span>',
-                '</div>',
-                '</div>',
-
-                '<div class="col-lg-3">',
-                '<div class="vc-control" data-field="zone_code">',
-                '<span class="vc-label">Zone</span>',
-                '<span class="vc-value" data-field="zone_code"></span>',
-                '</div>',
-                '<div class="vc-control" data-field="delivery_fee">',
-                '<span class="vc-label">Delivery Fee</span>',
-                '<span class="vc-value" data-field="delivery_fee" data-type="number">0.15</span>',
-                '</div>',
-                '<div class="vc-control" data-field="df_payer">',
-                '<span class="vc-label">DFP</span>',
-                '<span class="vc-value" data-field="df_payer">Sender</span>',
-                '</div>',
-                '<div class="vc-control" data-field="cod_fee">',
-                '<span class="vc-label">COD Fee</span>',
-                '<span class="vc-value" data-field="cod_fee" data-type="number" data-readonly="1">$0.05</span>',
-                '</div>',
-                '</div>',
-                '<div class="col-lg-3">',
-                '<div class="vc-control" data-field="receiver_phone">',
-                '<span class="vc-label">Receiver Phone</span>',
-                '<span class="vc-value" data-type="number" data-field="receiver_phone"></span>',
-                '</div>',
-                '<div class="vc-control" data-field="size">',
-                '<span class="vc-label">Size <span class="text-muted"> (width length height)</span></span>',
-                '<span class="vc-value" data-field="size">2 x 32 x 21</span>',
-                '</div>',
-                '<div class="vc-control" data-field="actual_kg">',
-                '<span class="vc-label">Actual KG</span>',
-                '<span class="vc-value" data-field="actual_kg" data-type="number">0</span>',
-                '</div>',
-                '<div class="vc-control" data-field="billed_kg">',
-                '<span class="vc-label">Billed KG</span>',
-                '<span class="vc-value" data-field="billed_kg" data-type="number">0</span>',
-                '</div>',
-                '</div>',
-                '<div class="col-lg-3">',
-                '<div class="vc-control" data-field="delivery_type">',
-                '<span class="vc-label">Delivery Type</span>',
-                '<span class="vc-value" data-field="delivery_type">Normal</span>',
-                '</div>',
-                '<div class="vc-control" data-field="forwarding_cost">',
-                '<span class="vc-label">Taxi Fee</span>',
-                '<span class="vc-value" data-field="forwarding_cost" data-type="number">$2</span>',
-                '</div>',
-                '<div class="vc-control" data-field="remarks">',
-                '<span class="vc-label">Remarks</span>',
-                '<span class="vc-value" data-field="remarks"></span>',
-                '</div>',
-                '<div class="vc-control" data-field="driver_name">',
-                '<span class="vc-label">Driver</span>',
-                '<span class="vc-value pg-driver" data-value="0" data-field="driver_name" data-readonly="1"></span>', // "data-did" is delivery_id and acts as fleet identifier number
-                '</div>',
-                '</div>',
-                '</div>',
-
-                '</div>',
-                '</td></tr>'].join('');
-            tr.after(d_html);
-            return PackageListComponent.tblPackages.find(['tbody>tr.', detail_class].join(''));
-
-        }
-
-        //display package header data field/ display packageHeaderData(), refreshHeaderData, updateHeaderData
-        this.displayHeaderData = (tr, fields = [], d, tr_is_header_row = false) => {
-            if (!tr) return;
-            let header_tr;
-            if (!tr_is_header_row) header_tr = tr.prev(); else header_tr = tr;
-            if (header_tr.data('pid') != d.package_id) {
-                if(!d.pacakge_id) console.log('issue #007: PackageListComponent.js/this.displayHeaderData => server method getPackageDetails() return data object without prop "package_id"');
-                return;
-            }
-            let cnt = fields.length;
-            for (let i = 0; i < cnt; i++) {
-                let f_name = fields[i];
-                let span = header_tr.find(['span.pg-text.pg-', f_name].join(''));
-                span.text(d[f_name]);
-            }
-        }
-
-        //setPackageDetailValues() is to use the given JSON data about the package and display them on package's expended detail
-        this.setPackageDetailValues = (tr, d, missing_value = 'NA') => {
-            if (!tr) return;
-            let c = d || {};
-            let x = tr.find('div.pd-container');
-            if (d.cod == 1) d.cod_text = 'Yes'; else d.cod_text = 'No';
-            x.find('div.vc-control').each(function () {
-                let k = $(this); //div.vc-control
-                let dataMember = k.data('field');
-                let el = k.find('.vc-value'); //span
-                k.find('.vc-value-edit').hide(); // only in case that the expanded detail has been edited before this moment
-
-                let value = d[dataMember] ? d[dataMember] : missing_value;;
-                if (dataMember == 'cod') {
-                    d.cod_text = (d.cod == 1) ? 'Yes' : 'No';
-                    if (!d.cod_text) d.cod_text = 'NA';
-                    el.html(d.cod_text); //display Yes or No instead of 0 or 1 in <span>
-                } else if (dataMember == 'size') {
-                    el.html([Number(d.dim_x), ' ', Number(d.dim_y), ' ', Number(d.dim_h)].join('')); //dim_x, dim_y, dim)h in cm
+     //display package header data field/ display packageHeaderData(), refreshHeaderData, updateHeaderData
+     this.displayHeaderData = (tr,fields=[],d)=>{
+         if(!tr) return;
+         let c =null, i =0;
+         do{
+            c = fields[i];
+            if(!c) break;
+                const f_name = c;
+                const span = tr.querySelector(['span.pg-',f_name].join(''));
+                if(span) span.textContent = d[f_name];
+            i++;
+         }while(c); 
+     }
+  
+       this.beginEdit = (container,id)=>{
+          const pd_container = container.querySelector('div.pd-container');
+          const div_actions_buttons =  container.querySelector('div.action-buttons');
+          const driver_pmt_statu_id = container.dataset.driverpmtstatusid;
+          const sender_pmt_statu_id = container.dataset.senderpmtstatusid;
+          if (driver_pmt_statu_id ==1 || sender_pmt_statu_id ==1){
+               let agent = (driver_pmt_statu_id ==1 && sender_pmt_statu_id ==1)? 'with driver and merchant': (driver_pmt_statu_id==1 ? 'with driver': 'with merchant');  
+               cv_interact.warning(`Cannot edit package information because there is cash settlement ${agent} already`);
+               return;
+          }
+           vsapi.call(`${main_view.base_url}/api/package/details-with-options`,{"id":id},null).then(res =>{
+              const data = res.status_code ===200? StringSanitizer.sanitizeObject(res.data) : {};
+              const d = data.details || {};
+              
+              let html = '';
+              /** fields = [ {inputType,name,label,required} ] */
+              mThis.fields.map(field =>{
+                let input_html = '';
+                let feeFactorClass = field.feeFactor? 'fee-factor':'';
+                if(field.inputType =="select"){
+                    input_html = `<select data-required="${field.required}" valueField="${field.options.valueField}" textField="${field.options.textField}" data-value="${d[field.name]?d[field.name]:''}" class="modal-select2 ${feeFactorClass} data-input" data-field="${field.name}" ${field.readOnly? 'disabled':''}></select>`;
+                }else {
+                    let textValue = d[field.name]?d[field.name]:'';
+                    if(field.formattedValue) textValue = field.formattedValue(d);
+                    input_html = `<input ${field.inputType ==='number'? 'number':field.inputType} class="data-input ${feeFactorClass} form-control" data-required="${field.required}" data-field="${field.name}" value="${textValue}" ${field.readOnly? 'readOnly':''}/>`;
                 }
-                else if (dataMember === 'zone_code') {
-                    let select2 = x.find('.select2-container');
-                    select2.hide();
-                    el.html(d.zone_name); //view Zone Name like Combo Box, but "zone_code" is important value
-                }
-                //  else if (dataMember =='receiver_address') {
-                //       el.html(d[dataMember]); 
-                //  }
-                else {
-                    el.html(value ? value : 'NA');
-                }
-                el.data('value', value); //store data-value ="some value" // used only for COD combo Item, where value 0= No, 1 = Yes
-                el.show();
 
-            });
-            //display header details for some fields such as *delivery_type, *zone_code, *zone_name, *recever_phone, 
-            mThis.displayHeaderData(tr, ['delivery_type', 'receiver_phone', 'receiver_address','remarks', 'zone_code', 'zone_name', 'driver_total', 'sender_total'], d, false);
-        }
+                html = [html,
+                `<div class="form-group col-lg-3">`,
+                 `<label for="${field.name}" class="form-label trans-text" data-langprop="titles.${field.label}"></label>`,
+                 `<div>`,input_html,`</div>`,
+                `</div>`, 
+                ].join('');
+              });
+               if(html) html = [`<div class="row">`,html,`</div>`].join('');
+               
+               pd_container.style.display ='none';
+               pd_container.innerHTML = html;
+  
+               //Init SELECT fields to be select2
+               pd_container.querySelectorAll('select').forEach(el =>{
+                 //Load SELECT's options for all SELECT fields on Edit Form
+                 let f = el.dataset.field;
+                 let valueField = el.getAttribute("valueField") || 'id';
+                 let textField = el.getAttribute("textField") || 'name';
+                 el.removeAttribute("valueField");
+                 el.removeAttribute("textField");
 
-        //@tr is expanded detail row <tr.pg_detail>
-        this.beginEdit = (tr) => {
-            tr.find('.vc-control').each(function (e) {
-                let x = $(this);
-                let span = x.find('.vc-value');
-                let input = x.find('.vc-value-edit');
-                let data_member = span.data('field');
-                let readonly = span.data('readonly');
-                let att_readOnly = null;
-                if (readonly == 1 || readonly == true) att_readOnly = " readOnly"; //applied readonly to textboxes, no select box used for Readonly fields
+                  VSUtil.setComboItems(el,data[f],valueField,textField,false,'',null);
+                  $(el).select2({
+                    "width":"100%"
+                  }).val(el.dataset.value).trigger('change');
+                 
+               });
 
-                // if(!readonly || readonly ==0) {
-                span.hide();
-                if (data_member == 'cod') {
-                    let cod = span.data('value');
-                    if (!$.isNumeric(cod)) cod = 0;
-                    if (!cod) cod = 0;
-                    if (input.is('select')) {
-                        input.val(cod);
-                        input.show();
-                        input.trigger('change');
-                    }
-                    else {
-                        let el = x.append($(['<select class="vc-value-edit form-control ', data_member, '">',
-                            '<option value="0">No</option>',
-                            '<option value="1">Yes</option>',
-                            , '</select>'].join('')));
-                        el = el.find('select');
-                        el.val(cod);
-                        el.trigger('change');
+              //Store object list of input elements in the mThis.inputs as an object accessible by key, which is the field's name
+               pd_container.querySelectorAll('.data-input').forEach(el =>{
+                let f = el.dataset.field;
+                    mThis.inputs[f] = el;
+               });
+               
+               LocaleManager.translateZone(pd_container,{"hide":true},()=>{
+                 pd_container.style.display ='block';
+               })
 
-                    }
-                } else if (data_member == 'delivery_type') {
-                    let dtype = span.data('value');
-                    if (!dtype) dtype = 'normal';
-                    if (input.is('select')) {
-                        input.val(dtype);
-                        input.show();
-                        input.trigger('change');
-                    }
-                    else {
-                        let el = x.append($(['<select class="vc-value-edit form-control ', data_member, '">',
-                            '<option value="normal">Normal</option>',
-                            '<option value="fast">Fast</option>',
-                            , '</select>'].join('')));
-                        el = el.find('select');
-                        el.val((dtype + '').toLowerCase());
-                        el.trigger('change');
-                    }
+               //Hide Edit button, and show Save button
+               let btnEdit = div_actions_buttons.querySelector('.pg-detail_edit_button');
+               btnEdit.style.display = 'none';
 
-                }
-                else if (data_member == 'df_payer') {
-                    let df_payer = span.data('value');
-                    if (!df_payer) df_payer = 'sender';
-                    if (input.is('select')) {
-                        input.val((df_payer + '').toLowerCase());
-                        input.show();
-                        input.trigger('change');
-                    }
-                    else {
-                        let els = x.append($(['<select class="vc-value-edit form-control ', data_member, '">',
-                            '<option value="sender">Sender</option>',
-                            '<option value="receiver">Receiver</option>',
-                            , '</select>'].join('')));
-                        let el = els.find('select');
-                        el.val((df_payer + '').toLowerCase()).trigger('change');
-                    }
-                }
-                else if (data_member == 'zone_code') {
-                    let zone_code = span.data('value');
-                    //let select2 = x.find('.select2-container'); //x is "<div.vc-control" with data-field="zone_code"
-                    let el = x.find('select.' + data_member); // el is a normal "Select box"
-                    if (el.length === 0) {
-                        let els = x.append($(['<select class="vc-value-edit ', data_member, '">',
-                            , '</select>'].join('')));
-                        el = els.find('select.' + data_member); // el is a normal "Select box"    
-                    }
-                    //In case select2 for zone_code is not found then convert Simple Select box to Select2() 
-                    if (el.length > 0) {
-                        if (!mThis.zones) if (FilterDialog_package.form_data) mThis.zones = FilterDialog_package.form_data.zones;
-                        if (!mThis.zones) mThis.zones = [];
-                        mThis.zones[0] = { 'zone_code': null, 'zone_name': '(Choose zone)' };
-                        VSUtil.setComboItems(el, mThis.zones, 'zone_code', 'zone_name', false, null, zone_code);
-                        el.select2({ width: '100%' });
-                    }
-                }
-                // else if (data_member=='receiver_address') {
-                //     let value = span.text();
-                //     //let element = tr.find('div.pg-receiver_address_container');
-                //     AddressWidget.editAddress(span,value);   
-                //  }
-                else {
-                    let data_type = span.data('type');
-                    let value = span.text();
-                    if (value == 'NA' || value == 'អត់មាន' || value == 'គ្មាន') value = null;
-                    if (data_type !== 'number') data_type == 'text';
-                    if (input.is('input')) {
-                        input.val(value);
-                        input.show();
-                    }
-                    else
-                        x.append($(['<input type="', data_type, '" class="vc-value-edit form-control ', data_member, '" value="', value, '" ', att_readOnly, '>'].join(''))).val(value);
-                }
-                //} close:: if readonlt ==true
-            });
+               let btnSave = div_actions_buttons.querySelector('.pg-detail_save_button');
+               let btnCancelSave = div_actions_buttons.querySelector('.pg-detail_cancel_edit_button');
+               btnCancelSave.style.display = 'inline-block';
+               btnSave.style.display ='inline-block';
+               //set event handler for EDIT view
+               mThis.setHandlers_edit(pd_container,'fee-factor');
+           });
+             
+           mThis.is_edition = true;    
+       }  
+        
+       //Change from Edit Mode to View mode. 
+       //if paremeter @data is specified => user has made changes to package details and therefore => display new details 
+       //parameter @tr is expanded detail row <tr.pg_detail>
+       this.cancelEdit = (container,pid)=>{
+          mThis.displayPackageDetails(container,pid)      
+       }
 
-            mThis.is_edition = true;
-            mThis.editing_detail_row = tr;
-        }
-
-        //Change from Edit Mode to View mode. 
-        //if paremeter @data is specified => user has made changes to package details and therefore => display new details 
-        //parameter @tr is expanded detail row <tr.pg_detail>
-        this.cancelEdit = (tr) => {
-            let pid = tr.data('pid');
-            let p = { 'package_id': pid };
-            //alway refresh package's expaneded detail from server's database
-            vsapi.call([mThis.base_url, '/api/package/details'].join(''), p).then(res => {
-                if (res.status_code === 200) {
-                    let packageInfo =StringSanitizer.sanitizeObject(res.data);
-                    mThis.setPackageDetailValues(tr, packageInfo);
-                    mThis.is_edition = false;
-                    mThis.editing_detail_row = null;
-                }
-                mThis.editing_detail_row = null;
-                let td = tr.find('td.col_action');
-                td.find('a.pg-detail_cancel_edit_button').hide();
-                td.find('a.pg-detail_save_button').hide();
-                td.find('a.pg-detail_edit_button').show();
-            });
-        }
-
-        this.getData = (tr) => {
-            if (!tr) return null;
-            let p = {};
-            p.package_id = tr.data('pid'); //pacakge_id;
-
-            tr.find('div.vc-control').each(function () {
-                let x = $(this);
-                let span = x.find('.vc-value');
-                let input = x.find('.vc-value-edit');
-                let data_member = span.data('field');
-                p[data_member] = input.val();
-            });
-
-            if (!p.package_id) {
-                cv_interact.warning('Package identity is not valid');
+       this.getData =(container)=>{
+          const pd_container = container.querySelector('div.pd-container'); 
+          let p = {
+            "id":container.dataset.id,
+            "sender_id":pd_container.dataset.senderid
+          };
+          //p.package_id = container.dataset.id; //pacakge_id;
+          pd_container.querySelectorAll('.data-input').forEach(el =>{
+             const f = el.dataset.field;
+             p[f] = el.value;
+          });
+          
+          let err_text ="";
+          if (!p.id) {
+                err_text = LocaleManager.trans('Package identity is not valid','validation');
+                cv_interact.error(err_text);
                 return null;
-            }
+         }
 
-            if (p.cod == 1) {
-                if (p.price <= 0 || !$.isNumeric(p.price)) {
-                    cv_interact.warning('When COD is Yes then Price is required', '', 'warning');
-                    return null;
-                }
-            }
+          if (p.cod ==1) {
+             if (p.price <=0 || isNaN(p.price)) {
+                 err_text = LocaleManager.trans('When COD is Yes then Price is required','validation');
+                 cv_interact.error(err_text);
+                 return null;
+             }
+          }
 
-            if ((p.df_payer + '').toLowerCase() != 'sender' && (p.df_payer + '').toLowerCase() != 'receiver') {
-                cv_interact.warning('DFP stands for Delivery Fee Payer. This must be Sender or Receiver', '', 'warning');
-                return null;
-            }
-            let size = mThis.processPackageSize(p.size);
-            if (!size) {
-                cv_interact.warning('<span class="error_text">Package size is not correct format</span><br><span style="color:green;font-weight:bold">Package Size is formated as Width Length Height. Example 20.2 11 15. all number in centimeter (cm)</span>', '', 'warning');
-                return null;
-            } else {
-                p.dim_x = size.width;
-                p.dim_y = size.length;
-                p.dim_h = size.height;
-            }
-            return p;
-        }
+          if ((p.df_payer+'').toLowerCase() !='sender' && (p.df_payer+'').toLowerCase() != 'receiver') {
+            //err_text = LocaleManager.trans('When COD is Yes then Price is required','validation');
+            cv_interact.warning('Fee payer must be Sender or Receiver');
+            return null;
+          }
+           let size = mThis.processPackageSize(p.size);
+           if (!size) {
+            cv_interact.error('<span class="error_text">Package size is not correct format</span><br><span style="color:green;font-weight:bold">Package Size is formated as Width Length Height. Example 20.2 11 15. All numbers are centimeter (cm)</span>','','warning');
+            return null;
+          } else {
+              p.dim_x = size.width;
+              p.dim_y = size.length;
+              p.dim_h = size.height;
+          }
+          return p;
+       }
 
         //size = width * length * height.  Return null in case of error or invalid size data. If @size_str i empty returns size(0,0,0)
         //processPackageSize() returns size object = {'length','width','height'}. parem @size_str = 20 10 5 (in cm)
-        this.processPackageSize = (size_str) => {
-            if (!size_str || (size_str + '').trim() == '') return { 'length': 0, 'width': 0, 'height': 0 };
+        this.processPackageSize = (size_str)=>{
+            if(!size_str || (size_str+'').trim() =='') return {'length':0,'width':0,'height':0};
             let parts = size_str.split(' ');
-            if (!parts[0])
+            if (!parts[0]) 
+            return false;
+            else if (parts[0] && !parts[2]){
                 return false;
-            else if (parts[0] && !parts[2]) {
-                return false;
-            } else if (isNaN(parts[2]) ||  isNaN(parts[1]) || isNaN(parts[0]))
-                return false;
+            } else if (isNaN(parts[2]) || isNaN(parts[1]) || isNaN(parts[0])) 
+            return false;
             else {
                 let length = parseFloat(parts[0]);
-                let width = parseFloat(parts[1]);
-                let height = parseFloat(parts[2]);
-                return { 'length': length, 'width': width, 'height': height };
-            }
+                let width =  parseFloat(parts[1]);
+                let height =  parseFloat(parts[2]);
+                return {'length':length,'width':width,'height':height};
+            }      
             return null;
         }
 
-        this.saveChanges = (tr, onDone) => {
-            if (!tr) return;
-            let p = mThis.getData(tr);
-            if (!p) return;
-            let pid = tr.data('pid');
-            let driver_total = 0, sender_total = 0;
-            //(sender_id, delivery_type,zone_code,billed_kg) are important to determine pricing details
-            let sender_id, delivery_type, zone_code;
+       this.saveChanges = (container,onDone)=>{
+          let p = mThis.getData(container);
+          if (!p) return;
+           let pid = container.dataset.id;
+           let driver_total =0,sender_total=0;
+           //(sender_id, delivery_type,zone_code,billed_kg) are important to determine pricing details
+           let sender_id = null;
+           //let zone_code = null; 
 
-            //begin:: get driver_total and sender_total values
-            let header_tr = tr.prev();
-            if (header_tr.hasClass('package_header')) {
-                if (header_tr.data('pid') == pid) {
-                    let td = header_tr.find('td.total');
-                    driver_total = td.find('span.driver-total').text();
-                    sender_total = td.find('span.sender-total').text();
-                    sender_id = header_tr.data('senderid'); //(sender_id, delivery_type,zone_code,billed_kg) are important to determine pricing details
-                    //delivery_type = header_tr.data('dtype'); // Do not use this @delivery_type from header row
-                    zone_code = header_tr.data('zonecode'); // get zone_code from header_tr
+          //begin:: get driver_total and sender_total values
+                let header_tr = container.closest('tr').previousElementSibling;
+                if(header_tr && header_tr.classList.contains('package_header')) {
+                    if(header_tr.dataset.id == pid ) {
+                        let td = header_tr.querySelector('td.total');
+                        driver_total = td.querySelector('span.driver-total').textContent;
+                        sender_total = td.querySelector('span.sender-total').textContent;
+                        sender_id = header_tr.dataset.senderid; //(sender_id, delivery_type,zone_code,billed_kg) are important to determine pricing details
+                        //delivery_type = header_tr.data('dtype'); // Do not use this @delivery_type from header row
+                        //zone_code = header_tr.dataset.zonecode; // get zone_code from header_tr
+                    }
                 }
-            }
-            //end:: get driver_toal and sender_total
-            p.sender_id = sender_id;
+          //end:: get driver_toal and sender_total
+            //p.sender_id = sender_id;
             //p.delivery_type = delivery_type;
             //p.zone_code =  //zone_code;
 
-            p.driver_total = parseFloat(driver_total);
-            p.sender_total = parseFloat(sender_total);
-            //imporant params are "sender_d,df_payer, delivery_type,zone_code,billed_kg" in order to determine the price
-            vsapi.call([main_view.base_url, '/api/updatePackageExpandedDetails'].join(''), p).then(res => {
-                if (res.status_code === 200) {
-                    let d = res.data;
-                    let packageInfo = StringSanitizer.sanitizeObject(d.details);
-                    mThis.setPackageDetailValues(tr, packageInfo);
-                    //let btnStatus = tr.find('._pol_status');
-                    //if(btnStatus.data('statusid')==9) btnStatus.data('notes', d.delivery_notes);
-                    let a = tr.prev().find('._pol_status');
-                    a.data('notes', packageInfo.remarks);
-                    if (typeof onDone === 'function') onDone(true);
-                } else cv_interact.warning(res.error_message);
-            });
-            //mThis.cancelEdit(tr);
-        }
+          p.driver_total = parseFloat(driver_total);
+          p.sender_total = parseFloat(sender_total);
+          //imporant params are "sender_d,df_payer, delivery_type,zone_code,billed_kg" in order to determine the price
+          vsapi.call(`${mThis.base_url}/api/package/update`,p).then(res => {
+            if(res.status_code === 200){
+                const data = StringSanitizer.sanitizeObject(res.data,null,['email']);
+                const d = data.details || {};
+                //let btnStatus = tr.find('._pol_status');
+                //if(btnStatus.data('statusid')==9) btnStatus.data('notes', d.delivery_notes);
+                const header_tr = container.closest('tr').previousElementSibling;
+                if(header_tr){
+                    let a = header_tr.querySelector('._pol_status');
+                    a.dataset.notes = d.delivery_notes;
+                }
+              
+                if(typeof onDone ==='function') onDone(d);
+                cv_interact.success('Paackage details have been saved!');
+             }else cv_interact.error(res.error_message);
+          });
+          //mThis.cancelEdit(tr);
+       }
     }
-    //##end::expanded_detail class
+    //##end::ExpandableDetails class
 }
 //## end::PackageListComponent
+
 
 //### begin::FilterDialog_package
 const FilterDialog_package = new function () {
@@ -1467,14 +1522,12 @@ const FilterDialog_package = new function () {
     this.btnOK.on('click', (e) => {
         mThis.self.modal('hide');
         let p = mThis.getData();
-        if (typeof mThis.onClose === 'function') mThis.onClose(p);
+        if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
     });
 
-    this.show = (option, onClose) => {
-        if (option) {
-            mThis.elTitle.text(option.title);
-        }
-        mThis.onClose = onClose;
+    this.show = (options) => {
+       mThis.options = options || {}; 
+       mThis.elTitle.text(options.title);
         mThis.loadFilterData(() => {
             if (main_view.MULTI_WAREHOUSE_OP === 0) mThis.elFilter_warehouse.parent().hide();
             mThis.self.modal({
@@ -1508,7 +1561,7 @@ const FilterDialog_package = new function () {
             VSUtil.setComboItems(mThis.elFilter_driver, mThis.form_data.drivers, 'id', 'driver_name', false, '(All Drivers)', def.driver_id);
             VSUtil.setComboItems(mThis.elFilter_zone, mThis.form_data.zones, 'zone_code', 'zone_name', false, null, def.zone_code);
             VSUtil.setComboItems(mThis.elFilter_status, mThis.form_data.statuses, 'id', 'status_name', false, null, def.status_id);
-            if (typeof onFinish === 'function') onFinish();
+            if (typeof onFinish === 'function') onFinish(mThis.form_data);
             return;
         }
         vsapi.call(`${mThis.base_url}/api/merchant/filter-options`, null,null).then(res => {
@@ -1529,40 +1582,10 @@ const FilterDialog_package = new function () {
                 mThis.form_data = data;
                 //Set form_data store for packageListComponent
                 PackageListComponent.form_data = data;
-                if (typeof onFinish === 'function') onFinish();
+                if (typeof onFinish === 'function') onFinish(mThis.form_data);
             }
         });
     }
 }
 //### end::FiterDialog_package
-
-//##begin::ScanInDialog
-const ScanInDialog = new function () {
-    let mThis = this;
-    this.self = main_view.appContent.children('#_dl_dlgScanIn');
-    this.elTitle = this.self.find('#_dl_dlgScanIn_title');
-    this.btnClose = this.self.find('#_dl_dlgScanIn_btnClose');
-
-    this.btnScanIn = this.self.find('#_dl_dlgScanIn_btnScan');
-
-    this.btnClose.on('click', (e) => {
-        e.preventDefault();
-        mThis.self.modal('hide');
-    });
-    this.show = (op, onClose) => {
-        if (!op) op = {};
-        if (op.title) mThis.elTitle.text(op.title);
-        mThis.onClose = onClose;
-        mThis.self.modal({
-            backdrop: 'static'
-        }).off('hide.bs.modal').on('hide.bs.modal', (e) => {
-            if (typeof mThis.onClose == 'function') mThis.onClose();
-        });
-    }
-
-}
-//##end::ScanInDialog
-$(document).ready(function () {
-    PackageListComponent.init();
-});
-
+ 
