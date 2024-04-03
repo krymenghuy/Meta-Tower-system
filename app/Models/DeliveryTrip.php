@@ -1103,7 +1103,8 @@ class DeliveryTrip
             }
             $inputs['delivery_notes'] = $d_notes;
         }
-        $update_notes = $diff_amounts? 'driver driver_name change COD from $'.$p1->driver_total.' to $'.$amount : null; 
+        $update_notes = $diff_amounts? 'driver driver_name change COD from $'.$p1->driver_total.' to $'.$amount : null;
+        if($diff_amounts && !$notes) return DV::error('ត្រូវការហេតុផល ប្តូរទឹកប្រាក់'); 
         if($status_id ==9)
             $inputs['failure_notes'] = $notes;
         else{

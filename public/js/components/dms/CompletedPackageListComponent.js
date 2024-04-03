@@ -251,7 +251,7 @@ var CompletedPackageListComponent = new function() {
 
          mThis.btnPrint.addEventListener('click',e =>{
             const d = mThis.getFilterData();
-             const param_string = ReportCenter.translateToQueryString(d);
+             const param_string = ReportCenterComponent.translateToQueryString(d);
             let params = ['rtype=package_list&completed=1&',param_string].join('');
             pdfReport.getEncryptData(encodeURI(params),(d)=>{
                 window.open([mThis.base_url,'/dms-gen-report/',d].join(''),'_blank'); 
