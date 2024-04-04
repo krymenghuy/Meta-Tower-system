@@ -43,6 +43,8 @@ use App\Models\PublicStorage;
 use App\Models\SystemSetting;
 //use App\Models\PaymentTransaction;
 
+use App\Http\Controllers\ShipmentController;
+
 /*
 /*
 |--------------------------------------------------------------------------
@@ -257,8 +259,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
   //*** end::legacy APIs from previous version
 });
 /** end:: CustomRateLimiter WITHOUT any prefix */
-  
-
+Route::middleware([CustomRateLimiter::class])->prefix('shipments')->group(function(){
+    Route::post('/save', [ShipmentController::class, 'save']);
+    Route::post('/list', [ShipmentController::class, 'getShipmentList']);
+});
  Route::middleware([CustomRateLimiter::class])->prefix('order')->group(function(){
             Route::post('/list', [PickupRequestController::class, 'getPickupList']);
             Route::post('/delete', [PickupRequestController::class, 'deletePickup']);

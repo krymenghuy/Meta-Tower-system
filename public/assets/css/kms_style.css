@@ -47,21 +47,27 @@ li.kt-menu__section {
 }
 
 .menu-selected {
-    background-color: #4825b8;
+    background-color: #ffff !important;
+    color: #8DC63F !important;
 }
 
 a.menu-selected .kt-menu__link-text {
-    color: #fffcfc;
+    color: #8DC63F;
 }
 
 .menu-selected .icons {
-    filter: brightness(0) saturate(100%) invert(96%) sepia(6%) saturate(811%)
-        hue-rotate(201deg) brightness(122%) contrast(100%);
+    /* filter: brightness(0) saturate(100%) invert(96%) sepia(80%) saturate(811%)
+        hue-rotate(201deg) brightness(122%) contrast(100%); */
+        /* color: #8DC63F !important; */
+        /* filter:hue-rotate(0deg); */
+    filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%) 
+        hue-rotate(24deg) brightness(87%) contrast(79%);
 }
 
 .icons {
-    filter: invert(53%) sepia(46%) saturate(7477%) hue-rotate(219deg)
-        brightness(90%) contrast(91%);
+    /* filter: invert(53%) sepia(46%) saturate(7477%) hue-rotate(219deg)
+        brightness(90%) contrast(91%); */
+        filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(341deg) brightness(103%) contrast(103%);
 }
 
 .kt-menu__link-icon img {
@@ -69,6 +75,7 @@ a.menu-selected .kt-menu__link-text {
     height: 22px;
     object-fit: contain;
     margin-right: 5px;
+    color: #8DC63F !important;
 }
 
 .kt-header-menu-wrapper {
