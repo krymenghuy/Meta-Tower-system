@@ -39,6 +39,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SalesCommissionPolicyController;
 //use App\Http\Controllers\PusherController;
 
+use App\Http\Controllers\CountryZoneController;
+
 use App\Models\PublicStorage;
 use App\Models\SystemSetting;
 //use App\Models\PaymentTransaction;
@@ -58,6 +60,8 @@ use App\Models\SystemSetting;
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+
+
 
 Route::post('telegram/send', [ApiController::class, 'sendToTelegram']);
 
@@ -342,6 +346,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
         Route::post('/commune/delete',[LocationController::class,'deleteCommune']);
     });      
     //end::LocationController
+    
 
      //begin:: Delivery ZONE
      Route::middleware([CustomRateLimiter::class])->prefix('zone')->group(function(){
@@ -352,6 +357,17 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
             Route::post('list-all', [DeliveryZoneController::class, 'getZoneList_all']);
             Route::post('save', [DeliveryZoneController::class, 'saveZone']);
      });
+
+     //begin:: Counties_Zone_Code
+
+Route::prefix('country')->group(function(){
+    Route::post('/save',[CountryZoneController::class,'save']);
+    Route::post('/delete',[CountryZoneController::class,'delete']);
+    Route::post('/list-all',[CountryZoneController::class,'getCountryZoneList_all']);
+    Route::post('/details',[CountryZoneController::class,'details']);
+
+});
+
     
      //begin::PriceController
         Route::post('getSampleScript', [PriceController::class, 'getSampleScript']);

@@ -187,7 +187,7 @@
                                 @include('layouts.assignStudentComponent')
                                 @include('layouts.accountRequestComponent')
                                 
-                                @include('layouts.customerComponent')
+                            
                             </div>
                         </div>
                     </div>

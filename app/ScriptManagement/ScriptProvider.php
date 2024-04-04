@@ -105,6 +105,8 @@ namespace App\ScriptManagement;
                         //start Components abm
 
                         '/js/components/abm/CustomersComponent.js',
+                        '/js/components/abm/CountryZonesComponent.js',
+                        
                     ]
               ],
 
