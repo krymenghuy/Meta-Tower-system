@@ -202,6 +202,7 @@
                         <div id="_p1" class="row">
                             <div class="col-lg-12 shadow-box ps-4" id="_app_content">
                                 @include('layouts.abm.dashboardComponent')
+                                @include('layouts.abm.customerListComponent')
                             </div>
                         </div>
                     </div> 
