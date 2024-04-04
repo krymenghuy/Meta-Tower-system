@@ -83,6 +83,7 @@ namespace App\ScriptManagement;
                         '/js/layout/abm/main.js',
                         '/assets/js/formUtils.js',
                         '/js/components/abm/dms.utils.js',
+                        '/js/components/abm/CustomerListComponent.js',
                         '/js/components/abm/DialogFilter.js',
                         //'/js/components/UnauthComponent.js',
                         '/js/components/abm/PDFReport.js',
