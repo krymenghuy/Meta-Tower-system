@@ -13,7 +13,6 @@ var CustomersComponent = new function(){
 
         
 
-
         mThis.initAlready = true;
     }
 
