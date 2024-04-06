@@ -78,6 +78,7 @@
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Dashboard"></span>
                 </a>
             </li>
+            
           
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
                 <a href="CustomerListComponent" modid="201" class="menu-item kt-menu__link">
