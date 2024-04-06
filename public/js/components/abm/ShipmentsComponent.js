@@ -295,20 +295,38 @@ var ShipmentsComponent = new function () {
                 data: function (data, row, display) {
                     let html = ['<div class="dropdown">',
                         '<a href="javascript:void(0)" data-orderid="', data.zone_code, '" data-senderid="', data.sender_id, '" class="btn_pickup_action" aria-haspopup="true" aria-expanded="false">',
-                        '<i class="fa fa-chevron-down" style="color:#E9E7E7;font-size:1.5em"></i>',
+                        '<i class="fa fa-chevron-down" style="color:#8DC63F;font-size:1.5em"></i>',
                         '</a>',
                         '</div>'].join('');
                     return html;
                 }
             },
             {
-                className: "Created Date",
+                className: "Order Date",
                 data: function (data, index, tr) {
-                    return ['<span class="pl-request_date">', data.created_at, '</span>',
-                        '<span class="pl-request_time">', data.request_time||"NA", '</span>'].join('');
+                    return ['<span class="pl-request_date">', data.create_date||"NA", '</span>',
+                        '<span class=" pl-request_time d-block p-1">', data.request_time||"NA", '</span>'].join('');
                 },
                 title: 'Created Date'
                 // title: mThis.trans('Created Date')
+            },
+            {
+                className: "Created Date",
+                data: function (data, index, tr) {
+                    return ['<span class="pl-request_date">',data.invoice_cmt||"NA", '</span>',
+                        '<span class=" d-block p-1">', data.invoice_id||"#00000", '</span>'].join('');
+                },
+                title: 'Invoice ID'
+                // title: mThis.trans('Created Date')
+            },
+            {
+                className: "sender_id",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.sender_id,'</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'Sender ID'
             },
             {
                 className: "zone_code",
@@ -320,32 +338,57 @@ var ShipmentsComponent = new function () {
                 title: 'Zone Code'
             },
             {
-                className: "sender_id",
-                data: (data,index,tr)=>{
-                    const sender_info = ['<span class="sender-name d-block">',data.sender_name,'</span>','<span class="sender-code d-block text-center text-info">',data.sender_code,'</span>'].join('');
-                    return sender_info;
+                className: "total_billed_weight",
+                data: function (data,index,tr) {
+                    // let cls_special_status_class = mThis.getSpecialStatusClass(data.status_id);
+                    return ['<div><div class="pl-order-special-status d-flex justify-content-between"><span class="rounded-3 pl-order-special-status-text "> ', data.total_billed_weight||"0.00", ' </span> <span class="rounded-3 order-code text-info">','kg', '</span> </div></div>'].join('');
                 },
-                title: mThis.trans('Sender ID')
+                // title: mThis.trans('Zone Code')
+                title: 'total billed weight'
             },
+            {
+                className: "total_actual_weight",
+                data: function (data,index,tr) {
+                    // let cls_special_status_class = mThis.getSpecialStatusClass(data.status_id);
+                    return ['<div><div class="pl-order-special-status d-flex justify-content-between"><span class="rounded-3 pl-order-special-status-text "> ', data.total_actual_weight||"0.00", ' </span> <span class="rounded-3 order-code text-info">','kg', '</span> </div></div>'].join('');
+                },
+                // title: mThis.trans('Zone Code')
+                title: 'total actual weight'
+            },
+            {
+                title:"Price",
+                data:(data,index,tr)=>{
+                  return ['<div><div class="pl-order-special-status d-flex justify-content-between"><span class="rounded-3 pl-order-special-status-text "> ', data.price||"0.00", ' </span> <span class="rounded-3 order-code text-info">','$', '</span> </div></div>'].join('');
+                }
+             },
+            
+           
+            {
+                title:"Remarks",
+                data:(data,index,tr)=>{
+                  return [`<span class="d-block fw-semibold">`,data.remarks||"NA",'</span>'].join('');
+                }
+             },
             
             {
-               title:"Created By",
+               title:"Status",
                data:(data,index,tr)=>{
-                 return [`<span class="d-block fw-semibold">`,data.create_user,`</span><span class="d-block p-1"></small>`,data.create_date,`</small></span>`].join('');
+                 return [`<span class="d-block fw-semibold">`,data.status_id||"NA",'</span>'].join('');
                }
             },
         ];
 
         mThis.shipmentListView = new ListView("_shm_div_order_list", {
             clientSidePagination: true,
-            fetchApi: `${main_view.base_url}/api/shipments/list`,
+            fetchApi: `${main_view.base_url}/api/oversea_shipments/Shipment-list`,
             // processResponse: (res) => {
             //     return d.items;
             // },
             rowCreated:(data,index,tr)=>{
-              tr.dataset.id = data.id;
-              tr.classList.add('order');
-              tr.setAttribute('id',['order_',data.id].join('')); 
+                console.log(data.id);
+              tr.dataset.id = data.id;  
+              tr.classList.add('shipment');
+              tr.setAttribute('id',['shipment_',data.id].join('')); 
             //   tr.dataset.statusid = data.status_id;
               tr.dataset.senderid = data.sender_id;
             //   tr.dataset.driverid = data.driver_id?data.driver_id:''; 
@@ -366,15 +409,15 @@ var ShipmentsComponent = new function () {
             onOpen: (container, detail_tr, parent_tr) => {
                 mThis.shm_prev_editing_row = null;
                 const view_name = parent_tr.dataset.view; 
-                let order_id = parent_tr.dataset.id;
+                let shipment_id = parent_tr.dataset.id;
                 let status_id = parent_tr.dataset.status_id;
                 //let sender_pmt_statu_id = parent_tr.dataset.senderpmtstatusid;
                 //let driver_pmt_statu_id = parent_tr.dataset.driverpmtstatusid;
-                if(!order_id) return;
-                container.dataset.id = order_id;
+                if(!shipment_id) return;
+                container.dataset.id = shipment_id;
                 container.dataset.statusid = status_id;
                 detail_tr.dataset.statusid = status_id;
-                detail_tr.dataset.orderid = order_id;
+                detail_tr.dataset.orderid = shipment_id;
                 mThis.displayOrderDetails(container,parent_tr,view_name);
                 mThis.showQuickButtons(parent_tr);
             },
@@ -480,7 +523,7 @@ var ShipmentsComponent = new function () {
         
                 let dropdownMenu = p.querySelector('.dropdown-menu');
                 if (!dropdownMenu || dropdownMenu.length === 0) {
-                    p.insertAdjacentHTML('beforeend', mThis.createDropdownMenuHtml_pickup(order_id, sender_id, status_id));
+                    p.insertAdjacentHTML('beforeend', mThis.createDropdownMenuHtml_pickup(shipment_id, sender_id, status_id));
                     dropdownMenu = p.querySelector('.dropdown-menu');
                 }
         
@@ -495,21 +538,21 @@ var ShipmentsComponent = new function () {
                 return;
             }
 
-            //Click on "Arrive" button, the shortcut button in order_tr
+            //Click on "Arrive" button, the shortcut button in shipment_tr
             btn = VSUtil.closestLimited(e.target,'.pkl_btn_receive');
             if(btn){
                         if(!AuthManager.allowed(222)) return;
-                        const order_tr = btn.closest('tr');
+                        const shipment_tr = btn.closest('tr');
                         cv_interact.confirm('ទទួលទំនិញទាំងអស់ក្នុងបញ្ជាមួយនេះ?',{'context':"update"},e =>{
                             if(e){
                                if (mThis.shm_prev_editing_row) {
                                    mThis.saveItem(mThis.shm_prev_editing_row, btn, success => {
                                        if (success){
-                                          mThis.receiveItems_all(order_tr, null);
+                                          mThis.receiveItems_all(shipment_tr, null);
                                        }
                                    });
                                }
-                               else mThis.receiveItems_all(order_tr, null);
+                               else mThis.receiveItems_all(shipment_tr, null);
                             }
                   });
                 return;
@@ -519,13 +562,13 @@ var ShipmentsComponent = new function () {
             btn = VSUtil.closestLimited(e.target,'.pkl_btn_pick');
             if(btn){
                 //if(!AuthManager.allowed() ) return; 
-                const order_tr = btn.closest('tr');
+                const shipment_tr = btn.closest('tr');
                 if (mThis.shm_prev_editing_row) {
                     mThis.saveItem(mThis.shm_prev_editing_row, (item_saved) => {
                         if (item_saved) {
-                            mThis.pickItems(order_tr, btn, (sucess,d) => {
+                            mThis.pickItems(shipment_tr, btn, (sucess,d) => {
                                 if (sucess){
-                                    order_tr.dataset.statusid = d.status_id;
+                                    shipment_tr.dataset.statusid = d.status_id;
                                     btn.style.display ='none';
                                 }
                             });
@@ -533,9 +576,9 @@ var ShipmentsComponent = new function () {
                     });
                 }
                 else {
-                    mThis.pickItems(order_tr,(success,d) => {
+                    mThis.pickItems(shipment_tr,(success,d) => {
                         if (success){
-                            order_tr.dataset.statusid = d.status_id;
+                            shipment_tr.dataset.statusid = d.status_id;
                             btn.style.display ='none';
                         }
                     });
@@ -589,17 +632,17 @@ var ShipmentsComponent = new function () {
             //Click on Arrive button
             btn = VSUtil.getElementByClass(e.target,'_pl_pa_receive');
             if(btn){
-                let order_tr = btn.closest('tr');
+                let shipment_tr = btn.closest('tr');
                 cv_interact.confirm('ទទួលទំនិញទាំងអស់ក្នុងបញ្ជាមួយនេះ?',{'context':"update"},e =>{
                      if(e){
                         if (mThis.shm_prev_editing_row) {
                             mThis.saveItem(mThis.shm_prev_editing_row, null, (success) => {
                                 if (success){
-                                    mThis.receiveItems_all(order_tr, null);
+                                    mThis.receiveItems_all(shipment_tr, null);
                                 }
                             });
                         }
-                        else mThis.receiveItems_all(order_tr, null);
+                        else mThis.receiveItems_all(shipment_tr, null);
                      }
                 });
                 return;
@@ -710,13 +753,13 @@ var ShipmentsComponent = new function () {
     //End:: PickupListComponent.init()
 
     this.changeOrderStatus = (tr)=>{
-            let order_id = tr.dataset.id;
+            let shipment_id = tr.dataset.id;
             let def_status_id = tr.dataset.statusid;
                
                 let sender_name = tr.querySelector('td.sender_name .sender-name').textContent;
                 let order_code = tr.querySelector('td.order_code .order-code').textContent;
                 let driver_id = tr.dataset.driverid;
-                let order = { 'order_id': order_id, 'order_code': order_code, 'sender_name': sender_name, 'driver_id': driver_id, 'status_id': def_status_id };
+                let order = { 'shipment_id': shipment_id, 'order_code': order_code, 'sender_name': sender_name, 'driver_id': driver_id, 'status_id': def_status_id };
                 PickupStatusDialog.show(order, d => {
                     if (d) {
                         tr.dataset.driverid =  d.driver_id;
@@ -729,11 +772,11 @@ var ShipmentsComponent = new function () {
     };
 
     this.deleteOrder = (tr)=>{  
-            let order_id = tr.dataset.id || tr.dataset.orderid;
+            let shipment_id = tr.dataset.id || tr.dataset.orderid;
             let status_id = tr.dataset.statusid;
             //let driver_id = tr.dataset.driverid;
             //let sender_id = tr.dataset.senderid;
-            let p = { 'id': order_id, 'status_id': status_id };
+            let p = { 'id': shipment_id, 'status_id': status_id };
             cv_interact.confirm('Delete this order?', { title: 'Delete Order', cancelButtonText: "Close", confirmButtonText: "Delete", context: "delete" }, function (e) {
                 if (e) {
                     vsapi.call([mThis.base_url, '/api/order/delete'].join(''), p).then(res => {
@@ -866,44 +909,50 @@ var ShipmentsComponent = new function () {
      * IMPORTANT:  @d = {"order_id","sender_id","status_id",["barcode"]}
     */
     this.createItemRow_html = (d ={},tr_id=null) => {
-        const display_cols = ['delivery_type', 'zone_code', 'receiver_phone', 'price', 'cod', 'df_payer', 'fees', 'remarks', 'base_fee', 'delivery_fee', 'size', 'actual_kg', 'billed_kg', 'driver_total'];
+        const display_cols = ['item_type', 'billed_weight', 'actual_weight', 'heigth', 'weigth', 'length' , 'allocated_kg'];
         let i = 0, c=null;
         let html_row = null;
+        // console.log(d);
         do {
             c = display_cols[i];
             if (!c) break;
             let val = null;
-            if (c != 'size') val = StringSanitizer.sanitizeOut(d[c]);
-            else val = DUtil.sanitizePackageSize(d[c]);
+            //if (c != 'size') 
+            val = StringSanitizer.sanitizeOut(d[c]);
+            // else val = DUtil.sanitizePackageSize(d[c]);
 
             let iType = 'text';
-            if (['delivery_type', 'df_payer', 'cod'].indexOf(c) >= 0) iType = 'select';
-            else if (c === 'zone_code') iType = 'select2';
-            else if (c === 'receiver_phone') iType = 'phone';
-            else if (['delivery_fee', 'base_fee', 'price', 'fees', 'actual_kg', 'billed_kg', 'driver_total'].indexOf(c) >= 0) iType = 'number';
+            if (['item_type'].indexOf(c) >= 0) iType = 'select';
+            // else if (c === 'zone_code') iType = 'select2';
+            // else if (c === 'receiver_phone') iType = 'phone';
+            else if (['actual_kg', 'billed_weight', 'actual_weight', 'heigth', 'weigth', 'length','allocated_kg'].indexOf(c) >= 0) iType = 'number';
 
             let disp_value = val;
-            if (c === 'cod') {
-                disp_value = 'Yes';
-                if (val === 0) disp_value = 'No';
+            if (c === 'item_type') {
+                // console.log(DUtil.properCase(d.item_type));
+                // disp_value = DUtil.properCase(d.item_type);
+                disp_value = 'doc';
+                if (val === 0) disp_value = 'none doc';
             }
-            else if (c === 'zone_name' || c === 'zone_code') {
-                val = d.zone_code;
-                disp_value = d.zone_name;
-            }
-            else if (c === 'delivery_type')
-                disp_value = DUtil.properCase(d.delivery_type);
-            else if (c === 'size')
-                disp_value = DUtil.getFriendlySize(d.size);
-            else if (['price','base_fee','delivery_fee','fees','driver_total','sender_total'].indexOf(c) >=0)
-             {
-                d.currency_code = d.currency_code || 'USD';
-                disp_value = [d[c],' ',d.currency_code].join('');
-             }
-             else if (['billed_kg','actual_kg'].indexOf(c) >=0){
+            // else if (c === 'zone_name' || c === 'zone_code') {
+            //     val = d.zone_code;
+            //     disp_value = d.zone_name;
+            // }
+            // else if (c === 'delivery_type')
+            //     disp_value = DUtil.properCase(d.delivery_type);
+            // else if (c === 'size')
+            //     disp_value = DUtil.getFriendlySize(d.size);
+            // else if (['price','base_fee','delivery_fee','fees','driver_total','sender_total'].indexOf(c) >=0)
+            //  {
+            //     d.currency_code = d.currency_code || 'USD';
+            //     disp_value = [d[c],' ',d.currency_code].join('');
+            //  }
+             else if (['billed_weight','actual_weight'].indexOf(c) >=0){
                 disp_value = [d[c],' kg'].join('');  
              }
             let readOnly = "0";
+            
+            console.log(val);
             html_row = [html_row, '<td data-value="', val, '" data-field="', c, '" data-readonly="', readOnly, '" data-inputtype="', iType, '" class="', c, ' text-nowrap">', disp_value, '</td>'].join('');
             i++;
         } while (c);
@@ -918,44 +967,37 @@ var ShipmentsComponent = new function () {
         return ['<tr id="', tr_id, '" data-barcode="', d.barcode, '" data-orderid="', d.order_id, '" data-senderid="', d.sender_id, '" data-id="', d.id, '" data-statusid="', d.status_id, '" class="pkl-package-row pkl_', (d.id?d.id:0), '">', td_action, html_row, '</tr>'].join('');
     }
 
-    this.createPackageTable_thead_html = (order_id,sender_id)=>{
+    this.createPackageTable_thead_html = (shipment_id,sender_id)=>{
         let thead_html = ['<thead><tr>',
           '<th>',
           '<div class="d-flex justify-content-between align-items-center gap-2">',
-          '<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" style="font-weight:bold;width:50px" class="pkl-lnk_add_item"><div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-plus fs-5 text-success"></i><span class="fs-5-08">Add</span></div></a>',
-          //'<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" class="pkl_btn_magic_entry"><i class="fa fa-cube fs-5 text-warning"></i></a>',
+          '<a data-senderid="', sender_id, '" data-shipmentid="', shipment_id, '" href="javascript:void(0)" style="font-weight:bold;width:50px" class="pkl-lnk_add_item"><div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-plus fs-5 text-success"></i><span class="fs-5-08">Add</span></div></a>',
+        //   '<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" class="pkl_btn_magic_entry"><i class="fa fa-cube fs-5 text-warning"></i></a>',
           '</div>',
           '</th>',
           '<th>TYPE</th>',
-          '<th>ZONE</th>',
-          '<th>RECEIVER PHONE</th>',
-          '<th>PRICE</th>',
-          '<th>COD</th>',
-          '<th>FEE PAYER</th>',
-          '<th>FEES</th>',
-          '<th>REMARKS</th>',
-          '<th>BASE FEE</th>',
-          '<th>ADDITIONAL</th>',
-          '<th>SIZE</th>',
-          '<th>ACTUAL KG</th>',
-          '<th>BILLED KG</th>',
-          '<th>TOTAL</th>',
+          '<th>BIILED WEIGHT</th>',
+          '<th>ACTUAL WEIGHT</th>',
+          '<th>HEIGHT</th>',
+          '<th>WEIGHT</th>',
+          '<th>LENGTH</th>',
+          '<th>ALLOCATED KG</th>',
           '</tr></thead>'].join(''); 
          return thead_html; 
       }
 
-    this.createPackageTable_html = (order_id,sender_id)=>{
-       let html = [`<table class="pkl-package-table table">`,mThis.createPackageTable_thead_html(order_id,sender_id),`<tbody></tbody>`,`</table>`].join('');
+    this.createPackageTable_html = (shipment_id,sender_id)=>{
+       let html = [`<table class="pkl-package-table table">`,mThis.createPackageTable_thead_html(shipment_id,sender_id),`<tbody></tbody>`,`</table>`].join('');
        return html; 
     }
 
     this.addItemRow = (div, d=null, edit_mode = false, refresh_count = false) => {   
         if (!div) return;
-        let order_id = div.dataset.orderid;
+        let shipment_id = div.dataset.shipmentid;
         let sender_id = div.dataset.senderid;
         let table = div.querySelector('table.pkl-package-table');
         if(!table){
-            div.innerHTML = mThis.createPackageTable_html(order_id,sender_id);
+            div.innerHTML = mThis.createPackageTable_html(shipment_id,sender_id);
             table = div.querySelector('table.pkl-package-table'); 
         } 
         let tbody = table.querySelector('tbody');
@@ -966,7 +1008,7 @@ var ShipmentsComponent = new function () {
          * price = 0, fees =0  are all default values when creating new item
         */
         
-        if (!d) d = {"sender_id":sender_id,"order_id":order_id,"status_id":1,"fees":0,"price":0};
+        if (!d) d = {"sender_id":sender_id,"shipment_id":shipment_id,"status_id":1,"fees":0,"price":0};
         let html_row = this.createItemRow_html(d,tr_id);
         //prepend html string to tbody
         tbody.insertAdjacentHTML('afterbegin',html_row);
@@ -1011,31 +1053,31 @@ var ShipmentsComponent = new function () {
     //    if (span) span.textContent = count;
     }
     
-    this.displayOrderDetails = (container,order_tr,def_view='items')=>{
+    this.displayOrderDetails = (container,shipment_tr,def_view='items')=>{
         container.innerHTML = null;
-        const order_id = order_tr.dataset.id;
-        const sender_id = order_tr.dataset.senderid;
+        const shipment_id = shipment_tr.dataset.id;
+        const sender_id = shipment_tr.dataset.senderid;
         let html = [
         `<div class="d-flex flex-column p-2 w-100">`,
           `<div class="pkl-header-panel d-flex flex-row justify-content-between w-100">`,
             `<div class="d-flex flex-row gap-2">`,
-                `<button type="button" data-id="`,order_id,`" data-viewname="items" class="btn-show btn-show-items btn btn-sm btn-secondary"><span>Items</span></button>`, 
-                `<button type="button" data-id="`,order_id,`" data-viewname="images" class="btn-show btn-show-images btn btn-sm btn-primary"><span>Photos</span></button>`, 
+                `<button type="button" data-id="`,shipment_id,`" data-viewname="items" class="btn-show btn-show-items btn btn-sm btn-secondary"><span>Items</span></button>`, 
+                // `<button type="button" data-id="`,order_id,`" data-viewname="images" class="btn-show btn-show-images btn btn-sm btn-primary"><span>Photos</span></button>`, 
             `</div>`,
             
             `<div>`,
             `<button class="btn btn-sm btn-success"><i class="fa fa-print"></i></button>`,
             `</div>`,
          `</div>`, 
-          `<div style="margin:15px;"> <div data-id="`,order_id,`" class="pkl-order-content p-1 mt-2">This is content</div></div>`,
+          `<div style="margin:15px;"> <div data-id="`,shipment_id,`" class="pkl-order-content p-1 mt-2">This is content</div></div>`,
         `</div>`].join('');
         container.innerHTML = html;
         
         const div = container.querySelector('div.pkl-order-content');
         if(def_view ==='items'){
-             mThis.displayOrderItems(div,order_id,sender_id);
+             mThis.displayOverseaItems(div,shipment_id,sender_id);
         }else{
-            mThis.displayOrderImages(div,order_id,sender_id);
+            mThis.displayOrderImages(div,shipment_id,sender_id);
         }
 
         const div_header = container.querySelector('div.pkl-header-panel');
@@ -1045,11 +1087,11 @@ var ShipmentsComponent = new function () {
             if (btn){
                 const viewname = btn.dataset.viewname;
                 if (viewname ==='items'){
-                     mThis.displayOrderItems(div,order_id,sender_id,btn);
+                     mThis.displayOverseaItems(div,shipment_id,sender_id,btn);
                 }else{
-                    mThis.displayOrderImages(div,order_id,sender_id,btn);
+                    mThis.displayOrderImages(div,shipment_id,sender_id,btn);
                 }
-                order_tr.dataset.view= viewname; 
+                shipment_tr.dataset.view= viewname; 
                 return;
             }
 
@@ -1060,9 +1102,9 @@ var ShipmentsComponent = new function () {
             //Click on Add Item button. Quick Add Item button
             let btn = VSUtil.closestLimited(e.target,'.pkl-lnk_add_item');
             if(btn){
-                let order_id = btn.dataset.orderid;
+                let shipment_id = btn.dataset.shipmentid;
                 let sender_id = btn.dataset.senderid;
-                div.dataset.orderid = order_id;
+                div.dataset.shipmentid = shipment_id;
                 div.dataset.senderid = sender_id;
                 //const item_table = btn.closest('table.pkl-package-table');  
                 //const editing_tr = mThis.getCurrentEditingRow(item_table);
@@ -1079,13 +1121,13 @@ var ShipmentsComponent = new function () {
                 e.preventDefault();
                 let x = $(this);
                 let tr = x.closest('tr');
-                let order_id = x.data('orderid');
+                let shipment_id = x.data('orderid');
                 let sender_id = x.data('senderid');
-                let op = { 'title': 'Magic Entry', 'sender_id': sender_id, 'order_id': order_id, 'tr': tr };
+                let op = { 'title': 'Magic Entry', 'sender_id': sender_id, 'shipment_id': shipment_id, 'tr': tr };
 
                 MagicEntryDialog.show(op, (e) => {
-                        let package_list_table = $(['#_pkl_wrapper_', order_id, ' > .pkl-package-list-table'].join(''));
-                        mThis.displayItemList(order_id, sender_id, package_list_table);
+                        let package_list_table = $(['#_pkl_wrapper_', shipment_id, ' > .pkl-package-list-table'].join(''));
+                        mThis.displayItemList(shipment_id, sender_id, package_list_table);
                 });
             });
 
@@ -1144,22 +1186,24 @@ var ShipmentsComponent = new function () {
       return null;
     }
     //displayItemList  | renderPackageTable
-    this.displayOrderItems = (div, order_id,sender_id,btn=null) => {
-        let p = { 'order_id': order_id };
+    this.displayOverseaItems = (div, shipment_id,sender_id,btn=null) => {
+        let p = { 'shipment_id':  shipment_id};
+        console.log(p);
         // const content_panel_class = 'pkl-order-content';
         // const div = container.querySelector(content_panel_class);
         //div.style.display= 'none';
         div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
         let html = '';
-        const header_cols = mThis.createPackageTable_thead_html(order_id,sender_id);
-        vsapi.call([mThis.base_url, '/api/order/package-list'].join(''), p,btn,false,null).then(res => {
+        const header_cols = mThis.createPackageTable_thead_html(shipment_id,sender_id);
+        vsapi.call([mThis.base_url, '/api/oversea_shipments/item-list'].join(''), p,btn,false,null).then(res => {
             if (res.status_code === 200) {
                 let packages = StringSanitizer.sanitizeObject(res.data,null,['size']);
                 let i = 0, c =null;
+                console.log(res.data);
                 do {
                     c = packages[i];
                     if (!c) break;
-                    c.order_id = order_id;
+                    c.shipment_id = shipment_id;
                     html = [html,mThis.createItemRow_html(c,null)].join('');
                     i++;
                 } while (c);
@@ -1167,7 +1211,7 @@ var ShipmentsComponent = new function () {
                    html = [`<table class="table pkl-package-table">`,header_cols,`<tbody>`, html ,`</tbody></table>`].join('');
                 }else{
                     mThis.shm_prev_editing_row = null;
-                    html = [`<div class="p-2 d-flex justify-content-center gap-2"><span class="h5 text-center p-1 fw-semibold">មិនទាន់បញ្ចូលកញ្ចប់ទំនិញ</span><a href="javascript:void(0)" data-orderid="`,order_id,`" data-senderid ="`,sender_id,`" class="pkl-lnk_add_item mt-2"><span class="p-2 border border-primary rounded-4">Add Item</span></a></div>`].join('');
+                    html = [`<div class="p-2 d-flex justify-content-center gap-2"><span class="h5 text-center p-1 fw-semibold">មិនទាន់បញ្ចូលកញ្ចប់ទំនិញ</span><a href="javascript:void(0)" data-orderid="`,shipment_id,`" data-senderid ="`,sender_id,`" class="pkl-lnk_add_item mt-2"><span class="p-2 border border-primary rounded-4">Add Item</span></a></div>`].join('');
                 }
                 div.innerHTML = html;
                 //div.style.display ='block';
@@ -1177,114 +1221,114 @@ var ShipmentsComponent = new function () {
     }
  
     /** displayOrderItems | renderPackagePhotos | renderItemsPhotos */
-    this.displayOrderImages = (div,order_id,sender_id=null,btn = null)=>{
-        div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
-        let p = {'id': order_id};
-        vsapi.call(`${mThis.base_url}/api/order/package-photos`,p,btn,false,null).then(res => {
-            let html = null;
-            let cnt =0;
-            if(res.status_code === 200){
-                let imgs = StringSanitizer.sanitizeObject(res.data,null,["image_url"]);
-                let image_html = "";
-                imgs.map(item => {
-                    //class="d-flex flex-column pe-4"
-                    const cls_border = item.barcode? 'border border-danger':'';
-                    image_html = [image_html,`<div class="img-box position-relative">
-                        <img data-orderid ="`,order_id,`" data-senderid="`,sender_id,`" data-id="`,item.id,`" data-pid="`,item.package_id,`" class="item-img `,cls_border,`" style="width:150px; height:150px;" src="${item.image_url}" data-url="${item.image_url}"/>`,
+    // this.displayOrderImages = (div,order_id,sender_id=null,btn = null)=>{
+    //     div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
+    //     let p = {'id': order_id};
+    //     vsapi.call(`${mThis.base_url}/api/order/package-photos`,p,btn,false,null).then(res => {
+    //         let html = null;
+    //         let cnt =0;
+    //         if(res.status_code === 200){
+    //             let imgs = StringSanitizer.sanitizeObject(res.data,null,["image_url"]);
+    //             let image_html = "";
+    //             imgs.map(item => {
+    //                 //class="d-flex flex-column pe-4"
+    //                 const cls_border = item.barcode? 'border border-danger':'';
+    //                 image_html = [image_html,`<div class="img-box position-relative">
+    //                     <img data-orderid ="`,order_id,`" data-senderid="`,sender_id,`" data-id="`,item.id,`" data-pid="`,item.package_id,`" class="item-img `,cls_border,`" style="width:150px; height:150px;" src="${item.image_url}" data-url="${item.image_url}"/>`,
 
-                        `<div style="visibility:hidden;background-color: rgba(0, 0, 0, 0.6);position:absolute;bottom: 2px; right: 2px;" class="img-actions bg-secondary rounded-3 d-flex flex-row gap-2 p-1">`,
-                        //   `<a href="javascript:void(0)" class="btn-edit-img full-opacity" data-id="${item.id}">
-                        //    <i class="fa fa-regular fa-edit text-warning fs-5"></i>
-                        //   </a>`,  
-                          `<a href="javascript:void(0)" class="btn-delete-img full-opacity" data-id="${item.id}">
-                              <i class="fa fa-regular fa-trash-can text-danger fs-5"></i>
-                            </a>`,
-                        `</div>`,
-                    `</div>`].join('');
-                    cnt++;
-                    mThis.current_images = imgs;
-                });
+    //                     `<div style="visibility:hidden;background-color: rgba(0, 0, 0, 0.6);position:absolute;bottom: 2px; right: 2px;" class="img-actions bg-secondary rounded-3 d-flex flex-row gap-2 p-1">`,
+    //                     //   `<a href="javascript:void(0)" class="btn-edit-img full-opacity" data-id="${item.id}">
+    //                     //    <i class="fa fa-regular fa-edit text-warning fs-5"></i>
+    //                     //   </a>`,  
+    //                       `<a href="javascript:void(0)" class="btn-delete-img full-opacity" data-id="${item.id}">
+    //                           <i class="fa fa-regular fa-trash-can text-danger fs-5"></i>
+    //                         </a>`,
+    //                     `</div>`,
+    //                 `</div>`].join('');
+    //                 cnt++;
+    //                 mThis.current_images = imgs;
+    //             });
                 
-                let container_id = ['oi_order_',order_id].join(''); 
-                if (cnt>0) 
-                   html = [`<div class="d-flex align-items-center gap-2 pb-4 p-3 my-3 mb-4" style="overflow-x: auto; width:86vw;" id="${container_id}">`,image_html,`</div>`].join('');
-                else
-                {
-                    let empty_text = LocaleManager.trans('No item images to display'); 
-                    html = [`<div class="d-flex justify-content-center" id="${container_id}"> <span class ="no-image-text p-3 d-block border rounded-5 border-warning fw-bold">${empty_text}</span> </div>`].join('');
-                }
-            }
-            else{
-                html =`<div class="expanded-row-error">${res.error_message}</div>`;
-            }
-            div.innerHTML = html;
+    //             let container_id = ['oi_order_',order_id].join(''); 
+    //             if (cnt>0) 
+    //                html = [`<div class="d-flex align-items-center gap-2 pb-4 p-3 my-3 mb-4" style="overflow-x: auto; width:86vw;" id="${container_id}">`,image_html,`</div>`].join('');
+    //             else
+    //             {
+    //                 let empty_text = LocaleManager.trans('No item images to display'); 
+    //                 html = [`<div class="d-flex justify-content-center" id="${container_id}"> <span class ="no-image-text p-3 d-block border rounded-5 border-warning fw-bold">${empty_text}</span> </div>`].join('');
+    //             }
+    //         }
+    //         else{
+    //             html =`<div class="expanded-row-error">${res.error_message}</div>`;
+    //         }
+    //         div.innerHTML = html;
             
-            div.addEventListener('click',e=>{
-               e.preventDefault();
+    //         div.addEventListener('click',e=>{
+    //            e.preventDefault();
 
-               //** Click on Image to Start Data Entry */
-               let img = VSUtil.closestLimited(e.target,'.item-img');
-               if(img){
-                  const img_id = img.dataset.id;
-                  const order_id = img.dataset.orderid;
-                  const sender_id = img.dataset.senderid;
-                  let op = {
-                    //currentView:"images", /** For refresh display When user close the Dialog */
-                    title:"Package Details",
-                    order_id:order_id,
-                    items : mThis.current_images,
-                    id:img_id,
-                    image_url: img.getAttribute('src'),
-                    onClose:(d)=>{
-                      //Refresh image list. If No more images left, then display Items Tab instead
-                      mThis.displayOrderImages(div,order_id,sender_id); 
-                    }
-                  }
-                  ItemEntryDialog.show(op);
-                  return;   
-               }
+    //            //** Click on Image to Start Data Entry */
+    //            let img = VSUtil.closestLimited(e.target,'.item-img');
+    //            if(img){
+    //               const img_id = img.dataset.id;
+    //               const order_id = img.dataset.orderid;
+    //               const sender_id = img.dataset.senderid;
+    //               let op = {
+    //                 //currentView:"images", /** For refresh display When user close the Dialog */
+    //                 title:"Package Details",
+    //                 order_id:order_id,
+    //                 items : mThis.current_images,
+    //                 id:img_id,
+    //                 image_url: img.getAttribute('src'),
+    //                 onClose:(d)=>{
+    //                   //Refresh image list. If No more images left, then display Items Tab instead
+    //                   mThis.displayOrderImages(div,order_id,sender_id); 
+    //                 }
+    //               }
+    //               ItemEntryDialog.show(op);
+    //               return;   
+    //            }
 
-               //*** Click on Delete image
-               let btn = VSUtil.closestLimited(e.target,'a.btn-delete-img');
-               if(btn){
-                  cv_interact.confirm('Delete this image?',{"title":"Delete Photo","context":"delete"},e=>{
-                     if(e){
-                        const img_id = btn.dataset.id;
-                         let p = {"photo_ids":img_id};
-                         vsapi.call(`${main_view.base_url}/api/order/delete-photos`,p,null).then(res=>{
-                            mThis.displayOrderImages(div,order_id,sender_id,btn); 
-                         });
-                     }
-                  });
+    //            //*** Click on Delete image
+    //            let btn = VSUtil.closestLimited(e.target,'a.btn-delete-img');
+    //            if(btn){
+    //               cv_interact.confirm('Delete this image?',{"title":"Delete Photo","context":"delete"},e=>{
+    //                  if(e){
+    //                     const img_id = btn.dataset.id;
+    //                      let p = {"photo_ids":img_id};
+    //                      vsapi.call(`${main_view.base_url}/api/order/delete-photos`,p,null).then(res=>{
+    //                         mThis.displayOrderImages(div,order_id,sender_id,btn); 
+    //                      });
+    //                  }
+    //               });
 
-                  return;
-               }
-            });
+    //               return;
+    //            }
+    //         });
 
-            div.querySelectorAll('.img-box').forEach(div_img => {
-                div_img.addEventListener('mouseover', e => {
-                    e.preventDefault();
-                    const p_div = VSUtil.closestLimited(e.target, '.img-box', 10);
-                    if (p_div) {
-                        const div_actions = p_div.querySelector('.img-actions');
-                        div_actions.style.visibility = 'visible';
-                        //console.log('mouse over ', div_actions.dataset.id);
-                    }
-                });
+    //         div.querySelectorAll('.img-box').forEach(div_img => {
+    //             div_img.addEventListener('mouseover', e => {
+    //                 e.preventDefault();
+    //                 const p_div = VSUtil.closestLimited(e.target, '.img-box', 10);
+    //                 if (p_div) {
+    //                     const div_actions = p_div.querySelector('.img-actions');
+    //                     div_actions.style.visibility = 'visible';
+    //                     //console.log('mouse over ', div_actions.dataset.id);
+    //                 }
+    //             });
             
-                div_img.addEventListener('mouseout', e => {
-                    e.preventDefault();
-                    const p_div = VSUtil.closestLimited(e.target, '.img-box', 10);
-                    if (p_div) {
-                        const div_actions = p_div.querySelector('.img-actions');
-                        div_actions.style.visibility = 'hidden';
-                        //console.log('mouse leave ', div_actions.dataset.id);
-                    }
-                });
-            });
+    //             div_img.addEventListener('mouseout', e => {
+    //                 e.preventDefault();
+    //                 const p_div = VSUtil.closestLimited(e.target, '.img-box', 10);
+    //                 if (p_div) {
+    //                     const div_actions = p_div.querySelector('.img-actions');
+    //                     div_actions.style.visibility = 'hidden';
+    //                     //console.log('mouse leave ', div_actions.dataset.id);
+    //                 }
+    //             });
+    //         });
              
-        });
-    }
+    //     });
+    // }
  
     this.getItems = (header_tr) => {
         if (!header_tr) return null;
@@ -1543,7 +1587,7 @@ var ShipmentsComponent = new function () {
 
     this.saveItem = (tr, lnk = null, onFinish = null) => {
         if (!tr) return;
-        //tr is the package tr , NOT order_tr
+        //tr is the package tr , NOT shipment_tr
         let p = mThis.getItem(tr);
         p.order_id = tr.dataset.orderid;
         p.package_id = tr.dataset.id;
@@ -1848,26 +1892,26 @@ var ShipmentsComponent = new function () {
         let order_id = tr.dataset.id;
         let status_id = tr.dataset.statusid;
         if (mThis.prev_quick_buttons) mThis.prev_quick_buttons.style.visibility = 'hidden';
-        let td = tr.querySelector('td.request_date');
-        let dx = td.querySelector('div.pkl-quick_action_buttons');
-        if (dx) {
-            if (status_id > 3){
-                const btn = dx.querySelector('.pkl_btn_pick');
-                if(btn) btn.style.visibility='hidden';
-            } else{
-                const btn = dx.querySelector('.pkl_btn_pick');
-                btn.style.visibility='visible';
-            }
-            dx.style.visibility='visible';
-            mThis.prev_quick_buttons = dx;
-            return;
-        }
+        // let td = tr.querySelector('td.request_date');
+        // let dx = td.querySelector('div.pkl-quick_action_buttons');
+        // if (dx) {
+        //     if (status_id > 3){
+        //         const btn = dx.querySelector('.pkl_btn_pick');
+        //         if(btn) btn.style.visibility='hidden';
+        //     } else{
+        //         const btn = dx.querySelector('.pkl_btn_pick');
+        //         btn.style.visibility='visible';
+        //     }
+        //     dx.style.visibility='visible';
+        //     mThis.prev_quick_buttons = dx;
+        //     return;
+        // }
 
-        td.insertAdjacentHTML('afterbegin',['<div id="pkl_quick_buttons_', order_id, '" class="d-flex flex-row gap-2 pkl-quick_action_buttons">',
-                (status_id < 3) ? ['<a href="javascript:void(0)" data-senderid="', sender_id, '" data-orderid="', order_id, '" class="pkl_btn_pick pl-1 pr-1 border rounded-3 border-primary">Pick</a>'].join('') : null,
-                (status_id < 5) ? ['<a href="javascript:void(0)" data-senderid="', sender_id, '" data-orderid="', order_id, '" class="pkl_btn_receive fw-semi-bold text-success ml-2 border rounded-2 pl-1 pr-1 border-success">Arrive</a>'].join('') : null,
-                '</div>'].join(''));
-        mThis.prev_quick_buttons  = td.querySelector(['#pkl_quick_buttons_',order_id].join(''));
+        // td.insertAdjacentHTML('afterbegin',['<div id="pkl_quick_buttons_', order_id, '" class="d-flex flex-row gap-2 pkl-quick_action_buttons">',
+        //         (status_id < 3) ? ['<a href="javascript:void(0)" data-senderid="', sender_id, '" data-orderid="', order_id, '" class="pkl_btn_pick pl-1 pr-1 border rounded-3 border-primary">Pick</a>'].join('') : null,
+        //         (status_id < 5) ? ['<a href="javascript:void(0)" data-senderid="', sender_id, '" data-orderid="', order_id, '" class="pkl_btn_receive fw-semi-bold text-success ml-2 border rounded-2 pl-1 pr-1 border-success">Arrive</a>'].join('') : null,
+        //         '</div>'].join(''));
+        // mThis.prev_quick_buttons  = td.querySelector(['#pkl_quick_buttons_',order_id].join(''));
     }
 
     this.getFilterData = ()=>{
@@ -2906,7 +2950,7 @@ let PerformPickupDialog = new function () {
         {
             className: "delivery_type",
             data: function (data,index,tr) {
-                let items = [{ 'delivery_type': 'normal' }, { 'delivery_type': 'fast' }];
+                let items = [{ 'item_type': 'doc' }, { 'delivery_type': 'non-doc' }];
                 data.delivery_type = (data.delivery_type + '').toLowerCase();
                 let d = { "inputType": "select2", "data": data, "cssClass": "form-control", "columnName": "delivery_type", "combo_items": items, "valueMember": "delivery_type", "textMember": "delivery_type" };
                 return EditableTable.makeTableCellEditor(d);
@@ -3486,14 +3530,14 @@ let VerifyPackageDialog = new function () {
             title: ''
         },
         {
-            className: "delivery_type",
+            className: "item_type",
             data: function (data,index,tr) {
-                let items = [{ 'delivery_type': 'normal' }, { 'delivery_type': 'fast' }];
-                data.delivery_type = (data.delivery_type + '').toLowerCase();
-                let d = { "inputType": "select2", "data": data, "cssClass": "form-control", "columnName": "delivery_type", "combo_items": items, "valueMember": "delivery_type", "textMember": "delivery_type" };
+                let items = [{ 'item_type': 'doc' }, { 'item_type': 'non-doc' }];
+                data.item_type = (data.item_type + '').toLowerCase();
+                let d = { "inputType": "select2", "data": data, "cssClass": "form-control", "columnName": "item_type", "combo_items": items, "valueMember": "item_type", "textMember": "item_type" };
                 return EditableTable.makeTableCellEditor(d);
             },
-            title: 'Delivery Type'
+            title: 'Item Type'
         },
         {
             className: "zone_name",

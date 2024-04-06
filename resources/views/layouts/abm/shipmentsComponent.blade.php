@@ -6,6 +6,14 @@
         color: gray;
         font-style: italic;
     }
+            
+    span.pl-request_time {
+        color: #1E38A4;
+        font-size: 0.8em;
+        display: block;
+        border-top: 1px solid #1E38A4;
+        padding: 5px;
+    }
 
     .small-box>.inner {
         min-height: 160px;
@@ -124,8 +132,8 @@
                 </div>
             </div>
         </div>
-        <div id="order_list_wrapper" class="shadow-lg bg-white rounded-3 border p-3 mt-3" style="min-height:43vw">
-            <div id="_shm_div_order_list" class=" overflow-hidden w-100"></div>
+        <div id="order_list_wrapper" class="shadow-lg bg-white rounded-3 border p-3 mt-3 overflow-auto " style="height:38vw">
+            <div id="_shm_div_order_list" class=" overflow-auto w-100"></div>
         </div>
     </div>
 </div>

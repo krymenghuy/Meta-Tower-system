@@ -16,6 +16,8 @@ body {
     font-size: 0.9rem;
     font-weight: normal;
     overflow: hidden;
+    /* overflow: auto; */
+    /* padding-top: 50px; */
 }
 
 input[type="number"]::-webkit-inner-spin-button,

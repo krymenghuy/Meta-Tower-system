@@ -40,7 +40,7 @@
                 background-size: cover;
                 background-repeat: no-repeat;
                 overflow: hidden;
-                filter:blur(5px);
+                filter:blur(2px);
             }
 
             .login-frame{
@@ -54,12 +54,12 @@
 
             .login-frame .vs-container-front-img{
                 width:70vw;
-                height:70vh;
-                background-color:#1286f1;
+                height:80vh;
+                background-color:#FFFF;
                 display:flex;
                 align-items:center;
                 justify-content:center;
-                border-radius:60px;
+                border-radius:10px;
                 position: absolute;
             }
 
@@ -67,6 +67,7 @@
                 height:100%;
                 width:50%;
                 border-radius:60px 0 0 60px;
+                padding: 50px;
             }
 
             .login-frame .vs-container-front-img .vs-login{
@@ -80,8 +81,8 @@
             }
             .vs-login .vs-title{
                 font-size:50px;
-                margin-bottom:3vh;
-                color:#fff;
+                /* margin-bottom:3vh; */
+                /* color:#fff; */
             }
 
             .vs-login .vs-form-group{
@@ -95,19 +96,20 @@
             }
 
             .vs-login .vs-form-group .vs-d-flex .vs-form-label{
-                color:#fff;
-                font-size:25px;
-                padding:20px 10px;
+                /* color:#fff; */
+                font-size:20px;
+                padding:25px 10px  10px;
             }
 
             .vs-login .vs-form-group .vs-d-flex .vs-form-control{
                 width:100%;
                 height:50px;
-                border-radius:10px;
+                border-radius:60px;
                 border:none;
                 outline:none;
                 padding:5px 15px;
-                font-size:18px;
+                font-size:16px;
+                background: #F4F4F4;
             }
 
             ::placeholder{
@@ -127,21 +129,22 @@
                 width:80%;
                 height:50px;
                 border-radius:10px;
-                border:2px solid #fff;
-                background-color:transparent;
-                font-size:25px;
+                border:2px solid #8DC63F;
+                background-color:#8DC63F;
+                font-size:20px;
                 color:#fff;
                 cursor:pointer;
             }
 
             .vs-login .vs-d-flex-copyright{
                 width:100%;
+                /* display:none; */
                 display:flex;
                 height:20%;
                 align-items:center;
                 justify-content:center;
                 flex-direction: column;
-                color:#fff;
+                /* color:#fff; */
                 font-size:18px;
             }
 
@@ -167,7 +170,7 @@
                 width:100vw;
                 height:100vh;
                 position: absolute;
-                background-color: #00000073;
+                /* background-color: #00000073; */
             }
 
             @media screen and (max-width:820px){
@@ -176,22 +179,22 @@
                 }
             }
 
-            @media screen and (min-width:821px) and (max-width:1500px){
+            /* @media screen and (min-width:821px) and (max-width:1500px){
                 .login-frame .vs-container-front-img{
                     width:84vw;
                 }
-            }
+            } */
         </style>
     </head>
     <body onload="checkDevice()">
         <div class="vs-container-login">
             <div>
-                <img class="img-background" src="{{ asset('assets/images/background_image.jpg') }}"/>
+                <img class="img-background" src="{{ asset('assets/images/logo/background_1.png') }}"/>
                 <div class="overlay-blur"></div>
             </div>
             <div class="login-frame">
                 <div class="vs-container-front-img">
-                    <img class="img-front" src="{{ asset('assets/images/front_image.png') }}"/>
+                    <img class="img-front" src="{{ asset('assets/images/logo/login_1.png') }}"/>
                     <div class="vs-login">
                         <div class="vs-form-login">
                             <h1 class="vs-title">WELCOME</h1>

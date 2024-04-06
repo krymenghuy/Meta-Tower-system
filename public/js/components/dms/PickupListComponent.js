@@ -802,7 +802,7 @@ var PickupListComponent = new function () {
              }
              else if (['billed_kg','actual_kg'].indexOf(c) >=0){
                 disp_value = [d[c],' kg'].join('');  
-             }
+             }  
             let readOnly = "0";
             html_row = [html_row, '<td data-value="', val, '" data-field="', c, '" data-readonly="', readOnly, '" data-inputtype="', iType, '" class="', c, ' text-nowrap">', disp_value, '</td>'].join('');
             i++;
@@ -1046,6 +1046,7 @@ var PickupListComponent = new function () {
     //displayItemList  | renderPackageTable
     this.displayOrderItems = (div, order_id,sender_id,btn=null) => {
         let p = { 'order_id': order_id };
+        console.log(p);
         // const content_panel_class = 'pkl-order-content';
         // const div = container.querySelector(content_panel_class);
         //div.style.display= 'none';
@@ -1055,6 +1056,7 @@ var PickupListComponent = new function () {
         vsapi.call([mThis.base_url, '/api/order/package-list'].join(''), p,btn,false,null).then(res => {
             if (res.status_code === 200) {
                 let packages = StringSanitizer.sanitizeObject(res.data,null,['size']);
+                console.log(packages);  
                 let i = 0, c =null;
                 do {
                     c = packages[i];

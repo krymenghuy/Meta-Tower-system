@@ -80,7 +80,7 @@
             </li>
           
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
-                <a href="CustomersComponent" modid="201" class="menu-item kt-menu__link">
+                <a href="CustomerListComponent" modid="201" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/pickup_center.svg') }}" />
                     </span>

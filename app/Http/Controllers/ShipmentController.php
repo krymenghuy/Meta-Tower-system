@@ -6,6 +6,7 @@ use App\Models\Shipment;
 use Illuminate\Http\Request;
 use App\Models\UM;
 use App\Models\JDV;
+
 class ShipmentController extends Controller
 {
     //

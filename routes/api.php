@@ -44,6 +44,7 @@ use App\Models\SystemSetting;
 //use App\Models\PaymentTransaction;
 
 use App\Http\Controllers\ShipmentController;
+use App\Http\Controllers\abm\OverseaShipmentController;
 
 /*
 /*
@@ -262,6 +263,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
 Route::middleware([CustomRateLimiter::class])->prefix('shipments')->group(function(){
     Route::post('/save', [ShipmentController::class, 'save']);
     Route::post('/list', [ShipmentController::class, 'getShipmentList']);
+});
+Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->group(function(){
+    Route::post('/save', [OverseaShipmentController::class, 'save']);
+    Route::post('/Shipment-list', [OverseaShipmentController::class, 'getOverseaShipmentList']);
+
+    Route::post('/create-item', [OverseaShipmentController::class, 'createOverseaItem']);
+    Route::post('/item-list', [OverseaShipmentController::class, 'getOverseaItemList']);
 });
  Route::middleware([CustomRateLimiter::class])->prefix('order')->group(function(){
             Route::post('/list', [PickupRequestController::class, 'getPickupList']);
