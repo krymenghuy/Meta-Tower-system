@@ -78,7 +78,6 @@
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Dashboard"></span>
                 </a>
             </li>
-            
           
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
                 <a href="CustomerListComponent" modid="201" class="menu-item kt-menu__link">
@@ -219,6 +218,7 @@
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Settings"></span>
                 </a>
             </li>
+<<<<<<< HEAD
 
        
 
@@ -228,7 +228,9 @@
 
 
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" <?php v_display(null,[106,218])?>>
+=======
             <!-- <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" <?php v_display(null,[106,218])?>>
+>>>>>>> 1f07f0b53a159a477b8115ad001f2c193c325eed
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/mobile_setting.svg') }}" />
