@@ -73,7 +73,7 @@
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(200); ?>>
                 <a href="DashboardComponent" modid="200" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" />
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/dashboard/dashboard-statistics-5499.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Dashboard"></span>
                 </a>
@@ -126,19 +126,19 @@
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(205); ?>>
-                <a href="DriverPaymentComponent" modid="205" class="menu-item kt-menu__link">
+                <a href="BillingValidationComponent" modid="205" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/driver_transaction.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Driver Transactions"></span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Billing Validation"></span>
                 </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>
-                <a href="SenderPaymentComponent" modid="206" class="menu-item kt-menu__link">
+                <a href="AccountingComponent" modid="206" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/marchant_transactions.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Merchant Transactions"></span>
+                    <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Accounting"></span>
                 </a>
             </li>
             <!-- <li class="kt-menu__item" aria-haspopup="true" style="display:none" <?php v_display(223);?>>
@@ -157,7 +157,7 @@
                     <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Driver Balances"></span>
                 </a>
             </li> -->
-            <li class="d-none kt-menu__item" aria-haspopup="true" <?php v_display(213); ?>>
+            <!-- <li class="d-none kt-menu__item" aria-haspopup="true" <?php v_display(213); ?>>
                 <a href="MerchantBalancesCompoment" modid="213" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/marchant_transactions.svg') }}" />
@@ -192,7 +192,7 @@
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Sales Agents"></span>
                 </a>
-            </li>
+            </li> -->
             <li class="kt-menu__section" <?php v_display(null,[209]);?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Reports"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
@@ -210,14 +210,14 @@
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
-                <a href="CompanyComponent" modid="105" class="menu-item kt-menu__link">
+                <a href="SettingsComponent" modid="105" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/company_profile.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Company Profile"></span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Settings"></span>
                 </a>
             </li>
-            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" <?php v_display(null,[106,218])?>>
+            <!-- <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" <?php v_display(null,[106,218])?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/mobile_setting.svg') }}" />
@@ -308,13 +308,13 @@
                         </li>
                     </ul>
                 </div>
-            </li>
+            </li> -->
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"<?php v_display(null, [100, 101]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/users_management.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text text-nowrap trans-text" data-langprop="menus.User Management">User Management</span>
+                    <span class="kt-menu__link-text text-nowrap trans-text" data-langprop="menus.User Roles & Permissions">User Roles & Permissions</span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>

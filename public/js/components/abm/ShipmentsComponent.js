@@ -1,4 +1,154 @@
-﻿"use strict";
+
+'use strict';
+
+// var ShipmentsComponent = new function () {
+//     const mThis = this;
+//     this.title_prop = "Dashboard";
+//     this.self = main_view.appContent.children('#_main_shipmentsComponent');
+
+//     this.tblShipment = this.self.find('#_ido_shipment');
+
+
+//     this.init= () => {
+//         if(mThis.initAlready) return;
+
+//         this.cfg = new ExpandableRowConfig('_ido_shipment',{
+//             'dontExpandByClickingOn':['btn_odi_modify','btn-odi-delete','btn_odi_action','btn_odi_print'],
+//             'onOpen':(container,detail_tr,parent_tr)=>{
+//                 let qtr = $(parent_tr);
+//                 let orderImage_id = qtr.data('id');
+//                 let empty_row = parent_tr.querySelector('td.dataTables_empty');
+//                 //Display details only when parent row is NOT the empty row 
+//                 if (!empty_row) mThis.displayOrderImagesDetails($(detail_tr),orderImage_id);
+//              }
+//         });
+        
+//         mThis.initAlready = true;
+
+//     }
+//     this.displayOrderImagesDetails = (detail_tr,orderImage_id = 0) => {
+//         let div_wrapper = detail_tr.find('div.expandable-row-container');
+//         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
+//         let p = {'id': orderImage_id};
+//         vsapi.call(`${mThis.base_url}/api/img-order/images`,p,null,false).then(res => {
+//             let html = null;
+//             let cnt =0;
+//             if(res.status_code === 200){
+//                 let imgs = StringSanitizer.sanitizeObject(res.data,null,["image_url"]);
+//                 let image_html = "";
+//                 imgs.map(item => {
+//                     image_html = [image_html,`<div class="d-flex flex-column pe-4">
+//                         <img data-id="${item.id}" class="img-thumbnail" style="width:285px; height:177px; min-width: 285px;" src="${item.image_url}" data-url="${item.image_url}"/>
+//                         <div class="d-flex align-items-center pt-2 w-100 px-2 bootstrap-custom">
+//                             <div>
+//                                 <button class="btn btn-warning btn-view-img" type="button" data-id="${item.id}" data-url="${item.image_url}">
+//                                     <span class="trans-text" data-langprop="buttons.View">View</span>
+//                                 </button>
+//                             </div>
+//                             <div class="d-flex justify-content-end w-100">
+//                                 <button class="btn btn-danger btn-delete-img" type="button" data-id="${item.id}">
+//                                     <span class="trans-text" data-langprop="buttons.Delete">Delete</span>
+//                                 </button>
+//                             </div>
+//                         </div>
+//                     </div>`].join('');
+//                     cnt++;
+//                 });
+                
+//                 let container_id = ['oi_order_',orderImage_id].join(''); 
+//                 if (cnt>0) 
+//                    html = [`<div class="d-flex align-items-center pb-4 shadow border rounded-3 p-3 my-3 mb-4" style="overflow-x: auto; width:86vw;" id="${container_id}">`,image_html,`</div>`].join('');
+//                 else
+//                 {
+//                     let empty_text = LocaleManager.trans('No images to display'); 
+//                     html = [`<div class="d-flex align-items-center" id="${container_id}"> <span class ="no-image-text p-3 d-block border border-rounded border-warning fw-bold">${empty_text}</span> </div>`].join('');
+//                 }
+//             }
+//             else{
+//                 html =`<div class="expanded-row-error">${res.error_message}</div>`;
+//             }
+//             div_wrapper.html(html);
+//         });
+//     }
+
+//     this.displayOrderImages = () => {
+//         // let p = {'search_value': mThis.elSearch.val(),'start_date': mThis.elFilter_start_date.val(),'end_date': mThis.elFilter_end_date.val(),'sender_name': mThis.elFilter_sender.val()};
+//         vsapi.call(`${main_view.base_url}/api/shipments/list`,null,null).then(res => {
+//             console.log(res);
+//             if(res.status_code === 200){
+//                 if(mThis.table){
+//                     mThis.tblShipment.DataTable().clear().destroy();
+//                     mThis.tblShipment.empty();
+//                     mThis.table = null;
+//                 }
+
+//                 let data = StringSanitizer.sanitizeObject(res.data);
+
+//                 let columns = [{
+//                     title: "Created Time",
+//                     data:(data,a,b)=>{
+//                         return [`<span class="fw-bold d-block">${data.created_at}</span><span class="text-secondary p-2">${data.order_time}</span>`].join('');
+//                     }
+//                 },{
+//                     title: "Zone code",
+//                     data: "zone_code"
+//                 },{
+//                     title: "Sender_id",
+//                     data: "sender_id"
+//                 },
+//                 ];
+
+//                 if(!mThis.table)
+//                 mThis.table = mThis.tblShipment.DataTable({
+//                     searching:false,
+//                     ordering:false,
+//                     destroy:true,
+//                     paging:true,
+//                     retrieve: true,
+//                     //scrollY:390,
+//                     //scrollX:500,
+//                     //pagingType:'numbers',
+//                     info:true,
+//                     bLengthChange:false,
+//                     saveState:true,
+//                     'processing': false,
+//                     'language': {
+//                         'loadingRecords': '&nbsp;',
+//                         'processing': 'Loading...',
+//                         "emptyTable": "No data to display"
+//                     },
+//                     data:data,
+//                     columns: columns
+//                     ,"createdRow": function(row, data, dataIndex){
+//                         let tr = $(row);
+//                         tr.data('id',data.id);   
+//                     }
+//                 });
+//             }
+//         });
+
+//         // let p = {"search_value":mThis.elSearch.val(), "order_date":mThis.elFilter_date.val(),"sender":mThis.elFilter_sender.val()};
+//         // vsapi.call(`${main_view.base_url}/api/merchant/v2/order-images`,null).then(res=>{
+//         //     if(res.status_code === 200){
+//         //          let data = res.data;
+//         //     }
+//         // });
+//     }
+
+//     this.show= (options)=>{
+//         if (!options) options = {};
+//             mThis.options = options;
+//         mThis.init();
+//         mThis.displayOrderImages();
+
+//         main_view.setTitle(mThis.title_prop);
+//         // mThis.workSpaceListView.showPage(null, null, () => {
+//             $(mThis.self).siblings().hide();
+//             $(mThis.self).fadeIn(204);
+//         // });
+//     }
+// }
+// "use strict";
 const FilterDialog_pickup = new function () {
     let mThis = this;
     this.base_url = main_view.base_url; //** || document.querySelector('meta[name="base_url"]').getAttribute('content');*/
@@ -33,7 +183,7 @@ const FilterDialog_pickup = new function () {
         if (!def.driver_id) def.driver_id = null;
         if (!def.warehouse_id) def.warehouse_id = main_view.DEF_TO_WAREHOUSE_ID;
 
-        let data = PickupListComponent.form_data;
+        let data = ShipmentsComponent.form_data;
         if (data) {
             VSUtil.setComboItems(mThis.elFilter_warehouse, data.warehouses, 'id', 'warehouse_name', false, '(Select Warehouse)', def.warehouse_id);
             VSUtil.setComboItems(mThis.elFilter_sender, data.senders, 'id', 'sender_name', false, null, def.sender_id);
@@ -60,7 +210,7 @@ const FilterDialog_pickup = new function () {
                 VSUtil.setComboItems(mThis.elFilter_status, data.order_statuses, 'status_id', 'status_name', false, null, def.status_id);
                 mThis.form_data = data;
                 if (typeof onFinish === 'function') onFinish(data);
-                PickupListComponent.form_data = data;
+                ShipmentsComponent.form_data = data;
             }
         });
     }
@@ -96,12 +246,12 @@ const FilterDialog_pickup = new function () {
 }
 //### end::FiterDialog_pickup
 
-var PickupListComponent = new function () {
+var ShipmentsComponent = new function () {
     let mThis = this;
-    this.title_prop = "Pickup Center";
+    this.title_prop = "Shipment";
     /** NOTE: PickupListComponent.form_data must be initially NULL, so that this prop will be loaded properly by api fetch on Component start */
     this.form_data = null;
-    this.self = main_view.appContent.find('#_main_lnkPickupListComponent');
+    this.self = main_view.appContent.find('#_main_shipmentsComponent');
     this.base_url = main_view.base_url;
 
     this.order_list_wrapper = this.self.find('#order_list_wrapper');
@@ -119,7 +269,7 @@ var PickupListComponent = new function () {
     this.lnkDailyPackages = this.self.find('#_pl_lnkDailyPackages');
  
     this.resizeItemListPanel = () => {
-        mThis.tblPickups.find('.package_list_wrapper').each(function () {
+        mThis.tblShipments.find('.package_list_wrapper').each(function () {
             let div = $(this);
             if (div.is(':visible')) {
                 div.width(mThis.order_list_wrapper.width());
@@ -144,111 +294,104 @@ var PickupListComponent = new function () {
                 className: 'col_action',
                 data: function (data, row, display) {
                     let html = ['<div class="dropdown">',
-                        '<a href="javascript:void(0)" data-orderid="', data.order_id, '" data-senderid="', data.sender_id, '" data-statusid="', data.status_id, '" class="btn_pickup_action" aria-haspopup="true" aria-expanded="false">',
-                        '<i class="fa fa-chevron-down" style="color:#E9E7E7;font-size:1.5em"></i>',
+                        '<a href="javascript:void(0)" data-orderid="', data.zone_code, '" data-senderid="', data.sender_id, '" class="btn_pickup_action" aria-haspopup="true" aria-expanded="false">',
+                        '<i class="fa fa-chevron-down" style="color:#8DC63F;font-size:1.5em"></i>',
                         '</a>',
                         '</div>'].join('');
                     return html;
                 }
             },
             {
-                className: "request_date",
+                className: "Order Date",
                 data: function (data, index, tr) {
-                    return ['<span class="pl-request_date">', data.request_date, '</span>',
-                        '<span class="pl-request_time">', data.request_time, '</span>'].join('');
+                    return ['<span class="pl-request_date">', data.create_date||"NA", '</span>',
+                        '<span class=" pl-request_time d-block p-1">', data.request_time||"NA", '</span>'].join('');
                 },
-                title: mThis.trans('Request Date')
+                title: 'Created Date'
+                // title: mThis.trans('Created Date')
             },
             {
-                className: "order_code",
-                data: function (data,index,tr) {
-                    let cls_special_status_class = mThis.getSpecialStatusClass(data.status_id);
-                    return ['<div><div class="pl-order-special-status"><span class="rounded-3 pl-order-special-status-text ', cls_special_status_class, '"></span></div><span class="rounded-3 order-code">', data.order_code, '</span></div>'].join('');
+                className: "Created Date",
+                data: function (data, index, tr) {
+                    return ['<span class="pl-request_date">',data.invoice_cmt||"NA", '</span>',
+                        '<span class=" d-block p-1">', data.invoice_id||"#00000", '</span>'].join('');
                 },
-                title: mThis.trans('Order ID')
+                title: 'Invoice ID'
+                // title: mThis.trans('Created Date')
             },
             {
-                className: "sender_name",
+                className: "sender_id",
                 data: (data,index,tr)=>{
-                    const sender_info = ['<span class="sender-name d-block">',data.sender_name,'</span>','<span class="sender-code d-block text-center text-info">',data.sender_code,'</span>'].join('');
+                    const sender_info = ['<span class="sender-name d-block">',data.sender_id,'</span>'].join('');
                     return sender_info;
                 },
-                title: mThis.trans('Merchant')
+                // title: mThis.trans('Sender ID')
+                title: 'Sender ID'
             },
             {
-                className: "col_vehicletype",
-                title: mThis.trans('Vehicle'),
-                data: (data,index,tr)=>{
-                    return [`<div class="d-flex gap-2"><i class="fa fa-motobike"></i><span class="text-nowrap">`,data.request_vehicle_type,`</span></div>`].join('');
+                className: "zone_code",
+                data: function (data,index,tr) {
+                    // let cls_special_status_class = mThis.getSpecialStatusClass(data.status_id);
+                    return ['<div><div class="pl-order-special-status"><span class="rounded-3 pl-order-special-status-text ', 'NA', '"></span></div><span class="rounded-3 order-code">', data.zone_code, '</span></div>'].join('');
                 },
+                // title: mThis.trans('Zone Code')
+                title: 'Zone Code'
             },
             {
-                className: "product_type",
-                data: (data,index,tr)=>{
-                    const html_image_count = data.image_count> 0? [`<i class="fa fa-image"></i> `,data.image_count,' images'].join('') : '';
-                    return [`<span class="d-block product-type">`,data.product_type,`</span>`,`<span class="pkl-img-count d-block text-danger">`,html_image_count,`</i></span>`].join('');
+                className: "total_billed_weight",
+                data: function (data,index,tr) {
+                    // let cls_special_status_class = mThis.getSpecialStatusClass(data.status_id);
+                    return ['<div><div class="pl-order-special-status d-flex justify-content-between"><span class="rounded-3 pl-order-special-status-text "> ', data.total_billed_weight||"0.00", ' </span> <span class="rounded-3 order-code text-info">','kg', '</span> </div></div>'].join('');
                 },
-                title: mThis.trans('Product Type')
+                // title: mThis.trans('Zone Code')
+                title: 'total billed weight'
             },
             {
-                className: "qty",
-                data: function (data, index, tr) {
-                    const booking_channel = (data.booking_channel || '').toLowerCase();
-                    let channel_bg = '';
-                    if(booking_channel == 'merchant') channel_bg ='bg-success';
-                    else if(booking_channel == 'driver') channel_bg ='bg-warning';
-    
-                    let is_from_mobile = (booking_channel == 'merchant' || booking_channel == 'driver') ? `<div class="d-flex flex-column"><span class="d-block p-2"><i style="color:green" class="fas fa-mobile-alt fs-4"></i></span><span class="d-block border ${channel_bg} shadow rounded-4 text-white p-1  text-center" style="min-width:70.5px">${VSUtil.properCase(booking_channel)}</span></div>` : ``;
-                    return ['<div class="d-flex justify-content-between"><span class="fw-semibold package_count mt-1">', data.qty, '</span>', is_from_mobile, '</div>'].join('');
-                    //return ['<div style="display:flex;flex-direction:row"><span class="package_count" style="display:inline-block;width:50%">', data.qty, '</span>&nbsp;<span class="pk-badge-delivery_type" style="display:inline-block;">', data.delivery_type, '</span></div>'].join('');
+                className: "total_actual_weight",
+                data: function (data,index,tr) {
+                    // let cls_special_status_class = mThis.getSpecialStatusClass(data.status_id);
+                    return ['<div><div class="pl-order-special-status d-flex justify-content-between"><span class="rounded-3 pl-order-special-status-text "> ', data.total_actual_weight||"0.00", ' </span> <span class="rounded-3 order-code text-info">','kg', '</span> </div></div>'].join('');
                 },
-                title: mThis.trans('Quantity')
+                // title: mThis.trans('Zone Code')
+                title: 'total actual weight'
             },
             {
-                className: "pickup_address",
-                data: (data, index, tr) => {
-                    let pickup_address = mThis.transformPickupAddress(data.pickup_address,data.map_url,data.sender_phone);
-                    return [`<span class="long-text-wrap-250">`,(pickup_address?pickup_address:'No pickup address'),`</span>`].join('');
-                },
-                title: mThis.trans('Pickup Address')
-            },
+                title:"Price",
+                data:(data,index,tr)=>{
+                  return ['<div><div class="pl-order-special-status d-flex justify-content-between"><span class="rounded-3 pl-order-special-status-text "> ', data.price||"0.00", ' </span> <span class="rounded-3 order-code text-info">','$', '</span> </div></div>'].join('');
+                }
+             },
+            
+           
             {
-                className: "driver_name",
-                data:  (data, index, tr)=> {
-                    return [`<div class="d-flex gap-1">`,`<span class="driver-name text-nowrap">`,(data.driver_name ? data.driver_name : "មិនទាន់មាន"),`</span>`,`<a href="javascript:void(0)" class="lnk-assign-driver"><span class="shadow-lg bg-white p-1"><i class="fa fa-pencil"></i></span</a>`,`</div>`].join('');
-                },
-                title: mThis.trans("Collector")
-            },
+                title:"Remarks",
+                data:(data,index,tr)=>{
+                  return [`<span class="d-block fw-semibold">`,data.remarks||"NA",'</span>'].join('');
+                }
+             },
+            
             {
-               title:"Created By",
+               title:"Status",
                data:(data,index,tr)=>{
-                 return [`<span class="d-block fw-semibold">`,data.create_user,`</span><span class="d-block p-1"></small>`,data.create_date,`</small></span>`].join('');
+                 return [`<span class="d-block fw-semibold">`,data.status_id||"NA",'</span>'].join('');
                }
             },
-            {
-                className: "order_status status",
-                data: function (data, index, tr) {
-                    if (!data.order_status || data.order_status == '') data.order_status = '?';
-                    const color_class = mThis.getOrderStatusColorClass(data.status_id);
-                    return ['<a class="change-order-status order-status" data-statusid="', data.status_id, '" data-id="', data.order_id, '" data-senderid="', data.sender_id, '" href="javascript:void(0)"><span class="order_status ',color_class,'">', data.order_status, '</span></a>'].join('');
-                },
-                title: mThis.trans('Status')
-            }
         ];
 
-        mThis.orderListView = new ListView("_pkl_div_order_list", {
+        mThis.shipmentListView = new ListView("_shm_div_order_list", {
             clientSidePagination: true,
-            fetchApi: `${main_view.base_url}/api/order/list`,
+            fetchApi: `${main_view.base_url}/api/oversea_shipments/Shipment-list`,
             // processResponse: (res) => {
             //     return d.items;
             // },
             rowCreated:(data,index,tr)=>{
-              tr.dataset.id = data.id;
-              tr.classList.add('order');
-              tr.setAttribute('id',['order_',data.id].join('')); 
-              tr.dataset.statusid = data.status_id;
+                console.log(data.id);
+              tr.dataset.id = data.id;  
+              tr.classList.add('shipment');
+              tr.setAttribute('id',['shipment_',data.id].join('')); 
+            //   tr.dataset.statusid = data.status_id;
               tr.dataset.senderid = data.sender_id;
-              tr.dataset.driverid = data.driver_id?data.driver_id:''; 
+            //   tr.dataset.driverid = data.driver_id?data.driver_id:''; 
             }, 
             apiCluster: main_view.apiCluster,
             tableClass: "table header-uppercase",
@@ -258,23 +401,23 @@ var PickupListComponent = new function () {
         });
 
         /** NOTE: tblOrder is Vanila javascript object, whereas mThis.tblPickups is Jquery Object that represents the same table */
-        mThis.tblOrders = mThis.orderListView.getTable();
-        mThis.tblPickups = $(mThis.tblOrders);
+        mThis.tblOrders = mThis.shipmentListView.getTable();
+        mThis.tblShipments = $(mThis.tblOrders);
 
-        mThis.cfg = new ExpandableRowConfig(mThis.tblPickups.attr('id'), {
+        mThis.cfg = new ExpandableRowConfig(mThis.tblShipments.attr('id'), {
             dontExpandByClickingOn: ['pkl_btn_receive','pkl_btn_pick','btn-show','btn_pickup_action','lnk-assign-driver','lnk-set-address'],
             onOpen: (container, detail_tr, parent_tr) => {
-                mThis.pkl_prev_editing_row = null;
+                mThis.shm_prev_editing_row = null;
                 const view_name = parent_tr.dataset.view; 
-                let order_id = parent_tr.dataset.id;
+                let shipment_id = parent_tr.dataset.id;
                 let status_id = parent_tr.dataset.status_id;
                 //let sender_pmt_statu_id = parent_tr.dataset.senderpmtstatusid;
                 //let driver_pmt_statu_id = parent_tr.dataset.driverpmtstatusid;
-                if(!order_id) return;
-                container.dataset.id = order_id;
+                if(!shipment_id) return;
+                container.dataset.id = shipment_id;
                 container.dataset.statusid = status_id;
                 detail_tr.dataset.statusid = status_id;
-                detail_tr.dataset.orderid = order_id;
+                detail_tr.dataset.orderid = shipment_id;
                 mThis.displayOrderDetails(container,parent_tr,view_name);
                 mThis.showQuickButtons(parent_tr);
             },
@@ -352,23 +495,23 @@ var PickupListComponent = new function () {
 
         mThis.btnToggleFilter.on('click', () => {
             FilterDialog_pickup.show(null, (d) => {
-                if (d) mThis.orderListView.showPage(mThis.getFilterData()); 
+                if (d) mThis.shipmentListView.showPage(mThis.getFilterData()); 
             });
         });
 
         mThis.btnSearch.on('click', (e) => {
-            mThis.orderListView.showPage(mThis.getFilterData()); 
+            mThis.shipmentListView.showPage(mThis.getFilterData()); 
         });
 
         mThis.elSearchPickup.on('keyup', function (e) {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(()=>{
-                mThis.orderListView.showPage(mThis.getFilterData()); 
+                mThis.shipmentListView.showPage(mThis.getFilterData()); 
             },200);
         });
  
         //mThis.tblPickups.addEventlistener
-        mThis.tblPickups[0].addEventListener('click', e => {
+        mThis.tblShipments[0].addEventListener('click', e => {
             e.preventDefault();
             // Click on Pickup Action button | drop down action
             let btn = VSUtil.closestLimited(e.target, '.btn_pickup_action');
@@ -380,7 +523,7 @@ var PickupListComponent = new function () {
         
                 let dropdownMenu = p.querySelector('.dropdown-menu');
                 if (!dropdownMenu || dropdownMenu.length === 0) {
-                    p.insertAdjacentHTML('beforeend', mThis.createDropdownMenuHtml_pickup(order_id, sender_id, status_id));
+                    p.insertAdjacentHTML('beforeend', mThis.createDropdownMenuHtml_pickup(shipment_id, sender_id, status_id));
                     dropdownMenu = p.querySelector('.dropdown-menu');
                 }
         
@@ -395,21 +538,21 @@ var PickupListComponent = new function () {
                 return;
             }
 
-            //Click on "Arrive" button, the shortcut button in order_tr
+            //Click on "Arrive" button, the shortcut button in shipment_tr
             btn = VSUtil.closestLimited(e.target,'.pkl_btn_receive');
             if(btn){
                         if(!AuthManager.allowed(222)) return;
-                        const order_tr = btn.closest('tr');
+                        const shipment_tr = btn.closest('tr');
                         cv_interact.confirm('ទទួលទំនិញទាំងអស់ក្នុងបញ្ជាមួយនេះ?',{'context':"update"},e =>{
                             if(e){
-                               if (mThis.pkl_prev_editing_row) {
-                                   mThis.saveItem(mThis.pkl_prev_editing_row, btn, success => {
+                               if (mThis.shm_prev_editing_row) {
+                                   mThis.saveItem(mThis.shm_prev_editing_row, btn, success => {
                                        if (success){
-                                          mThis.receiveItems_all(order_tr, null);
+                                          mThis.receiveItems_all(shipment_tr, null);
                                        }
                                    });
                                }
-                               else mThis.receiveItems_all(order_tr, null);
+                               else mThis.receiveItems_all(shipment_tr, null);
                             }
                   });
                 return;
@@ -419,13 +562,13 @@ var PickupListComponent = new function () {
             btn = VSUtil.closestLimited(e.target,'.pkl_btn_pick');
             if(btn){
                 //if(!AuthManager.allowed() ) return; 
-                const order_tr = btn.closest('tr');
-                if (mThis.pkl_prev_editing_row) {
-                    mThis.saveItem(mThis.pkl_prev_editing_row, (item_saved) => {
+                const shipment_tr = btn.closest('tr');
+                if (mThis.shm_prev_editing_row) {
+                    mThis.saveItem(mThis.shm_prev_editing_row, (item_saved) => {
                         if (item_saved) {
-                            mThis.pickItems(order_tr, btn, (sucess,d) => {
+                            mThis.pickItems(shipment_tr, btn, (sucess,d) => {
                                 if (sucess){
-                                    order_tr.dataset.statusid = d.status_id;
+                                    shipment_tr.dataset.statusid = d.status_id;
                                     btn.style.display ='none';
                                 }
                             });
@@ -433,9 +576,9 @@ var PickupListComponent = new function () {
                     });
                 }
                 else {
-                    mThis.pickItems(order_tr,(success,d) => {
+                    mThis.pickItems(shipment_tr,(success,d) => {
                         if (success){
-                            order_tr.dataset.statusid = d.status_id;
+                            shipment_tr.dataset.statusid = d.status_id;
                             btn.style.display ='none';
                         }
                     });
@@ -489,17 +632,17 @@ var PickupListComponent = new function () {
             //Click on Arrive button
             btn = VSUtil.getElementByClass(e.target,'_pl_pa_receive');
             if(btn){
-                let order_tr = btn.closest('tr');
+                let shipment_tr = btn.closest('tr');
                 cv_interact.confirm('ទទួលទំនិញទាំងអស់ក្នុងបញ្ជាមួយនេះ?',{'context':"update"},e =>{
                      if(e){
-                        if (mThis.pkl_prev_editing_row) {
-                            mThis.saveItem(mThis.pkl_prev_editing_row, null, (success) => {
+                        if (mThis.shm_prev_editing_row) {
+                            mThis.saveItem(mThis.shm_prev_editing_row, null, (success) => {
                                 if (success){
-                                    mThis.receiveItems_all(order_tr, null);
+                                    mThis.receiveItems_all(shipment_tr, null);
                                 }
                             });
                         }
-                        else mThis.receiveItems_all(order_tr, null);
+                        else mThis.receiveItems_all(shipment_tr, null);
                      }
                 });
                 return;
@@ -562,7 +705,7 @@ var PickupListComponent = new function () {
             //  }
         });
   
-        mThis.tblPickups.on('mouseover','tr',function(e){
+        mThis.tblShipments.on('mouseover','tr',function(e){
             let x = $(this);
             let col_action = x.find('td.col_action');
             // let btn_barcode = x.find('a._cpl_pa_quick_btn_barcode');
@@ -578,7 +721,7 @@ var PickupListComponent = new function () {
         });
 
         document.addEventListener('click', function (e) {
-            mThis.tblPickups[0].querySelectorAll('div.dropdown-menu').forEach(dropdownMenu => {
+            mThis.tblShipments[0].querySelectorAll('div.dropdown-menu').forEach(dropdownMenu => {
                 if (!dropdownMenu.parentElement.contains(e.target)) {
                     dropdownMenu.classList.remove('show');
                 }
@@ -590,7 +733,7 @@ var PickupListComponent = new function () {
             const options = {
                 'title': 'Quick Order',
                 'onClose': () => {
-                   mThis.orderListView.showPage(mThis.getFilterData());
+                   mThis.shipmentListView.showPage(mThis.getFilterData());
                 }
             };
             QuickOrderDialog.show(options);
@@ -599,7 +742,7 @@ var PickupListComponent = new function () {
         mThis.btnNewRequest.on('click', function (e) {
             let option = { 'title': 'New Pickup Request' };
             let onClose = (d) => {
-                mThis.orderListView.showPage(mThis.getFilterData());
+                mThis.shipmentListView.showPage(mThis.getFilterData());
             };
 
             PickupRequestDialog.show(option, onClose);
@@ -610,13 +753,13 @@ var PickupListComponent = new function () {
     //End:: PickupListComponent.init()
 
     this.changeOrderStatus = (tr)=>{
-            let order_id = tr.dataset.id;
+            let shipment_id = tr.dataset.id;
             let def_status_id = tr.dataset.statusid;
                
                 let sender_name = tr.querySelector('td.sender_name .sender-name').textContent;
                 let order_code = tr.querySelector('td.order_code .order-code').textContent;
                 let driver_id = tr.dataset.driverid;
-                let order = { 'order_id': order_id, 'order_code': order_code, 'sender_name': sender_name, 'driver_id': driver_id, 'status_id': def_status_id };
+                let order = { 'shipment_id': shipment_id, 'order_code': order_code, 'sender_name': sender_name, 'driver_id': driver_id, 'status_id': def_status_id };
                 PickupStatusDialog.show(order, d => {
                     if (d) {
                         tr.dataset.driverid =  d.driver_id;
@@ -629,16 +772,16 @@ var PickupListComponent = new function () {
     };
 
     this.deleteOrder = (tr)=>{  
-            let order_id = tr.dataset.id || tr.dataset.orderid;
+            let shipment_id = tr.dataset.id || tr.dataset.orderid;
             let status_id = tr.dataset.statusid;
             //let driver_id = tr.dataset.driverid;
             //let sender_id = tr.dataset.senderid;
-            let p = { 'id': order_id, 'status_id': status_id };
+            let p = { 'id': shipment_id, 'status_id': status_id };
             cv_interact.confirm('Delete this order?', { title: 'Delete Order', cancelButtonText: "Close", confirmButtonText: "Delete", context: "delete" }, function (e) {
                 if (e) {
                     vsapi.call([mThis.base_url, '/api/order/delete'].join(''), p).then(res => {
                         if (res.status_code === 200) {
-                           mThis.orderListView.showPage(mThis.getFilterData()); 
+                           mThis.shipmentListView.showPage(mThis.getFilterData()); 
                         } else cv_interact.error(res.error_message);
                     });
                 }
@@ -766,44 +909,50 @@ var PickupListComponent = new function () {
      * IMPORTANT:  @d = {"order_id","sender_id","status_id",["barcode"]}
     */
     this.createItemRow_html = (d ={},tr_id=null) => {
-        const display_cols = ['delivery_type', 'zone_code', 'receiver_phone', 'price', 'cod', 'df_payer', 'fees', 'remarks', 'base_fee', 'delivery_fee', 'size', 'actual_kg', 'billed_kg', 'driver_total'];
+        const display_cols = ['item_type', 'billed_weight', 'actual_weight', 'heigth', 'weigth', 'length' , 'allocated_kg'];
         let i = 0, c=null;
         let html_row = null;
+        // console.log(d);
         do {
             c = display_cols[i];
             if (!c) break;
             let val = null;
-            if (c != 'size') val = StringSanitizer.sanitizeOut(d[c]);
-            else val = DUtil.sanitizePackageSize(d[c]);
+            //if (c != 'size') 
+            val = StringSanitizer.sanitizeOut(d[c]);
+            // else val = DUtil.sanitizePackageSize(d[c]);
 
             let iType = 'text';
-            if (['delivery_type', 'df_payer', 'cod'].indexOf(c) >= 0) iType = 'select';
-            else if (c === 'zone_code') iType = 'select2';
-            else if (c === 'receiver_phone') iType = 'phone';
-            else if (['delivery_fee', 'base_fee', 'price', 'fees', 'actual_kg', 'billed_kg', 'driver_total'].indexOf(c) >= 0) iType = 'number';
+            if (['item_type'].indexOf(c) >= 0) iType = 'select';
+            // else if (c === 'zone_code') iType = 'select2';
+            // else if (c === 'receiver_phone') iType = 'phone';
+            else if (['actual_kg', 'billed_weight', 'actual_weight', 'heigth', 'weigth', 'length','allocated_kg'].indexOf(c) >= 0) iType = 'number';
 
             let disp_value = val;
-            if (c === 'cod') {
-                disp_value = 'Yes';
-                if (val === 0) disp_value = 'No';
+            if (c === 'item_type') {
+                // console.log(DUtil.properCase(d.item_type));
+                // disp_value = DUtil.properCase(d.item_type);
+                disp_value = 'doc';
+                if (val === 0) disp_value = 'none doc';
             }
-            else if (c === 'zone_name' || c === 'zone_code') {
-                val = d.zone_code;
-                disp_value = d.zone_name;
-            }
-            else if (c === 'delivery_type')
-                disp_value = DUtil.properCase(d.delivery_type);
-            else if (c === 'size')
-                disp_value = DUtil.getFriendlySize(d.size);
-            else if (['price','base_fee','delivery_fee','fees','driver_total','sender_total'].indexOf(c) >=0)
-             {
-                d.currency_code = d.currency_code || 'USD';
-                disp_value = [d[c],' ',d.currency_code].join('');
-             }
-             else if (['billed_kg','actual_kg'].indexOf(c) >=0){
+            // else if (c === 'zone_name' || c === 'zone_code') {
+            //     val = d.zone_code;
+            //     disp_value = d.zone_name;
+            // }
+            // else if (c === 'delivery_type')
+            //     disp_value = DUtil.properCase(d.delivery_type);
+            // else if (c === 'size')
+            //     disp_value = DUtil.getFriendlySize(d.size);
+            // else if (['price','base_fee','delivery_fee','fees','driver_total','sender_total'].indexOf(c) >=0)
+            //  {
+            //     d.currency_code = d.currency_code || 'USD';
+            //     disp_value = [d[c],' ',d.currency_code].join('');
+            //  }
+             else if (['billed_weight','actual_weight'].indexOf(c) >=0){
                 disp_value = [d[c],' kg'].join('');  
-             }  
+             }
             let readOnly = "0";
+            
+            console.log(val);
             html_row = [html_row, '<td data-value="', val, '" data-field="', c, '" data-readonly="', readOnly, '" data-inputtype="', iType, '" class="', c, ' text-nowrap">', disp_value, '</td>'].join('');
             i++;
         } while (c);
@@ -818,44 +967,37 @@ var PickupListComponent = new function () {
         return ['<tr id="', tr_id, '" data-barcode="', d.barcode, '" data-orderid="', d.order_id, '" data-senderid="', d.sender_id, '" data-id="', d.id, '" data-statusid="', d.status_id, '" class="pkl-package-row pkl_', (d.id?d.id:0), '">', td_action, html_row, '</tr>'].join('');
     }
 
-    this.createPackageTable_thead_html = (order_id,sender_id)=>{
+    this.createPackageTable_thead_html = (shipment_id,sender_id)=>{
         let thead_html = ['<thead><tr>',
           '<th>',
           '<div class="d-flex justify-content-between align-items-center gap-2">',
-          '<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" style="font-weight:bold;width:50px" class="pkl-lnk_add_item"><div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-plus fs-5 text-success"></i><span class="fs-5-08">Add</span></div></a>',
-          //'<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" class="pkl_btn_magic_entry"><i class="fa fa-cube fs-5 text-warning"></i></a>',
+          '<a data-senderid="', sender_id, '" data-shipmentid="', shipment_id, '" href="javascript:void(0)" style="font-weight:bold;width:50px" class="pkl-lnk_add_item"><div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-plus fs-5 text-success"></i><span class="fs-5-08">Add</span></div></a>',
+        //   '<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" class="pkl_btn_magic_entry"><i class="fa fa-cube fs-5 text-warning"></i></a>',
           '</div>',
           '</th>',
           '<th>TYPE</th>',
-          '<th>ZONE</th>',
-          '<th>RECEIVER PHONE</th>',
-          '<th>PRICE</th>',
-          '<th>COD</th>',
-          '<th>FEE PAYER</th>',
-          '<th>FEES</th>',
-          '<th>REMARKS</th>',
-          '<th>BASE FEE</th>',
-          '<th>ADDITIONAL</th>',
-          '<th>SIZE</th>',
-          '<th>ACTUAL KG</th>',
-          '<th>BILLED KG</th>',
-          '<th>TOTAL</th>',
+          '<th>BIILED WEIGHT</th>',
+          '<th>ACTUAL WEIGHT</th>',
+          '<th>HEIGHT</th>',
+          '<th>WEIGHT</th>',
+          '<th>LENGTH</th>',
+          '<th>ALLOCATED KG</th>',
           '</tr></thead>'].join(''); 
          return thead_html; 
       }
 
-    this.createPackageTable_html = (order_id,sender_id)=>{
-       let html = [`<table class="pkl-package-table table">`,mThis.createPackageTable_thead_html(order_id,sender_id),`<tbody></tbody>`,`</table>`].join('');
+    this.createPackageTable_html = (shipment_id,sender_id)=>{
+       let html = [`<table class="pkl-package-table table">`,mThis.createPackageTable_thead_html(shipment_id,sender_id),`<tbody></tbody>`,`</table>`].join('');
        return html; 
     }
 
     this.addItemRow = (div, d=null, edit_mode = false, refresh_count = false) => {   
         if (!div) return;
-        let order_id = div.dataset.orderid;
+        let shipment_id = div.dataset.shipmentid;
         let sender_id = div.dataset.senderid;
         let table = div.querySelector('table.pkl-package-table');
         if(!table){
-            div.innerHTML = mThis.createPackageTable_html(order_id,sender_id);
+            div.innerHTML = mThis.createPackageTable_html(shipment_id,sender_id);
             table = div.querySelector('table.pkl-package-table'); 
         } 
         let tbody = table.querySelector('tbody');
@@ -866,7 +1008,7 @@ var PickupListComponent = new function () {
          * price = 0, fees =0  are all default values when creating new item
         */
         
-        if (!d) d = {"sender_id":sender_id,"order_id":order_id,"status_id":1,"fees":0,"price":0};
+        if (!d) d = {"sender_id":sender_id,"shipment_id":shipment_id,"status_id":1,"fees":0,"price":0};
         let html_row = this.createItemRow_html(d,tr_id);
         //prepend html string to tbody
         tbody.insertAdjacentHTML('afterbegin',html_row);
@@ -894,7 +1036,7 @@ var PickupListComponent = new function () {
      * 
     */
     this.setItemCount =(order_id,package_count =0)=>{
-        const tr =  mThis.tblPickups[0].querySelector(`tr.order_${order_id}`);
+        const tr =  mThis.tblShipments[0].querySelector(`tr.order_${order_id}`);
         if(!tr) return;
         const span = tr.querySelector('td.qty .package_count');
         if (span) span.textContent = package_count;
@@ -911,31 +1053,31 @@ var PickupListComponent = new function () {
     //    if (span) span.textContent = count;
     }
     
-    this.displayOrderDetails = (container,order_tr,def_view='items')=>{
+    this.displayOrderDetails = (container,shipment_tr,def_view='items')=>{
         container.innerHTML = null;
-        const order_id = order_tr.dataset.id;
-        const sender_id = order_tr.dataset.senderid;
+        const shipment_id = shipment_tr.dataset.id;
+        const sender_id = shipment_tr.dataset.senderid;
         let html = [
         `<div class="d-flex flex-column p-2 w-100">`,
           `<div class="pkl-header-panel d-flex flex-row justify-content-between w-100">`,
             `<div class="d-flex flex-row gap-2">`,
-                `<button type="button" data-id="`,order_id,`" data-viewname="items" class="btn-show btn-show-items btn btn-sm btn-secondary"><span>Items</span></button>`, 
-                `<button type="button" data-id="`,order_id,`" data-viewname="images" class="btn-show btn-show-images btn btn-sm btn-primary"><span>Photos</span></button>`, 
+                `<button type="button" data-id="`,shipment_id,`" data-viewname="items" class="btn-show btn-show-items btn btn-sm btn-secondary"><span>Items</span></button>`, 
+                // `<button type="button" data-id="`,order_id,`" data-viewname="images" class="btn-show btn-show-images btn btn-sm btn-primary"><span>Photos</span></button>`, 
             `</div>`,
             
             `<div>`,
             `<button class="btn btn-sm btn-success"><i class="fa fa-print"></i></button>`,
             `</div>`,
          `</div>`, 
-          `<div style="margin:15px;"> <div data-id="`,order_id,`" class="pkl-order-content p-1 mt-2">This is content</div></div>`,
+          `<div style="margin:15px;"> <div data-id="`,shipment_id,`" class="pkl-order-content p-1 mt-2">This is content</div></div>`,
         `</div>`].join('');
         container.innerHTML = html;
         
         const div = container.querySelector('div.pkl-order-content');
         if(def_view ==='items'){
-             mThis.displayOrderItems(div,order_id,sender_id);
+             mThis.displayOverseaItems(div,shipment_id,sender_id);
         }else{
-            mThis.displayOrderImages(div,order_id,sender_id);
+            mThis.displayOrderImages(div,shipment_id,sender_id);
         }
 
         const div_header = container.querySelector('div.pkl-header-panel');
@@ -945,11 +1087,11 @@ var PickupListComponent = new function () {
             if (btn){
                 const viewname = btn.dataset.viewname;
                 if (viewname ==='items'){
-                     mThis.displayOrderItems(div,order_id,sender_id,btn);
+                     mThis.displayOverseaItems(div,shipment_id,sender_id,btn);
                 }else{
-                    mThis.displayOrderImages(div,order_id,sender_id,btn);
+                    mThis.displayOrderImages(div,shipment_id,sender_id,btn);
                 }
-                order_tr.dataset.view= viewname; 
+                shipment_tr.dataset.view= viewname; 
                 return;
             }
 
@@ -960,14 +1102,14 @@ var PickupListComponent = new function () {
             //Click on Add Item button. Quick Add Item button
             let btn = VSUtil.closestLimited(e.target,'.pkl-lnk_add_item');
             if(btn){
-                let order_id = btn.dataset.orderid;
+                let shipment_id = btn.dataset.shipmentid;
                 let sender_id = btn.dataset.senderid;
-                div.dataset.orderid = order_id;
+                div.dataset.shipmentid = shipment_id;
                 div.dataset.senderid = sender_id;
                 //const item_table = btn.closest('table.pkl-package-table');  
                 //const editing_tr = mThis.getCurrentEditingRow(item_table);
-                if (mThis.pkl_prev_editing_row){
-                    mThis.saveItem(mThis.pkl_prev_editing_row,btn,(success)=>{
+                if (mThis.shm_prev_editing_row){
+                    mThis.saveItem(mThis.shm_prev_editing_row,btn,(success)=>{
                         if(success) mThis.addItemRow(div,null,true);
                     });
                     return;
@@ -975,17 +1117,17 @@ var PickupListComponent = new function () {
                 return;
             }
  
-            mThis.tblPickups.on('click', 'a.pkl_btn_magic_entry', function (e) {
+            mThis.tblShipments.on('click', 'a.pkl_btn_magic_entry', function (e) {
                 e.preventDefault();
                 let x = $(this);
                 let tr = x.closest('tr');
-                let order_id = x.data('orderid');
+                let shipment_id = x.data('orderid');
                 let sender_id = x.data('senderid');
-                let op = { 'title': 'Magic Entry', 'sender_id': sender_id, 'order_id': order_id, 'tr': tr };
+                let op = { 'title': 'Magic Entry', 'sender_id': sender_id, 'shipment_id': shipment_id, 'tr': tr };
 
                 MagicEntryDialog.show(op, (e) => {
-                        let package_list_table = $(['#_pkl_wrapper_', order_id, ' > .pkl-package-list-table'].join(''));
-                        mThis.displayItemList(order_id, sender_id, package_list_table);
+                        let package_list_table = $(['#_pkl_wrapper_', shipment_id, ' > .pkl-package-list-table'].join(''));
+                        mThis.displayItemList(shipment_id, sender_id, package_list_table);
                 });
             });
 
@@ -1044,32 +1186,32 @@ var PickupListComponent = new function () {
       return null;
     }
     //displayItemList  | renderPackageTable
-    this.displayOrderItems = (div, order_id,sender_id,btn=null) => {
-        let p = { 'order_id': order_id };
+    this.displayOverseaItems = (div, shipment_id,sender_id,btn=null) => {
+        let p = { 'shipment_id':  shipment_id};
         console.log(p);
         // const content_panel_class = 'pkl-order-content';
         // const div = container.querySelector(content_panel_class);
         //div.style.display= 'none';
         div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
         let html = '';
-        const header_cols = mThis.createPackageTable_thead_html(order_id,sender_id);
-        vsapi.call([mThis.base_url, '/api/order/package-list'].join(''), p,btn,false,null).then(res => {
+        const header_cols = mThis.createPackageTable_thead_html(shipment_id,sender_id);
+        vsapi.call([mThis.base_url, '/api/oversea_shipments/item-list'].join(''), p,btn,false,null).then(res => {
             if (res.status_code === 200) {
                 let packages = StringSanitizer.sanitizeObject(res.data,null,['size']);
-                console.log(packages);  
                 let i = 0, c =null;
+                console.log(res.data);
                 do {
                     c = packages[i];
                     if (!c) break;
-                    c.order_id = order_id;
+                    c.shipment_id = shipment_id;
                     html = [html,mThis.createItemRow_html(c,null)].join('');
                     i++;
                 } while (c);
                 if (i > 0){
                    html = [`<table class="table pkl-package-table">`,header_cols,`<tbody>`, html ,`</tbody></table>`].join('');
                 }else{
-                    mThis.pkl_prev_editing_row = null;
-                    html = [`<div class="p-2 d-flex justify-content-center gap-2"><span class="h5 text-center p-1 fw-semibold">មិនទាន់បញ្ចូលកញ្ចប់ទំនិញ</span><a href="javascript:void(0)" data-orderid="`,order_id,`" data-senderid ="`,sender_id,`" class="pkl-lnk_add_item mt-2"><span class="p-2 border border-primary rounded-4">Add Item</span></a></div>`].join('');
+                    mThis.shm_prev_editing_row = null;
+                    html = [`<div class="p-2 d-flex justify-content-center gap-2"><span class="h5 text-center p-1 fw-semibold">មិនទាន់បញ្ចូលកញ្ចប់ទំនិញ</span><a href="javascript:void(0)" data-orderid="`,shipment_id,`" data-senderid ="`,sender_id,`" class="pkl-lnk_add_item mt-2"><span class="p-2 border border-primary rounded-4">Add Item</span></a></div>`].join('');
                 }
                 div.innerHTML = html;
                 //div.style.display ='block';
@@ -1079,114 +1221,114 @@ var PickupListComponent = new function () {
     }
  
     /** displayOrderItems | renderPackagePhotos | renderItemsPhotos */
-    this.displayOrderImages = (div,order_id,sender_id=null,btn = null)=>{
-        div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
-        let p = {'id': order_id};
-        vsapi.call(`${mThis.base_url}/api/order/package-photos`,p,btn,false,null).then(res => {
-            let html = null;
-            let cnt =0;
-            if(res.status_code === 200){
-                let imgs = StringSanitizer.sanitizeObject(res.data,null,["image_url"]);
-                let image_html = "";
-                imgs.map(item => {
-                    //class="d-flex flex-column pe-4"
-                    const cls_border = item.barcode? 'border border-danger':'';
-                    image_html = [image_html,`<div class="img-box position-relative">
-                        <img data-orderid ="`,order_id,`" data-senderid="`,sender_id,`" data-id="`,item.id,`" data-pid="`,item.package_id,`" class="item-img `,cls_border,`" style="width:150px; height:150px;" src="${item.image_url}" data-url="${item.image_url}"/>`,
+    // this.displayOrderImages = (div,order_id,sender_id=null,btn = null)=>{
+    //     div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
+    //     let p = {'id': order_id};
+    //     vsapi.call(`${mThis.base_url}/api/order/package-photos`,p,btn,false,null).then(res => {
+    //         let html = null;
+    //         let cnt =0;
+    //         if(res.status_code === 200){
+    //             let imgs = StringSanitizer.sanitizeObject(res.data,null,["image_url"]);
+    //             let image_html = "";
+    //             imgs.map(item => {
+    //                 //class="d-flex flex-column pe-4"
+    //                 const cls_border = item.barcode? 'border border-danger':'';
+    //                 image_html = [image_html,`<div class="img-box position-relative">
+    //                     <img data-orderid ="`,order_id,`" data-senderid="`,sender_id,`" data-id="`,item.id,`" data-pid="`,item.package_id,`" class="item-img `,cls_border,`" style="width:150px; height:150px;" src="${item.image_url}" data-url="${item.image_url}"/>`,
 
-                        `<div style="visibility:hidden;background-color: rgba(0, 0, 0, 0.6);position:absolute;bottom: 2px; right: 2px;" class="img-actions bg-secondary rounded-3 d-flex flex-row gap-2 p-1">`,
-                        //   `<a href="javascript:void(0)" class="btn-edit-img full-opacity" data-id="${item.id}">
-                        //    <i class="fa fa-regular fa-edit text-warning fs-5"></i>
-                        //   </a>`,  
-                          `<a href="javascript:void(0)" class="btn-delete-img full-opacity" data-id="${item.id}">
-                              <i class="fa fa-regular fa-trash-can text-danger fs-5"></i>
-                            </a>`,
-                        `</div>`,
-                    `</div>`].join('');
-                    cnt++;
-                    mThis.current_images = imgs;
-                });
+    //                     `<div style="visibility:hidden;background-color: rgba(0, 0, 0, 0.6);position:absolute;bottom: 2px; right: 2px;" class="img-actions bg-secondary rounded-3 d-flex flex-row gap-2 p-1">`,
+    //                     //   `<a href="javascript:void(0)" class="btn-edit-img full-opacity" data-id="${item.id}">
+    //                     //    <i class="fa fa-regular fa-edit text-warning fs-5"></i>
+    //                     //   </a>`,  
+    //                       `<a href="javascript:void(0)" class="btn-delete-img full-opacity" data-id="${item.id}">
+    //                           <i class="fa fa-regular fa-trash-can text-danger fs-5"></i>
+    //                         </a>`,
+    //                     `</div>`,
+    //                 `</div>`].join('');
+    //                 cnt++;
+    //                 mThis.current_images = imgs;
+    //             });
                 
-                let container_id = ['oi_order_',order_id].join(''); 
-                if (cnt>0) 
-                   html = [`<div class="d-flex align-items-center gap-2 pb-4 p-3 my-3 mb-4" style="overflow-x: auto; width:86vw;" id="${container_id}">`,image_html,`</div>`].join('');
-                else
-                {
-                    let empty_text = LocaleManager.trans('No item images to display'); 
-                    html = [`<div class="d-flex justify-content-center" id="${container_id}"> <span class ="no-image-text p-3 d-block border rounded-5 border-warning fw-bold">${empty_text}</span> </div>`].join('');
-                }
-            }
-            else{
-                html =`<div class="expanded-row-error">${res.error_message}</div>`;
-            }
-            div.innerHTML = html;
+    //             let container_id = ['oi_order_',order_id].join(''); 
+    //             if (cnt>0) 
+    //                html = [`<div class="d-flex align-items-center gap-2 pb-4 p-3 my-3 mb-4" style="overflow-x: auto; width:86vw;" id="${container_id}">`,image_html,`</div>`].join('');
+    //             else
+    //             {
+    //                 let empty_text = LocaleManager.trans('No item images to display'); 
+    //                 html = [`<div class="d-flex justify-content-center" id="${container_id}"> <span class ="no-image-text p-3 d-block border rounded-5 border-warning fw-bold">${empty_text}</span> </div>`].join('');
+    //             }
+    //         }
+    //         else{
+    //             html =`<div class="expanded-row-error">${res.error_message}</div>`;
+    //         }
+    //         div.innerHTML = html;
             
-            div.addEventListener('click',e=>{
-               e.preventDefault();
+    //         div.addEventListener('click',e=>{
+    //            e.preventDefault();
 
-               //** Click on Image to Start Data Entry */
-               let img = VSUtil.closestLimited(e.target,'.item-img');
-               if(img){
-                  const img_id = img.dataset.id;
-                  const order_id = img.dataset.orderid;
-                  const sender_id = img.dataset.senderid;
-                  let op = {
-                    //currentView:"images", /** For refresh display When user close the Dialog */
-                    title:"Package Details",
-                    order_id:order_id,
-                    items : mThis.current_images,
-                    id:img_id,
-                    image_url: img.getAttribute('src'),
-                    onClose:(d)=>{
-                      //Refresh image list. If No more images left, then display Items Tab instead
-                      mThis.displayOrderImages(div,order_id,sender_id); 
-                    }
-                  }
-                  ItemEntryDialog.show(op);
-                  return;   
-               }
+    //            //** Click on Image to Start Data Entry */
+    //            let img = VSUtil.closestLimited(e.target,'.item-img');
+    //            if(img){
+    //               const img_id = img.dataset.id;
+    //               const order_id = img.dataset.orderid;
+    //               const sender_id = img.dataset.senderid;
+    //               let op = {
+    //                 //currentView:"images", /** For refresh display When user close the Dialog */
+    //                 title:"Package Details",
+    //                 order_id:order_id,
+    //                 items : mThis.current_images,
+    //                 id:img_id,
+    //                 image_url: img.getAttribute('src'),
+    //                 onClose:(d)=>{
+    //                   //Refresh image list. If No more images left, then display Items Tab instead
+    //                   mThis.displayOrderImages(div,order_id,sender_id); 
+    //                 }
+    //               }
+    //               ItemEntryDialog.show(op);
+    //               return;   
+    //            }
 
-               //*** Click on Delete image
-               let btn = VSUtil.closestLimited(e.target,'a.btn-delete-img');
-               if(btn){
-                  cv_interact.confirm('Delete this image?',{"title":"Delete Photo","context":"delete"},e=>{
-                     if(e){
-                        const img_id = btn.dataset.id;
-                         let p = {"photo_ids":img_id};
-                         vsapi.call(`${main_view.base_url}/api/order/delete-photos`,p,null).then(res=>{
-                            mThis.displayOrderImages(div,order_id,sender_id,btn); 
-                         });
-                     }
-                  });
+    //            //*** Click on Delete image
+    //            let btn = VSUtil.closestLimited(e.target,'a.btn-delete-img');
+    //            if(btn){
+    //               cv_interact.confirm('Delete this image?',{"title":"Delete Photo","context":"delete"},e=>{
+    //                  if(e){
+    //                     const img_id = btn.dataset.id;
+    //                      let p = {"photo_ids":img_id};
+    //                      vsapi.call(`${main_view.base_url}/api/order/delete-photos`,p,null).then(res=>{
+    //                         mThis.displayOrderImages(div,order_id,sender_id,btn); 
+    //                      });
+    //                  }
+    //               });
 
-                  return;
-               }
-            });
+    //               return;
+    //            }
+    //         });
 
-            div.querySelectorAll('.img-box').forEach(div_img => {
-                div_img.addEventListener('mouseover', e => {
-                    e.preventDefault();
-                    const p_div = VSUtil.closestLimited(e.target, '.img-box', 10);
-                    if (p_div) {
-                        const div_actions = p_div.querySelector('.img-actions');
-                        div_actions.style.visibility = 'visible';
-                        //console.log('mouse over ', div_actions.dataset.id);
-                    }
-                });
+    //         div.querySelectorAll('.img-box').forEach(div_img => {
+    //             div_img.addEventListener('mouseover', e => {
+    //                 e.preventDefault();
+    //                 const p_div = VSUtil.closestLimited(e.target, '.img-box', 10);
+    //                 if (p_div) {
+    //                     const div_actions = p_div.querySelector('.img-actions');
+    //                     div_actions.style.visibility = 'visible';
+    //                     //console.log('mouse over ', div_actions.dataset.id);
+    //                 }
+    //             });
             
-                div_img.addEventListener('mouseout', e => {
-                    e.preventDefault();
-                    const p_div = VSUtil.closestLimited(e.target, '.img-box', 10);
-                    if (p_div) {
-                        const div_actions = p_div.querySelector('.img-actions');
-                        div_actions.style.visibility = 'hidden';
-                        //console.log('mouse leave ', div_actions.dataset.id);
-                    }
-                });
-            });
+    //             div_img.addEventListener('mouseout', e => {
+    //                 e.preventDefault();
+    //                 const p_div = VSUtil.closestLimited(e.target, '.img-box', 10);
+    //                 if (p_div) {
+    //                     const div_actions = p_div.querySelector('.img-actions');
+    //                     div_actions.style.visibility = 'hidden';
+    //                     //console.log('mouse leave ', div_actions.dataset.id);
+    //                 }
+    //             });
+    //         });
              
-        });
-    }
+    //     });
+    // }
  
     this.getItems = (header_tr) => {
         if (!header_tr) return null;
@@ -1307,7 +1449,7 @@ var PickupListComponent = new function () {
             cv_interact.confirm('Are you sure to discard this item?', { title: 'Discard Item', context: 'delete' }, e => {
                 if (e) {
                     tr.remove();
-                    mThis.pkl_prev_editing_row = null;
+                    mThis.shm_prev_editing_row = null;
                 }
             });
             return;
@@ -1374,7 +1516,7 @@ var PickupListComponent = new function () {
                 index++;
             });
             tr.dataset.editing = 0;
-            mThis.pkl_prev_editing_row = null;
+            mThis.shm_prev_editing_row = null;
             return;
         }
 
@@ -1445,7 +1587,7 @@ var PickupListComponent = new function () {
 
     this.saveItem = (tr, lnk = null, onFinish = null) => {
         if (!tr) return;
-        //tr is the package tr , NOT order_tr
+        //tr is the package tr , NOT shipment_tr
         let p = mThis.getItem(tr);
         p.order_id = tr.dataset.orderid;
         p.package_id = tr.dataset.id;
@@ -1482,13 +1624,13 @@ var PickupListComponent = new function () {
         if (!data.status_id) data.status_id = 1;
 
         /** If there is another item being open for Editing or being in Edit mode, then close it first before converting this row (tr) into Edit mode  */
-        if (mThis.pkl_prev_editing_row) {
-            if (mThis.pkl_prev_editing_row.dataset.barcode && mThis.pkl_prev_editing_row.dataset.id != tr.dataset.id) {
+        if (mThis.shm_prev_editing_row) {
+            if (mThis.shm_prev_editing_row.dataset.barcode && mThis.shm_prev_editing_row.dataset.id != tr.dataset.id) {
                 //if (!mThis.getItem(tr)) return;
                 let refresh_from_database = false;
                 if (!mThis.org_item_data || !mThis.org_item_data.delivery_type) refresh_from_database = true;
                 
-                mThis.setItemReadOnly(mThis.pkl_prev_editing_row, refresh_from_database, mThis.org_item_data);
+                mThis.setItemReadOnly(mThis.shm_prev_editing_row, refresh_from_database, mThis.org_item_data);
                 mThis.makeRowEditable(tr,data);
 
                 // mThis.saveItem(mThis.pkl_prev_editing_row,lnk,(success)=>{
@@ -1499,11 +1641,11 @@ var PickupListComponent = new function () {
                 //    }
                 // });
                
-            } else if (!mThis.pkl_prev_editing_row.dataset.barcode){
+            } else if (!mThis.shm_prev_editing_row.dataset.barcode){
                 /** This case: happends When user click on Add Item button, but did not enter details, and then click on Edit item another item below, so automatically delete the empty item above, and start Editing row on the targeted item row */
                 cv_interact.confirm('ចង់លុបកញ្ចប់ខាងលើ មែនទេ?',{"context":"delete","title":"Cancel Edit"},e=>{
                     if(e){
-                        mThis.pkl_prev_editing_row.remove();
+                        mThis.shm_prev_editing_row.remove();
                         mThis.makeRowEditable(tr,data);
                     }
                 });
@@ -1644,7 +1786,7 @@ var PickupListComponent = new function () {
                            if (!mThis.form_data) {
                                mThis.form_data = {};
                                mThis.form_data.zones = [];
-                               console.error('Error at PickupListComponent.js => this.beginEditItem() => problem: "mThis.form_data" is NULL ');
+                               console.error('Error at ShipmentsComponent.js => this.beginEditItem() => problem: "mThis.form_data" is NULL ');
                            };
                            VSUtil.setComboItems(el, mThis.form_data.zones, 'zone_code', 'zone_name', false, null, zone_code);
                            el.dispatchEvent (new Event('change'));
@@ -1662,7 +1804,7 @@ var PickupListComponent = new function () {
         mThis.setEditor_events(tr);
 
         tr.dataset.editing = 1;
-        mThis.pkl_prev_editing_row = tr;
+        mThis.shm_prev_editing_row = tr;
 
         if (data) {
             if (!data.delivery_type) data = null;
@@ -1732,7 +1874,7 @@ var PickupListComponent = new function () {
     }
   
     this.resizePackageList = () => {
-        let div = mThis.tblPickups.closest('div.border-style1');
+        let div = mThis.tblShipments.closest('div.border-style1');
         let w = div.width();
         mThis.self.find('dv.package_list_wrapper').css('width', [w, 'px !important'].join(''));
     }
@@ -1750,26 +1892,26 @@ var PickupListComponent = new function () {
         let order_id = tr.dataset.id;
         let status_id = tr.dataset.statusid;
         if (mThis.prev_quick_buttons) mThis.prev_quick_buttons.style.visibility = 'hidden';
-        let td = tr.querySelector('td.request_date');
-        let dx = td.querySelector('div.pkl-quick_action_buttons');
-        if (dx) {
-            if (status_id > 3){
-                const btn = dx.querySelector('.pkl_btn_pick');
-                if(btn) btn.style.visibility='hidden';
-            } else{
-                const btn = dx.querySelector('.pkl_btn_pick');
-                btn.style.visibility='visible';
-            }
-            dx.style.visibility='visible';
-            mThis.prev_quick_buttons = dx;
-            return;
-        }
+        // let td = tr.querySelector('td.request_date');
+        // let dx = td.querySelector('div.pkl-quick_action_buttons');
+        // if (dx) {
+        //     if (status_id > 3){
+        //         const btn = dx.querySelector('.pkl_btn_pick');
+        //         if(btn) btn.style.visibility='hidden';
+        //     } else{
+        //         const btn = dx.querySelector('.pkl_btn_pick');
+        //         btn.style.visibility='visible';
+        //     }
+        //     dx.style.visibility='visible';
+        //     mThis.prev_quick_buttons = dx;
+        //     return;
+        // }
 
-        td.insertAdjacentHTML('afterbegin',['<div id="pkl_quick_buttons_', order_id, '" class="d-flex flex-row gap-2 pkl-quick_action_buttons">',
-                (status_id < 3) ? ['<a href="javascript:void(0)" data-senderid="', sender_id, '" data-orderid="', order_id, '" class="pkl_btn_pick pl-1 pr-1 border rounded-3 border-primary">Pick</a>'].join('') : null,
-                (status_id < 5) ? ['<a href="javascript:void(0)" data-senderid="', sender_id, '" data-orderid="', order_id, '" class="pkl_btn_receive fw-semi-bold text-success ml-2 border rounded-2 pl-1 pr-1 border-success">Arrive</a>'].join('') : null,
-                '</div>'].join(''));
-        mThis.prev_quick_buttons  = td.querySelector(['#pkl_quick_buttons_',order_id].join(''));
+        // td.insertAdjacentHTML('afterbegin',['<div id="pkl_quick_buttons_', order_id, '" class="d-flex flex-row gap-2 pkl-quick_action_buttons">',
+        //         (status_id < 3) ? ['<a href="javascript:void(0)" data-senderid="', sender_id, '" data-orderid="', order_id, '" class="pkl_btn_pick pl-1 pr-1 border rounded-3 border-primary">Pick</a>'].join('') : null,
+        //         (status_id < 5) ? ['<a href="javascript:void(0)" data-senderid="', sender_id, '" data-orderid="', order_id, '" class="pkl_btn_receive fw-semi-bold text-success ml-2 border rounded-2 pl-1 pr-1 border-success">Arrive</a>'].join('') : null,
+        //         '</div>'].join(''));
+        // mThis.prev_quick_buttons  = td.querySelector(['#pkl_quick_buttons_',order_id].join(''));
     }
 
     this.getFilterData = ()=>{
@@ -1779,7 +1921,7 @@ var PickupListComponent = new function () {
     this.show = (options = null) => {
         mThis.init(); //InitOnce one time only
         if(AuthManager.allowed(220,true)) mThis.btnNewQuickOrder.show(); else mThis.btnNewQuickOrder.hide();
-        mThis.orderListView.showPage(mThis.getFilterData());
+        mThis.shipmentListView.showPage(mThis.getFilterData());
         mThis.self.siblings().hide();
         main_view.setTitle(mThis.title_prop);
         mThis.self.fadeIn(250);
@@ -2183,7 +2325,7 @@ const PickupStatusDialog = new function () {
         mThis.onClose = onClose;
         mThis.order_id = order.order_id;
         mThis.order = order;
-        mThis.form_data = PickupListComponent.form_data;
+        mThis.form_data = ShipmentsComponent.form_data;
         mThis.elOrderId.val(order.id || order.order_id);
         mThis.elSenderName.val(order.sender_name);
         mThis.elOrderCode.val(order.order_code);
@@ -2808,7 +2950,7 @@ let PerformPickupDialog = new function () {
         {
             className: "delivery_type",
             data: function (data,index,tr) {
-                let items = [{ 'delivery_type': 'normal' }, { 'delivery_type': 'fast' }];
+                let items = [{ 'item_type': 'doc' }, { 'delivery_type': 'non-doc' }];
                 data.delivery_type = (data.delivery_type + '').toLowerCase();
                 let d = { "inputType": "select2", "data": data, "cssClass": "form-control", "columnName": "delivery_type", "combo_items": items, "valueMember": "delivery_type", "textMember": "delivery_type" };
                 return EditableTable.makeTableCellEditor(d);
@@ -2818,7 +2960,7 @@ let PerformPickupDialog = new function () {
         {
             className: "zone_name",
             data: function (data,index,tr) {
-                let d = { "inputType": "select2", "data": data, "cssClass": "modal-select2", "columnName": "zone_name", "combo_items": PickupListComponent.form_data.zones, "valueMember": "zone_code", "textMember": "zone_name" };
+                let d = { "inputType": "select2", "data": data, "cssClass": "modal-select2", "columnName": "zone_name", "combo_items": ShipmentsComponent.form_data.zones, "valueMember": "zone_code", "textMember": "zone_name" };
                 return EditableTable.makeTableCellEditor(d);
             },
             title: 'Destination'
@@ -3145,7 +3287,7 @@ let PerformPickupDialog = new function () {
     this.prepareFormData = (def, onFinish) => {
         if (!def) def = {};
         def.warehouse_id = main_view.DEF_TO_WAREHOUSE_ID;
-        VSUtil.setComboItems(mThis.elToWarehouse, PickupListComponent.form_data.warehouses, 'id', 'warehouse_name', false, null, def.warehouse_id);
+        VSUtil.setComboItems(mThis.elToWarehouse, ShipmentsComponent.form_data.warehouses, 'id', 'warehouse_name', false, null, def.warehouse_id);
         vsapi.call([mThis.base_url, '/api/getComboItems_driver'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let rows = StringSanitizer.sanitizeObject(res.data);
@@ -3213,7 +3355,7 @@ let PerformPickupDialog = new function () {
                     cv_interact.success(['<span style="font-weight:bold;color:green">Pickup action succeeded!'].join(''));
                 }
                 else cv_interact.warning(['<span style="font-weight:bold;color:red">', d.success_count ? d.success_count : 0, ' packages received'].join(''));
-                if (d.success_count > 0) PickupListComponent.updatePickupStatus(tr, { 'status_id': d.status_id, 'status': d.status, 'completed': d.completed });
+                if (d.success_count > 0) ShipmentsComponent.updatePickupStatus(tr, { 'status_id': d.status_id, 'status': d.status, 'completed': d.completed });
             }
         });
     }
@@ -3388,19 +3530,19 @@ let VerifyPackageDialog = new function () {
             title: ''
         },
         {
-            className: "delivery_type",
+            className: "item_type",
             data: function (data,index,tr) {
-                let items = [{ 'delivery_type': 'normal' }, { 'delivery_type': 'fast' }];
-                data.delivery_type = (data.delivery_type + '').toLowerCase();
-                let d = { "inputType": "select2", "data": data, "cssClass": "form-control", "columnName": "delivery_type", "combo_items": items, "valueMember": "delivery_type", "textMember": "delivery_type" };
+                let items = [{ 'item_type': 'doc' }, { 'item_type': 'non-doc' }];
+                data.item_type = (data.item_type + '').toLowerCase();
+                let d = { "inputType": "select2", "data": data, "cssClass": "form-control", "columnName": "item_type", "combo_items": items, "valueMember": "item_type", "textMember": "item_type" };
                 return EditableTable.makeTableCellEditor(d);
             },
-            title: 'Delivery Type'
+            title: 'Item Type'
         },
         {
             className: "zone_name",
             data: function (data,index,tr) {
-                let d = { "inputType": "select2", "data": data, "cssClass": "modal-select2", "columnName": "zone_name", "combo_items": PickupListComponent.form_data.zones, "valueMember": "zone_code", "textMember": "zone_name" };
+                let d = { "inputType": "select2", "data": data, "cssClass": "modal-select2", "columnName": "zone_name", "combo_items": ShipmentsComponent.form_data.zones, "valueMember": "zone_code", "textMember": "zone_name" };
                 return EditableTable.makeTableCellEditor(d);
             },
             title: 'Destination'
@@ -3714,7 +3856,7 @@ let VerifyPackageDialog = new function () {
     this.prepareFormData = (def, onFinish) => {
         if (!def) def = {};
         def.warehouse_id = main_view.DEF_TO_WAREHOUSE_ID;
-        VSUtil.setComboItems(mThis.elToWarehouse, PickupListComponent.form_data.warehouses, 'id', 'warehouse_name', false, 0, def.warehouse_id);
+        VSUtil.setComboItems(mThis.elToWarehouse, ShipmentsComponent.form_data.warehouses, 'id', 'warehouse_name', false, 0, def.warehouse_id);
         vsapi.call([mThis.base_url, '/api/getComboItems_driver'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let items = StringSanitizer.sanitizeObject(res.data);
