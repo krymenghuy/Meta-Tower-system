@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\abm\CustomerController;
 use Illuminate\Http\Request;
 use App\Models\Notifier;
 use App\Http\Middleware\CustomRateLimiter;
@@ -39,7 +40,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SalesCommissionPolicyController;
 //use App\Http\Controllers\PusherController;
 
-use App\Http\Controllers\CountryZoneController;
+use App\Http\Controllers\abm\CountryZoneController;
 
 use App\Models\PublicStorage;
 use App\Models\SystemSetting;
@@ -358,15 +359,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
             Route::post('save', [DeliveryZoneController::class, 'saveZone']);
      });
 
-     //begin:: Counties_Zone_Code
-
-Route::prefix('country')->group(function(){
-    Route::post('/save',[CountryZoneController::class,'save']);
-    Route::post('/delete',[CountryZoneController::class,'delete']);
-    Route::post('/list-all',[CountryZoneController::class,'getCountryZoneList_all']);
-    Route::post('/details',[CountryZoneController::class,'details']);
-
-});
+  
 
     
      //begin::PriceController
@@ -443,6 +436,25 @@ Route::prefix('country')->group(function(){
         //Route::post('updateSenderStatus', [SenderController::class, 'updateSenderStatus']);
     });
 //end::SenderController
+
+   //begin:: Counties_Zone_Code
+
+   Route::prefix('country')->group(function(){
+    Route::post('/save',[CountryZoneController::class,'save']);
+    Route::post('/delete',[CountryZoneController::class,'delete']);
+    Route::post('/list-all',[CountryZoneController::class,'getCountryZoneList_all']);
+    Route::post('/details',[CountryZoneController::class,'details']);
+
+});
+
+Route::prefix('customer')->group(function(){
+    Route::post('/save',[CustomerController::class,'save']);
+    Route::post('/delete',[CustomerController::class,'deleteCustomer']);
+    Route::post('/list-all',[CustomerController::class,'getList_all']);
+    Route::post('/details',[CustomerController::class,'getCustomerDetails']);
+    Route::post('/form-options',[CustomerController::class,'getFormOptions']);
+    Route::post('/list',[CustomerController::class,'getList']);
+});
  
 //begin::DriverController
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('driver')->group(function(){

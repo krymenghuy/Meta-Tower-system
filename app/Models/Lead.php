@@ -46,14 +46,7 @@ class Lead //extends Model
     //   return null;
     }
 
-  static function details($id,$ss,$includeProfilePicture=false){
-      $branch_id = $ss->branch_id;
-      $cols = 's.id,s.code,s.name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id,s.phone_number,s.email,s.business_type,s.price_list_id,sales_agent_id,s.category_id,c.`name` AS category,s.status_id,ls.`name` AS status,s.reopen_count,s.closing_status_id';    
-      $row = DB::table('leads as s')->join('lead_statuses as ls','ls.id','=','s.status_id')->join('lead_categories as c','c.id','=','s.category_id')->selectRaw($cols)->where('s.branch_id',$branch_id)->where('s.id',$id)->take(1)->first();
-      if (!$row) return null;
-          if($includeProfilePicture) $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
-          return $row;
-   }
+
  
     function getRandomNumbers($min, $max, $total) {
       $temp_arr = array();
@@ -513,7 +506,14 @@ function leadExists($uss,$name,$id) {
   $row  = DB::table('leads AS s')->where('s.branch_id',$branch_id)->where('s.name',$name)->whereRaw($str_id)->selectRaw('id')->take(1)->first();
   return $row? true:false;
 }
-     
+static function details($id,$ss,$includeProfilePicture=false){
+  $branch_id = $ss->branch_id;
+  $cols = 's.id,s.code,s.name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id,s.phone_number,s.email,s.business_type,s.price_list_id,sales_agent_id,s.category_id,c.`name` AS category,s.status_id,ls.`name` AS status,s.reopen_count,s.closing_status_id';    
+  $row = DB::table('leads as s')->join('lead_statuses as ls','ls.id','=','s.status_id')->join('lead_categories as c','c.id','=','s.category_id')->selectRaw($cols)->where('s.branch_id',$branch_id)->where('s.id',$id)->take(1)->first();
+  if (!$row) return null;
+      if($includeProfilePicture) $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
+      return $row;
+}
     static function getFormOptions($id,$ss){   
         $branch_id = $ss->branch_id;
         $lead_details = null;

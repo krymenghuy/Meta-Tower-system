@@ -454,7 +454,7 @@ class Sender //extends Model
         'address_link'=>'0|string|500',
         //'loc_lat'=>'0|number|default=0',
         //'loc_lng'=>'0|number|default=0',
-        'sales_agent_id'=>'0|number',
+       // 'sales_agent_id'=>'0|number',
         'banks'=>'0|array',
         'bank_account_changed'=>'0|number|default=0'
       ];

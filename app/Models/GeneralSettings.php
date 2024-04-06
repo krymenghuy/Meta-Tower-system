@@ -71,6 +71,7 @@ class GeneralSettings //extends Model
         $str_status_code ="l.status_code ='Active'";
         return  DB::table('sender as l')->whereRaw($str_status_code)->where('l.branch_id',$ss->branch_id)->select('l.id','l.name as sender_name')->orderBy('l.name','ASC')->get();
     }
+    
     static function options_merchant_mobile($ss){
         //for Mobile app, => field name is "name", not "sender_name"
         $str_status_code ="l.status_code ='Active'";
@@ -88,6 +89,7 @@ class GeneralSettings //extends Model
     static function options_sender($ss){
         return  DB::table('sender')->where('branch_id',$ss->branch_id)->whereRaw('status_code =\'active\'')->selectRaw('name AS sender_name,id')->orderBy('name','ASC')->get();
     }
+
     static function options_zone_type($ss){
         return [
            (object)['zone_type'=>'Local'],
@@ -307,4 +309,8 @@ class GeneralSettings //extends Model
     $branch_id =1;
     return DB::table('sender_business_types as b')->selectRaw('b.`business_type` AS code, b.`business_type`, b.allow_register')->get();
   } 
+
+//   static function options_business_type($ss=null){
+//     return DB::table('sender_business_types as bus')->selectRaw('bus.id,bus.business_type as business,bus.allow_register')->get();
+//   }
 }

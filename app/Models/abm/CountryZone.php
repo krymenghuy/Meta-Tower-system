@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\abm;
 
 use App\Models\DV;
 use Sanitizer;
