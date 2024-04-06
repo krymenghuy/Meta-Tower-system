@@ -929,10 +929,11 @@ var ShipmentsComponent = new function () {
 
             let disp_value = val;
             if (c === 'item_type') {
+                console.log(disp_value);
                 // console.log(DUtil.properCase(d.item_type));
                 // disp_value = DUtil.properCase(d.item_type);
                 disp_value = 'doc';
-                if (val === 0) disp_value = 'none doc';
+                if (val === 0) disp_value = 'non-doc';
             }
             // else if (c === 'zone_name' || c === 'zone_code') {
             //     val = d.zone_code;

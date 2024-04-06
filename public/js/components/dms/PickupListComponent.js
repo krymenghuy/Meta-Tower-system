@@ -1549,7 +1549,7 @@ var PickupListComponent = new function () {
                 switch (col_name) {
                     case 'cod': {
                         val = data.cod;
-                        disp_value = 'Yes';
+                        disp_value = '  ';
                         if (val == 0) disp_value = 'No';
                         break;
                     }
