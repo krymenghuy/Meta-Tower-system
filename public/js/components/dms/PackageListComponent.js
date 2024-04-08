@@ -6,11 +6,13 @@ var PackageListComponent = new function() {
     // this.lang ='kh';
     this.title_prop = "Package Trail";
     this.self = main_view.appContent.find('#_main_packageListComponent');
+    this.div_summary = this.self[0].querySelector('div.pg-summary-container');
+    this.div_cards = mThis.div_cards || mThis.div_summary.querySelectorAll('div.pg-alert-card');
+
     this.elFilter_period = this.self.find('#_pgl_filter_period');
     this.base_url = main_view.base_url; // this.self.find('#__base_url').val();
       
     this.div_filter_fields = main_view.appContent.children('#_dl_dlgFilter').find('.modal-body')[0];
-
     //this.package_dropdown_menu = mThis.tblPackages.find('.dropdown-menu');
 
     //this.lnkReceivePackage = this.self.find('#_pgl_lnkReceivePackage');
@@ -44,6 +46,7 @@ var PackageListComponent = new function() {
                         } 
                     },
                     {
+                        className:"barcode",
                         data:function(data,index,tr){
                             return ['<div class="d-flex flex-row justify-content-between">',
                              '<div>',
@@ -51,7 +54,8 @@ var PackageListComponent = new function() {
                                '<span class="pg-pickup_time d-block">',data.arrival_date,'</span>',
                                '<span class="d-block text-primary">ថ្ងៃបញ្ចប់ ',data.finish_time,'</span>',
                              '</div>',
-                             '<a href="javascript:;" style="display:none" data-barcode="',data.barcode,'" class="_pgl_pa_quick_btn_barcode"><i class="fa fa-barcode" style="color:green"></i></a>',
+
+                             '<div class="d-flex flex-row gap-1"><i class="fa fa-print"></i><span class="pg-label-print-count text-danger">',data.label_print_count,'</span><a href="javascript:;" style="visibility:hidden" data-barcode="',data.barcode,'" class="_pgl_pa_quick_btn_barcode"><i class="fa fa-barcode" style="color:green"></i></a></div>',
                             '</div>'].join('');
                         },
                         title:'Barcode'
@@ -96,8 +100,8 @@ var PackageListComponent = new function() {
                     {
                         title:'Service Type',
                         data:(data,index,tr)=>{
-                            let pickup_driver_name = data.pickup_driver_name? ['Picked by: ',data.pickup_driver_name].join(''):'';
-                            return  ['<div class="d-flex flex-column">','<span class="pg-text pg-delivery_type pg-badge-delivery_type" style="margin-left:30%" data-field="delivery_type">',data.delivery_type,'</span>','<span>',pickup_driver_name,'</span>','</div>'].join('');
+                            let pickup_driver_name = data.pickup_driver_name? ['<span class="text-muted">Picked by:</span> ',data.pickup_driver_name].join(''):'';
+                            return  ['<div class="d-flex flex-column flex-wrap">','<span class="pg-text pg-delivery_type text-info" style="margin-left:30%" data-field="delivery_type">',VSUtil.properCase(data.delivery_type),'</span>','<span>',pickup_driver_name,'</span>','</div>'].join('');
                         }
                     },
                     {
@@ -134,6 +138,48 @@ var PackageListComponent = new function() {
                     }
                 ];
  
+    this.div_summary.addEventListener('click',e=>{
+       e.preventDefault();
+       let lnk = VSUtil.closestLimited(e.target, 'a.lnk-alert-list');
+       if(lnk){
+        let status_id = lnk.dataset.statusid;
+         mThis.listView.showPage({"is_overdue_alert":1,"status_id":status_id}); 
+         mThis.setSelected_alert_card(status_id);
+       }
+      
+    });
+
+    this.setSelected_alert_card = (status_id)=>{
+       //  mThis.div_cards = mThis.div_cards || mThis.div_summary.querySelectorAll('div.pg-alert-card');
+        mThis.div_cards.forEach(c=>{
+           let c_status_id = c.dataset.statusid; 
+           if(status_id == c_status_id){
+              c.classList.add('selected');
+           }else{
+              c.classList.remove('selected');
+           } 
+        });
+    }
+
+    this.showSummaryInfo = (summary ={})=>{
+      
+       mThis.div_cards.forEach(card =>{
+           const card_name = card.dataset.name;
+           let d = summary[card_name];
+           if(d){
+            card.querySelectorAll('.data-input').forEach(el =>{
+                const f = el.dataset.field;
+                let css = d.alert_color;
+                if(f ==='value' || f=== 'count') {
+                    el.classList.remove(css);
+                    el.classList.add(css);
+                } 
+                el.innerHTML = d[f] || '';
+              });
+           }
+       });
+    }   
+
     this.sanitizeInput = (userInput =null) => {
         userInput = userInput || '';
        // Remove HTML tags
@@ -152,9 +198,24 @@ var PackageListComponent = new function() {
             'columns':mThis.cols,
             // 'clientSidePagination':true,
             'processResponse':(res)=>{
-               //display summary data 
-
-               return res.data.list;
+               const d = res.data || {}; 
+               //display summary data
+               mThis.setSelected_alert_card(0); //clear alert card selection
+               mThis.showSummaryInfo(d.summary);
+               if(d.is_overdue_list ==1){
+                  mThis.setSelected_alert_card(d.status_id);
+               }
+               if(main_view.side_menus){
+                   mThis.pg_overdue_count_text = mThis.pg_overdue_count_text || main_view.side_menus.querySelector('#pg_overdue_count');
+               }
+               if(mThis.pg_overdue_count_text) {
+                if(d.total_overdue_count > 0) {
+                    mThis.pg_overdue_count_text.closest('div.pg-overdue-count-wrapper').style.display='block';
+                    mThis.pg_overdue_count_text.innerHTML = d.total_overdue_count;
+                }
+                else mThis.pg_overdue_count_text.closest('div.pg-overdue-count-wrapper').style.display='none';
+            }; 
+               return d.list;
             },
             //'paginationContainer': document.querySelector('#test_div'),
             'apiCluster':main_view.apiCluster,
@@ -166,6 +227,7 @@ var PackageListComponent = new function() {
                 tr.classList.add('package_header');
                 tr.dataset.id = data.id;
                 tr.dataset.barcode = data.barcode;
+                tr.dataset.printcount = data.label_print_count;
                 tr.dataset.driverid = data.driver_id;
                 tr.dataset.senderpmtstatusid = data.sender_pmt_status_id ==1? data.sender_pmt_status_id :0;
                 tr.dataset.driverpmtstatusid = data.driver_pmt_status_id ==1? data.driver_pmt_status_id:0;
@@ -202,7 +264,7 @@ var PackageListComponent = new function() {
         mThis.tblPackages = $(mThis.listView.getTable());
 
         mThis.cfg = new ExpandableRowConfig(mThis.tblPackages.attr('id'), {
-            dontExpandByClickingOn: ['btn_pg_action'],
+            dontExpandByClickingOn: ['btn_pg_action','_pgl_pa_quick_btn_barcode'],
             onOpen: (container, detail_tr, parent_tr) => {
                 let pid = parent_tr.dataset.id;
                 let barcode = parent_tr.dataset.barcode;
@@ -463,55 +525,28 @@ var PackageListComponent = new function() {
                 }
             });
         });
-
-
                 mThis.tblPackages.on('mouseover','tr',function(e){
-                    let x = $(this);
-                    let col_action = x.find('td.col_action');
-                    let btn_barcode = x.find('a._pgl_pa_quick_btn_barcode');
-                    btn_barcode.show();
-                    col_action.find('a.btn_pg_action>i').addClass('action-button-zoomin');    
+                    let x = $(this)[0];
+                    let col_action = x.querySelector('td.col_action');
+                    let btn_barcode = x.querySelector('td.barcode a._pgl_pa_quick_btn_barcode');
+                    if(btn_barcode) btn_barcode.style.visibility ='visible' ;
+                    if(col_action) col_action.querySelector('a.btn_pg_action>i').classList.add('action-button-zoomin');    
                 }).on('mouseleave','tr',function(e) {
-                    let x = $(this);
-                    let col_action = x.find('td.col_action');
-                    let btn_barcode = x.find('a._pgl_pa_quick_btn_barcode');
-                    btn_barcode.hide();
-                    col_action.find('a.btn_pg_action>i').removeClass('action-button-zoomin');
-                    col_action.find('div.dropdown-menu').removeClass('show');  
+                    let x = $(this)[0];
+                    let col_action = x.querySelector('td.col_action');
+                    let btn_barcode = x.querySelector('td.barcode a._pgl_pa_quick_btn_barcode');
+                    if(btn_barcode) btn_barcode.style.visibility ='hidden';
+                    if(col_action){
+                        col_action.querySelector('a.btn_pg_action>i').classList.remove ('action-button-zoomin');
+                        const dpn = col_action.querySelector('div.dropdown-menu');
+                        if(dpn) { 
+                            const mnu = dpn.querySelector('div.dropdown-menu');
+                            if(mnu) mnu.classList.remove('show');
+                          } 
+                    }
+                    
                 });
-
-                // /** NOTE: because mThis.tblPackages is a jQuery object , so we use mThis.tblPackages[0] */
-                // mThis.tblPackages.on('mouseover', function (e) {
-                //     if (e.target.tagName === 'TR') {
-                //         const x = e.target;
-                //         const colAction = x.querySelector('td.col_action');
-                //         const btnBarcode = x.querySelector('a._pgl_pa_quick_btn_barcode');
-                //         if(btnBarcode) console.log(' found btnBarcode');
-                //         btnBarcode.style.display = 'block';
-                //         colAction.querySelector('a.btn_pg_action i').classList.add('action-button-zoomin');
-                //     }
-                // });
-                
-                // mThis.tblPackages.on('mouseleave', function (e) {
-                //     if (e.target.tagName === 'TR') {
-                //         const x = e.target;
-                //         const colAction = x.querySelector('td.col_action');
-                //         const btnBarcode = x.querySelector('a._pgl_pa_quick_btn_barcode');
-                //         btnBarcode.style.display = 'none';
-                //         colAction.querySelector('a.btn_pg_action i').classList.remove('action-button-zoomin');
-                //         colAction.querySelector('div.dropdown-menu').classList.remove('show');
-                //     }
-                // });
-       //##END:: tblPackages dropdown menu
-   
-    //    mThis.tblPackages.on('mouseover', 'button._pol_status', function (e) {
-    //     let popper_notes = new Popper($(this), mThis.popper_div, {
-    //         placement: 'top'
-    //     });
-    //     popper_notes.show();
-    //   }).on('mouseleave', 'button._pol_status', function (e) {
-    //     return;
-    //   });
+ 
 
        mThis.tblPackages.on('click',e =>{
            e.preventDefault();
@@ -532,22 +567,26 @@ var PackageListComponent = new function() {
 
 
                 //Click on barcode menu item
-                btn = VSUtil.getElementByClass(e.target,'_cpl_pa_print_barcode');
+                btn = VSUtil.closestLimited(e.target,'._cpl_pa_print_barcode');
                 if(btn){
+                     
                     const barcode = btn.dataset.barcode;
-                    window.open([mThis.base_url,'/package_barcode/',barcode].join(''),'_blank'); 
+                    const printWindow =  window.open([mThis.base_url,'/package_barcode/',barcode].join(''),'_blank'); 
+                    const tr = VSUtil.closestLimited(btn,'tr');
+                    mThis.countLabelPrint(tr);
                 }
                
 
                  //Click on Quick barcode icon
-                 btn = e.target.closest('._pgl_pa_quick_btn_barcode');
+                 btn = VSUtil.closestLimited(e.target,'._pgl_pa_quick_btn_barcode');
                  if(btn){
                     const barcode = btn.dataset.barcode;
-                    window.open([mThis.base_url,'/package_barcode/',barcode].join(''),'_blank'); 
+                    const printWindow = window.open([mThis.base_url,'/package_barcode/',barcode].join(''),'_blank');
+                    const tr = VSUtil.closestLimited(btn,'tr');
+                    mThis.countLabelPrint(tr);
                  }
        });
-   
-        
+     
     //    //Update Delviery status
     //    mThis.tblPackages.on('click','a._cpl_pa_change_status',function(e){
     //         e.preventDefault();
@@ -776,6 +815,22 @@ var PackageListComponent = new function() {
         '</div>'].join('');
         return html;
     };
+
+    this.countLabelPrint = (tr)=>{
+        if(tr){
+            const span = tr.querySelector('td.barcode .pg-label-print-count');
+            let cnt =  tr.dataset.printcount >=0? tr.dataset.printcount : 0;
+            cnt++;
+            span.textContent =cnt;
+            tr.dataset.printcount = cnt;
+            let id = tr.dataset.id;
+            vsapi.call([mThis.base_url,'/api/package/save-label-print-count'].join(''),{"package_id":id,"count":cnt},false,false,false).then(res =>{
+                if(res.status_code !==200){
+                    console.error(res.error_message);
+                }
+            });
+        }  
+   }
 
     this.findRowByBarcode = (barcode) => {
         let tr = null;
@@ -1391,20 +1446,21 @@ var PackageListComponent = new function() {
              p[f] = el.value;
           });
           
-          let err_text ="";
-          if (!p.id) {
+        let err_text ="";
+        if (!p.id) {
                 err_text = LocaleManager.trans('Package identity is not valid','validation');
                 cv_interact.error(err_text);
                 return null;
          }
-
-          if (p.cod ==1) {
-             if (p.price <=0 || isNaN(p.price)) {
-                 err_text = LocaleManager.trans('When COD is Yes then Price is required','validation');
-                 cv_interact.error(err_text);
-                 return null;
-             }
-          }
+         if(p.price <=0 || !p.price) p.cod = 0;
+         
+        //   if (p.cod ==1) {
+        //      if (p.price <=0 || isNaN(p.price)) {
+        //          err_text = LocaleManager.trans('When COD is Yes then Price is required','validation');
+        //          cv_interact.error(err_text);
+        //          return null;
+        //      }
+        //   }
 
           if ((p.df_payer+'').toLowerCase() !='sender' && (p.df_payer+'').toLowerCase() != 'receiver') {
             //err_text = LocaleManager.trans('When COD is Yes then Price is required','validation');
@@ -1589,3 +1645,11 @@ const FilterDialog_package = new function () {
 }
 //### end::FiterDialog_package
  
+window.addEventListener('message', function(event) {
+    if (event.data === 'print_complete') {
+        console.log('User printed');
+        // Implement your feedback mechanism here
+    }else {
+        console.log(event.data);
+    }
+});

@@ -89,30 +89,35 @@ class PackageController extends Controller
      return JDV::result($data); 
   }
 
+  function saveLabelPrintCount(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !== 200) return JDV::raw($ss);
+    $id = $req->package_id ?? $req->id;
+    $res = Package::saveLabelPrintCount($req->count,$id);
+    return JDV::raw($res);
+  }
+
  function getOutstandingPackageList(Request $req) { 
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !== 200) return JDV::raw($ss);
-    $p = new Package(null,$ss);
-    $rows = $p->getOutstandingPackageList($req->all()); 
-    return JDV::result($rows); 
-  }
-    
+    $data = Package::list($req->all(),$ss);
+    return JDV::result($data);
+  }    
     function getOutstandingPackageList_print(Request $req) { 
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
-      $p = new Package(null,$ss);
-      $rows= $p->getOutstandingPackageList_print($req->all(),$ss); 
-      return JDV::result($rows);
+      $data= Package::listAll($req->all(),$ss); 
+      return JDV::result($data);
     }
 
-   function getDeliveryDetails(Request $req) {    
-      $ss = UM::getUserInfoByToken($req,-1);
-      if($ss->status_code !== 200) return JDV::raw($ss);
-        $trip_id = $req->delivery_id;
-        $p = new Package(null,$ss);
-        $data = $p->getDeliveryDetails($trip_id);
-       return JDV::result($data); 
-    }
+  //  function getDeliveryDetails(Request $req) {    
+  //     $ss = UM::getUserInfoByToken($req,-1);
+  //     if($ss->status_code !== 200) return JDV::raw($ss);
+  //       $trip_id = $req->delivery_id;
+  //       $p = new Package(null,$ss);
+  //       $data = $p->getDeliveryDetails($trip_id);
+  //      return JDV::result($data); 
+  //   }
  
   function getPackageDetails(Request $req) {
       $ss = UM::getUserInfoByToken($req,-1);

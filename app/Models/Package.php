@@ -27,6 +27,12 @@ class Package //extends Model
     protected $id = null;
     protected $userInfo = null;
     protected $use_barcode =false;
+   
+    protected static $overdue_alert_times = [
+       '5'=>2,
+       '6'=>4,
+       '9'=>48
+    ];
 
     function __construct($id=null,$userInfo=null,$use_barcode =false){
          $this->userInfo = $userInfo;
@@ -61,9 +67,9 @@ class Package //extends Model
       $ss = $ss?$ss:$this->userInfo;
       $package_id = $id?$id:$this->id; 
       $branch_id = $ss->branch_id;
-      $cache_key = 'orderdetails_'.$branch_id.$id;
-      $cache_data = Cache::get($cache_key);
-      if($cache_data) return $cache_data;
+      // $cache_key = 'orderdetails_'.$branch_id.$id;
+      // $cache_data = Cache::get($cache_key);
+      // if($cache_data) return $cache_data;
 
       $p = DB::table('package AS p')->where('p.branch_id',$branch_id)->where('p.id',$package_id)->selectRaw('p.id,p.delivery_id, p.sender_pmt_status_id,p.driver_pmt_status_id, p.qr_code AS barcode, p.sender_id,LOWER(p.df_payer) AS df_payer,p.sender_name,p.sender_phone,p.dim_x,p.dim_y,p.dim_h,LOWER(p.delivery_type) AS delivery_type,p.zone_code,p.zone_name,p.receiver_phone,p.receiver_address, p.cod, 0 AS cod_fee_percent, p.cod_fee, p.base_fee, p.delivery_fee, p.driver_adjust_amount,p.forwarding_cost,p.price,p.actual_kg,p.billed_kg,p.agent_notes,IFNULL(p.delivery_notes,\'NA\') AS remarks, p.failure_notes, p.status_id, IFNULL((SELECT name FROM driver WHERE id = p.driver_id LIMIT 1),\'មិនទាន់មាន\') AS driver_name, p.driver_total, p.sender_total,IFNULL(p.driver_pmt_status_id,0) AS driver_pmt_status_id,IFNULL(p.sender_pmt_status_id,0) AS sender_pmt_status_id')->take(1)->first(); 
       $data = (object)[
@@ -73,7 +79,7 @@ class Package //extends Model
          'delivery_type'=>[(object)['delivery_type'=>'normal'],(object)['delivery_type'=>'fast']],
          'zone_code'=>DB::table('zones as z')->where('branch_id',$branch_id)->whereRaw('IFNULL(inactive,0) =0')->selectRaw('z.zone_code,CONCAT(zone_code,\' \',z.zone_name) AS zone_name')->get()
       ];
-      Cache::put($cache_key,$data,15);
+      //Cache::put($cache_key,$data,15);
       return $data;
     } 
 
@@ -975,209 +981,210 @@ class Package //extends Model
         return null;
       }
 
-      function getOutstandingPackageList($filter=[],$ss=null) {  
-        $ss = $ss ?? $this->userInfo;
-        $data = (object)$filter;  
-        $branch_id =$ss->branch_id;
-        $fresh = isset($data->fresh)? $data->fresh:0;
-        $data->warehouse_id = isset($data->warehouse_id)?Sanitizer::sanitize($data->warehouse_id):0;
-        $start_date = isset($data->start_date)?$data->start_date:'';
-        $end_date = isset($data->end_date)? $data->end_date:'';
-        $data->delivery_type = isset($data->delivery_type)?$data->delivery_type:null;
-        if($data->delivery_type ==0) $data->delivery_type =null;
-        $data->zone_code = Sanitizer::sanitize(isset($data->zone_code)? $data->zone_code:null);
-        $data->driver_id = Sanitizer::sanitize(isset($data->driver_id)? $data->driver_id : null);
-        $data->sender_id = Sanitizer::sanitize(isset($data->sender_id)? $data->sender_id : null);
-        $data->status_id = isset($data->status_id)?Sanitizer::sanitize($data->status_id):-1;
-        if(!isset($data->status_id)) $data->status_id =-1;
-        $search_value =isset($data->search_value)?escape_like_str(Sanitizer::sanitize($data->search_value)):null;
+      // function getOutstandingPackageList($filter=[],$ss=null) {  
+      //   $ss = $ss ?? $this->userInfo;
+      //   $data = (object)$filter;  
+      //   $branch_id =$ss->branch_id;
+      //   $fresh = isset($data->fresh)? $data->fresh:0;
+      //   $data->warehouse_id = isset($data->warehouse_id)?Sanitizer::sanitize($data->warehouse_id):0;
+      //   $start_date = isset($data->start_date)?$data->start_date:'';
+      //   $end_date = isset($data->end_date)? $data->end_date:'';
+      //   $data->delivery_type = isset($data->delivery_type)?$data->delivery_type:null;
+      //   if($data->delivery_type ==0) $data->delivery_type =null;
+      //   $data->zone_code = Sanitizer::sanitize(isset($data->zone_code)? $data->zone_code:null);
+      //   $data->driver_id = Sanitizer::sanitize(isset($data->driver_id)? $data->driver_id : null);
+      //   $data->sender_id = Sanitizer::sanitize(isset($data->sender_id)? $data->sender_id : null);
+      //   $data->status_id = isset($data->status_id)?Sanitizer::sanitize($data->status_id):-1;
+      //   if(!isset($data->status_id)) $data->status_id =-1;
+      //   $search_value =isset($data->search_value)?escape_like_str(Sanitizer::sanitize($data->search_value)):null;
          
-        $cache_key = 'pglist_';
-        foreach($data as $key => $val) $cache_key .= $val;
-        $cache_key = str_replace(['/','-','?','@','|'],'',$cache_key);
-        // $fresh =1 then user just have Deleted on package in Package Trail, so we do not use Cached data to return
-        if(!$fresh){
-          $cache_data = Cache::get($cache_key); 
-          if ($cache_data) {
-            //Log::info('Cached pglist. key = '.$cache_key); 
-            return $cache_data;
-          }
-        }
+      //   $cache_key = 'pglist_';
+      //   foreach($data as $key => $val) $cache_key .= $val;
+      //   $cache_key = str_replace(['/','-','?','@','|'],'',$cache_key);
+      //   // $fresh =1 then user just have Deleted on package in Package Trail, so we do not use Cached data to return
+      //   if(!$fresh){
+      //     $cache_data = Cache::get($cache_key); 
+      //     if ($cache_data) {
+      //       //Log::info('Cached pglist. key = '.$cache_key); 
+      //       return $cache_data;
+      //     }
+      //   }
        
-          //$succeeded_status ="delivered"; /* outstanding delvieries => select all packages that has status different from "delivered" */
-          $str_driver = null;
-          $str_warehouse =null;
-          $str_zone ='';
-          $str_sender =null;
-          $str_status = null; //status_id = 4 (Picked and Booked), status_id = 5 (Arrived at warehouse) 
-          $str_delivery_type = null;
-          $str_search = null;
-          if ($search_value) { 
-            $str_search = " AND (p.qr_code ='$search_value' OR p.receiver_phone LIKE '%$search_value%'  OR s.phone_number LIKE '%".$search_value."%' OR s.name LIKE '%".$search_value."%' OR p.order_id = (SELECT `id` FROM `order` WHERE code ='".$search_value."' LIMIT 1))";
-            $more_wheres = " p.status_id > 4 ".$str_search;
-          }
-          else{
+      //     //$succeeded_status ="delivered"; /* outstanding delvieries => select all packages that has status different from "delivered" */
+      //     $str_driver = null;
+      //     $str_warehouse =null;
+      //     $str_zone ='';
+      //     $str_sender =null;
+      //     $str_status = null; //status_id = 4 (Picked and Booked), status_id = 5 (Arrived at warehouse) 
+      //     $str_delivery_type = null;
+      //     $str_search = null;
+      //     if ($search_value) { 
+      //       $str_search = " AND (p.qr_code ='$search_value' OR p.receiver_phone LIKE '%$search_value%'  OR s.phone_number LIKE '%".$search_value."%' OR s.name LIKE '%".$search_value."%' OR p.order_id = (SELECT `id` FROM `order` WHERE code ='".$search_value."' LIMIT 1))";
+      //       $more_wheres = " p.status_id > 4 ".$str_search;
+      //     }
+      //     else{
 
-            $start_date = convertDate($start_date);
-            $end_date = convertDate($end_date);
-            if ((bool)strtotime($start_date) && (bool)strtotime($end_date)){
-              $str_dates = "AND (DATE(p.arrival_time) >='$start_date' AND DATE(p.arrival_time) <='$end_date')";
-           }else if ((bool)strtotime($start_date))
-               $str_dates = "AND (DATE(p.arrival_time) >='$start_date' AND DATE(p.arrival_time) <='$start_date')";
-           else if ((bool)strtotime($end_date))
-               $str_dates = "AND (DATE(p.arrival_time) >='$end_date' AND DATE(p.arrival_time) <='$end_date')";
-           else
-               $str_dates =null;
-            if ($data->status_id >0) $str_status = ' AND p.status_id ='.$data->status_id;
+      //       $start_date = convertDate($start_date);
+      //       $end_date = convertDate($end_date);
+      //       if ((bool)strtotime($start_date) && (bool)strtotime($end_date)){
+      //         $str_dates = "AND (DATE(p.arrival_time) >='$start_date' AND DATE(p.arrival_time) <='$end_date')";
+      //      }else if ((bool)strtotime($start_date))
+      //          $str_dates = "AND (DATE(p.arrival_time) >='$start_date' AND DATE(p.arrival_time) <='$start_date')";
+      //      else if ((bool)strtotime($end_date))
+      //          $str_dates = "AND (DATE(p.arrival_time) >='$end_date' AND DATE(p.arrival_time) <='$end_date')";
+      //      else
+      //          $str_dates =null;
+      //       if ($data->status_id >0) $str_status = ' AND p.status_id ='.$data->status_id;
    
-            if ($data->delivery_type) $str_delivery_type =" AND p.delivery_type ='".$data->delivery_type."' ";
-            if($data->warehouse_id >0) $str_warehouse =" AND p.warehouse_id =$data->warehouse_id ";
-            if ($data->driver_id > 0) $str_driver = " AND p.driver_id =$data->driver_id ";
-            if (!$data->driver_id || $data->driver_id <=0) $str_driver = null; // " AND IFNULL(p.driver_id,0) = 0";
-            if ($data->sender_id > 0) $str_sender = " AND p.sender_id =$data->sender_id ";
-            if ($data->zone_code) $str_zone = " AND p.zone_code ='$data->zone_code' ";
+      //       if ($data->delivery_type) $str_delivery_type =" AND p.delivery_type ='".$data->delivery_type."' ";
+      //       if($data->warehouse_id >0) $str_warehouse =" AND p.warehouse_id =$data->warehouse_id ";
+      //       if ($data->driver_id > 0) $str_driver = " AND p.driver_id =$data->driver_id ";
+      //       if (!$data->driver_id || $data->driver_id <=0) $str_driver = null; // " AND IFNULL(p.driver_id,0) = 0";
+      //       if ($data->sender_id > 0) $str_sender = " AND p.sender_id =$data->sender_id ";
+      //       if ($data->zone_code) $str_zone = " AND p.zone_code ='$data->zone_code' ";
             
-            $more_wheres = " p.status_id > 4 AND p.outstanding =1 ".$str_warehouse.$str_delivery_type.$str_driver.$str_zone.$str_sender.$str_dates.$str_status;
-          }
-          $str_since = 'AND DATE(p.delivery_date) >=\''.Carbon::now()->addDay(-60).'\' AND p.branch_id ='.$branch_id>0? $branch_id:1;
-          $select_cols ="p.id As package_id,p.delivery_id, p.order_id, DATE_FORMAT(p.pickup_time,'%d %b %Y') AS pickup_time,p.zone_code, p.delivery_type, p.qr_code AS barcode,p.delivery_notes,p.failure_notes, CASE (p.status_id =9 OR p.status_id=11) WHEN 1 THEN p.failure_notes ELSE delivery_notes END AS remarks,p.delivery_condition, 
-           DATE_FORMAT(p.arrival_time,'%d %b %Y') AS `arrival_time`, s.sender_type_id, st.name AS sender_type, (select x.name from driver as x WHERE x.id = p.driver_id LIMIT 1) AS driver_name, p.driver_id,
-          p.status_id,(SELECT ds.name FROM package_statuses AS ds WHERE ds.id = p.status_id LIMIT 1) AS status, p.sender_id, s.phone_number AS sender_phone, p.receiver_id, p.receiver_address, p.receiver_name, p.receiver_phone,p.zone_name, s.name AS sender_name, IFNULL(p.driver_total,0) AS driver_total, IFNULL(p.sender_total,0) AS sender_total";
-          $rows = DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->join('sender_type AS st','st.id','=','s.sender_type_id')->selectRaw($select_cols)->whereRaw($str_since)->whereRaw($more_wheres)->orderByRaw('p.create_date DESC, p.delivery_id DESC')->get();
-          if ($cache_key) Cache::put($cache_key,$rows,15);
-          return $rows; 
-        }
+      //       $more_wheres = " p.status_id > 4 AND p.outstanding =1 ".$str_warehouse.$str_delivery_type.$str_driver.$str_zone.$str_sender.$str_dates.$str_status;
+      //     }
+      //     $str_since = 'AND DATE(p.delivery_date) >=\''.Carbon::now()->addDay(-60).'\' AND p.branch_id ='.$branch_id>0? $branch_id:1;
+      //     $select_cols ="p.id As package_id,p.delivery_id, p.order_id, DATE_FORMAT(p.pickup_time,'%d %b %Y') AS pickup_time,p.zone_code, p.delivery_type, p.qr_code AS barcode,p.delivery_notes,p.failure_notes, CASE (p.status_id =9 OR p.status_id=11) WHEN 1 THEN p.failure_notes ELSE delivery_notes END AS remarks,p.delivery_condition, 
+      //      DATE_FORMAT(p.arrival_time,'%d %b %Y') AS `arrival_time`, s.sender_type_id, st.name AS sender_type, (select x.name from driver as x WHERE x.id = p.driver_id LIMIT 1) AS driver_name, p.driver_id,
+      //     p.status_id,(SELECT ds.name FROM package_statuses AS ds WHERE ds.id = p.status_id LIMIT 1) AS status, p.sender_id, s.phone_number AS sender_phone, p.receiver_id, p.receiver_address, p.receiver_name, p.receiver_phone,p.zone_name, s.name AS sender_name, IFNULL(p.driver_total,0) AS driver_total, IFNULL(p.sender_total,0) AS sender_total";
+      //     $rows = DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->join('sender_type AS st','st.id','=','s.sender_type_id')->selectRaw($select_cols)->whereRaw($str_since)->whereRaw($more_wheres)->orderByRaw('p.create_date DESC, p.delivery_id DESC')->get();
+      //     if ($cache_key) Cache::put($cache_key,$rows,15);
+      //     return $rows; 
+      //   }
   
-         //GetOutStandingPackageList_print() returns data for pdf printing only
-         function getOutstandingPackageList_print($arr=[],$ss=null) {
-          $ss = $ss ?? $this->userInfo;   
-          $data = (object)$arr;   
-          $branch_id = Sanitizer::sanitize($ss->branch_id);
-          $data->warehouse_id = isset($data->warehouse_id)?Sanitizer::sanitize($data->warehouse_id):0;
-          $start_date = isset($data->start_date)?$data->start_date:null;
-          $end_date = isset($data->end_date)? $data->end_date:null;
-          $data->delivery_type = isset($data->delivery_type)?$data->delivery_type:null;
-          if($data->delivery_type ==0) $data->delivery_type =null;
-          $data->zone_code = Sanitizer::sanitize($data->zone_code);
-          $data->driver_id = Sanitizer::sanitize($data->driver_id);
-          $data->sender_id = Sanitizer::sanitize($data->sender_id);
-          $data->status_id = Sanitizer::sanitize($data->status_id);
-          if(empty($data->status_id)) $data->status_id =-1;
-          $data->search_value =isset($data->search_value)?$data->search_value:null;
-          $data->search_value = escape_like_str(Sanitizer::sanitize(trim($data->search_value)));
+      //    //GetOutStandingPackageList_print() returns data for pdf printing only
+      //    function getOutstandingPackageList_print($arr=[],$ss=null) {
+      //     $ss = $ss ?? $this->userInfo;   
+      //     $data = (object)$arr;   
+      //     $branch_id = Sanitizer::sanitize($ss->branch_id);
+      //     $data->warehouse_id = isset($data->warehouse_id)?Sanitizer::sanitize($data->warehouse_id):0;
+      //     $start_date = isset($data->start_date)?$data->start_date:null;
+      //     $end_date = isset($data->end_date)? $data->end_date:null;
+      //     $data->delivery_type = isset($data->delivery_type)?$data->delivery_type:null;
+      //     if($data->delivery_type ==0) $data->delivery_type =null;
+      //     $data->zone_code = Sanitizer::sanitize($data->zone_code);
+      //     $data->driver_id = Sanitizer::sanitize($data->driver_id);
+      //     $data->sender_id = Sanitizer::sanitize($data->sender_id);
+      //     $data->status_id = Sanitizer::sanitize($data->status_id);
+      //     if(empty($data->status_id)) $data->status_id =-1;
+      //     $data->search_value =isset($data->search_value)?$data->search_value:null;
+      //     $data->search_value = escape_like_str(Sanitizer::sanitize(trim($data->search_value)));
   
-          // $is_default_view = true;
-          // if ((bool)strtotime($start_date)) 
-          // {
-          //    $is_default_view = false;
-          //    if (!(bool)strtotime($end_date)) $end_date = $start_date;
-          // }
+      //     // $is_default_view = true;
+      //     // if ((bool)strtotime($start_date)) 
+      //     // {
+      //     //    $is_default_view = false;
+      //     //    if (!(bool)strtotime($end_date)) $end_date = $start_date;
+      //     // }
 
-          // $is_default_view = false;
-          // if (!(bool)strtotime($start_date)) 
-          //    $is_default_view = true;
-          // else if (!(bool)strtotime($end_date)){
-          //    $end_date = $start_date;    
-          // }
+      //     // $is_default_view = false;
+      //     // if (!(bool)strtotime($start_date)) 
+      //     //    $is_default_view = true;
+      //     // else if (!(bool)strtotime($end_date)){
+      //     //    $end_date = $start_date;    
+      //     // }
  
-           //$succeeded_status ="delivered"; /* outstanding delvieries => select all packages that has status different from "delivered" */
-            $str_driver = null;
-            $str_warehouse =null;
-            $str_zone ='';
-            $str_dates =null;
-            $str_sender =null;
-            $str_status = null; //status_id = 4 (Picked and Booked), status_id = 5 (Arrived at warehouse) 
-            $str_delivery_type = null;
-            $str_search = null;
-            if (!empty($data->search_value)) { 
-              $str_search = " AND (p.qr_code ='".$data->search_value."') OR p.receiver_phone ='".$data->search_value."'  OR s.phone_number ='".$data->search_value."' OR s.name ='%".$data->search_value."%' OR p.order_id IN (SELECT `id` FROM `order` WHERE code ='".$data->search_value."')";
-              $more_wheres = " p.status_id > 4 AND p.status_id NOT IN (8,11) ".$str_search;
-            }
-            else{
+      //      //$succeeded_status ="delivered"; /* outstanding delvieries => select all packages that has status different from "delivered" */
+      //       $str_driver = null;
+      //       $str_warehouse =null;
+      //       $str_zone ='';
+      //       $str_dates =null;
+      //       $str_sender =null;
+      //       $str_status = null; //status_id = 4 (Picked and Booked), status_id = 5 (Arrived at warehouse) 
+      //       $str_delivery_type = null;
+      //       $str_search = null;
+      //       if (!empty($data->search_value)) { 
+      //         $str_search = " AND (p.qr_code ='".$data->search_value."') OR p.receiver_phone ='".$data->search_value."'  OR s.phone_number ='".$data->search_value."' OR s.name ='%".$data->search_value."%' OR p.order_id IN (SELECT `id` FROM `order` WHERE code ='".$data->search_value."')";
+      //         $more_wheres = " p.status_id > 4 AND p.status_id NOT IN (8,11) ".$str_search;
+      //       }
+      //       else{
 
-              $start_date = convertDate($start_date);
-              $end_date = convertDate($end_date);
-             if ((bool)strtotime($start_date) && (bool)strtotime($end_date)){
-                $str_dates = "AND (DATE(p.arrival_time) >='$start_date' AND DATE(p.arrival_time) <='$end_date')";
-             }else if ((bool)strtotime($start_date))
-                 $str_dates = "AND (DATE(p.arrival_time) >='$start_date' AND DATE(p.arrival_time) <='$start_date')";
-             else if ((bool)strtotime($end_date))
-                 $str_dates = "AND (DATE(p.arrival_time) >='$end_date' AND DATE(p.arrival_time) <='$end_date')";
-             else
-                 $str_dates =null;
+      //         $start_date = convertDate($start_date);
+      //         $end_date = convertDate($end_date);
+      //        if ((bool)strtotime($start_date) && (bool)strtotime($end_date)){
+      //           $str_dates = "AND (DATE(p.arrival_time) >='$start_date' AND DATE(p.arrival_time) <='$end_date')";
+      //        }else if ((bool)strtotime($start_date))
+      //            $str_dates = "AND (DATE(p.arrival_time) >='$start_date' AND DATE(p.arrival_time) <='$start_date')";
+      //        else if ((bool)strtotime($end_date))
+      //            $str_dates = "AND (DATE(p.arrival_time) >='$end_date' AND DATE(p.arrival_time) <='$end_date')";
+      //        else
+      //            $str_dates =null;
                 
-             if ($data->status_id >0) $str_status = " AND p.status_id =$data->status_id";
+      //        if ($data->status_id >0) $str_status = " AND p.status_id =$data->status_id";
     
-             if ($data->delivery_type) $str_delivery_type =" AND p.delivery_type ='".$data->delivery_type."' ";
-             if($data->warehouse_id >0) $str_warehouse =" AND p.warehouse_id =$data->warehouse_id ";
-             if ($data->driver_id > 0) $str_driver = " AND p.driver_id =$data->driver_id ";
-             if (!$data->driver_id || $data->driver_id <=0) $str_driver = null; // " AND IFNULL(p.driver_id,0) = 0";
-             if ($data->sender_id > 0) $str_sender = " AND p.sender_id =$data->sender_id ";
-             if ($data->zone_code) $str_zone = " AND p.zone_code ='$data->zone_code' ";
+      //        if ($data->delivery_type) $str_delivery_type =" AND p.delivery_type ='".$data->delivery_type."' ";
+      //        if($data->warehouse_id >0) $str_warehouse =" AND p.warehouse_id =$data->warehouse_id ";
+      //        if ($data->driver_id > 0) $str_driver = " AND p.driver_id =$data->driver_id ";
+      //        if (!$data->driver_id || $data->driver_id <=0) $str_driver = null; // " AND IFNULL(p.driver_id,0) = 0";
+      //        if ($data->sender_id > 0) $str_sender = " AND p.sender_id =$data->sender_id ";
+      //        if ($data->zone_code) $str_zone = " AND p.zone_code ='$data->zone_code' ";
              
-              $more_wheres = " p.status_id > 4 ".$str_warehouse.$str_delivery_type.$str_driver.$str_zone.$str_sender.$str_dates.$str_status;
-            }          
+      //         $more_wheres = " p.status_id > 4 ".$str_warehouse.$str_delivery_type.$str_driver.$str_zone.$str_sender.$str_dates.$str_status;
+      //       }          
            
-            $select_cols ="'$' AS cur, p.qr_code AS barcode,DATE_FORMAT(p.create_date,'%d %b %Y') AS booking_date, s.name AS sender_name, s.phone_number AS sender_phone,p.zone_name,p.receiver_phone, 
-            (select x.name from driver as x WHERE x.id = p.driver_id LIMIT 1) AS driver_name, p.delivery_type,
-            (SELECT ds.name FROM package_statuses AS ds WHERE ds.id = p.status_id LIMIT 1) AS status, IFNULL(p.driver_total,0) AS driver_total";
+      //       $select_cols ="'$' AS cur, p.qr_code AS barcode,DATE_FORMAT(p.create_date,'%d %b %Y') AS booking_date, s.name AS sender_name, s.phone_number AS sender_phone,p.zone_name,p.receiver_phone, 
+      //       (select x.name from driver as x WHERE x.id = p.driver_id LIMIT 1) AS driver_name, p.delivery_type,
+      //       (SELECT ds.name FROM package_statuses AS ds WHERE ds.id = p.status_id LIMIT 1) AS status, IFNULL(p.driver_total,0) AS driver_total";
   
-            return DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->join('sender_type AS st','st.id','=','s.sender_type_id')->selectRaw($select_cols)->where('p.branch_id',$branch_id)->where('p.outstanding',1)->whereRaw($more_wheres)->orderByRaw('p.create_date DESC, p.delivery_id DESC')->get();
+      //       return DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->join('sender_type AS st','st.id','=','s.sender_type_id')->selectRaw($select_cols)->where('p.branch_id',$branch_id)->where('p.outstanding',1)->whereRaw($more_wheres)->orderByRaw('p.create_date DESC, p.delivery_id DESC')->get();
              
-           }
+      //      }
         
-         //get count packages per trip based on multiple statuses   
-         function getPackageCountByStatuses($uss,$delivery_id,$status_ids=-1){
-           $branch_id = $uss->branch_id;
-           $more_wheres =" p.status_id IN (".$status_ids.")";
-           DB::table('package AS p')->where('branch_id',$branch_id)->where('delivery_id',$delivery_id)->whereRaw($more_wheres)->selectRaw("COUNT(p.id) AS cnt")->get();
-           foreach($rows as $row) return is_numeric($row->cnt)?$row->cnt:0;
-           return 0;
-          } 
+      //    //get count packages per trip based on multiple statuses   
+      //    function getPackageCountByStatuses($uss,$delivery_id,$status_ids=-1){
+      //      $branch_id = $uss->branch_id;
+      //      $more_wheres =" p.status_id IN (".$status_ids.")";
+      //      DB::table('package AS p')->where('branch_id',$branch_id)->where('delivery_id',$delivery_id)->whereRaw($more_wheres)->selectRaw("COUNT(p.id) AS cnt")->get();
+      //      foreach($rows as $row) return is_numeric($row->cnt)?$row->cnt:0;
+      //      return 0;
+      //     } 
 
-          //updateDeliveryStatus() returns trip status id (3) only in case the trip is DONE, other returns NULL  
-         function updateDeliveryStatus($uss,$delivery_id){
-               $branch_id = $uss->branch_id;
-               if ($delivery_id <=0 || $delivery_id) return null;
-               $delivered_status_id =8; //For package status only, Not delivery status
-               $failed_status_id =9;
-               $cnt = $this->getPackageCountByStatus($uss,$delivery_id,-1); //count all packages
-               $delivered_cnt = $this->getPackageCountByStatus($uss,$delivery_id,$delivered_status_id);
-               $failed_and_returned_count = $this->getPackageCountByStatuses($uss,$delivery_id,'9,11');
-               $trip_status_id =null; //The trip is 2 = "On Delivery" (In process ofe delivery for each package)
+      //     //updateDeliveryStatus() returns trip status id (3) only in case the trip is DONE, other returns NULL  
+      //    function updateDeliveryStatus($uss,$delivery_id){
+      //          $branch_id = $uss->branch_id;
+      //          if ($delivery_id <=0 || $delivery_id) return null;
+      //          $delivered_status_id =8; //For package status only, Not delivery status
+      //          $failed_status_id =9;
+      //          $cnt = $this->getPackageCountByStatus($uss,$delivery_id,-1); //count all packages
+      //          $delivered_cnt = $this->getPackageCountByStatus($uss,$delivery_id,$delivered_status_id);
+      //          $failed_and_returned_count = $this->getPackageCountByStatuses($uss,$delivery_id,'9,11');
+      //          $trip_status_id =null; //The trip is 2 = "On Delivery" (In process ofe delivery for each package)
 
-               if ($cnt <=  $delivered_cnt + $failed_and_returned_count) $trip_status_id =3; //Trip Finished AS "Done"
-               DB::table('delivery')->where('id',$delivery_id)->where('branch_id',$branch_id)->update(array(
-                 'delivered_count'=>$delivered_cnt,
-                 'failed_count'=>$failed_and_returned_count,
-                 'package_count'=>$cnt
-               ));
-               //If all packages are delviered => then also update trip's status to 3 ="Done" automatically
-               if($trip_status_id ==3){
-                  DB::table('delivery')->where('id',$delivery_id)->where('branch_id',$branch_id)->update(array(
-                    'status_id'=>$trip_status_id
-                  ));
-               }
-               return $trip_status_id;
-         }
+      //          if ($cnt <=  $delivered_cnt + $failed_and_returned_count) $trip_status_id =3; //Trip Finished AS "Done"
+      //          DB::table('delivery')->where('id',$delivery_id)->where('branch_id',$branch_id)->update(array(
+      //            'delivered_count'=>$delivered_cnt,
+      //            'failed_count'=>$failed_and_returned_count,
+      //            'package_count'=>$cnt
+      //          ));
+      //          //If all packages are delviered => then also update trip's status to 3 ="Done" automatically
+      //          if($trip_status_id ==3){
+      //             DB::table('delivery')->where('id',$delivery_id)->where('branch_id',$branch_id)->update(array(
+      //               'status_id'=>$trip_status_id
+      //             ));
+      //          }
+      //          return $trip_status_id;
+      //    }
 
-      function getDeliveryDetails($delivery_id){
-          $delivery_id =$delivery_id?$delivery_id:0;
-          //delivery_type = {Normal,Fast}
-          $rows= DB::select(DB::raw('SELECT d.id as delivery_id, d.delivery_type, s.name as sender_name, formatTime(d.depart_time) AS depart_time, formatTime(d.arrival_time) AS arrival_time, d.package_count, d.sender_id, s.code AS sender_code, 
-          (SELECT `name` FROM `driver` WHERE id = IFNULL(p.driver_id,0) LIMIT 1) AS driver_name, p.driver_id,
-          (SELECT `code` FROM `driver` WHERE id = IFNULL(p.driver_id,0) LIMIT 1) AS driver_code,
-          p.zone_code,destination_map_location,d.delivery_notes, p.receiver_phone,p.receiver_address,p.receiver_name, d.taxi_fee
-          FROM `delivery` AS d INNER JOIN `sender` AS s ON s.id = d.sender_id WHERE d.id ='.$delivery_id.' LIMIT 1'));
+      
+      //    function getDeliveryDetails($delivery_id){
+      //     $delivery_id =$delivery_id?$delivery_id:0;
+      //     //delivery_type = {Normal,Fast}
+      //     $rows= DB::select(DB::raw('SELECT d.id as delivery_id, d.delivery_type, s.name as sender_name, formatTime(d.depart_time) AS depart_time, formatTime(d.arrival_time) AS arrival_time, d.package_count, d.sender_id, s.code AS sender_code, 
+      //     (SELECT `name` FROM `driver` WHERE id = IFNULL(p.driver_id,0) LIMIT 1) AS driver_name, p.driver_id,
+      //     (SELECT `code` FROM `driver` WHERE id = IFNULL(p.driver_id,0) LIMIT 1) AS driver_code,
+      //     p.zone_code,destination_map_location,d.delivery_notes, p.receiver_phone,p.receiver_address,p.receiver_name, d.taxi_fee
+      //     FROM `delivery` AS d INNER JOIN `sender` AS s ON s.id = d.sender_id WHERE d.id ='.$delivery_id.' LIMIT 1'));
           
-          $data = (object)['deliveryInfo'=>null,'packages'=>[]];
-          foreach($rows as $row) {
-              $data->deliveryInfo = $row;
-              $data->packages = DB::select(DB::raw("SELECT p.id, p.qr_code, p.package_name,p.dimension,p.billed_kg, p.price,p.delivery_fee, IFNULL(p.cod,0) AS cod, p.dimension_x, dimension_y, p.dimension_z,p.cubic_meter_size FROM `package` AS p WHERE p.branch_id ='".$branch_id."' AND p.delivery_id =".$delivery_id)); 
-              return ($data);
-          }
-          return ($data);
-      }
+      //     $data = (object)['deliveryInfo'=>null,'packages'=>[]];
+      //     foreach($rows as $row) {
+      //         $data->deliveryInfo = $row;
+      //         $data->packages = DB::select(DB::raw("SELECT p.id, p.qr_code, p.package_name,p.dimension,p.billed_kg, p.price,p.delivery_fee, IFNULL(p.cod,0) AS cod, p.dimension_x, dimension_y, p.dimension_z,p.cubic_meter_size FROM `package` AS p WHERE p.branch_id ='".$branch_id."' AND p.delivery_id =".$delivery_id)); 
+      //         return ($data);
+      //     }
+      //     return ($data);
+      // }
 
     //   function updateDelivery($arr = [], $ss = null){
     //     $ss = $ss ?? $this->userInfo;
@@ -2041,8 +2048,15 @@ class Package //extends Model
 
 static function list($arr,$ss=null) {   
   $d = (object)$arr;
+  
+  $is_overdue_alert = isset($d->is_overdue_alert)? $d->is_overdue_alert:0;
+  if($is_overdue_alert){
+    $status_id = $d->status_id;
+    return self::list_overdue($arr,$status_id,$ss); 
+    return;
+  }
 
-  $fresh = isset($d->fresh)?$d->fresh:0;
+  $fresh = isset($d->fresh)?$d->fresh:1;
   $str_dates = '5=5';
   $current_page =isset($d->current_page)?$d->current_page:1;
   $per_page =isset($d->per_page)?$d->per_page:10;
@@ -2095,13 +2109,16 @@ static function list($arr,$ss=null) {
     $str_zone = ''; // $d->zone_code? 'p.zone_code =\''.$d->zone_code.'\' ':'7=7'; 
     $str_search = null;
     $search_value = $d->search_value;
+    $str_outstanding = '';
     if ($search_value) { 
        $search_value = escape_like_str($search_value);
        $search_by_driver = ' OR p.driver_id = (SELECT d.id FROM driver as d WHERE d.name =\''.$search_value.'\' OR d.code =\''.$search_value.'\' LIMIT 1 ) ';
        $str_search = " AND (p.qr_code ='$search_value' OR p.receiver_phone LIKE '%$search_value%'  OR s.phone_number LIKE '%".$search_value."%' OR s.name LIKE '%".$search_value."%' OR p.order_id = (SELECT `id` FROM `order` WHERE code ='".$search_value."' LIMIT 1) $search_by_driver)";
-       $more_wheres = " IFNULL(p.outstanding,0) =1 AND p.status_id IN (5,6,9) ".$str_search;
+       $more_wheres = '1=1 '.$str_search;
+       $str_status ='1=1'; //Allow search all statuses in Package trail
     }
     else{
+      $str_outstanding = '  AND IFNULL(p.outstanding,0) =1 ';
       if ($d->delivery_type) $str_delivery_type =" AND p.delivery_type ='".$d->delivery_type."' ";
       if ($d->driver_id > 0) $str_driver = ' AND p.driver_id ='.$d->driver_id;
       if ($d->pickup_driver_id > 0) $str_pickup_driver = ' AND p.pickup_driver_id ='.$d->pickup_driver_id;
@@ -2117,9 +2134,9 @@ static function list($arr,$ss=null) {
            $str_dates = "DATE(p.delivery_time) >= '$start_date' AND DATE(delivery_time) <='$end_date'";
         }else $str_dates = "DATE(p.arrival_time) >= '$start_date' AND DATE(arrival_time) <='$end_date'";
     }
-      $more_wheres = 'p.warehouse_id = '.$warehouse_id.' AND IFNULL(p.outstanding,0) =1 '.$str_delivery_type.$str_driver.$str_pickup_driver.$str_zone.$str_sender.$str_status;
+      $more_wheres = 'p.warehouse_id = '.$warehouse_id.$str_outstanding.$str_delivery_type.$str_driver.$str_pickup_driver.$str_zone.$str_sender.$str_status;
     }
-    $select_cols ='p.id,p.collectible,p.delivery_id, p.order_id, p.zone_code, formatTime(p.delivery_time) AS finish_time, p.delivery_type, p.qr_code AS barcode,p.delivery_notes, p.failure_notes, CASE IFNULL(p.failure_notes,\'\') WHEN \'\' THEN p.delivery_notes ELSE p.failure_notes END AS remarks,HEX(p.driver_pmt_status_id) as driver_pmt_status_id, 
+    $select_cols ='p.id,p.label_print_count,p.collectible,p.delivery_id, p.order_id, p.zone_code, formatTime(p.delivery_time) AS finish_time, p.delivery_type, p.qr_code AS barcode,p.delivery_notes, p.failure_notes, CASE IFNULL(p.failure_notes,\'\') WHEN \'\' THEN p.delivery_notes ELSE p.failure_notes END AS remarks,HEX(p.driver_pmt_status_id) as driver_pmt_status_id, 
     formatDate(p.arrival_time) AS `arrival_date`, s.sender_type_id, st.name AS sender_type, (select x.name from driver as x WHERE x.id = p.driver_id LIMIT 1) AS driver_name, p.driver_id,'.
     '(select x.name from driver as x WHERE x.id = p.pickup_driver_id LIMIT 1) AS pickup_driver_name,'.
     '(IFNULL(p.base_fee,0) + IFNULL(p.delivery_fee,0) +IFNULL(p.cod_fee,0)) AS fees, 
@@ -2131,10 +2148,46 @@ static function list($arr,$ss=null) {
     $count = $count_query->count('p.id');
     $rows = $query->skip($skip_rows)->take($per_page)->get();
     
-    $summary = (object)[];
-
+    $overdue_queries = [
+      ['status_id'=>'5','hours_ago'=> self::$overdue_alert_times['5']],
+      ['status_id'=>'6','hours_ago'=>self::$overdue_alert_times['6']],
+      ['status_id'=>'9','hours_ago'=>self::$overdue_alert_times['9']]
+    ];
+    $countInfo = [];
+    foreach($overdue_queries as $q){
+      $status_id = $q['status_id'];
+      $hours_ago = $q['hours_ago'];
+      $str_time = 'TIMESTAMPDIFF(HOUR, p.arrival_time, NOW()) >='.$hours_ago;
+      $cnt  = DB::table('package as p')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->whereRaw($str_time)->where('p.status_id',$status_id)->count();  
+      $countInfo[$status_id] = (object)['count'=>$cnt,'hours_ago'=>$hours_ago]; 
+    } 
+      
+    $summary = (object)[
+       'overdue_aw'=>(object)[
+          'title'=>'Overdue AW',
+          'value'=> $countInfo['5']->count.' pcs',
+          'alert_color'=> $countInfo['5']->count > 0 ? 'text-danger':'text-success',
+          'time_ago'=>'Over '.$countInfo['5']->hours_ago.'h'
+       ],
+       'overdue_od'=>(object)[
+        'title'=>'Overdue OD',
+        'value'=> $countInfo['6']->count. ' pcs',
+        'alert_color'=> $countInfo['6']->count > 0 ? 'text-danger':'text-success',
+        'time_ago'=>'Over '.$countInfo['6']->hours_ago.'h'
+       ],
+       'overdue_failed'=>(object)[
+        'title'=>'Overdue Failed',
+        'value'=> $countInfo['9']->count. ' pcs',
+        'alert_color'=> $countInfo['9']->count > 0 ? 'text-danger':'text-success',
+        'time_ago'=>'Over '.$countInfo['9']->hours_ago.'h'
+     ]
+    ];
+    $total_overdue_count = $countInfo['5']->count + $countInfo['6']->count +$countInfo['9']->count;
     $data = (object)[
       'summary'=>$summary,
+      'is_overdue_list'=>0,
+      'status_id'=>'',
+      'total_overdue_count'=>$total_overdue_count,
       'list'=>new LengthAwarePaginator($rows, $count, $per_page, $current_page)
     ];
     Cache::put($cache_key,$data,30);
@@ -2246,6 +2299,91 @@ static function list($arr,$ss=null) {
     return $rows;
  }
  
+ static function saveLabelPrintCount($count, $id){
+    DB::table('package')->where('id',$id)->update(['label_print_count'=>$count]);
+    return DV::success();
+ }
+
+ /** List overdue package, for example, over 72 hours ago */
+ static function list_overdue($arr, $status_id, $ss=null) { 
+  $filter_status_id = $status_id;  
+  $wheres = [
+    '5'=>'TIMESTAMPDIFF(HOUR, p.arrival_time, NOW()) >='.self::$overdue_alert_times['5'].' AND p.status_id ='.$status_id,
+    '6'=>'TIMESTAMPDIFF(HOUR, p.arrival_time, NOW()) >='.self::$overdue_alert_times['6'].' AND p.status_id ='.$status_id,
+    '9'=>'TIMESTAMPDIFF(HOUR, p.arrival_time, NOW()) >='.self::$overdue_alert_times['9'].' AND p.status_id ='.$status_id
+  ]; 
+  
+  $str_where = $wheres[$status_id];
+
+  $d = (object)$arr;
+  $current_page =isset($d->current_page)?$d->current_page:1;
+  $per_page =isset($d->per_page)?$d->per_page:10;
+  if(!is_numeric($current_page)) $current_page=1;
+  $skip_rows = ($current_page -1) * $per_page;
+
+   $branch_id = Sanitizer::sanitize($ss->branch_id);
+   //$warehouse_id = isset($d->warehouse_id)?Sanitizer::sanitize($d->warehouse_id):1;
+   
+   $str_order ='p.arrival_time DESC, p.status_id';
+     
+    $select_cols ='p.id,p.collectible,p.delivery_id, p.order_id, p.zone_code, formatTime(p.delivery_time) AS finish_time, p.delivery_type, p.qr_code AS barcode,p.delivery_notes, p.failure_notes, CASE IFNULL(p.failure_notes,\'\') WHEN \'\' THEN p.delivery_notes ELSE p.failure_notes END AS remarks,HEX(p.driver_pmt_status_id) as driver_pmt_status_id, 
+    formatDate(p.arrival_time) AS `arrival_date`, s.sender_type_id, st.name AS sender_type, (select x.name from driver as x WHERE x.id = p.driver_id LIMIT 1) AS driver_name, p.driver_id,'.
+    '(select x.name from driver as x WHERE x.id = p.pickup_driver_id LIMIT 1) AS pickup_driver_name,'.
+    '(IFNULL(p.base_fee,0) + IFNULL(p.delivery_fee,0) +IFNULL(p.cod_fee,0)) AS fees, 
+        (CASE p.cod WHEN 1 THEN (IFNULL(p.price,0) - IFNULL(p.cod_fee,0)) ELSE 0 END) AS cod_amount,
+     p.status_id,IFNULL(p.driver_pmt_status_id,0) AS driver_pmt_status_id, IFNULL(p.sender_pmt_status_id,0) AS sender_pmt_status_id,ps.`name` AS status, p.sender_id, s.phone_number AS sender_phone, p.receiver_id, p.receiver_address, p.receiver_name, p.receiver_phone,p.zone_name, s.name AS sender_name, IFNULL(p.driver_total,0) AS driver_total, IFNULL(p.sender_total,0) AS sender_total';
+
+    $query = DB::table('package AS p')->join('package_statuses as ps','ps.id','=','p.status_id')->join('sender AS s','s.id','=','p.sender_id')->join('sender_type AS st','st.id','=','s.sender_type_id')->whereRaw($str_where)->where('p.branch_id',$branch_id)->selectRaw($select_cols)->orderByRaw($str_order);
+    $count_query = clone $query;
+    $count = $count_query->count('p.id');
+    $rows = $query->skip($skip_rows)->take($per_page)->get();
+    
+    $overdue_queries = [
+      ['status_id'=>'5','hours_ago'=> self::$overdue_alert_times['5']],
+      ['status_id'=>'6','hours_ago'=>self::$overdue_alert_times['6']],
+      ['status_id'=>'9','hours_ago'=>self::$overdue_alert_times['9']]
+    ];
+    $countInfo = [];
+    foreach($overdue_queries as $q){
+      $status_id = $q['status_id'];
+      $hours_ago = $q['hours_ago'];
+      $str_time = 'TIMESTAMPDIFF(HOUR, p.arrival_time, NOW()) >='.$hours_ago;
+      $cnt  = DB::table('package as p')->join('sender as s','s.id','=','p.sender_id')->where('p.branch_id',$branch_id)->whereRaw($str_time)->where('p.status_id',$status_id)->count();  
+      $countInfo[$status_id] = (object)['count'=>$cnt,'hours_ago'=>$hours_ago]; 
+    } 
+      
+    $summary = (object)[
+       'overdue_aw'=>(object)[
+          'title'=>'Overdue AW',
+          'value'=> $countInfo['5']->count.' pcs',
+          'alert_color'=> $countInfo['5']->count > 0 ? 'text-danger':'text-success',
+          'time_ago'=>'Over '.$countInfo['5']->hours_ago.'h'
+       ],
+       'overdue_od'=>(object)[
+        'title'=>'Overdue OD',
+        'value'=> $countInfo['6']->count. ' pcs',
+        'alert_color'=> $countInfo['6']->count > 0 ? 'text-danger':'text-success',
+        'time_ago'=>'Over '.$countInfo['6']->hours_ago.'h'
+       ],
+       'overdue_failed'=>(object)[
+        'title'=>'Overdue Failed',
+        'value'=> $countInfo['9']->count. ' pcs',
+        'alert_color'=> $countInfo['9']->count > 0 ? 'text-danger':'text-success',
+        'time_ago'=>'Over '.$countInfo['9']->hours_ago.'h'
+     ]
+    ];
+
+    $total_overdue_count = $countInfo['5']->count + $countInfo['6']->count +$countInfo['9']->count;
+    $data = (object)[
+      'is_overdue_list'=>1,
+      'status_id'=>$filter_status_id,
+      'total_overdue_count'=>$total_overdue_count,
+      'summary'=>$summary,
+      'list'=>new LengthAwarePaginator($rows, $count, $per_page, $current_page)
+    ]; 
+    return $data;
+}
+
 function getZoneByCode($branch_id, $zone_code) {
   $zones = Cache::get('zones', null);
   if (!$zones) {
