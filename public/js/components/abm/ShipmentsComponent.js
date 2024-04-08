@@ -2357,1128 +2357,1074 @@ const PickupStatusDialog = new function () {
     }
 }
 
-let PickupRequestDialog = new function () {
-    let mThis = this;
-    this.self = main_view.appContent.children('#_pl_dlgPickupRequest');
-    this.model_body = this.self.find('#_pl_dlgPickupRequest');
-    this.base_url = main_view.base_url;
-    this.elTitle = this.self.find('#_pl_dlgPickupRequestTitle');
-
-    this.btnAddPackage = this.self.find('#_pl_pr_add_package');
-    this.btnSaveRequest = this.self.find('#_pl_pr_btnSaveRequest');
-
-    this.elOrderId = this.self.find('#_pl_pr_order_id');
-    this.elOrderCode = this.self.find('#_pl_pr_order_code');
-
-    this.elSender = this.self.find('#_pl_pr_sender');
-
-    this.elSenderId = this.self.find('#_pl_pr_sender_id');
-    this.elSenderName = this.self.find('#_pl_pr_sender_name');
-    this.elSenderCode = this.self.find('#_pl_pr_sender_code');
-    this.elSenderId = this.self.find('#_pl_pr_sender_id');
-
-    this.elRequestDate = this.self.find('#_pl_pr_request_date');
-    this.elPickupDate = this.self.find('#_pl_pr_pickup_date');
-
-    this.elVechicleType = this.self.find('#_pl_pr_vehicle_type');
-    this.elCondition = this.self.find('#_pl_pr_delivery_condition');
-    this.elDeliveryType = this.self.find('#_pl_pr_delivery_type');
-    this.elProductType = this.self.find('#_pl_pr_product_type');
-    this.elPickupAddress = this.self.find('#_pl_pr_pickup_address');
-    this.elQty = this.self.find('#_pl_pr_qty');
-    this.lnkFindSender = this.self.find('#_pl_pr_lnkFindSender');
-    this.tblPackages = this.self.find('#_pl_pr_tblPackages');
-
-    this.package_columns = [
-        {
-            className: "col_action",
-            data: function (data,index,tr) {
-                return ['<div class="d-flex align-items-center gap-3">',
-                    '<a href="javascript:void(0)" class="_pl_pr_print_barcode disabled" data-barcode="', data.barcode, '" data-pid="', data.package_id, '" data-senderid="', data.sender_id, '"><i class="fa fa-list-alt fs-5 text-success"></i></a>',
-                    '<a href="javascript:void(0)" class="_pl_remove_package" data-barcode="', data.barcode, '" data-pid="', data.package_id, '"><i class="fa fa-times fs-5 text-warning"></i></a>',
-                    '</div>'].join('');
-            },
-            title: ''
-        },
-        {
-            className: "zone_name",
-            data: function (data,index,tr) {
-                let d = { "inputType": "select2", "data": data, "columnName": "zone_name", "cssClass": "modal-select2", "combo_items": mThis.form_options.zones, "valueMember": "zone_code", "textMember": "zone_name" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Zone', 'titles')
-        },
-        {
-            className: "receiver_phone",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "receiver_phone", "cssClass": "phone", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Receiver Phone', 'titles')
-        },
-        {
-            className: "price",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "price", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Price', 'titles')
-        },
-        {
-            className: "cod",
-            data: function (data,index,tr) {
-                let items = [{ "id": "0", "name": "No" }, { "id": "1", "name": "Yes" }];
-                let d = { "inputType": "select2", "data": data, "columnName": "cod", "readOnly": false, "combo_items": items, "valueMember": "id", "textMamber": "name", "defaultValue": 1 };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('COD', 'titles')
-        },
-        {
-            className: "df_payer",
-            data: function (data,index,tr) {
-                let items = [{ "name": "Sender" }, { "name": "Receiver" }];
-                let d = { "inputType": "select2", "data": data, "columnName": "df_payer", "readOnly": false, "combo_items": items, "valueMember": "name", "textMamber": "name", "defaultValue": "Sender" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Fee Payer', 'titles')
-        },
-        {
-            className: "fees",
-            data: function (data,index,tr) {
-                if (!data.fees) data.fees = parseFloat(data.base_fee) + parseFloat(data.delivery_fee);
-                data.fees = Number(data.fees).toFixed(2);
-                let d = { "inputType": "number", "data": data, "columnName": "fees", "readOnly": true, "defaultValue": 0 };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Fees', 'titles')
-        },
-        {
-            className: 'receiver_address',
-            data: function (data,index,tr) {
-                let d = { "inputType": "input", "data": data, "columnName": "receiver_address", "cssClass": "address", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Receiver Address', 'titles')
-        },
-        {
-            className: "base_fee",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "base_fee", "readOnly": true };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Base Fee', 'titles')
-        },
-        {
-            className: "delivery_fee",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "delivery_fee", "readOnly": true };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Additional', 'titles')
-        },
-        {
-            className: "size",
-            data: function (data,index,tr) {
-                if (data.size instanceof Object && data.size) {
-                    data.size = [data.size.length, ' ', data.size.width, ' ', data.size.height].join('');
-                }
-                let d = { "inputType": "input", "data": data, "columnName": "size", "readOnly": false, "placeholder": "eg: 10 9.5 11" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Size', 'titles')
-        },
-        {
-            className: "actual_kg",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "actual_kg", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Actual KG', 'titles')
-        },
-        {
-            className: "billed_kg",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "billed_kg", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Billed KG', 'titles')
-        },
-        {
-            className: 'total',
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "total", "readOnly": true };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Total', 'titles')
-        }
-    ];
-
-    this.elSender.on('change', (e) => {
-        let m = { 'sender_id': mThis.elSender.val() };
-        vsapi.call([mThis.base_url, '/api/getVendorAddress'].join(''), m).then(res => {
-            let address = "";
-            if (res.status_code === 200) address = StringSanitizer.sanitizeOut(address);
-            mThis.elPickupAddress.val(address);
-        });
-    });
-
-    mThis.btnSaveRequest.off('click').on('click', function (e) {
-        $(this).prop('disabled', true);
-
-        let p = mThis.getData();
-        if (!p) {
-            cv_interact.error("It seems data input is not correct!");
-            mThis.btnSaveRequest.prop('disabled', false);
-            return;
-        }
-
-        if (!p.request_date) p.request_date = '';
-        if (!p.pickup_date) p.pickup_date = '';
-
-        if (!p) {
-            mThis.btnSaveRequest.prop('disabled', false);
-            return;
-        }
-
-        vsapi.call([mThis.base_url, '/api/savePickupRequest'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                mThis.self.modal('hide');
-                mThis.btnSaveRequest.prop('disabled', false);
-
-                if (typeof mThis.onClose === 'function') mThis.onClose(true);
-            }
-            else {
-                mThis.btnSaveRequest.prop('disabled', false);
-                cv_interact.error(res.error_message);
-            }
-        });
-    });
-
-    mThis.tblPackages.on('blur', 'td.size>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-    });
-
-    mThis.tblPackages.on('blur', 'td.actual_kg>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-    });
-
-    this.setBilledKg = (tr, size_string) => {
-        if (!size_string) size_string = EditableTable.getCellValue(tr, 'size', false);
-        if (!size_string) return;
-        if (!size.length) return;
-
-        let size = DUtil.processPackageSize(size_string);
-        let kg = 0;
-        let b = size.length * size.width * size.height;
-        b = Number(b / 6015);
-        let actual_kg = EditableTable.getCellValue(tr, 'actual_kg',true);
-        if (b > actual_kg)
-            kg = b;
-        else
-            kg = actual_kg;
-        EditableTable.setCellValue(tr, 'billed_kg', kg);
-    }
-
-    mThis.btnAddPackage.off('click').on('click', function (e) {
-        e.preventDefault();
-        mThis.addPackageRow();
-    });
-
-    mThis.tblPackages.on('click', 'td.col_action a._pl_remove_package', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.packages = mThis.removePackageRow(tr);
-        tr.remove();
-    });
-
-    mThis.tblPackages.on('change', 'td.delivery_type>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'delivery_type');
-    });
-
-    mThis.tblPackages.on('change', 'td.zone_name>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'zone_name');
-    });
-
-    mThis.tblPackages.on('change', 'td.billed_kg>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'billed_kg');
-    });
-
-    mThis.tblPackages.on('keyup', 'td.actual_kg>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-        mThis.setDeliveryPrices(tr, 'actual_kg');
-    });
-
-    mThis.tblPackages.on('blur', 'td.size>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-        mThis.setDeliveryPrices(tr, 'size');
-    });
-
-    //Change Price td.price on "Create Order" form
-    mThis.tblPackages.on('change', 'td.price>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'price');
-    });
-
-    mThis.tblPackages.on('keyup', 'td.price>.col-input', function (e) {
-        setTimeout(() => {
-            let tr = $(this).closest('tr');
-            mThis.setDeliveryPrices(tr, 'price');
-        }, 300);
-
-    });
-
-    mThis.tblPackages.on('change', 'td.cod>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'cod');
-    });
-
-    mThis.tblPackages.on('change', 'td.df_payer>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'cod');
-    });
-
-    this.setDeliveryPrices = (tr, change_agent, error_span = null) => {
-        let sender_id = mThis.elSender.val();
-        let zone_code, billed_kg = 0, price = 0, cod;
-        let delivery_type = EditableTable.getCellValue(tr, 'delivery_type',false);
-        zone_code = EditableTable.getCellValue(tr, 'zone_name',false);
-        billed_kg = EditableTable.getCellValue(tr, 'billed_kg', true);
-
-        price = EditableTable.getCellValue(tr, 'price',true);
-        if (price > 0) {
-            cod = 1;
-        } else cod = 0; //EditableTable.getCellValue(tr, 'cod');
-
-        EditableTable.setCellValue(tr, 'cod', cod);
-
-        if (!delivery_type) delivery_type = mThis.elDeliveryType.val();
-        let p = { 'sender_id': sender_id, 'delivery_type': delivery_type, 'zone_code': zone_code, 'billed_kg': billed_kg, 'cod': cod };
-
-        vsapi.call([mThis.base_url, '/api/package/price-info'].join(''), p, null, false).then(res => {
-            if (res.status_code === 200) {
-                let d = StringSanitizer.sanitizeObject(res.data);
-                let base_fee = 0;
-                let delivery_fee = 0;
-                let cod_fee = 0;
-                EditableTable.setCellValue(tr, 'base_fee', d.base_fee);
-                EditableTable.setCellValue(tr, 'delivery_fee', Number(d.delivery_fee).toFixed(2));
-                price = EditableTable.getCellValue(tr, 'price', true);
-
-                base_fee = EditableTable.getCellValue(tr, 'base_fee', true);
-                delivery_fee = EditableTable.getCellValue(tr, 'delivery_fee', true);
-                let df_payer = (EditableTable.getCellValue(tr, 'df_payer', false) + '').toLowerCase();
-
-                if (cod == 0) {
-                    cod_fee = 0;
-                    price = 0;
-                }
-                else
-                    cod_fee = (price + base_fee + delivery_fee) * d.cod_fee_percent / 100;
-
-                EditableTable.setCellValue(tr, 'cod_fee', Number(cod_fee).toFixed(2));
-                let fees = base_fee + delivery_fee;
-                EditableTable.setCellValue(tr, 'fees', Number(fees).toFixed(2));
-                if (df_payer === 'sender') fees = 0;
-                let total = fees + price;
-                EditableTable.setCellValue(tr, 'total', total);
-                if (d.status === 'Error') {
-                    EditableTable.handlePriceError(tr, d, error_span);
-                }
-            }
-        });
-    }
-
-    this.validatePackage = (p) => {
-        if (Validator.isNullOrEmpty(p.receiver_phone)) {
-            return 'Some packages does not have receiver`s phone number';
-        }
-
-        if (Validator.isNullOrEmpty(p.zone_code)) {
-            return 'Some packages does not have destination zone name';
-        }
-
-        if (p.cod == 1) {
-            if (p.price <= 0 || !p.price) {
-                return 'In case of Cash On Delivery (COD), the package`s price cannot be zero';
-            }
-        }
-
-        if (p.base_fee > 0 || p.delivery_fee > 0) {
-            let dfp = (p.df_payer + '').toLowerCase();
-            if (dfp != 'sender' && dfp != 'receiver') {
-                return 'Delivery Fee Payer (DFP) must be Sender or Receiver';
-            }
-        }
-        return null;
-    }
-
-    this.setBilledKg = (tr, size_string = null) => {
-        if (!size_string) size_string = EditableTable.getCellValue(tr, 'size',false);
-        if (!size_string) return;
-        let size = DUtil.processPackageSize(size_string);
-        if (!size) {
-            return;
-        }
-        if (!size.length) return;
-        let kg = 0;
-        let b = size.length * size.width * size.height;
-        b = Number(b / 6015);
-        let actual_kg = EditableTable.getCellValue(tr, 'actual_kg',true);
-        if (b > actual_kg) kg = b; else kg = actual_kg;
-        EditableTable.setCellValue(tr, 'billed_kg', Number(kg).toFixed(2));
-    }
-
-    this.show = (option, onClose) => {
-        if (!option) option = {};
-        mThis.onClose = onClose;
-        mThis.sender_id = option.sender_id;
-        mThis.btnSaveRequest.prop('disabled', false);
-
-        let title_text = LocaleManager.trans('New Pickup Request');
-        mThis.elTitle.html(option.title ? option.title : title_text);
-        mThis.prepareFormData(null, () => {
-            mThis.elRequestDate.val(DateHelper.getTodayDate());
-            mThis.elDeliveryType.val('normal');
-            mThis.elVechicleType.val('moto bike');
-            mThis.displayPackages(null);
-            mThis.self.modal({
-                backdrop: 'static'
-            });
-        });
-
-    }
-
-    this.prepareFormData = (def, onFinish) => {
-        if (!def) def = {};
-        if (!def.delivery_condition) def.delivery_condition = 'None';
-        if (mThis.form_options) {
-            VSUtil.setComboItems(mThis.elSender, mThis.form_options.senders, 'id', 'name', true, '(Select a merchant)', def.sender_id);
-            VSUtil.setComboItems(mThis.elVechicleType, mThis.form_options.vehicle_types, 'code', 'vehicle_type', true, '(Select Vehicle Type)', def.request_vehicle_type);
-            VSUtil.setComboItems(mThis.elCondition, mThis.form_options.conditions, 'name', 'name', true, '(Select Condition)', def.delivery_condition);
-            VSUtil.setComboItems(mThis.elProductType, mThis.form_options.product_types, 'product_type', 'product_type', true, '(Select Product Type)', def.product_type);
-            onFinish();
-            return;
-        }
-        vsapi.call([mThis.base_url, '/api/getFormData_pickup_request'].join(''), null, null).then(res => {
-            if (res.status_code === 200) {
-                let data = res.data;
-                data.vehicle_types = StringSanitizer.sanitizeObject(data.vehicle_types);
-                data.conditions = StringSanitizer.sanitizeObject(data.conditions);
-                data.zones = StringSanitizer.sanitizeObject(data.zones);
-                data.senders = StringSanitizer.sanitizeObject(data.senders);
-                VSUtil.setComboItems(mThis.elSender, data.senders, 'id', 'name', true, '(Select a merchant)', def.sender_id);
-                VSUtil.setComboItems(mThis.elVechicleType, data.vehicle_types, 'code', 'vehicle_type', true, '(Select Vehicle Type)', def.request_vehicle_type);
-                VSUtil.setComboItems(mThis.elCondition, data.conditions, 'name', 'name', true, '(Select Condition)', def.delivery_condition);
-                VSUtil.setComboItems(mThis.elProductType, data.product_types, 'product_type', 'product_type', true, '(Select Product Type)', def.product_type);
-                mThis.form_options = data;
-                onFinish();
-            }
-        });
-    }
-
-    this.addPackageRow = () => {
-        let def_base_fee = 0;
-        if (mThis.senderInfo) def_base_fee = mThis.senderInfo.base_fee;
-        let row_data_blank = { 'barcode': null, 'zone_name': null, 'receiver_phone': null, 'price': 0, 'df_payer': 'sender', 'fees': 0, 'receiver_address': null, 'cod': 1, 'base_fee': 0, 'delivery_fee': 0, 'size': null, 'actual_kg': 0, 'billed_kg': 0, 'total': 0 };
-        let rows = mThis.getPackages();
-        rows.splice(0, 0, row_data_blank);
-        mThis.displayPackages(rows);
-    }
-
-    this.removePackageRow = (tr) => {
-        let rows = mThis.getPackages();
-        let index = tr.data('index');
-        rows.splice(index, 1);
-        mThis.elQty.val(rows.length);
-        return rows;
-    }
-
-    this.getData = function () {
-        let p = {};
-        p.order_id = mThis.order_id;
-        p.order_code = mThis.elOrderCode.val();
-        p.sender_id = mThis.elSender.val();
-        p.pickup_date = mThis.elPickupDate.val();
-        p.request_date = mThis.elRequestDate.val();
-        p.delivery_type = mThis.elDeliveryType.val();
-        p.delivery_condition = mThis.elCondition.val();
-        p.qty = mThis.elQty.val();
-        p.product_type = mThis.elProductType.val();
-        p.pickup_address = mThis.elPickupAddress.val();
-        p.request_vehicle_type = mThis.elVechicleType.val();
-
-        p.packages = mThis.getPackages(p.delivery_type);
-
-        let i = 0, c;
-        do {
-            c = p.packages[i];
-            if (!c) break;
-            let error = mThis.validatePackage(c);
-            if (error) {
-                cv_interact.error(error);
-                return null;
-            }
-            i++;
-        } while (c);
-        return p;
-    }
-
-    this.getPackages = (delivery_type) => {
-        let data = [];
-        mThis.tblPackages.find('>tbody>tr').each(function () {
-            let row = {};
-            let tr = $(this);
-            let btn_barcode = tr.find('td.col_action button._pl_print_barcode');
-            row.barcode = btn_barcode.data('barcode');
-            tr.find('td>.col-input').each(function () {
-                let x = $(this);
-                let col_name = x.data('field');
-
-                if (col_name == 'size') {
-                    row.size = DUtil.processPackageSize(x.val());
-                }
-                else {
-                    row[col_name] = x.val();
-                }
-            });
-            row.delivery_type = delivery_type;
-            if (!row.zone_code) row.zone_code = row.zone_name;
-            data.push(row);
-        });
-        return data;
-    }
-
-    this.displayPackages = function (data, onFinish, d) {
-        if (!data || !data[0]) {
-            data = [{ 'barcode': null, 'zone_name': null, 'receiver_phone': null, 'price': 0, 'base_fee': 0, 'delivery_fee': 0, 'df_payer': 'sender', 'cod': 1, 'size': '', 'actual_kg': 0, 'billed_kg': 0, 'cod_fee': 0 }];
-        }
-        if (mThis.table) {
-            mThis.tblPackages.DataTable().clear().destroy();
-            mThis.tblPackages.empty();
-            mThis.table = null;
-        }
-
-        let cnt = 1;
-        if (!mThis.table)
-            mThis.table = mThis.tblPackages.DataTable({
-                searching: false,
-                destroy: true,
-                paging: true,
-                pageLength: 5,
-                ordering: false,
-                scrollCollapse: true,
-                paging: false,
-                bLengthChange: false,
-                saveState: true,
-                processing: true,
-                language: {
-                    loadingRecords: '&nbsp;',
-                    processing: 'Loading...',
-                    emptyTable: "No pacakges found"
-                },
-                data: data,
-                columns: mThis.package_columns,
-                createdRow: function (row, data, dataIndex) {
-                    let tr = $(row);
-                    tr.data('pid', data.package_id);
-                    tr.data('senderid', data.sender_id);
-                    tr.data('barcode', data.barcode);
-
-                    let i = 0;
-                    tr.find('td').each(function () {
-                        let td = $(this);
-                        td.find('select.modal-select2').select2({
-                            width: '100%'
-                        });
-                        if (i == 0) td.css('min-width', '75px');
-                        else if (i == 1) td.css('min-width', '180px');
-                        else if (i == 2) td.css('min-width', '180px');
-                        else if (i > 0) td.css('min-width', '150px');
-                        i++;
-                    });
-                }
-            });
-
-        mThis.packages = data;
-        mThis.elQty.val(mThis.packages.length);
-        if (typeof onFinish == 'function') onFinish();
-    };
-}
-
-let PerformPickupDialog = new function () {
-    let mThis = this;
-    this.self = main_view.appContent.children('#_pl_dlgPerformPickup');
-    this.base_url = main_view.base_url;
-    this.elTitle = this.self.find('#_pl_dlgPerformPickupTitle');
-    this.lnkFindDriver = this.self.find('#_pl_pp_lnkFindDriver');
-    this.btnAddPackage = this.self.find('#_pl_pp_add_package');
-    this.btnPickup = this.self.find('#_pl_pp_btnPickup');
-    this.btnPickupOnArrival = this.self.find('#_pl_pp_btnPickOnArrival');
-
-    this.elDriver = this.self.find('#_pl_dd_driver');
-    this.elDriverCode = this.self.find('#_pl_dd_driver_code');
-
-    this.elOrderId = this.self.find('#_pl_dd_order_id');
-    this.elOrderCode = this.self.find('#_pl_dd_order_code');
-    this.elSenderId = this.self.find('#_pl_dd_sender_id');
-    this.elSenderName = this.self.find('#_pl_dd_sender_name');
-    this.elSenderCode = this.self.find('#_pl_dd_sender_code');
-    this.elPickupDate = this.self.find('#_pl_dd_pickup_date');
-    this.elDeliveryType = this.self.find('#_pl_dd_delivery_type');
-    this.elToWarehouse = this.self.find('#_pl_dd_to_warehouse');
-
-    this.elPickupContext = this.self.find('#_pl_dd_pickup_context');
-    this.elPickupType = this.self.find('#_pl_dd_pickup_type');
-    this.tblPackages = this.self.find('#_pl_dd_tblPackages');
-
-    this.package_columns = [
-        {
-            className: "col_action",
-            data: function (data,index,tr) {
-                return ['<div class="form-inline">',
-                    '<button type="button" class="_pl_print_barcode btn btn-sm btn-outline-primary disabled" data-barcode="', data.barcode, '" data-pid="', data.package_id, '" data-senderid="', data.sender_id, '"><i class="fa fa-list-alt" style="color:green"></i></button>&nbsp;',
-                    '<button type="button" class="_pl_remove_package btn btn-sm btn-outline-danger" data-barcode="', data.barcode, '" data-pid="', data.package_id, '"><i class="fa fa-times" style="color:orange"></i></button>',
-                    '</div>'].join('');
-            },
-            title: ''
-        },
-        {
-            className: "delivery_type",
-            data: function (data,index,tr) {
-                let items = [{ 'item_type': 'doc' }, { 'delivery_type': 'non-doc' }];
-                data.delivery_type = (data.delivery_type + '').toLowerCase();
-                let d = { "inputType": "select2", "data": data, "cssClass": "form-control", "columnName": "delivery_type", "combo_items": items, "valueMember": "delivery_type", "textMember": "delivery_type" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Delivery Type'
-        },
-        {
-            className: "zone_name",
-            data: function (data,index,tr) {
-                let d = { "inputType": "select2", "data": data, "cssClass": "modal-select2", "columnName": "zone_name", "combo_items": ShipmentsComponent.form_data.zones, "valueMember": "zone_code", "textMember": "zone_name" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Destination'
-        },
-        {
-            className: "receiver_phone",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "receiver_phone", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Receiver Phone'
-        },
-        {
-            className: "price",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "price", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Price'
-        },
-        {
-            className: "df_payer",
-            data: function (data,index,tr) {
-                let items = [{ "name": "Sender" }, { "name": "Receiver" }];
-                let d = { "inputType": "select2", "data": data, "columnName": "df_payer", "readOnly": false, "combo_items": items, "valueMember": "name", "textMamber": "name", "defaultValue": "Sender" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'DFP'
-        },
-        {
-            className: "fees",
-            data: function (data,index,tr) {
-                if (!data.fees) data.fees = parseFloat(data.base_fees) + parseFloat(data.delivery_fee);
-                data.fees = Number(data.fees).toFixed(2);
-                let d = { "inputType": "number", "data": data, "columnName": "fees", "readOnly": true, "defaultValue": 0 };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Fees'
-        },
-        {
-            className: "receiver_address",
-            data: function (data,index,tr) {
-                let d = { "inputType": "input", "data": data, "columnName": "receiver_address", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Receiver Address'
-        },
-        {
-            className: "cod",
-            data: function (data,index,tr) {
-                let items = [{ "id": "0", "name": "No" }, { "id": "1", "name": "Yes" }];
-                let d = { "inputType": "select2", "data": data, "columnName": "cod", "readOnly": false, "combo_items": items, "valueMember": "id", "textMamber": "name", "defaultValue": 1 };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'COD'
-        },
-        {
-            className: "base_fee",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "base_fee", "defaultValue": 0, "readOnly": true };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Base Fee'
-        },
-        {
-            className: "delivery_fee",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "delivery_fee", "defaultValue": 0, "readOnly": true };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Additional'
-        },
-        {
-            className: "size",
-            data: function (data,index,tr) {
-                if (data.size instanceof Object && data.size) {
-                    data.size = [data.size.length, ' ', data.size.width, ' ', data.size.height].join('');
-                }
-                let d = { "inputType": "input", "data": data, "columnName": "size", "readOnly": false, "defaultValue": null, "placeholder": "eg: 10 9.5 11" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Size'
-        },
-        {
-            className: "actual_kg",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "actual_kg", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Actual KG'
-        },
-        {
-            className: "billed_kg",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "billed_kg", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Billed KG'
-        }
-    ];
-
-    mThis.btnPickup.on('click', function (e) {
-        let pick_on_arrival = 0;
-        mThis.performPickup(pick_on_arrival, mThis.tr_row);
-    });
-
-    mThis.btnPickupOnArrival.on('click', function (e) {
-        let pick_on_arrival = 1;
-        mThis.performPickup(pick_on_arrival, mThis.tr_row);
-    });
-
-    mThis.btnPickup.on('mouseover', (e) => {
-        mThis.elPickupType.html('You are about to book pickup on behalf of a driver and goods not yet Arrive At Warehouse');
-        mThis.elPickupType.css('color', 'orange');
-    }).on('mouseleave', () => {
-        mThis.elPickupType.html(null);
-    });
-
-    mThis.btnPickupOnArrival.on('mouseover', (e) => {
-        mThis.elPickupType.html('You are about to book packages on Arrival At Warehouse');
-        mThis.elPickupType.css('color', 'green');
-    }).on('mouseleave', () => {
-        mThis.elPickupType.html(null);
-    });
-
-    mThis.elDriver.on('change', function (e) {
-        let driver_id = $(this).val();
-        mThis.btnPickup.prop('disabled', (driver_id <= 0 || !driver_id) ? true : false);
-
-        if (driver_id <= 0 || !driver_id) {
-            mThis.elPickupContext.html('The following packages are NOT picked up by an agent or driver');
-            mThis.elPickupContext.css('color', 'orange');
-        }
-        else {
-            let driver_name = mThis.elDriver.find('option:selected').text();
-            mThis.elPickupContext.html(['The following packages are picked up by an agent named ', driver_name].join(''));
-            mThis.elPickupContext.css('color', 'green');
-        }
-    });
-
-    mThis.lnkFindDriver.on('click', function (e) {
-        e.preventDefault();
-        let onClose = (ds) => {
-            if (ds[0]) {
-                let d = ds[0];
-                mThis.elDriver.val(d.id);
-                if (!mThis.elDriver.val()) {
-                    mThis.elDriver.append($('<option/>').val(d.id).text(d.name)).val(d.id);
-                }
-                mThis.elDriverCode.val(d.code);
-                mThis.elDriver.trigger('change');
-            }
-        };
-
-        let option = { 'title': 'Find Driver', 'role': 'driver', 'singleSelect': true, 'previousDialog': mThis.self };
-        FindPersonDialog.show(option, onClose);
-    });
-
-    mThis.btnAddPackage.on('click', function (e) {
-        e.preventDefault();
-        mThis.addPackageRow();
-    });
-
-    mThis.tblPackages.on('click', 'td.col_action button._pl_remove_package', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.packages = mThis.removePackageRow(tr);
-        tr.remove();
-    });
-
-    mThis.tblPackages.on('click', 'td.col_action a._pl_print_barcode', function (e) {
-        let barcode = $(this).data('barcode');
-        if (!barcode)
-            cv_interact.warning('Bar code is not yet created');
-        else
-            window.open([mThis.base_url, '/package_barcode/', barcode].join(''), '_blank');
-    });
-
-    mThis.tblPackages.on('change', 'td.delivery_type>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'delivery_type', mThis.elError);
-    });
-
-    mThis.tblPackages.on('change', 'td.zone_name>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'zone_name', mThis.elError);
-    });
-
-    mThis.tblPackages.on('change', 'td.billed_kg>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'billed_kg', mThis.elError);
-    });
-
-    mThis.tblPackages.on('keyup', 'td.actual_kg>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-        mThis.setDeliveryPrices(tr, 'actual_kg', mThis.elError);
-    });
-
-    mThis.tblPackages.on('blur', 'td.size>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-        mThis.setDeliveryPrices(tr, 'size', mThis.elError);
-    });
-
-    mThis.tblPackages.on('change', 'td.price>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'price', mThis.elError);
-    });
-
-    mThis.tblPackages.on('change', 'td.cod>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'cod', mThis.elError);
-    });
-
-    this.setDeliveryPrices = (tr, change_agent) => {
-        let sender_id = mThis.elSender.val();
-        let zone_code, billed_kg = 0, price = 0, cod;
-        zone_code = EditableTable.getCellValue(tr, 'zone_name',false);
-        let delivery_type = EditableTable.getCellValue(tr, 'delivery_type',false);
-        billed_kg = EditableTable.getCellValue(tr, 'billed_kg', true);
-        cod = EditableTable.getCellValue(tr, 'cod',true);
-
-        if (!sender_id) {
-            mThis.elError.html('សូមជ្រើសរើសអ្នកលក់ដើម្បីកំណត់តំលៃសេវា');
-            return;
-        }
-
-        if (!zone_code) {
-            mThis.elError.html('សូមជ្រើសរើសតំបន់ដើម្បីកំណត់តំលៃសេវា');
-            return;
-        }
-        if (!delivery_type) {
-            mThis.elError.html('សូមជ្រើសរើសប្រភេទសេវាដើម្បីកំណត់តំលៃសេវា');
-            return;
-        }
-        let p = { 'sender_id': sender_id, 'delivery_type': delivery_type, 'zone_code': zone_code, 'billed_kg': billed_kg, 'cod': cod };
-        vsapi.call([mThis.base_url, '/api/package/price-info'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                let d = StringSanitizer.sanitizeObject(res.data);
-                EditableTable.setCellValue(tr, 'base_fee', d.base_fee);
-                EditableTable.setCellValue(tr, 'delivery_fee', Number(d.delivery_fee).toFixed(2));
-                price = EditableTable.getCellValue(tr, 'price', true);
-
-                if (cod == 0)
-                    EditableTable.setCellValue(tr, 'cod_fee', 0);
-                else {
-                    let base_fee = EditableTable.getCellValue(tr, 'base_fee', true);
-                    let delivery_fee = EditableTable.getCellValue(tr, 'delivery_fee', true);
-                    let cod_fee = (price + base_fee + delivery_fee) * d.cod_fee_percent / 100;
-                    EditableTable.setCellValue(tr, 'cod_fee', Number(cod_fee).toFixed(2));
-                    let fees = base_fee + delivery_fee;
-                    EditableTable.setCellValue(tr, 'fees', Number(fees).toFixed(2));
-                }
-
-                if (d.status == 'Error') {
-                    EditableTable.handlePriceError(tr, d, mThis.elError);
-                }
-            } else cv_interact.warning(res.error_message);
-        });
-    }
-
-    this.validatePackage = (p) => {
-        let error = {};
-        if (Validator.isNullOrEmpty(p.receiver_phone)) {
-            error.message = 'Some packages does not have receiver`s phone number';
-            return error;
-        }
-        if (Validator.isNullOrEmpty(p.zone_code)) {
-            error.message = 'Some packages does not have a correct destination Zone';
-            return error;
-        }
-
-        if (p.cod == 1) {
-            if (p.price <= 0 || !p.price) {
-                error.message = 'In case of Cash On Delivery (COD), the package`s price cannot be zero';
-                return error;
-            }
-        }
-        if (p.delivery_fee > 0) {
-            let dfp = (p.df_payer + '').toLowerCase();
-            if (dfp != 'sender' && dfp != 'receiver') {
-                error.message = 'Delivery Fee Payer (DFP) must be Sender or Receiver';
-                return error;
-            }
-        }
-        return null;
-    }
-
-    this.setBilledKg = (tr, size_string) => {
-        if (!size_string) size_string = EditableTable.getCellValue(tr, 'size',false);
-        if (!size_string) return;
-        let size = DUtil.processPackageSize(size_string);
-        if (!size.length) return;
-        let kg = 0;
-        let b = size.length * size.width * size.height;
-        b = Number(b / 6015);
-        let actual_kg = EditableTable.getCellValue(tr, 'actual_kg',true);
-        if (b > actual_kg)
-            kg = b;
-        else
-            kg = actual_kg;
-        EditableTable.setCellValue(tr, 'billed_kg', kg);
-    }
-
-    this.show = (option, onClose) => {
-        if (!option) option = {};
-        mThis.onClose = onClose;
-        mThis.order_id = option.order_id;
-        mThis.sender_id = option.sender_id;
-        mThis.tr_row = option.tr_row;
-        mThis.elTitle.html(option.title ? option.title : ' Perform Pickup');
-
-        mThis.prepareFormData({ 'driver_id': 0 });
-        mThis.elPickupContext.html(null);
-        if (mThis.order_id > 0) {
-            mThis.loadOrderInfo(mThis.order_id, function (e) {
-                mThis.self.modal({
-                    backdrop: 'static'
-                });
-            });
-        }
-    }
-
-    this.prepareFormData = (def, onFinish) => {
-        if (!def) def = {};
-        def.warehouse_id = main_view.DEF_TO_WAREHOUSE_ID;
-        VSUtil.setComboItems(mThis.elToWarehouse, ShipmentsComponent.form_data.warehouses, 'id', 'warehouse_name', false, null, def.warehouse_id);
-        vsapi.call([mThis.base_url, '/api/getComboItems_driver'].join(''), null).then(res => {
-            if (res.status_code === 200) {
-                let rows = StringSanitizer.sanitizeObject(res.data);
-                let text1 = LocaleManager.trans('Not picked by driver');
-                VSUtil.setComboItems(mThis.elDriver, rows, 'id', 'driver_name', true, `(${text1})`, def.driver_id);
-                if (typeof onFinish === 'function') onFinish();
-            }
-        });
-    }
-
-    this.loadOrderInfo = (order_id, onFinish) => {
-        let p = { 'order_id': order_id ? order_id : 0, "context": "0" };
-        vsapi.call([mThis.base_url, '/api/order/info'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                let d = StringSanitizer.sanitizeObject(res.data);
-                let packages = d.packages ? d.packages : [];
-                packages = StringSanitizer.sanitizeObject(packages);
-
-                mThis.order_id = d.order_id;
-                mThis.elOrderCode.val(d.order_code);
-                mThis.elSenderName.val(d.sender_name);
-                mThis.elSenderId.val(d.sender_id);
-                mThis.elSenderCode.val(d.sender_code);
-                mThis.displayPackages(packages, null);
-                if (typeof onFinish == 'function') onFinish();
-            }
-        });
-    }
-
-    this.performPickup = (pick_on_arrival = false, tr = null) => {
-        let p = mThis.getData();
-        if (!p) return;
-        if (!p.pickup_date) p.pickup_date = '';
-        if (!p.driver_id) p.driver_id = 0;
-        p.pick_on_arrival = (pick_on_arrival == true) ? 1 : 0;
-
-        vsapi.call([mThis.base_url, '/api/performPickup'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-
-                let d = StringSanitizer.sanitizeObject(res.data);
-
-                mThis.self.modal('hide');
-                if (typeof mThis.onClose == 'function') mThis.onClose(true);
-                if (d.error_count > 0) {
-                    let i = 0, c;
-                    let html = null;
-                    do {
-                        c = d.errors[i];
-                        if (!c) break;
-                        html = [html, '<li><span style="color:red;">', c, '</span></li>'].join('');
-                        i++;
-                    } while (c);
-                    if (d.success_count > 0) {
-                        if (html) html = ['<span style="color:red;font-weight:bold">There are ', (i + 1), ' problems as follows:</span><br><ul>', html, '</ul>'].join('');
-                        cv_interact.warning(html);
-                    }
-                    else {
-                        if (html) html = ['<span style="color:red;font-weight:bold">No packages are picked up. See the following problems:</span><br><ul>', html, '</ul>'].join('');
-                        cv_interact.warning(html);
-                    }
-                } else if (d.success_count > 0) {
-                    if (pick_on_arrival == 1) {
-                        tr.remove();
-                    }
-                    cv_interact.success(['<span style="font-weight:bold;color:green">Pickup action succeeded!'].join(''));
-                }
-                else cv_interact.warning(['<span style="font-weight:bold;color:red">', d.success_count ? d.success_count : 0, ' packages received'].join(''));
-                if (d.success_count > 0) ShipmentsComponent.updatePickupStatus(tr, { 'status_id': d.status_id, 'status': d.status, 'completed': d.completed });
-            }
-        });
-    }
-
-    this.addPackageRow = () => {
-        let row_data_blank = { 'barcode': null, 'zone_name': null, 'receiver_phone': null, 'price': 0, 'df_payer': 'sender', 'fees': 0, 'receiver_address': null, 'cod': 1, 'base_fee': 0, 'delivery_fee': 0, 'size': null, 'actual_kg': 0, 'billed_kg': 0 };
-        let rows = mThis.getPackages();
-        rows.splice(0, 0, row_data_blank);
-        mThis.displayPackages(rows);
-    }
-
-    this.removePackageRow = (tr) => {
-        let rows = mThis.getPackages();
-        let index = tr.data('index');
-        rows.splice(index, 1);
-        return rows;
-    }
-
-    this.getData = function () {
-        let p = {};
-        p.order_id = mThis.order_id;
-        p.order_code = mThis.elOrderCode.val();
-        p.sender_id = mThis.elSenderId.val();
-        p.sender_code = mThis.elSenderCode.val();
-        p.pickup_date = mThis.elPickupDate.val();
-        p.to_warehouse_id = mThis.elToWarehouse.val();
-        p.packages = mThis.getPackages(p.to_warehouse_id, p.delivery_type);
-
-        let i = 0, c;
-        do {
-            c = p.packages[i];
-            if (!c) break;
-            let error = mThis.validatePackage(c);
-            if (error) {
-                cv_interact.error(error.message);
-                return null;
-            }
-            i++;
-        } while (c);
-        p.size = DUtil.processPackageSize(p.size);
-        return p;
-    }
-
-    this.getPackages = (to_warehouse_id) => {
-        let data = [];
-        mThis.tblPackages.find('tbody>tr').each(function () {
-            let row = {};
-            let tr = $(this);
-            let btn_barcode = tr.find('td.col_action a._pl_print_barcode');
-            row.barcode = btn_barcode.data('barcode');
-            row.to_warehouse_id = to_warehouse_id;
-            tr.find('td>.col-input').each(function () {
-                let x = $(this);
-                let col_name = x.data('field');
-                if (col_name == 'size') {
-                    row['size'] = DUtil.processPackageSize(x.val());
-                }
-                else {
-                    row[col_name] = x.val();
-                }
-            });
-
-            if (!row.zone_code) row.zone_code = row.zone_name;
-            data.push(row);
-        });
-        return data;
-    }
-
-    this.displayPackages = function (data, onFinish, d) {
-        if (!data || !data[0]) {
-            data = [{ 'barcode': null, 'delivery_type': 'normal', 'zone_name': null, 'receiver_phone': null, 'price': 0, 'df_payer': 'sender', 'fees': 0, 'receiver_address': null, 'cod': 1, 'size': null, 'actual_kg': 0, 'billed_kg': 0, 'delivery_fee': 0, 'cod_fee': 0, 'forwarding_cost': '0' }];
-        }
-
-        if (mThis.table) {
-            mThis.tblPackages.DataTable().clear().destroy();
-            mThis.tblPackages.empty();
-            mThis.table = null;
-        }
-
-        if (!mThis.table)
-            mThis.table = mThis.tblPackages.DataTable({
-                searching: false,
-                destroy: true,
-                'ordering': false,
-                scrollCollapse: true,
-                paging: false,
-                bLengthChange: false,
-                saveState: true,
-                'processing': true,
-                'language': {
-                    'loadingRecords': '&nbsp;',
-                    'processing': 'Loading...',
-                    "emptyTable": "No pacakges found"
-                },
-                data: data,
-                columns: mThis.package_columns,
-                "createdRow": function (row, data, dataIndex) {
-                    let tr = $(row);
-                    tr.data('pid', data.package_id);
-                    tr.data('senderid', data.sender_id);
-                    tr.data('barcode', data.barcode);
-                    let i = 0;
-                    tr.find('td').each(function () {
-                        let td = $(this);
-                        if (i == 1 || i == 2) {
-                            td.find('select.modal-select2').select2({ width: '100%' });
-                        }
-
-                        if (i == 0) td.css('min-width', '75px');
-                        else if (i == 1) td.css('min-width', '180px');
-                        else if (i == 2) td.css('min-width', '180px');
-                        else if (i == 3) td.css('min-width', '180px');
-                        else if (i > 0) td.css('min-width', '130px');
-                        i++;
-                    });
-                }
-            });
-
-        mThis.packages = data;
-        if (typeof onFinish == 'function') onFinish();
-    };
-}
+// let PickupRequestDialog = new function () {
+//     let mThis = this;
+//     this.self = main_view.appContent.children('#_pl_dlgPickupRequest');
+//     this.model_body = this.self.find('#_pl_dlgPickupRequest');
+//     this.base_url = main_view.base_url;
+//     this.elTitle = this.self.find('#_pl_dlgPickupRequestTitle');
+
+//     this.btnAddPackage = this.self.find('#_pl_pr_add_package');
+//     this.btnSaveRequest = this.self.find('#_pl_pr_btnSaveRequest');
+
+//     this.elOrderId = this.self.find('#_pl_pr_order_id');
+//     this.elOrderCode = this.self.find('#_pl_pr_order_code');
+
+//     this.elSender = this.self.find('#_pl_pr_sender');
+
+//     this.elSenderId = this.self.find('#_pl_pr_sender_id');
+//     this.elSenderName = this.self.find('#_pl_pr_sender_name');
+//     this.elSenderCode = this.self.find('#_pl_pr_sender_code');
+//     this.elSenderId = this.self.find('#_pl_pr_sender_id');
+
+//     this.elRequestDate = this.self.find('#_pl_pr_request_date');
+//     this.elPickupDate = this.self.find('#_pl_pr_pickup_date');
+
+//     this.elVechicleType = this.self.find('#_pl_pr_vehicle_type');
+//     this.elCondition = this.self.find('#_pl_pr_delivery_condition');
+//     this.elDeliveryType = this.self.find('#_pl_pr_delivery_type');
+//     this.elProductType = this.self.find('#_pl_pr_product_type');
+//     this.elPickupAddress = this.self.find('#_pl_pr_pickup_address');
+//     this.elQty = this.self.find('#_pl_pr_qty');
+//     this.lnkFindSender = this.self.find('#_pl_pr_lnkFindSender');
+//     this.tblPackages = this.self.find('#_pl_pr_tblPackages');
+
+//     this.package_columns = [
+//         {
+//             className: "col_action",
+//             data: function (data,index,tr) {
+//                 return ['<div class="d-flex align-items-center gap-3">',
+//                     '<a href="javascript:void(0)" class="_pl_pr_print_barcode disabled" data-barcode="', data.barcode, '" data-pid="', data.package_id, '" data-senderid="', data.sender_id, '"><i class="fa fa-list-alt fs-5 text-success"></i></a>',
+//                     '<a href="javascript:void(0)" class="_pl_remove_package" data-barcode="', data.barcode, '" data-pid="', data.package_id, '"><i class="fa fa-times fs-5 text-warning"></i></a>',
+//                     '</div>'].join('');
+//             },
+//             title: ''
+//         },
+//         {
+//             className: "zone_name",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "select2", "data": data, "columnName": "zone_name", "cssClass": "modal-select2", "combo_items": mThis.form_options.zones, "valueMember": "zone_code", "textMember": "zone_name" };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('Zone', 'titles')
+//         },
+//         {
+//             className: "receiver_phone",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "receiver_phone", "cssClass": "phone", "readOnly": false };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('Receiver Phone', 'titles')
+//         },
+//         {
+//             className: "price",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "price", "readOnly": false };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('Price', 'titles')
+//         },
+//         {
+//             className: "cod",
+//             data: function (data,index,tr) {
+//                 let items = [{ "id": "0", "name": "No" }, { "id": "1", "name": "Yes" }];
+//                 let d = { "inputType": "select2", "data": data, "columnName": "cod", "readOnly": false, "combo_items": items, "valueMember": "id", "textMamber": "name", "defaultValue": 1 };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('COD', 'titles')
+//         },
+//         {
+//             className: "df_payer",
+//             data: function (data,index,tr) {
+//                 let items = [{ "name": "Sender" }, { "name": "Receiver" }];
+//                 let d = { "inputType": "select2", "data": data, "columnName": "df_payer", "readOnly": false, "combo_items": items, "valueMember": "name", "textMamber": "name", "defaultValue": "Sender" };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('Fee Payer', 'titles')
+//         },
+//         {
+//             className: "fees",
+//             data: function (data,index,tr) {
+//                 if (!data.fees) data.fees = parseFloat(data.base_fee) + parseFloat(data.delivery_fee);
+//                 data.fees = Number(data.fees).toFixed(2);
+//                 let d = { "inputType": "number", "data": data, "columnName": "fees", "readOnly": true, "defaultValue": 0 };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('Fees', 'titles')
+//         },
+//         {
+//             className: 'receiver_address',
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "input", "data": data, "columnName": "receiver_address", "cssClass": "address", "readOnly": false };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('Receiver Address', 'titles')
+//         },
+//         {
+//             className: "base_fee",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "base_fee", "readOnly": true };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('Base Fee', 'titles')
+//         },
+//         {
+//             className: "delivery_fee",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "delivery_fee", "readOnly": true };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('Additional', 'titles')
+//         },
+//         {
+//             className: "size",
+//             data: function (data,index,tr) {
+//                 if (data.size instanceof Object && data.size) {
+//                     data.size = [data.size.length, ' ', data.size.width, ' ', data.size.height].join('');
+//                 }
+//                 let d = { "inputType": "input", "data": data, "columnName": "size", "readOnly": false, "placeholder": "eg: 10 9.5 11" };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('Size', 'titles')
+//         },
+//         {
+//             className: "actual_kg",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "actual_kg", "readOnly": false };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('Actual KG', 'titles')
+//         },
+//         {
+//             className: "billed_kg",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "billed_kg", "readOnly": false };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('Billed KG', 'titles')
+//         },
+//         {
+//             className: 'total',
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "total", "readOnly": true };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: LocaleManager.trans('Total', 'titles')
+//         }
+//     ];
+
+//     this.elSender.on('change', (e) => {
+//         let m = { 'sender_id': mThis.elSender.val() };
+//         vsapi.call([mThis.base_url, '/api/getVendorAddress'].join(''), m).then(res => {
+//             let address = "";
+//             if (res.status_code === 200) address = StringSanitizer.sanitizeOut(address);
+//             mThis.elPickupAddress.val(address);
+//         });
+//     });
+
+//     mThis.btnSaveRequest.off('click').on('click', function (e) {
+//         $(this).prop('disabled', true);
+
+//         let p = mThis.getData();
+//         if (!p) {
+//             cv_interact.error("It seems data input is not correct!");
+//             mThis.btnSaveRequest.prop('disabled', false);
+//             return;
+//         }
+
+//         if (!p.request_date) p.request_date = '';
+//         if (!p.pickup_date) p.pickup_date = '';
+
+//         if (!p) {
+//             mThis.btnSaveRequest.prop('disabled', false);
+//             return;
+//         }
+
+//         vsapi.call([mThis.base_url, '/api/savePickupRequest'].join(''), p).then(res => {
+//             if (res.status_code === 200) {
+//                 mThis.self.modal('hide');
+//                 mThis.btnSaveRequest.prop('disabled', false);
+
+//                 if (typeof mThis.onClose === 'function') mThis.onClose(true);
+//             }
+//             else {
+//                 mThis.btnSaveRequest.prop('disabled', false);
+//                 cv_interact.error(res.error_message);
+//             }
+//         });
+//     });
+
+//     mThis.tblPackages.on('blur', 'td.size>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setBilledKg(tr);
+//     });
+
+//     mThis.tblPackages.on('blur', 'td.actual_kg>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setBilledKg(tr);
+//     });
+
+//     this.setBilledKg = (tr, size_string) => {
+//         if (!size_string) size_string = EditableTable.getCellValue(tr, 'size', false);
+//         if (!size_string) return;
+//         if (!size.length) return;
+
+//         let size = DUtil.processPackageSize(size_string);
+//         let kg = 0;
+//         let b = size.length * size.width * size.height;
+//         b = Number(b / 6015);
+//         let actual_kg = EditableTable.getCellValue(tr, 'actual_kg',true);
+//         if (b > actual_kg)
+//             kg = b;
+//         else
+//             kg = actual_kg;
+//         EditableTable.setCellValue(tr, 'billed_kg', kg);
+//     }
+
+//     mThis.btnAddPackage.off('click').on('click', function (e) {
+//         e.preventDefault();
+//         mThis.addPackageRow();
+//     });
+
+//     mThis.tblPackages.on('click', 'td.col_action a._pl_remove_package', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.packages = mThis.removePackageRow(tr);
+//         tr.remove();
+//     });
+
+//     mThis.tblPackages.on('change', 'td.delivery_type>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setDeliveryPrices(tr, 'delivery_type');
+//     });
+
+//     mThis.tblPackages.on('change', 'td.zone_name>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setDeliveryPrices(tr, 'zone_name');
+//     });
+
+//     mThis.tblPackages.on('change', 'td.billed_kg>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setDeliveryPrices(tr, 'billed_kg');
+//     });
+
+//     mThis.tblPackages.on('keyup', 'td.actual_kg>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setBilledKg(tr);
+//         mThis.setDeliveryPrices(tr, 'actual_kg');
+//     });
+
+//     mThis.tblPackages.on('blur', 'td.size>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setBilledKg(tr);
+//         mThis.setDeliveryPrices(tr, 'size');
+//     });
+
+//     //Change Price td.price on "Create Order" form
+//     mThis.tblPackages.on('change', 'td.price>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setDeliveryPrices(tr, 'price');
+//     });
+
+//     mThis.tblPackages.on('keyup', 'td.price>.col-input', function (e) {
+//         setTimeout(() => {
+//             let tr = $(this).closest('tr');
+//             mThis.setDeliveryPrices(tr, 'price');
+//         }, 300);
+
+//     });
+
+//     mThis.tblPackages.on('change', 'td.cod>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setDeliveryPrices(tr, 'cod');
+//     });
+
+//     mThis.tblPackages.on('change', 'td.df_payer>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setDeliveryPrices(tr, 'cod');
+//     });
+
+//     this.setDeliveryPrices = (tr, change_agent, error_span = null) => {
+//         let sender_id = mThis.elSender.val();
+//         let zone_code, billed_kg = 0, price = 0, cod;
+//         let delivery_type = EditableTable.getCellValue(tr, 'delivery_type',false);
+//         zone_code = EditableTable.getCellValue(tr, 'zone_name',false);
+//         billed_kg = EditableTable.getCellValue(tr, 'billed_kg', true);
+
+//         price = EditableTable.getCellValue(tr, 'price',true);
+//         if (price > 0) {
+//             cod = 1;
+//         } else cod = 0; //EditableTable.getCellValue(tr, 'cod');
+
+//         EditableTable.setCellValue(tr, 'cod', cod);
+
+//         if (!delivery_type) delivery_type = mThis.elDeliveryType.val();
+//         let p = { 'sender_id': sender_id, 'delivery_type': delivery_type, 'zone_code': zone_code, 'billed_kg': billed_kg, 'cod': cod };
+
+//         vsapi.call([mThis.base_url, '/api/package/price-info'].join(''), p, null, false).then(res => {
+//             if (res.status_code === 200) {
+//                 let d = StringSanitizer.sanitizeObject(res.data);
+//                 let base_fee = 0;
+//                 let delivery_fee = 0;
+//                 let cod_fee = 0;
+//                 EditableTable.setCellValue(tr, 'base_fee', d.base_fee);
+//                 EditableTable.setCellValue(tr, 'delivery_fee', Number(d.delivery_fee).toFixed(2));
+//                 price = EditableTable.getCellValue(tr, 'price', true);
+
+//                 base_fee = EditableTable.getCellValue(tr, 'base_fee', true);
+//                 delivery_fee = EditableTable.getCellValue(tr, 'delivery_fee', true);
+//                 let df_payer = (EditableTable.getCellValue(tr, 'df_payer', false) + '').toLowerCase();
+
+//                 if (cod == 0) {
+//                     cod_fee = 0;
+//                     price = 0;
+//                 }
+//                 else
+//                     cod_fee = (price + base_fee + delivery_fee) * d.cod_fee_percent / 100;
+
+//                 EditableTable.setCellValue(tr, 'cod_fee', Number(cod_fee).toFixed(2));
+//                 let fees = base_fee + delivery_fee;
+//                 EditableTable.setCellValue(tr, 'fees', Number(fees).toFixed(2));
+//                 if (df_payer === 'sender') fees = 0;
+//                 let total = fees + price;
+//                 EditableTable.setCellValue(tr, 'total', total);
+//                 if (d.status === 'Error') {
+//                     EditableTable.handlePriceError(tr, d, error_span);
+//                 }
+//             }
+//         });
+//     }
+
+//     this.validatePackage = (p) => {
+//         if (Validator.isNullOrEmpty(p.receiver_phone)) {
+//             return 'Some packages does not have receiver`s phone number';
+//         }
+
+//         if (Validator.isNullOrEmpty(p.zone_code)) {
+//             return 'Some packages does not have destination zone name';
+//         }
+
+//         if (p.cod == 1) {
+//             if (p.price <= 0 || !p.price) {
+//                 return 'In case of Cash On Delivery (COD), the package`s price cannot be zero';
+//             }
+//         }
+
+//         if (p.base_fee > 0 || p.delivery_fee > 0) {
+//             let dfp = (p.df_payer + '').toLowerCase();
+//             if (dfp != 'sender' && dfp != 'receiver') {
+//                 return 'Delivery Fee Payer (DFP) must be Sender or Receiver';
+//             }
+//         }
+//         return null;
+//     }
+
+//     this.setBilledKg = (tr, size_string = null) => {
+//         if (!size_string) size_string = EditableTable.getCellValue(tr, 'size',false);
+//         if (!size_string) return;
+//         let size = DUtil.processPackageSize(size_string);
+//         if (!size) {
+//             return;
+//         }
+//         if (!size.length) return;
+//         let kg = 0;
+//         let b = size.length * size.width * size.height;
+//         b = Number(b / 6015);
+//         let actual_kg = EditableTable.getCellValue(tr, 'actual_kg',true);
+//         if (b > actual_kg) kg = b; else kg = actual_kg;
+//         EditableTable.setCellValue(tr, 'billed_kg', Number(kg).toFixed(2));
+//     }
+
+//     this.show = (option, onClose) => {
+//         if (!option) option = {};
+//         mThis.onClose = onClose;
+//         mThis.sender_id = option.sender_id;
+//         mThis.btnSaveRequest.prop('disabled', false);
+
+//         let title_text = LocaleManager.trans('New Pickup Request');
+//         mThis.elTitle.html(option.title ? option.title : title_text);
+//         mThis.prepareFormData(null, () => {
+//             mThis.elRequestDate.val(DateHelper.getTodayDate());
+//             mThis.elDeliveryType.val('normal');
+//             mThis.elVechicleType.val('moto bike');
+//             mThis.displayPackages(null);
+//             mThis.self.modal({
+//                 backdrop: 'static'
+//             });
+//         });
+
+//     }
+
+//     this.prepareFormData = (def, onFinish) => {
+//         if (!def) def = {};
+//         if (!def.delivery_condition) def.delivery_condition = 'None';
+//         if (mThis.form_options) {
+//             VSUtil.setComboItems(mThis.elSender, mThis.form_options.senders, 'id', 'name', true, '(Select a merchant)', def.sender_id);
+//             VSUtil.setComboItems(mThis.elVechicleType, mThis.form_options.vehicle_types, 'code', 'vehicle_type', true, '(Select Vehicle Type)', def.request_vehicle_type);
+//             VSUtil.setComboItems(mThis.elCondition, mThis.form_options.conditions, 'name', 'name', true, '(Select Condition)', def.delivery_condition);
+//             VSUtil.setComboItems(mThis.elProductType, mThis.form_options.product_types, 'product_type', 'product_type', true, '(Select Product Type)', def.product_type);
+//             onFinish();
+//             return;
+//         }
+//         vsapi.call([mThis.base_url, '/api/getFormData_pickup_request'].join(''), null, null).then(res => {
+//             if (res.status_code === 200) {
+//                 let data = res.data;
+//                 data.vehicle_types = StringSanitizer.sanitizeObject(data.vehicle_types);
+//                 data.conditions = StringSanitizer.sanitizeObject(data.conditions);
+//                 data.zones = StringSanitizer.sanitizeObject(data.zones);
+//                 data.senders = StringSanitizer.sanitizeObject(data.senders);
+//                 VSUtil.setComboItems(mThis.elSender, data.senders, 'id', 'name', true, '(Select a merchant)', def.sender_id);
+//                 VSUtil.setComboItems(mThis.elVechicleType, data.vehicle_types, 'code', 'vehicle_type', true, '(Select Vehicle Type)', def.request_vehicle_type);
+//                 VSUtil.setComboItems(mThis.elCondition, data.conditions, 'name', 'name', true, '(Select Condition)', def.delivery_condition);
+//                 VSUtil.setComboItems(mThis.elProductType, data.product_types, 'product_type', 'product_type', true, '(Select Product Type)', def.product_type);
+//                 mThis.form_options = data;
+//                 onFinish();
+//             }
+//         });
+//     }
+
+//     this.addPackageRow = () => {
+//         let def_base_fee = 0;
+//         if (mThis.senderInfo) def_base_fee = mThis.senderInfo.base_fee;
+//         let row_data_blank = { 'barcode': null, 'zone_name': null, 'receiver_phone': null, 'price': 0, 'df_payer': 'sender', 'fees': 0, 'receiver_address': null, 'cod': 1, 'base_fee': 0, 'delivery_fee': 0, 'size': null, 'actual_kg': 0, 'billed_kg': 0, 'total': 0 };
+//         let rows = mThis.getPackages();
+//         rows.splice(0, 0, row_data_blank);
+//         mThis.displayPackages(rows);
+//     }
+
+//     this.removePackageRow = (tr) => {
+//         let rows = mThis.getPackages();
+//         let index = tr.data('index');
+//         rows.splice(index, 1);
+//         mThis.elQty.val(rows.length);
+//         return rows;
+//     }
+
+//     this.getData = function () {
+//         let p = {};
+//         p.order_id = mThis.order_id;
+//         p.order_code = mThis.elOrderCode.val();
+//         p.sender_id = mThis.elSender.val();
+//         p.pickup_date = mThis.elPickupDate.val();
+//         p.request_date = mThis.elRequestDate.val();
+//         p.delivery_type = mThis.elDeliveryType.val();
+//         p.delivery_condition = mThis.elCondition.val();
+//         p.qty = mThis.elQty.val();
+//         p.product_type = mThis.elProductType.val();
+//         p.pickup_address = mThis.elPickupAddress.val();
+//         p.request_vehicle_type = mThis.elVechicleType.val();
+
+//         p.packages = mThis.getPackages(p.delivery_type);
+
+//         let i = 0, c;
+//         do {
+//             c = p.packages[i];
+//             if (!c) break;
+//             let error = mThis.validatePackage(c);
+//             if (error) {
+//                 cv_interact.error(error);
+//                 return null;
+//             }
+//             i++;
+//         } while (c);
+//         return p;
+//     }
+
+//     this.getPackages = (delivery_type) => {
+//         let data = [];
+//         mThis.tblPackages.find('>tbody>tr').each(function () {
+//             let row = {};
+//             let tr = $(this);
+//             let btn_barcode = tr.find('td.col_action button._pl_print_barcode');
+//             row.barcode = btn_barcode.data('barcode');
+//             tr.find('td>.col-input').each(function () {
+//                 let x = $(this);
+//                 let col_name = x.data('field');
+
+//                 if (col_name == 'size') {
+//                     row.size = DUtil.processPackageSize(x.val());
+//                 }
+//                 else {
+//                     row[col_name] = x.val();
+//                 }
+//             });
+//             row.delivery_type = delivery_type;
+//             if (!row.zone_code) row.zone_code = row.zone_name;
+//             data.push(row);
+//         });
+//         return data;
+//     }
+
+  
+// }
+
+// let PerformPickupDialog = new function () {
+//     let mThis = this;
+//     this.self = main_view.appContent.children('#_pl_dlgPerformPickup');
+//     this.base_url = main_view.base_url;
+//     this.elTitle = this.self.find('#_pl_dlgPerformPickupTitle');
+//     this.lnkFindDriver = this.self.find('#_pl_pp_lnkFindDriver');
+//     this.btnAddPackage = this.self.find('#_pl_pp_add_package');
+//     this.btnPickup = this.self.find('#_pl_pp_btnPickup');
+//     this.btnPickupOnArrival = this.self.find('#_pl_pp_btnPickOnArrival');
+
+//     this.elDriver = this.self.find('#_pl_dd_driver');
+//     this.elDriverCode = this.self.find('#_pl_dd_driver_code');
+
+//     this.elOrderId = this.self.find('#_pl_dd_order_id');
+//     this.elOrderCode = this.self.find('#_pl_dd_order_code');
+//     this.elSenderId = this.self.find('#_pl_dd_sender_id');
+//     this.elSenderName = this.self.find('#_pl_dd_sender_name');
+//     this.elSenderCode = this.self.find('#_pl_dd_sender_code');
+//     this.elPickupDate = this.self.find('#_pl_dd_pickup_date');
+//     this.elDeliveryType = this.self.find('#_pl_dd_delivery_type');
+//     this.elToWarehouse = this.self.find('#_pl_dd_to_warehouse');
+
+//     this.elPickupContext = this.self.find('#_pl_dd_pickup_context');
+//     this.elPickupType = this.self.find('#_pl_dd_pickup_type');
+//     this.tblPackages = this.self.find('#_pl_dd_tblPackages');
+
+//     this.package_columns = [
+//         {
+//             className: "col_action",
+//             data: function (data,index,tr) {
+//                 return ['<div class="form-inline">',
+//                     '<button type="button" class="_pl_print_barcode btn btn-sm btn-outline-primary disabled" data-barcode="', data.barcode, '" data-pid="', data.package_id, '" data-senderid="', data.sender_id, '"><i class="fa fa-list-alt" style="color:green"></i></button>&nbsp;',
+//                     '<button type="button" class="_pl_remove_package btn btn-sm btn-outline-danger" data-barcode="', data.barcode, '" data-pid="', data.package_id, '"><i class="fa fa-times" style="color:orange"></i></button>',
+//                     '</div>'].join('');
+//             },
+//             title: ''
+//         },
+//         {
+//             className: "item_type",
+//             data: function (data,index,tr) {
+//                 let items = [{ 'item_type': 'doc' }, { 'delivery_type': 'non-doc' }];
+//                 data.item_type = (data.item_type + '').toLowerCase();
+//                 let d = { "inputType": "select2", "data": data, "cssClass": "", "columnName": "item_type", "combo_items": items, "valueMember": "item_type", "textMember": "item_type" };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'Item Type'
+//         },
+//         {
+//             className: "zone_name",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "select2", "data": data, "cssClass": "modal-select2", "columnName": "zone_name", "combo_items": ShipmentsComponent.form_data.zones, "valueMember": "zone_code", "textMember": "zone_name" };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'Destination'
+//         },
+//         {
+//             className: "receiver_phone",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "receiver_phone", "readOnly": false };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'Receiver Phone'
+//         },
+//         {
+//             className: "price",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "price", "readOnly": false };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'Price'
+//         },
+//         {
+//             className: "df_payer",
+//             data: function (data,index,tr) {
+//                 let items = [{ "name": "Sender" }, { "name": "Receiver" }];
+//                 let d = { "inputType": "select2", "data": data, "columnName": "df_payer", "readOnly": false, "combo_items": items, "valueMember": "name", "textMamber": "name", "defaultValue": "Sender" };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'DFP'
+//         },
+//         {
+//             className: "fees",
+//             data: function (data,index,tr) {
+//                 if (!data.fees) data.fees = parseFloat(data.base_fees) + parseFloat(data.delivery_fee);
+//                 data.fees = Number(data.fees).toFixed(2);
+//                 let d = { "inputType": "number", "data": data, "columnName": "fees", "readOnly": true, "defaultValue": 0 };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'Fees'
+//         },
+//         {
+//             className: "receiver_address",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "input", "data": data, "columnName": "receiver_address", "readOnly": false };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'Receiver Address'
+//         },
+//         {
+//             className: "cod",
+//             data: function (data,index,tr) {
+//                 let items = [{ "id": "0", "name": "No" }, { "id": "1", "name": "Yes" }];
+//                 let d = { "inputType": "select2", "data": data, "columnName": "cod", "readOnly": false, "combo_items": items, "valueMember": "id", "textMamber": "name", "defaultValue": 1 };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'COD'
+//         },
+//         {
+//             className: "base_fee",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "base_fee", "defaultValue": 0, "readOnly": true };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'Base Fee'
+//         },
+//         {
+//             className: "delivery_fee",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "delivery_fee", "defaultValue": 0, "readOnly": true };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'Additional'
+//         },
+//         {
+//             className: "size",
+//             data: function (data,index,tr) {
+//                 if (data.size instanceof Object && data.size) {
+//                     data.size = [data.size.length, ' ', data.size.width, ' ', data.size.height].join('');
+//                 }
+//                 let d = { "inputType": "input", "data": data, "columnName": "size", "readOnly": false, "defaultValue": null, "placeholder": "eg: 10 9.5 11" };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'Size'
+//         },
+//         {
+//             className: "actual_kg",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "actual_kg", "readOnly": false };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'Actual KG'
+//         },
+//         {
+//             className: "billed_kg",
+//             data: function (data,index,tr) {
+//                 let d = { "inputType": "number", "data": data, "columnName": "billed_kg", "readOnly": false };
+//                 return EditableTable.makeTableCellEditor(d);
+//             },
+//             title: 'Billed KG'
+//         }
+//     ];
+
+//     mThis.btnPickup.on('click', function (e) {
+//         let pick_on_arrival = 0;
+//         mThis.performPickup(pick_on_arrival, mThis.tr_row);
+//     });
+
+//     mThis.btnPickupOnArrival.on('click', function (e) {
+//         let pick_on_arrival = 1;
+//         mThis.performPickup(pick_on_arrival, mThis.tr_row);
+//     });
+
+//     mThis.btnPickup.on('mouseover', (e) => {
+//         mThis.elPickupType.html('You are about to book pickup on behalf of a driver and goods not yet Arrive At Warehouse');
+//         mThis.elPickupType.css('color', 'orange');
+//     }).on('mouseleave', () => {
+//         mThis.elPickupType.html(null);
+//     });
+
+//     mThis.btnPickupOnArrival.on('mouseover', (e) => {
+//         mThis.elPickupType.html('You are about to book packages on Arrival At Warehouse');
+//         mThis.elPickupType.css('color', 'green');
+//     }).on('mouseleave', () => {
+//         mThis.elPickupType.html(null);
+//     });
+
+//     mThis.elDriver.on('change', function (e) {
+//         let driver_id = $(this).val();
+//         mThis.btnPickup.prop('disabled', (driver_id <= 0 || !driver_id) ? true : false);
+
+//         if (driver_id <= 0 || !driver_id) {
+//             mThis.elPickupContext.html('The following packages are NOT picked up by an agent or driver');
+//             mThis.elPickupContext.css('color', 'orange');
+//         }
+//         else {
+//             let driver_name = mThis.elDriver.find('option:selected').text();
+//             mThis.elPickupContext.html(['The following packages are picked up by an agent named ', driver_name].join(''));
+//             mThis.elPickupContext.css('color', 'green');
+//         }
+//     });
+
+//     mThis.lnkFindDriver.on('click', function (e) {
+//         e.preventDefault();
+//         let onClose = (ds) => {
+//             if (ds[0]) {
+//                 let d = ds[0];
+//                 mThis.elDriver.val(d.id);
+//                 if (!mThis.elDriver.val()) {
+//                     mThis.elDriver.append($('<option/>').val(d.id).text(d.name)).val(d.id);
+//                 }
+//                 mThis.elDriverCode.val(d.code);
+//                 mThis.elDriver.trigger('change');
+//             }
+//         };
+
+//         let option = { 'title': 'Find Driver', 'role': 'driver', 'singleSelect': true, 'previousDialog': mThis.self };
+//         FindPersonDialog.show(option, onClose);
+//     });
+
+//     mThis.btnAddPackage.on('click', function (e) {
+//         e.preventDefault();
+//         mThis.addPackageRow();
+//     });
+
+//     mThis.tblPackages.on('click', 'td.col_action button._pl_remove_package', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.packages = mThis.removePackageRow(tr);
+//         tr.remove();
+//     });
+
+//     mThis.tblPackages.on('click', 'td.col_action a._pl_print_barcode', function (e) {
+//         let barcode = $(this).data('barcode');
+//         if (!barcode)
+//             cv_interact.warning('Bar code is not yet created');
+//         else
+//             window.open([mThis.base_url, '/package_barcode/', barcode].join(''), '_blank');
+//     });
+
+//     mThis.tblPackages.on('change', 'td.delivery_type>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setDeliveryPrices(tr, 'delivery_type', mThis.elError);
+//     });
+
+//     mThis.tblPackages.on('change', 'td.zone_name>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setDeliveryPrices(tr, 'zone_name', mThis.elError);
+//     });
+
+//     mThis.tblPackages.on('change', 'td.billed_kg>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setDeliveryPrices(tr, 'billed_kg', mThis.elError);
+//     });
+
+//     mThis.tblPackages.on('keyup', 'td.actual_kg>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setBilledKg(tr);
+//         mThis.setDeliveryPrices(tr, 'actual_kg', mThis.elError);
+//     });
+
+//     mThis.tblPackages.on('blur', 'td.size>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setBilledKg(tr);
+//         mThis.setDeliveryPrices(tr, 'size', mThis.elError);
+//     });
+
+//     mThis.tblPackages.on('change', 'td.price>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setDeliveryPrices(tr, 'price', mThis.elError);
+//     });
+
+//     mThis.tblPackages.on('change', 'td.cod>.col-input', function (e) {
+//         let tr = $(this).closest('tr');
+//         mThis.setDeliveryPrices(tr, 'cod', mThis.elError);
+//     });
+
+//     this.setDeliveryPrices = (tr, change_agent) => {
+//         let sender_id = mThis.elSender.val();
+//         let zone_code, billed_kg = 0, price = 0, cod;
+//         zone_code = EditableTable.getCellValue(tr, 'zone_name',false);
+//         let delivery_type = EditableTable.getCellValue(tr, 'delivery_type',false);
+//         billed_kg = EditableTable.getCellValue(tr, 'billed_kg', true);
+//         cod = EditableTable.getCellValue(tr, 'cod',true);
+
+//         if (!sender_id) {
+//             mThis.elError.html('សូមជ្រើសរើសអ្នកលក់ដើម្បីកំណត់តំលៃសេវា');
+//             return;
+//         }
+
+//         if (!zone_code) {
+//             mThis.elError.html('សូមជ្រើសរើសតំបន់ដើម្បីកំណត់តំលៃសេវា');
+//             return;
+//         }
+//         if (!delivery_type) {
+//             mThis.elError.html('សូមជ្រើសរើសប្រភេទសេវាដើម្បីកំណត់តំលៃសេវា');
+//             return;
+//         }
+//         let p = { 'sender_id': sender_id, 'delivery_type': delivery_type, 'zone_code': zone_code, 'billed_kg': billed_kg, 'cod': cod };
+//         vsapi.call([mThis.base_url, '/api/package/price-info'].join(''), p).then(res => {
+//             if (res.status_code === 200) {
+//                 let d = StringSanitizer.sanitizeObject(res.data);
+//                 EditableTable.setCellValue(tr, 'base_fee', d.base_fee);
+//                 EditableTable.setCellValue(tr, 'delivery_fee', Number(d.delivery_fee).toFixed(2));
+//                 price = EditableTable.getCellValue(tr, 'price', true);
+
+//                 if (cod == 0)
+//                     EditableTable.setCellValue(tr, 'cod_fee', 0);
+//                 else {
+//                     let base_fee = EditableTable.getCellValue(tr, 'base_fee', true);
+//                     let delivery_fee = EditableTable.getCellValue(tr, 'delivery_fee', true);
+//                     let cod_fee = (price + base_fee + delivery_fee) * d.cod_fee_percent / 100;
+//                     EditableTable.setCellValue(tr, 'cod_fee', Number(cod_fee).toFixed(2));
+//                     let fees = base_fee + delivery_fee;
+//                     EditableTable.setCellValue(tr, 'fees', Number(fees).toFixed(2));
+//                 }
+
+//                 if (d.status == 'Error') {
+//                     EditableTable.handlePriceError(tr, d, mThis.elError);
+//                 }
+//             } else cv_interact.warning(res.error_message);
+//         });
+//     }
+
+//     this.validatePackage = (p) => {
+//         let error = {};
+//         if (Validator.isNullOrEmpty(p.receiver_phone)) {
+//             error.message = 'Some packages does not have receiver`s phone number';
+//             return error;
+//         }
+//         if (Validator.isNullOrEmpty(p.zone_code)) {
+//             error.message = 'Some packages does not have a correct destination Zone';
+//             return error;
+//         }
+
+//         if (p.cod == 1) {
+//             if (p.price <= 0 || !p.price) {
+//                 error.message = 'In case of Cash On Delivery (COD), the package`s price cannot be zero';
+//                 return error;
+//             }
+//         }
+//         if (p.delivery_fee > 0) {
+//             let dfp = (p.df_payer + '').toLowerCase();
+//             if (dfp != 'sender' && dfp != 'receiver') {
+//                 error.message = 'Delivery Fee Payer (DFP) must be Sender or Receiver';
+//                 return error;
+//             }
+//         }
+//         return null;
+//     }
+
+//     this.setBilledKg = (tr, size_string) => {
+//         if (!size_string) size_string = EditableTable.getCellValue(tr, 'size',false);
+//         if (!size_string) return;
+//         let size = DUtil.processPackageSize(size_string);
+//         if (!size.length) return;
+//         let kg = 0;
+//         let b = size.length * size.width * size.height;
+//         b = Number(b / 6015);
+//         let actual_kg = EditableTable.getCellValue(tr, 'actual_kg',true);
+//         if (b > actual_kg)
+//             kg = b;
+//         else
+//             kg = actual_kg;
+//         EditableTable.setCellValue(tr, 'billed_kg', kg);
+//     }
+
+//     this.show = (option, onClose) => {
+//         if (!option) option = {};
+//         mThis.onClose = onClose;
+//         mThis.order_id = option.order_id;
+//         mThis.sender_id = option.sender_id;
+//         mThis.tr_row = option.tr_row;
+//         mThis.elTitle.html(option.title ? option.title : ' Perform Pickup');
+
+//         mThis.prepareFormData({ 'driver_id': 0 });
+//         mThis.elPickupContext.html(null);
+//         if (mThis.order_id > 0) {
+//             mThis.loadOrderInfo(mThis.order_id, function (e) {
+//                 mThis.self.modal({
+//                     backdrop: 'static'
+//                 });
+//             });
+//         }
+//     }
+
+//     this.prepareFormData = (def, onFinish) => {
+//         if (!def) def = {};
+//         def.warehouse_id = main_view.DEF_TO_WAREHOUSE_ID;
+//         VSUtil.setComboItems(mThis.elToWarehouse, ShipmentsComponent.form_data.warehouses, 'id', 'warehouse_name', false, null, def.warehouse_id);
+//         vsapi.call([mThis.base_url, '/api/getComboItems_driver'].join(''), null).then(res => {
+//             if (res.status_code === 200) {
+//                 let rows = StringSanitizer.sanitizeObject(res.data);
+//                 let text1 = LocaleManager.trans('Not picked by driver');
+//                 VSUtil.setComboItems(mThis.elDriver, rows, 'id', 'driver_name', true, `(${text1})`, def.driver_id);
+//                 if (typeof onFinish === 'function') onFinish();
+//             }
+//         });
+//     }
+
+//     this.loadOrderInfo = (order_id, onFinish) => {
+//         let p = { 'order_id': order_id ? order_id : 0, "context": "0" };
+//         vsapi.call([mThis.base_url, '/api/order/info'].join(''), p).then(res => {
+//             if (res.status_code === 200) {
+//                 let d = StringSanitizer.sanitizeObject(res.data);
+//                 let packages = d.packages ? d.packages : [];
+//                 packages = StringSanitizer.sanitizeObject(packages);
+
+//                 mThis.order_id = d.order_id;
+//                 mThis.elOrderCode.val(d.order_code);
+//                 mThis.elSenderName.val(d.sender_name);
+//                 mThis.elSenderId.val(d.sender_id);
+//                 mThis.elSenderCode.val(d.sender_code);
+//                 mThis.displayPackages(packages, null);
+//                 if (typeof onFinish == 'function') onFinish();
+//             }
+//         });
+//     }
+
+//     this.performPickup = (pick_on_arrival = false, tr = null) => {
+//         let p = mThis.getData();
+//         if (!p) return;
+//         if (!p.pickup_date) p.pickup_date = '';
+//         if (!p.driver_id) p.driver_id = 0;
+//         p.pick_on_arrival = (pick_on_arrival == true) ? 1 : 0;
+
+//         vsapi.call([mThis.base_url, '/api/performPickup'].join(''), p).then(res => {
+//             if (res.status_code === 200) {
+
+//                 let d = StringSanitizer.sanitizeObject(res.data);
+
+//                 mThis.self.modal('hide');
+//                 if (typeof mThis.onClose == 'function') mThis.onClose(true);
+//                 if (d.error_count > 0) {
+//                     let i = 0, c;
+//                     let html = null;
+//                     do {
+//                         c = d.errors[i];
+//                         if (!c) break;
+//                         html = [html, '<li><span style="color:red;">', c, '</span></li>'].join('');
+//                         i++;
+//                     } while (c);
+//                     if (d.success_count > 0) {
+//                         if (html) html = ['<span style="color:red;font-weight:bold">There are ', (i + 1), ' problems as follows:</span><br><ul>', html, '</ul>'].join('');
+//                         cv_interact.warning(html);
+//                     }
+//                     else {
+//                         if (html) html = ['<span style="color:red;font-weight:bold">No packages are picked up. See the following problems:</span><br><ul>', html, '</ul>'].join('');
+//                         cv_interact.warning(html);
+//                     }
+//                 } else if (d.success_count > 0) {
+//                     if (pick_on_arrival == 1) {
+//                         tr.remove();
+//                     }
+//                     cv_interact.success(['<span style="font-weight:bold;color:green">Pickup action succeeded!'].join(''));
+//                 }
+//                 else cv_interact.warning(['<span style="font-weight:bold;color:red">', d.success_count ? d.success_count : 0, ' packages received'].join(''));
+//                 if (d.success_count > 0) ShipmentsComponent.updatePickupStatus(tr, { 'status_id': d.status_id, 'status': d.status, 'completed': d.completed });
+//             }
+//         });
+//     }
+
+//     this.addPackageRow = () => {
+//         let row_data_blank = { 'barcode': null, 'zone_name': null, 'receiver_phone': null, 'price': 0, 'df_payer': 'sender', 'fees': 0, 'receiver_address': null, 'cod': 1, 'base_fee': 0, 'delivery_fee': 0, 'size': null, 'actual_kg': 0, 'billed_kg': 0 };
+//         let rows = mThis.getPackages();
+//         rows.splice(0, 0, row_data_blank);
+//         mThis.displayPackages(rows);
+//     }
+
+//     this.removePackageRow = (tr) => {
+//         let rows = mThis.getPackages();
+//         let index = tr.data('index');
+//         rows.splice(index, 1);
+//         return rows;
+//     }
+
+//     this.getData = function () {
+//         let p = {};
+//         p.order_id = mThis.order_id;
+//         p.order_code = mThis.elOrderCode.val();
+//         p.sender_id = mThis.elSenderId.val();
+//         p.sender_code = mThis.elSenderCode.val();
+//         p.pickup_date = mThis.elPickupDate.val();
+//         p.to_warehouse_id = mThis.elToWarehouse.val();
+//         p.packages = mThis.getPackages(p.to_warehouse_id, p.delivery_type);
+
+//         let i = 0, c;
+//         do {
+//             c = p.packages[i];
+//             if (!c) break;
+//             let error = mThis.validatePackage(c);
+//             if (error) {
+//                 cv_interact.error(error.message);
+//                 return null;
+//             }
+//             i++;
+//         } while (c);
+//         p.size = DUtil.processPackageSize(p.size);
+//         return p;
+//     }
+
+//     this.getPackages = (to_warehouse_id) => {
+//         let data = [];
+//         mThis.tblPackages.find('tbody>tr').each(function () {
+//             let row = {};
+//             let tr = $(this);
+//             let btn_barcode = tr.find('td.col_action a._pl_print_barcode');
+//             row.barcode = btn_barcode.data('barcode');
+//             row.to_warehouse_id = to_warehouse_id;
+//             tr.find('td>.col-input').each(function () {
+//                 let x = $(this);
+//                 let col_name = x.data('field');
+//                 if (col_name == 'size') {
+//                     row['size'] = DUtil.processPackageSize(x.val());
+//                 }
+//                 else {
+//                     row[col_name] = x.val();
+//                 }
+//             });
+
+//             if (!row.zone_code) row.zone_code = row.zone_name;
+//             data.push(row);
+//         });
+//         return data;
+//     }
+
+//     this.displayPackages = function (data, onFinish, d) {
+//         if (!data || !data[0]) {
+//             data = [{ 'barcode': null, 'delivery_type': 'normal', 'zone_name': null, 'receiver_phone': null, 'price': 0, 'df_payer': 'sender', 'fees': 0, 'receiver_address': null, 'cod': 1, 'size': null, 'actual_kg': 0, 'billed_kg': 0, 'delivery_fee': 0, 'cod_fee': 0, 'forwarding_cost': '0' }];
+//         }
+
+//         if (mThis.table) {
+//             mThis.tblPackages.DataTable().clear().destroy();
+//             mThis.tblPackages.empty();
+//             mThis.table = null;
+//         }
+
+//         if (!mThis.table)
+//             mThis.table = mThis.tblPackages.DataTable({
+//                 searching: false,
+//                 destroy: true,
+//                 'ordering': false,
+//                 scrollCollapse: true,
+//                 paging: false,
+//                 bLengthChange: false,
+//                 saveState: true,
+//                 'processing': true,
+//                 'language': {
+//                     'loadingRecords': '&nbsp;',
+//                     'processing': 'Loading...',
+//                     "emptyTable": "No pacakges found"
+//                 },
+//                 data: data,
+//                 columns: mThis.package_columns,
+//                 "createdRow": function (row, data, dataIndex) {
+//                     let tr = $(row);
+//                     tr.data('pid', data.package_id);
+//                     tr.data('senderid', data.sender_id);
+//                     tr.data('barcode', data.barcode);
+//                     let i = 0;
+//                     tr.find('td').each(function () {
+//                         let td = $(this);
+//                         if (i == 1 || i == 2) {
+//                             td.find('select.modal-select2').select2({ width: '100%' });
+//                         }
+
+//                         if (i == 0) td.css('min-width', '75px');
+//                         else if (i == 1) td.css('min-width', '180px');
+//                         else if (i == 2) td.css('min-width', '180px');
+//                         else if (i == 3) td.css('min-width', '180px');
+//                         else if (i > 0) td.css('min-width', '130px');
+//                         i++;
+//                     });
+//                 }
+//             });
+
+//         mThis.packages = data;
+//         if (typeof onFinish == 'function') onFinish();
+//     };
+// }
 
 let VerifyPackageDialog = new function () {
     let mThis = this;
