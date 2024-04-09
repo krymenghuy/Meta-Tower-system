@@ -638,7 +638,7 @@ var PickupListComponent = new function () {
                 if (e) {
                     vsapi.call([mThis.base_url, '/api/order/delete'].join(''), p).then(res => {
                         if (res.status_code === 200) {
-                           mThis.orderListView.showPage(mThis.getFilterData()); 
+                            mThis.orderListView.showPage(mThis.getFilterData()); 
                         } else cv_interact.error(res.error_message);
                     });
                 }

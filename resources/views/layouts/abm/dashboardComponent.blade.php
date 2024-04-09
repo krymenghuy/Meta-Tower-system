@@ -73,5 +73,5 @@
 </style>
 
 <div id="_main_dashboardComponent" style="display:none;padding:15px">
-    <h5> AWM Dashboard</h5>
+    <h1>Heloo</h1>
 </div>
