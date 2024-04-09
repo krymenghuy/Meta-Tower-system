@@ -56,13 +56,13 @@ function getList(Request $req){
     if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
     return JDV::result(Customer::list($req->all(),$ss));
    }
-//    function setPriceList(Request $req){
-//     $ss = UM::getUserInfoByToken($req,-1);
-//     if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
-//     $id = $req->sender_id? $req->sender_id:$req->id;
-//     $sender = new Sender($id,$ss);
-//     $res = $sender->setPriceList($req->price_list_id);
-//     if ($res->status==='OK') return JDV::success(['list_name'=>$res->list_name,'list_id'=>$res->list_id]);
-//     return JDV::error($res->error_message);
-//  }
+function setPriceList(Request $req){
+  $ss = UM::getUserInfoByToken($req,-1);
+  if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
+  $id = $req->sender_id? $req->sender_id:$req->id;
+  $cus = new Customer($id,$ss);
+  $res = $cus->setPriceList($req->price_list_id);
+  if ($res->status==='OK') return JDV::success(['list_name'=>$res->list_name,'list_id'=>$res->list_id]);
+  return JDV::error($res->error_message);
+}
 }

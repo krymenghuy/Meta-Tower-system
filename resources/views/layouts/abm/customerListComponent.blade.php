@@ -14,15 +14,16 @@
 
                 </select>
             </div>
-            <div>
-                <button type="button" class="btn btn-primary"><i class="fa fa-filter"></i></button>   
-            </div>
+           
             <div class="min-width-select">
                 <select id="_cuslist_filter_customer_status" class="modal-select2 filter-field" data-field="status_code">
                     <option value="Active">Active</option>
                     <option value="Inactive">Inactive</option>
                 </select>
+                 
             </div>
+            
+            
         </div>
     </div>
 
@@ -30,9 +31,12 @@
         <div class="d-flex gap-2">
             <div class="d-flex gap-1">
                 <input type="text" id="_cuslist_Search" class="form-control " placeholder="Search customer">
-                <button id="_cuslist_btnSearch" role="button" class="btn btn-primary">
+                <button id="_cuslist_btnSearch" role="button" class="btn btn-primary ml-3">
                     <i class="la la-search"></i>
                 </button>
+                <button id="_cuslist_btnFilter" type="button" class="btn btn-primary ml-3">
+                    <i class="fa fa-filter"></i>
+                </button>  
             </div>
         </div>
         <div class="d-flex flex-row gap-2">

@@ -17,27 +17,44 @@ class Customer //extends Model
 {
     protected $id = null;
     protected $userInfo = null;
+   protected static $img_dir = 'customer';
+
     function __construct($id=null,$userInfo=null){
         $this->id =$id;
         $this->userInfo = $userInfo;
    }
-  
-//   function setPriceList($price_list_id,$id=null,$ss =null){
-//     $ss = $ss ?? $this->userInfo;
-//     $id = $id ?? $this->id;
-//     $branch_id = Sanitizer::sanitize($ss->branch_id);
-//     $p = getDataRow('price_list_names',["id"=>$price_list_id],"id,name");
-//     if(!$p) return DV::error("Price list ID is not valid");
-//     $p_name = $p->name;
-//     DB::table('sender')->where('id',$id)->update(array(
-//     'price_list_id'=>$price_list_id));
-//     return DV::success(['list_name'=>$p_name,'list_id'=>$price_list_id]);
-// }
-//   static function getDefaultPriceList(){
-//     $row = DB::table('price_list_names AS l')->where('is_default',1)->take(1)->selectRaw('id,name')->first();
-//     if($row) return $row;
-//     return (object)['id'=>null,'name'=>''];
-//   }
+   
+ 
+   function getDefaultOptions(){
+     //price_list_id =11 (Normal Condition)
+     $data =(object)[
+       'price_list_id'=>self::getDefaultPriceList()->id,
+       'cod'=>0,
+       'cod_fee'=>0
+     ];
+     return $data;
+   }
+
+   static function getDefaultPriceList(){
+     $row = DB::table('price_list_names AS l')->where('is_default',1)->take(1)->selectRaw('id,name')->first();
+     if($row) return $row;
+     return (object)['id'=>null,'name'=>''];
+   }
+   
+   
+
+
+function setPriceList($price_list_id,$id=null,$ss =null){
+  $ss = $ss ?? $this->userInfo;
+  $id = $id ?? $this->id;
+  $branch_id = Sanitizer::sanitize($ss->branch_id);
+  $p = getDataRow('price_list_names',["id"=>$price_list_id],"id,name");
+  if(!$p) return DV::error("Price list ID is not valid");
+  $p_name = $p->name;
+  DB::table('sender')->where('id',$id)->update(array(
+  'price_list_id'=>$price_list_id));
+  return DV::success(['list_name'=>$p_name,'list_id'=>$price_list_id]);
+}
    function customerNameExists($ss,$name,$id) {
     $branch_id = $ss->branch_id;
     $name = Sanitizer::sanitize($name);

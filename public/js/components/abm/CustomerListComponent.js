@@ -11,6 +11,7 @@ var CustomerListComponent = new function(){
     this.btnNewCustomer = mThis.self.find('#_cuslist__btnNewCustomer');
     this.elSearch = mThis.self.find('#_cuslist_Search');
     this.btnSearch = mThis.self.find('#_cuslist_btnSearch');
+   // this.btn_filter = mThis.self.find('$cuslist_btnFilter');
     this.btnPrint = mThis.self.find('#_cuslist_btnPrint');
     this.btnPDF = mThis.self.find('#_cuslist_btnPDF');
 
@@ -84,11 +85,7 @@ var CustomerListComponent = new function(){
                 <small>${item.created_at}</small>
             </span>`;
 
-            // (item.bank_accounts || []).map(ac => {
-            //     if(ac.is_primary == 1 || !item.bank_accounts[1])
-            //         bank_account_html = `<span class="fw-semibold">${ac.bank_name}/${ac.account_number}</span>
-            //         <span> /${ac.account_name}</span`;
-            // });
+           
 
             let status_class = (item.status_code +'').toLowerCase() === 'active' ? 'text-capitalize p-2 text-center border border-success rounded-5 text-success' : 'text-capitalize p-2 text-center border border-danger rounded-5 text-danger';
             
@@ -616,6 +613,7 @@ var CustomerListComponent = new function(){
             });
         });
     }
+  
 
     this.hide = () => {
         mThis.self.hide();
@@ -639,6 +637,7 @@ const CustomerDialog = new function(){
     this.onClose = null;
      this.body =  this.self.find('.modal-body')[0];
     this.div_sender_info =  this.body.querySelector('#div_merchant_info');
+  
     
     // this.body = this.self.find('.modal-body')[0];
   
@@ -694,6 +693,7 @@ const CustomerDialog = new function(){
   
        
     }
+    
 
     this.getData = () => {
         let p = {};

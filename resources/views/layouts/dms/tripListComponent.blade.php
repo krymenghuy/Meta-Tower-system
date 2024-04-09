@@ -153,9 +153,12 @@
                     <i class="fas fa-sync-alt"></i>
                 </button>
                 <button role="button" id="_trl_btnToggleFilter" class="btn btn-outline-primary height">
-                    <i class="fas fa-filter"></i>
+                <i class="fas fa-filter"></i>
+
                 </button>
+                
             </div>
+
             <div class="d-flex gap-2 justify-content-end">
                 <button id="_trl_btnPrint" role="button" class="btn btn-success height">
                     <i class="fas fa-print"></i>
