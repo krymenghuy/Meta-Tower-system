@@ -32,7 +32,7 @@ var CompletedPackageListComponent = new function() {
                         className:'col_action',
                         data:function(data,index,tr) {
                          let html =['<div class="dropdown">',
-                             '<a href="javascript:void(0)" data-barcode="',data.barcode,'" data-id="',data.id,'" data-did="',data.delivery_id,'" data-statusid="',data.status_id,'" class="btn_cp_action" aria-haspopup="true" aria-expanded="false">',
+                             '<a href="javascript:void(0)" data-barcode="',data.barcode,'" data-id="',data.id,'" data-did="',data.delivery_id,'" data-statusid="',data.status_id,'" class="btn_pg_action" aria-haspopup="true" aria-expanded="false">',
                              '<i class="fa fa-cube fs-5 text-warning text-opacity-25"></i>',
                              //' Action',
                              '</a>',
@@ -42,6 +42,7 @@ var CompletedPackageListComponent = new function() {
                         } 
                     },
                     {
+                        className:"barcode",
                         data:function(data,index,tr){
                             return ['<div style="display:flex;flex-direction:row">',
                              '<div>',
@@ -49,7 +50,7 @@ var CompletedPackageListComponent = new function() {
                                '<span class="pg-pickup_time d-block">',data.arrival_date,'</span>',
                                '<span class="d-block text-primary">ថ្ងៃបញ្ចប់ ',data.finish_time,'</span>',
                              '</div>',
-                             '<a href="javascript:;" style="display:none" data-barcode="',data.barcode,'" class="_cpl_pa_quick_btn_barcode"><i class="fa fa-barcode" style="color:green"></i></a>',
+                             '<a href="javascript:;" style="visibility:hidden" data-barcode="',data.barcode,'" class="_pgl_pa_quick_btn_barcode"><i class="fa fa-barcode" style="color:green"></i></a>',
                             '</div>'].join('');
                         },
                         title:'Barcode'
@@ -94,8 +95,8 @@ var CompletedPackageListComponent = new function() {
                     {
                         title:'Service Type',
                         data:(data,index,tr)=>{
-                            let pickup_driver_name = data.pickup_driver_name? ['Picked by: ',data.pickup_driver_name].join(''):'';
-                            return  ['<div class="d-flex flex-column">','<span class="pg-text pg-delivery_type pg-badge-delivery_type" style="margin-left:30%" data-field="delivery_type">',data.delivery_type,'</span>','<span>',pickup_driver_name,'</span>','</div>'].join('');
+                            let pickup_driver_name = data.pickup_driver_name? ['<span class="text-muted">Picked by:</span> ',data.pickup_driver_name].join(''):'';
+                            return  ['<div class="d-flex flex-column">','<span class="pg-text pg-delivery_type text-info" style="margin-left:30%" data-field="delivery_type">',VSUtil.properCase(data.delivery_type),'</span>','<span>',pickup_driver_name,'</span>','</div>'].join('');
                         }
                     },
                     {
@@ -109,7 +110,7 @@ var CompletedPackageListComponent = new function() {
                              const remarks = mThis.sanitizeInput(data.remarks);
                              const failure_notes = mThis.sanitizeInput(data.failure_notes);
                              const agent_notes = mThis.sanitizeInput(data.agent_notes);
-                             return ['<a data-remarks="',remarks,'" data-failurenotes ="',failure_notes,'" data-agentnotes="',agent_notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">',data.status,'</a>',str_driver].join('');
+                             return ['<div class="d-flex flex-column flex-wrap"><a data-remarks="',remarks,'" data-failurenotes ="',failure_notes,'" data-agentnotes="',agent_notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">',data.status,'</a>',str_driver,'</div>'].join('');
                         },
                         title:'Status'
                     },
@@ -196,7 +197,7 @@ var CompletedPackageListComponent = new function() {
         mThis.tblPackages = $(mThis.listView.getTable());
 
         mThis.cfg = new ExpandableRowConfig(mThis.tblPackages.attr('id'), {
-            dontExpandByClickingOn: ['btn_cp_action'],
+            dontExpandByClickingOn: ['btn_pg_action','_pgl_pa_quick_btn_barcode'],
             onOpen: (container, detail_tr, parent_tr) => {
                 let pid = parent_tr.dataset.id;
                 let barcode = parent_tr.dataset.barcode;
@@ -295,8 +296,8 @@ var CompletedPackageListComponent = new function() {
          
       //##BEGIN:: tblPackages dropdown menu
                 mThis.tblPackages.on('click', (e) => {
-                    // Check if the clicked element has the class 'btn_cp_action'
-                    let btn = VSUtil.getElementByClass(e.target,'btn_cp_action');
+                    // Check if the clicked element has the class 'btn_pg_action'
+                    let btn = VSUtil.getElementByClass(e.target,'btn_pg_action');
                     if (btn) {
                         e.preventDefault();
 
@@ -353,53 +354,43 @@ var CompletedPackageListComponent = new function() {
                 });
  
                 mThis.tblPackages.on('mouseover','tr',function(e){
-                    let x = $(this);
-                    let col_action = x.find('td.col_action');
-                    let btn_barcode = x.find('a._cpl_pa_quick_btn_barcode');
-                    btn_barcode.show();
-                    col_action.find('a.btn_cp_action>i').addClass('action-button-zoomin');    
+                    let x = $(this)[0];
+                    let col_action = x.querySelector('td.col_action');
+                    let btn_barcode = x.querySelector('td.barcode a._pgl_pa_quick_btn_barcode');
+                    if(btn_barcode) btn_barcode.style.visibility ='visible' ;
+                    if(col_action) col_action.querySelector('a.btn_pg_action>i').classList.add('action-button-zoomin');    
                 }).on('mouseleave','tr',function(e) {
-                    let x = $(this);
-                    let col_action = x.find('td.col_action');
-                    let btn_barcode = x.find('a._cpl_pa_quick_btn_barcode');
-                    btn_barcode.hide();
-                    col_action.find('a.btn_cp_action>i').removeClass('action-button-zoomin');
-                    col_action.find('div.dropdown-menu').removeClass('show');  
+                    let x = $(this)[0];
+                    let col_action = x.querySelector('td.col_action');
+                    let btn_barcode = x.querySelector('td.barcode a._pgl_pa_quick_btn_barcode');
+                    if(btn_barcode) btn_barcode.style.visibility ='hidden';
+                    if(col_action){
+                        col_action.querySelector('a.btn_pg_action>i').classList.remove ('action-button-zoomin');
+                        const dpn = col_action.querySelector('div.dropdown-menu');
+                        if(dpn) { 
+                            const mnu = dpn.querySelector('div.dropdown-menu');
+                            if(mnu) mnu.classList.remove('show');
+                          } 
+                    }
+                    
                 });
 
-                // /** NOTE: because mThis.tblPackages is a jQuery object , so we use mThis.tblPackages[0] */
-                // mThis.tblPackages.on('mouseover', function (e) {
-                //     if (e.target.tagName === 'TR') {
-                //         const x = e.target;
-                //         const colAction = x.querySelector('td.col_action');
-                //         const btnBarcode = x.querySelector('a._cpl_pa_quick_btn_barcode');
-                //         if(btnBarcode) console.log(' found btnBarcode');
-                //         btnBarcode.style.display = 'block';
-                //         colAction.querySelector('a.btn_cp_action i').classList.add('action-button-zoomin');
-                //     }
+                // mThis.tblPackages.on('mouseover','tr',function(e){
+                //     let x = $(this);
+                //     let col_action = x.find('td.col_action');
+                //     let btn_barcode = x.find('a._pgl_pa_quick_btn_barcode');
+                //     btn_barcode[0].style.visibility ='visible';
+                //     col_action.find('a.btn_pg_action>i').addClass('action-button-zoomin');    
+                // }).on('mouseleave','tr',function(e) {
+                //     let x = $(this);
+                //     let col_action = x.find('td.col_action');
+                //     let btn_barcode = x.find('a._pgl_pa_quick_btn_barcode');
+                //     btn_barcode[0].style.visibility ='hidden';
+                //     col_action.find('a.btn_pg_action>i').removeClass('action-button-zoomin');
+                //     col_action.find('div.dropdown-menu').removeClass('show');  
                 // });
-                
-                // mThis.tblPackages.on('mouseleave', function (e) {
-                //     if (e.target.tagName === 'TR') {
-                //         const x = e.target;
-                //         const colAction = x.querySelector('td.col_action');
-                //         const btnBarcode = x.querySelector('a._cpl_pa_quick_btn_barcode');
-                //         btnBarcode.style.display = 'none';
-                //         colAction.querySelector('a.btn_cp_action i').classList.remove('action-button-zoomin');
-                //         colAction.querySelector('div.dropdown-menu').classList.remove('show');
-                //     }
-                // });
-       //##END:: tblPackages dropdown menu
-   
-    //    mThis.tblPackages.on('mouseover', 'button._pol_status', function (e) {
-    //     let popper_notes = new Popper($(this), mThis.popper_div, {
-    //         placement: 'top'
-    //     });
-    //     popper_notes.show();
-    //   }).on('mouseleave', 'button._pol_status', function (e) {
-    //     return;
-    //   });
 
+ 
        mThis.tblPackages.on('click',e =>{
            e.preventDefault();
 
@@ -427,7 +418,7 @@ var CompletedPackageListComponent = new function() {
                
 
                  //Click on Quick barcode icon
-                 btn = e.target.closest('._cpl_pa_quick_btn_barcode');
+                 btn = e.target.closest('._pgl_pa_quick_btn_barcode');
                  if(btn){
                     const barcode = btn.dataset.barcode;
                     window.open([mThis.base_url,'/package_barcode/',barcode].join(''),'_blank'); 
