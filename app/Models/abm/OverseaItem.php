@@ -3,6 +3,7 @@
 namespace App\Models\abm;
 use DB;
 use App\Models\DV;
+use App\Models\JDV;
 use Illuminate\Pagination\LengthAwarePaginator;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
@@ -22,6 +23,7 @@ class OverseaItem //extends Model
         $branch_id = $ss->branch_id;
         $v_rule = [
             'item_type'=>'0|string|1,20 |default = doc',
+            'shipment_id'=>'0|number|',
             'billed_weight'=>'0|number|default =0.00',
             'actual_weight'=>'0|number|default =0.00',
             'allocated_kg'=>'0|number|default =0.00',
@@ -44,10 +46,12 @@ class OverseaItem //extends Model
     function getOverseaItemList($id=null,$ss =null){
         $ss = $ss ?? $this->userInfo;
         $shipnent_id = $id ?? $this->id;
+        // return JDV::result($shipnent_id);
+
         $branch_id = $ss->branch_id;
         // if(empty($shipnent_id)) $shipnent_id =-1;
         // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());
-        return DB::table('oversea_items')->where('branch_id',$branch_id)->where('shipment_id',$shipnent_id)->selectRaw('item_type, billed_weight, actual_weight, allocated_kg, heigth, weigth, length')->get();
+        return DB::table('oversea_items')->where('shipment_id',$shipnent_id)->selectRaw('item_type, billed_weight, actual_weight, allocated_kg, heigth, weigth, length')->get();
     }
 
     function List(){

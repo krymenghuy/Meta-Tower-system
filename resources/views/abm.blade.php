@@ -204,8 +204,9 @@
                                 @include('layouts.abm.dashboardComponent')
                                 @include('layouts.abm.countryZonesComponent')
                                 <!-- @include('layouts.abm.customerComponent') -->
-                                @include('layouts.abm.shipmentsComponent')
                                 @include('layouts.abm.customerListComponent')
+                                @include('layouts.abm.shipmentsComponent')
+                                @include('layouts.abm.suppliersComponent')
                             </div>
                         </div>
                     </div> 

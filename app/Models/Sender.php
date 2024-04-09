@@ -1080,7 +1080,7 @@ class Sender //extends Model
        if($business_type) { 
          $business_type = escape_like_str($business_type);
          $str_business_type ='s.business_type LIKE \'%'.$business_type.'%\'';
-      }
+      } 
        if(in_array(strtolower($status),['active','inactive'])) $str_status = 's.status_code =\''.$status.'\'';
      }
      $select_referrer_name = ',(SELECT r.`name` FROM sales_agents as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name'; 
