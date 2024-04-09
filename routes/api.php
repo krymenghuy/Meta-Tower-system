@@ -210,6 +210,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
    Route::post('getPackageInfoByBarcode', [DeliveryTripController::class, 'getPackageInfoByBarcode']); //For scanning barcode to start Delivery trip
    Route::post('updatePackageExpandedDetails', [PackageController::class, 'updatePackageExpandedDetails']);
    Route::post('getOutstandingPackageList', [PackageController::class, 'getOutstandingPackageList']);
+   Route::post('package/list', [PackageController::class, 'getOutstandingPackageList']);
+   Route::post('package/save-label-print-count', [PackageController::class, 'saveLabelPrintCount']);
    Route::post('getOutstandingPackageList_print', [PackageController::class, 'getOutstandingPackageList_print']);
    Route::post('getPackageReceiverInfo', [PackageController::class, 'getPackageReceiverInfo']);
    Route::post('updatePackageReceiverInfo', [PackageController::class, 'updatePackageReceiverInfo']);

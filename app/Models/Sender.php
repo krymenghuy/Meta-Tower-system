@@ -21,7 +21,7 @@ class Sender //extends Model
     
     protected $id = null;
     protected $userInfo = null;
-    
+    protected static $img_dir = 'merchant';
     //Merchant Regitration default options | senderDetaultOptions() | merchantDefaultOptions
     function getDefaultOptions(){
       //price_list_id =11 (Normal Condition)
@@ -134,7 +134,7 @@ class Sender //extends Model
         PublicStorage::delete($ss->branch_id,'merchant','image',$sender->photo_file_name);
         DB::table('sender')->where('id',$id)->update(['photo_file_name'=>null]);
       }
-      return PublicStorage::saveImage($ss->branch_id,'merchant', null,$photo_data,null,['id'=>$id,'store'=>'sender.photo_file_name']);  
+      return PublicStorage::saveImage($ss->branch_id,self::$img_dir, null,$photo_data,null,['id'=>$id,'store'=>'sender.photo_file_name']);  
     }
 
     function deleteProfilePicture($id=null,$ss=null){
@@ -255,6 +255,7 @@ class Sender //extends Model
         'password'=>'0|string|0-150',
         'address'=>'0|string|0-250'
       ];
+
       $res = validateObject($arr,$v_rule,true,['email'=>['@','-','.','_'],$def_lang,false,null]);
       if($res->error) return DV::error($res->error);
       $d = (object)$res->values;
@@ -278,6 +279,10 @@ class Sender //extends Model
       }
    
      $ss = (object)['branch_id'=>$branch_id];
+
+     $phone_err = $this->checkUniquePerson($branch_id,$d->phone_number,null);
+     if ($phone_err) return DV::error( $phone_err);   
+
      if(!isset($d->name_kh)) $d->name_kh = $d->name;
      //start:: check phone number exists as login name
         $login_name = $d->phone_number;
@@ -457,7 +462,8 @@ class Sender //extends Model
         //'loc_lng'=>'0|number|default=0',
        // 'sales_agent_id'=>'0|number',
         'banks'=>'0|array',
-        'bank_account_changed'=>'0|number|default=0'
+        'bank_account_changed'=>'0|number|default=0',
+        'photo'=>'0|image'
       ];
       $checkUnque = ["$branch_id|sender|name,phone_number,code|id=id|text=Sender or merchant already exists by name, phone number, or email"];
       $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%'];
@@ -466,6 +472,8 @@ class Sender //extends Model
       $id = $res->id;
       $inputs = $res->values;
       $d = (object)$inputs;
+      $photo = $d->photo;
+
       $d->phone_number = str_replace(' ','',$inputs['phone_number']);
       $inputs['phone_number'] = $d->phone_number;
       if(!$d->phone_number) return DV::error('Phone number is required for valid merchant account');
@@ -479,7 +487,7 @@ class Sender //extends Model
       unset($inputs['address_link'],$inputs['bank_account_changed']);
 
       //Additional check
-      if($inputs['cod_fee'] <0) return DV::error("COD fee is not correct!");
+      if($inputs['cod_fee'] < 0) return DV::error("COD fee is not correct!");
       if ($this->senderCodeExists($ss,$inputs['code'],$id)) return DV::error('Merchant ID already exists');
       $phone_err = $this->checkUniquePerson($branch_id,$inputs['phone_number'],$id);
       if ($phone_err) return DV::error( $phone_err);   
@@ -487,8 +495,9 @@ class Sender //extends Model
       if(!isset($inputs['name_kh'])) $inputs['name_kh'] = $inputs['name'];
       if($inputs['cod_fee'] > 0) $inputs['cod'] =1;
       $bank_accounts = $inputs['banks'];
-      unset($inputs['banks']);
-      $sender_created = $id>0? 0:1;
+      unset($inputs['banks'],$inputs['photo']);
+      $sender_created = !$id;
+      $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
       if($id > 0){
          $org_sender = DB::table('sender as s')->where('s.id',$id)->selectRaw('s.name,s.phone_number')->take(1)->first();
          if(!$org_sender) return DV::error('Failed to identify existing merchant for updating their information');
@@ -506,7 +515,14 @@ class Sender //extends Model
       $id = saveData($ss,'sender',['id'=>$id],$inputs,[],1);
       if($id > 0){
            $new_code = null;
-           if ($sender_created ===1){
+
+           if($delete_prev_image){
+            $file_name = DB::table('sender as s')->where('s.id',$id)->take(1)->value('s.photo_file_name');
+            if($file_name) PublicStorage::delete($branch_id,self::$img_dir,'image',$file_name);
+            DB::table('sender as s')->where('s.id',$id)->update(['photo_file_name'=>null]);
+           }
+           PublicStorage::saveImage($branch_id,self::$img_dir,null,$photo,null,['id'=>$id,'store'=>'sender.photo_file_name']);  
+           if ($sender_created){
               $new_code = $this->getNextSenderCode($ss); // formatNumber($sender_id,5);
               //$inputs['code'] = $new_code;
               DB::table('sender')->where('id',$id)->update(['code'=>$new_code]);
@@ -1086,7 +1102,7 @@ class Sender //extends Model
   }
  
   static function defaultImage($branch_id){
-    return PublicStorage::getUrl($branch_id,'merchant','image').'def-merchant.png';
+    return PublicStorage::getUrl($branch_id,'default','image').'default_merchant.png';
   }
 
    //static method getSenderProp($sender_id,$prop)

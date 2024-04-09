@@ -98,6 +98,9 @@
                 <a href="PackageListComponent" modid="202" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/package_trail.svg') }}" />
+                        <div class="pg-overdue-count-wrapper bg-red" style="display:none">
+                            <small id="pg_overdue_count" class="pending-count font-badge-label">3</small>
+                        </div>
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Package Trail"></span>
                 </a>

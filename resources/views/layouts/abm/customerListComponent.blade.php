@@ -1,14 +1,14 @@
 <div id="_main_customerListComponent" style="display:none;">
     <div class="d-flex justify-content-between shadow rounded-3 mt-3 p-3 bg-white">
         <div class="d-flex gap-2">
-           <div class="d-flex flex-row gap-2" id="_cuslist_filter_fields">
+           <div class="d-flex flex-row gap-2" >
                 <button style="background-color: #8DC63F;" id="_cuslist__btnNewCustomer" data-toggle="modal" class="btn  text-white">
                     <i class="la la-plus fs-5"></i>
                     <span  class="kt-hidden-mobile trans-text" data-langprop="titles.New Customer"></span>
                 </button>
             </div>
         </div>
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2" id="_cuslist_filter_fields">
             <div class="min-width-select">
                 <select id="_cuslist_filter_business_type" class="d-none modal-select2 filter-field" data-field="business_type">
 
@@ -83,7 +83,7 @@
 
                     <div class="form-group col-lg-6">
                         <label for="sender_type" class="form-label trans-text" data-langprop="titles.Customer Type"></label>
-                        <select class="modal-select2 data-input" id="_cuslist_sender_type" data-field="sender_type"></select>
+                        <select class="modal-select2 data-input" id="_cuslist_sender_type" data-field="sender_type_id"></select>
                     </div>
 
                     <div class="form-group col-lg-6">
@@ -100,7 +100,7 @@
             
                     <div class="form-group col-lg-6">
                         <label for="price_list_id" class="form-label trans-text" data-langprop="titles.Price List"></label>
-                        <select id="_cuslist_price_list" class="modal-select2 data-input" data-field="price_list_name"></select>
+                        <select id="_cuslist_price_list" class="modal-select2 data-input" data-field="price_list_id"></select>
                     </div>
                     
                     <div class="col-lg-6">
@@ -123,7 +123,7 @@
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
                 <button type="button" class="btn btn-success" id="_cuslist_dlgCustomer_btnSave">
-                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>
         </div>
