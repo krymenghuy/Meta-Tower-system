@@ -38,11 +38,11 @@
 <div class="kt-aside-menu-wrapper kt-grid__item kt-grid__item--fluid" id="kt_aside_menu_wrapper">
     <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-vertical="1" data-ktmenu-scroll="1" data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand kt-grid__item" id="kt_aside_brand">
-            <div class="kt-aside__brand-logo ">
+            <div class="kt-aside__brand-logo pt-2">
                 <img src="{{ asset('assets/images/logo/jto2.jpg') }}" alt="" class="img-logo" />
             </div>
             <div class="kt-aside__brand-tools">
-                <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler" style="padding:15px;font-size:1.3em !important">
+                <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler" style="padding:10px;font-size:1.3em !important">
                     <span>
                         <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
                             width="24px" height="24px" viewBox="0 0 24 24" version="1.1" class="kt-svg-icon">
@@ -88,6 +88,8 @@
                 </a>
             </li>
 
+           
+
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
                 <a href="SuppliersComponent" modid="202" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -96,6 +98,7 @@
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Suppliers"></span>
                 </a>
             </li>
+
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(214); ?>>
                 <a href="SeleAgentsComponent" modid="214" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -113,14 +116,17 @@
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Shipments"></span>
                 </a>
             </li>
-            <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(204); ?>>
-                <a href="CompletedPackageListComponent" modid="204" class="menu-item kt-menu__link">
+
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
+                <a href="CountryZonesComponent" modid="105" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/complete_delivery.svg') }}" />
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/delivery_zones.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Finished Packages"></span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Country Zone"></span>
                 </a>
-            </li> -->
+            </li>
+            
+           
             <li class="kt-menu__section" <?php v_display(null,[205,206,223,219,213]);?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Billings & Payments"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
@@ -185,14 +191,7 @@
                     <span class="kt-menu__link-text font-color trans-text text-nowrap" data-langprop="menus.Merchant Management"></span>
                 </a>
             </li>
-            <li class="kt-menu__item" aria-haspopup="true" style="display:none" <?php v_display(222);?>>
-                <a href="SalesAgentsComponent" modid="222" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_sale_staff.svg') }}" />
-                    </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Sales Agents"></span>
-                </a>
-            </li> -->
+            -->
             <li class="kt-menu__section" <?php v_display(null,[209]);?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Reports"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>

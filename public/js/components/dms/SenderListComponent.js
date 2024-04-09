@@ -150,6 +150,7 @@ var SenderListComponent = new function(){
                                 <p class="text-nowrap text-capitalize">${item.sender_type}</p>
                            </div>
                         </div>
+
                         <div class="col">
                            <div class="d-flex">
                                 <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Business"></p>
@@ -172,6 +173,7 @@ var SenderListComponent = new function(){
                                 <p class="text-nowrap text-capitalize"><a href="javascript:void(0)" data-referrerid ="${item.referrer_id}">${item.referrer_name ? item.referrer_name : 'គ្មាន'}</a></p>
                             </div>
                         </div>
+                        
                         <div class="col">
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Bank Account"></p>
@@ -768,6 +770,7 @@ const SenderDialog = new function(){
 
         let bank_accounts = d.bank_accounts;
         d.bank_accounts = null;
+        
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el =>{ 
             const data_member = el.dataset.field;
             if(el.tagName.toLowerCase() === 'select'){

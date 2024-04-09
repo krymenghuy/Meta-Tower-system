@@ -32,17 +32,18 @@ class Sender //extends Model
       ];
       return $data;
     }
+    static function getDefaultPriceList(){
+      $row = DB::table('price_list_names AS l')->where('is_default',1)->take(1)->selectRaw('id,name')->first();
+      if($row) return $row;
+      return (object)['id'=>null,'name'=>''];
+    }
     
     function __construct($id=null,$userInfo=null){
          $this->id =$id;
          $this->userInfo = $userInfo;
     }
     
-    static function getDefaultPriceList(){
-      $row = DB::table('price_list_names AS l')->where('is_default',1)->take(1)->selectRaw('id,name')->first();
-      if($row) return $row;
-      return (object)['id'=>null,'name'=>''];
-    }
+   
     function getDetails($id=null,$ss=null,$includeProfilePicture=false,$includeBankAccount=true){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -459,7 +460,7 @@ class Sender //extends Model
         'address_link'=>'0|string|500',
         //'loc_lat'=>'0|number|default=0',
         //'loc_lng'=>'0|number|default=0',
-        'sales_agent_id'=>'0|number',
+       // 'sales_agent_id'=>'0|number',
         'banks'=>'0|array',
         'bank_account_changed'=>'0|number|default=0',
         'photo'=>'0|image'

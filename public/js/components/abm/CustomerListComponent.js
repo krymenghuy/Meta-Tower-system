@@ -4,22 +4,70 @@ var CustomerListComponent = new function(){
     this.title_prop = "Customers";
     this.base_url = main_view.base_url;
     this.self = main_view.appContent.children('#_main_customerListComponent');
-    this.elFilter_agent = mThis.self.find('#_cuslist_filter_agent');
-    //this.elFilter_business_type = mThis.self.find('#_cuslist__filter_business_type');
-    this.elFilter_lead_status = mThis.self.find('#_cuslist_filter_customer_status');
-    this.div_filter_fields = mThis.self.find('#_cuslist_filter_fields')[0];
+    this.elFilter_customer_status = mThis.self.find('#_cuslist_filter_customer_status');
+    this.elFilter_customer_business_type = mThis.self.find('#_cuslist_filter_business_type');
 
-    this.btnNewLead = mThis.self.find('#_cuslist__btnNewCustomer');
+    this.div_filter_fields = mThis.self.find('#_cuslist_filter_fields')[0];
+    this.btnNewCustomer = mThis.self.find('#_cuslist__btnNewCustomer');
     this.elSearch = mThis.self.find('#_cuslist_Search');
     this.btnSearch = mThis.self.find('#_cuslist_btnSearch');
-    //this.tblLeads = mThis.self.find('#_cuslist__tblLeads');
-    //this.tblLeads_body = mThis.self.find('#_cuslist__tblLeads_body');
-    //this.lead_dropdown_menu = mThis.tblLeads.find('div.dropdown');
-
     this.btnPrint = mThis.self.find('#_cuslist_btnPrint');
     this.btnPDF = mThis.self.find('#_cuslist_btnPDF');
+
+   
+
+
+    this.setMerchantPriceList = (sender_id,name=null,span=null,def_price_list_id=null) => {
+        mThis.getPriceListItems((items)=>{
+            // console.log();
+            items.unshift({
+                id: null,
+                name: 'Select price list'
+            });
+
+            let option = {
+                title: `Set Price List for ${name ? name : 'Customer'}`,
+                dataLabel: "Price list name",
+                valueMember: "id",
+                textMember: "name",
+                blankErrorMessage: "Please a price list",
+                data: items,
+                defaultValue: def_price_list_id
+            };
+
+            InputBox2.show(option,(d)=>{
+                if(d) {
+                    let p = {
+                        sender_id: sender_id,
+                        price_list_id: d.value
+                    };
+
+                    vsapi.call(`${mThis.base_url}/api/merchant/set-price-list`,p,null).then(res => {
+                        if(res.status_code === 200){
+                            let d = StringSanitizer.sanitizeObject(res.data);
+                            span.textContent =d.list_name; 
+                            //InputBox2.hide(); 
+                            
+                            //mThis.listView.showPage(mThis.getFilterData());
+                
+                            cv_interact.success('Price list ' + d.list_name + ' has been assigned to the customer successfully');
+                            
+                        }
+                        else
+                            cv_interact.error(res.error_message); 
+                    });
+                    
+                }
+                return;
+                
+            });
+    
+            
+        });
+    }
  
     this.renderCustomers = (container, data) => {
+       // console.log(data);
         let html = '';
         let cnt = 0;
         container.style.display = 'none';
@@ -30,19 +78,20 @@ var CustomerListComponent = new function(){
                 name: item.name,
                 phone_number: item.phone_number
             };
-            let bank_account_html = `<span class="fw-semibold text-danger">គ្មាន</span>`;
+           // let bank_account_html = `<span class="fw-semibold text-danger">គ្មាន</span>`;
             let created_by = `<span class="d-block fw-sembold">${item.create_user}</span>
-            <pan class="d-block">
-                <small>${item.create_date}</small>
+            <span class="d-block">
+                <small>${item.created_at}</small>
             </span>`;
 
-            (item.bank_accounts || []).map(ac => {
-                if(ac.is_primary == 1 || !item.bank_accounts[1])
-                    bank_account_html = `<span class="fw-semibold">${ac.bank_name}/${ac.account_number}</span>
-                    <span> /${ac.account_name}</span`;
-            });
+            // (item.bank_accounts || []).map(ac => {
+            //     if(ac.is_primary == 1 || !item.bank_accounts[1])
+            //         bank_account_html = `<span class="fw-semibold">${ac.bank_name}/${ac.account_number}</span>
+            //         <span> /${ac.account_name}</span`;
+            // });
 
-            let status_class = mThis.getStatusClass(item.status_id);
+            let status_class = (item.status_code +'').toLowerCase() === 'active' ? 'text-capitalize p-2 text-center border border-success rounded-5 text-success' : 'text-capitalize p-2 text-center border border-danger rounded-5 text-danger';
+            
             let mobile_login = '';
             if(item.mobile_login){
                 if(item.mobile_login.status.toLowerCase() == 'active'){
@@ -64,142 +113,131 @@ var CustomerListComponent = new function(){
                ].join('');
             }
 
-            let price_list_html = item.price_list_name ? `<span class="merchant-price-list">${item.price_list_name}</span>` : [`គ្មាន`
-            //  ,`<a href="javascript:void(0)" data-id="${item.id}" data-merchantname="${item.name}" class="set-price-list">
-            //     <i class="fa fa-edit fs-5"></i>
-            //   </a>`
+            let price_list_html = item.price_list_name ? `<span class="merchant-price-list ">${item.price_list_name}</span>` : [`គ្មាន`
+             ,`<a href="javascript:void(0)" data-id="${item.id}" data-merchantname="${item.name}" class="set-price-list">
+                <i class="fa fa-edit fs-5"></i>
+              </a>`
            ].join('');
 
             html = [html,`<div class="d-flex p-3 bg-white h-info-student shadow-lg mb-3">
+
                 <div class="div-img" data-id="${item.id}" data-imageurl="${item.image_url}"></div>
-                <div class="d-block ms-3 w-100">
-                    <div class="row row-cols-3 mb-0">
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Lead ID"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize data-get" data-field="official_id">${item.code}</p>
+                    <div class="d-block  ms-3 w-100">
+                        <div class="row row-cols-3 mb-0">
+                            <div class="col ml-5">
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.ID"></p>
+                                    <p class="px-3">:</p>
+                                    <p style="color: #8DC63F;" class="text-nowrap  data-get" data-field="official_id">${item.id}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Name"></p>
+                                    <p class="px-3">:</p>
+                                    <p style="color: #8DC63F;" class="text-nowrap   data-get" data-field="full_name">${item.name}</p>
+                                </div>
+
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Email"></p>
+                                    <p class="px-3">:</p>
+                                    <p style="color: #8DC63F;" class="text-nowrap "><a href="javascript:void(0)">${item.email ? item.email : 'គ្មាន'}</a></p>
+                                </div>
+                       
                             </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Name"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize data-get" data-field="full_name">${item.name}</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Phone Number"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize data-get" data-field="phone_number">${item.phone_number}</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Category"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.category}</p>
-                           </div>
-                        </div>
-                        <div class="col">
-                           <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Business"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.business_type ? item.business_type : 'NA'}</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Price List"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${price_list_html}</p>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.COD"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.cod == 1 ? 'Yes' : 'No'}</p>
-                            </div>`,
-                            `<div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Email"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize"><a href="javascript:void(0)">${item.email ? item.email : 'គ្មាន'}</a></p>
-                            </div>`,
-                        `</div>`,
-                        `<div class="col">`,
-                            `<div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Referred By"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize"><a href="javascript:void(0)" data-referrerid ="${item.referrer_id}">${item.referrer_name ? item.referrer_name : 'គ្មាន'}</a></p>
-                            </div>`,
-                            `<div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Bank Account"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${bank_account_html}</p>
-                            </div>`,
-                            `<div class="d-flex align-items-center">
-                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.App Account"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${mobile_login}</p>
-                            </div>`,
-                           `<div class="d-flex align-items-center">
-    
-                           </div>`,
-                        `</div>
-                        <div class="col">
-                            <div class="d-flex align-items-start justify-content-end gap-2">
-                                <button class="btn btn-sm btn-danger rounded-3 btn-options position-relative text-nowrap" type="button">
-                                    <span class="text-nowrap trans-text" data-langprop="buttons.Options"></span>
-                                    <i class="fa-solid fa-caret-down ps-2"></i>
-                                    <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">`,
-                                        (item.status_id != 5? `<a href="javascript:void(0)" class="btn-lead-edit border-bottom pb-2" data-id="${item.id}" data-statusid ="${item.status_id}">
-                                            <i class="fa-regular fa-pen-to-square fs-5"></i>
-                                            <span class="ps-2 trans-text" data-langprop="titles.Modify Lead"></span>
-                                        </a>` : ''),
-                                        // `<a href="javascript:void(0)" class="btn-set-price-list border-bottom pb-2" data-id="${item.id}" data-pricelistid="${item.price_list_id}" data-merchantname="${item.name}" data-statusid="${item.status_id}">
-                                        //     <i class="fa-regular fa-list-alt fs-5"></i>
-                                        //     <span class="ps-2 trans-text" data-langprop="titles.Set Price List"></span>
-                                        // </a>`,
-                                        `<a href="javascript:void(0)" class="btn-lead-delete border-bottom pb-2" data-id="${item.id}" data-statusid="${item.status_id}">
-                                            <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
-                                            <span class="ps-2 trans-text" data-langprop="titles.Delete Lead"></span>
-                                        </a>
-                                        <a href="javascript:void(0)" class="btn-lead-delete-special border-bottom pb-2" data-id="${item.id}" data-statusid="${item.status_id}">
-                                          <i class="fa-regular fa-trash-can fs-5 text-warning"></i>
-                                          <span class="ps-2 trans-text" data-langprop="titles.Delete Special"></span>
-                                       </a>
-                                        <a href="javascript:void(0)" class="btn-lead-status border-bottom pb-2" data-id="${item.id}" data-statusid="${item.status_id}">
-                                            <i class="fa-regular fa-circle-stop fs-5"></i>
-                                            <span class="ps-2 trans-text" data-langprop="titles.Change Status"></span>
-                                        </a>`,
-                                        // `<a href="javascript:void(0)" class="btn-create-app-account border-bottom pb-2" data-id="${item.id}">
-                                        //     <i class="fa-solid fa-mobile fs-5"></i>
-                                        //     <span class="ps-2 trans-text" data-langprop="titles.Create App Account"></span>
-                                        // </a>`,
-                                    `</div>
-                                </button>
-                            </div>
-                            <div class="d-flex justify-content-end align-items-center h-100">
-                                <div class="d-block position-relative">
-                                    <a href="javascript:void(0)" class="lnk-lead-status ${status_class}" data-id="${item.id}" data-statusid="${item.status_id}">${item.status}</a>  
+
+                            <div class="col ml-5">
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Customer Type"></p>
+                                    <p class="px-4">:</p>
+                                    <p style="color: #8DC63F;" class="text-nowrap ">${item.sender_type}</p>
+                                </div>
+                          
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Business Type"></p>
+                                    <p class="px-4">:</p>
+                                    <p style="color: #8DC63F;" class="text-nowrap ">${item.business_type ? item.business_type : 'N/A'}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Phone Number"></p>
+                                    <p class="px-4">:</p>
+                                    <p style="color: #8DC63F;" class="text-nowrap  data-get" data-field="phone_number" >${item.phone_number}</p>
                                 </div>
                             </div>
+
+                            <div class="col">
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Price List"></p>
+                                    <p class="px-4">:</p>
+                                    <p style="color: #8DC63F;" class="text-nowrap">${price_list_html}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Referred By"></p>
+                                    <p class="px-2">:</p>
+                                    <p style="color: #8DC63F;" class="text-nowrap"><a href="javascript:void(0)" data-referrerid ="${item.referrer_id}">${item.referrer_name ? item.referrer_name : 'គ្មាន'}</a></p>
+                                </div>
+                            </div>
+
+
+                            <div class="col m-3">
+                                <div class="d-flex align-items-start  justify-content-end gap-2">
+                                    <button style="background-color: #8DC63F;" class="btn btn-sm  rounded-3 btn-options position-relative text-nowrap" type="button">
+                                        <span class="text-nowrap text-white  trans-text" data-langprop="buttons.Options"></span>
+                                            <i class="fa-solid text-success fa-caret-down ps-2"></i>
+                                        <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
+                                            <a href="javascript:void(0)" class="btn-customer-edit border-bottom pb-2" data-id="${item.id}" >
+                                                <i class="fa-regular fa-pen-to-square fs-5 text-success"></i>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Modify Customer"></span>
+                                            </a>
+
+                                            <a href="javascript:void(0)" class="btn-set-price-list border-bottom pb-2" data-id="${item.id}" data-pricelistid="${item.price_list_id}" data-merchantname="${item.name}" data-status="${item.status_code}">
+                                                <i class="fa-regular fa-list-alt fs-5 text-warning"></i>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Set Price List"></span>
+                                            </a>
+
+                                            <a href="javascript:void(0)" class="btn-customer-delete border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
+                                                <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Delete Customer"></span>
+                                            </a>
+                                        
+                                            <a href="javascript:void(0)" class="btn-customer-status border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
+                                                <i class="fa-regular fa-circle-stop fs-5 text-primary"></i>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Change Status"></span>
+                                            </a>
+                                            
+                                        </div>
+                                    </button>
+                                </div>
+
+                                <div class="d-flex justify-content-end align-items-center h-100">
+                                    <div class="d-block mb-3 position-relative">
+                                        <a href="javascript:void(0)" class="lnk-customer-status ${status_class}" data-id="${item.id}" data-status="${item.status_code}">${item.status_code}</a>  
+                                    </div>
+                                </div>
                         </div>
+
                     </div>
-                    <hr class="bg-dark m-1 p-0"/>
+
+                    <hr class="bg-warning m-1 p-0"/>
                     <div class="row row-cols-5 mt-2">
-                        <div class="col">
+                        <div class="col ml-5">
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Address"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.address ? item.address : 'គ្មាន'}</p>
+                                <p class="px-1">:</p>
+                                <p style="color: #8DC63F;" class="text-nowrap ">${item.address}</p>
                             </div>
                         </div>
+
                         <div class="col">
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Created By"></p>
                                 <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${created_by}</p>
+                                <p style="color: #8DC63F;" class="text-nowrap ">${created_by}</p>
                             </div>
                        </div>
+
                     </div>
-                    <div class="d-flex flex-row gap-2">`,
-                     (item.status_id !=5 ? `<a data-id="${item.id}" data-statusid ="${item.status_id}" href="javascript:void(0)" class="btn-convert-to-merchant btn btn-sm btn-info rounded-3"><span>Convert to merchant</span></a>` : ``), 
-                    `</div
+                 
                 </div>
-            </div></div>`].join('');
+        </div>`].join('');
             cnt++;
         });
 
@@ -240,7 +278,7 @@ var CustomerListComponent = new function(){
                     if(d){
                         const imgContainer = img.parentElement;
                         mThis.setImage(imgContainer,d.dataUrl);
-                        vsapi.call(`${main_view.base_url}/api/sales-module/lead/save-profile-picture`,{
+                        vsapi.call(`${main_view.base_url}/api/merchant/save-profile-picture`,{
                             id: imgContainer.dataset.id,
                             photo: d.dataUrl
                         },false).then(res => {
@@ -289,7 +327,7 @@ var CustomerListComponent = new function(){
                 },(e) => {
                     if(e){
                         const imgContainer = lnk.closest('.div-img');
-                        vsapi.call(`${main_view.base_url}/api/sales-module/lead/delete-profile-picture`,{
+                        vsapi.call(`${main_view.base_url}/api/merchant/delete-profile-picture`,{
                             id: imgContainer.dataset.id
                         },false).then(res => {
                             if(res.status_code === 200){
@@ -307,10 +345,10 @@ var CustomerListComponent = new function(){
             }
         }
     }
-
     this.setEvents = (container) => {
         const div =  container.find('.w-options');
         const btn = container.find('.btn-options');
+       // console.log(div.length);
 
         btn.off('click').on('click',function(e){
             e.preventDefault();
@@ -320,31 +358,10 @@ var CustomerListComponent = new function(){
         container.off('click').on('click',e => {
             e.preventDefault();
              
-            let lnk = VSUtil.getElementByClass(e.target,'btn-app-login');
-            if(lnk){
-                mThis.createAppAccount(lnk.dataset.id);
-                return;
-            }
- 
-            //Click on Convert to merchant
-            lnk = VSUtil.closestLimited(e.target,'.btn-convert-to-merchant');
-            if(lnk){
-                cv_interact.confirm(`Convert this prospect to merchant now?`,{'context':'update',title:'Convert to Merchant','confirmButtonText':'Convert Now'},e =>{
-                     if(e){
-                         let p = {'id':lnk.dataset.id};
-                         vsapi.call(`${main_view.base_url}/api/sales-module/lead/convert-to-merchant`,p,lnk,null).then(res =>{
-                             if(res.status_code ==200){
-                                 mThis.listView.showPage(mThis.getFitlerData());
-                                 cv_interact.success('The prospect has now become a merchant'); 
-                             }else cv_interact.warning(res.error_message);
-                         });
-                     }
-                });
-                return;
-            }
+    
 
-            //click on Set Price List
-            lnk = VSUtil.getElementByClass(e.target,'set-price-list');
+           // click on Set Price List
+           let lnk = VSUtil.getElementByClass(e.target,'set-price-list');
             if(lnk){
                 mThis.setMerchantPriceList(lnk.dataset.id,lnk.dataset.merchantname,lnk.parentElement,null);
                 return;
@@ -369,22 +386,23 @@ var CustomerListComponent = new function(){
             div.off('click').on('click',(e) => {
                 e.preventDefault();
 
-                let lnk = VSUtil.getElementByClass(e.target,'btn-lead-edit');
+                let lnk = VSUtil.getElementByClass(e.target,'btn-customer-edit');
                 if(lnk){
-                    const status_id =lnk.dataset.statusid; 
+                    //const status_code =lnk.dataset.id; 
                     let op = {
                         id: lnk.dataset.id,
-                        status_id: status_id,
+                        
+                        //status_id: status_id,
                         onClose:()=>{
-                            mThis.listView.showPage(mThis.getFitlerData());
+                            mThis.listView.showPage(mThis.getFilterData());
                         }
                     };
-                    LeadDialog.show(op);                     
+                    CustomerDialog.show(op);                     
                     return;
                 }
             
                 //Click on Delete Merchant
-                lnk = VSUtil.getElementByClass(e.target,'btn-lead-delete');
+                lnk = VSUtil.getElementByClass(e.target,'btn-customer-delete');
                 if(lnk){
                     const id = lnk.dataset.id;
                     let status_code = lnk.dataset.status;
@@ -392,147 +410,15 @@ var CustomerListComponent = new function(){
                         id: id,
                         status_code: status_code
                     };
-                    cv_interact.confirm('Delete this lead?',{
-                        title: 'Delete Lead',
+                    cv_interact.confirm('Delete this customer?',{
+                        title: 'Delete Customer',
                         context: 'delete'
                     },function(e){
                         if(e){
-                            vsapi.call(`${mThis.base_url}/api/sales-module/lead/delete`,{
+                            vsapi.call(`${mThis.base_url}/api/customer/delete`,{
                                 id: id
                             },null).then(res => {
                                 if(res.status_code === 200){
-                                    mThis.listView.showPage(mThis.getFitlerData());
-                                }
-                                else
-                                    cv_interact.error(res.error_message);
-                            });
-                        }
-                    });
-                    return;
-                }
- 
-                //Click on Delete Merchant Special (Force delete everything about the merchant)
-                lnk = VSUtil.closestLimited(e.target, '.btn-lead-delete-special');
-
-                if (lnk) {
-                    const id = lnk.dataset.id;
-                    let status_code = lnk.dataset.status;
-                    let p = {
-                        id: id,
-                        status_code: status_code
-                    };
-                    let confirm_count = 0;
-                
-                    const confirmDelete = () => {
-                        cv_interact.confirm([
-                            'Are you sure to delete this lead <span class="text-danger fw-semibold">permanently?</span>',
-                            '<span class="d-block text-black mt-2">You will need to confirm 7 times before deleting. <span class="d-block fs-4 fw-semibold text-danger">',
-                            (confirm_count + 1 ==7? 'This you LAST confirmation!': ['Confirm Count: ',(confirm_count +1)].join('')),
-                            '</span></span>'
-                        ].join(''), {
-                            title: 'Delete Lead Special',
-                            context: 'delete'
-                        }, e => {
-                            if (e) {
-                                confirm_count++;
-                
-                                if (confirm_count === 7) {
-                                    vsapi.call(`${mThis.base_url}/api/sales-module/lead/delete-special`, {
-                                        id: id
-                                    }, null).then(res => {
-                                        if (res.status_code === 200) {
-                                            mThis.listView.showPage(mThis.getFitlerData());
-                                        } else {
-                                            cv_interact.error(res.error_message);
-                                        }
-                                    });
-                                } else {
-                                    confirmDelete();
-                                }
-                            } else {
-                                confirm_count = 0;
-                            }
-                        });
-                    };
-                
-                    confirmDelete();
-                }
- 
-                // //Click on Set Price List
-                // lnk = VSUtil.getElementByClass(e.target,'btn-set-price-list');
-                // if(lnk){
-                //     const id = lnk.dataset.id;
-                //     let pl_id = lnk.dataset.pricelistid;
-                //     let name = lnk.dataset.merchantname;
-                //     let span = container.find('.merchant-price-list')[0];
-                //     mThis.setMerchantPriceList(id,name, span ? span.parentElement : null ,pl_id); 
-                //     return;
-                // }
-
-                //Click on Change Status
-                lnk = VSUtil.closestLimited(e.target,'.btn-lead-status');
-                if (!lnk) lnk= VSUtil.closestLimited(e.target,'.lnk-lead-status');
-                if(lnk){
-                    let lead_id = lnk.dataset.id;
-                    let status_id = Validator.properCase(lnk.dataset.statusid);
-                    let option = {
-                        confirmButtonText:'OK',
-                        title: 'Set Lead Status',
-                        dataLabel: "Status",
-                        valueMember: "id",
-                        textMember: "status",
-                        blankErrorMessage: "Please select a correct status",
-                        //data: [],
-                        defaultValue: status_id
-                    };
-                    
-                    this.getLeadStatuses().then(statuses => {
-                        option.data = statuses;
-                        InputBox2.show(option,(d)=>{
-                            if(d) {
-                                let p = {
-                                    id: lead_id,
-                                    status_id: d.value
-                                };
-    
-                                vsapi.call(`${mThis.base_url}/api/sales-module/lead/update-status`,p).then(res => {
-                                    if(res.status_code === 200){
-                                        mThis.elFilter_lead_status.val(d.value).trigger('change');
-                                        //mThis.elFilter_sender_status.dispatchEvent(new Event('change'));
-                                        const new_status = res.data? `to ${res.data.new_status}`: null;
-                                        cv_interact.info([`Lead status has been changed `,d.new_status].join(''));
-                                    }
-                                    else
-                                        cv_interact.error(res.error_message); 
-                                });
-                            }
-                        });
-                    });
-                    return;
-                }
-
-                // //Click on create mobile app account
-                // lnk = VSUtil.getElementByClass(e.target,'btn-create-app-account');
-                // if(lnk){
-                //     mThis.createAppAccount(lnk.dataset.id);
-                //     return;
-                // }
-
-                //Click on "Delete Special" => Force delete lead information and related data
-                lnk = VSUtil.getElementByClass(e.target,'btn-lead-delete-sepcial');
-                if(lnk){
-                    let op = {
-                        id: lnk.dataset.studentid
-                    };
-
-                    cv_interact.confirm('You are about to delete this lead permanently. Are you sure to proceed?',{
-                        title: 'Delete Lead Permanently',
-                        context: 'delete'
-                    },(e) => {
-                        if(e){
-                            vsapi.call(`${main_view.base_url}/api/sales-module/lead/delete-special`,op,null).then(res => {
-                                if(res.status_code === 200){
-                                    cv_interact.success('The lead has been deleted permanently');
                                     mThis.listView.showPage(mThis.getFilterData());
                                 }
                                 else
@@ -542,52 +428,77 @@ var CustomerListComponent = new function(){
                     });
                     return;
                 }
-            });
-        }
-    }
+                //Click on Set Price List
+                lnk = VSUtil.getElementByClass(e.target,'btn-set-price-list');
+               // console.log(lnk);
+                if(lnk){
+                    const id = lnk.dataset.id;
+                    let pl_id = lnk.dataset.pricelistid;
+                    let name = lnk.dataset.merchantname;
+                    let span = container.find('.merchant-price-list')[0];
+                    mThis.setMerchantPriceList(id,name, span ? span.parentElement : null ,pl_id); 
+
+                    return;
+                }
  
-    this.getStatusClass = (status_id)=>{
-        switch(status_id){
-             case 2:{
-                return 'text-capitalize p-2 text-center border border-warning rounded-5 text-warning';
-             }
-             case 3:{
-                return 'text-capitalize p-2 text-center border border-info rounded-5 text-info';
-             }
-             case 4:
-                return 'text-capitalize p-2 text-center border border-danger rounded-5 text-danger';
-             case 5:
-                return 'text-capitalize p-2 text-center border border-success rounded-5 text-success';
-             case 6:
-              return 'text-capitalize p-2 text-center border border-danger rounded-5 text-danger';
-             default:
-              return 'text-capitalize p-2 text-center border border-success rounded-5 text-success';       
+               
+
+                //Click on Change Status
+                lnk = VSUtil.closestLimited(e.target,'.btn-customer-status');
+                if (!lnk) lnk= VSUtil.closestLimited(e.target,'.lnk-lead-status');
+                if(lnk){
+                    let sender_id = lnk.dataset.id;
+                    let status_code = Validator.properCase(lnk.dataset.status);
+                    let option = {
+                        confirmButtonText:'OK',
+                        title: 'Set Customer Status',
+                        dataLabel: "Customer Status",
+                        valueMember: "status_code",
+                        textMember: "name",
+                        blankErrorMessage: "Please select a correct status",
+                        data:[{
+                            status_code: "Active",
+                            name: "Active"
+                        },
+                        {
+                            status_code: "Inactive",
+                            name: "Inactive"
+                        }
+                    ],
+                        //data: [],
+                        defaultValue: status_code
+                    };
+                    InputBox2.show(option,(d)=>{
+                        if(d) {
+                            let p = {
+                                id: sender_id,
+                                status_code: d.value
+                            };
+
+                            vsapi.call(`${mThis.base_url}/api/merchant/update-status`,p).then(res => {
+                                if(res.status_code === 200){
+                                   mThis.elFilter_customer_status.val(d.value).trigger('change');
+                                    //mThis.listView.showPage(mThis.getFilterData()); 
+                                    const new_status = res.data? `to ${res.data.new_status}`: null;
+                                    cv_interact.info([`Customer status has been changed `,d.new_status].join(''));
+                                }
+                                else
+                                    cv_interact.error(res.error_message); 
+                            });
+                        }
+                    });
+                    return;
+                }
+              
+            });
         }
     }
 
-    this.getLeadStatuses = () => {
-        if(mThis.form_data.lead_statuses){
-            return new Promise((resolve) =>{
-                resolve( mThis.form_data.lead_statuses);
-            });
-        }
 
-        return new Promise((resolve, reject) => {
-            vsapi.call(`${main_view.base_url}/api/settings/options-lead-status`, null, false).then(res => {
-               if(res.status_code == 200){
-                mThis.form_data.lead_statuses = res.data.filter(x =>{
-                    return ([2,3,4,6].indexOf(x.id) >= 0 ); 
-                 });
-                 resolve(mThis.form_data.lead_statuses);
-               }else{
-                cv_interact.error(res.error_message);
-               }
-            }).catch(error => {
-                cv_interact.error('Failed to load status options');
-                reject(error); // Reject with the error
-            });
-        });
-    }
+ 
+ 
+ 
+
  
     this.loadFilterData = (onFinish) => {
         mThis.def_filter = mThis.def_filter || {};
@@ -595,33 +506,29 @@ var CustomerListComponent = new function(){
 
         //Do not allow filter to be applied yet. I means that filter SELECT's change event wont refresh the merchant list
         mThis.allow_filter = false;
-        vsapi.call(`${mThis.base_url}/api/sales-module/lead/form-options`, null,null,main_view.apiCluster).then(res => {
+        vsapi.call(`${mThis.base_url}/api/customer/form-options`, null,null,main_view.apiCluster).then(res => {
             let d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
-            d.lead_statuses = d.lead_statuses.filter(x =>{
-                return ([2,3,4,5,6].indexOf(x.id) >=0) ;
-            });
-            VSUtil.setComboItems(mThis.elFilter_lead_status, d.lead_statuses, 'id', 'status', true, '(All Statuses)', mThis.def_filter.status_id);
-            //VSUtil.setComboItems(mThis.elFilter_business_type, d.business_types, 'business_type', 'business_type', true, '(All Business Types)', 0);
-            VSUtil.setComboItems(mThis.elFilter_agent, d.sales_agents, 'id', 'agent_name', true, '(All)', null);
-            //VSUtil.setComboItems(LeadDialog.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
-            mThis.form_data = d;
+           
+            VSUtil.setComboItems(mThis.elFilter_customer_status, d.customer_statuses, 'status_code', 'status_name', true, '(All Status)', mThis.def_filter.status_code);
+            VSUtil.setComboItems(mThis.elFilter_customer_business_type, d.business_types, 'business_type', 'business_type', true, 'ប្រភេទ​ ទំនិញ (All Business Types)', 0);
+            //VSUtil.setComboItems(mThis.elFilter_agent, d.sales_agents, 'id', 'agent_name', true, '(All)', null);
+        //VSUtil.setComboItems(CustomerDialog.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
             onFinish();
             mThis.allow_filter = true;
         });
     }
-
-    // this.getPriceListItems = (onFinish) => {
-    //     vsapi.call(`${mThis.base_url}/api/getComboItems_price_list`,null,false).then(res => {
-    //         let items = res.status_code ===200? res.data: [];
-    //         onFinish(items); 
-    //     });
-    // }
+    this.getPriceListItems = (onFinish) => {
+        vsapi.call(`${mThis.base_url}/api/getComboItems_price_list`,null,false).then(res => {
+            let items = res.status_code ===200? res.data: [];
+            onFinish(items); 
+        });
+    }
 
     this.initOnce = () => {
         if(mThis.initAlready) return;
 
         mThis.listView = new ListView('_cuslist_customer_list', {
-            fetchApi: `${main_view.base_url}/api/customers/list`,
+            fetchApi: `${main_view.base_url}/api/customer/list`,
             apiCluster: main_view.apiCluster,
             perPage: 3,
             renderItems: (items, list_container) => {
@@ -629,33 +536,34 @@ var CustomerListComponent = new function(){
             },
             listContainerClass: null
         });
-
-        mThis.tblLeads = mThis.listView.getListContainer();
+        mThis.tblCustomers = mThis.listView.getListContainer();
 
         this.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
             el.onchange = e => {
                 e.preventDefault();
                 if(mThis.allow_filter){
-                    mThis.listView.showPage(mThis.getFitlerData());
+                    mThis.listView.showPage(mThis.getFilterData());
                 }
             };
         });
 
-        this.btnNewLead.on('click', function(e){
+        this.btnNewCustomer.on('click', function(e){
             e.preventDefault();
             let op = {
-                id: null,
+                id: '',
                 onClose: (d) =>{
-                    mThis.listView.showPage(mThis.getFitlerData());  
+                    mThis.listView.showPage(mThis.getFilterData());  
                 }
             } 
-            LeadDialog.show(op);
+            CustomerDialog.show(op);
         });
+       
 
-        mThis.tblLeads.addEventListener('click', e => {
+        mThis.tblCustomers.addEventListener('click', e => {
             e.preventDefault();
             //Click on action button;
-            let btn = VSUtil.getElementByClass(e.target, 'btn_lead_action');
+            let btn = VSUtil.getElementByClass(e.target, 'btn_sender_action');
+            //console.log(btn);
             if(btn){
                 return;
             }
@@ -663,11 +571,11 @@ var CustomerListComponent = new function(){
 
         document.addEventListener('click', e => {
             //e.preventDefault();
-            if(!mThis.lead_dropdown_menu) return;
-            let container = mThis.lead_dropdown_menu.parent();
+            if(!mThis.customer_dropdown_menu) return;
+            let container = mThis.sender_dropdown_menu.parent();
             if(container){
                 if(!container.is(e.target) && container.has(e.target).length === 0){
-                    mThis.lead_dropdown_menu.removeClass('show');
+                    mThis.sender_dropdown_menu.removeClass('show');
                 }
             }
         });
@@ -675,18 +583,18 @@ var CustomerListComponent = new function(){
         mThis.elSearch.on('keyup', () => {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.listView.showPage(mThis.getFitlerData());
+                mThis.listView.showPage(mThis.getFilterData());
             }, 250);
         });
 
         mThis.btnSearch.on('click', function(){
-            mThis.listView.showPage(mThis.getFitlerData());
+            mThis.listView.showPage(mThis.getFilterData());
         });
 
         mThis.initAlready = true;
     }
 
-    this.getFitlerData = () => {
+    this.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.val()
         };
@@ -702,7 +610,7 @@ var CustomerListComponent = new function(){
         mThis.option = option;
         main_view.setTitle(mThis.title_prop);
         mThis.loadFilterData(() => {
-            mThis.listView.showPage(mThis.getFitlerData(),null,() => {
+            mThis.listView.showPage(mThis.getFilterData(),null,() => {
                 mThis.self.siblings().hide();
                 mThis.self.hide().fadeIn(300);
             });
@@ -713,40 +621,37 @@ var CustomerListComponent = new function(){
         mThis.self.hide();
     }
 
-    this.changeLeadStatus = () => {
-        return;
-    }
+    
 }
 
-const LeadDialog = new function(){
+const CustomerDialog = new function(){
     const mThis = this;
     this.self = main_view.appContent.find('#_cuslist_dlgCustomer');
     this.base_url = main_view.base_url;
     this.options = {};
     
-    this.elTitle = this.self.find('.modal-title');
-    this.btnSave =  this.self.find('#_cuslist__dlgLead_btnSave');
-    this.elCategory =  this.self.find('#_cuslist__category');
-    this.elBusinessType =  this.self.find('#_cuslist__lead_businesstype');
-    this.elSalesAgent =  this.self.find('#_cuslist__sales_agent');
-
-    this.elPriceList =  this.self.find('#_cuslist__price_list');
-    this.elCOD =  this.self.find('#_cuslist__cod');
-    this.elCODFee =  this.self.find('#_cuslist__cod_fee');
+    this.elTitle = this.self.find('.modal-_cuslist_dlgCustomer');
+    this.btnSave =  this.self.find('#_cuslist_dlgCustomer_btnSave');
+    this.elBusinessType =  this.self.find('#_cuslist_business_type');
+    this.elSalesAgent =  this.self.find('#_cuslist_sales_agent');
+    this.elPriceList =  this.self.find('#_cuslist_price_list');
+    this.elCustomerType = this.self.find('#_cuslist_sender_type') ;
     this.onClose = null;
+     this.body =  this.self.find('.modal-body')[0];
+    this.div_sender_info =  this.body.querySelector('#div_merchant_info');
     
-    this.body = this.self.find('.modal-body')[0];
+    // this.body = this.self.find('.modal-body')[0];
   
     this.prepareData = (id,def, onFinish) => {
         if(!def) def = {};
-        vsapi.call(`${mThis.base_url}/api/sales-module/lead/form-options`,{
-            id: id
-        },null).then(res => {
+        vsapi.call(`${mThis.base_url}/api/customer/form-options`,{id: id },null).then(res => {
             let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
-            VSUtil.setComboItems(mThis.elCategory, d.categories, 'id', 'category', true, '(Select Category)', def.category_id);
             VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No Sales Agent)', def.sales_agent_id);
             VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
-            //VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'name', true, '(Price List)', def.price_list_id);
+            VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'price_list', true, '(Price List)', def.price_list_id);
+            VSUtil.setComboItems(mThis.elCustomerType,d.sender_types,'id','sender_type',true,'(Customer Type)',def.sender_type_id);
+            console.log(d);
+
             mThis.form_data = d;
             onFinish(d);
         });
@@ -755,61 +660,80 @@ const LeadDialog = new function(){
     this.btnSave.on('click', function(e){
         e.preventDefault();
         let p = mThis.getData();
-        console.log(p);
-        vsapi.call(`${mThis.base_url}/api/sales-module/lead/save`, p).then(res => {
+        vsapi.call(`${mThis.base_url}/api/customer/save`, p).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
+
             }
             else
                 cv_interact.error(res.error_message);
         });
-    });
+     });
+      this.setData = (d) => {
+        d = d || {};
+        console.log(d);
+        // mThis.body.querySelectorAll('.data-input').forEach(el =>{
+        //     el.value = null;
+        // });
+        mThis.div_sender_info.querySelectorAll('.data-input').forEach(el =>{ 
+            const data_member = el.dataset.field;
+            if(el.tagName.toLowerCase() === 'select'){
+
+                el.value = d[data_member];
+                let event = new Event('change',{
+                    bubbles: true,
+                    cancelable: true
+                });
+                el.dispatchEvent(event);
+            }
+            else{
+                el.value = d[data_member]?? '';
+            }
+        });
+  
+       
+    }
+
+    this.getData = () => {
+        let p = {};
+        p.id = mThis.options.id;
+        mThis.self[0].querySelectorAll('.data-input').forEach(el=>{
+            let f = el.dataset.field;
+            
+            p [f] = el.value;
+        });
+        
+        
+        return p;
+    }
 
     this.show = (options) => {
         if (!options) options = {};
         mThis.options = options;
+       // console.log('grth');
          
         mThis.prepareData(mThis.options.id,{},data => {
             if(data.sender){
-                mThis.elTitle.text("Modify Lead Information");
+                
+                mThis.elTitle.text("Modify Customer");
             }
             else{
-                mThis.elTitle.text("Create Lead");
+                mThis.elTitle.text("Create Customer");
             }
-            mThis.setData(data.lead);
+// console.log(data.customer);
+            mThis.setData(data.sender);
+
             mThis.self.modal({
                 backdrop: 'static'
             });
         });
     }
 
-    this.setData = (d) => {
-        d = d || {};
-        mThis.body.querySelectorAll('.data-input').forEach(el =>{
-            el.value = null;
-        });
-
   
-        mThis.setBankAccountInfo(d.bank_account_info);
-    }
-
-    this.getData = () => {
-        let p = {
-            "status_id":mThis.options.status_id
-        };
-        if(!p.status_id || p.status_id ==1){
-            //cv_interact.info('It seems the status ID is invalid, so the default status "In Review" will be used instead');
-            // return null;
-            p.status_id =2;
-        }
-
-        p.id = mThis.options.id;
-       
-        
-        return p;
-    }
 
   
 }
+
+
  

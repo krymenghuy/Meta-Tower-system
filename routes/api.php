@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\abm\CustomerController;
 use Illuminate\Http\Request;
 use App\Models\Notifier;
 use App\Http\Middleware\CustomRateLimiter;
@@ -39,6 +40,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SalesCommissionPolicyController;
 //use App\Http\Controllers\PusherController;
 
+use App\Http\Controllers\abm\CountryZoneController;
+
 use App\Models\PublicStorage;
 use App\Models\SystemSetting;
 //use App\Models\PaymentTransaction;
@@ -62,6 +65,8 @@ use App\Http\Controllers\abm\SupplierController;
 // Route::middleware('auth:api')->get('/user', function (Request $request) {
 //     return $request->user();
 // });
+
+
 
 Route::post('telegram/send', [ApiController::class, 'sendToTelegram']);
 
@@ -362,6 +367,7 @@ Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->grou
         Route::post('/commune/delete',[LocationController::class,'deleteCommune']);
     });      
     //end::LocationController
+    
 
      //begin:: Delivery ZONE
      Route::middleware([CustomRateLimiter::class])->prefix('zone')->group(function(){
@@ -372,6 +378,9 @@ Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->grou
             Route::post('list-all', [DeliveryZoneController::class, 'getZoneList_all']);
             Route::post('save', [DeliveryZoneController::class, 'saveZone']);
      });
+
+  
+
     
      //begin::PriceController
         Route::post('getSampleScript', [PriceController::class, 'getSampleScript']);
@@ -388,6 +397,7 @@ Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->grou
 
         Route::post('merchant/set-price-list', [SenderController::class, 'setPriceList']);
         Route::post('os_suppliers/set-price-list', [SupplierController::class, 'setSupplierPriceList']);
+        Route::post('customer/set-price-list', [CustomerController::class, 'setPriceList']);
         Route::post('deletePriceZones', [PriceController::class, 'deletePriceZones']);
         //update only zone_codes list (price_list_id, org_zone_codes,zone_codes)
         Route::post('updateZoneCodes', [PriceController::class, 'updateZoneCodes']);
@@ -448,6 +458,26 @@ Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->grou
         //Route::post('updateSenderStatus', [SenderController::class, 'updateSenderStatus']);
     });
 //end::SenderController
+
+   //begin:: Counties_Zone_Code
+
+   Route::prefix('country')->group(function(){
+    Route::post('/save',[CountryZoneController::class,'save']);
+    Route::post('/delete',[CountryZoneController::class,'delete']);
+    Route::post('/list-all',[CountryZoneController::class,'getCountryZoneList_all']);
+    Route::post('/details',[CountryZoneController::class,'details']);
+
+});
+
+Route::prefix('customer')->group(function(){
+    Route::post('/save',[CustomerController::class,'save']);
+    Route::post('/delete',[CustomerController::class,'deleteCustomer']);
+    Route::post('/list-all',[CustomerController::class,'getList_all']);
+    Route::post('/details',[CustomerController::class,'getCustomerDetails']);
+    Route::post('/form-options',[CustomerController::class,'getFormOptions']);
+    Route::post('/list',[CustomerController::class,'getList']);
+});
+
  
 //begin::DriverController
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('driver')->group(function(){

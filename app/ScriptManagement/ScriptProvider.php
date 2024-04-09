@@ -91,6 +91,7 @@ namespace App\ScriptManagement;
                         '/assets/js/ImageHelper.js',
                         '/assets/js/FileChooser.js',
                         '/assets/js/ListView.js',
+                        '/assets/js/InputBoxes.js',
                         // 'js/components/dms/SenderPaymentComponent.js',
                         // 'js/components/dms/TripListComponent.js',
                         // 'js/components/dms/RoleManagementComponent.js',
@@ -101,6 +102,10 @@ namespace App\ScriptManagement;
 
                         '/assets/js/InputBoxes.js',
                         //start Components abm
+
+                        '/js/components/abm/CustomersComponent.js',
+                        '/js/components/abm/CountryZonesComponent.js',
+                        
                         '/js/components/abm/DashboardComponent.js',
                         '/js/components/abm/SuppliersComponent.js',
                         // '/js/components/abm/CustomersComponent.js',
