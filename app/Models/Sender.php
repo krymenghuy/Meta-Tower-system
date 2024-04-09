@@ -32,17 +32,18 @@ class Sender //extends Model
       ];
       return $data;
     }
+    static function getDefaultPriceList(){
+      $row = DB::table('price_list_names AS l')->where('is_default',1)->take(1)->selectRaw('id,name')->first();
+      if($row) return $row;
+      return (object)['id'=>null,'name'=>''];
+    }
     
     function __construct($id=null,$userInfo=null){
          $this->id =$id;
          $this->userInfo = $userInfo;
     }
     
-    static function getDefaultPriceList(){
-      $row = DB::table('price_list_names AS l')->where('is_default',1)->take(1)->selectRaw('id,name')->first();
-      if($row) return $row;
-      return (object)['id'=>null,'name'=>''];
-    }
+   
     function getDetails($id=null,$ss=null,$includeProfilePicture=false,$includeBankAccount=true){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;

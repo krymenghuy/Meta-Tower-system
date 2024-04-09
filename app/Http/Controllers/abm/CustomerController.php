@@ -16,6 +16,7 @@ class CustomerController extends Controller
          $id = $req->id;
          $zone = new Customer($id,$ss); 
          $save = $zone->save($req->all());
+        //  JDV::result($save);
          return JDV::raw($save); 
      }
      function getList_all(Request $req) {
@@ -55,4 +56,13 @@ function getList(Request $req){
     if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
     return JDV::result(Customer::list($req->all(),$ss));
    }
+//    function setPriceList(Request $req){
+//     $ss = UM::getUserInfoByToken($req,-1);
+//     if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
+//     $id = $req->sender_id? $req->sender_id:$req->id;
+//     $sender = new Sender($id,$ss);
+//     $res = $sender->setPriceList($req->price_list_id);
+//     if ($res->status==='OK') return JDV::success(['list_name'=>$res->list_name,'list_id'=>$res->list_id]);
+//     return JDV::error($res->error_message);
+//  }
 }

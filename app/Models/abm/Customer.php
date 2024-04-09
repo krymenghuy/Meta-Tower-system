@@ -5,6 +5,7 @@ namespace App\Models\abm;
 use App\Models\UM;
 use App\Models\PublicStorage;
 use App\Models\DV;
+use App\Models\JDV;
 use DB;
 use Sanitizer;
 use Carbon\Carbon;
@@ -20,6 +21,23 @@ class Customer //extends Model
         $this->id =$id;
         $this->userInfo = $userInfo;
    }
+  
+//   function setPriceList($price_list_id,$id=null,$ss =null){
+//     $ss = $ss ?? $this->userInfo;
+//     $id = $id ?? $this->id;
+//     $branch_id = Sanitizer::sanitize($ss->branch_id);
+//     $p = getDataRow('price_list_names',["id"=>$price_list_id],"id,name");
+//     if(!$p) return DV::error("Price list ID is not valid");
+//     $p_name = $p->name;
+//     DB::table('sender')->where('id',$id)->update(array(
+//     'price_list_id'=>$price_list_id));
+//     return DV::success(['list_name'=>$p_name,'list_id'=>$price_list_id]);
+// }
+//   static function getDefaultPriceList(){
+//     $row = DB::table('price_list_names AS l')->where('is_default',1)->take(1)->selectRaw('id,name')->first();
+//     if($row) return $row;
+//     return (object)['id'=>null,'name'=>''];
+//   }
    function customerNameExists($ss,$name,$id) {
     $branch_id = $ss->branch_id;
     $name = Sanitizer::sanitize($name);
@@ -64,7 +82,8 @@ return null;
       'email'=>'0|email',
       'address'=>'0|string|0-250',
       'phone_number'=>'1|phone|0-50',
-      'sales_agent_id'=>'0|number',
+      'sales_agent_id'=>'0|number|default=1',
+      'os_agent_types_id'=>'0|number',
       'adr_country_id'=>'0|number',
       'adr_city_id'=>'0|number',
       'adr_district_id'=>'0|number',
@@ -84,6 +103,8 @@ return null;
     $res = validateObject($arr,$v_rule,true,['email'=>['-','.',',','@','_']],$ss->lang,false,$checkUnque);
     if($res->error) return DV::error($res->error);
     $id = $id ?? $res->id;
+    // return JDV::result($res->error);
+   
    
     $inputs = $res->values;
     $d = (object)$inputs;
@@ -106,6 +127,7 @@ return null;
       }
    }
     $id = saveData($ss,'sender',['id'=>$id],$inputs,[],1,false);
+
     return DV::depends($id,['action'=>'saved']);
     // if($id > 0){
     //   $new_code = null;
@@ -174,7 +196,7 @@ static function list($arr,$ss){
      if(in_array(strtolower($status),['active','inactive'])) $str_status = 's.status_code =\''.$status.'\'';
    }
    $select_referrer_name = ',(SELECT r.`name` FROM sales_agents as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name'; 
-   $query = DB::table('sender as s')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at')->where('s.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
+   $query = DB::table('sender as s')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_types_id LIMIT 1) AS agent_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at')->where('s.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
    
    $count_query = clone $query;
    $count = $count_query->count('s.id');
@@ -182,8 +204,8 @@ static function list($arr,$ss){
    foreach($rows as $row){
      $row->image_url = '';
     // $row->bank_accounts = self::bankAccounts($row->id,null);
-     $row->mobile_login = UM::getAccountInfo($row->id,'official_id','merchant');
-     if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($row->branch_id,'merchant','image').$row->photo_file_name;
+     $row->mobile_login = UM::getAccountInfo($row->id,'official_id','customer');
+     if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($row->branch_id,'customer','image').$row->photo_file_name;
      unset($row->photo_file_name);
      //if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
    }
@@ -241,12 +263,14 @@ static function details($id,$ss,$includeProfilePicture=false){
         $data= (object)[];
         $data->sender = $customer_details;
         $data->branches = [(object)['id'=>1,'branch_name'=>'Head Quarter']];
-        $data->sales_agents = DB::table('sales_agents as a')->where('a.branch_id',$branch_id)->selectRaw('id,name AS agent_name,code')->get();
+         $data->sales_agents = DB::table('sales_agents as a')->where('a.branch_id',$branch_id)->selectRaw('id,name AS agent_name')->get();
         //$data->categories = DB::table('lead_categories as c')->selectRaw('id,name AS category')->get();
-        $data->business_types = DB::table('sender_business_types')->selectRaw('business_type')->get();
-        $data->customer_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name as status_name')->get();
+       $data->business_types = DB::table('sender_business_types')->selectRaw('business_type')->get();
+       $data->customer_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name as status_name')->get();
         //$data->closing_statuses = DB::table('closing_statuses AS cs')->selectRaw('scs.id,cs.name AS closing_status')->get();
-        //$data->price_list = DB::table('price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name')->get();
+        $data->price_list = DB::table('price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name as price_list')->get();
+        $data->sender_types = DB::table('sender_type')->selectRaw('id,name as sender_type')->get();
+        
         return $data;
     }
 function delete($id){

@@ -13,6 +13,52 @@ var CustomerListComponent = new function(){
     this.btnSearch = mThis.self.find('#_cuslist_btnSearch');
     this.btnPrint = mThis.self.find('#_cuslist_btnPrint');
     this.btnPDF = mThis.self.find('#_cuslist_btnPDF');
+
+    this.setMerchantPriceList = (sender_id,name=null,span=null,def_price_list_id=null) => {
+        mThis.getPriceListItems((items)=>{
+            console.log();
+            items.unshift({
+                id: null,
+                name: 'Select price list'
+            });
+
+            let option = {
+                title: `Set Price List for ${name ? name : 'Merchant'}`,
+                dataLabel: "Price list name",
+                valueMember: "id",
+                textMember: "name",
+                blankErrorMessage: "Please a price list",
+                data: items,
+                defaultValue: def_price_list_id
+            };
+
+            InputBox2.show(option,(d)=>{
+                if(d) {
+                    let p = {
+                        sender_id: sender_id,
+                        price_list_id: d.value
+                    };
+
+                    vsapi.call(`${mThis.base_url}/api/merchant/set-price-list`,p,null).then(res => {
+                        if(res.status_code === 200){
+                            let d = StringSanitizer.sanitizeObject(res.data);
+                            span.textContent =d.list_name; 
+                            
+                
+                            cv_interact.success('Price list ' + d.list_name + ' has been assigned to the merchant successfully');
+                            
+                        }
+                        else
+                            cv_interact.error(res.error_message); 
+                    });
+                    
+                }
+                
+            });
+    
+            
+        });
+    }
  
     this.renderCustomers = (container, data) => {
        // console.log(data);
@@ -69,69 +115,79 @@ var CustomerListComponent = new function(){
 
             html = [html,`<div class="d-flex p-3 bg-white h-info-student shadow-lg mb-3">
                 <div class="div-img" data-id="${item.id}" data-imageurl="${item.image_url}"></div>
-                <div class="d-block ms-3 w-100">
+                <div class="d-block  ms-3 w-100">
                     <div class="row row-cols-3 mb-0">
-                        <div class="col">
+                        <div class="col ml-5">
                             <div class="d-flex">
-                                <p class="text-nowrap text-success trans-text width-p" data-langprop="titles.Code"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap   text-capitalize data-get" data-field="official_id">${item.code}</p>
+                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.ID"></p>
+                                <p class="px-3">:</p>
+                                <p style="color: #8DC63F;" class="text-nowrap  data-get" data-field="official_id">${item.id}</p>
                             </div>
                             <div class="d-flex">
-                                <p class="text-nowrap text-success trans-text width-p" data-langprop="titles.Name"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap  text-capitalize data-get" data-field="full_name">${item.name}</p>
+                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Name"></p>
+                                <p class="px-3">:</p>
+                                <p style="color: #8DC63F;" class="text-nowrap   data-get" data-field="full_name">${item.name}</p>
                             </div>
                             <div class="d-flex">
-                                <p class="text-nowrap text-success trans-text width-p" data-langprop="titles.Phone"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap  text-capitalize data-get" data-field="phone_number">${item.phone_number}</p>
+                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Email"></p>
+                                <p class="px-3">:</p>
+                                <p style="color: #8DC63F;" class="text-nowrap "><a href="javascript:void(0)">${item.email ? item.email : 'គ្មាន'}</a></p>
                             </div>
                        
                         </div>
 
-                        <div class="col">
-                           <div class="d-flex">
-                                <p class="text-nowrap text-success trans-text width-p" data-langprop="titles.Business"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.business_type ? item.business_type : 'NA'}</p>
+                        <div class="col ml-5">
+                        <div class="d-flex">
+                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Customer Type"></p>
+                                <p class="px-4">:</p>
+                                <p style="color: #8DC63F;" class="text-nowrap ">${item.sender_type}</p>
                             </div>
+                          
                             <div class="d-flex">
-                                <p class="text-nowrap text-success trans-text width-p" data-langprop="titles.Price List"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${price_list_html}</p>
+                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Business Type"></p>
+                                <p class="px-4">:</p>
+                                <p style="color: #8DC63F;" class="text-nowrap ">${item.business_type ? item.business_type : 'N/A'}</p>
                             </div>`,
                             `<div class="d-flex">
-                                <p class="text-nowrap text-success trans-text width-p" data-langprop="titles.Email"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize"><a href="javascript:void(0)">${item.email ? item.email : 'គ្មាន'}</a></p>
+                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Phone Number"></p>
+                                <p class="px-4">:</p>
+                                <p style="color: #8DC63F;" class="text-nowrap  data-get" data-field="phone_number" >${item.phone_number}</p>
+
+                               
                             </div>`,
                         `</div>`,
 
                         `<div class="col">`,
 
-                            `<div class="d-flex">
-                                <p class="text-nowrap text-success trans-text width-p" data-langprop="titles.Referred By"></p>
+                            `
+                            <div class="d-flex">
+                            <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Price List"></p>
+                            <p class="px-4">:</p>
+                            <p style="color: #8DC63F;" class="text-nowrap">${item.price_list}</p>
+                        </div>
+                        <div class="d-flex">
+                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Referred By"></p>
                                 <p class="px-2">:</p>
-                                <p class="text-nowrap  text-capitalize"><a href="javascript:void(0)" data-referrerid ="${item.referrer_id}">${item.referrer_name ? item.referrer_name : 'គ្មាន'}</a></p>
+                                <p style="color: #8DC63F;" class="text-nowrap"><a href="javascript:void(0)" data-referrerid="${item.referrer_id}">${item.referrer_name ? item.referrer_name : 'គ្មាន'}</a></p>
                             </div>`,
+                            
                            
         
                            `<div class="d-flex align-items-center">
     
                            </div>`,
                         `</div>
-                        <div class="col">
+                        <div class="col m-3">
                             <div class="d-flex align-items-start  justify-content-end gap-2">
-                                <button class="btn btn-sm btn-danger rounded-3 btn-options position-relative text-nowrap" type="button">
-                                    <span class="text-nowrap  trans-text" data-langprop="buttons.Options"></span>
-                                    <i class="fa-solid fa-caret-down ps-2"></i>
+                                <button style="background-color: #8DC63F;" class="btn btn-sm  rounded-3 btn-options position-relative text-nowrap" type="button">
+                                    <span class="text-nowrap text-white  trans-text" data-langprop="buttons.Options"></span>
+                                    <i class="fa-solid text-success fa-caret-down ps-2"></i>
                                     <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">`,
                                         (item.status_id != 5? `<a href="javascript:void(0)" class="btn-customer-edit border-bottom pb-2" data-id="${item.id}" >
                                             <i class="fa-regular fa-pen-to-square fs-5 text-success"></i>
                                             <span class="ps-2 trans-text" data-langprop="titles.Modify Customer"></span>
                                         </a>` : ''),
-                                        `<a href="javascript:void(0)" class="btn-set-price-list border-bottom pb-2" data-id="${item.id}" data-pricelistid="${item.price_list_id}" data-merchantname="${item.name}" data-statusid="${item.status_id}">
+                                        `<a href="javascript:void(0)" class="btn-set-price-list border-bottom pb-2" data-id="${item.id}" data-pricelistid="${item.price_list_id}" data-merchantname="${item.name}" data-status="${item.status_code}">
                                             <i class="fa-regular fa-list-alt fs-5 text-warning"></i>
                                             <span class="ps-2 trans-text" data-langprop="titles.Set Price List"></span>
                                         </a>`,
@@ -145,10 +201,7 @@ var CustomerListComponent = new function(){
                                             <i class="fa-regular fa-circle-stop fs-5 text-primary"></i>
                                             <span class="ps-2 trans-text" data-langprop="titles.Change Status"></span>
                                         </a>`,
-                                        // `<a href="javascript:void(0)" class="btn-create-app-account border-bottom pb-2" data-id="${item.id}">
-                                        //     <i class="fa-solid fa-mobile fs-5"></i>
-                                        //     <span class="ps-2 trans-text" data-langprop="titles.Create App Account"></span>
-                                        // </a>`,
+                                        
                                     `</div>
                                 </button>
                             </div>
@@ -161,18 +214,18 @@ var CustomerListComponent = new function(){
                     </div>
                     <hr class="bg-warning m-1 p-0"/>
                     <div class="row row-cols-5 mt-2">
-                        <div class="col">
+                        <div class="col ml-5">
                             <div class="d-flex">
-                                <p class="text-nowrap text-success trans-text width-bp" data-langprop="titles.Address"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.address ? item.address : 'គ្មាន'}</p>
+                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Address"></p>
+                                <p class="px-1">:</p>
+                                <p class="text-nowrap text-capitalize"></p>
                             </div>
                         </div>
                         <div class="col">
                             <div class="d-flex">
-                                <p class="text-nowrap text-success trans-text width-bp" data-langprop="titles.Created By"></p>
+                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Created By"></p>
                                 <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize text-danger">${created_by}</p>
+                                <p class="text-nowrap text-success text-danger"></p>
                             </div>
                        </div>
                     </div>
@@ -287,215 +340,7 @@ var CustomerListComponent = new function(){
         }
     }
 
-    this.setEvents = (container) => {
-        const div =  container.find('.w-options');
-        const btn = container.find('.btn-options');
-
-        btn.off('click').on('click',function(e){
-            e.preventDefault();
-            $(this).find('.w-options').toggle('fast');
-        });
-  
-        container.off('click').on('click',e => {
-            e.preventDefault();
-             
-            // let lnk = VSUtil.getElementByClass(e.target,'btn-app-login');
-            // if(lnk){
-            //     mThis.createAppAccount(lnk.dataset.id);
-            //     return;
-            // }
  
-            // //Click on Convert to merchant
-            // lnk = VSUtil.closestLimited(e.target,'.btn-convert-to-merchant');
-            // if(lnk){
-            //     cv_interact.confirm(`Convert this prospect to merchant now?`,{'context':'update',title:'Convert to Merchant','confirmButtonText':'Convert Now'},e =>{
-            //          if(e){
-            //              let p = {'id':lnk.dataset.id};
-            //              vsapi.call(`${main_view.base_url}/api/sales-module/lead/convert-to-merchant`,p,lnk,null).then(res =>{
-            //                  if(res.status_code ==200){
-            //                      mThis.listView.showPage(mThis.getFitlerData());
-            //                      cv_interact.success('The prospect has now become a merchant'); 
-            //                  }else cv_interact.warning(res.error_message);
-            //              });
-            //          }
-            //     });
-            //     return;
-            // }
-
-           // click on Set Price List
-            lnk = VSUtil.getElementByClass(e.target,'set-price-list');
-            if(lnk){
-                mThis.setMerchantPriceList(lnk.dataset.id,lnk.dataset.merchantname,lnk.parentElement,null);
-                return;
-            }
-         });
-
-        if(div.length !== 0){
-            let prev_div = null;
-            $(document).off('click').on('mouseup',function(e){
-                e.preventDefault();
-                if((!div.is(e.target) && div.has(e.target).length === 0) && prev_div){
-                    prev_div.hide('fast');
-                }
-                else{
-                    if((!div.is(e.target) && div.has(e.target).length === 0) && (!btn.is(e.target) && btn.has(e.target).length === 0)){
-                        prev_div = div;
-                        div.hide('fast');
-                    }
-                }
-            });
-
-            div.off('click').on('click',(e) => {
-                e.preventDefault();
-
-                let lnk = VSUtil.getElementByClass(e.target,'btn-customer-edit');
-                if(lnk){
-                    //const status_id =lnk.dataset.statusid; 
-                    let op = {
-                        id: lnk.dataset.id,
-                        
-                        //status_id: status_id,
-                        onClose:()=>{
-                            mThis.listView.showPage(mThis.getFilterData());
-                        }
-                    };
-                    CustomerDialog.show(op);                     
-                    return;
-                }
-            
-                //Click on Delete Merchant
-                lnk = VSUtil.getElementByClass(e.target,'btn-customer-delete');
-                if(lnk){
-                    const id = lnk.dataset.id;
-                    let status_code = lnk.dataset.status;
-                    let p = {
-                        id: id,
-                        status_code: status_code
-                    };
-                    cv_interact.confirm('Delete this customer?',{
-                        title: 'Delete Customer',
-                        context: 'delete'
-                    },function(e){
-                        if(e){
-                            vsapi.call(`${mThis.base_url}/api/customer/delete`,{
-                                id: id
-                            },null).then(res => {
-                                if(res.status_code === 200){
-                                    mThis.listView.showPage(mThis.getFilterData());
-                                }
-                                else
-                                    cv_interact.error(res.error_message);
-                            });
-                        }
-                    });
-                    return;
-                }
- 
-               
-
-                //Click on Change Status
-                lnk = VSUtil.closestLimited(e.target,'.btn-customer-status');
-                if (!lnk) lnk= VSUtil.closestLimited(e.target,'.lnk-lead-status');
-                if(lnk){
-                    let sender_id = lnk.dataset.id;
-                    let status_code = Validator.properCase(lnk.dataset.status);
-                    let option = {
-                        confirmButtonText:'OK',
-                        title: 'Set Customer Status',
-                        dataLabel: "Customer Status",
-                        valueMember: "status_code",
-                        textMember: "name",
-                        blankErrorMessage: "Please select a correct status",
-                        data:[{
-                            status_code: "Active",
-                            name: "Active"
-                        },
-                        {
-                            status_code: "Inactive",
-                            name: "Inactive"
-                        }
-                    ],
-                        //data: [],
-                        defaultValue: status_code
-                    };
-                    InputBox2.show(option,(d)=>{
-                        if(d) {
-                            let p = {
-                                id: sender_id,
-                                status_code: d.value
-                            };
-
-                            vsapi.call(`${mThis.base_url}/api/merchant/update-status`,p).then(res => {
-                                if(res.status_code === 200){
-                                    mThis.elFilter_customer_status.val(d.value).trigger('change');
-                                }
-                                else
-                                    cv_interact.error(res.error_message); 
-                            });
-                        }
-                    });
-                    return;
-                }
-                    
-                  // this.getLeadStatuses().then(statuses => {
-                    //     option.data = statuses;
-                    //     InputBox2.show(option,(d)=>{
-                    //         if(d) {
-                    //             let p = {
-                    //                 id: lead_id,
-                    //                 status_id: d.value
-                    //             };
-    
-                    //             vsapi.call(`${mThis.base_url}/api/sales-module/lead/update-status`,p).then(res => {
-                    //                 if(res.status_code === 200){
-                    //                     mThis.elFilter_lead_status.val(d.value).trigger('change');
-                    //                     //mThis.elFilter_sender_status.dispatchEvent(new Event('change'));
-                    //                     const new_status = res.data? `to ${res.data.new_status}`: null;
-                    //                     cv_interact.info([`Lead status has been changed `,d.new_status].join(''));
-                    //                 }
-                    //                 else
-                    //                     cv_interact.error(res.error_message); 
-                    //             });
-                    //         }
-                    //     });
-                    // });
-                    // return;
-            
-
-                // //Click on create mobile app account
-                // lnk = VSUtil.getElementByClass(e.target,'btn-create-app-account');
-                // if(lnk){
-                //     mThis.createAppAccount(lnk.dataset.id);
-                //     return;
-                // }
-
-                //Click on "Delete Special" => Force delete lead information and related data
-                // lnk = VSUtil.getElementByClass(e.target,'btn-customer-delete-sepcial');
-                // if(lnk){
-                //     let op = {
-                //         id: lnk.dataset.studentid
-                //     };
-
-                //     cv_interact.confirm('You are about to delete this lead permanently. Are you sure to proceed?',{
-                //         title: 'Delete Lead Permanently',
-                //         context: 'delete'
-                //     },(e) => {
-                //         if(e){
-                //             vsapi.call(`${main_view.base_url}/api/sales-module/lead/delete-special`,op,null).then(res => {
-                //                 if(res.status_code === 200){
-                //                     cv_interact.success('The lead has been deleted permanently');
-                //                     mThis.listView.showPage(mThis.getFilterData());
-                //                 }
-                //                 else
-                //                     cv_interact.error(res.error_message);
-                //             });
-                //         }
-                //     });
-                //     return;
-                // }
-            });
-        }
-    }
  
  
 
@@ -533,11 +378,17 @@ var CustomerListComponent = new function(){
             let d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
            
             VSUtil.setComboItems(mThis.elFilter_customer_status, d.customer_statuses, 'status_code', 'status_name', true, '(All Status)', mThis.def_filter.status_code);
-            VSUtil.setComboItems(mThis.elFilter_customer_business_type, d.business_types, 'business_type', 'business_type', true, '(All Business Types)', 0);
+            VSUtil.setComboItems(mThis.elFilter_customer_business_type, d.business_types, 'business_type', 'business_type', true, 'ប្រភេទ​ ទំនិញ (All Business Types)', 0);
             //VSUtil.setComboItems(mThis.elFilter_agent, d.sales_agents, 'id', 'agent_name', true, '(All)', null);
-            VSUtil.setComboItems(CustomerDialog.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
+        //VSUtil.setComboItems(CustomerDialog.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
             onFinish();
             mThis.allow_filter = true;
+        });
+    }
+    this.getPriceListItems = (onFinish) => {
+        vsapi.call(`${mThis.base_url}/api/getComboItems_price_list`,null,false).then(res => {
+            let items = res.status_code ===200? res.data: [];
+            onFinish(items); 
         });
     }
 
@@ -553,7 +404,6 @@ var CustomerListComponent = new function(){
             },
             listContainerClass: null
         });
-
         mThis.tblCustomers = mThis.listView.getListContainer();
 
         this.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
@@ -575,26 +425,227 @@ var CustomerListComponent = new function(){
             } 
             CustomerDialog.show(op);
         });
-
-        mThis.tblCustomers.addEventListener('click', e => {
-            e.preventDefault();
-            //Click on action button;
-            let btn = VSUtil.getElementByClass(e.target, 'btn_customer_action');
-            if(btn){
-                return;
-            }
-        });
-
-        document.addEventListener('click', e => {
-            //e.preventDefault();
-            if(!mThis.customer_dropdown_menu) return;
-            let container = mThis.customer_dropdown_menu.parent();
-            if(container){
-                if(!container.is(e.target) && container.has(e.target).length === 0){
-                    mThis.customer_dropdown_menu.removeClass('show');
+        this.setEvents = (container) => {
+            const div =  container.find('.w-options');
+            const btn = container.find('.btn-options');
+            console.log(div.length);
+    
+            btn.off('click').on('click',function(e){
+                e.preventDefault();
+                $(this).find('.w-options').toggle('fast');
+            });
+      
+            container.off('click').on('click',e => {
+                e.preventDefault();
+                 
+        
+    
+               // click on Set Price List
+                lnk = VSUtil.getElementByClass(e.target,'set-price-list');
+                if(lnk){
+                    mThis.setMerchantPriceList(lnk.dataset.id,lnk.dataset.merchantname,lnk.parentElement,null);
+                    return;
                 }
+             });
+    
+            if(div.length !== 0){
+                let prev_div = null;
+                $(document).off('click').on('mouseup',function(e){
+                    e.preventDefault();
+                    if((!div.is(e.target) && div.has(e.target).length === 0) && prev_div){
+                        prev_div.hide('fast');
+                    }
+                    else{
+                        if((!div.is(e.target) && div.has(e.target).length === 0) && (!btn.is(e.target) && btn.has(e.target).length === 0)){
+                            prev_div = div;
+                            div.hide('fast');
+                        }
+                    }
+                });
+    
+                div.off('click').on('click',(e) => {
+                    e.preventDefault();
+    
+                    let lnk = VSUtil.getElementByClass(e.target,'btn-customer-edit');
+                    if(lnk){
+                        const status_code =lnk.dataset.id; 
+                        let op = {
+                            id: status_code,
+                            
+                            //status_id: status_id,
+                            onClose:()=>{
+                                mThis.listView.showPage(mThis.getFilterData());
+                            }
+                        };
+                        CustomerDialog.show(op);                     
+                        return;
+                    }
+                
+                    //Click on Delete Merchant
+                    lnk = VSUtil.getElementByClass(e.target,'btn-customer-delete');
+                    if(lnk){
+                        const id = lnk.dataset.id;
+                        let status_code = lnk.dataset.status;
+                        let p = {
+                            id: id,
+                            status_code: status_code
+                        };
+                        cv_interact.confirm('Delete this customer?',{
+                            title: 'Delete Customer',
+                            context: 'delete'
+                        },function(e){
+                            if(e){
+                                vsapi.call(`${mThis.base_url}/api/customer/delete`,{
+                                    id: id
+                                },null).then(res => {
+                                    if(res.status_code === 200){
+                                        mThis.listView.showPage(mThis.getFilterData());
+                                    }
+                                    else
+                                        cv_interact.error(res.error_message);
+                                });
+                            }
+                        });
+                        return;
+                    }
+                    //Click on Set Price List
+                    lnk = VSUtil.getElementByClass(e.target,'btn-set-price-list');
+                    console.log(lnk);
+                    if(lnk){
+                        const id = lnk.dataset.id;
+                        let pl_id = lnk.dataset.pricelistid;
+                        let name = lnk.dataset.merchantname;
+                        let span = container.find('.merchant-price-list')[0];
+                        mThis.setMerchantPriceList(id,name, span ? span.parentElement : null ,pl_id); 
+                        return;
+                    }
+     
+                   
+    
+                    //Click on Change Status
+                    lnk = VSUtil.closestLimited(e.target,'.btn-customer-status');
+                    if (!lnk) lnk= VSUtil.closestLimited(e.target,'.lnk-lead-status');
+                    if(lnk){
+                        let sender_id = lnk.dataset.id;
+                        let status_code = Validator.properCase(lnk.dataset.status);
+                        let option = {
+                            confirmButtonText:'OK',
+                            title: 'Set Customer Status',
+                            dataLabel: "Customer Status",
+                            valueMember: "status_code",
+                            textMember: "name",
+                            blankErrorMessage: "Please select a correct status",
+                            data:[{
+                                status_code: "Active",
+                                name: "Active"
+                            },
+                            {
+                                status_code: "Inactive",
+                                name: "Inactive"
+                            }
+                        ],
+                            //data: [],
+                            defaultValue: status_code
+                        };
+                        InputBox2.show(option,(d)=>{
+                            if(d) {
+                                let p = {
+                                    id: sender_id,
+                                    status_code: d.value
+                                };
+    
+                                vsapi.call(`${mThis.base_url}/api/merchant/update-status`,p).then(res => {
+                                    if(res.status_code === 200){
+                                        mThis.elFilter_customer_status.val(d.value).trigger('change');
+                                    }
+                                    else
+                                        cv_interact.error(res.error_message); 
+                                });
+                            }
+                        });
+                        return;
+                    }
+                        
+                      // this.getLeadStatuses().then(statuses => {
+                        //     option.data = statuses;
+                        //     InputBox2.show(option,(d)=>{
+                        //         if(d) {
+                        //             let p = {
+                        //                 id: lead_id,
+                        //                 status_id: d.value
+                        //             };
+        
+                        //             vsapi.call(`${mThis.base_url}/api/sales-module/lead/update-status`,p).then(res => {
+                        //                 if(res.status_code === 200){
+                        //                     mThis.elFilter_lead_status.val(d.value).trigger('change');
+                        //                     //mThis.elFilter_sender_status.dispatchEvent(new Event('change'));
+                        //                     const new_status = res.data? `to ${res.data.new_status}`: null;
+                        //                     cv_interact.info([`Lead status has been changed `,d.new_status].join(''));
+                        //                 }
+                        //                 else
+                        //                     cv_interact.error(res.error_message); 
+                        //             });
+                        //         }
+                        //     });
+                        // });
+                        // return;
+                
+    
+                    // //Click on create mobile app account
+                    // lnk = VSUtil.getElementByClass(e.target,'btn-create-app-account');
+                    // if(lnk){
+                    //     mThis.createAppAccount(lnk.dataset.id);
+                    //     return;
+                    // }
+    
+                    //Click on "Delete Special" => Force delete lead information and related data
+                    // lnk = VSUtil.getElementByClass(e.target,'btn-customer-delete-sepcial');
+                    // if(lnk){
+                    //     let op = {
+                    //         id: lnk.dataset.studentid
+                    //     };
+    
+                    //     cv_interact.confirm('You are about to delete this lead permanently. Are you sure to proceed?',{
+                    //         title: 'Delete Lead Permanently',
+                    //         context: 'delete'
+                    //     },(e) => {
+                    //         if(e){
+                    //             vsapi.call(`${main_view.base_url}/api/sales-module/lead/delete-special`,op,null).then(res => {
+                    //                 if(res.status_code === 200){
+                    //                     cv_interact.success('The lead has been deleted permanently');
+                    //                     mThis.listView.showPage(mThis.getFilterData());
+                    //                 }
+                    //                 else
+                    //                     cv_interact.error(res.error_message);
+                    //             });
+                    //         }
+                    //     });
+                    //     return;
+                    // }
+                });
             }
-        });
+        }
+
+        // mThis.tblCustomers.addEventListener('click', e => {
+        //     e.preventDefault();
+        //     //Click on action button;
+        //     let btn = VSUtil.getElementByClass(e.target, 'btn_sender_action');
+        //     //console.log(btn);
+        //     if(btn){
+        //         return;
+        //     }
+        // });
+
+        // document.addEventListener('click', e => {
+        //     //e.preventDefault();
+        //     if(!mThis.customer_dropdown_menu) return;
+        //     let container = mThis.sender_dropdown_menu.parent();
+        //     if(container){
+        //         if(!container.is(e.target) && container.has(e.target).length === 0){
+        //             mThis.sender_dropdown_menu.removeClass('show');
+        //         }
+        //     }
+        // });
 
         mThis.elSearch.on('keyup', () => {
             clearTimeout(mThis.search_timeout);
@@ -653,6 +704,7 @@ const CustomerDialog = new function(){
     this.elBusinessType =  this.self.find('#_cuslist_business_type');
     this.elSalesAgent =  this.self.find('#_cuslist_sales_agent');
     this.elPriceList =  this.self.find('#_cuslist_price_list');
+    this.elCustomerType = this.self.find('#_cuslist_sender_type') ;
     this.onClose = null;
     
     this.body = this.self.find('.modal-body')[0];
@@ -665,7 +717,8 @@ const CustomerDialog = new function(){
             let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
             VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No Sales Agent)', def.sales_agent_id);
             VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
-            VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'name', true, '(Price List)', def.price_list_id);
+            VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'price_list', true, '(Price List)', def.price_list_id);
+            VSUtil.setComboItems(mThis.elCustomerType,d.sender_types,'id','sender_type',true,'(Customer Type)',def.sender_type_id);
 
             mThis.form_data = d;
             onFinish(d);
@@ -680,6 +733,7 @@ const CustomerDialog = new function(){
             if(res.status_code === 200){
                 mThis.self.modal('hide');
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
+
             }
             else
                 cv_interact.error(res.error_message);
@@ -692,14 +746,14 @@ const CustomerDialog = new function(){
        // console.log('grth');
          
         mThis.prepareData(mThis.options.id,{},data => {
-            if(data.sender){
+            if(data.customer){
                 
                 mThis.elTitle.text("Modify Customer");
             }
             else{
                 mThis.elTitle.text("Create Customer");
             }
-            mThis.setData(data.sender);
+            mThis.setData(data.customer);
             mThis.self.modal({
                 backdrop: 'static'
             });
@@ -731,4 +785,6 @@ const CustomerDialog = new function(){
 
   
 }
+
+
  

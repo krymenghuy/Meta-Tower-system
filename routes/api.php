@@ -388,6 +388,7 @@ Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->grou
         Route::post('addMerchantToPriceList', [PriceController::class, 'addMerchantToPriceList']);
 
         Route::post('merchant/set-price-list', [SenderController::class, 'setPriceList']);
+        //Route::post('customer/set-price-list', [CustomerController::class, 'setPriceList']);
         Route::post('deletePriceZones', [PriceController::class, 'deletePriceZones']);
         //update only zone_codes list (price_list_id, org_zone_codes,zone_codes)
         Route::post('updateZoneCodes', [PriceController::class, 'updateZoneCodes']);
@@ -467,6 +468,7 @@ Route::prefix('customer')->group(function(){
     Route::post('/form-options',[CustomerController::class,'getFormOptions']);
     Route::post('/list',[CustomerController::class,'getList']);
 });
+
  
 //begin::DriverController
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('driver')->group(function(){

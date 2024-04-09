@@ -39,7 +39,7 @@
     <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-vertical="1" data-ktmenu-scroll="1" data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand kt-grid__item" id="kt_aside_brand">
             <div class="kt-aside__brand-logo pt-2">
-                <img src="{{ asset('assets/images/logo/houexpress.png') }}" alt="" class="img-logo" />
+                <img src="{{ asset('assets/images/logo/jto2.jpg') }}" alt="" class="img-logo" />
             </div>
             <div class="kt-aside__brand-tools">
                 <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler" style="padding:10px;font-size:1.3em !important">
@@ -88,12 +88,32 @@
                 </a>
             </li>
 
+           
+
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
                 <a href="SuppliersComponent" modid="202" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/package_trail.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Suppliers"></span>
+                </a>
+            </li>
+
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(214); ?>>
+                <a href="SeleAgentsComponent" modid="214" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/order_image.svg') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Sale Agents"></span>
+                </a>
+            </li>
+
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(203); ?>>
+                <a href="ShipmentsComponent" modid="203" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_fleet.svg') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Shipments"></span>
                 </a>
             </li>
 
@@ -106,22 +126,7 @@
                 </a>
             </li>
             
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(203); ?>>
-                <a href="TripListComponent" modid="203" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_fleet.svg') }}" />
-                    </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Fleet Management"></span>
-                </a>
-            </li>
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(204); ?>>
-                <a href="CompletedPackageListComponent" modid="204" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/complete_delivery.svg') }}" />
-                    </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Finished Packages"></span>
-                </a>
-            </li>
+           
             <li class="kt-menu__section" <?php v_display(null,[205,206,223,219,213]);?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Billings & Payments"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
@@ -186,14 +191,7 @@
                     <span class="kt-menu__link-text font-color trans-text text-nowrap" data-langprop="menus.Merchant Management"></span>
                 </a>
             </li>
-            <li class="kt-menu__item" aria-haspopup="true" style="display:none" <?php v_display(222);?>>
-                <a href="SalesAgentsComponent" modid="222" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_sale_staff.svg') }}" />
-                    </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Sales Agents"></span>
-                </a>
-            </li> -->
+            -->
             <li class="kt-menu__section" <?php v_display(null,[209]);?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Reports"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
@@ -218,19 +216,7 @@
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Settings"></span>
                 </a>
             </li>
-<<<<<<< HEAD
-
-       
-
-            
-
-         
-
-
-            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" <?php v_display(null,[106,218])?>>
-=======
             <!-- <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" <?php v_display(null,[106,218])?>>
->>>>>>> 1f07f0b53a159a477b8115ad001f2c193c325eed
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/mobile_setting.svg') }}" />
