@@ -102,6 +102,7 @@ namespace App\ScriptManagement;
 
                         //start Components abm
                         '/js/components/abm/DashboardComponent.js',
+                        '/js/components/abm/SuppliersComponent.js',
                         // '/js/components/abm/CustomersComponent.js',
                         '/js/components/abm/ShipmentsComponent.js',
                     ]

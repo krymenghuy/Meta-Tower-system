@@ -7,7 +7,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 
-class OverseaShipment //extends Model
+class Supplier //extends Model
 {   
     protected $id = null;
     protected $userInfo = null;
@@ -20,50 +20,41 @@ class OverseaShipment //extends Model
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'sender_id' => '1|number',
-            'zone_code'=>'1|number',
-            'to_country_id'=>'1|number',
-            'from_country_id'=>'0|number',
-            'primary_cp_id'=>'0|number',
-            'secondary_cp_id'=>'0|number',
-            'from_country_id'=>'0|number',
-            
-            'effective_weight'=>'0|number|default =0.00',
-            'actual_weight'=>'0|number|default =0.00',
-            'total_weight'=>'0|number|default =0.00',
-            'carrier_total_weight'=>'0|number|default =0.00',
-            'total_price'=>'0|number|default =0.00',
-            'carrier_cost'=>'0|number|default =0.00',
-            'carrier_special_charge'=>'0|number|default =0.00',
-            'total_carrier_cost'=>'0|number|default =0.00',
-            'total_special_charge'=>'0|number|default =0.00',
-            'total_price'=>'0|number|default =0.00',
-
-            'receiver_name'=>'0|string|1,150',
-            'receiver_address'=>'0|string|1,250',
-            'remarks'=>'0|string|1,200',
-            'status_id'=>'0|number|default =1',
-            
-
+            'name' => '1|string|1-150',
+            'phone_number'=>'1|string|1-20',
+            'email'=>'0|string',
+            'address'=>'0|number',
+            'sales_agent_id'=>'0|number',
+            'price_list_id'=>'0|number',
+            'status_code'=>'0|string|default =active',
         ];
-        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+        $eml_char = ['$','#','@','!','.','-','_','=','?'];
+        $res = validateObject($arr,$v_rule,1,['email'=>$eml_char],$ss->lang,0,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         // return JDV::result($inputs);
-
-        // $check = isExist('shipments',$id,['description'=>$inputs['description']]);
-        // if($check) return DV::error('Requirement is already to save...');
-        $save = saveData($ss,'os_shipments',['id'=>$id],$inputs,[],1,0);   
+        $phone_err = $this->checkUniquePerson($branch_id,$inputs['phone_number'],$id);
+        if ($phone_err) return DV::error( $phone_err);  
+        // $check = isExist('suppliers',$id,['phone_number'=>$inputs['phone_number']]);
+        // if($check) return DV::error('Phone number is already save...');
+        $save = saveData($ss,'suppliers',['id'=>$id],$inputs,[],1,0);   
         return DV::depends($save,['action'=>'saved']);
 
     }
 
-    function getOverseaShipmentList(){
+    function getSuplierList(){
         // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());
-        return DB::table('os_shipments')->selectRaw('id,sender_id, remarks, zone_code, status_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->get();
+        return DB::table('suppliers')->selectRaw('id,name, phone_number, email, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->get();
     }
 
-    
+    function checkUniquePerson($branch_id,$phone_number,$id=null){
+        $str_id ="1=1";
+        if(!$phone_number) return 'Phone number cannot be empty';
+        if ($id>0) $str_id="s.id <> $id";
+        $x = DB::table('suppliers as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+        if ($x) return 'Phone number "'.$phone_number.'" is already save...';
+        return null;
+      }
 
     function getOverseaItemList(){
         // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());

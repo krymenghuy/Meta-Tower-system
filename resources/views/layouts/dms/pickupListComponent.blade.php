@@ -314,8 +314,8 @@
                 </div>
             </div>
         </div>
-        <div id="order_list_wrapper" class="shadow-lg bg-white rounded-3 border p-3 mt-3" style="min-height:43vw">
-            <div id="_pkl_div_order_list" class="overflow-hidden w-100"></div>
+        <div id="order_list_wrapper" class="shadow-lg bg-white rounded-3 border p-3 mt-3 overflow-auto" style="min-height:3vw">
+            <div id="_pkl_div_order_list" class="overflow-auto w-100"></div>
         </div>
     </div>
 </div>

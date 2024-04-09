@@ -778,6 +778,7 @@ var PickupListComponent = new function () {
 
             let iType = 'text';
             if (['delivery_type', 'df_payer', 'cod'].indexOf(c) >= 0) iType = 'select';
+            // if (['delivery_type', 'df_payer', 'cod'].indexOf(c) >= 0) iType = 'select';
             else if (c === 'zone_code') iType = 'select2';
             else if (c === 'receiver_phone') iType = 'phone';
             else if (['delivery_fee', 'base_fee', 'price', 'fees', 'actual_kg', 'billed_kg', 'driver_total'].indexOf(c) >= 0) iType = 'number';
@@ -823,7 +824,7 @@ var PickupListComponent = new function () {
           '<th>',
           '<div class="d-flex justify-content-between align-items-center gap-2">',
           '<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" style="font-weight:bold;width:50px" class="pkl-lnk_add_item"><div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-plus fs-5 text-success"></i><span class="fs-5-08">Add</span></div></a>',
-          //'<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" class="pkl_btn_magic_entry"><i class="fa fa-cube fs-5 text-warning"></i></a>',
+          '<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" class="pkl_btn_magic_entry"><i class="fa fa-cube fs-5 text-warning"></i></a>',
           '</div>',
           '</th>',
           '<th>TYPE</th>',
@@ -845,7 +846,9 @@ var PickupListComponent = new function () {
       }
 
     this.createPackageTable_html = (order_id,sender_id)=>{
-       let html = [`<table class="pkl-package-table table">`,mThis.createPackageTable_thead_html(order_id,sender_id),`<tbody></tbody>`,`</table>`].join('');
+       let html = [`<table class="pkl-package-table table">`,
+                        // mThis.createPackageTable_thead_html(order_id,sender_id),
+                    `<tbody></tbody>`,`</table>`].join('');
        return html; 
     }
 
@@ -860,7 +863,7 @@ var PickupListComponent = new function () {
         } 
         let tbody = table.querySelector('tbody');
         let tr_id = DUtil.createGUID();
-        
+        // console.log(tr_id);
         /**
          * Set defeault object "d" that must be at least {"order_id","sender_id","status_id",[barcode]}
          * price = 0, fees =0  are all default values when creating new item
@@ -868,6 +871,7 @@ var PickupListComponent = new function () {
         
         if (!d) d = {"sender_id":sender_id,"order_id":order_id,"status_id":1,"fees":0,"price":0};
         let html_row = this.createItemRow_html(d,tr_id);
+        console.log(html_row);
         //prepend html string to tbody
         tbody.insertAdjacentHTML('afterbegin',html_row);
         let new_tr = tbody.querySelector(['tr#', tr_id].join(''));
@@ -1063,6 +1067,7 @@ var PickupListComponent = new function () {
                     if (!c) break;
                     c.order_id = order_id;
                     html = [html,mThis.createItemRow_html(c,null)].join('');
+                    html = ``;
                     i++;
                 } while (c);
                 if (i > 0){
@@ -1377,7 +1382,7 @@ var PickupListComponent = new function () {
             mThis.pkl_prev_editing_row = null;
             return;
         }
-
+        console.log(p);
         vsapi.call([main_view.base_url, '/api/order/package-details'].join(''), p).then(res => {
             if (res) {
                 let d = StringSanitizer.sanitizeObject(res.data,null,['size']);
@@ -1532,6 +1537,7 @@ var PickupListComponent = new function () {
         let i = 0;
         tr.querySelectorAll('td').forEach(td =>{
             let col_name = td.dataset.field;
+            console.log(col_name);
             if (i === 0) {
                 let html_buttons;
                 html_buttons = ['<div class="edit-actions d-flex flex-row gap-2 mt-3">',
@@ -1542,9 +1548,9 @@ var PickupListComponent = new function () {
                 td.innerHTML = null;
                 td.insertAdjacentHTML('beforeend',html_buttons);
             }
-
             if (i > 0) {
                 let val = data[col_name];
+               
                 let disp_value = val;
                 switch (col_name) {
                     case 'cod': {
@@ -1566,7 +1572,9 @@ var PickupListComponent = new function () {
                     }
                     case 'delivery_type': {
                         disp_value = DUtil.properCase(disp_value);
-                        break;
+                        // disp_value = null;
+                        // console.log(disp_value);
+                        break; 
                     }
                     case 'size': {
                         disp_value = null;
@@ -1590,6 +1598,7 @@ var PickupListComponent = new function () {
                 td.innerHTML = null;
                 let field_name = td.dataset.field;
                 let inputType = td.dataset.inputtype;
+                console.log(inputType);
                 let input_html;
                 let is_readOnly = null;
                 let readOnly = 0;
@@ -1660,12 +1669,11 @@ var PickupListComponent = new function () {
   
         //Set onChange, onClick, onBlur event handler for SELECT, INPUT elements on this row "tr" for editing item
         mThis.setEditor_events(tr);
-
         tr.dataset.editing = 1;
         mThis.pkl_prev_editing_row = tr;
 
         if (data) {
-            if (!data.delivery_type) data = null;
+        if (!data.delivery_type) data = null;
         }
         mThis.org_item_data = data;
     }

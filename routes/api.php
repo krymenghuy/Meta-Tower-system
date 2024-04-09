@@ -45,6 +45,7 @@ use App\Models\SystemSetting;
 
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\abm\OverseaShipmentController;
+use App\Http\Controllers\abm\SupplierController;
 
 /*
 /*
@@ -263,6 +264,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
 Route::middleware([CustomRateLimiter::class])->prefix('shipments')->group(function(){
     Route::post('/save', [ShipmentController::class, 'save']);
     Route::post('/list', [ShipmentController::class, 'getShipmentList']);
+});
+Route::middleware([CustomRateLimiter::class])->prefix('os_suppliers')->group(function(){
+    Route::post('/save', [SupplierController::class, 'save']);
+    Route::post('/list', [SupplierController::class, 'getSuplierList']);
 });
 Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->group(function(){
     Route::post('/save', [OverseaShipmentController::class, 'save']);

@@ -1,9 +1,9 @@
 'use strict';
-var SenderListComponent = new function(){
+var SuppliersComponent = new function(){
     const mThis = this;
-    this.title_prop = "Merchants";
+    this.title_prop = "Supplier";
     this.base_url = main_view.base_url;
-    this.self = main_view.appContent.children('#_main_senderListComponent');
+    this.self = main_view.appContent.children('#_main_suppliersComponent');
     this.elFilter_business_type = mThis.self.find('#_sdl_filter_business_type');
     this.elFilter_sender_status = mThis.self.find('#_sdl_filter_sender_status');
     this.div_filter_fields = mThis.self.find('#_sdl_filter_fields')[0];
