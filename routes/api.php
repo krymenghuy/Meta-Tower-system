@@ -270,6 +270,7 @@ Route::middleware([CustomRateLimiter::class])->prefix('shipments')->group(functi
 Route::middleware([CustomRateLimiter::class])->prefix('os_suppliers')->group(function(){
     Route::post('/save', [SupplierController::class, 'save']);
     Route::post('/list', [SupplierController::class, 'getSuplierList']);
+    Route::post('/list-paginate', [SupplierController::class, 'getSuplierListPaginate']);
 });
 Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->group(function(){
     Route::post('/save', [OverseaShipmentController::class, 'save']);
@@ -386,6 +387,7 @@ Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->grou
         Route::post('addMerchantToPriceList', [PriceController::class, 'addMerchantToPriceList']);
 
         Route::post('merchant/set-price-list', [SenderController::class, 'setPriceList']);
+        Route::post('os_suppliers/set-price-list', [SupplierController::class, 'setSupplierPriceList']);
         Route::post('deletePriceZones', [PriceController::class, 'deletePriceZones']);
         //update only zone_codes list (price_list_id, org_zone_codes,zone_codes)
         Route::post('updateZoneCodes', [PriceController::class, 'updateZoneCodes']);

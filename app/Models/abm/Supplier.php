@@ -3,10 +3,11 @@
 namespace App\Models\abm;
 use DB;
 use App\Models\DV;
+use App\Models\JDV;
 use Illuminate\Pagination\LengthAwarePaginator;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
-
+use Sanitizer;
 class Supplier //extends Model
 {   
     protected $id = null;
@@ -77,7 +78,7 @@ class Supplier //extends Model
         ];
     }
     
-    function ListPaginate($filter,$ss){
+    function getSuplierListPaginate($filter,$ss){
         $branch_id = $ss->branch_id;
         $d = (object)$filter;
         // return JDV::result($filter->page);
@@ -85,32 +86,43 @@ class Supplier //extends Model
         $current_page = isset($d->current_page)?$d->current_page:1;
         $per_page = isset($d->per_page)?$d->per_page:10;
         $search_value = isset($d->search_value)?$d->search_value:null;
-        $project_id = isset($d->project_id)?$d->project_id:null;
+        $price_list_id = isset($d->price_list_id)?$d->price_list_id:null;
         $str_srch = '1=1';
         $str_where = '1=1';
         if($search_value){
             $skip_row = 0;
-            $str_srch = '(r.name LIKE \'%'.$search_value.'%\')';
+            $str_srch = '(s.name LIKE \'%'.$search_value.'%\')';
         }
-        if($project_id){
-            $str_where = 'r.project_id = '.$project_id;
+        if($price_list_id){
+            $str_where = 's.price_list_id = '.$price_list_id;
         }
         $skip_row = ($current_page - 1) * $per_page;
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
        // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
-        $query = DB::table('requirements as r')
-                ->join('projects as p', 'r.project_id', '=', 'p.id')
-                ->join('project_statuses as s','r.status_id','=','s.id') // Perform an inner join
+        $query = DB::table('suppliers as s')
                 ->whereRaw($str_srch)
                 ->whereRaw($str_where)
-                ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
+                ->selectRaw('s.id as code, s.name, s.phone_number, s.email, s.address, s.status_code, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.status_code,s.sales_agent_id,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' );
        
         $clone_query = clone $query;
-        $count = $clone_query->count('r.id');
-        $login_accounts = DB::table('um_users')->selectRaw('official_id')->get();
+        $count = $clone_query->count('s.id');
+        // $login_accounts = DB::table('um_users')->selectRaw('official_id')->get();
         $rows = $query->skip($skip_row)->take($per_page)->get();
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
     }
+
+    function setPriceList($price_list_id,$id=null,$ss =null){
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+        $branch_id = Sanitizer::sanitize($ss->branch_id);
+        $p = getDataRow('price_list_names',["id"=>$price_list_id],"id,name");
+        if(!$p) return DV::error("Price list ID is not valid");
+        $p_name = $p->name;
+        DB::table('suppliers')->where('id',$id)->update(array(
+        'price_list_id'=>$price_list_id));
+        // return JDV::result($price_list_id );
+        return DV::success(['list_name'=>$p_name,'list_id'=>$price_list_id]);
+      }
 
     function details($id,$ss){
         $id = $id ?? $this->id;

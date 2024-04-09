@@ -116,7 +116,7 @@ class SenderController extends Controller
       return JDV::raw($res);
    }
 
-   function setPriceList(Request $req){
+   function setSupplierPriceList(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
       $id = $req->sender_id? $req->sender_id:$req->id;
