@@ -260,12 +260,12 @@ var CustomerListComponent = new function(){
             container.style.display = 'block';
         }, 200);
 
-        const parent = container.parentElement;
-        parent.style.height = (window.innerHeight - 210)+'px';
-        parent.classList.add('overflow-y-auto');
-        window.onresize = () => {
+            const parent = container.parentElement;
             parent.style.height = (window.innerHeight - 210)+'px';
-        }
+            parent.classList.add('overflow-y-auto');
+            window.onresize = () => {
+                parent.style.height = (window.innerHeight - 210)+'px';
+            }
     };
 
     this.chooseImage = (div) => {

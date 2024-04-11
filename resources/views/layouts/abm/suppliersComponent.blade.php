@@ -1,3 +1,21 @@
+<style>
+    .btn-act{
+        padding: 4px 20px;
+        color: #008767;
+        background-color: #16c0985c;
+        border: 2px solid #008767;
+    }
+    td .d-block{
+        padding: 18px 0;
+    }
+    .kt-aside--fixed .kt-aside {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 98;
+  }
+</style>
 <div id="_main_suppliersComponent" style="display:none;margin:15px">
     <div class="d-flex justify-content-between shadow rounded-3 p-3 bg-white">
         <div class="d-flex gap-2">
@@ -34,8 +52,8 @@
             </button>
         </div>
     </div>
-    <div class="rounded-3 mt-3 bg-transparent">
-        <div id="_sdl_sender_list"></div>
+    <div class="rounded-3 mt-3 bg-white ">
+        <div id="_sdl_sender_list" ></div>
     </div>
 </div>
 

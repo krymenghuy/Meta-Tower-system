@@ -5,8 +5,6 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <link rel="icon" type="image/png" href="background-image.png"/>
         <title>DELIVERY HOUEXPRESS</title>
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script>
             function checkDevice(){
                 if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
@@ -32,16 +30,8 @@
                 width:100vw;
                 height:100vh;
                 position: absolute;
-                overflow:hidden;   
-                background: #f69a9e;
-                background-image: linear-gradient(180deg, rgb(240 233 233 / 0%) 0%, rgb(254 250 251) 100%);
-            }
-            /* .vs-container-login{
-                width:100%;
-                height:100%;
-                position: absolute;
                 overflow:hidden;
-            } */
+            }
 
             .vs-container-login .img-background{
                 width:100vw;
@@ -50,7 +40,7 @@
                 background-size: cover;
                 background-repeat: no-repeat;
                 overflow: hidden;
-                /* filter:blur(2px); */
+                filter:blur(2px);
             }
 
             .login-frame{
@@ -62,21 +52,10 @@
                 justify-content:center;
             }
 
-            .login-frame .img-background{
-                width:80vw;
-                height:100vh;
-                position:absolute;
-                background-size: cover;
-                background-repeat: no-repeat;
-                overflow: hidden;
-                /* filter:blur(2px); */
-            }
-
             .login-frame .vs-container-front-img{
-                width:80vw;
+                width:70vw;
                 height:80vh;
-                /* background-color:#00001010; */
-                /* background-image: url({{ asset('assets/images/logo/houxepress2.png') }}); */
+                background-color:#FFFF;
                 display:flex;
                 align-items:center;
                 justify-content:center;
@@ -101,16 +80,13 @@
                 flex-direction:column;
             }
             .vs-login .vs-title{
-                padding: 40px 50px 20px;
-                font-size:25px;
-                color:#EC1D27;
+                font-size:50px;
                 /* margin-bottom:3vh; */
                 /* color:#fff; */
             }
 
             .vs-login .vs-form-group{
-                /* width:75%; */
-                padding: 0 50px 20px;
+                width:80%;
             }
 
             .vs-login .vs-form-group .vs-d-flex{
@@ -121,19 +97,19 @@
 
             .vs-login .vs-form-group .vs-d-flex .vs-form-label{
                 /* color:#fff; */
-                font-size:18px;
+                font-size:20px;
                 padding:25px 10px  10px;
             }
 
             .vs-login .vs-form-group .vs-d-flex .vs-form-control{
                 width:100%;
-                height:40px;
-                border-radius:10px;
+                height:50px;
+                border-radius:60px;
                 border:none;
                 outline:none;
                 padding:5px 15px;
-                font-size:14px;
-                background: #FFFFFF;
+                font-size:16px;
+                background: #F4F4F4;
             }
 
             ::placeholder{
@@ -150,15 +126,14 @@
             }
 
             .vs-login .vs-form-group .vs-d-flex-btn .btn-login{
-                width: 65%;
-                height: 30px;
-                border-radius: 50px;
-                border: 2px solid #DD4032;
-                background-color: #DD4032;
-                font-size: 14px;
-                color: #fff;
-                cursor: pointer;
-                margin: 20% 0;
+                width:80%;
+                height:50px;
+                border-radius:10px;
+                border:2px solid #8DC63F;
+                background-color:#8DC63F;
+                font-size:20px;
+                color:#fff;
+                cursor:pointer;
             }
 
             .vs-login .vs-d-flex-copyright{
@@ -174,13 +149,11 @@
             }
 
             .vs-login .vs-form-login{
-                height:100%;
-                width:80%;
-                border-radius:40px;
-                background-color:#FFFC;
+                height:80%;
+                width:100%;
                 display:flex;
-                /* align-items:center; */
-                /* justify-content:center; */
+                align-items:center;
+                justify-content:center;
                 flex-direction: column;
             }
 
@@ -199,40 +172,12 @@
                 position: absolute;
                 /* background-color: #00000073; */
             }
-            .vs-form-login .logo {display: none;}
-            @media screen and (max-width:1025px){
-                .vs-login .vs-form-group{ padding: 0 25px 20px; }
-                .vs-login .vs-form-group .vs-d-flex .vs-form-label{ padding: 20px 0px 10px;}
-                .vs-login .vs-form-login{ border-radius: 30px;}
-                .vs-login .vs-title{ padding: 30px 25px 10px;}
-                .login-frame .vs-container-front-img { width: 85vw;}
-                .login-frame .img-background{ width: 85vw;}
-            }
-            @media screen and (max-width:820px){
-                .login-frame .vs-container-front-img{ width:100vw;}
-                .vs-login .vs-form-group{ padding: 0 20px 20px; }
-            }
-            @media screen and (max-width:769px){
-                .login-frame .vs-container-front-img { width: 100vw;}
-                .login-frame .img-background{ width: 95vw;}
-            }
-            @media screen and (max-width:601px){
-                .login-frame .vs-container-front-img .img-front{display: none;}
-                .vs-login .vs-form-login{ width: 100%; background-color:#fff;}
-                .vs-login .vs-form-group .vs-d-flex .vs-form-control{background: #fef6f7;}
-                .vs-form-login .logo {width: 100px;}
-                .vs-login .vs-title{ padding: 10px 20px 0;}
-                .vs-login .vs-form-group .vs-d-flex .vs-form-label{ padding: 10px 0px 10px;}
-                .login-frame .vs-container-front-img .vs-login{width: 60%;}
-                .vs-form-login .logo {display: flex;}
-                .vs-login .vs-form-group .vs-d-flex-btn .btn-login{ margin: 10% 0;}
-            }
-            @media screen and (max-width:601px){
-                .login-frame .vs-container-front-img .vs-login{width: 80%;}
-                .vs-form-login .logo {display: flex;}
 
+            @media screen and (max-width:820px){
+                .login-frame .vs-container-front-img{
+                    width:96vw;
+                }
             }
-           
 
             /* @media screen and (min-width:821px) and (max-width:1500px){
                 .login-frame .vs-container-front-img{
@@ -241,24 +186,18 @@
             } */
         </style>
     </head>
-    <body 'onload="checkDevice()"'>
+    <body onload="checkDevice()">
         <div class="vs-container-login">
             <div>
-                <!-- <img class="img-background" src="{{ asset('assets/images/logo/houxepress4.svg') }}"/> -->
+                <img class="img-background" src="{{ asset('assets/images/logo/background_1.png') }}"/>
                 <div class="overlay-blur"></div>
             </div>
-            
             <div class="login-frame">
-                <img class="img-background rounded-2" src="{{ asset('assets/images/logo/houxepress2.png') }}"/>
                 <div class="vs-container-front-img">
-                    <div class="img-front"></div>
-                    <!-- <img class="img-front" src="{{ asset('assets/images/logo/login_2.png') }}"/> -->
+                    <img class="img-front" src="{{ asset('assets/images/logo/login_1.png') }}"/>
                     <div class="vs-login">
                         <div class="vs-form-login">
-                            <div class="d-lg-none m-2 d-flex justify-content-center">
-                                <img class="logo" src="{{ asset('assets/images/logo/houexpress1.png') }}"/>
-                            </div>
-                            <h1 class="vs-title">Login</h1>
+                            <h1 class="vs-title">WELCOME</h1>
                             <div class="vs-form-group">
                                 <form action="{{ url('/processLogin') }}" method="POST">
                                     {{ csrf_field() }}
@@ -281,10 +220,10 @@
                                 </form>
                             </div>
                         </div>
-                        <!-- <div class="vs-d-flex-copyright">
+                        <div class="vs-d-flex-copyright">
                             <p>Vectorasoft Co.,LTD.</p>
                             <p>Copyright &copy 2023. All rights reserved</p>
-                        </div> -->
+                        </div>
                     </div>
                 </div>
             </div>
