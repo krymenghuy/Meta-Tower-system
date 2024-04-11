@@ -387,6 +387,7 @@ var ShipmentsComponent = new function () {
             rowCreated:(data,index,tr)=>{
                 console.log(data.id);
               tr.dataset.id = data.id;  
+              tr.classList.add('order');
               tr.classList.add('shipment');
               tr.setAttribute('id',['shipment_',data.id].join('')); 
             //   tr.dataset.statusid = data.status_id;
@@ -517,7 +518,7 @@ var ShipmentsComponent = new function () {
             let btn = VSUtil.closestLimited(e.target, '.btn_pickup_action');
             if (btn) {
                 let p = btn.parentElement;
-                let order_id = btn.dataset.id;
+                let shipment_id = btn.dataset.id;
                 let sender_id = btn.dataset.senderid;
                 let status_id = btn.dataset.statusid;
         
@@ -1982,9 +1983,9 @@ var ShipmentsComponent = new function () {
         // }
     }
 
-    this.createDropdownMenuHtml_pickup = function (order_id, sender_id, status_id) {
-        let html = ['<div class="dropdown-menu bg-white shadow" data-orderid="', order_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '">',
-            '<a class="dropdown-item _pl_pa_assign_driver" href="javascript:void(0)"><i class="fa fa-biking" data-orderid="', order_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '"></i> Assign Driver (Pickup)</a>',
+    this.createDropdownMenuHtml_pickup = function (shipment_id, sender_id, status_id) {
+        let html = ['<div class="dropdown-menu bg-white shadow" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '">',
+            '<a class="dropdown-item _pl_pa_assign_driver" href="javascript:void(0)"><i class="fa fa-biking" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '"></i> Assign Driver (Pickup)</a>',
             '<a class="dropdown-item _pl_pa_receive" href="javascript:void(0)"><i class="fa fa-shipping-fast"></i> Arrive</a>',
             '<div class="dropdown-divider"></div>',
             '<a class="dropdown-item _pl_pa_delete" href="javascript:void(0)"><i class="fa fa-trash" style="color:red"></i> Delete Pickup</a>',
