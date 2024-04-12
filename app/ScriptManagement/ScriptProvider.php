@@ -99,13 +99,17 @@ namespace App\ScriptManagement;
                         'assets/js/pusher/pusher.min.js',
                         '/js/components/abm/pusher_client_houxpress.js',
                         //'/js/components/abm/pusher_client_dms.js'
-
+                        'j
+                        s/components/dms/ReportCenterComponent.js',
+                        //'/assets/js/InputBoxes.js',
                         //start Components abm
 
                         '/js/components/abm/CustomersComponent.js',
                         '/js/components/abm/CountryZonesComponent.js',
+                        '/js/components/abm/SalesAgentsComponent.js',
                         
                         '/js/components/abm/DashboardComponent.js',
+                        '/js/components/abm/SuppliersComponent.js',
                         // '/js/components/abm/CustomersComponent.js',
                         '/js/components/abm/ShipmentsComponent.js',
                     ]

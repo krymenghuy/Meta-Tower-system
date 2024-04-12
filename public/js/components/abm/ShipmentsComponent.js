@@ -1107,6 +1107,7 @@ var ShipmentsComponent = new function () {
                 let sender_id = btn.dataset.senderid;
                 div.dataset.shipmentid = shipment_id;
                 div.dataset.senderid = sender_id;
+                // console.log(div.dataset.senderid);
                 //const item_table = btn.closest('table.pkl-package-table');  
                 //const editing_tr = mThis.getCurrentEditingRow(item_table);
                 if (mThis.shm_prev_editing_row){
@@ -1188,7 +1189,7 @@ var ShipmentsComponent = new function () {
     }
     //displayItemList  | renderPackageTable
     this.displayOverseaItems = (div, shipment_id,sender_id,btn=null) => {
-        let p = { 'shipment_id':  shipment_id};
+        let p = { 'id':  shipment_id};
         console.log(p);
         // const content_panel_class = 'pkl-order-content';
         // const div = container.querySelector(content_panel_class);
@@ -1196,7 +1197,7 @@ var ShipmentsComponent = new function () {
         div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
         let html = '';
         const header_cols = mThis.createPackageTable_thead_html(shipment_id,sender_id);
-        vsapi.call([mThis.base_url, '/api/oversea_shipments/item-list'].join(''), p,btn,false,null).then(res => {
+        vsapi.call([mThis.base_url, '/api/oversea_shipments/item-list'].join(''), p,null,null,null).then(res => {
             if (res.status_code === 200) {
                 let packages = StringSanitizer.sanitizeObject(res.data,null,['size']);
                 let i = 0, c =null;
@@ -1590,20 +1591,23 @@ var ShipmentsComponent = new function () {
         if (!tr) return;
         //tr is the package tr , NOT shipment_tr
         let p = mThis.getItem(tr);
-        p.order_id = tr.dataset.orderid;
-        p.package_id = tr.dataset.id;
 
-        vsapi.call([mThis.base_url, '/api/order/save-package'].join(''), p, lnk).then(res => {
+        p.shipment_id = tr.dataset.shipmentid;
+        console.log(tr.dataset.shipmentid);
+        // p.package_id = tr.dataset.id;
+
+        vsapi.call([mThis.base_url, '/api/oversea_shipments/create-item'].join(''), p, lnk).then(res => {
             if (res.status_code === 200) {
                 let data = res.data;
                 let packageInfo = StringSanitizer.sanitizeObject(data.package,null,['size','receiver_address']);
+                console.log(packageInfo);
+                console.log(data.item_type);
+                if (!data.item_type) console.error('Problem in api/order/save-package because this method returns delivery_type (result.data.delivery_type) as NULL or empty');
+                // data.item_type = (packageInfo.item_type || '').toLowerCase();
 
-                if (!data.delivery_type) console.error('Problem in api/order/save-package  because this method returns delivery_type (result.data.delivery_type) as NULL or empty');
-                data.delivery_type = (packageInfo.delivery_type || '').toLowerCase();
-
-                tr.dataset.id = packageInfo.package_id;
-                tr.dataset.codfee = packageInfo.cof_fee;
-                tr.dataset.barcode = packageInfo.barcode;
+                // tr.dataset.id = packageInfo.package_id;
+                // tr.dataset.codfee = packageInfo.cof_fee;
+                // tr.dataset.barcode = packageInfo.barcode;
                 const lnk_barcode = tr.querySelector('td.col_action .pkl_btn_print_barcode');
                 if(lnk_barcode) lnk_barcode.dataset.barcode = packageInfo.barcode;
                 if (data.price_error) cv_interact.warning(data.price_error);
@@ -1631,7 +1635,7 @@ var ShipmentsComponent = new function () {
                 let refresh_from_database = false;
                 if (!mThis.org_item_data || !mThis.org_item_data.delivery_type) refresh_from_database = true;
                 
-                mThis.setItemReadOnly(mThis.shm_prev_editing_row, refresh_from_database, mThis.org_item_data);
+                // mThis.setItemReadOnly(mThis.shm_prev_editing_row, refresh_from_database, mThis.org_item_data);
                 mThis.makeRowEditable(tr,data);
 
                 // mThis.saveItem(mThis.pkl_prev_editing_row,lnk,(success)=>{
@@ -1657,24 +1661,26 @@ var ShipmentsComponent = new function () {
 
     /** make item row editable */
     this.makeRowEditable = (tr,data)=>{
-        const readOnlyFields = ['fees', 'base_fee', 'delivery_fee', 'driver_total'];
+        // const readOnlyFields = ['fees', 'base_fee', 'delivery_fee', 'driver_total'];
         const def_min_width ='90px';
         const minWidths = {
-            "cod":"100px",
-            "delivery_type":"150px",
-            "df_payer":"150px",
-            "size":"200px",
-            "zone_code":"200px",
-            "zone_name":"200px",
-            "receiver_phone":"200px",
-            "remarks":"250px",
-            "receiver_address":"220px",
-            "price":"120px"
+            // "cod":"100px",
+            "item_type":"150px",
+            "billed_weight":"200px",
+            "actual_weight":"200px",
+            "allocated_kg":"200px",
+            "heigth":"200px",
+            "weigth":"200px",
+            // "remarks":"250px",
+            "length":"200px",
+            // "price":"120px"
         };
          
         let i = 0;
         tr.querySelectorAll('td').forEach(td =>{
             let col_name = td.dataset.field;
+            console.log(col_name);
+
             if (i === 0) {
                 let html_buttons;
                 html_buttons = ['<div class="edit-actions d-flex flex-row gap-2 mt-3">',
@@ -1733,16 +1739,17 @@ var ShipmentsComponent = new function () {
                 td.innerHTML = null;
                 let field_name = td.dataset.field;
                 let inputType = td.dataset.inputtype;
+                console.log(inputType);
                 let input_html;
                 let is_readOnly = null;
                 let readOnly = 0;
 
-                if (readOnlyFields.indexOf(col_name) >= 0) readOnly = 1;
-                if (readOnly == 1 || readOnly==true) {
-                    if (['number','phone','email','input','text'].indexOf(inputType) >=0 || !inputType)
-                        is_readOnly = " readonly";
-                    else if (['select2','select'].indexOf(inputType) >=0) is_readOnly = " disabled";
-                }
+                // if (readOnlyFields.indexOf(col_name) >= 0) readOnly = 1;
+                // if (readOnly == 1 || readOnly==true) {
+                //     if (['number','phone','email','input','text'].indexOf(inputType) >=0 || !inputType)
+                //         is_readOnly = " readonly";
+                //     else if (['select2','select'].indexOf(inputType) >=0) is_readOnly = " disabled";
+                // }
                 let style_min_width = minWidths[field_name]? [' style="min-width: ',minWidths[field_name],';"'].join('') : ['style="min-width:',def_min_width,'" '].join('');
                 if (inputType === 'number')
                     input_html = ['<input type="number" class="form-control col-input" value="', val, '" ',style_min_width, is_readOnly, '>'].join('');
@@ -1767,10 +1774,10 @@ var ShipmentsComponent = new function () {
                         items = [{ 'id': 1, 'text': 'Yes' }, { 'id': 0, 'text': 'No' }];
                         if (!def) def = 1;
                     }
-                    else if (field_name === 'delivery_type') {
-                        items = [{ 'id': 'normal', 'text': 'Normal' }, { 'id': 'fast', 'text': 'Fast' }];
-                        def = data.delivery_type ? (data.delivery_type + '').toLowerCase() : null;
-                        if (!def) def = 'normal';
+                    else if (field_name === 'item_type') {
+                        items = [{ 'id': 'doc', 'text': 'doc' }, { 'id': 'non-doc', 'text': 'non-doc' }];
+                        def = data.item_type ? (data.item_type + '').toLowerCase() : null;
+                        if (!def) def = 'doc';
                     }
                     else if (field_name === 'df_payer') {
                         items = [{ 'id': 'sender', 'text': 'Sender'}, {'id': 'receiver', 'text': 'Receiver' }];

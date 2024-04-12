@@ -434,8 +434,11 @@ var DriverListComponent = new function(){
               let p = {"driver_id":driver_id,"status_code":d.value}; 
               vsapi.call([mThis.base_url,'/api/driver/update-status'].join(''),p).then(res=>{
                   if(res.status_code === 200) {
-                      cv_interact.success('Driver status has been updated!');
-                      mThis.driverListView.showPage(mThis.getFilterData());
+                    cv_interact.success('Driver status has been updated!');
+                    mThis.driverListView.showPage(mThis.getFilterData());
+                    // mThis.self.siblings().hide();
+                    // mThis.self.hide().fadeIn(250);	
+                    // mThis.hide();
                   }else cv_interact.error(res.error_message); 
               });
            }

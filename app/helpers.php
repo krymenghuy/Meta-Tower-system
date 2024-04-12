@@ -883,6 +883,10 @@ function createUUIDV1()
         }
         return $out;
     }
+    function isExist($tbl_name,$pk_id,$findCols=[]){
+        $pk_id = DB::table($tbl_name)->where('id','<>',$pk_id)->where($findCols)->take(1)->value('id');
+        return $pk_id>0?true:false;
+    }
 
     //compress Image Size
     //default max_size to 500 KB

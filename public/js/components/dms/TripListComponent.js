@@ -18,7 +18,6 @@ var TripListComponent = new function() {
     
     this.btnPrint = this.self.find('#_trl_btnPrint');
     this.btnPDF = this.self.find('#_trl_btnPDF');
-    this.btnExcel = this.self.find('#_trl_btnExcel');
     this.trip_list_pane = this.self.find('#_trl_trip_list_panel');
     //prev_pacakge_detail_tr is Must be declared within another class named "PackageList"
     // this.prev_package_detail_tr =null;

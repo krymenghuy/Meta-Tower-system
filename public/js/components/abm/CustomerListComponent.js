@@ -12,15 +12,14 @@ var CustomerListComponent = new function(){
     this.elSearch = mThis.self.find('#_cuslist_Search');
     this.btnSearch = mThis.self.find('#_cuslist_btnSearch');
    // this.btn_filter = mThis.self.find('$cuslist_btnFilter');
-    this.btnPrint = mThis.self.find('#_cuslist_btnPrint');
-    this.btnPDF = mThis.self.find('#_cuslist_btnPDF');
+    this.btnPrint = mThis.self.find('#_cuslist_btnPrint')[0];
+    this.btnExcel = mThis.self.find('#_cuslist_btnExcel')[0];
 
    
 
 
     this.setMerchantPriceList = (sender_id,name=null,span=null,def_price_list_id=null) => {
         mThis.getPriceListItems((items)=>{
-            // console.log();
             items.unshift({
                 id: null,
                 name: 'Select price list'
@@ -56,19 +55,13 @@ var CustomerListComponent = new function(){
                         }
                         else
                             cv_interact.error(res.error_message); 
-                    });
-                    
-                }
-                return;
-                
+                    });   
+                } 
             });
-    
-            
         });
     }
  
     this.renderCustomers = (container, data) => {
-       // console.log(data);
         let html = '';
         let cnt = 0;
         container.style.display = 'none';
@@ -79,36 +72,11 @@ var CustomerListComponent = new function(){
                 name: item.name,
                 phone_number: item.phone_number
             };
-           // let bank_account_html = `<span class="fw-semibold text-danger">គ្មាន</span>`;
             let created_by = `<span class="d-block fw-sembold">${item.create_user}</span>
             <span class="d-block">
-                <small>${item.created_at}</small>
+                <small class="text-success">${item.created_at}</small>
             </span>`;
-
-           
-
             let status_class = (item.status_code +'').toLowerCase() === 'active' ? 'text-capitalize p-2 text-center border border-success rounded-5 text-success' : 'text-capitalize p-2 text-center border border-danger rounded-5 text-danger';
-            
-            let mobile_login = '';
-            if(item.mobile_login){
-                if(item.mobile_login.status.toLowerCase() == 'active'){
-                    mobile_login = `<span class="text-success">${item.mobile_login.login_name}  (${item.mobile_login.status})</span>`;
-                }
-                else{
-                    mobile_login = `<span class="text-dark p-1">${item.mobile_login.login_name}</span>
-                    <span class="text-capitalize p-2 bg-danger rounded-5 text-white">${item.mobile_login.status}</span>`;
-                }
-            }
-            else{
-                mobile_login = [`<span class="p-2 text-danger">គ្មាន</span>`
-                // ,`<span>
-                //     <a href="javascript:void(0)" data-id="${item.id}" class="btn-app-login btn btn-sm btn-outline-primary">
-                //         <i class="la la-mobile fs-4"></i> 
-                //         <span>Create</span>
-                //     </a>
-                //  </span>`
-               ].join('');
-            }
 
             let price_list_html = item.price_list_name ? `<span class="merchant-price-list ">${item.price_list_name}</span>` : [`គ្មាន`
              ,`<a href="javascript:void(0)" data-id="${item.id}" data-merchantname="${item.name}" class="set-price-list">
@@ -117,69 +85,77 @@ var CustomerListComponent = new function(){
            ].join('');
 
             html = [html,`<div class="d-flex p-3 bg-white h-info-student shadow-lg mb-3">
-
                 <div class="div-img" data-id="${item.id}" data-imageurl="${item.image_url}"></div>
                     <div class="d-block  ms-3 w-100">
                         <div class="row row-cols-3 mb-0">
                             <div class="col ml-5">
+
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.ID"></p>
+                                    <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Customer ID"></p>
                                     <p class="px-3">:</p>
-                                    <p style="color: #8DC63F;" class="text-nowrap  data-get" data-field="official_id">${item.id}</p>
+                                    <p class="text-nowrap text-capitalize  data-get" data-field="official_id">${item.code}</p>
                                 </div>
+
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Name"></p>
                                     <p class="px-3">:</p>
-                                    <p style="color: #8DC63F;" class="text-nowrap   data-get" data-field="full_name">${item.name}</p>
+                                    <p class="text-nowrap text-capitalize   data-get" data-field="full_name">${item.name}</p>
                                 </div>
 
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Email"></p>
                                     <p class="px-3">:</p>
-                                    <p style="color: #8DC63F;" class="text-nowrap "><a href="javascript:void(0)">${item.email ? item.email : 'គ្មាន'}</a></p>
+                                    <p class="text-nowrap text-capitalize "><a href="javascript:void(0)">${item.email ? item.email : 'គ្មាន'}</a></p>
                                 </div>
                        
                             </div>
 
                             <div class="col ml-5">
+
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Customer Type"></p>
                                     <p class="px-4">:</p>
-                                    <p style="color: #8DC63F;" class="text-nowrap ">${item.sender_type}</p>
+                                    <p class="text-nowrap text-capitalize ">${item.sender_type}</p>
                                 </div>
                           
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Business Type"></p>
                                     <p class="px-4">:</p>
-                                    <p style="color: #8DC63F;" class="text-nowrap ">${item.business_type ? item.business_type : 'N/A'}</p>
+                                    <p class="text-nowrap text-capitalize">${item.business_type ? item.business_type : 'N/A'}</p>
                                 </div>
+
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Phone Number"></p>
                                     <p class="px-4">:</p>
-                                    <p style="color: #8DC63F;" class="text-nowrap  data-get" data-field="phone_number" >${item.phone_number}</p>
+                                    <p class="text-nowrap text-capitalize  data-get" data-field="phone_number" >${item.phone_number}</p>
                                 </div>
+
                             </div>
 
                             <div class="col">
+
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Price List"></p>
                                     <p class="px-4">:</p>
-                                    <p style="color: #8DC63F;" class="text-nowrap">${price_list_html}</p>
+                                    <p class="text-nowrap text-capitalize ">${price_list_html}</p>
                                 </div>
+
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Referred By"></p>
                                     <p class="px-2">:</p>
-                                    <p style="color: #8DC63F;" class="text-nowrap"><a href="javascript:void(0)" data-referrerid ="${item.referrer_id}">${item.referrer_name ? item.referrer_name : 'គ្មាន'}</a></p>
+                                    <p text-capitalize class="text-nowrap"><a href="javascript:void(0)" data-referrerid ="${item.referrer_id}">${item.referrer_name ? item.referrer_name : 'គ្មាន'}</a></p>
                                 </div>
-                            </div>
 
+                            </div>
 
                             <div class="col m-3">
                                 <div class="d-flex align-items-start  justify-content-end gap-2">
-                                    <button style="background-color: #8DC63F;" class="btn btn-sm  rounded-3 btn-options position-relative text-nowrap" type="button">
+                                    <button class="btn btn-sm bg-primary  rounded-3 btn-options position-relative text-nowrap" type="button">
                                         <span class="text-nowrap text-white  trans-text" data-langprop="buttons.Options"></span>
+
                                             <i class="fa-solid text-success fa-caret-down ps-2"></i>
                                         <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
+
                                             <a href="javascript:void(0)" class="btn-customer-edit border-bottom pb-2" data-id="${item.id}" >
                                                 <i class="fa-regular fa-pen-to-square fs-5 text-success"></i>
                                                 <span class="ps-2 trans-text" data-langprop="titles.Modify Customer"></span>
@@ -209,25 +185,27 @@ var CustomerListComponent = new function(){
                                         <a href="javascript:void(0)" class="lnk-customer-status ${status_class}" data-id="${item.id}" data-status="${item.status_code}">${item.status_code}</a>  
                                     </div>
                                 </div>
-                        </div>
+                            </div>
 
-                    </div>
+                        </div>
 
                     <hr class="bg-warning m-1 p-0"/>
                     <div class="row row-cols-5 mt-2">
                         <div class="col ml-5">
+
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Address"></p>
                                 <p class="px-1">:</p>
-                                <p style="color: #8DC63F;" class="text-nowrap ">${item.address}</p>
+                                <p class="text-nowrap text-capitalize">${item.address}</p>
                             </div>
                         </div>
 
                         <div class="col">
                             <div class="d-flex">
+
                                 <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Created By"></p>
                                 <p class="px-2">:</p>
-                                <p style="color: #8DC63F;" class="text-nowrap ">${created_by}</p>
+                                <p  class="text-nowrap text-capitalize ">${created_by}</p>
                             </div>
                        </div>
 
@@ -275,7 +253,7 @@ var CustomerListComponent = new function(){
                     if(d){
                         const imgContainer = img.parentElement;
                         mThis.setImage(imgContainer,d.dataUrl);
-                        vsapi.call(`${main_view.base_url}/api/merchant/save-profile-picture`,{
+                        vsapi.call(`${main_view.base_url}/api/customer/save-profile-picture`,{
                             id: imgContainer.dataset.id,
                             photo: d.dataUrl
                         },false).then(res => {
@@ -324,7 +302,7 @@ var CustomerListComponent = new function(){
                 },(e) => {
                     if(e){
                         const imgContainer = lnk.closest('.div-img');
-                        vsapi.call(`${main_view.base_url}/api/merchant/delete-profile-picture`,{
+                        vsapi.call(`${main_view.base_url}/api/customer/delete-profile-picture`,{
                             id: imgContainer.dataset.id
                         },false).then(res => {
                             if(res.status_code === 200){
@@ -442,7 +420,6 @@ var CustomerListComponent = new function(){
 
                 //Click on Change Status
                 lnk = VSUtil.closestLimited(e.target,'.btn-customer-status');
-                if (!lnk) lnk= VSUtil.closestLimited(e.target,'.lnk-lead-status');
                 if(lnk){
                     let sender_id = lnk.dataset.id;
                     let status_code = Validator.properCase(lnk.dataset.status);
@@ -507,7 +484,7 @@ var CustomerListComponent = new function(){
             let d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
            
             VSUtil.setComboItems(mThis.elFilter_customer_status, d.customer_statuses, 'status_code', 'status_name', true, '(All Status)', mThis.def_filter.status_code);
-            VSUtil.setComboItems(mThis.elFilter_customer_business_type, d.business_types, 'business_type', 'business_type', true, 'ប្រភេទ​ ទំនិញ (All Business Types)', 0);
+            VSUtil.setComboItems(mThis.elFilter_customer_business_type, d.business_types, 'business_type', 'business_type', true, 'ប្រភេទ​ទំនិញ (All Business Types)', 0);
             //VSUtil.setComboItems(mThis.elFilter_agent, d.sales_agents, 'id', 'agent_name', true, '(All)', null);
         //VSUtil.setComboItems(CustomerDialog.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
             onFinish();
@@ -534,6 +511,30 @@ var CustomerListComponent = new function(){
             listContainerClass: null
         });
         mThis.tblCustomers = mThis.listView.getListContainer();
+
+
+        // mThis.btnPrint.on('click',function(e){
+        //     let d = FilterDialog_pickup.getData(); 
+        //     let params = ['rtype=driver_list&wid=',d.warehouse_id,'&search=',mThis.elSearch.val(),'&statuscode=',mThis.elFilter_driver_status.val(),'&&shift=',mThis.elFilter_shift.val()].join('');
+        //     pdfReport.getEncryptData(encodeURI(params),(d)=>{
+        //         window.open([mThis.base_url,'/dms-gen-report/',d].join(''),'_blank'); 
+        //     });
+        //  }); 
+           this.btnPrint.addEventListener('click',e =>{
+            const d = mThis.getFilterData();
+             const param_string = ReportCenterComponent.translateToQueryString(d);
+            let params = ['rtype=package_list&completed=0&',param_string].join('');
+            pdfReport.getEncryptData(encodeURI(params),(d)=>{
+                window.open([mThis.base_url,'/dms-gen-report/',d].join(''),'_blank'); 
+            });
+         }); 
+    
+
+  
+        this.btnExcel.addEventListener('click', (e)=>{
+         
+            cv_interact.info('Export to Excel');
+         });
 
         this.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
             el.onchange = e => {
@@ -576,6 +577,8 @@ var CustomerListComponent = new function(){
                 }
             }
         });
+    
+        
 
         mThis.elSearch.on('keyup', () => {
             clearTimeout(mThis.search_timeout);
@@ -613,11 +616,14 @@ var CustomerListComponent = new function(){
             });
         });
     }
+ 
+  
   
 
     this.hide = () => {
         mThis.self.hide();
     }
+  
 
     
 }
@@ -635,7 +641,7 @@ const CustomerDialog = new function(){
     this.elPriceList =  this.self.find('#_cuslist_price_list');
     this.elCustomerType = this.self.find('#_cuslist_sender_type') ;
     this.onClose = null;
-     this.body =  this.self.find('.modal-body')[0];
+    this.body =  this.self.find('.modal-body')[0];
     this.div_sender_info =  this.body.querySelector('#div_merchant_info');
   
     
@@ -668,6 +674,7 @@ const CustomerDialog = new function(){
             else
                 cv_interact.error(res.error_message);
         });
+        
      });
       this.setData = (d) => {
         d = d || {};
@@ -736,4 +743,4 @@ const CustomerDialog = new function(){
 }
 
 
- 
+

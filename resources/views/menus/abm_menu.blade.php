@@ -100,11 +100,11 @@
             </li>
 
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(214); ?>>
-                <a href="SeleAgentsComponent" modid="214" class="menu-item kt-menu__link">
+                <a href="SalesAgentsComponent" modid="214" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/order_image.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Sale Agents"></span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Sales Agents"></span>
                 </a>
             </li>
 

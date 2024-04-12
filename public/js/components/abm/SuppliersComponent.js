@@ -1,14 +1,14 @@
 'use strict';
-var SenderListComponent = new function(){
+var SuppliersComponent = new function(){
     const mThis = this;
-    this.title_prop = "Merchants";
+    this.title_prop = "Supplier";
     this.base_url = main_view.base_url;
-    this.self = main_view.appContent.children('#_main_senderListComponent');
+    this.self = main_view.appContent.children('#_main_suppliersComponent');
     this.elFilter_business_type = mThis.self.find('#_sdl_filter_business_type');
     this.elFilter_sender_status = mThis.self.find('#_sdl_filter_sender_status');
     this.div_filter_fields = mThis.self.find('#_sdl_filter_fields')[0];
 
-    this.btnNewSender = mThis.self.find('#_sdl_btnNewSender');
+    this.btnNewSupplier = mThis.self.find('#_sdl_btnNewSupplier');
     this.elSearch = mThis.self.find('#_sdl_search_sender');
     this.btnSearch = mThis.self.find('#_sdl_btnSearch');
     this.tblSenders = mThis.self.find('#_sdl_tblSenders');
@@ -18,7 +18,7 @@ var SenderListComponent = new function(){
     this.btnPrint = mThis.self.find('#_sdl_btnPrint');
     this.btnPDF = mThis.self.find('#_sdl_btnPDF');
 
-    this.setMerchantPriceList = (sender_id,name=null,span=null,def_price_list_id=null) => {
+    this.setMerchantPriceList = (supplier_id,name=null,span=null,def_price_list_id=null) => {
         mThis.getPriceListItems((items)=>{
             items.unshift({
                 id: null,
@@ -38,26 +38,29 @@ var SenderListComponent = new function(){
             InputBox2.show(option,(d)=>{
                 if(d) {
                     let p = {
-                        sender_id: sender_id,
+                        supplier_id: supplier_id,
                         price_list_id: d.value
                     };
-
-                    // vsapi.call(`${mThis.base_url}/api/merchant/set-price-list`,p,null).then(res => {
-                    //     if(res.status_code === 200){
-                    //         let d = StringSanitizer.sanitizeObject(res.data);
-                    //         span.textContent =d.list_name; 
-                    //         cv_interact.success('Price list ' + d.list_name + ' has been assigned to the merchant successfully');
-                    //     }
-                    //     else
-                    //         cv_interact.error(res.error_message); 
-                    // });
+// console.log(p); 
+                    vsapi.call(`${mThis.base_url}/api/os_suppliers/set-price-list`,p,null).then(res => {
+                        if(res.status_code === 200){
+                            let d = StringSanitizer.sanitizeObject(res.data);
+                            span.textContent = d.list_name; 
+                            cv_interact.success('Price list ' + d.list_name + ' has been assigned to the merchant successfully');
+                            
+                        }
+                        else
+                            cv_interact.error(res.error_message); 
+                    });
                 }
+                mThis.self.siblings().hide();
+                mThis.self.hide().fadeIn(250);	
             });
         });
     }
 
     this.createAppAccount = (sender_id)=>{
-        const sender = mThis.store_senders[sender_id] || {}; 
+        const sender = mThis.store_suppliers[sender_id] || {}; 
         const op = {
             user_id: null,
             open: 'add-user',
@@ -80,14 +83,15 @@ var SenderListComponent = new function(){
         let html = '';
         let cnt = 0;
         container.style.display = 'none';
-        mThis.store_senders = {};
+        mThis.store_suppliers = {};
         (data || []).map(item => {
-            mThis.store_senders[item.id] = {
+            mThis.store_suppliers[item.id] = {
                 code: item.code,
                 name: item.name,
                 phone_number: item.phone_number
             };
-            let bank_account_html = `<span class="fw-semibold text-danger">គ្មាន</span>`;
+            let sales_agent_id = `<span class=" ">${item.sales_agent_id}</span>`;
+            let email = `<span class=" ">${item.email}</span>`;
             let created_by = `<span class="d-block fw-sembold">${item.create_user}</span>
             <pan class="d-block">
                 <small>${item.created_at}</small>
@@ -120,7 +124,7 @@ var SenderListComponent = new function(){
                 </span>`;
             }
 
-            let price_list_html = item.price_list_name ? `<span class="merchant-price-list">${item.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${item.id}" data-merchantname="${item.name}" class="set-price-list">
+            let price_list_html = item.price_list_name ? `<span class="merchant-price-list">${item.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${item.code}" data-merchantname="${item.name}" class="set-price-list">
                 <i class="fa fa-edit fs-5"></i>
             </a>`;
 
@@ -130,7 +134,7 @@ var SenderListComponent = new function(){
                     <div class="row row-cols-3 mb-0">
                         <div class="col">
                             <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Merchant ID"></p>
+                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Supplier ID"></p>
                                 <p class="px-2">:</p>
                                 <p class="text-nowrap text-capitalize data-get" data-field="official_id">${item.code}</p>
                             </div>
@@ -144,18 +148,12 @@ var SenderListComponent = new function(){
                                 <p class="px-2">:</p>
                                 <p class="text-nowrap text-capitalize data-get" data-field="phone_number">${item.phone_number}</p>
                             </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Client Type"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.sender_type}</p>
-                           </div>
                         </div>
-
                         <div class="col">
-                           <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Business"></p>
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Sales Agent"></p>
                                 <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.business_type ? item.business_type : 'NA'}</p>
+                                <p class="text-nowrap text-capitalize">${item.sales_agent_id? item.sales_agent_id:"គ្មាន"}</p>
                             </div>
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Price List"></p>
@@ -163,23 +161,12 @@ var SenderListComponent = new function(){
                                 <p class="text-nowrap text-capitalize">${price_list_html}</p>
                             </div>
                             <div class="d-flex align-items-center">
-                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.COD"></p>
+                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Email"></p>
                                 <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.cod == 1 ? 'Yes' : 'No'}</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Referred By"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize"><a href="javascript:void(0)" data-referrerid ="${item.referrer_id}">${item.referrer_name ? item.referrer_name : 'គ្មាន'}</a></p>
+                                <p class="text-nowrap text-capitalize">${email}</p>
                             </div>
                         </div>
-                        
                         <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Bank Account"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${bank_account_html}</p>
-                            </div>
                             <div class="d-flex align-items-center">
                                 <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.App Account"></p>
                                 <p class="px-2">:</p>
@@ -221,7 +208,7 @@ var SenderListComponent = new function(){
                             </div>
                             <div class="d-flex justify-content-end align-items-center h-100">
                                 <div class="d-block position-relative">
-                                    <span class="${status_class}" data-id="${item.id}" data-status="${item.status_code}">${item.status_code}</span>  
+                                    <span class="${status_class}" data-id="${item.code}" data-status="${item.status_code}">${item.status_code}</span>  
                                 </div>
                             </div>
                         </div>
@@ -405,7 +392,7 @@ var SenderListComponent = new function(){
                             mThis.listView.showPage(mThis.getFitlerData());
                         }
                     };
-                    SenderDialog.show(op);                     
+                    SupplierDialog.show(op);                     
                     return;
                 }
                
@@ -498,7 +485,7 @@ var SenderListComponent = new function(){
                 //Click on Change Status
                 lnk = VSUtil.getElementByClass(e.target,'btn-merchant-status');
                 if(lnk){
-                    let sender_id = lnk.dataset.id;
+                    let supplier_id = lnk.dataset.id;
                     let status_code = Validator.properCase(lnk.dataset.status);
                     let option = {
                         title: 'Set Merchant Status',
@@ -520,7 +507,7 @@ var SenderListComponent = new function(){
                     InputBox2.show(option,(d)=>{
                         if(d) {
                             let p = {
-                                id: sender_id,
+                                id: supplier_id,
                                 status_code: d.value
                             };
 
@@ -581,7 +568,7 @@ var SenderListComponent = new function(){
             let d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
             VSUtil.setComboItems(mThis.elFilter_sender_status, d.sender_statuses, 'status_code', 'status_name', true, '(All Status)', mThis.def_filter.status_code);
             VSUtil.setComboItems(mThis.elFilter_business_type, d.business_types, 'business_type', 'business_type', true, '(All Business Types)', 0);
-            VSUtil.setComboItems(SenderDialog.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
+            // VSUtil.setComboItems(SupplierDialog.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
             onFinish();
             mThis.allow_filter = true;
         });
@@ -598,10 +585,11 @@ var SenderListComponent = new function(){
         if(mThis.initAlready) return;
 
         mThis.listView = new ListView('_sdl_sender_list', {
-            fetchApi: `${main_view.base_url}/api/merchant/list`,
+            fetchApi: `${main_view.base_url}/api/os_suppliers/list-paginate`,
             apiCluster: main_view.apiCluster,
             perPage: 3,
             renderItems: (items, list_container) => {
+                console.log(items);
                 mThis.renderMerchant(list_container, items);
             },
             listContainerClass: null
@@ -618,7 +606,7 @@ var SenderListComponent = new function(){
             };
         });
 
-        this.btnNewSender.on('click', function(e){
+        this.btnNewSupplier.on('click', function(e){
             e.preventDefault();
             let op = {
                 id: null,
@@ -626,7 +614,7 @@ var SenderListComponent = new function(){
                     mThis.listView.showPage(mThis.getFitlerData());  
                 }
             } 
-            SenderDialog.show(op);
+            SupplierDialog.show(op);
         });
 
         mThis.tblSenders.addEventListener('click', e => {
@@ -693,28 +681,28 @@ var SenderListComponent = new function(){
     }
 }
 
-const SenderDialog = new function(){
+const SupplierDialog = new function(){
     const mThis = this;
-    this.self = main_view.appContent.find('#_sdl_dlgSender');
+    this.self = main_view.appContent.find('#_sdl_dlgSupplier');
     this.base_url = main_view.base_url;
     this.options = {};
     
-    this.elTitle = this.self.find('#_sdl_dlgSenderTitle');
-    this.btnSave =  this.self.find('#_sdl_sender_btnSave');
-    this.elSenderType =  this.self.find('#_sdl_sender_sendertype');
-    this.elBusinessType =  this.self.find('#_sdl_sender_businesstype');
+    this.elTitle = this.self.find('#_sdl_dlgSupplierTitle');
+    this.btnSave =  this.self.find('#_sdl_supplier_btnSave');
+    // this.elSenderType =  this.self.find('#_sdl_sender_sendertype');
+    // this.elBusinessType =  this.self.find('#_sdl_sender_businesstype');
     this.elSalesAgent =  this.self.find('#_sdl_sales_agent');
 
     this.elPriceList =  this.self.find('#_sdl_price_list');
-    this.elCOD =  this.self.find('#_sdl_cod');
-    this.elCODFee =  this.self.find('#_sdl_cod_fee');
+    // this.elCOD =  this.self.find('#_sdl_cod');
+    // this.elCODFee =  this.self.find('#_sdl_cod_fee');
 
     this.onClose = null;
     this.elError =  this.self.find('#_sdl_sender_error');
 
     this.body =  this.self.find('.modal-body')[0];
     this.div_sender_info =  this.body.querySelector('#div_merchant_info');
-    this.div_bank_account = this.body.querySelector('#div_bank_account');
+    // this.div_bank_account = this.body.querySelector('#div_bank_account');
 
     this.prepareData = (id,def, onFinish) => {
         if(!def) def = {};
@@ -722,11 +710,11 @@ const SenderDialog = new function(){
             id: id
         },null).then(res => {
             let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
-            d.bank_accounts = d.bank_accounts || [];
-            VSUtil.setComboItems(mThis.elSenderType, d.sender_types, 'id', 'sender_type', true, '(Select Merchant Type)', def.sender_type_id);
-            VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
+            // d.bank_accounts = d.bank_accounts || [];
+            // VSUtil.setComboItems(mThis.elSenderType, d.sender_types, 'id', 'sender_type', true, '(Select Merchant Type)', def.sender_type_id);
+            // VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
             VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'name', true, '(Price List)', def.price_list_id);
-            mThis.form_data = d;
+            VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', def.sales_agent_id);
             onFinish(d);
         });
     }
@@ -734,7 +722,7 @@ const SenderDialog = new function(){
     this.btnSave.on('click', function(e){
         e.preventDefault();
         let p = mThis.getData();
-        vsapi.call(`${mThis.base_url}/api/merchant/save`, p).then(res => {
+        vsapi.call(`${mThis.base_url}/api/os_suppliers/save`, p).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
@@ -748,7 +736,7 @@ const SenderDialog = new function(){
         if (!options) options = {};
         mThis.options = options;
          
-        mThis.prepareData(mThis.options.id,{},data => {
+        mThis.prepareData(mThis.options.id,{},data => { 
             if(data.sender){
                 mThis.elTitle.text("Modify Merchant Information");
             }
@@ -770,7 +758,6 @@ const SenderDialog = new function(){
 
         let bank_accounts = d.bank_accounts;
         d.bank_accounts = null;
-        
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el =>{ 
             const data_member = el.dataset.field;
             if(el.tagName.toLowerCase() === 'select'){
@@ -809,31 +796,9 @@ const SenderDialog = new function(){
             let data_member = el.dataset.field;
             p[data_member] = el.value;
         });
-        p.banks = mThis.getBanks();
+        // p.banks = mThis.getBanks();
         return p;
     }
 
-    this.getBanks = () => {
-        let ps = [];
-        let p = {};
-        p.is_primary = 1;
-        let div = mThis.div_bank_account.querySelector('div.primary_bank_panel');
-        div.querySelectorAll('.data-input').forEach(el => {
-            let dataMember = el.dataset.field;
-            p[dataMember] = el.value;
-        });
-        p.id = div.dataset.id;
-        ps.push(p);
-
-        div = mThis.div_bank_account.querySelector('div.secondary_bank_panel');
-        let p1 = {};
-        p1.is_primary = 0;
-        div.querySelectorAll('.data-input').forEach(el =>{
-            let dataMember = el.dataset.field;
-            p1[dataMember] = el.value;
-        });
-        p1.id = div.dataset.id;
-        ps.push(p1);
-        return ps;
-    }
+    
 }

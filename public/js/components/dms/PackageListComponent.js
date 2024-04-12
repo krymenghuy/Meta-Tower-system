@@ -587,87 +587,7 @@ var PackageListComponent = new function() {
                  }
        });
      
-    //    //Update Delviery status
-    //    mThis.tblPackages.on('click','a._cpl_pa_change_status',function(e){
-    //         e.preventDefault();
-    //         let tr = $(this).closest('tr');
-    //         let delivery_id = tr.data('did');
-    //         let pid = tr.data('pid');
-    //         //let driver_id = tr.data('driverid');
-    //         let def_status_id = tr.data('statusid');
-    //         //let sender_id = tr.data('senderid');
- 
-    //         let option = {
-    //             "title":"Set Package Status",
-    //             "data":mThis.statuses,
-    //             "textMember":"status_name", //status code
-    //             "valueMember":"id",  // status name of delivery. Whereas status_id is used in table order.status_id
-    //             "dataLabel":"Choose package status",
-    //             'blankErrorMessage':'Please select one status',
-    //             'okBtnText':'OK',
-    //             'defaultValue': def_status_id
-    //         };
-
-    //         InputBox2.show(option,function(data) {
-    //             if(data) {
-    //                 let p = {
-    //                     "delivery_id":delivery_id,
-    //                     "package_id":pid,
-    //                     "status_id":data.value
-    //                 };
-                    
-    //                 vsapi.call(`${mThis.base_url}/api/updatePackageStatus`,p).then(res => {
-    //                     if(res.status_code === 200) {
-    //                         let data = res.data;
-    //                         let td = tr.find('td.package-status');
-    //                         td.find('a.pg-text').text(data.text); 
-    //                         //mThis.ExpandableDetails.refreshPackageData(tr,pid);
-    //                     } else cv_interact.error(res.error_message);
-    //                 });
-    //              }
-    //         });
-    //    });
- 
-        // mThis.tblPackages.on('click','a._cpl_pa_quick_return_package',function(e){
-        //     e.preventDefault();
-        //     let x =$(this);
-        //     let tr = x.closest('tr');
-        //     let p  = {'package_id':tr.data('pid')};
-        //     //let def_driver_id = tr.data('driverid');
-        //     cv_interact.confirm('Return this package?',{title:'Return Package',context:'update'},function(e){
-        //             if(e){
-        //                 vsapi.call(`${mThis.base_url}/api/returnPackage`,p).then(res => {
-        //                     if(res.status_code === 200){
-        //                        //update status on package trail | updatePackageStatus() || displayPackageStatus() || displayStatus()
-        //                        let btn = tr.find('a._pol_status');
-        //                        btn.data('statusid',11);
-        //                        btn.data('status','Returned');
-        //                        btn.text('Returned');
-        //                     }else cv_interact.error(res.error_message);
-        //                 }); 
-        //             }
-        //     });
-
-          
-        // });
-      
-     // //BEGIN:: listen to private event from backend (private channel)
-        //         window.Echo.private(main_view.backend_channel_name).listen( '.package_status_changed',(d) =>{
-        //             let data = d.data;
-        //             toastr.info(DUtil.escapeHtml(data.message),data.title);
-        //             main_view.addNotificationItem({'title':data.title,'message':data.message});
-
-        //             if(mThis.tblPackages.is(':visible')){
-        //                 let tr = mThis.findRowByBarcode(data.bar_code);
-        //                 mThis.displayDriverData(tr,{"driver_id":data.driver_id,"driver_name":data.driver_name,'status':data.status,'status_id':data.status_id});
-        //             }
-                
-        //         });
-        //  //END:: listen to private event from backend (private channel)
-
-        // //initialize class "ExpandableDetails", which is the package's dropdown expanded detail
-        // mThis.ExpandableDetails.init();
-        // mThis.initialized = true;
+    
         mThis.initAlready = true;
     }
     //end::PackageListComponent.init() | end::init()
@@ -1647,7 +1567,7 @@ const FilterDialog_package = new function () {
  
 window.addEventListener('message', function(event) {
     if (event.data === 'print_complete') {
-        console.log('User printed');
+       // console.log('User printed');
         // Implement your feedback mechanism here
     }else {
         console.log(event.data);

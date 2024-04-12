@@ -483,33 +483,33 @@ static function list($arr,$ss=null){
           $str_status = $status_code? 'd.status_code =\''.$status_code.'\'' : '1=1';
         }
        
-        $query = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.policy_id,d.email,d.phone_number,d.address,d.status_code,t.id as agent_type_id,t.name AS agent_type,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date,d.create_user,photo_file_name'); 
+        $query = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.email,d.status_id,d.phone_number,d.address,t.id as agent_type_id,t.name AS agent_type,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date'); 
         $count_query = clone $query;
         $count = $count_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-        foreach($rows as $row){
-          $row->image_url = '';
-          //$row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id');
-          $url = $row->photo_file_name? $row->image_url = PublicStorage::getUrl($branch_id,self::$photo_dir,'image').$row->photo_file_name:null;
-          $row->image_url = validateUrl($url,self::defaultImage($branch_id));
-          unset($row->photo_file_name);
-          $pol = self::getPolicyInfo($row->policy_id,$ss);
-          $row->policy_name = $pol? $pol->name: 'NA';
-          if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
-          $user_info = self::getLoginInfo(  $row->id,$ss);
-          if($user_info){
-             $row->login_name = $user_info->login_name;
-             $row->user_id = $user_info->id;
-          }
-          $current_month = date('m');
-          $current_year = date('Y');
-          $row->current_month = getMonthName($current_month);
-          $row->current_year = $current_year;
-          $countInfo = self::countTarget($current_year,$current_month,$row->id,$ss);
-          $row->count_type = $countInfo->count_type;
-          $row->target_count = $countInfo->count; 
-          $row->summary_type = $countInfo->summary_type;
-        }
+        // foreach($rows as $row){
+        //   $row->image_url = '';
+        //   //$row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id');
+        //   //$url = $row->photo_file_name? $row->image_url = PublicStorage::getUrl($branch_id,self::$photo_dir,'image').$row->photo_file_name:null;
+        //   //$row->image_url = validateUrl($url,self::defaultImage($branch_id));
+        //   //unset($row->photo_file_name);
+        //   //$pol = self::getPolicyInfo($row->policy_id,$ss);
+        //   //$row->policy_name = $pol? $pol->name: 'NA';
+        //   if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
+        //   $user_info = self::getLoginInfo(  $row->id,$ss);
+        //   if($user_info){
+        //      $row->login_name = $user_info->login_name;
+        //      $row->user_id = $user_info->id;
+        //   }
+        //   $current_month = date('m');
+        //   $current_year = date('Y');
+        //   $row->current_month = getMonthName($current_month);
+        //   $row->current_year = $current_year;
+        //   $countInfo = self::countTarget($current_year,$current_month,$row->id,$ss);
+        //   $row->count_type = $countInfo->count_type;
+        //   $row->target_count = $countInfo->count; 
+        //   $row->summary_type = $countInfo->summary_type;
+        // }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
     
