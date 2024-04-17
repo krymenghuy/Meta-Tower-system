@@ -4,9 +4,9 @@ namespace App\Models\Dms;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\Dms\DV;
+use App\Models\DV;
 use Carbon\Carbon;
-use App\Models\Dms\Notifier;
+use App\Models\Notifier;
 use App\Models\Dms\PublicStorage;
 use Sanitizer;
 use DB;

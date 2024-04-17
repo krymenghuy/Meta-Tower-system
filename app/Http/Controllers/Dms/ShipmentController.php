@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dms;
 
 use App\Models\Dms\Shipment;
 use Illuminate\Http\Request;
-use App\Models\Dms\UM;
-use App\Models\Dms\JDV;
+use App\Models\UM;
+use App\Models\JDV;
 
 class ShipmentController extends Controller
 {
-    //
     protected $shipment = null;
     function __construct(){
         $this->shipment = new Shipment();

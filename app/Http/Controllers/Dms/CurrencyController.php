@@ -1,15 +1,14 @@
 <?php
-
-namespace App\Http\Controller\Dms;
+namespace App\Http\Controllers\Dms;
+//use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Dms\UM;
-use App\Models\Dms\JDV;
-use Config;
+use App\Models\UM;
+use App\Models\JDV;
+//use Config;
 use DB;
  
 class CurrencyController extends Controller
 {
-    
     //Exhcnage rate update period = {'intra-day','daily','monthly'}
     protected static $update_period ='daily';
     //protected $UMModel;

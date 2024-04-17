@@ -32,7 +32,7 @@ use App\Http\Controllers\Dms\CurrencyController;
 use App\Http\Controllers\Dms\CategoryController;
 use App\Http\Controllers\Dms\RemarksController;
 use App\Http\Controllers\Dms\WebReportController;
-use App\Http\Controllers\Dms\NotificationController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Dms\SalesCommissionPolicyController;
  
  //begin:: api without Authentication
@@ -47,7 +47,7 @@ use App\Http\Controllers\Dms\SalesCommissionPolicyController;
 //begin:: Admin notifications
     Route::middleware('auth.api', CustomRateLimiter::class)->group(function(){
             Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
-            Route::get('notifications', [NotificationController::class, 'getNotificationListByUser']);
+            Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
             Route::post('unread-count',[NotificationController::class,'getUnreadCount']);
             Route::post('mark-read-all',[NotificationController::class,'markReadAll']);
     });
@@ -426,9 +426,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('mobile-settin
    
 //end::ReportController
  
-    Route::group(['middleware' => 'cors'], function(){
-        Route::post('package-photos-all', [ApiController::class, 'getPackagePhotos']);
-    });
+    // Route::group(['middleware' => 'cors'], function(){
+    //     Route::post('package-photos-all', [ApiController::class, 'getPackagePhotos']);
+    // });
  
 
 //begin::Currency APIs

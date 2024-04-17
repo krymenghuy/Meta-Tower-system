@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
-
+namespace App\Http\Controllers\Dms;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Dms\MobileAppSettings;
-use App\Models\Dms\UM;
-use App\Models\Dms\JDV;
+use App\Models\UM;
+use App\Models\JDV;
   
 class MobileAppSettingsController extends Controller
 {

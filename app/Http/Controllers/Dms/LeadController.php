@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dms;
 use App\Http\Controllers\Controller;
 use App\Models\Dms\GeneralSettings;
 use Illuminate\Http\Request;
 use App\Models\Dms\Lead;
-use App\Models\Dms\UM;
-use App\Models\Dms\JDV;
+use App\Models\UM;
+use App\Models\JDV;
  
 class LeadController extends Controller
 {

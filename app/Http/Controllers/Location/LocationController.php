@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Location;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Dms\Location\Country;
-use App\Models\Dms\Location\City;
-use App\Models\Dms\Location\District;
-use App\Models\Dms\Location\Commune;
-
-use App\Models\Dms\JDV;
-use App\Models\Dms\UM;
+use App\Models\Location\Country;
+use App\Models\Location\City;
+use App\Models\Location\District;
+use App\Models\Location\Commune;
+use App\Models\JDV;
+use App\Models\UM;
 
 class LocationController extends Controller
 {

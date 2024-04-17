@@ -4,10 +4,10 @@ namespace App\Models\Dms;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\Dms\Notifier;
+use App\Models\Notifier;
 use App\Models\Dms\Driver;
-use App\Models\Dms\DV;
-use App\Models\Dms\UM;
+use App\Models\DV;
+use App\Models\UM;
 use Sanitizer;
 use DB;
 use Illuminate\Support\Facades\Log;

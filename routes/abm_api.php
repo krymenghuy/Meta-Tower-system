@@ -3,7 +3,7 @@ use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Login\LoginController;
  
-use App\Http\Controllers\WebReportController;
+use App\Http\Controllers\Dms\WebReportController;
 
 use App\Http\Controllers\NotificationController;
  

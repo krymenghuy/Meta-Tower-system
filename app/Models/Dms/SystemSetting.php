@@ -2,18 +2,18 @@
 
 namespace App\Models\Dms;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Dms\UM;
+// use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Database\Eloquent\Model;
+use App\Models\UM;
 // use App\Models\Dms\Notifier;
 // use Carbon\Carbon;
 // use Session;
 use DB;
 use Sanitizer;
 
-class SystemSetting extends Model
+class SystemSetting //extends Model
 {
-    use HasFactory;
+    //use HasFactory;
  
     static function package_statuses($d){
         // $ss = UM::getUserInfoByToken($d);
