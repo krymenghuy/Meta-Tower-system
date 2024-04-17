@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dms;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
@@ -9,7 +9,6 @@ use App\Models\Dms\SystemSetting;
 class SystemSettingController extends Controller
 {
     protected $sys_settings;
-
     public function __construct(){
         $this->sys_settings = new SystemSetting();
     }

@@ -3,12 +3,12 @@
 namespace App\Models\Dms;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\Dms\UM;
+use App\Models\UM;
 //use Carbon\Carbon;
 //use Session;
 use DB;
 use Sanitizer;
-use Illuminate\Support\Collection;
+//use Illuminate\Support\Collection;
 
 class GeneralSettings //extends Model
 {

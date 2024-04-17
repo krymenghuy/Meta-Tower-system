@@ -1,5 +1,5 @@
 <?php
-use App\Http\Controllers\LocationController;
+use App\Http\Controllers\Location\LocationController;
 
 //begin::LocationController
 // Route::post('location/cities', [LocationController::class, 'getCityList']);

@@ -1,10 +1,10 @@
 <?php
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dms;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Dms\UM;
+use App\Models\UM;
 use App\Models\Dms\SMS;
-use App\Models\Dms\Notifier;
+use App\Models\Notifier;
 use App\Models\Dms\PickupRequest;
 use App\Models\Dms\Package;
 use App\Models\Dms\Sender;
@@ -21,8 +21,8 @@ use App\Models\Dms\Report;
 use App\Models\Dms\PublicStorage;
 use App\Models\Dms\PendingTask;
 use App\Models\Dms\PaymentTransaction;
-use App\Models\Dms\DV;
-use App\Models\Dms\JDV;
+use App\Models\DV;
+use App\Models\JDV;
 use App\Models\Dms\GeneralSettings;
 use App\Models\Dms\Tracker;
 use Config;

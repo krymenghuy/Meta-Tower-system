@@ -1,20 +1,18 @@
 <?php
 
 namespace App\Models\Dms;
-
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use App\Models\Dms\Notifier;
+// use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Database\Eloquent\Model;
+//use App\Models\Notifier;
 use Storage;
-use Session;
-use Sanitizer;
+// use Session;
+// use Sanitizer;
 use DB;
-use Carbon\Carbon;
-use Exception;
-
-class PrivateStorage extends Model
+// use Carbon\Carbon;
+  
+class PrivateStorage //extends Model
 {
-    use HasFactory;
+    //use HasFactory;
 
     static function deleteFile($fileName)
         {

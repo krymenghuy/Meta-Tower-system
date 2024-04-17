@@ -108,27 +108,7 @@
                     </div>
                    
                 </div>
-                <div class="row" style="display:none">
-                    <div class="col-lg-6" style="margin-top:15px">
-                        <span style="font-weight:bold;color:green;display:block">Primary Bank Account</span>
-                        <div class="div-line" style="border-color:green"></div>
-                        <div class="border-style1 primary_bank_panel" id="_cul_primary_bank_panel">
-                            <div>
-                                <span class="form-label">Bank Name</span>
-                                <input type="text" data-field="bank_name" class="form-control data-input">
-                                <input class="data-input" data-field="id" type="hidden">
-                            </div>
-                            <div>
-                                <span class="form-label">Account Number</span>
-                                <input type="number" data-field="account_number" class="form-control data-input">
-                            </div>
-                            <div>
-                                <span class="form-label">Account Name</span>
-                                <input type="text" data-field="account_name" class="form-control data-input">
-                            </div>
-                        </div>
-                    </div>
-                </div>
+              
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default btn-secondary height" data-dismiss="modal"><span class="trans-text" data-langprop="buttons.Cancel"></span></button>

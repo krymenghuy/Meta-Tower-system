@@ -5,7 +5,7 @@ namespace App\Models\Dms;
 // use Illuminate\Database\Eloquent\Model;
 use DB;
 use Sanitizer;
-use App\Models\Dms\DV;
+use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator; 
 use App\Models\Dms\PublicStorage;
 use Carbon\Carbon;

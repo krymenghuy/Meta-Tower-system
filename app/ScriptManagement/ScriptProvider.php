@@ -99,8 +99,6 @@ namespace App\ScriptManagement;
                         'assets/js/pusher/pusher.min.js',
                         '/js/components/abm/pusher_client_houxpress.js',
                         //'/js/components/abm/pusher_client_dms.js'
-
-                        '/assets/js/InputBoxes.js',
                         //start Components abm
 
                         '/js/components/abm/CustomersComponent.js',
@@ -155,6 +153,7 @@ namespace App\ScriptManagement;
                         'js/components/dms/OrderImagesComponent.js',
                         'js/components/dms/PromotionComponent.js',
                         'js/components/dms/ReportCenterComponent.js',
+                        'js/components/dms/SocialMediaComponent.js',
                         'js/components/dms/SalesAgentsComponent.js',
                         'js/components/dms/SenderListComponent.js?v=1',
                         'js/components/dms/SenderPaymentComponent.js',

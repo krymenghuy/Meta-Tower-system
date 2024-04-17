@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Dms;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Dms\Dashboard;
-use App\Models\Dms\JDV;
-use App\Models\Dms\UM;
+use App\Models\JDV;
+use App\Models\UM;
 use Illuminate\Support\Facades\Cache;
 //use DB;
 

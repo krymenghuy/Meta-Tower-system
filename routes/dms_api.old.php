@@ -1,5 +1,4 @@
 <?php
-
 use App\Http\Controllers\abm\CustomerController;
 use Illuminate\Http\Request;
 use App\Models\Notifier;

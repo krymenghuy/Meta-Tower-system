@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dms;
 
 use App\Http\Controllers\Controller;
-use App\Models\Dms\JDV;
+use App\Models\JDV;
 use App\Models\Dms\SocialMedia;
-use App\Models\Dms\UM;
+use App\Models\UM;
 use Illuminate\Http\Request;
 
 class SocialMediaController extends Controller

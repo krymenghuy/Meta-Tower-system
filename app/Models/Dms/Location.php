@@ -2,18 +2,17 @@
 
 namespace App\Models\Dms;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Session;
-use App\Models\Dms\UM;
-use App\Models\Dms\JDV;
-use Carbon\Carbon;
+// use Illuminate\Database\Eloquent\Factories\HasFactory;
+// use Illuminate\Database\Eloquent\Model;
+ 
+use App\Models\UM;
+use App\Models\JDV;
 use Sanitizer;
-use Localization;
+ 
 
-class Location extends Model
+class Location //extends Model
 {
-  use HasFactory;
+  //use HasFactory;
     
       function getComboItems_country($d){
           $ss = UM::getUserInfoByToken($d,-1);
