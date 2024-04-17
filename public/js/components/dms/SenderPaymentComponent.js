@@ -101,7 +101,7 @@ var SenderTabView = new function(){
         this.getMerchantBankInfo = (id)=>{
             mThis.sender_bank_info ='';
             let p = {'sender_id':id};
-            vsapi.call(`${mThis.base_url}/api/getMerchantBankInfo`,p).then(res=>{
+            vsapi.call(`${mThis.base_url}/dms/getMerchantBankInfo`,p).then(res=>{
                 if(res.status_code ===200){
                     let d = StringSanitizer.sanitizeObject(res.data);
                     mThis.sender_bank_info = [d.bank_name,'  ',d.account_number,'  (',d.account_name,')'].join('');
@@ -223,7 +223,7 @@ var SenderTabView = new function(){
                 return;   
             }
 
-            vsapi.call([mThis.base_url,'/api/merchant/filter-options'].join(''),null,null,false,null).then(res=>{
+            vsapi.call([mThis.base_url,'/dms/merchant/filter-options'].join(''),null,null,false,null).then(res=>{
                 if(res.status_code ==200){
                     let data = StringSanitizer.sanitizeObject(res.data,null,['sender_name']);
                     //(data.senders || []).unshift({'id':null,'sender_name':'(Choose merchant)'});
@@ -355,7 +355,7 @@ var SenderTabView = new function(){
                     };
                     cv_interact.confirm(`ទូទាត់បញ្ចប់ទឹកប្រាក់ 0 USD សំរាប់ ${sel.package_count} កញ្ចប់`,{"context":"update","title":"Merchant Settlement"},e=>{
                         if(e){
-                             vsapi.call(`${main_view.base_url}/api/merchant/payment/settle-zero`,p,btnOK,false).then(res=>{
+                             vsapi.call(`${main_view.base_url}/dms/merchant/payment/settle-zero`,p,btnOK,false).then(res=>{
                                 if(res.status_code ===200){
                                     mThis.displayDeliveryItemsBySender();
                                     cv_interact.success(['Settlement for zero amount for ',d.success_count,' items completed'].join(''));
@@ -368,7 +368,7 @@ var SenderTabView = new function(){
   
                   const op = {
                     "id":sender_id,
-                    "prep_api":`${main_view.base_url}/api/merchant/payment/form-options`,
+                    "prep_api":`${main_view.base_url}/dms/merchant/payment/form-options`,
                     "type":trans_type, /* "receive" or "pay" */
                     "agent_name":sender_name,
                     "showCheck":false,
@@ -403,7 +403,7 @@ var SenderTabView = new function(){
                       p.package_count = sel.package_count;
                       p.packages = sel.ids;
                       const api_method = trans_type =='receive'? 'receive':'pay';
-                      vsapi.call(`${main_view.base_url}/api/merchant/payment/${api_method}`,p,btnOK,false).then(res=>{
+                      vsapi.call(`${main_view.base_url}/dms/merchant/payment/${api_method}`,p,btnOK,false).then(res=>{
                           if(res.status_code ===200){ 
                               mThis.displayDeliveryItemsBySender(); 
                               PmtDialog.close();
@@ -459,7 +459,7 @@ var SenderTabView = new function(){
         this.displayDeliveryItemsBySender = (onFinish=null) =>{   
             let p = FilterDialog_spmt.getData();
             p.search_value = mThis.elSearchPackage.val();
-            vsapi.call([mThis.base_url, '/api/merchant/delivery-items'].join(''),p,null,null,main_view.apiCluster).then(res=>{
+            vsapi.call([mThis.base_url, '/dms/merchant/delivery-items'].join(''),p,null,null,main_view.apiCluster).then(res=>{
                 if (mThis.table){
                     mThis.tblItems.DataTable().clear().destroy();
                     mThis.tblItems.empty();
@@ -796,7 +796,7 @@ var SenderTabView = new function(){
                 // },
                 //'paginationContainer': document.querySelector('#test_div'),
                 'apiCluster':main_view.apiCluster,
-                'fetchApi': `${main_view.base_url}/api/merchant/payment/list`,
+                'fetchApi': `${main_view.base_url}/dms/merchant/payment/list`,
                 'processResponse':(res)=>{
                     let d = res.status_code ===200? res.data:{};
                     //console.log(d.pmt_breakdowns);
@@ -865,7 +865,7 @@ var SenderTabView = new function(){
                p.wid = p.warehouse_id;
                p.type = 'all'; /** borth types: Receipt and Disbursement */
           
-               //    vsapi.call(`${main_view.base_url}/api/merchant/payment/list`,p,null,false).then(res=>{
+               //    vsapi.call(`${main_view.base_url}/dms/merchant/payment/list`,p,null,false).then(res=>{
                 
             //       if(res.status_code ===200){
             //         console.log(res); 
@@ -877,7 +877,7 @@ var SenderTabView = new function(){
             let qstring = ReportCenterComponent.translateToQueryString(p);
             let data = {"data":['rtype=vd_transactions&',qstring].join('')};
              
-            vsapi.call(`${main_view.base_url}/api/encryptData`,data,false,false).then(res=>{
+            vsapi.call(`${main_view.base_url}/dms/encryptData`,data,false,false).then(res=>{
                 let d = {};
                 if(res.error_message){
                     cv_interact.error(res.error_message);
@@ -904,7 +904,7 @@ var SenderTabView = new function(){
                             if (e) {
                                 //let trx_type ='receipt';
                                 let p = { 'trx_id': trx_id, 'trx_type': trx_type };
-                                vsapi.call([main_view.base_url, '/api/merchant/payment/delete'].join(''), p).then(res => {
+                                vsapi.call([main_view.base_url, '/dms/merchant/payment/delete'].join(''), p).then(res => {
                                     if (res.status_code === 200) {
                                        mThis.pmtListView.showPage(mThis.getFilterData()); 
                                     }
@@ -954,7 +954,7 @@ var SenderTabView = new function(){
             let trx_type = tr.data('trxtype');
             let p = {'trx_id':trx_id,'trx_type':trx_type,'user_class':'merchant'};
             
-            vsapi.call([mThis.base_url,'/api/deleteTransactionPhoto'].join(''),p).then(res=>{
+            vsapi.call([mThis.base_url,'/dms/deleteTransactionPhoto'].join(''),p).then(res=>{
                 if(res.status_code ===200){
                     let img = tr.find('img.trx-img');
                     img.prop('src',null);
@@ -1023,7 +1023,7 @@ var SenderTabView = new function(){
                 return;
             }
             
-            vsapi.call([main_view.base_url,'/api/getComboItems_sender'].join(''),null).then(res=>{ 
+            vsapi.call([main_view.base_url,'/dms/getComboItems_sender'].join(''),null).then(res=>{ 
                 if(res.status_code ===200){
                     let rows = StringSanitizer.sanitizeObject(res.data);
                     VSUtil.setComboItems(mThis.elFilter_report_sender,rows,'id','sender_name',false,null,def.driver_id);
@@ -1062,7 +1062,7 @@ var SenderTabView = new function(){
                 let qstring = ReportCenterComponent.translateToQueryString(p);
                 let data = {"data":['rtype=hs_merchant_invoice&',qstring].join('')};
     
-                vsapi.call(`${main_view.base_url}/api/encryptData`,data,false,false).then(res=>{
+                vsapi.call(`${main_view.base_url}/dms/encryptData`,data,false,false).then(res=>{
                     let d = {};
                     if(res.error_message){
                         cv_interact.error(res.error_message);

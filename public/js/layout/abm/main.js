@@ -40,7 +40,7 @@ let main_view = new function(){
   
     this.getEncryptData = (qstring,onFinish)=>{
         let p = {'data':qstring};
-        vsapi.call([mThis.base_url,'/api/encryptData'].join(''),p).then((res)=>{
+        vsapi.call([mThis.base_url,'/abm/encryptData'].join(''),p).then((res)=>{
             onFinish(res.data?res.data:res);
         }); 
     }
@@ -239,7 +239,7 @@ let main_view = new function(){
     }
 
     this.displayNotifications = ()=> {
-        vsapi.call(`${mThis.base_url}/api/notifications`,null).then((res)=>{
+        vsapi.call(`${mThis.base_url}/abm/notifications`,null).then((res)=>{
             let i=0;
             if(res.status_code ===200){
                 let d = res.data;
@@ -276,7 +276,7 @@ let main_view = new function(){
 
     this.displayTasks =()=> {
         let items =null;
-        vsapi.call(`${mThis.base_url}/api/pending-requests`,null).then((res)=>{
+        vsapi.call(`${mThis.base_url}/abm/pending-requests`,null).then((res)=>{
             if(res.status_code===200){
                 let d = res.data;
                 let i=0;
@@ -306,7 +306,7 @@ let main_view = new function(){
     };
 
     mThis.updateNotificationCount = ()=>{
-        vsapi.call(`${mThis.base_url}/api/unread-count`,null,false).then((res)=>{
+        vsapi.call(`${mThis.base_url}/abm/unread-count`,null,false).then((res)=>{
             if(res.status_code ===200){
                 let d = res.data;
                 const span = mThis.btnNotif.find('.number--notification');

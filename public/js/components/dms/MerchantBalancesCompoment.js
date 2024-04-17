@@ -15,6 +15,7 @@ var MerchantBalancesCompoment = new (function () {
     this.div_container = this.self.find("#div_merchant_balances")[0];
     this.div_summary = this.self.find("#_mbl_div_summary");
     this.elMerchantAmount = this.div_summary.find("#_mbl_merchant_amount");
+    this.div_alert_list = this.self[0].querySelector('#_mbl_alert_list');
     this.elMerchantAmountCurrency = this.div_summary.find("#_mbl_merchant_currency");
     this.elPackageCount = this.div_summary.find("#_mbl_package_count");
 
@@ -171,12 +172,13 @@ var MerchantBalancesCompoment = new (function () {
         if (mThis.initAlready) return;
         mThis.listView = new ListView("div_merchant_balances", {
             clientSidePagination: true,
-            fetchApi: `${main_view.base_url}/api/merchant/outstanding-balances`,
+            fetchApi: `${main_view.base_url}/dms/merchant/outstanding-balances`,
             processResponse: (res) => {
                 mThis.setColorTone(mThis.elFilter_type.val());
                 if (res.status_code === 200) {
-                    let d = StringSanitizer.sanitizeObject(res.data);
-
+                    let d = StringSanitizer.sanitizeObject(res.data,null,['currency_symbol']);
+                    mThis.currency_code = d.currency_code; 
+                    mThis.currency_symbol = d.currency_code =='USD' ? '$': d.currency_symbol; 
                     const total_amount = Number(d.total).toLocaleString(
                         "en-US",
                         {
@@ -188,6 +190,7 @@ var MerchantBalancesCompoment = new (function () {
                     mThis.elMerchantAmount.text(total_amount);
                     mThis.elMerchantAmountCurrency.text(d.currency_code);
                     mThis.elPackageCount.text([d.total_count, " pcs"].join(""));
+                    mThis.setAlertInfo(d.od_cards);
                     return d.items;
                 } else {
                     cv_interact.warning(res.error_message);
@@ -246,7 +249,7 @@ var MerchantBalancesCompoment = new (function () {
                                 if (e) {
                                     vsapi
                                         .call(
-                                            `${main_view.base_url}/api/merchant/payment/settle-zero`,
+                                            `${main_view.base_url}/dms/merchant/payment/settle-zero`,
                                             p,
                                             null
                                         )
@@ -280,7 +283,7 @@ var MerchantBalancesCompoment = new (function () {
                     }
                     const op = {
                         id: id,
-                        prep_api: `${main_view.base_url}/api/merchant/payment/form-options`,
+                        prep_api: `${main_view.base_url}/dms/merchant/payment/form-options`,
                         type: list_type == "payable" ? "pay" : "receive",
                         agent_name: sender.name,
                         showCheck: false,
@@ -321,15 +324,16 @@ var MerchantBalancesCompoment = new (function () {
                                 list_type == "payable" ? "pay" : "receive";
                             vsapi
                                 .call(
-                                    `${main_view.base_url}/api/merchant/payment/${api_method}`,
+                                    `${main_view.base_url}/dms/merchant/payment/${api_method}`,
                                     p,
                                     btnOK,
                                     false
                                 )
                                 .then((res) => {
                                     if (res.status_code === 200) {
+                                        const no_cache =1;
                                         mThis.listView.showPage(
-                                            mThis.getFilterData()
+                                            mThis.getFilterData(no_cache)
                                         );
                                         PmtDialog.close();
                                         cv_interact.success(
@@ -377,7 +381,7 @@ var MerchantBalancesCompoment = new (function () {
                 };
                 vsapi
                     .call(
-                        `${main_view.base_url}/api/encryptData`,
+                        `${main_view.base_url}/dms/encryptData`,
                         data,
                         false,
                         false
@@ -408,15 +412,29 @@ var MerchantBalancesCompoment = new (function () {
 
         this.btnExport.on("click", (e) => {
             e.preventDefault();
-            VSRoute.loadScript(
-                `${main_view.asset_url}/js/xlsx/xlsx.full.min.js`
-            ).then(() => {
-                mThis.exportToExcel_payables();
+            cv_interact.confirm('You about to export the Merhcant Balances to Excel spreadsheet. Confirm to continue?',{"context":"info","title":"Export Merchant Balances","confirmButtonText":"Continue","translate":true,"langprop":"buttons"},e=>{
+                 if(e){
+                    VSRoute.loadScript(
+                        `${main_view.asset_url}/js/xlsx/xlsx.full.min.js`
+                    ).then(() => {
+                        mThis.exportToExcel_payables();
+                    });
+                 }
             });
+          
         });
 
         mThis.elFilter_sender.on("change", function (e) {
             e.preventDefault();
+            let sender_id =   mThis.elFilter_sender.val();
+            if(sender_id ==0 || !sender_id || sender_id ==-1){
+               if(!mThis.elFilter_startDate.val() ||  !mThis.elFilter_endDate.val()){
+                 let today = DateHelper.getTodayDate();
+                 mThis.elFilter_startDate.val(today);
+                 mThis.elFilter_endDate.val(today);
+               }
+            } 
+          
             mThis.listView.showPage(mThis.getFilterData());
         });
 
@@ -444,7 +462,7 @@ var MerchantBalancesCompoment = new (function () {
         mThis.initAlready = true;
     };
 
-    this.getFilterData = () => {
+    this.getFilterData = (no_cache=0) => {
         //static warehouse_id =1
         let p = {
             warehouse_id: 1,
@@ -455,6 +473,7 @@ var MerchantBalancesCompoment = new (function () {
             end_date: mThis.elFilter_endDate.val(),
         };
         if (p.search_value || p.sender_id > 0) p.current_page = 1;
+        p.no_cache = no_cache;
         return p;
     };
 
@@ -463,7 +482,7 @@ var MerchantBalancesCompoment = new (function () {
         p.sender_id = sender_id;
         vsapi
             .call(
-                `${main_view.base_url}/api/merchant/outstanding-balances`,
+                `${main_view.base_url}/dms/merchant/outstanding-balances`,
                 p,
                 null,
                 false
@@ -482,7 +501,7 @@ var MerchantBalancesCompoment = new (function () {
     this.loadFilterOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/api/settings/options-sender`,
+                `${main_view.base_url}/dms/settings/options-sender`,
                 null,
                 null,
                 false
@@ -515,12 +534,33 @@ var MerchantBalancesCompoment = new (function () {
         });
     };
 
+    this.setAlertInfo = (d)=>{
+        mThis.div_alert_list.innerHTML = '';
+        if(!d) return;
+        let total_count = 0, html = [`<div class="d-flex flex-row gap-2 p-1 mt-1">
+          <a href="javascript:void(0)" class="lnk-list-merchant" data-name="overude-all"><span class="mbl-alert-title text-info">All Dues</span></a>
+        </div>`].join('');
+ 
+        (d || []).map(m =>{
+          let text_color = m.merchant_count > 0 ? 'text-danger':'text-success';
+          total_count += m.merchant_count; 
+          html =  [html,`<div class="d-flex flex-row gap-2 p-1 mt-1">
+               <a href="javascript:void(0)" class="lnk-list-merchant" data-name="`,m.name,`"><span class="mbl-alert-title ${text_color}">`,m.title,`</span><span class="prefix-colon mbl-alert-value ${text_color}">`,m.merchant_count,`</span></a>
+            </div>`].join(''); 
+        });
+        mThis.spanOverdueMerchantCount = mThis.spanOverdueMerchantCount || main_view.side_menus.querySelector("#overdue_merchant_count");
+        mThis.spanOverdueMerchantCount.textContent = total_count;
+        let vs_show =  (total_count <=0 || !total_count)? 'none':'block'; 
+        mThis.spanOverdueMerchantCount.parentNode.style.display = vs_show; 
+        mThis.div_alert_list.innerHTML = html;
+     }
+
     this.setColorTone = (type) => {
         if (!mThis.tblBalances) return;
-        mThis.div_container.classList.remove("payable", "receivable");
-        mThis.div_container.classList.add(type);
-        mThis.tblBalances.classList.remove("payable", "receivable");
-        mThis.tblBalances.classList.add(type);
+        // mThis.div_container.classList.remove("payable", "receivable");
+        //mThis.div_container.classList.add(type);
+        //mThis.tblBalances.classList.remove("payable", "receivable");
+        //mThis.tblBalances.classList.add(type);
     };
 
     this.processMerchantPaybales = (data) => {
@@ -567,7 +607,7 @@ var MerchantBalancesCompoment = new (function () {
         let p = mThis.getFilterData();
         vsapi
             .call(
-                `${main_view.base_url}/api/merchant/outstanding-balances`,
+                `${main_view.base_url}/dms/merchant/outstanding-balances`,
                 p,
                 null,
                 false

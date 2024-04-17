@@ -47,8 +47,8 @@ var CompletedPackageListComponent = new function() {
                             return ['<div style="display:flex;flex-direction:row">',
                              '<div>',
                               '<span class="pg-barcode">',data.barcode,'</span>',
-                               '<span class="pg-pickup_time d-block">',data.arrival_date,'</span>',
-                               '<span class="d-block text-primary">ថ្ងៃបញ្ចប់ ',data.finish_time,'</span>',
+                               '<span class="pg-pickup_time d-block"><small>',data.arrival_time,'</small></span>',
+                               '<span class="d-block text-primary"><small>ថ្ងៃបញ្ចប់ ',data.finish_time || '(Not Yet)','</small></span>',
                              '</div>',
                              '<a href="javascript:;" style="visibility:hidden" data-barcode="',data.barcode,'" class="_pgl_pa_quick_btn_barcode"><i class="fa fa-barcode" style="color:green"></i></a>',
                             '</div>'].join('');
@@ -110,7 +110,30 @@ var CompletedPackageListComponent = new function() {
                              const remarks = mThis.sanitizeInput(data.remarks);
                              const failure_notes = mThis.sanitizeInput(data.failure_notes);
                              const agent_notes = mThis.sanitizeInput(data.agent_notes);
-                             return ['<div class="d-flex flex-column flex-wrap"><a data-remarks="',remarks,'" data-failurenotes ="',failure_notes,'" data-agentnotes="',agent_notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">',data.status,'</a>',str_driver,'</div>'].join('');
+                             let start_time =  data.arrival_time;
+                             let finish_time = data.finish_time || data.delivery_time;
+                             switch(data.status_id){
+                                case 5:
+                                  start_time = data.arrival_time;
+                                  break;
+                                case 6:
+                                    start_time = data.last_checkout_time;
+                                    break;
+                                case 9:
+                                    start_time = finish_time;
+                                    break;
+                                case 11:
+                                    start_time = finish_time;
+                                    break;
+                                case 8:
+                                    start_time = finish_time;
+                                    break;
+                                default:
+                                    start_time = data.arrival_time;
+                                    break;
+                             }       
+                             const time_to_now = PackageListComponent.formatTimeSpan(start_time || data.arrival_time);
+                             return ['<div class="d-flex flex-column flex-wrap"><a data-remarks="',remarks,'" data-failurenotes ="',failure_notes,'" data-agentnotes="',agent_notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">','<span class="d-block status-text">',data.status,'</span>','<span class="text-dark"><small class="status-time">',time_to_now,'</small></span>','</a>',str_driver,'</div>'].join('');
                         },
                         title:'Status'
                     },
@@ -154,7 +177,7 @@ var CompletedPackageListComponent = new function() {
             // },
             //'paginationContainer': document.querySelector('#test_div'),
             'apiCluster':main_view.apiCluster,
-            'fetchApi': `${main_view.base_url}/api/completed-package/list`,
+            'fetchApi': `${main_view.base_url}/dms/completed-package/list`,
             'apiCluster': main_view.apiCluster,
             'tableClass':'header-uppercase table',
             'perPage': 6,
@@ -267,7 +290,7 @@ var CompletedPackageListComponent = new function() {
         //    let rpt_title = 'Completed Package List';
         //    if (mThis.lang == 'kh') rpt_title = 'បញ្ជីរកញ្ចប់ទំនិញដែលបានបញ្ចប់';
         //    try {
-        //         vsapi.call(`${mThis.base_url}/api/getCompletedPackageList_print`,p).then(res => {
+        //         vsapi.call(`${mThis.base_url}/dms/getCompletedPackageList_print`,p).then(res => {
         //             if(res.status_code === 200){
         //                 let data = res.data;
         //                 //data = StringSanitizer.sanitizeObject(data,'email');
@@ -285,7 +308,7 @@ var CompletedPackageListComponent = new function() {
         // this.btnExcel.addEventListener('click',function(e){
         //     let p = FilterDialog_cpl.getData();
         //     p.search_value = mThis.elSearchPackage.val();
-        //          vsapi.call(`${mThis.base_url}/api/completed-package/list-all`,p).then(res => {
+        //          vsapi.call(`${mThis.base_url}/dms/completed-package/list-all`,p).then(res => {
         //              if(res.status_code === 200){
         //                 let data = res.data;
         //                  let d = mThis.processPackageList_print(data);
@@ -455,7 +478,7 @@ var CompletedPackageListComponent = new function() {
     //                     "status_id":data.value
     //                 };
                     
-    //                 vsapi.call(`${mThis.base_url}/api/updatePackageStatus`,p).then(res => {
+    //                 vsapi.call(`${mThis.base_url}/dms/updatePackageStatus`,p).then(res => {
     //                     if(res.status_code === 200) {
     //                         let data = res.data;
     //                         let td = tr.find('td.package-status');
@@ -475,7 +498,7 @@ var CompletedPackageListComponent = new function() {
         //     //let def_driver_id = tr.data('driverid');
         //     cv_interact.confirm('Return this package?',{title:'Return Package',context:'update'},function(e){
         //             if(e){
-        //                 vsapi.call(`${mThis.base_url}/api/returnPackage`,p).then(res => {
+        //                 vsapi.call(`${mThis.base_url}/dms/returnPackage`,p).then(res => {
         //                     if(res.status_code === 200){
         //                        //update status on package trail | updatePackageStatus() || displayPackageStatus() || displayStatus()
         //                        let btn = tr.find('a._pol_status');
@@ -629,7 +652,7 @@ var CompletedPackageListComponent = new function() {
     // }
 
     this.localizePackageStatuses = (onFinish)=>{
-        vsapi.call(`${mThis.base_url}/api/getComboItems_package_status`,null).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/getComboItems_package_status`,null).then(res => {
             if(res.status_code === 200){
                 let rows = res.data;
                 mThis.statuses = StringSanitizer.sanitizeObject(rows);
@@ -650,7 +673,7 @@ var CompletedPackageListComponent = new function() {
 
     this.deletePackage = (barcode,package_id)=>{
         let p = {'barcode':barcode?barcode:'','id':package_id};
-       vsapi.call(`${mThis.base_url}/api/completed-package/delete`,p).then(res => {
+       vsapi.call(`${mThis.base_url}/dms/completed-package/delete`,p).then(res => {
          if(res.status_code === 200) {
              mThis.listView.showPage(mThis.getFilterData());
              cv_interact.success('Package was deleted');
@@ -688,7 +711,7 @@ var CompletedPackageListComponent = new function() {
             let pid = pd_container.dataset.id;
             //let p = {'sender_id':sender_id,'delivery_type':delivery_type,'zone_code':zone_code,'billed_kg':billed_kg};  
             let p = mThis.getPriceFactors(pd_container);
-            vsapi.call(`${mThis.base_url}/api/package/price-info`,p,false).then(res => {
+            vsapi.call(`${mThis.base_url}/dms/package/price-info`,p,false).then(res => {
                if(res.error_message) {
                  cv_interact.warning(res.error_message);
                } 
@@ -785,7 +808,7 @@ var CompletedPackageListComponent = new function() {
                 let p = {'id':pid};
                 //css class "pg-text" refers to every <td> or <span> or <div> that contains data value or text such as sender_name, sender_type, sender_phone, etc... on <"tr.pg-header"> row
                 //css class ="vc-value" refers to very <span> in "tr.pg-detail" row that contains data for each field of the package's expaned details
-                vsapi.call(`${mThis.base_url}/api/pacakge/details`,p).then(res => {
+                vsapi.call(`${mThis.base_url}/dms/pacakge/details`,p).then(res => {
                     if(res.status_code === 200){
                         let d = StringSanitizer.sanitizeObject(res.data,null,['email']);
                         tr.querySelector('td.pg-text').forEach(x => {
@@ -806,7 +829,7 @@ var CompletedPackageListComponent = new function() {
   
     mThis.displayPackageDetails = (container,id,can_edit=false)=>{
         //container.style.display ='none';
-        vsapi.call(`${mThis.base_url}/api/package/details`,{"id":id},null).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/package/details`,{"id":id},null).then(res => {
              let d = res.status_code === 200? StringSanitizer.sanitizeObject(res.data) : {};
              d = d || {};
              mThis.currency_symbol = d.currency_symbol || '$';
@@ -1137,7 +1160,7 @@ var CompletedPackageListComponent = new function() {
                cv_interact.warning(`Cannot edit package information because there is cash settlement ${agent} already`);
                return;
           }
-           vsapi.call(`${main_view.base_url}/api/package/details-with-options`,{"id":id},null).then(res =>{
+           vsapi.call(`${main_view.base_url}/dms/package/details-with-options`,{"id":id},null).then(res =>{
               const data = res.status_code ===200? StringSanitizer.sanitizeObject(res.data) : {};
               const d = data.details || {};
               
@@ -1307,7 +1330,7 @@ var CompletedPackageListComponent = new function() {
           p.driver_total = parseFloat(driver_total);
           p.sender_total = parseFloat(sender_total);
           //imporant params are "sender_d,df_payer, delivery_type,zone_code,billed_kg" in order to determine the price
-          vsapi.call(`${mThis.base_url}/api/package/update`,p).then(res => {
+          vsapi.call(`${mThis.base_url}/dms/package/update`,p).then(res => {
             if(res.status_code === 200){
                 const data = StringSanitizer.sanitizeObject(res.data,null,['email']);
                 const d = data.details || {};
@@ -1418,7 +1441,7 @@ const FilterDialog_cpl = new function(){
                 let def =  mThis.getData();
                 //if(!def.warehouse_id) def.warehouse_id = main_view.DEF_TO_WAREHOUSE_ID; 
                 console.log('def',mThis.remembered_filter);
-                vsapi.call(`${mThis.base_url}/api/completed-package/form-options`,null).then(res => {
+                vsapi.call(`${mThis.base_url}/dms/completed-package/form-options`,null).then(res => {
                     if(res.status_code === 200){
                         let data = StringSanitizer.sanitizeObject(res.data);
                         data.statuses= DUtil.process_statuses(data.statuses,[5,6,7,9,10],{"status_id":-1,"status_name":"(All Statuses)"});

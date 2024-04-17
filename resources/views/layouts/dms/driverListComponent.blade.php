@@ -1,4 +1,4 @@
-<div id="_main_driverListComponent" style="display:none;padding:15px">
+<div id="_main_driverListComponent" class="m-3" style="display:none;">
     <div class="d-flex justify-content-between bg-white rounded-3 p-3 border">
         <div class="d-flex gap-2">
             <button id="_drl_btnNewDriver" data-toggle="modal" class="btn btn-primary text-nowrap">

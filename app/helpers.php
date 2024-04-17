@@ -888,7 +888,7 @@ function createUUIDV1()
     //default max_size to 500 KB
     function resizeImage_base64($base64_string,$maxSize=500000){
         //For quick process, we can check if the provided $base64_string is a URL or not. IF not, go further to process the base64 into image object
-        if(filter_var($base64_string, FILTER_VALIDATE_URL)) return null;
+        if(filter_var($base64_string, FILTER_VALIDATE_URL))  return (object)['error'=>'The data is not an image','image'=>null];
         // Set maximum allowed image size (in bytes)
         $maxSize =$maxSize? $maxSize:1000000; // 1 MB
         $image = null;

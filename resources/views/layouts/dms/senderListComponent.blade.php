@@ -1,21 +1,28 @@
-<div id="_main_senderListComponent" style="display:none;margin:15px">
+<div id="_main_senderListComponent" class="m-3" style="display:none;">
     <div class="d-flex justify-content-between shadow rounded-3 p-3 bg-white">
         <div class="d-flex gap-2">
             <div class="d-flex gap-2">
                 <input type="text" class="form-control" id="_sdl_search_sender" placeholder="Search merchant">
-                <button id="_sdl_btnSearch" role="button" class="btn btn-primary height">
+                <button id="_sdl_btnSearch" role="button" class="btn btn-secondary height">
                     <i class="la la-search"></i>
                 </button>
             </div>
             <div class="d-flex gap-2" id="_sdl_filter_fields">
-                <div class="min-width-select">
+                <!-- <div class="min-width-select">
                     <select id="_sdl_filter_business_type" class="d-none modal-select2 filter-field" data-field="business_type"></select>
-                </div>
+                </div> -->
                 <div class="min-width-select">
                     <select id="_sdl_filter_sender_status" class="modal-select2 filter-field" data-field="status_code">
+                        <option value="">(All Statuses)</option>
                         <option value="Active">Active</option>
                         <option value="Inactive">Inactive</option>
                     </select>
+                </div>
+                <div>
+                    <button id="_sdl_btnFilter" role="button" class="btn btn-primary height">
+                        <i class="la la-filter"></i>
+                        <span class="filter-info position-absolute text-center"></span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -28,10 +35,10 @@
                 <i class="fa fa-print fs-5"></i>
                 <span class="trans-text" data-langprop="buttons.Print"></span>
             </button>
-            <button id="_sdl_btnExcel" class="btn btn-primary height">
+            <!-- <button id="_sdl_btnExcel" class="btn btn-primary height">
                 <i class="fa fa-file-excel fs-5"></i>
                 <span class="trans-text" data-langprop="buttons.Excel"></span>
-            </button>
+            </button> -->
         </div>
     </div>
     <div class="rounded-3 mt-3 bg-transparent">
@@ -48,7 +55,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body" style="height:75vh; overflow-y:auto">
                 <div class="row" id="div_merchant_info">
                     <div class="form-group col-lg-6">
                         <label for="code" class="form-label trans-text" data-langprop="titles.Merchant ID"></label>
@@ -155,7 +162,7 @@
     </div>
 </div>
 
-<div class="modal fade" id="dlg_sdl_add_user" tabindex="-1" aria-labelledby="dlg_sdl_add_user_title" aria-hidden="true">
+<!-- <div class="modal fade" id="dlg_sdl_add_user" tabindex="-1" aria-labelledby="dlg_sdl_add_user_title" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
@@ -173,4 +180,4 @@
             </div>
         </div>
     </div>
-</div>
+</div> -->

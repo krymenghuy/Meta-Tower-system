@@ -120,7 +120,7 @@ var DriverListComponent = new function(){
         if(!def) def={};
         //def.emp_type =0;
         //def.status_code = 0;
-        vsapi.call ([mThis.base_url,'/api/driver/form-options'].join(''),null,null,main_view.apiCluster).then(res=>{
+        vsapi.call ([mThis.base_url,'/dms/driver/form-options'].join(''),null,null,main_view.apiCluster).then(res=>{
            if(res.status_code ===200){
                let d = res.data;
                d.emp_types = StringSanitizer.sanitizeObject(d.emp_types);
@@ -136,7 +136,7 @@ var DriverListComponent = new function(){
     this.init = ()=>{
         if (mThis.initAlready) return;
         mThis.driverListView = new ListView("_drl_driver_list", {
-            fetchApi: `${main_view.base_url}/api/driver/list`,
+            fetchApi: `${main_view.base_url}/dms/driver/list`,
             processResponse: (res) => {
                 let d = res.status_code === 200 ? res.data : {};
                 const driver_count = d.driver_count;
@@ -222,8 +222,8 @@ var DriverListComponent = new function(){
                         mThis.prev_dropdownMenu.classList.remove('show');
                     }
                     const pos = btn.getBoundingClientRect();
-                    dropdownMenu.style.top = [(pos.y - pos.height -60),'px'].join('');
-                    dropdownMenu.style.left =[(pos.x - pos.width - 230),'px'].join('');
+                    dropdownMenu.style.top = [(pos.y - pos.height),'px'].join('');
+                    dropdownMenu.style.left =[(pos.x - pos.width),'px'].join('');
                     dropdownMenu.classList.add('show');
                     //if (dropdownMenu.classList.contains('show')) {
                         mThis.prev_dropdownMenu = dropdownMenu;
@@ -249,7 +249,7 @@ var DriverListComponent = new function(){
                     let p = {'driver_id':driver_id,'status_code':status_code};
                     cv_interact.confirm('Delete this driver?',{title:'Delete Driver',context:'delete'},e=>{
                         if(e) {
-                                vsapi.call([mThis.base_url,'/api/driver/delete'].join(''),p,null,null,main_view.apiCluster).then(res=>{
+                                vsapi.call([mThis.base_url,'/dms/driver/delete'].join(''),p,null,null,main_view.apiCluster).then(res=>{
                                     if(res.status_code===200) {
                                         mThis.driverListView.showPage(mThis.getFilterData());
                                     }else cv_interact.error(res.error_message);
@@ -298,6 +298,7 @@ var DriverListComponent = new function(){
             });
 
                 document.addEventListener('click', function (e) {
+                    if(!mThis.driver_dropdown_menu) return;
                     // e.preventDefault(); // Commented out because it prevents normal click behavior; uncomment if needed
                     let container = mThis.driver_dropdown_menu.parentNode;
                     if (container) {
@@ -417,7 +418,7 @@ var DriverListComponent = new function(){
     this.createDropdownMenuHtml_driver = function(data) {
         //cla = 'class_list_action' = > cla_delete, cla_modify,...
         let html = ['<div class="dropdown-menu bg-white shadow" data-drivercode="',data.code,'" data-driverid="',data.id,'" data-id="',data.id,'" data-statuscode="',data.status_code,'">',
-        '<a class="dropdown-item _drl_da_modify" data-id="',data.id,'"  href="javascript:void(0)"><i class="fa fa-edit" style="color:green"></i> Modify Driver Info</a>',
+        '<a class="dropdown-item _drl_da_modify" data-id="',data.id,'"  href="javascript:void(0)"><i class="fa fa-edit" style="color:green"></i> Modify Driver Details</a>',
         '<a class="dropdown-item _drl_da_compensation" data-id="',data.id,'" href="javascript:void(0)"><i class="fa fa-money-bill-alt" style="color:orange"></i> Modify Driver Commissions</a>',
         '<a class="dropdown-item _drl_da_create_login" data-id="',data.id,'" href="javascript:void(0)"><i class="fa fa-user" style="color:blue"></i> Create Mobile App Login</a>',
         '<a class="dropdown-item _drl_da_delete" data-id="',data.id,'" href="javascript:void(0)"><i class="fa fa-times" style="color:red"></i> Delete Driver</a>',
@@ -432,13 +433,10 @@ var DriverListComponent = new function(){
         InputBox2.show(option,(d)=>{
            if(d) {
               let p = {"driver_id":driver_id,"status_code":d.value}; 
-              vsapi.call([mThis.base_url,'/api/driver/update-status'].join(''),p).then(res=>{
+              vsapi.call([mThis.base_url,'/dms/driver/update-status'].join(''),p).then(res=>{
                   if(res.status_code === 200) {
-                    cv_interact.success('Driver status has been updated!');
-                    mThis.driverListView.showPage(mThis.getFilterData());
-                    // mThis.self.siblings().hide();
-                    // mThis.self.hide().fadeIn(250);	
-                    // mThis.hide();
+                      cv_interact.success('Driver status has been updated!');
+                      mThis.driverListView.showPage(mThis.getFilterData());
                   }else cv_interact.error(res.error_message); 
               });
            }
@@ -484,7 +482,7 @@ const DriverDialog = new function(){
         return;
        }
 
-      vsapi.call([mThis.base_url,'/api/driver/form-options'].join(''),null,null,main_view.apiCluster).then(res=>{
+      vsapi.call([mThis.base_url,'/dms/driver/form-options'].join(''),null,null,main_view.apiCluster).then(res=>{
          if(res.status_code===200){
              let d = res.data;
 
@@ -530,7 +528,7 @@ const DriverDialog = new function(){
     //     mThis.elError.html('Status is not correct!');
     //     return;
     //   }
-      vsapi.call([mThis.base_url,'/api/driver/save'].join(''),p).then(res=>{
+      vsapi.call([mThis.base_url,'/dms/driver/save'].join(''),p).then(res=>{
             if(res.status_code === 200) {
                 mThis.self.modal('hide');
                 if (typeof mThis.onClose ==='function') mThis.onClose(p);
@@ -550,7 +548,7 @@ const DriverDialog = new function(){
        if (mThis.driver_id > 0) {
           mThis.elTitle.html("Driver Details");
           let p = {'driver_id':mThis.driver_id};
-          vsapi.call([mThis.base_url,'/api/driver/details'].join(''),p).then(res=> {
+          vsapi.call([mThis.base_url,'/dms/driver/details'].join(''),p).then(res=> {
                 if(res.status_code === 200){
                    let d = StringSanitizer.sanitizeObject(res.data,null,['email']);
                    mThis.prepareData(d, function(){
@@ -633,7 +631,7 @@ const DriverDialog = new function(){
          let p = mThis.getData();
          if(!p) return;
          
-         vsapi.call([mThis.base_url,'/api/driver/commissions/save'].join(''),p).then(res =>{
+         vsapi.call([mThis.base_url,'/dms/driver/commissions/save'].join(''),p).then(res =>{
              if(res.status_code===200) {
                 if(typeof mThis.onClose ==='function') mThis.onClose(true);
                 mThis.self.modal('hide');
@@ -663,7 +661,7 @@ const DriverDialog = new function(){
 
      this.getDriverCommisions= (driver_id,onFinish)=>{
         let p = {'driver_id':driver_id?driver_id:0};
-        vsapi.call([mThis.base_url,'/api/driver/commissions'].join(''),p).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/driver/commissions'].join(''),p).then(res=>{
             if(res.status_code===200){
                 //mThis.driver_id = driver_id;
                 let d = res.data;

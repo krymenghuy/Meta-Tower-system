@@ -327,7 +327,7 @@ var DashboardComponent = new function () {
 
 
   this.loadDashBoardData = (onFinish = null) => {
-    vsapi.call(`${main_view.base_url}/api/dashboard/data`, null, null,main_view.apiCluster).then(res => {
+    vsapi.call(`${main_view.base_url}/dms/dashboard/data`, null, null,main_view.apiCluster).then(res => {
       const data = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
       onFinish(data);
     });

@@ -14,13 +14,13 @@ let PusherClient = new function(){
         cluster: 'mt1',
         useTLS:true,
         disableStats:true,
-        // authEndpoint:"/api/broadcast/auth",
+        // authEndpoint:"/dms/broadcast/auth",
         //authTransport:'ajax', //two options = {'ajax','jsonp'}. The default is "ajax"
         authorizer: function authorizer(channel, options){
             return {
                 authorize: function authorize(socketId, callback) {
                     let p = {"socket_id":socketId,"channel_name":channel.name};
-                    vsapi.call(`${main_view.base_url}/api/broadcast/auth`,p).then(auth_data=>{
+                    vsapi.call(`${main_view.base_url}/dms/broadcast/auth`,p).then(auth_data=>{
                         console.log('Pusher authorization succeeded!');
                         //NOTE: @auth_data ={"auth":"app_key:sig"} . For example,  @auth_data = {"auth":"b7351506ee87f3eec932:3c27d88c6944726d39052efd50770468b23b0e9987e981acbc5ed58ba4bb1d51"}
                         callback(null, auth_data);

@@ -60,8 +60,8 @@
                 <button class="kt-header-mobile__topbar-toggler" id="kt_header_mobile_topbar_toggler">
                     <i class="flaticon-more"></i>
                 </button>
-                <div class="d-flex flex-row justify-content-center w-100 shadow rounded-5 mb-2 mt-1">
-                    <h4 id="mobile_screen_title" class="trans-text mobile-screen-title p-1"></h4>
+                <div class="d-flex flex-row flex-wrap justify-content-center align-items-center shadow rounded-5 m-1">
+                    <h4 id="mobile_screen_title" class="trans-text text-center mobile-screen-title p-1 mt-2"></h4>
                 </div>
             </div>
         </div>
@@ -72,10 +72,10 @@
                 </div>
                 <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor kt-wrapper" id="kt_wrapper">
                     <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
-                        <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper" style="padding:10px">
+                        <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
                             <div class="d-flex">
                                
-                            <div class="mainview-top-right">
+                            <div class="mainview-top-right ml-2 pl-1">
                                     <div class="show--title flex-grow-1">
                                         <div class="screen-info">
                                             <h5 class="screen-title mb-0 trans-text" data-langprop="titles.dashboard" style="text-transform:uppercase" id="screen_title">Dashboard</h5>
@@ -198,7 +198,7 @@
                         <div class="animation-line line--loader d-none" id="vs_loader"></div>
                     </div>
                     <!--Removed class "kt-content" from this DIV -->
-                    <div id="_p2" class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content" style="margin-top:-15px">
+                    <div id="_p2" class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content">
                         <div id="_p1" class="row">
                             <div class="col-lg-12 shadow-box ps-4" id="_app_content">
                                 @include('layouts.dms.dashboardComponent')
@@ -220,6 +220,8 @@
                                 @include('layouts.um.roleManagementComponent')
                                 @include('layouts.dms.locationComponent')
                                 @include('layouts.dms.mobileBrandImagesComponent')
+                                @include('layouts.dms.mobilePrivacyComponent')
+                                @include('layouts.dms.mobileTCComponent')
                                 @include('layouts.dms.promotionComponent')
                                 @include('layouts.dms.deliveryZoneComponent')
                                 @include('layouts.dms.priceSettingsComponent')

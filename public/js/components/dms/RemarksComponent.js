@@ -48,7 +48,7 @@ var RemarksComponent = function() {
   ];
 
   const remarkListView = new ListView('div_remark_list', {
-    fetchApi: `${base_url}/api/remarks/list-paginate`,
+    fetchApi: `${base_url}/dms/remarks/list-paginate`,
     columns: columns,
     tableClass: "table header-light-blue header-uppercase",
     rowCreated: (data, index, tr) => {
@@ -100,7 +100,7 @@ var RemarksComponent = function() {
         context: 'delete',
       }, (confirmed) => {
         if (confirmed) {
-          vsapi.call(`${base_url}/api/remarks/delete`, p)
+          vsapi.call(`${base_url}/dms/remarks/delete`, p)
             .then((res) => {
               if (res.status_code === 200) {
                 remarkListView.showPage();
@@ -140,8 +140,8 @@ class RemarkDialog {
       "itemName": "Remarks",
       "formId": '_rmk_dlgRemarks',
       "instance": this,
-      "apiSave": `${main_view.base_url}/api/remarks/save`,
-      "apiGet": `${main_view.base_url}/api/remarks/details`,
+      "apiSave": `${main_view.base_url}/dms/remarks/save`,
+      "apiGet": `${main_view.base_url}/dms/remarks/details`,
       "modifyTitle": "Modify Remarks",
       "createTitle": "New Modify Remarks",
       "identityProps": ['id'],

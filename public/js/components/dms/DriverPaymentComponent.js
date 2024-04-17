@@ -181,7 +181,7 @@ var DriverTabView = new function () {
                     };
                     cv_interact.confirm(`ទូទាត់បញ្ចប់ទឹកប្រាក់ 0 USD សំរាប់ ${sel.package_count} កញ្ចប់`,{"context":"update","title":"Driver Settlement"},e=>{
                         if(e){
-                             vsapi.call(`${main_view.base_url}/api/driver/payment/settle-zero`,p,null,null).then(res=>{
+                             vsapi.call(`${main_view.base_url}/dms/driver/payment/settle-zero`,p,null,null).then(res=>{
                                 if(res.status_code ===200){
                                     mThis.displayDeliveryItemsByDriver(null,6); 
                                     cv_interact.info(['Settlement for zero amount for ',d.success_count,' items but in waiting for approval'].join(''));
@@ -194,7 +194,7 @@ var DriverTabView = new function () {
   
                   const op = {
                     "id":driver_id,
-                    "prep_api":`${main_view.base_url}/api/driver/payment/form-options`,
+                    "prep_api":`${main_view.base_url}/dms/driver/payment/form-options`,
                     "type":trans_type,
                     "agent_name":driver_name,
                     "showCheck":false,
@@ -216,7 +216,7 @@ var DriverTabView = new function () {
                       p.packages = sel.ids;
 
                       const api_method = trans_type =='receive'? 'receive':'pay';
-                      vsapi.call(`${main_view.base_url}/api/driver/payment/${api_method}`,p,btnOK,null).then(res=>{
+                      vsapi.call(`${main_view.base_url}/dms/driver/payment/${api_method}`,p,btnOK,null).then(res=>{
                           if(res.status_code ===200){ 
                               mThis.displayDeliveryItemsByDriver(null,7); 
                               PmtDialog.close();
@@ -287,7 +287,7 @@ var DriverTabView = new function () {
                 if (typeof onFinish == 'function') onFinish();
                 return;
             }
-            vsapi.call([main_view.base_url, '/api/merchant/filter-options'].join(''), null,null,main_view.apiCluster).then(res => {
+            vsapi.call([main_view.base_url, '/dms/merchant/filter-options'].join(''), null,null,main_view.apiCluster).then(res => {
                 if (res.status_code === 200) {
                     const data =  StringSanitizer.sanitizeObject(res.data,null,['sender_name']);
                     (data.drivers || []).unshift({ 'id': -1, 'driver_name': '(All Drivers)' });
@@ -438,7 +438,7 @@ var DriverTabView = new function () {
             let p = FilterDialog_dpmt.getData();
             p.search_value = mThis.elSearchPackage.val();
             //displayItems() | displayPackages() | Packages delivered by driver  get merchant or vendor transactions payments
-            vsapi.call([main_view.base_url, '/api/driver/delivery-items'].join(''), p, null, null, main_view.apiCluster).then(res => {
+            vsapi.call([main_view.base_url, '/dms/driver/delivery-items'].join(''), p, null, null, main_view.apiCluster).then(res => {
                 if (mThis.table) {
                     mThis.tblItems.DataTable().clear().destroy();
                     //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
@@ -868,7 +868,7 @@ var DriverTabView = new function () {
                 // },
                 //'paginationContainer': document.querySelector('#test_div'),
                 'apiCluster':main_view.apiCluster,
-                'fetchApi': `${main_view.base_url}/api/driver/payment/list`,
+                'fetchApi': `${main_view.base_url}/dms/driver/payment/list`,
                 'processResponse':(res)=>{
                     let d = res.status_code ===200? res.data:{};
                     if (!mThis.elStartDate.val() && d.start_date) mThis.elStartDate.val(d.start_date);
@@ -933,7 +933,7 @@ var DriverTabView = new function () {
                     if (e) {
                         let p = mThis.getFilterData();
                         //p.trx_type = 'receipt';
-                        vsapi.call([main_view.base_url, '/api/driver/payment/bulk-authorize'].join(''), p).then(res => {
+                        vsapi.call([main_view.base_url, '/dms/driver/payment/bulk-authorize'].join(''), p).then(res => {
                             console.log(res);
                             if (res.status_code === 200) {
                                 let d = res.data;
@@ -959,7 +959,7 @@ var DriverTabView = new function () {
                             if (e) {
                                 //let trx_type ='receipt';
                                 let p = { 'trx_id': trx_id, 'trx_type': trx_type };
-                                vsapi.call([main_view.base_url, '/api/driver/payment/delete'].join(''), p).then(res => {
+                                vsapi.call([main_view.base_url, '/dms/driver/payment/delete'].join(''), p).then(res => {
                                     if (res.status_code === 200) {
                                        mThis.pmtListView.showPage(mThis.getFilterData()); 
                                     }
@@ -1001,7 +1001,7 @@ var DriverTabView = new function () {
                                 if (e) {
                                     //let trx_type ='receipt';
                                     let p = { 'trx_id': trx_id, 'trx_type': trx_type };
-                                    vsapi.call([main_view.base_url, '/api/driver/payment/authorize'].join(''), p).then(res => {
+                                    vsapi.call([main_view.base_url, '/dms/driver/payment/authorize'].join(''), p).then(res => {
                                         if (res.status_code === 200) {
                                            let d = StringSanitizer.sanitizeObject(res.data); 
                                            mThis.pmtListView.showPage(mThis.getFilterData());
@@ -1092,7 +1092,7 @@ var DriverTabView = new function () {
                 return;
             }
 
-            vsapi.call([main_view.base_url, '/api/getComboItems_driver'].join(''), null).then(res => {
+            vsapi.call([main_view.base_url, '/dms/getComboItems_driver'].join(''), null).then(res => {
                 if (res.status_code === 200) {
                     let rows = StringSanitizer.sanitizeObject(res.data);
                     //The following line has error if if  "rows" is not array
