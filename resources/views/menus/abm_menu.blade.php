@@ -26,7 +26,7 @@
 
 <?php
     function v_display($mod_id, $module_ids = null){
-        if(App\Models\Dms\UM::access_mod($mod_id, null, $module_ids)){
+        if(App\Models\UM::access_mod($mod_id, null, $module_ids)){
             echo '';
         }
         else{

@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 var SenderListComponent = new function(){
     const mThis = this;
     this.title_prop = "Merchants";
