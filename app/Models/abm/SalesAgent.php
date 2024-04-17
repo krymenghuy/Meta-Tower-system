@@ -1,22 +1,22 @@
 <?php
 
-namespace App\Models\Dms;
+namespace App\Models\Abm;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use DB;
 use Sanitizer;
-use App\Models\Dms\DV;
+use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator; 
-use App\Models\Dms\PublicStorage;
+use App\Models\PublicStorage;
 use Carbon\Carbon;
-use App\Models\Dms\Sender;
+use App\Models\Sender;
 use Config;
 use Illuminate\Support\Facades\Cache;
 
 class SalesAgent //extends Model
 {
     protected $id = null, $userInfo = null;
-    protected static $photo_dir = 'sales_agent';
+    protected static $photo_dir = 'os_sales_agent';
     /** This is for Full-timer sales staff: the Threhold is set to 3000pcs in order to get $100 bonus, and each additional package, he gets 0.05 USD */
     protected static $ft_item_count_threhold = 500, $ft_amount_per_unit =0.05, $ft_bonus_amount =100;
     ///** This is the standard columns for commission summary. Some of these columns will be restructured or remaned according to whether the Summary is Closed or Real-time */
@@ -46,66 +46,30 @@ class SalesAgent //extends Model
        //Policy_id => 1 = "Full time policy", 2 = "Freelanancer commission policy"
     }
 
-    static function saveBankAccount($arr,$id,$ss){
-        $d = (object)$arr;
-        $x = DB::table('sales_agents')->where('id',$id)->update([
-           'account_number'=>isset($d->account_number)? $d->account_number:null,
-           'account_name'=>isset($d->account_name)? $d->account_name:null,
-           'bank_name'=>isset($d->bank_name)?$d->bank_name:null
-        ]); 
-      return DV::depends($x,null);
-    }
-
-    static function getBankAccount($id){
-      return DB::table('sales_agents as a')->where('a.id',$id)->selectRaw('a.id,a.bank_name,a.account_name,a.account_number')->first();  
-    }
-
     function save($arr, $id = null, $ss = null){
       $ss = $ss ?? $this->userInfo;
       $id = $id ?? $this->id;
       $v_rule = [
          'name'=>'1|string|1-150',
          'sex'=>'1|choice|M,F,O',
-         'agent_type_id'=>'1|number|exists=sales_agent_types.id',
+         'agent_type'=>'1|choice|client-affiliate,freelancer|default=client-affiliate',
          'phone_number'=>'1|phone',
          'email'=>'0|email',
          'address'=>'0|address',
-         'start_date'=>'0|date',
-         'policy_id'=>'0|number|exists=commission_policies.id',
-         'status_code' => '0|choice|Active,Inactive|default=Active',
-         'login_name'=>'0|string|0-50',
-         'password'=>'0|string|0-50',
-         'photo'=>'0|image'
-      ];
 
+      ];
+      $email_chars = ['@','-','.','_'];
+      $address_chars = ['.','#'];
       $branch_id = $ss->branch_id;
-      $res = validateObject($arr,$v_rule,true,['photo'=>GeneralSettings::$image_chars, 'address'=>GeneralSettings::$address_chars,'email'=>GeneralSettings::$email_chars],$ss->lang,false,null);
+      $res = validateObject($arr,$v_rule,true,['address'=>$address_chars,'email'=>$email_chars],$ss->lang,false,null);
       if($res->error) return DV::error($res->error);
       $inputs = $res->values;
       $d = (object)$inputs;
-      $photo = $d->photo;
-      unset($inputs['photo'],$inputs['login_name'],$inputs['password']);
-      $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
       $created = !$id;
-      $inputs['policy_id'] = self::getPolicyId($d->agent_type_id);
       $create_login = $created;
-      $id = saveData($ss,'sales_agents',['id'=>$id],$inputs,[],1,false);
-      if($id > 0){
-          if($delete_prev_image){
-              $file_name = DB::table('sales_agents as a')->where('id',$id)->take(1)->value('photo_file_name');
-              if($file_name) PublicStorage::delete($branch_id,self::$photo_dir,'image',$file_name);
-              DB::table('sales_agents as a')->where('id',$id)->update(['photo_file_name'=>null]);
-          }
-          $new_code = null;
-          PublicStorage::saveImage($branch_id,self::$photo_dir,null,$photo,null,['id'=>$id,'store'=>'sales_agents.photo_file_name']); 
-          if ($created){
-             $new_code = self::setAgentCode($ss,5);
-             DB::table('sales_agents')->where('id',$id)->update(['code'=>$new_code]);
-             self::createAppLogin($id,$new_code,$d,$ss);
-          }    
-       }
+      $id = saveData($ss,'os_sales_agents',['id'=>$id],$inputs,[],1,false);
 
-      return DV::depends($id,['id'=>$id,'new_code'=>$new_code],'Failed to save sales agent');
+      return DV::depends($id,['id'=>$id],'Failed to save sales agent');
     }
  
     static function createAppLogin($agent_id,$agent_code,$d,$ss){
@@ -142,7 +106,7 @@ class SalesAgent //extends Model
                     ]);
                     $d->user_id  = DB::getPdo()->lastInsertId();
 
-                    $um = new \App\Models\Dms\UM();
+                    $um = new \App\Models\UM();
                     $um->addRoleMember($d->user_id,$default_role_id,$ss);
     }
 
@@ -497,13 +461,13 @@ static function list($arr,$ss=null){
           $str_status = $status_code? 'd.status_code =\''.$status_code.'\'' : '1=1';
         }
        
-        $query = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.policy_id,d.email,d.sex,d.phone_number,d.address,d.status_code,t.id as agent_type_id,t.name AS agent_type,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date,d.create_user,photo_file_name'); 
+        $query = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.policy_id,d.email,d.phone_number,d.address,d.status_code,t.id as agent_type_id,t.name AS agent_type,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date,d.create_user,photo_file_name'); 
         $count_query = clone $query;
         $count = $count_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
           $row->image_url = '';
-          //$row->mobile_login = \App\Models\Dms\UM::getAccountInfo($row->id,'official_id');
+          //$row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id');
           $url = $row->photo_file_name? $row->image_url = PublicStorage::getUrl($branch_id,self::$photo_dir,'image').$row->photo_file_name:null;
           $row->image_url = validateUrl($url,self::defaultImage($branch_id));
           unset($row->photo_file_name);
@@ -687,9 +651,6 @@ static function list($arr,$ss=null){
        $start_date = isset($d->start_date)? convertDate($d->start_date) : null;
        $end_date = isset($d->end_date)? convertDate($d->end_date):null;
        $str_dates = '1=1';
-       if($start_date && $end_date){
-         $str_dates = 'DATE(p.payment_date) BETWEEN '.$start_date. ' AND '.$end_date;
-       }
        $rows = DB::table('commission_payments AS p')->join('closed_commissions as c','c.id','=','p.closing_id')->where('p.payee_id',$id)->where('payee_type','sales_agent')->whereRaw($str_dates)->selectRaw('p.id,p.closing_id,formatTime(p.payment_date) AS payment_date,p.amount,c.amount_per_unit,p.payee_id AS sales_agent_id,p.payee_id,c.target_count, c.count_type,c.policy_id,p.payee_type,p.pmt_method,p.create_user,formatTime(p.create_date) AS create_date,p.remarks')->get();
        $total = 0;
        foreach($rows as $row){
@@ -702,32 +663,11 @@ static function list($arr,$ss=null){
        ];
     }
 
-      /** Get commission payment by month. Sales Agent can see only one payment */
-      function getCommissionPaymentByMonth($arr, $id=null,$ss= null){
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-        $d = (object)$arr;
-        if(strtolower($ss->user_class) =='sales_agent') $id = $ss->official_id;
-        $month = isset($d->month)? $d->month : date('m');
-        $year =isset($d->year)? $d->year : date('y');
-        $str_dates = 'p.op_month ='.$month. ' AND p.op_year ='.$year;
-        $rows = DB::table('commission_payments AS p')->join('closed_commissions as c','c.id','=','p.closing_id')->where('p.payee_id',$id)->where('payee_type','sales_agent')->whereRaw($str_dates)->selectRaw('p.id,p.closing_id,formatTime(p.payment_date) AS payment_date,p.amount,c.amount_per_unit,p.payee_id AS sales_agent_id,p.payee_id,c.target_count, c.count_type,c.policy_id,p.payee_type,p.pmt_method,p.create_user,formatTime(p.create_date) AS create_date,p.remarks')->get();
-        $total = 0;
-        foreach($rows as $row){
-           $total += $row->amount;
-        }
-        return (object)[
-          'currency'=>'USD',
-          'total'=>$total,
-          'payments'=>$rows
-        ];
-     }
-
     /** Given sales_agent_id, return policy details indlucing policy ID , policy name, and detailed items or conditions */
     static function getCommissionPolicyDetails($id){
        $agent = DB::table('sales_agents AS a')->where('a.id',$id)->selectRaw('a.branch_id,a.id,a.agent_type_id,a.policy_id')->first();
        if(!$agent) return null;
-       $cm = new \App\Models\Dms\SalesCommissionPolicy($agent->policy_id);
+       $cm = new \App\Models\SalesCommissionPolicy($agent->policy_id);
        $ss = (object)['branch_id'=>$agent->branch_id];
        $pol = self::getPolicyInfo($agent->policy_id,$ss);
        if(!$pol) return null;
@@ -753,11 +693,11 @@ static function list($arr,$ss=null){
         $str_status = $status_code? 'status_code =\''.$status_code.'\'' : '1=1';
         $str_agent_type = $agent_type_id > 0 ? 'agent_type_id ='.$agent_type_id : '2=2';
 
-        $rows = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.policy_id,d.email,d.phone_number,d.address,d.status_code,t.sex,t.name AS agent_type')->get(); 
+        $rows = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.policy_id,d.email,d.phone_number,d.address,d.status_code,t.name AS agent_type')->get(); 
    
         foreach($rows as $row){
           $row->image_url = '';
-          //$row->mobile_login = \App\Models\Dms\UM::getAccountInfo($row->id,'official_id');
+          //$row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id');
           if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($branch_id,strtolower($ss->user_class),'image').$row->photo_file_name;
           unset($row->photo_file_name);
           $pol = self::getPolicyInfo($row->policy_id,$ss);
@@ -769,7 +709,7 @@ static function list($arr,$ss=null){
 
     static function details($id,$ss){ 
         $branch_id = $ss->branch_id;
-        $row = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('d.id',$id)->selectRaw('d.id,d.name,d.policy_id,d.agent_type_id,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,d.account_name,d.account_number, d.bank_name,d.commission,t.id AS agent_type_id,t.name AS agent_type,d.photo_file_name,formatDate(d.create_date) AS create_date')->take(1)->first(); 
+        $row = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('d.id',$id)->selectRaw('d.id,d.name,d.policy_id,d.agent_type_id,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,d.commission,t.id AS agent_type_id,t.name AS agent_type,d.photo_file_name,formatDate(d.create_date) AS create_date')->take(1)->first(); 
         if($row){
            $pol = self::getPolicyInfo($row->policy_id,$ss);
            $row->policy_name = $pol? $pol->name: 'NA';
@@ -1049,7 +989,6 @@ static function list($arr,$ss=null){
   return collect($sortedRows);
 }
   
- /** Calculate for Full-time sales staff */
  static function calculateRuleA($month,$year,$agent_id,$ss){
   $countInfo = self::countTarget($year,$month,$agent_id,$ss);
   $effective_count = $countInfo->count - self::$ft_item_count_threhold;
@@ -1306,8 +1245,8 @@ static function list($arr,$ss=null){
       'month_range' =>$month_range,
       'package_count' => $package_count,
       'merchant_count'=>$merchant_count,
-      'balance'=>$bal,
-      'currency_code'=>'USD',
+      'balance'=>$bal ?? 111,
+      'currency_code'=>'KHR',
        'month_range' => $month_range
      ];
    
@@ -1328,24 +1267,15 @@ static function list($arr,$ss=null){
       //  ];
   }
 
-  /** return commission payments or transactions. For Backend system 
-   * $arr = ['agent_id','start_date','end_date']
-  */
   static function getPayments($arr,$ss){
       $d = (object)$arr;
       $agent_id = isset($d->agent_id)?$d->agent_id:null;
       $agent_id = $agent_id ?? (isset($d->sales_agent_id)? $d->sales_agent_id:null);
-      $start_date = isset($d->start_date)? convertDate($d->start_date): null;
-      $end_date = isset($d->end_date)? convertDate($d->end_date):null;
-      if((!$start_date || !$end_date) && !$agent_id){
-          return (object)[
-            'summary'=>null,
-            'list'=>[]
-        ];
-      }
+      $start_date = isset($d->start_date)? convertDate($d->start_date): date('Y-m-d');
+      $end_date = isset($d->end_date)? convertDate($d->end_date):date('Y-m-d');
       $str_dates = ($start_date && $end_date)? 'DATE(p.payment_date) >=\''.$start_date.'\' AND date(p.payment_date) <\''.$end_date.'\'':'1=1';
       $str_agent = $agent_id > 0 ? 'p.payee_id ='.$agent_id :'2=2'; 
-      $rows = DB::table('commission_payments as p')->join('closed_commissions as c','c.id','=','p.closing_id')->join('sales_agent_types as t','t.id','=','c.agent_type_id')->join('sales_agents as a','a.id','=','p.payee_id')->where('p.branch_id',$ss->branch_id)->whereRaw($str_agent)->whereRaw($str_dates)->selectRaw('p.id,p.id AS trx_id,a.name AS payee_id,IFNULL(p.payee_name,a.name) AS payee_name,p.amount,formatTime(p.payment_date) AS payment_date, t.`name` AS sales_agent_type, c.paid_amount, c.total_amount, c.currency_code, c.agent_type_id, c.target_count,c.merchant_count, c.policy_id, c.rule_class, p.create_user, p.remarks,p.closing_id,p.pmt_method,p.op_month,p.op_year')->get();
+      $rows = DB::table('commission_payments as p')->join('closed_commissions as c','c.id','=','p.closing_id')->join('sales_agent_types as t','t.id','=','c.agent_type_id')->join('sales_agents as a','a.id','=','p.payee_id')->where('p.branch_id',$ss->branch_id)->whereRaw($str_agent)->whereRaw($str_dates)->selectRaw('p.id,p.id AS trx_id,a.name AS payee_id,IFNULL(p.payee_name,a.name) AS payee_name,p.amount,formatTime(p.payment_date) AS payment_date, t.`name` AS sales_agent_type, c.paid_amount, c.total_amount, c.currency_code, c.agent_type_id, c.target_count, c.policy_id, c.rule_class, p.create_user, p.remarks,p.closing_id,p.pmt_method')->get();
       $total = 0;
       foreach($rows as $row){
          $total += $row->amount;
@@ -1362,7 +1292,7 @@ static function list($arr,$ss=null){
  
   static function getPaymentsByClosingId($closing_id,$agent_id, $ss){
       $str_agent = $agent_id > 0 ? 'a.id ='.$agent_id : '1=1';
-      $rows = DB::table('commission_payments as p')->join('closed_commissions AS c','c.id','=','p.closing_id')->join('sales_agents as a','a.id','=','p.payee_id')->join('sales_agent_types as t','t.id','=','a.agent_type_id')->where('p.closing_id',$closing_id)->whereRaw($str_agent)->selectRaw('p.id,p.id AS trx_id,p.payee_id, a.`name` AS payee_name, t.`name` AS sales_agent_type, c.merchant_count,c.target_count, p.amount,formatTime(p.payment_date) AS payment_date, p.create_user, p.remarks,p.closing_id,p.pmt_method,p.op_month,p.op_year')->get();
+      $rows = DB::table('commission_payments as p')->join('closed_commissions AS c','c.id','=','p.closing_id')->join('sales_agents as a','a.id','=','p.payee_id')->join('sales_agent_types as t','t.id','=','a.agent_type_id')->where('p.closing_id',$closing_id)->whereRaw($str_agent)->selectRaw('p.id,p.id AS trx_id,p.payee_id, a.`name` AS payee_name,c.op_month,c.op_year, t.`name` AS sales_agent_type, c.merchant_count,c.target_count, p.amount,formatTime(p.payment_date) AS payment_date, p.create_user, p.remarks,p.closing_id,p.pmt_method')->get();
       return $rows;
   }
 

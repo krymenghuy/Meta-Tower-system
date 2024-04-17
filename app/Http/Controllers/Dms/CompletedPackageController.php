@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\CompletedPackage;
-use App\Models\UM;
-use App\Models\JDV;
+use App\Models\Dms\CompletedPackage;
+use App\Models\Dms\UM;
+use App\Models\Dms\JDV;
 
 class CompletedPackageController extends Controller
 {

@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 
 use App\Http\Controllers\GeneralSettingsController;
-use App\Models\UM;
-use App\Models\PublicStorage;
-use App\Models\DV;
+use App\Models\Dms\UM;
+use App\Models\Dms\PublicStorage;
+use App\Models\Dms\DV;
 use DB;
 use Sanitizer;
 use Carbon\Carbon;
@@ -866,7 +866,7 @@ class Sender //extends Model
         'status_code'=>$status_code
     ]);
     //if(!$x) return DV::error('It seems that provided merchant identity does not exist');
-    $um = new \App\Models\UM();
+    $um = new \App\Models\Dms\UM();
     $user_id = DB::table('um_users')->where('official_id',$id)->take(1)->value('id');
     $res = $um->setUserStatus($status_code,$user_id);
     return $res;
@@ -888,7 +888,7 @@ class Sender //extends Model
     $row = DB::table('um_users as u')->where('u.official_id',$official_id)->where('user_class',$user_class)->selectRaw('u.login_name, u.id as user_id')->take(1)->first();
     if(!$row) return false;
     $user_id = $row->user_id;
-    $um = new \App\Models\UM();
+    $um = new \App\Models\Dms\UM();
     $um->setUserStatus($user_id,$status_code);
     return true;
   }
@@ -896,7 +896,7 @@ class Sender //extends Model
   function deleteSpecial($id=null,$ss=null){
     $id =$id?$id:$this->id;
     $ss = $ss?$ss:$this->userInfo;
-    $pg = new \App\Models\Package();
+    $pg = new \App\Models\Dms\Package();
     $pg_rows = DB::table('package as p')->where('p.sender_id',$id)->selectRaw('p.id')->get();
     foreach($pg_rows as $row){
       $pg->deleteSpecial($row->id,$ss);
@@ -1035,7 +1035,7 @@ class Sender //extends Model
    foreach($rows as $row){
      $row->image_url = '';
      $row->bank_accounts = self::bankAccounts($row->id,null);
-     $row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id','merchant');
+     $row->mobile_login = \App\Models\Dms\UM::getAccountInfo($row->id,'official_id','merchant');
      if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($row->branch_id,'merchant','image').$row->photo_file_name;
      unset($row->photo_file_name);
      if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
@@ -1121,7 +1121,7 @@ class Sender //extends Model
      ]);
      if($res->status_code ==200){
        $des = $ss->full_name.' reversed merchant back to be a lead (change status back to In Review) at '.date('d M Y H:i', strtotime('now'));
-       \App\Models\Lead::trackStatus($ss,$sender->lead_id,2,$des);
+       \App\Models\Dms\Lead::trackStatus($ss,$sender->lead_id,2,$des);
        return DV::depends(1);
      }
      else return DV::error($res->error_message);

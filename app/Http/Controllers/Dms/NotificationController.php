@@ -1,10 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Notifier;
+use App\Models\Dms\Notifier;
 use Illuminate\Http\Request;
-use App\Models\JDV;
-use App\Models\UM;
+use App\Models\Dms\JDV;
+use App\Models\Dms\UM;
 
 class NotificationController extends Controller
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 use DB;
-use App\Models\DV;
+use App\Models\Dms\DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;

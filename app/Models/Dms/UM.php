@@ -1,14 +1,14 @@
 <?php
-namespace App\Models;
+namespace App\Models\Dms;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-//use App\Models;
+//use App\Models\Dms;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 
-use App\Models\SMS;
-use App\Models\PublicStorage;
+use App\Models\Dms\SMS;
+use App\Models\Dms\PublicStorage;
 //use App\Security\Sanitizer as SecuritySanitizer;
 // use App\Security\Sanitizer as SecuritySanitizer;
 use Illuminate\Pagination\LengthAwarePaginator;

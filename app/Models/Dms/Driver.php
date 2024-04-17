@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\UM;
-use App\Models\GeneralSettings;
+use App\Models\Dms\UM;
+use App\Models\Dms\GeneralSettings;
 use DB;
 use Carbon\Carbon;
 use Sanitizer;
 //use Data Validator
-use App\Models\DV;
+use App\Models\Dms\DV;
 use Illuminate\Pagination\LengthAwarePaginator; 
 use Illuminate\Support\Facades\Cache;
 //use Illuminate\Support\Facades\Log;
@@ -1253,7 +1253,7 @@ function getUnpaidPackages($arr = [], $id = null, $ss = null)
        DB::table('driver')->where('id',$id)->where('branch_id',$branch_id)->update([
            'status_code'=>$status_code
        ]);
-       $um = new \App\Models\UM();
+       $um = new \App\Models\Dms\UM();
        $user_id = DB::table('um_users')->where('official_id',$id)->take(1)->value('id');
        $update_profile = false;
        $res = $um->setUserStatus($status_code,$user_id,$update_profile);

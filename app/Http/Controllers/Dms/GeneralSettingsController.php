@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\GeneralSettings;
-use App\Models\JDV;
-use App\Models\UM;
+use App\Models\Dms\GeneralSettings;
+use App\Models\Dms\JDV;
+use App\Models\Dms\UM;
 
 class GeneralSettingsController extends Controller
 {

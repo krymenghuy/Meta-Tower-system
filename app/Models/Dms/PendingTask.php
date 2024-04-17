@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\UM;
-use App\Models\DV;
+use App\Models\Dms\UM;
+use App\Models\Dms\DV;
 use Carbon\Carbon;
 use DB;
 
@@ -85,13 +85,13 @@ class PendingTask //extends Model
                  switch($action_name){
                      case 'change_phone_number':{
                         //DB::table('sender')->where('id',$user->official_id)->update(array('phone_number'=>$new_value));
-                        \App\Models\UM::updatePhoneNumber($new_value,$user_id);
+                        \App\Models\Dms\UM::updatePhoneNumber($new_value,$user_id);
                         //if($err) return DV::error('មិនទាន់អាចប្ត្តរលខទូរសព្ទ័. '.$err);
                         $task_done =true;
                         break;
                      }case 'change_email':{
                         //DB::table('sender')->where('id',$user->official_id)->update(array('email'=>$new_value));
-                         \App\Models\UM::updateEmail($new_value,$user_id);
+                         \App\Models\Dms\UM::updateEmail($new_value,$user_id);
                         //if($err) return DV::error('មិនទាន់អាចប្ត្តរ email. '.$err);
                         $task_done =true;
                         break;

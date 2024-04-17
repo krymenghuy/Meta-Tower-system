@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Login;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\UM;
+use App\Models\Dms\UM;
 use App\Services\GarbageCollector;
 use Config;
 use Session;

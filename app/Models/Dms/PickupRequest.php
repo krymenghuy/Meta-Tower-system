@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\Notifier;
-use App\Models\PublicStorage;
-use App\Models\DeliveryZone;
-use App\Models\UM;
+use App\Models\Dms\Notifier;
+use App\Models\Dms\PublicStorage;
+use App\Models\Dms\DeliveryZone;
+use App\Models\Dms\UM;
 use DB;
 use Sanitizer;
 //use Localization;
@@ -397,7 +397,7 @@ class PickupRequest //extends Model
         $i = 0;
         $success_count = 0;
         
-      $packageModel = new \App\Models\Package();
+      $packageModel = new \App\Models\Dms\Package();
       $success_items = []; 
       $sender_id = $order->sender_id;
       if (!$sender_id) return DV::error('The provided Merchant ID is empty and is not correct'); 

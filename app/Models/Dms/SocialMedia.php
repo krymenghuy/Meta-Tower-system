@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
-use App\Models\DV;
-use App\Models\PublicStorage;
+namespace App\Models\Dms;
+use App\Models\Dms\DV;
+use App\Models\Dms\PublicStorage;
 
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;

@@ -1,16 +1,16 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
-use App\Models\DV;
-use App\Models\UM;
+use App\Models\Dms\DV;
+use App\Models\Dms\UM;
 //use Session;
 use DB;
 use Sanitizer;
-use App\Models\ErrorManager;
-use App\Models\Tracker;
+use App\Models\Dms\ErrorManager;
+use App\Models\Dms\Tracker;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
@@ -2917,7 +2917,7 @@ function getZoneByCode($branch_id, $zone_code) {
       $i = 0;
       $success_count = 0;
       
-    $packageModel = new \App\Models\Package();
+    $packageModel = new \App\Models\Dms\Package();
     $success_items = []; 
     $sender_id = $order->sender_id; 
    do{

@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\GeneralSettings;
-use App\Models\UM;
+use App\Models\Dms\GeneralSettings;
+use App\Models\Dms\UM;
 use Illuminate\Http\Request;
-use App\Models\Report;
+use App\Models\Dms\Report;
 use Session;
 use Carbon\Carbon;
-use App\Models\JDV;
+use App\Models\Dms\JDV;
 use DB;
 use PHPUnit\TextUI\XmlConfiguration\Generator;
 
@@ -105,13 +105,13 @@ class WebReportController extends Controller{
       //$agent_type=isset($p->agenttype)?$p->agenttype:null;
 
 
-      $trx = (new \App\Models\PaymentTransaction)::quickDetails($trx_id,$trx_type);
+      $trx = (new \App\Models\Dms\PaymentTransaction)::quickDetails($trx_id,$trx_type);
       if(!$trx){
           echo '<div class="bg-danger text-white p-2">The given transaction ID does not exist</div>';
           return;
       }
 
-      $driver = new \App\Models\Driver(null,null);
+      $driver = new \App\Models\Dms\Driver(null,null);
       $m_data = $driver->getSettledPackages($trx_id,$agent_id);
       if (!isset($m_data->items[0])){
         echo '<div style="background:red;padding:10px; font-size:1.2em;border-radious:5px; border:1.2px solid red;color:#fff;">The driver transaction was done before updating system. Cannot display the package list <span style="display:block;padding:5px;">trans type: '.$trx_type.' | trans ID: '.$trx_id.'  | agent ID: '.$agent_id.'</span></div>';
@@ -143,13 +143,13 @@ class WebReportController extends Controller{
       //$agent_type=isset($p->agenttype)?$p->agenttype:null;
 
 
-      $trx = (new \App\Models\PaymentTransaction)::quickDetails($trx_id,$trx_type);
+      $trx = (new \App\Models\Dms\PaymentTransaction)::quickDetails($trx_id,$trx_type);
       if(!$trx){
           echo '<div class="bg-danger text-white p-2">The given transaction ID does not exist</div>';
           return;
       }
 
-      $pmt = new \App\Models\PaymentTransaction(null,null);
+      $pmt = new \App\Models\Dms\PaymentTransaction(null,null);
       $m_data = (object)[];
       $m_data->items = $pmt->getSettledPackages_sender($trx_id,$ss);
       if (!isset($m_data->items[0])){
@@ -252,7 +252,7 @@ class WebReportController extends Controller{
             $end_date = isset($p->enddate)?$p->enddate:date('d M Y');
             $driver_id=isset($p->driverid)?$p->driverid:null;
             $trx_id=isset($p->trxid)?$p->trxid:null;
-            $driver = new \App\Models\Driver();
+            $driver = new \App\Models\Dms\Driver();
             $m_data = $driver->getUnpaidPackages(['trx_id'=>$trx_id,'driver_id'=>$driver_id,'start_date'=>$start_date,'end_date'=>$end_date],$driver_id);
 
             $start_date = (bool)strtotime($start_date)? $start_date:date('d M Y');
@@ -328,7 +328,7 @@ class WebReportController extends Controller{
             $search_value = null;
             $status_code= null;
             $ss = (object)['branch_id'=>$branch_id];
-            $agent = new \App\Models\SalesAgent();
+            $agent = new \App\Models\Dms\SalesAgent();
             $data["items"]= $agent->getList();
             break;
           }
@@ -478,7 +478,7 @@ class WebReportController extends Controller{
             $ss = (object)['branch_id'=>$branch_id];
             $senderInfo = null;
             if( $sender_id > 0){
-              $sender = new \App\Models\Sender($sender_id,$ss);
+              $sender = new \App\Models\Dms\Sender($sender_id,$ss);
               $senderInfo = $sender->getDetails();
             }
 
@@ -487,7 +487,7 @@ class WebReportController extends Controller{
             if(!$end_date) $end_date = date('Y-m-d');
             $sub_title = $sender_name. " (".date('d M Y',strtotime($start_date))." to ".date('d M Y',strtotime($end_date)).")";
             $data['subtitle'] =  $sub_title;
-            $pmt = new \App\Models\PaymentTransaction();
+            $pmt = new \App\Models\Dms\PaymentTransaction();
 
             $m_data =$pmt->getTransactions_merchant([
               'trx_type'=>$trx_type,
@@ -531,7 +531,7 @@ class WebReportController extends Controller{
             $sub_title = "ចាប់ពី ".date('d M Y',strtotime($start_date))." ដល់ ".date('d M Y',strtotime($end_date));
             $data['subtitle1'] = $sub_title;
 
-            $rpt = new \App\Models\PaymentTransaction();
+            $rpt = new \App\Models\Dms\PaymentTransaction();
             $d = $rpt->getTransactions_driver([
               'use_paginate'=>false,
               'warehouse_id'=>$warehouse_id,
@@ -654,7 +654,7 @@ class WebReportController extends Controller{
       $sender_pmt_status_id = $p->senderpmtstatusid;
 
       $sender_pmt_status_id =  $sender_pmt_status_id==null?-1:$sender_pmt_status_id;
-      $report = new \App\Models\Report();
+      $report = new \App\Models\Dms\Report();
       $d = $report->getMerchantSummaryReport($warehouse_id,$sender_id,$start_date,$end_date,$sender_pmt_status_id);
       $merchant_banks = null;
       if(isset($d->merchant)){

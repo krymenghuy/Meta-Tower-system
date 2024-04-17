@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models\Dms;
+namespace App\Models\Dms\Dms;
 
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
-use App\Models\DV;
+use App\Models\Dms\DV;
 //use Session;
 use Sanitizer;
-//use App\Models\UM;
+//use App\Models\Dms\UM;
 use Illuminate\Support\Facades\Log;
 use DB;
 

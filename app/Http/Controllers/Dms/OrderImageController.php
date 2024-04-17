@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-use App\Models\OrderImage;
-use App\Models\JDV;
-use App\Models\UM;
-use App\Models\PickupRequest;
+use App\Models\Dms\OrderImage;
+use App\Models\Dms\JDV;
+use App\Models\Dms\UM;
+use App\Models\Dms\PickupRequest;
 use Config;
 
 class OrderImageController extends Controller

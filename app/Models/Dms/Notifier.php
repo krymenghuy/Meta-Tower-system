@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 // use LaravelFCM\Facades\FCM;
-use App\Models\DV;
+use App\Models\Dms\DV;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use DB;

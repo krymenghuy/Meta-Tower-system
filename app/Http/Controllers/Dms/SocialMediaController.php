@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\JDV;
-use App\Models\SocialMedia;
-use App\Models\UM;
+use App\Models\Dms\JDV;
+use App\Models\Dms\SocialMedia;
+use App\Models\Dms\UM;
 use Illuminate\Http\Request;
 
 class SocialMediaController extends Controller

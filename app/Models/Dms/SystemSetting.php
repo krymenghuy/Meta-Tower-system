@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\UM;
-// use App\Models\Notifier;
+use App\Models\Dms\UM;
+// use App\Models\Dms\Notifier;
 // use Carbon\Carbon;
 // use Session;
 use DB;

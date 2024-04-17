@@ -3,8 +3,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\UM;
-use App\Models\JDV;
+use App\Models\Dms\UM;
+use App\Models\Dms\JDV;
 use DB;
 //NOTE: we use table "product_types" and column name "name" for categories
 //Current version of DMS => the actual application of product_type is in table "order,package"

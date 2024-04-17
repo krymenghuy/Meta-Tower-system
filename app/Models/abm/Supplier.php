@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\abm;
+namespace App\Models\Abm;
 use DB;
 use App\Models\DV;
 use App\Models\JDV;

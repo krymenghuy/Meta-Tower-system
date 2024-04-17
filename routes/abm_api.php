@@ -2,17 +2,17 @@
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Login\LoginController;
-use App\Http\Controllers\abm\PackageController;
+use App\Http\Controllers\Abm\PackageController;
 // use App\Http\Controllers\LocationController;
-use App\Http\Controllers\abm\CustomerController;
+use App\Http\Controllers\Abm\CustomerController;
 use App\Http\Controllers\CompanyProfileController;
 
 use App\Http\Controllers\ReportController;
-use App\Http\Controllers\abm\DashboardController;
+use App\Http\Controllers\Abm\DashboardController;
   
 use App\Http\Controllers\MobileAppSettingsController;
 use App\Http\Controllers\SocialMediaController;
-use App\Http\Controllers\amb\GeneralSettingsController;
+// use App\Http\Controllers\Abm\GeneralSettingsController;
 //use App\Http\Controllers\SystemSettingController;
 //use App\Http\Controllers\ApiController;
 use App\Http\Controllers\CurrencyController; 
@@ -44,4 +44,4 @@ use App\Http\Controllers\NotificationController;
    Route::post('report-center/reports-by-category', [WebReportController::class, 'getReportListByCategory']);
    Route::post('report-center/filter-options', [WebReportController::class, 'getReportFilterOptions']);
 
-   
+    });

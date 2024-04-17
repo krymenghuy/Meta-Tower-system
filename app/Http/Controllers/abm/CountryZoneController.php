@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\abm;
+namespace App\Http\Controllers\Abm;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
-use App\Models\abm\CountryZone;
+use App\Models\Abm\CountryZone;
 use App\Models\UM;
 use App\Models\JDV;
 

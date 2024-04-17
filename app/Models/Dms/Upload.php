@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-//use App\Models\Notifier;
+//use App\Models\Dms\Notifier;
 //use Storage;
 use Session;
 use DB;
 use UM;
 use Sanitizer;
 use Carbon\Carbon;
-use App\Models\PublicStorage;
-use App\Models\PrivateStorage;
+use App\Models\Dms\PublicStorage;
+use App\Models\Dms\PrivateStorage;
 use Exception;
 
 class Upload extends Model

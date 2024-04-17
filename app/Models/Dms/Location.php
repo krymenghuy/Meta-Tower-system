@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Session;
-use App\Models\UM;
-use App\Models\JDV;
+use App\Models\Dms\UM;
+use App\Models\Dms\JDV;
 use Carbon\Carbon;
 use Sanitizer;
 use Localization;
