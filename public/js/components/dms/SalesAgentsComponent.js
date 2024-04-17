@@ -35,7 +35,8 @@ var SalesAgentsComponent = new function(){
         title: "Name",
         className: "align-middle text-capitalize text-nowrap",
         data: (data,index,tr)=>{
-            let sex = data.sex === 'M' ? 'Male' : 'Female';
+            let sex = data.sex ==='M'? 'Male':'Female';
+            if(!data.sex) sex = '';
             return [`<span class="d-block fw-semibold">`,data.name,`</span><span class="d-block text-muted text-left">`,sex,`</span>`].join('');
         }
     },
@@ -105,7 +106,7 @@ var SalesAgentsComponent = new function(){
             def.status_code ='Active';
         }
        
-        vsapi.call([mThis.base_url,'/api/sales-module/agent/form-options'].join(''),{'id':null},null,main_view.apiCluster).then(res => {
+        vsapi.call([mThis.base_url,'/dms/sales-module/agent/form-options'].join(''),{'id':null},null,main_view.apiCluster).then(res => {
                 let d = res.status_code ===200?  StringSanitizer.sanitizeObject(res.data) : {};  
                 VSUtil.setComboItems(mThis.elFilter_agent_type,d.agent_types,'id','agent_type',true,'(All Types)',def.agent_type_id);
                 VSUtil.setComboItems(mThis.elFilter_agent_status,d.statuses,'status_code','status_name',true,'(All Status)',def.status_code);
@@ -116,7 +117,7 @@ var SalesAgentsComponent = new function(){
     this.init = ()=>{
         if(mThis.initAlready ) return;
         mThis.agentListView = new ListView('div_sales_agent_list',{
-            'fetchApi':`${main_view.base_url}/api/sales-module/agent/list`,
+            'fetchApi':`${main_view.base_url}/dms/sales-module/agent/list`,
             'columns': mThis.cols,
             apiCluster:main_view.apiCluster,
             'tableClass':"table header-light-blue header-uppercase",
@@ -169,7 +170,8 @@ var SalesAgentsComponent = new function(){
                       textMember: "status_code",
                       blankErrorMessage: "Please select a correct status",
                       //data: [],
-                      defaultValue: status_code
+                      defaultValue: status_code,
+                      autoClose:true
                   };
                   
                   this.getLeadStatuses().then(statuses => {
@@ -180,13 +182,14 @@ var SalesAgentsComponent = new function(){
                                   id: agent_id,
                                   status_code: d.value
                               };
-                              vsapi.call(`${mThis.base_url}/api/sales-module/agent/update-status`,p).then(res => {
+                              vsapi.call(`${mThis.base_url}/dms/sales-module/agent/update-status`,p).then(res => {
                                   if(res.status_code === 200){
                                       mThis.elFilter_agent_status.value =  d.value;
                                       mThis.elFilter_agent_status.dispatchEvent(new Event('change'));
                                       //mThis.elFilter_sender_status.dispatchEvent(new Event('change'));
                                       const new_status = res.data? `to ${res.data.new_status}`: null;
                                       cv_interact.info([`Agent status has been changed `,d.new_status].join(''));
+                                      //InputBox2.self.modal('hide');
                                   }
                                   else
                                       cv_interact.error(res.error_message); 
@@ -244,7 +247,7 @@ var SalesAgentsComponent = new function(){
                 let p = {'id':agent_id,'status_code':status_code};
                 cv_interact.confirm('Delete this sales agent?',{title:'Delete Sales Agent',context:'delete'},function(e){
                     if(e){
-                        vsapi.call([mThis.base_url,'/api/sales-module/agent/delete'].join(''),p,btn,false).then(res=>{
+                        vsapi.call([mThis.base_url,'/dms/sales-module/agent/delete'].join(''),p,btn,false).then(res=>{
                             if(res.status_code===200) {
                                 mThis.agentListView.showPage(mThis.getFilterData());
                             }
@@ -310,7 +313,7 @@ var SalesAgentsComponent = new function(){
         }
 
         return new Promise((resolve, reject) => {
-            vsapi.call(`${main_view.base_url}/api/settings/options-agent-status`, null, false).then(res => {
+            vsapi.call(`${main_view.base_url}/dms/settings/options-agent-status`, null, false).then(res => {
                if(res.status_code == 200){
                  mThis.form_data.statuses = res.data;
                  resolve(mThis.form_data.statuses);
@@ -372,7 +375,7 @@ const SalesAgentDialog = new function(){
         "onLoadImage":(photo) =>{
             let p = {"id":mThis.options.id,"sales_agent_id":mThis.options.id,"photo":photo};
             if(!p.id) return; 
-            vsapi.call(`${main_view.base_url}/api/sales-app/agent/save-profile-picture`,p,null,null,false).then(res =>{
+            vsapi.call(`${main_view.base_url}/dms/sales-app/agent/save-profile-picture`,p,null,null,false).then(res =>{
                 if(res.status_code ===200){
                     mThis.imgBox.setImage(photo);
                     cv_interact.success('Photo has been saved');
@@ -380,7 +383,7 @@ const SalesAgentDialog = new function(){
             });
         },
         "deleteAPI":{
-            "endPoint":`${main_view.base_url}/api/sales-app/agent/delete-profile-picture`,
+            "endPoint":`${main_view.base_url}/dms/sales-app/agent/delete-profile-picture`,
             "params":()=>{
                 return {"id": mThis.options.id,"sales_agent_id":mThis.options.id}
             }
@@ -402,7 +405,7 @@ const SalesAgentDialog = new function(){
             return;
         }
 
-        vsapi.call([mThis.base_url,'/api/sales-module/agent/form-options'].join(''),null).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/sales-module/agent/form-options'].join(''),null).then(res=>{
             if(res.status_code===200){
                 let d = res.data;
                 d.agent_types = StringSanitizer.sanitizeObject(d.agent_types);
@@ -416,7 +419,7 @@ const SalesAgentDialog = new function(){
     this.btnSave.addEventListener('click',e =>{
         let p = mThis.getData();
         //if(!p) return;
-        vsapi.call([mThis.base_url,'/api/sales-module/agent/save'].join(''),p, this.btnSave,null).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/sales-module/agent/save'].join(''),p, this.btnSave,null).then(res=>{
             if(res.status_code ===200) {
                 mThis.self.modal('hide');
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
@@ -435,7 +438,7 @@ const SalesAgentDialog = new function(){
         if (mThis.options.id > 0) {
             mThis.elTitle.innerHTML = "Sales Agent Details";
             let p = {'id':mThis.options.id};
-            vsapi.call([main_view.base_url,'/api/sales-module/agent/details'].join(''),p,null).then(res=>{
+            vsapi.call([main_view.base_url,'/dms/sales-module/agent/details'].join(''),p,null).then(res=>{
                 if(res.status_code === 200){
                     let d = res.data;
                     d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);

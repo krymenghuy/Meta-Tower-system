@@ -31,7 +31,7 @@ var PriceSettingsComponent = new function () {
       e.preventDefault();
       if (e.keyCode == 13) {
         let p = { 'search_value': mThis.elSearch_pl.val() };
-        vsapi.call(`${mThis.base_url}/api/getPriceListIdBySearchValue`, p).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/getPriceListIdBySearchValue`, p).then(res => {
           if (res.status_code === 200) {
             let d = res.data;
             d.price_list_id = StringSanitizer.sanitizeOut(d.price_list_id);
@@ -58,7 +58,7 @@ var PriceSettingsComponent = new function () {
       cv_interact.inputBox('Enter new name', "Price List Name", 'text', def_name, null).then(d => {
         if (d.isConfirmed) {
           let p = { 'id': id, 'name': d.value };
-          vsapi.call(`${mThis.base_url}/api/renamePriceList`, p, null, false).then(res => {
+          vsapi.call(`${mThis.base_url}/dms/renamePriceList`, p, null, false).then(res => {
             if (res.status_code === 200) {
               //refresh price list options //here
               mThis.refreshPriceListOptions(id);
@@ -74,7 +74,7 @@ var PriceSettingsComponent = new function () {
       let p = { 'price_list_id': id };
       cv_interact.confirm('Delete this price list?', { title: 'Delete Price List', context: "delete" }, function (e) {
         if (e) {
-          vsapi.call(`${mThis.base_url}/api/deletePriceList`, p).then(res => {
+          vsapi.call(`${mThis.base_url}/dms/deletePriceList`, p).then(res => {
             if (res.status_code === 200) {
               mThis.loadFilterData(null);
               mThis.elFilter_price_list.val(null);
@@ -122,7 +122,7 @@ var PriceSettingsComponent = new function () {
         //p = {price_list_id,zone_codes}
         //Add org zone_codes for updating only zone_codes
         p.org_zone_codes = zone_codes;
-        vsapi.call(`${mThis.base_url}/api/updateZoneCodes`, p, null, false).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/updateZoneCodes`, p, null, false).then(res => {
           if (res.status_code === 200) {
             mThis.displayZoneCodes(btnViewZone, p.zone_codes);
             PriceLineDialog.hide();
@@ -140,7 +140,7 @@ var PriceSettingsComponent = new function () {
       let p = { 'zone_codes': zone_codes };
       cv_interact.confirm('Delete this pricing zones?', { title: 'Delete Pricing Zones', context: "delete" }, function (e) {
         if (e) {
-          vsapi.call(`${mThis.base_url}/api/deletePriceZones`, p).then(res => {
+          vsapi.call(`${mThis.base_url}/dms/deletePriceZones`, p).then(res => {
             if (res.status_code === 200) {
               mThis.displayPrices();
             } else cv_interact.error(res.error_message);
@@ -172,7 +172,7 @@ var PriceSettingsComponent = new function () {
 
       PriceLineDialog.show(op, (p) => {
         //alert(JSON.stringify(p.zone_codes));
-        vsapi.call(`${mThis.base_url}/api/savePriceLineZones`, p).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/savePriceLineZones`, p).then(res => {
           if (res.status_code === 200) {
             mThis.displayPrices();
             PriceLineDialog.hide();
@@ -184,7 +184,7 @@ var PriceSettingsComponent = new function () {
   } //end::PriceSettingsCompoent.init()
 
   this.refreshPriceListOptions = (def_list_id = null) => {
-    vsapi.call(`${mThis.base_url}/api/getComboItems_price_list`, null).then(res => {
+    vsapi.call(`${mThis.base_url}/dms/getComboItems_price_list`, null).then(res => {
       if (res.status_code === 200) {
         let items = StringSanitizer.sanitizeObject(res.data);
         let b = def_list_id;
@@ -254,7 +254,7 @@ var PriceSettingsComponent = new function () {
       p.zone_codes = zone_codes;
       p.section = section;
       p.delivery_type = delivery_type;
-      vsapi.call(`${mThis.base_url}/api/savePriceLineInfo`, p).then(res => {
+      vsapi.call(`${mThis.base_url}/dms/savePriceLineInfo`, p).then(res => {
         if (res.status_code === 200) {
           that.data('id', res.id);
         } else cv_interact.error(res.error_message);
@@ -468,7 +468,7 @@ var PriceSettingsComponent = new function () {
       return;
     }
 
-    vsapi.call(`${mThis.base_url}/api/getPriceList_data`, p).then(res => {
+    vsapi.call(`${mThis.base_url}/dms/getPriceList_data`, p).then(res => {
       tbody.empty();
       mThis.tblPrices.find('.ps-below-kg').text('5kg and Below');
       mThis.tblPrices.find('.ps-above-kg').text('Above 5 kg');
@@ -508,7 +508,7 @@ var PriceLineDialog = new function () {
   this.elError = this.self.find('#_ps_dlgPriceLine_error');
 
   this.loadZones = () => {
-    vsapi.call(`${mThis.base_url}/api/settings/options-delivery-zone`, null).then(res => {
+    vsapi.call(`${mThis.base_url}/dms/settings/options-delivery-zone`, null).then(res => {
       let items = StringSanitizer.sanitizeObject(res.data, null, ['zone_name']);
       VSUtil.setComboItems(mThis.elZone, items, 'zone_code', 'zone_name', false, null, null);
     });
@@ -589,7 +589,7 @@ const PriceListDialog = new function () {
       return;
     }
 
-    vsapi.call([mThis.base_url, '/api/createPriceList'].join(''), p).then(res => {
+    vsapi.call([mThis.base_url, '/dms/createPriceList'].join(''), p).then(res => {
       if (res.status_code === 200) {
         let d = res.data;
         if (typeof mThis.onClose === 'function') mThis.onClose(d.id);
@@ -655,7 +655,7 @@ const MerchantListDialog = new function () {
       if (persons[0]) {
         let p = persons[0];
         let m = { 'sender_id': p.id, 'price_list_id': mThis.price_list_id };
-        vsapi.call([mThis.base_url, '/api/setMerchantPriceList'].join(''), m).then(res => {
+        vsapi.call([mThis.base_url, '/dms/setMerchantPriceList'].join(''), m).then(res => {
           if (res.status_code === 200)
             mThis.showMerchantList();
           else cv_interact.error(res.error_message);
@@ -677,7 +677,7 @@ const MerchantListDialog = new function () {
       return;
     }
 
-    vsapi.call([mThis.base_url, '/api/setMerchantPriceList'].join(''), p).then(res => {
+    vsapi.call([mThis.base_url, '/dms/setMerchantPriceList'].join(''), p).then(res => {
       if (res.status_code === 200)
         mThis.showMerchantList();
       //x.hide();
@@ -691,7 +691,7 @@ const MerchantListDialog = new function () {
     cv_interact.confirm('Remove this merchant from the Price List?', { title: 'Remove Merchant', 'context': 'delete' }, (e) => {
       if (e) {
         let p = { 'price_list_id': mThis.price_list_id, 'sender_id': sender_id };
-        vsapi.call([mThis.base_url, '/api/removeMerchantFromPriceList'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/dms/removeMerchantFromPriceList'].join(''), p).then(res => {
           if (res.status_code === 200) {
             mThis.showMerchantList();
           } else cv_interact.error(res.error_message);
@@ -702,7 +702,7 @@ const MerchantListDialog = new function () {
 
   this.showMerchantList = (onFinish) => {
     let p = { 'price_list_id': mThis.price_list_id, 'search_value': mThis.elSearch.val() };
-    vsapi.call([mThis.base_url, '/api/getMerchantsByPriceList'].join(''), p).then(res => {
+    vsapi.call([mThis.base_url, '/dms/getMerchantsByPriceList'].join(''), p).then(res => {
       if (res.status_code === 200) {
         let items = StringSanitizer.sanitizeObject(res.data);
         let i = 0, c;
@@ -728,7 +728,7 @@ const MerchantListDialog = new function () {
         if (typeof onFinish === 'function') onFinish();
       } else {
         if (typeof onFinish === 'function') onFinish();
-        console.log('error occured in method .../api/getMerchantsByPriceList() returning @items as NULL');
+        console.log('error occured in method .../dms/getMerchantsByPriceList() returning @items as NULL');
       }
     });
   }

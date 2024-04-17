@@ -38,24 +38,48 @@ class RouteServiceProvider extends ServiceProvider
 
         $this->routes(function () {
             Route::prefix('api')
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/driver_app_api.php'));
+
+            Route::prefix('api')
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/merchant_app_api.php'));
+
+            Route::prefix('api')
+            ->middleware('api')
+            ->namespace($this->namespace)
+            ->group(base_path('routes/sales_app_api.php'));
+
+            Route::prefix('dms')
                 ->middleware('api')
                 ->namespace($this->namespace)
-                ->group(base_path('routes/api.php'));
+                ->group(base_path('routes/dms_api.php'));
+            
+            Route::middleware('web')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/web.php'));
             Route::prefix('api')
                 ->middleware('api')
                 ->namespace($this->namespace)
-                ->group(base_path('routes/location_api.php'));
-
+                ->group(base_path('routes/location_api.php'));    
             Route::prefix('api')
                 ->middleware('api')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/um_api.php'));
-
-            Route::middleware('web')
+            
+            Route::prefix('utils')
+                ->middleware('api')
                 ->namespace($this->namespace)
-                ->group(base_path('routes/web.php'));
-    
-        });
+                ->group(base_path('routes/util_api.php'));
+             Route::prefix('test')
+                ->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/test_api.php'));
+
+           });
+ 
     }
 
     /**
@@ -66,7 +90,7 @@ class RouteServiceProvider extends ServiceProvider
     protected function configureRateLimiting()
     {
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by(optional($request->user())->id ?: $request->ip());
+            return Limit::perMinute(100)->by(optional($request->user())->id ?: $request->ip());
         });
     }
 }

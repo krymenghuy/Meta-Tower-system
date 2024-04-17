@@ -51,8 +51,8 @@ var PackageListComponent = new function() {
                             return ['<div class="d-flex flex-row justify-content-between">',
                              '<div>',
                               '<span class="pg-barcode">',data.barcode,'</span>',
-                               '<span class="pg-pickup_time d-block">',data.arrival_date,'</span>',
-                               '<span class="d-block text-primary">ថ្ងៃបញ្ចប់ ',data.finish_time,'</span>',
+                               '<span class="pg-pickup_time d-block"><small>',data.arrival_time,'</small></span>',
+                               '<span class="d-block text-primary"><small>ថ្ងៃបញ្ចប់ ',data.finish_time || '(Not Yet)','</small></span>',
                              '</div>',
 
                              '<div class="d-flex flex-row gap-1"><i class="fa fa-print"></i><span class="pg-label-print-count text-danger">',data.label_print_count,'</span><a href="javascript:;" style="visibility:hidden" data-barcode="',data.barcode,'" class="_pgl_pa_quick_btn_barcode"><i class="fa fa-barcode" style="color:green"></i></a></div>',
@@ -115,7 +115,30 @@ var PackageListComponent = new function() {
                              const remarks = mThis.sanitizeInput(data.remarks);
                              const failure_notes = mThis.sanitizeInput(data.failure_notes);
                              const agent_notes = mThis.sanitizeInput(data.agent_notes);
-                             return ['<div class="d-flex flex-column flex-wrap">','<a data-remarks="',remarks,'" data-failurenotes ="',failure_notes,'" data-agentnotes="',agent_notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">',data.status,'</a>',str_driver, '</div>'].join('');
+                             let start_time =  data.arrival_time;
+                             let finish_time = data.finish_time || data.delivery_time;
+                             switch(data.status_id){
+                                case 5:
+                                  start_time = data.arrival_time;
+                                  break;
+                                case 6:
+                                    start_time = data.last_checkout_time;
+                                    break;
+                                case 9:
+                                    start_time = finish_time;
+                                    break;
+                                case 11:
+                                    start_time = finish_time;
+                                    break;
+                                case 8:
+                                    start_time = finish_time;
+                                    break;
+                                default:
+                                    start_time = data.arrival_time;
+                                    break;
+                             }
+                             const time_to_now = mThis.formatTimeSpan(start_time || data.arrival_time);
+                             return ['<div class="d-flex flex-column flex-wrap">','<a data-remarks="',remarks,'" data-failurenotes ="',failure_notes,'" data-agentnotes="',agent_notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">','<span class="d-block status-text">',data.status,'</span>', '<span class="text-dark"><small class="status-time">',time_to_now,'</small></span>' ,'</a>',str_driver, '</div>'].join('');
                         },
                         title:'Status'
                     },
@@ -138,16 +161,6 @@ var PackageListComponent = new function() {
                     }
                 ];
  
-    this.div_summary.addEventListener('click',e=>{
-       e.preventDefault();
-       let lnk = VSUtil.closestLimited(e.target, 'a.lnk-alert-list');
-       if(lnk){
-        let status_id = lnk.dataset.statusid;
-         mThis.listView.showPage({"is_overdue_alert":1,"status_id":status_id}); 
-         mThis.setSelected_alert_card(status_id);
-       }
-      
-    });
 
     this.setSelected_alert_card = (status_id)=>{
        //  mThis.div_cards = mThis.div_cards || mThis.div_summary.querySelectorAll('div.pg-alert-card');
@@ -189,6 +202,76 @@ var PackageListComponent = new function() {
        let safeText = doc.body.textContent || "";
        return safeText;
     }
+
+      
+    this.formatTimeSpan = (date1, date2 = new Date()) => {
+        // Helper function to parse date strings in "12 Mar 2024 11:09" format quickly
+        function parseCustomDate(input) {
+            const monthNames = {
+                Jan: '01', Feb: '02', Mar: '03', Apr: '04', May: '05', Jun: '06',
+                Jul: '07', Aug: '08', Sep: '09', Oct: '10', Nov: '11', Dec: '12'
+            };
+            const parts = input.match(/(\d{2}) (\w{3}) (\d{4}) (\d{2}):(\d{2})/);
+            if (!parts) {
+                throw new Error('Invalid date format');
+            }
+            const year = parts[3];
+            const month = monthNames[parts[2]];
+            const day = parts[1];
+            const hours = parts[4];
+            const minutes = parts[5];
+            return new Date(`${year}-${month}-${day}T${hours}:${minutes}:00`);
+        }
+    
+        const msPerMinute = 60 * 1000;
+        const msPerHour = msPerMinute * 60;
+        const msPerDay = msPerHour * 24;
+        const msPerWeek = msPerDay * 7;
+        const msPerMonth = msPerDay * 30;
+        const msPerYear = msPerDay * 365;
+    
+        let earlier = parseCustomDate(date1);
+        let later = typeof date2 === 'string' ? parseCustomDate(date2) : date2;
+    
+        if (earlier > later) {
+            [earlier, later] = [later, earlier];
+        }
+    
+        let msDiff = later - earlier;
+    
+        const years = Math.floor(msDiff / msPerYear);
+        msDiff -= years * msPerYear;
+    
+        const months = Math.floor(msDiff / msPerMonth);
+        msDiff -= months * msPerMonth;
+    
+        const weeks = Math.floor(msDiff / msPerWeek);
+        msDiff -= weeks * msPerWeek;
+    
+        const days = Math.floor(msDiff / msPerDay);
+        msDiff -= days * msPerDay;
+    
+        const hours = Math.floor(msDiff / msPerHour);
+        msDiff -= hours * msPerHour;
+    
+        const minutes = Math.floor(msDiff / msPerMinute);
+    
+        let result = "";
+        if (years > 0) {
+            if (months === 0 && weeks === 0 && days === 0) {
+                return `over ${years} year${years > 1 ? 's' : ''} ago`;
+            }
+            result += `${years}y `;
+        }
+        if (months > 0) result += `${months}M `;
+        if (weeks > 0) result += `${weeks}w `;
+        if (days > 0) result += `${days}d `;
+        if (hours > 0) result += `${hours}h `;
+        if (minutes > 0) result += `${minutes}m`;
+    
+        return result.trim();
+    }
+  
     this.initOnce = function() {
         if(mThis.initAlready) return;
         
@@ -219,7 +302,7 @@ var PackageListComponent = new function() {
             },
             //'paginationContainer': document.querySelector('#test_div'),
             'apiCluster':main_view.apiCluster,
-            'fetchApi': `${main_view.base_url}/api/package/list`,
+            'fetchApi': `${main_view.base_url}/dms/package/list`,
             'apiCluster': main_view.apiCluster,
             'tableClass':'table header-uppercase table',
             'perPage': 10,
@@ -283,6 +366,18 @@ var PackageListComponent = new function() {
             },
         });
 
+
+        this.div_summary.addEventListener('click',e=>{
+            e.preventDefault();
+            let lnk = VSUtil.closestLimited(e.target, 'a.lnk-alert-list');
+            if(lnk){
+             let status_id = lnk.dataset.statusid;
+              mThis.listView.showPage({"is_overdue_alert":1,"status_id":status_id}); 
+              mThis.setSelected_alert_card(status_id);
+            }
+           
+        });
+
         mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el => {
             el.onChange = e =>{
                 e.preventDefault();
@@ -340,7 +435,7 @@ var PackageListComponent = new function() {
            let rpt_title = 'Outstanding Package List';
            if (mThis.lang == 'kh') rpt_title = 'បញ្ជីរកញ្ចប់ទំនិញមិនទានិបញ្ចប់';
            try {
-                vsapi.call(`${mThis.base_url}/api/package/list-print`,p).then(res => {
+                vsapi.call(`${mThis.base_url}/dms/package/list-print`,p).then(res => {
                     if(res.status_code === 200){
                         let data = res.data;
                         //data = StringSanitizer.sanitizeObject(data,'email');
@@ -358,7 +453,7 @@ var PackageListComponent = new function() {
         // this.btnExcel.addEventListener('click',function(e){
         //     let p = FilterDialog_package.getData();
         //     p.search_value = mThis.elSearchPackage.val();
-        //          vsapi.call(`${mThis.base_url}/api/completed-package/list-all`,p).then(res => {
+        //          vsapi.call(`${mThis.base_url}/dms/completed-package/list-all`,p).then(res => {
         //              if(res.status_code === 200){
         //                 let data = res.data;
         //                  let d = mThis.processPackageList_print(data);
@@ -439,7 +534,7 @@ var PackageListComponent = new function() {
                         if (ps[0]) {
                             let sender = ps[0];
                             let p = { "id": package_id, 'sender_id': sender.id };
-                            vsapi.call(`${mThis.base_url}/api/package/change-sender`, p).then(res => {
+                            vsapi.call(`${mThis.base_url}/dms/package/change-sender`, p).then(res => {
                                 if (res.status_code === 200) {
                                     let d = StringSanitizer.sanitizeObject(res.data);
                                     tr.find('.pg-sender_name').text(d.sender_name);
@@ -461,13 +556,14 @@ var PackageListComponent = new function() {
                     //let def_driver_id = tr.data('driverid');
                     cv_interact.confirm('Return this package?', { title: 'Return Package', context: 'update' }, function (e) {
                         if (e) {
-                            vsapi.call([mThis.base_url, '/api/returnPackage'].join(''), p).then(res => {
+                            vsapi.call([mThis.base_url, '/dms/returnPackage'].join(''), p).then(res => {
                                 if (res.status_code === 200) {
                                     //update status on package trail | updatePackageStatus() || displayPackageStatus() || displayStatus()
                                     let btn = tr.find('a._pol_status');
                                     btn.data('statusid', 11);
                                     btn.data('status', 'Returned');
-                                    btn.text('Returned');
+                                    btn.find('.status-text').text('Returned');
+                                    btn.find('.status-time').text('Just now');
                                 } else cv_interact.error(res.error_message);
                             });
                         }
@@ -484,46 +580,53 @@ var PackageListComponent = new function() {
             let def_driver_id = tr.data('driverid'); //not correct this line yet
             let pacakge_id = tr.data('id');
             let no_driver_assigned = LocaleManager.trans('No Driver Assigned');
-            if (!mThis.drivers1) {
-                let i = 0, c;
-                mThis.drivers1 = [];
-                mThis.drivers1.push({ 'id': -1, 'driver_name': `(${no_driver_assigned})` });
-                do {
-                    c = mThis.form_data.drivers[i];
-                    if (!c) break;
-                    if (c.id > 0) mThis.drivers1.push(c);
-                    i++;
-                } while (c);
-            }
-            let option = { 'manualClosing':true, 'confirmButtonText':'Assign Now', 'title': 'Assign Driver', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': mThis.drivers1, 'allowBlankValue':false,'blankErrorMessage': "Please choose one driver", "defaultValue": def_driver_id };
-            InputBox2.show(option, (d,btnAssign) => {
-                if (d) {
-                    let p = {};
-                    p.driver_id = d.value; /** d.value = driver id and d.text = driver name **/
-                    p.warehouse_id = FilterDialog_package.elFilter_warehouse.val();
-                    //p.delivery_id = delivery_id;
-                    p.package_id = pacakge_id ? pacakge_id : 0;
-                    if (p.driver_id == -1) p.driver_id = null; //Set driver to "Unassigned"
-                    if (!p.warehouse_id || p.warehouse_id <= 0) {
-                        cv_interact.warning('Warehouse ID is not valid');
-                        return;
-                    }
-
-                    //assignDriver()
-                    vsapi.call([mThis.base_url,'/api/b_assignDeliveryDriver'].join(''),p,btnAssign).then(res=>{
-                        if(res.status_code ===200) {
-                            let status = 'On Delivery';
-                            let status_id = 6;
-                            if (!p.driver_id || p.driver_id <= 0) {
-                                status = 'At Warehouse';
-                                status_id = 5;
+            
+            mThis.getActiveDrivers((active_drivers) =>{
+                    active_drivers.push({ 'id': -1, 'driver_name': `(${no_driver_assigned})` });
+                    let option = { 'manualClosing':true, 'confirmButtonText':'Assign Now', 'title': 'Assign Driver', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': active_drivers, 'allowBlankValue':false,'blankErrorMessage': "Please choose one driver", "defaultValue": def_driver_id };
+                    InputBox2.show(option, (d,btnAssign) => {
+                        if (d) {
+                            let p = {};
+                            p.driver_id = d.value; /** d.value = driver id and d.text = driver name **/
+                            p.warehouse_id = FilterDialog_package.elFilter_warehouse.val();
+                            //p.delivery_id = delivery_id;
+                            p.package_id = pacakge_id ? pacakge_id : 0;
+                            if (p.driver_id == -1) p.driver_id = null; //Set driver to "Unassigned"
+                            if (!p.warehouse_id || p.warehouse_id <= 0) {
+                                cv_interact.warning('Warehouse ID is not valid');
+                                return;
                             }
-                            if(option.manualClosing) InputBox2.self.modal('hide');
-                            mThis.displayDriverData(tr, { "driver_id": p.driver_id, "driver_name": d.text, 'status': status, 'status_id': status_id });
-                        } else cv_interact.error(res.error_message);
+        
+                            //assignDriver()
+                            vsapi.call([mThis.base_url,'/dms/b_assignDeliveryDriver'].join(''),p,btnAssign).then(res=>{
+                                if(res.status_code ===200) {
+                                    let status = 'On Delivery';
+                                    let status_id = 6;
+                                    if (!p.driver_id || p.driver_id <= 0) {
+                                        status = 'At Warehouse';
+                                        status_id = 5;
+                                    }
+                                    if(option.manualClosing) InputBox2.self.modal('hide');
+                                    mThis.displayDriverData(tr, { "driver_id": p.driver_id, "driver_name": d.text, 'status': status, 'status_id': status_id });
+                                } else cv_interact.error(res.error_message);
+                            });
+                        }
                     });
-                }
             });
+
+            // if (!mThis.drivers1) {
+            //     let i = 0, c;
+            //     mThis.drivers1 = [];
+            //     mThis.drivers1.push({ 'id': -1, 'driver_name': `(${no_driver_assigned})` });
+            //     do {
+            //         c = mThis.form_data.drivers[i];
+            //         if (!c) break;
+            //         //Do not show Inactive Drivers, Do not show Driver who has resigned from company in the Assign Driver List
+            //         if (c.id > 0 && (c.status_code || '').toLowerCase() ==='active') mThis.drivers1.push(c);
+            //         i++;
+            //     } while (c);
+            // }
+    
         });
                 mThis.tblPackages.on('mouseover','tr',function(e){
                     let x = $(this)[0];
@@ -616,7 +719,7 @@ var PackageListComponent = new function() {
     //                     "status_id":data.value
     //                 };
                     
-    //                 vsapi.call(`${mThis.base_url}/api/updatePackageStatus`,p).then(res => {
+    //                 vsapi.call(`${mThis.base_url}/dms/updatePackageStatus`,p).then(res => {
     //                     if(res.status_code === 200) {
     //                         let data = res.data;
     //                         let td = tr.find('td.package-status');
@@ -636,7 +739,7 @@ var PackageListComponent = new function() {
         //     //let def_driver_id = tr.data('driverid');
         //     cv_interact.confirm('Return this package?',{title:'Return Package',context:'update'},function(e){
         //             if(e){
-        //                 vsapi.call(`${mThis.base_url}/api/returnPackage`,p).then(res => {
+        //                 vsapi.call(`${mThis.base_url}/dms/returnPackage`,p).then(res => {
         //                     if(res.status_code === 200){
         //                        //update status on package trail | updatePackageStatus() || displayPackageStatus() || displayStatus()
         //                        let btn = tr.find('a._pol_status');
@@ -672,6 +775,13 @@ var PackageListComponent = new function() {
     }
     //end::PackageListComponent.init() | end::init()
  
+    this.getActiveDrivers = (onFinish)=>{
+        vsapi.call([mThis.base_url, '/dms/settings/options-active-driver'].join(''),null,null,false ).then(res =>{
+            let drivers = res.status_code ==200? res.data: [];
+            onFinish(drivers);
+        });
+    }
+
     this.findRowByBarcode = (barcode)=>{
        let tr = null; 
        mThis.tblPackages.find(`tr.package_header`).each(function(){
@@ -794,7 +904,7 @@ var PackageListComponent = new function() {
     // }
 
     this.localizePackageStatuses = (onFinish)=>{
-        vsapi.call(`${mThis.base_url}/api/getComboItems_package_status`,null).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/getComboItems_package_status`,null).then(res => {
             if(res.status_code === 200){
                 let rows = res.data;
                 mThis.statuses = StringSanitizer.sanitizeObject(rows);
@@ -824,7 +934,7 @@ var PackageListComponent = new function() {
             span.textContent =cnt;
             tr.dataset.printcount = cnt;
             let id = tr.dataset.id;
-            vsapi.call([mThis.base_url,'/api/package/save-label-print-count'].join(''),{"package_id":id,"count":cnt},false,false,false).then(res =>{
+            vsapi.call([mThis.base_url,'/dms/package/save-label-print-count'].join(''),{"package_id":id,"count":cnt},false,false,false).then(res =>{
                 if(res.status_code !==200){
                     console.error(res.error_message);
                 }
@@ -849,7 +959,8 @@ var PackageListComponent = new function() {
             tr.data('driverid', d.driver_id);
             tr.find('a._pol_driver_name').text(d.driver_name);
             let lnkStatus = tr.find('td.package-status').find('a._pol_status');
-            lnkStatus.text(d.status);
+            lnkStatus.find('.status-text').text(d.status);
+            lnkStatus.find('.status-time').text('Just now');
             lnkStatus.data('statusid', d.status_id);
             tr.data('statusid', d.status_id);
 
@@ -868,7 +979,7 @@ var PackageListComponent = new function() {
 
     this.deletePackage = (barcode,package_id)=>{
         let p = {'barcode':barcode?barcode:'','id':package_id};
-       vsapi.call(`${mThis.base_url}/api/package/delete`,p).then(res => {
+       vsapi.call(`${mThis.base_url}/dms/package/delete`,p).then(res => {
          if(res.status_code === 200) {
              let p = mThis.getFilterData();
              p.fresh =1; // load package list without using cache
@@ -908,7 +1019,7 @@ var PackageListComponent = new function() {
             let pid = pd_container.dataset.id;
             //let p = {'sender_id':sender_id,'delivery_type':delivery_type,'zone_code':zone_code,'billed_kg':billed_kg};  
             let p = mThis.getPriceFactors(pd_container);
-            vsapi.call(`${mThis.base_url}/api/package/price-info`,p,false).then(res => {
+            vsapi.call(`${mThis.base_url}/dms/package/price-info`,p,false).then(res => {
                if(res.error_message) {
                  cv_interact.warning(res.error_message);
                } 
@@ -1005,7 +1116,7 @@ var PackageListComponent = new function() {
                 let p = {'id':pid};
                 //css class "pg-text" refers to every <td> or <span> or <div> that contains data value or text such as sender_name, sender_type, sender_phone, etc... on <"tr.pg-header"> row
                 //css class ="vc-value" refers to very <span> in "tr.pg-detail" row that contains data for each field of the package's expaned details
-                vsapi.call(`${mThis.base_url}/api/pacakge/details`,p).then(res => {
+                vsapi.call(`${mThis.base_url}/dms/pacakge/details`,p).then(res => {
                     if(res.status_code === 200){
                         let d = StringSanitizer.sanitizeObject(res.data,null,['email']);
                         tr.querySelector('td.pg-text').forEach(x => {
@@ -1026,7 +1137,7 @@ var PackageListComponent = new function() {
   
     mThis.displayPackageDetails = (container,id,can_edit=false)=>{
         //container.style.display ='none';
-        vsapi.call(`${mThis.base_url}/api/package/details`,{"id":id},null).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/package/details`,{"id":id},null).then(res => {
              let d = res.status_code === 200? StringSanitizer.sanitizeObject(res.data) : {};
              d = d || {};
              mThis.currency_symbol = d.currency_symbol || '$';
@@ -1346,7 +1457,7 @@ var PackageListComponent = new function() {
             i++;
          }while(c); 
      }
-  
+     
        this.beginEdit = (container,id)=>{
           const pd_container = container.querySelector('div.pd-container');
           const div_actions_buttons =  container.querySelector('div.action-buttons');
@@ -1357,7 +1468,7 @@ var PackageListComponent = new function() {
                cv_interact.warning(`Cannot edit package information because there is cash settlement ${agent} already`);
                return;
           }
-           vsapi.call(`${main_view.base_url}/api/package/details-with-options`,{"id":id},null).then(res =>{
+           vsapi.call(`${main_view.base_url}/dms/package/details-with-options`,{"id":id},null).then(res =>{
               const data = res.status_code ===200? StringSanitizer.sanitizeObject(res.data) : {};
               const d = data.details || {};
               
@@ -1528,7 +1639,7 @@ var PackageListComponent = new function() {
           p.driver_total = parseFloat(driver_total);
           p.sender_total = parseFloat(sender_total);
           //imporant params are "sender_d,df_payer, delivery_type,zone_code,billed_kg" in order to determine the price
-          vsapi.call(`${mThis.base_url}/api/package/update`,p).then(res => {
+          vsapi.call(`${mThis.base_url}/dms/package/update`,p).then(res => {
             if(res.status_code === 200){
                 const data = StringSanitizer.sanitizeObject(res.data,null,['email']);
                 const d = data.details || {};
@@ -1620,7 +1731,7 @@ const FilterDialog_package = new function () {
             if (typeof onFinish === 'function') onFinish(mThis.form_data);
             return;
         }
-        vsapi.call(`${mThis.base_url}/api/merchant/filter-options`, null,null).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/merchant/filter-options`, null,null).then(res => {
             if (res.status_code === 200) {
                 const data =StringSanitizer.sanitizeObject( res.data,null,['sender_name']);
                 data.statuses = DUtil.process_statuses(data.statuses, [7,8,10,11], { "status_id": -1, "status_name": "(All Statuses)" });

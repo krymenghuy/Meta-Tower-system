@@ -105,7 +105,7 @@ var TripListComponent = new function() {
             let p = FilterDialog_trip.getData();
             p.search_value = mThis.elSearchTrip.val(); 
             try {
-                vsapi.call([mThis.base_url, '/api/getDeliveryTrips_print'].join(''),p).then(res=>{
+                vsapi.call([mThis.base_url, '/dms/getDeliveryTrips_print'].join(''),p).then(res=>{
                     if(res.status_code ===200){
                         let data = res.data;
                         let d = mThis.processDeliveryTrips_print(data);
@@ -233,7 +233,7 @@ var TripListComponent = new function() {
                         "status_id":data.value
                     };
                     
-                    vsapi.call([mThis.base_url,'/api/updateTripStatus'].join(''),p).then(res=>{
+                    vsapi.call([mThis.base_url,'/dms/updateTripStatus'].join(''),p).then(res=>{
                         if(res.status_code === 200) {
                             let td = tr.find('td.trip-status');
                             td.find('a.pg-text').text(data.text);
@@ -313,7 +313,7 @@ var TripListComponent = new function() {
                         return;
                     }
 
-                    vsapi.call([mThis.base_url,'/api/changeDeliveryDriver'].join(''),p).then(res=>{
+                    vsapi.call([mThis.base_url,'/dms/changeDeliveryDriver'].join(''),p).then(res=>{
                         if(res.status_code ===200){
                             tr.data('driverid',d.id);
                             tr.find('td.driver_name').text(d.name);
@@ -345,7 +345,7 @@ var TripListComponent = new function() {
             cv_interact.confirm('Take this package out of the trip?',{title:'Take Package Out',context:'update','confirmButtonText':'Take Out','cancelButtonText':'Cancel'},function(e){
                 if(e){
                     let p = {'delivery_id':did,'barcode':barcode};
-                    vsapi.call([mThis.base_url,'/api/removePackageFromTrip'].join(''),p).then(res=>{
+                    vsapi.call([mThis.base_url,'/dms/removePackageFromTrip'].join(''),p).then(res=>{
                         if(res.status_code ===200) {
                             let result =  res.data;
 
@@ -392,7 +392,7 @@ var TripListComponent = new function() {
             PackageStatusDialog.show(op,(d)=>{
                 if(d){
                     let p = {'update_trip_status':1,'package_id':package_id,'status_id':d.status_id,'failure_notes':d.notes};
-                    vsapi.call([mThis.base_url,'/api/updatePackageStatus'].join(''),p).then(res=>{
+                    vsapi.call([mThis.base_url,'/dms/updatePackageStatus'].join(''),p).then(res=>{
                         if(res.status_code ===200){ 
                             mThis.refreshPackageList(delivery_id,null,null);
                         }
@@ -463,7 +463,7 @@ var TripListComponent = new function() {
 
     this.finishDeliveryTrip = (delivery_id,notes)=>{
         let p = {'delivery_id':delivery_id,failure_notes:notes};
-        vsapi.call([mThis.base_url,'/api/finishDeliveryTrip'].join(''),p).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/finishDeliveryTrip'].join(''),p).then(res=>{
             if(res.status_code===200){
                 cv_interact.success('The delivery trip is finished');
                 mThis.displayDeliveryTrips();
@@ -476,7 +476,7 @@ var TripListComponent = new function() {
         if(!driver_id) driver_id = mThis.driver_id;
         let p = {'delivery_id':delivery_id,'driver_id':driver_id};
     
-        vsapi.call([mThis.base_url,'/api/startDeliveryTrip'].join(''),p).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/startDeliveryTrip'].join(''),p).then(res=>{
             if(res.status_code ===200){
                 let d = res.data;
                 cv_interact.info(`Trip started with tracking number: ${d.fleet_tracking_number}`);
@@ -505,7 +505,7 @@ var TripListComponent = new function() {
 
     this.deleteDeliveryTrip = (delivery_id,tr)=>{
         let p = {'delivery_id':delivery_id};
-        vsapi.call([mThis.base_url,'/api/deleteDeliveryTrip'].join(''),p).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/deleteDeliveryTrip'].join(''),p).then(res=>{
             if(res.status_code === 200){
                     if (tr) {
                         let detail_tr = tr.next();
@@ -563,7 +563,7 @@ var TripListComponent = new function() {
         let tknumber = tr.data('tknumber');
         let p = {'delivery_id':did,'show_all_statuses':show_all_statuses?1:0};
         
-        vsapi.call([mThis.base_url,'/api/getTripInfo'].join(''),p).then(res=> {
+        vsapi.call([mThis.base_url,'/dms/getTripInfo'].join(''),p).then(res=> {
             let d = res.data;
             let packages = StringSanitizer.sanitizeObject(d.packages);
             let m = mThis.processPackageListByTrip_print(packages);
@@ -624,7 +624,7 @@ var TripListComponent = new function() {
         if (search_action == true) p.search_value = mThis.elSearchTrip.val();
         p.warehouse_id = main_view.DEF_WAREHOUSE_ID?main_view.DEF_WAREHOUSE_ID:1;
 
-        vsapi.call([mThis.base_url, '/api/getDeliveryTrips'].join(''),p,null,null,main_view.apiCluster).then(res=>{  
+        vsapi.call([mThis.base_url, '/dms/getDeliveryTrips'].join(''),p,null,null,main_view.apiCluster).then(res=>{  
             if(mThis.table){
                 mThis.tblTrips.DataTable().clear().destroy();
                 mThis.tblTrips.empty();
@@ -774,7 +774,7 @@ var TripListComponent = new function() {
         mThis.refreshPackageList(did,null,null);
 
         // let p = {'delivery_id':did,'search_value':mThis.elSearchTrip.val()};
-        // vsapi.call([mThis.base_url,'/api/getPackageListByTripId'].join(''),p,null,false).then(res=>{
+        // vsapi.call([mThis.base_url,'/dms/getPackageListByTripId'].join(''),p,null,false).then(res=>{
         //     let d = res.data;
         //     if(res.status_code !==200){
         //         cv_interact.warning(res.error_message);
@@ -797,7 +797,7 @@ var TripListComponent = new function() {
             //If search value is NULL, then try using search_value from the search Box
             if(!search_value) search_value =TripListComponent.elSearchTrip.val();
             let p = {'delivery_id':did,'search_value':search_value};
-            vsapi.call(`${mThis.base_url}/api/getPackageListByTripId`,p,null,false).then(res=>{
+            vsapi.call(`${mThis.base_url}/dms/getPackageListByTripId`,p,null,false).then(res=>{
                 let d = res.data;
                 if(res.status_code !==200){
                     cv_interact.warning(res.error_message);
@@ -954,7 +954,7 @@ var TripListComponent = new function() {
 
 //                     //if(!detail_tr || detail_tr.length <=0){
 //                         let p = {'delivery_id':did,'search_value':TripListComponent.elSearchTrip.val()};
-//                         vsapi.call([mThis.base_url,'/api/getPackageListByTripId'].join(''),p).then(res=>{
+//                         vsapi.call([mThis.base_url,'/dms/getPackageListByTripId'].join(''),p).then(res=>{
 //                             let d = res.data;
 //                             if(res.status_code !==200){
 //                                 cv_interact.warning(res.error_message);
@@ -1098,7 +1098,7 @@ var TripListComponent = new function() {
 //                     mThis.prev_selected_tr = trip_header_row;
 
 //                     let p = {'delivery_id':delivery_id};
-//                     vsapi.call([mThis.base_url,'/api/getPackageListByTripId'].join(''),p).then(res=>{
+//                     vsapi.call([mThis.base_url,'/dms/getPackageListByTripId'].join(''),p).then(res=>{
 //                         if (res.status_code ===200){
 //                             let d = res.data;
 //                             let packages = StringSanitizer.sanitizeObject(d.packages);
@@ -1163,7 +1163,7 @@ const DeliveryDialogTrip = new function() {
         e.preventDefault();
         let p = {'delivery_id':mThis.delivery_id};
         if (p.delivery_id){
-            vsapi.call([mThis.base_url,'/api/deleteNewTrip'].join(''),p).then(res=>{
+            vsapi.call([mThis.base_url,'/dms/deleteNewTrip'].join(''),p).then(res=>{
                 if(res.status_code === 200){
                     return;
                 }
@@ -1179,7 +1179,7 @@ const DeliveryDialogTrip = new function() {
             return;
         }
         p.driver_id = mThis.driver_id;
-        vsapi.call([mThis.base_url,'/api/startDeliveryTrip'].join(''),p).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/startDeliveryTrip'].join(''),p).then(res=>{
             if (res.status_code ===200){
                 let d = res.data;
                 if (typeof mThis.onClose ==='function') mThis.onClose(p); 
@@ -1302,7 +1302,7 @@ const DeliveryDialogTrip = new function() {
     this.displayDriverInfo = (data,fromServer=false)=>{
         if(fromServer){
             let p = {'driver_id':data};
-            vsapi.call([mThis.base_url,'/api/getDriverInfo'].join(),p).then(res=>{
+            vsapi.call([mThis.base_url,'/dms/getDriverInfo'].join(),p).then(res=>{
                 d = StringSanitizer.sanitizeObject(res.data);
                 mThis.elDriverCode.val(d.code);
                 mThis.elDriverId.val(d.id);
@@ -1336,7 +1336,7 @@ const DeliveryDialogTrip = new function() {
         
         mThis.elError.html(null);
         mThis.elBarcode.parent().removeClass('has-error');
-        vsapi.call([mThis.base_url,'/api/scanPackageOut'].join(''),p_info).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/scanPackageOut'].join(''),p_info).then(res=>{
             if (res.status_code ===200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
                 if (!mThis.delivery_id) mThis.delivery_id = d.delivery_id;
@@ -1390,7 +1390,7 @@ const DeliveryDialogTrip = new function() {
         if(!tr) return;
         let barcode = tr.data('barcode');
         let p = {'barcode':barcode,'delivery_id':tr.data('did')};
-        vsapi.call([mThis.base_url,'/api/removeScannedPackage'].join(''),p).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/removeScannedPackage'].join(''),p).then(res=>{
             if(res.status_code ===200) tr.remove(); 
             else mThis.elError.html(res.error_message);
         });
@@ -1408,7 +1408,7 @@ const DeliveryDialogTrip = new function() {
             if(typeof onFinish == 'function') onFinish();
             return;
         }
-        vsapi.call([mThis.base_url,'/api/getForm_options_delivery_trip'].join(''),null).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/getForm_options_delivery_trip'].join(''),null).then(res=>{
             let d = res.data;
             if(d){
                 mThis.form_data ={};
@@ -1497,7 +1497,7 @@ const FilterDialog_trip = new function(){
             return;   
         }
 
-        vsapi.call([mThis.base_url,'/api/getForm_options_delivery_trip'].join(''),null,null).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/getForm_options_delivery_trip'].join(''),null,null).then(res=>{
             let data =res.data;
             if(data && data.statuses ){
                 data.warehouses = StringSanitizer.sanitizeObject(data.warehouses);
@@ -1657,7 +1657,7 @@ const AddItemToTripDialog = new function(){
     });
 
     this.addPackageToTrip = (p,closeOnSuccess=false) => {
-        vsapi.call([mThis.base_url,'/api/addPackageToTrip'].join(''),p).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/addPackageToTrip'].join(''),p).then(res=>{
             if(res.status_code ===200) {
                 let result = StringSanitizer.sanitizeObject(res.data);
                 

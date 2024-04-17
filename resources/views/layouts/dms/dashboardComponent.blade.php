@@ -72,4 +72,4 @@
     }
 </style>
 
-<div id="_main_dashboardComponent" style="display:none;padding:15px"></div>
+<div id="_main_dashboardComponent" class="m-2" style="display:none;padding:15px"></div>

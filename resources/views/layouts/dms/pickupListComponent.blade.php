@@ -1,4 +1,7 @@
 <style>
+    div.expandable-row-container{
+       overflow:hidden;
+    }
     table.package-table {
         width: 1500px;
         height: 390px;
@@ -282,29 +285,32 @@
         color: red;
         border: 1.2px dotted red;
         text-align: center;
-        vertical-align: middle;
         border-radius: 5px;
     }
 </style>
 
-<div id="_main_lnkPickupListComponent" style="display:none; margin-right:15px;">
-    <div class="p-3 bg-white shadow rounded-3">
-        <div class="kt-portlet__head-toolbar form-inline" id="_dl_filter_panel">
-            <div class="d-flex w-100 justify-content-between">
+<div id="_main_lnkPickupListComponent" class="m-2" style="display:none">
+    
+        <div class="mr-2 ml-2" id="_dl_filter_panel">
+            <div class="d-flex w-100 justify-content-between shadow p-3 rounded-3 bg-white mt-1">
                 <div class="d-flex flex-row gap-2">
                     <div class="btn-group">
                         <!-- <button id="_pl_btnNewPickup" data-toggle="modal" class="btn btn-primary height">New Order</button> -->
-                        <button id="btn_newQuickOrder" class="btn btn-warning height">
+                       <div>
+                         <button id="btn_newQuickOrder" class="btn btn-warning height">
                             <span class="trans-text" data-langprop="buttons.Quick Order">Quick Order</span>
+                         </button>
+                       </div>
+                    </div>
+                    <div><input type="text" id="_pl_search" class="form-control min-width-search height" placeholder="Search request"/></div>
+                    <div class="d-flex gap-2">
+                        <button type="button" id="_pl_btnSearch" class="btn btn-primary height">
+                            <i class="fa fa-sync-alt"></i>
+                        </button>
+                        <button type="button" class="btn btn-outline-success height" id="_pl_btnToggleFilter">
+                            <i class="fa fa-list-alt"></i>
                         </button>
                     </div>
-                    <input type="text" id="_pl_search" class="form-control min-width-search height" placeholder="Search request"/>
-                    <button type="button" id="_pl_btnSearch" class="btn btn-primary height">
-                        <i class="fa fa-sync-alt"></i>
-                    </button>
-                    <button type="button" class="btn btn-outline-success height" id="_pl_btnToggleFilter">
-                        <i class="fa fa-list-alt"></i>
-                    </button>
                 </div>
                 <div class="d-flex gap-2">
                     <button type="button" class="btn btn-danger" id="_pl_lnkDailyPackages">
@@ -314,10 +320,11 @@
                 </div>
             </div>
         </div>
-        <div id="order_list_wrapper" class="shadow-lg bg-white rounded-3 border p-3 mt-3 overflow-auto" style="min-height:3vw">
-            <div id="_pkl_div_order_list" class="overflow-auto w-100"></div>
+        <!-- <div class="d-flex p-3 shadow rounded-3 mt-1 mr-2 ml-2"></div> -->
+        <div id="order_list_wrapper" class="shadow-lg bg-white rounded-3 border p-3 mt-3 mr-2 ml-2" style="min-height:43vw">
+            <div id="_pkl_div_order_list" class="overflow-hidden w-100"></div>
         </div>
-    </div>
+  
 </div>
 
 <div class="modal fade" id="_pl_dlgPickupStatus" tabindex="-1" role="dialog" aria-labelledby="_pl_dlgPickupStatusTitle" aria-hidden="true">

@@ -12,7 +12,7 @@ class Commune //extends Model
     //use HasFactory;
     protected $id = null;
     protected $userInfo = null;
-    function __construct($id=null,$ss=null){
+    function __construct($id=null,$userInfo=null){
         $this->id = $id;
         $this->userInfo = $userInfo;
     }

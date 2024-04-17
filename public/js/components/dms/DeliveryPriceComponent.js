@@ -78,7 +78,7 @@ const PriceTabView = new function(){
         if (typeof onFinish == 'function') onFinish();
         return;
       }
-       vsapi.call([mThis.base_url,'/api/getFormOptions_priceline'].join(''),null).then(res=>{
+       vsapi.call([mThis.base_url,'/dms/getFormOptions_priceline'].join(''),null).then(res=>{
          if(res.status_code===200){
           let data = res.data;
            data.zones = StringSanitizer.sanitizeObject(data.zones);
@@ -187,14 +187,14 @@ const PriceTabView = new function(){
                    e.preventDefault();
                    let text = mThis.elScriptText.val();
                     let p = {'p_script':text};
-                    vsapi.call([mThis.base_url,'/api/importPricesByScript'].join(''),p).then(res=>{
+                    vsapi.call([mThis.base_url,'/dms/importPricesByScript'].join(''),p).then(res=>{
                        //if(result.error_count > 0) mThis.elError.
                     });
                });
 
                mThis.btnGetSampleScript.on('click',(e)=>{
                   let text = mThis.elScriptText.val();
-                  vsapi.call([mThis.base_url,'/api/getSampleScript'].join(''),null).then(res=>{
+                  vsapi.call([mThis.base_url,'/dms/getSampleScript'].join(''),null).then(res=>{
                     //d = StringSanitizer.sanitizeOut(d,null,['=','#',',']);
                     //mThis.elScriptText.clear();
                     let d = res.data;
@@ -205,7 +205,7 @@ const PriceTabView = new function(){
                mThis.btnRunScript.on('click',(e)=>{
                   let text = mThis.elScriptText.val();
                   let p = {'p_script':text};
-                  vsapi.call(`${mThis.base_url}/api/translateScript`,p).then(res => {
+                  vsapi.call(`${mThis.base_url}/dms/translateScript`,p).then(res => {
                     if(res.status_code === 200){
                       let d = res.data;
                       mThis.elScriptMeaning.html(d);
@@ -218,7 +218,7 @@ const PriceTabView = new function(){
                this.btnSaveCODCharge.on('click',function(e){
                  e.preventDefault();
                  let p = {'sender_id':null,'cod_fee_percent':mThis.elCODFeeChargePercent.val(), 'cod_fee':0,'charge_option':'percentage'};
-                 vsapi.call(`${mThis.base_url}/api/saveCODFeeCharge`,p).then(res => {
+                 vsapi.call(`${mThis.base_url}/dms/saveCODFeeCharge`,p).then(res => {
                     if(res.status_code === 200) {
                         cv_interact.info('COD Fee Charge has been saved!');
                     }else cv_interact.error(error_message);
@@ -301,7 +301,7 @@ const PriceTabView = new function(){
                 cv_interact.confirm('Delete this Price Line?','Delete Price Line',function(e){
                       if(e){
                         let p = {'id':id,'sender_id':sender_id}; // NOTE parameter @sender_id is used to find target table "price_list" or "sender_price_list" for deleting
-                         vsapi.call([mThis.base_url,'/api/deletePriceLine'].join(''),p).then(res=>{
+                         vsapi.call([mThis.base_url,'/dms/deletePriceLine'].join(''),p).then(res=>{
                             if (res.status_code===200){
                                mThis.displayPrices();
                             } else cv_interact.error(res.error_message);
@@ -317,7 +317,7 @@ const PriceTabView = new function(){
                  //p.id = p.city_id;
                  cv_interact.confirm('Delete this price?',{title:'Delete Price'},(e)=>{
                    if(e){
-                     vsapi.call(`${mThis.base_url}/api/deletePrice`,p).then(res => {
+                     vsapi.call(`${mThis.base_url}/dms/deletePrice`,p).then(res => {
                        if(res.status_code === 200){
                          mThis.displayPrices(mThis.country_id);
                        } else cv_interact.error(error_message);
@@ -352,7 +352,7 @@ const PriceTabView = new function(){
                       let tr = $(this).closest('tr');
                       let p = mThis.getRowData(tr);
                       if (!p) return;
-                      vsapi.call(`${mThis.base_url}/api/saveBaseFee`,p).then(res => {
+                      vsapi.call(`${mThis.base_url}/dms/saveBaseFee`,p).then(res => {
                          if (res.status_code === 200) {
                              mThis.changeRowState(tr,'view');
                          }else cv_interact.error(error_message);
@@ -388,7 +388,7 @@ const PriceTabView = new function(){
                      let p = {'id':x.data('id')};
                      cv_interact.confirm('Delete COD?',{title:'Delete COD'},function(e){
                        if(e) {
-                          vsapi.call(`${mThis.base_url}/api/deleteCODFee`,p).then(res => {
+                          vsapi.call(`${mThis.base_url}/dms/deleteCODFee`,p).then(res => {
                             if (res.status_code === 200) {
                               mThis.displayCODFees();
                             } cv_interact.error(error_message);
@@ -523,7 +523,7 @@ const PriceTabView = new function(){
           // this.displayCODFee = ()=>{
           //    let p = {'sender_id':null};
           //    mThis.elCODFeeChargePercent.val(0);
-          //    post_ajax([mThis.base_url,'/api/getCODFeeCharge'].join(''),p,function(d){
+          //    post_ajax([mThis.base_url,'/dms/getCODFeeCharge'].join(''),p,function(d){
           //       if (!d) d = 0;
           //       mThis.elCODFeeChargePercent.val(d);
           //    });
@@ -607,7 +607,7 @@ const PriceTabView = new function(){
              let p = {'price_id':header_tr.data('id')};
              let html_zones =null;
       
-             vsapi.call([mThis.base_url,'/api/getApplicableZones'].join(''),p).then(res=>{
+             vsapi.call([mThis.base_url,'/dms/getApplicableZones'].join(''),p).then(res=>{
               if (res.status_code===200){
                       let rows = StringSanitizer.sanitizeObject(res.data);
                       let i=0,c;
@@ -661,7 +661,7 @@ const PriceTabView = new function(){
               let p = {'price_id':header_tr.data('id')};
               let htm_senders =null;
        
-              vsapi.call([mThis.base_url,'/api/getApplicableSenders'].join(''),p).then(res=>{
+              vsapi.call([mThis.base_url,'/dms/getApplicableSenders'].join(''),p).then(res=>{
                  if (res.status_code===200){
                    let rows = StringSanitizer.sanitizeObject(res.data);
                    let i=0,c;
@@ -783,7 +783,7 @@ const PriceTabView = new function(){
           ];
 
           this.displayBaseFees = (onFinish=null)=>{
-            vsapi.call(`${mThis.base_url}/api/getSenderBaseFees`,null).then(res => {
+            vsapi.call(`${mThis.base_url}/dms/getSenderBaseFees`,null).then(res => {
               if (res.status_code === 200)
                 mThis.populateBaseFeesTable(res.data,onFinish);
             });  
@@ -862,7 +862,7 @@ const PriceTabView = new function(){
               cv_interact.confirm('Delete this base fee?',{title:'Delete Base Fee',context:'delete'},function(e){
                 if (e){
                    let p = {'id':id};
-                   vsapi.call(`${mThis.base_url}/api/deleteBaseFee`,p).then(res => {
+                   vsapi.call(`${mThis.base_url}/dms/deleteBaseFee`,p).then(res => {
                      if(res.status_code === 200) {
                         mThis.displayBaseFees();
                      } else cv_interact.error(error_message);
@@ -887,7 +887,7 @@ const PriceTabView = new function(){
                    } else p = {'delivery_type':mThis.elFilter_deliverytype.val(),'zone_code':mThis.elFilter_zone.val(),'sender_id':mThis.elFilter_sender.val()}; 
                   
                    mThis.tblPrices_body.empty();  
-                   vsapi.call(`${mThis.base_url}/api/getPriceList`,p).then(res => {
+                   vsapi.call(`${mThis.base_url}/dms/getPriceList`,p).then(res => {
                        let rows = StringSanitizer.sanitizeObject(res.data);
                        if(rows){
                           rows = StringSanitizer.sanitizeObject(rows);
@@ -911,7 +911,7 @@ const PriceTabView = new function(){
             if (animate) div.removeClass('animate-slide-left');
                    mThis.tblCODs_body.empty();
                    
-                   vsapi.call([mThis.base_url,'/api/getCODFees'].join(''),p).then(res=>{
+                   vsapi.call([mThis.base_url,'/dms/getCODFees'].join(''),p).then(res=>{
                      
                         if(res.status_code===200){
                           let rows = StringSanitizer.sanitizeObject(res.data);
@@ -1000,7 +1000,7 @@ const PriceTabView = new function(){
       e.preventDefault();
       let p = mThis.getData();
       if (!p) return;
-      vsapi.call(`${mThis.base_url}/api/savePriceLine`,p).then(res => {
+      vsapi.call(`${mThis.base_url}/dms/savePriceLine`,p).then(res => {
          if (res.status_code === 200) {
           let d = [];
             d.data =StringSanitizer.sanitizeObject(d.data,'email');
@@ -1053,7 +1053,7 @@ const PriceTabView = new function(){
         //     return;
         // }
   
-         vsapi.call([mThis.base_url,'/api/getFormOptions_priceline'].join(''),null).then(res=>{
+         vsapi.call([mThis.base_url,'/dms/getFormOptions_priceline'].join(''),null).then(res=>{
            if(res.status_code ===200){
                 let data = res.data;
                 data.zones = StringSanitizer.sanitizeObject(data.zones);
@@ -1086,7 +1086,7 @@ const PriceTabView = new function(){
          * NOTE: paramter @sender_id is VERY IMPORTANT IMPORTANT to determine which 
         table is to be queried => "price_list" or "sender_price_list" **/
         let p = {'sender_id':sender_id,'id':price_id};
-        vsapi.call(`${mThis.base_url}/api/getPriceLineData`,p).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/getPriceLineData`,p).then(res => {
            if (res.status_code === 200) {
               let d = StringSanitizer.sanitizeObject(res.data,null,['zone_codes','sender_ids']);
               mThis.setData(d);
@@ -1241,7 +1241,7 @@ const PriceTabView = new function(){
         let p = mThis.getData();
         if(!p) return;
         
-        vsapi.call(`${mThis.base_url}/api/saveCODFeeBySender`,p).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/saveCODFeeBySender`,p).then(res => {
           if(res.status_code === 200) {
             if (typeof mThis.onClose =='function')  mThis.onClose(p);
             mThis.self.modal('hide');

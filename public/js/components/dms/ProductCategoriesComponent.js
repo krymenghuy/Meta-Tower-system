@@ -35,7 +35,7 @@ var ProductCategoriesComponent = function() {
   ];
 
   const categoryListView = new ListView('div_category_list', {
-    fetchApi: `${base_url}/api/category/list-paginate`,
+    fetchApi: `${base_url}/dms/category/list-paginate`,
     columns: columns,
     tableClass: "table header-light-blue header-uppercase",
     rowCreated: (data, index, tr) => {
@@ -86,7 +86,7 @@ var ProductCategoriesComponent = function() {
         context: 'delete',
       }, (confirmed) => {
         if (confirmed) {
-          vsapi.call(`${base_url}/api/category/delete`, p)
+          vsapi.call(`${base_url}/dms/category/delete`, p)
             .then((res) => {
               if (res.status_code === 200) {
                 categoryListView.showPage();
@@ -126,8 +126,8 @@ class ProductCategoryDialog {
       "itemName": "Product Category",
       "formId": '_pdc_dlgProductCategory',
       "instance": this,
-      "apiSave": `${main_view.base_url}/api/category/save`,
-      "apiGet": `${main_view.base_url}/api/category/details`,
+      "apiSave": `${main_view.base_url}/dms/category/save`,
+      "apiGet": `${main_view.base_url}/dms/category/details`,
       "modifyTitle": "Modify Product type",
       "createTitle": "New Product Type",
       "identityProps": ['id'],

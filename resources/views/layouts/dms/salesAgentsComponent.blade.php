@@ -1,27 +1,36 @@
-<div id="_main_saleAgentsComponent" style="display:none;" class="m-2">
+<div id="_main_saleAgentsComponent" class="m-2" style="display:none;">
     <div class="w-100">
-        <div class="d-flex flex-row justify-content-between" id="div_filter_fields">
+        <div class="d-flex flex-row justify-content-between bg-white shadow-lg rounded-3 p-3 mb-2" id="div_filter_fields">
             <div class="d-flex gap-2">
+              <div class="d-flex flex-row gap-1">
                 <input type="text" class="form-control" id="_sal_search_agent" placeholder="Search agent">
                 <button id="_sal_btnSearch" class="btn btn-primary" type="button"><i class="fa fa-search"></i></button>
-            </div>
-            <div class="d-flex gap-2">
-              <select  id="_sal_filter_agent_type" class="modal-select2 filter-field" data-field="agent_type"></select>
-              <select  id="_sal_filter_agent_status" class="modal-select2 filter-field" data-field="status_code"></select>
+             </div>
+              <div class="d-flex gap-2">
+                <select  id="_sal_filter_agent_type" class="modal-select2 filter-field" data-field="agent_type_id"></select>
+                <select  id="_sal_filter_agent_status" class="modal-select2 filter-field" data-field="status_code"></select>
+              </div>
             </div>
             <div class="d-flex gap-2">
                <button id="_sal_btnNewAgent" class="btn btn-primary" type="button"><i class="fa fa-user-plus"></i> <span class="trans-text" data-langprop="buttons.New Agent"></span></button>
                <button id="_sal_btnPrint" class="btn btn-secondary" type="button"><i class="fa fa-print"></i> <span class="trans-text" data-langprop="buttons.Print"></span></button>
             </div>
         </div>
-        <div class="p-2 shadow rounded-3 bg-white mt-2">
-            <div id="div_sales_agent_list"></div>
+        <div class="d-flex flex-row justify-content-between bg-white shadow-lg rounded-3 p-3 mb-2" id="div_filter_fields">
+            <div class="d-flex gap-2">
+            </div>
+           
+            <div class="d-flex gap-2">
+            </div>
+        </div>
+        <div class="shadow rounded-3 bg-white mt-3 p-2 overflow-hidden">
+            <div id="div_sales_agent_list" class="p-2"></div>
         </div>
     </div>
 </div>
 
 <div class="modal fade" id="_sal_dlgSalesAgent" tabindex="-1" role="dialog" aria-labelledby="_sal_dlgSalesAgentTitle" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="dialog">
+    <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="_sal_dlgSalesAgentTitle">New Sales Agent</h5>
@@ -30,41 +39,74 @@
                 </button>
             </div>
             <div class="modal-body" id="_sal_dlgSalesAgent_body">
-                <div id="_sal_dlgSalesAgent_fields">
+                <div id="_sal_dlgSalesAgent_fields" class="d-flex flex-column">
+                   <div class="row">
+                     <div class="col-xs-12 col-md-12 col-lg-3">
+                        <div class="d-flex align-items-center"> <div id="_agent_profile_photo" style="height:230px" class="mt-2"></div></div>
+                     </div>
+                     <div class="col-xs-12 col-lg-9">
+                        <div class="row">
+                            <div class="col-xs-12 col-lg-6">
+                                <label class="form-label">Agent ID</label>
+                                <input type="text" class="form-control data-input" data-field="code" placeholder="AUTO" readOnly>
+                            </div>
+                            <div class="col-xs-12 col-lg-6">
+                                <label class="form-label">Name</label>
+                                <input type="text" class="form-control data-input" data-field="name">
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 col-lg-6">
+                                       <label class="form-label">Sex</label>
+                                        <select class="modal-select2 data-input" data-field="sex">
+                                            <option value="F">Female</option>
+                                            <option value="M">Male</option>
+                                            <option value="O">Other</option>
+                                        </select>
+                            </div>
+                            <div class="col-xs-12 col-lg-6">
+                                 <label class="form-label">Agent Type</label>
+                                 <select class="modal-select2 data-input" id="_sal_agent_type" data-field="agent_type_id"></select>
+                            </div>
+                        </div>
+                        
+                     </div>
+                   </div>
+ 
                     <div class="row">
-                        <div class="col-lg-6">
-                            <label class="simple-label">Agent ID</label>
-                            <input type="text" class="form-control data-input" data-field="code" placeholder="AUTO" readOnly>
+                        <div class="form-group col-lg-6">
+                            <label class="form-label">Phone Number</label>
+                            <input id="_sal_phone_number" class="form-control data-input" data-field="phone_number" />
                         </div>
-                        <div class="col-lg-6">
-                            <label class="simple-label">Agent Type</label>
-                            <select class="form-control data-input" id="_sal_agent_type" data-field="agent_type_id"></select>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-lg-3">
-                            <label class="simple-label">Agent Name</label>
-                            <input type="text" class="form-control data-input" data-field="name">
-                        </div>
-                        <div class="col-lg-3">
-                            <label class="simple-label">Phone Number</label>
-                            <input class="form-control data-input" data-field="phone_number" />
-                        </div>
-                        <div class="col-lg-3">
-                            <label class="simple-label">Email</label>
+                        <div class="form-group col-lg-6">
+                            <label class="form-label">Email</label>
                             <input class="form-control data-input" data-field="email">
                         </div>
-                        <div class="col-lg-3">
-                            <label class="simple-label">Commission (USD)</label>
-                            <input type="number" class="form-control data-input" data-field="commission">
-                        </div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-12">
-                            <label class="simple-label">Address</label>
+                        <div class="form-group col-lg-12">
+                            <label class="form-label">Address</label>
                             <textarea class="form-control data-input" data-field="address"></textarea>
                         </div>
                     </div>
+                    <div class="div_login_info p-2">
+                        <div class="p-2 d-flex gap-2">
+                            <i class="fa fa-mobile fs-5 mt-1"></i> <span class="fs-5 fw-semibold">Mobile App Account</span>
+                        </div> 
+                        <div class="d-flex flex-row gap-2 mt-1">
+                              <div>
+                                 <label class="form-label">Login name</label>
+                                 <input id="_sal_login_name" class="form-control data-input" data-field="login_name" placeholder="Phone number">
+                              </div> 
+                              <div>
+                                 <label class="form-label">Password</label>
+                                 <input id="_sal_password" type="password" class="form-control data-input" data-field="password">
+                              </div>
+                        </div>
+                      
+                    </div>
+                   
                 </div>
                 <div class="row" style="display:none">
                     <div class="col-lg-6" style="margin-top:15px">
@@ -72,16 +114,16 @@
                         <div class="div-line" style="border-color:green"></div>
                         <div class="border-style1 primary_bank_panel" id="_sal_primary_bank_panel">
                             <div>
-                                <span class="simple-label">Bank Name</span>
+                                <span class="form-label">Bank Name</span>
                                 <input type="text" data-field="bank_name" class="form-control data-input">
                                 <input class="data-input" data-field="id" type="hidden">
                             </div>
                             <div>
-                                <span class="simple-label">Account Number</span>
+                                <span class="form-label">Account Number</span>
                                 <input type="number" data-field="account_number" class="form-control data-input">
                             </div>
                             <div>
-                                <span class="simple-label">Account Name</span>
+                                <span class="form-label">Account Name</span>
                                 <input type="text" data-field="account_name" class="form-control data-input">
                             </div>
                         </div>
@@ -89,9 +131,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <span id="_sal_agent_error" class="error_text"></span>
-                <button type="button" class="btn btn-default btn-secondary height" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success height" id="_sal_dlgSalesAgent_btnSave">Save</button>
+                <button type="button" class="btn btn-default btn-secondary height" data-dismiss="modal"><span class="trans-text" data-langprop="buttons.Cancel"></span></button>
+                <button type="button" class="btn btn-success height" id="_sal_dlgSalesAgent_btnSave"><span class="trans-text" data-langprop="buttons.Save"></span></button>
             </div>
         </div>
     </div>

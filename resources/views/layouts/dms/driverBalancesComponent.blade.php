@@ -14,22 +14,38 @@
   #_mbl_tblBalances.receivable th {
     color: green;
   }
+  /* .overdue-card{
+    display:flex;
+    flex-direction: column;
+    border-radius: 3px;
+    border: 1.2px solid red;
+  }
+  .overdue-card .od-title{
+     font-weight: bold;
+     padding: 2px;
+     display: block;
+     color:orange;
+  }
+  .overdue-card .od-category{
+     font-weight: bold;
+     padding: 2px;
+     display: block;
+  } */
+  .prefix-colon::before{
+     content:': ';
+  }
 </style>
 
 <div id="_mainDriverBalancesCompoment" style="display:none;padding:15px">
   <div class="d-flex justify-content-between bg-white rounded-3 p-3 border">
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 justify-content-start align-items-start flex-wrap">
       <button id="_dbl_btnToggleView" class="btn btn-primary" data-toolip="true" data-title="View by date" data-placement="top">
         <span><i class="la la-user"></i> </span>
       </button> 
-      <div class="min-width-select">
+      <div class="">
         <input style="display:none" type="text" class="form-control" id="_dbl_search_driver" placeholder="Search">  
-        <!-- <select class="modal-select2" id="_dbl_filter_type">
-          <option value="payable">វេចេញ (Payables)</option>
-          <option value="receivable">ទទួល (Receivables)</option>
-        </select> -->
       </div>
-      <div class="min-width-select">
+      <div style="min-width:200px">
         <select class="modal-select2" id="_dbl_filter_driver"></select>
       </div>
       <div>
@@ -41,29 +57,47 @@
     </div>
   </div>
 
-  <div id="_dbl_div_summary" class="d-flex justify-content-between bg-white rounded-3 p-3 border gap-3 mt-1">
+  <div id="_dbl_div_summary" class="d-flex flex-wrap justify-content-between bg-white rounded-3 p-3 border gap-3 mt-1">
         <div class="d-flex align-items-start gap-5">
-            <div class="d-flex gap-2">
-              <span class="fw-semibold trans-text fs-5 text-muted" data-langprop="titles.Package count:"></span>
-              <span id="_dbl_package_count" class="fw-semibold package-count fs-5">0 pcs</span>
-            </div>
+            <div class="d-flex flex-column flex-wrap justify-content-start">
+               <div class="d-flex flex-row gap-5 align-items-start">
+                  <div class="d-flex gap-2">
+                      <span class="fw-semibold trans-text fs-5 text-muted" data-langprop="titles.Package count:"></span>
+                      <span id="_dbl_package_count" class="fw-semibold package-count fs-5">0 pcs</span>
+                  </div>
 
-            <div class="d-flex gap-2">
-              <span class="fw-semibold trans-text fs-5 text-muted" data-langprop="titles.Amount:"></span>
-              <span id="_dbl_driver_amount" class="fw-semibold driver-amount fs-5">0</span>
-              <span id="_dbl_driver_currency" class="fw-semibold driver-currency fs-5">USD</span>
+                   <div class="d-flex gap-2">
+                      <span class="fw-semibold trans-text fs-5 text-muted" data-langprop="titles.Amount:"></span>
+                      <span id="_dbl_driver_amount" class="fw-semibold driver-amount fs-5">0</span>
+                      <span id="_dbl_driver_currency" class="fw-semibold driver-currency fs-5">USD</span>
+                   </div>
+               </div>
+               <div class="line-3d"></div>
+               
+               <div id="_dbl_alert_list" class="d-flex flex-row gap-5 align-items-between justify-content-between">
+                   <div class="d-flex flex-row gap-2">
+                      <span class="dbl-alert-title">Overdue (4h-24h)</span><span class="prefix-colon dbl-alert-value">3</span>
+                   </div>
+                   <div class="d-flex flex-row gap-2">
+                      <span class="dbl-alert-title">Overdue (over 24h)</span><span class="prefix-colon dbl-alert-value">1</span>
+                   </div>      
+               </div>
+
             </div>
+      
         </div>
         
-        <div class="d-flex gap-2">
-            <button id="_dbl_btnPrint" class="btn btn-sm btn-outline-success">
-              <i class="fa fa-print fs-5"></i>
-              <span>Print</span>
-          </button>
-          <button id="_dbl_btnExportExcel" class="btn btn-sm btn-outline-primary">
-              <i class="fa fa-file-excel fs-5"></i>
-              <span>Export to Excel</span>
-          </button>
+        <div style="visibility:hidden" class="d-flex flex-column align-items-center justify-content-center flex-wrap">
+            <div class="d-flex gap-2">
+              <button id="_dbl_btnPrint" class="btn btn-sm btn-outline-success">
+                  <i class="fa fa-print fs-5"></i>
+                  <span>Print</span>
+              </button>
+              <button id="_dbl_btnExportExcel" class="btn btn-sm btn-outline-primary">
+                  <i class="fa fa-file-excel fs-5"></i>
+                  <span>Export to Excel</span>
+              </button>
+            </div>
         </div>
   </div>
 
