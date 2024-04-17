@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Location\Country;
-use App\Models\Location\City;
-use App\Models\Location\District;
-use App\Models\Location\Commune;
+use App\Models\Dms\Location\Country;
+use App\Models\Dms\Location\City;
+use App\Models\Dms\Location\District;
+use App\Models\Dms\Location\Commune;
 
-use App\Models\JDV;
-use App\Models\UM;
+use App\Models\Dms\JDV;
+use App\Models\Dms\UM;
 
 class LocationController extends Controller
 {
@@ -117,32 +117,32 @@ class LocationController extends Controller
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
     $country_id = $req->country_id?$req->country_id:-1;
-    return JDV::result(\App\Models\GeneralSettings::options_city($country_id,$ss));
+    return JDV::result(\App\Models\Dms\GeneralSettings::options_city($country_id,$ss));
   }
 
   function getComboItems_district(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
     $city_id =$req->city_id?$req->city_id:-1;
-    return JDV::result(\App\Models\GeneralSettings::options_district($city_id,$ss));
+    return JDV::result(\App\Models\Dms\GeneralSettings::options_district($city_id,$ss));
   }
    
   function getComboItems_commune(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
     $district_id = $req->district_id?$req->district_id:-1;
-    return JDV::result(\App\Models\GeneralSettings::options_commune($district_id,$ss));
+    return JDV::result(\App\Models\Dms\GeneralSettings::options_commune($district_id,$ss));
   }
 
   function getZoneItems(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
-    return JDV::result(\App\Models\DeliveryZone::list($ss));
+    return JDV::result(\App\Models\Dms\DeliveryZone::list($ss));
   }
   function getComboItems_zone(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
-    return JDV::result(\App\Models\GeneralSettings::options_zone($ss));
+    return JDV::result(\App\Models\Dms\GeneralSettings::options_zone($ss));
   }
 
 }

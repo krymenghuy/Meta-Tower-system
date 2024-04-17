@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\MobileAppSettings;
-use App\Models\UM;
-use App\Models\JDV;
+use App\Models\Dms\MobileAppSettings;
+use App\Models\Dms\UM;
+use App\Models\Dms\JDV;
   
 class MobileAppSettingsController extends Controller
 {

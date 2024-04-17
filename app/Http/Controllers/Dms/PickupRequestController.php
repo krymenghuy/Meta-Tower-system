@@ -5,10 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 
-use App\Models\PickupRequest;
+use App\Models\Dms\PickupRequest;
  
-use App\Models\JDV;
-use App\Models\UM;
+use App\Models\Dms\JDV;
+use App\Models\Dms\UM;
    
 class PickupRequestController extends Controller
 {

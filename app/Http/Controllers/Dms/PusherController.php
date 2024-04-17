@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Pusher\Pusher;
-use App\Models\UM;
-use App\Models\JDV;
+use App\Models\Dms\UM;
+use App\Models\Dms\JDV;
 use Config;
 
 class PusherController extends Controller

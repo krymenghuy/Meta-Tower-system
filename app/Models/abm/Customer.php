@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models\abm;
+namespace App\Models\Abm;
 
 use App\Models\UM;
 use App\Models\PublicStorage;

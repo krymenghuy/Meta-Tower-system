@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\Notifier;
-use App\Models\Driver;
-use App\Models\DV;
-use App\Models\UM;
+use App\Models\Dms\Notifier;
+use App\Models\Dms\Driver;
+use App\Models\Dms\DV;
+use App\Models\Dms\UM;
 use Sanitizer;
 use DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
-use App\Models\GeneralTrack;
-use App\Models\Tracker;
+use App\Models\Dms\GeneralTrack;
+use App\Models\Dms\Tracker;
 
 class DeliveryTrip
 {
@@ -389,7 +389,7 @@ class DeliveryTrip
              }
             
          }else{
-            $m = new \App\Models\BDelivery(null,$ss);
+            $m = new \App\Models\Dms\BDelivery(null,$ss);
             //make sure the $ss->user_class is a driver to avoid permission check
             $res = $m->b_assignDeliveryDriver($d,$ss);
             if($res->status ==='Error') return DV::error($res->error_message);

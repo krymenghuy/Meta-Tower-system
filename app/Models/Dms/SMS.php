@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\UM;
-use App\Models\DV;
+use App\Models\Dms\UM;
+use App\Models\Dms\DV;
 //use Carbon\Carbon;
 use DB;
 use Sanitizer;

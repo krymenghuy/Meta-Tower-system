@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
-use App\Models\GeneralSettings;
+use App\Models\Dms\GeneralSettings;
 use Illuminate\Http\Request;
-use App\Models\Lead;
-use App\Models\UM;
-use App\Models\JDV;
+use App\Models\Dms\Lead;
+use App\Models\Dms\UM;
+use App\Models\Dms\JDV;
  
 class LeadController extends Controller
 {

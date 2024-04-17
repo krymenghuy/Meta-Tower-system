@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\UM;
+use App\Models\Dms\UM;
 //use Session;
 use Sanitizer;
 use DB;
 use Carbon\Carbon;
-use App\Models\GeneralSettings;
+use App\Models\Dms\GeneralSettings;
 use Illuminate\Pagination\LengthAwarePaginator; 
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
-use App\Models\GeneralTrack;
+use App\Models\Dms\GeneralTrack;
 
 class PaymentTransaction //extends Model
 {
@@ -70,7 +70,7 @@ class PaymentTransaction //extends Model
        $pmtInfo = DB::table('cash_receipts AS r')->whereRaw('trx_id = UNHEX(\''.$trx_id.'\')')->selectRaw('r.payment_date,create_user,amount,payer_id,Lower(payer_type) AS payer_type')->first();
        if(!$pmtInfo) return DV::error('Cash receipt identity does not exist');
         if ($pmtInfo->payer_type =='driver') $prn_id = 275; else $prn_id = 276;
-        if (! \App\Models\UM::allowed($prn_id)) return DV::error('Permission '.$prn_id.' is needed to delete the trasnaction');
+        if (! \App\Models\Dms\UM::allowed($prn_id)) return DV::error('Permission '.$prn_id.' is needed to delete the trasnaction');
         DB::table('receipt_breakdowns')->whereRaw('trx_id = UNHEX(\''.$trx_id.'\')')->delete();
         DB::table('cash_receipts')->whereRaw('trx_id = UNHEX(\''.$trx_id.'\')')->delete();
         if (strtolower($pmtInfo->payer_type) =='driver')
@@ -86,7 +86,7 @@ class PaymentTransaction //extends Model
           $pmtInfo = DB::table('cash_disbursements AS r')->whereRaw('trx_id = UNHEX(\''.$trx_id.'\')')->selectRaw('r.payment_date,create_user,amount,payee_id,payee_type')->first();
           if(!$pmtInfo) return DV::error('Cash disbursement identity does not exist');
           if ($pmtInfo->payee_type =='driver') $prn_id = 275; else $prn_id = 276;
-          if (! \App\Models\UM::allowed($prn_id)) return DV::error('Permission '.$prn_id.' is needed to delete the trasnaction');
+          if (! \App\Models\Dms\UM::allowed($prn_id)) return DV::error('Permission '.$prn_id.' is needed to delete the trasnaction');
           DB::table('disbursement_breakdowns')->whereRaw('trx_id = UNHEX(\''.$trx_id.'\')')->delete();
           DB::table('cash_disbursements')->whereRaw('trx_id = UNHEX(\''.$trx_id.'\')')->delete();
           if (strtolower($pmtInfo->payee_type) =='driver')

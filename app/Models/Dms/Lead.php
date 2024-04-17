@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\PublicStorage;
-use App\Models\DV;
+use App\Models\Dms\PublicStorage;
+use App\Models\Dms\DV;
 use DB;
 //use Sanitizer;
 //use Config;
@@ -351,7 +351,7 @@ class Lead //extends Model
         $phone =  ' with phone number: '.$sender->phone_number;
         return DV::error('This prospect already becomes a merchant '.$phone); 
      }
-     $senderModel = new \App\Models\Sender(null,$ss);
+     $senderModel = new \App\Models\Dms\Sender(null,$ss);
      $input =DB::table('leads as l')->where('l.id',$id)->selectRaw('l.name,sales_agent_id,l.phone_number,l.email,address,business_type')->first();
      $input->name_kh = $input->name;
      $input->sender_type_id =1;
@@ -413,7 +413,7 @@ class Lead //extends Model
     $ss = $ss ?? $this->userInfo;
     $lead = DB::table('leads as l')->where('id',$id)->selectRaw('l.id,l.name,l.code,l.client_id')->first();
     if(!$lead) return DV::error('Lead ID ? is does not exist::'.$id);
-    $senderModel = new \App\Models\Sender(null,$ss);
+    $senderModel = new \App\Models\Dms\Sender(null,$ss);
     if($lead->client_id){
       $res = $senderModel->deleteSpecial($lead->client_id,$ss);
       if($res->status === 'Error') return DV::error('This lead was once converted to merchant. Problem in deleting the merchant: '.$res->error_message);
@@ -434,7 +434,7 @@ class Lead //extends Model
     if($err) return DV::error($err);
     $sender = DB::table('sender as s')->where('lead_id',$id)->selectRaw('s.id,s.name,s.phone_number,s.status_code')->first();
     if($sender){
-      $senderModel = new \App\Models\Sender(null,$ss);
+      $senderModel = new \App\Models\Dms\Sender(null,$ss);
       $res = $senderModel->delete($sender->id,$ss);
       if($res->status ==='Error') return DV::error($res->error_message);
     }

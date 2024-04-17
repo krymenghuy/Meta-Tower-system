@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Config;

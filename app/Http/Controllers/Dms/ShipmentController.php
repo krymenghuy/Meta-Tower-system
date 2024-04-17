@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Shipment;
+use App\Models\Dms\Shipment;
 use Illuminate\Http\Request;
-use App\Models\UM;
-use App\Models\JDV;
+use App\Models\Dms\UM;
+use App\Models\Dms\JDV;
 
 class ShipmentController extends Controller
 {

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\UM;
+use App\Models\Dms\UM;
 // use Carbon\Carbon;
-use App\Models\CompanyProfile;
+use App\Models\Dms\CompanyProfile;
 use Session;
 use DB;
 // use Facade\Ignition\QueryRecorder\Query;
@@ -1223,7 +1223,7 @@ class Report //extends Model
          $data = (object)['packagesByDate'=>$packagesByDate,'exchangeRateInfo'=>$exchangeRateInfo,'currency_symbol'=>'$'];
 
          //$data->transactions = $rows;
-         $merchant = new \App\Models\Sender($sender_id?$sender_id:0,(object)['branch_id'=>$branch_id]);
+         $merchant = new \App\Models\Dms\Sender($sender_id?$sender_id:0,(object)['branch_id'=>$branch_id]);
          $data->merchant = $merchant->getDetails();
          $data->merchant = $data->merchant? $data->merchant:(object)['name'=>'merchant info','phone_number'=>'NA','email'=>'NA'];
          $data->start_date = $start_date;
@@ -1375,7 +1375,7 @@ class Report //extends Model
         $summary_info['at_warehouse'] = (object)['label'=>'នៅឃ្លាំង','count'=>$at_warehouse_total,'amount'=>$at_warehouse_amount,'new_count'=>$new_count_by_status[5]];
         $summary_info['on_delivery'] = (object)['label'=>'កំពុងដឹក','count'=>$on_delivery_total,'amount'=>$on_delivery_amount,'new_count'=>$new_count_by_status[6]];
 
-        $merchant = new \App\Models\Sender($sender_id?$sender_id:0,(object)['branch_id'=>$branch_id]);
+        $merchant = new \App\Models\Dms\Sender($sender_id?$sender_id:0,(object)['branch_id'=>$branch_id]);
         $exchange_rate = self::getExchangeRate($end_date); //number_format($exchange_rate/$delivered_cnt,2);
         $exchangeRateInfo = (object)[
             'rate'=>$exchange_rate->buy_rate,

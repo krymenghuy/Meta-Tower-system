@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Dms;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +13,6 @@ class Slides extends Model
     protected $table = 'slides';
 
     public function umUsers(){
-    	return $this->belongsTo('App\Models\UmUsers', 'user_id', 'id');
+    	return $this->belongsTo('App\Models\Dms\UmUsers', 'user_id', 'id');
     }
 }
