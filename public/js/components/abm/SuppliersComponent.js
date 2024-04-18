@@ -79,6 +79,95 @@ var SuppliersComponent = new function(){
         AddUserDialog.show(op);
     }
 
+    this.cols = [
+        
+        {
+            className: "code",
+            data: (data,index,tr)=>{
+                const sender_info = ['<span class="sender-name d-block">#',data.code||'គ្មាន','</span>'].join('');
+                return sender_info;
+            },
+            // title: mThis.trans('Sender ID')
+            title: 'code '
+        },
+        {
+            className: "name",
+            data: (data,index,tr)=>{
+                const sender_info = ['<span class="sender-name d-block">',data.name,'</span>'].join('');
+                return sender_info;
+            },
+            // title: mThis.trans('Sender ID')
+            title: 'Name '
+        },
+        {
+            className: "phone_number",
+            data: (data,index,tr)=>{
+                const sender_info = ['<span class="sender-name d-block">',data.phone_number,'</span>'].join('');
+                return sender_info;
+            },
+            // title: mThis.trans('Sender ID')
+            title: 'phone number '
+        },
+        {
+            className: "email",
+            data: (data,index,tr)=>{
+                const sender_info = ['<span class="sender-name d-block">',data.gmail||'NA','</span>'].join('');
+                return sender_info;
+            },
+            // title: mThis.trans('Sender ID')
+            title: 'email'
+        },
+        {
+            className: "address",
+            data: (data,index,tr)=>{
+                const sender_info = ['<span class="sender-name d-block">',data.address||'NA','</span>'].join('');
+                return sender_info;
+            },
+            // title: mThis.trans('Sender ID')
+            title: 'address '
+        },
+        {
+            className: "price_list_name",
+            data: (data,index,tr)=>{
+                let price_list_html = data.price_list_name ? `<span class="merchant-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-merchantname="${data.name}" class="set-price-list">
+                <i class="fa fa-edit fs-5"></i></a>`;
+                const sender_info = ['<span class="sender-name d-block">',price_list_html,'</span>'].join('');
+                return sender_info;
+            },
+            // title: mThis.trans('Sender ID')
+            title: 'price list '
+        },
+        
+        {
+            className: "created_by",
+            data: function (data, index, tr) {
+                return ['<span class="pl-request_date d-block">',data.create_user||"NA", '</span>'].join('');
+            },
+            title: 'create by'
+            // title: mThis.trans('Created Date')
+        },
+        {
+            className: "status",
+            data: function (data, index, tr) {
+                return ['<div class="d-block">',data.status_code = 'active'? '<span class="pl-request_date btn-act rounded-2">Ative</span>' : '<span class="pl-request_date btn-act rounded-2">Inactive</span>','</div>'].join('');
+            },
+            title: 'status'
+            // title: mThis.trans('Created Date')
+        },
+        {
+            className: 'col_action',
+            data: function (data, row, display) {
+                let html = ['<div class="dropdown d-block">',
+                    '<a href="javascript:void(0)" data-orderid="', data.zone_code, '" data-senderid="', data.code, '" class="btn_pickup_action" aria-haspopup="true" aria-expanded="false">',
+                    '<i class="fa fa-chevron-down" style="color:#8DC63F;font-size:1.5em"></i>',
+                    '</a>',
+                    '</div>'].join('');
+                return html;
+            },
+            // title: 'action'
+        },
+    ];
+
     this.renderMerchant = (container, data) => {
         let html = '';
         let cnt = 0;
@@ -587,13 +676,33 @@ var SuppliersComponent = new function(){
         mThis.listView = new ListView('_sdl_sender_list', {
             fetchApi: `${main_view.base_url}/api/os_suppliers/list-paginate`,
             apiCluster: main_view.apiCluster,
-            perPage: 3,
-            renderItems: (items, list_container) => {
-                console.log(items);
-                mThis.renderMerchant(list_container, items);
-            },
+            tableClass: "table header-uppercase",
+            perPage: 10,
+            columns: mThis.cols,
+            rowCreated:(data,index,tr)=>{
+                
+              tr.dataset.id = data.id;  
+              tr.classList.add('shipment');
+              tr.setAttribute('id',['shipment_',data.id].join('')); 
+            //   tr.dataset.statusid = data.status_id;
+              tr.dataset.senderid = data.sender_id;
+            //   tr.dataset.driverid = data.driver_id?data.driver_id:''; 
+            }, 
+            // renderItems: (items, list_container) => {
+            //     console.log(list_container);
+            //     mThis.renderMerchant(list_container, items);
+            // },
             listContainerClass: null
         });
+
+        this.container = mThis.listView.getListContainer();
+        // console.log(mThis.container.parentElement); 
+        const parent = mThis.container.parentElement;
+            parent.style.height = (window.innerHeight - 210)+'px';
+            parent.classList.add('overflow-y-auto');
+            window.onresize = () => {
+            parent.style.height = (window.innerHeight - 210)+'px';
+        }
 
         mThis.tblSenders = mThis.listView.getListContainer();
 
@@ -615,6 +724,205 @@ var SuppliersComponent = new function(){
                 }
             } 
             SupplierDialog.show(op);
+        });
+
+        mThis.tblSPY = mThis.listView.getTable();
+        mThis.tblSuppliers = $(mThis.tblSPY);
+        console.log(mThis.tblSuppliers);
+
+        mThis.tblSuppliers[0].addEventListener('click', e => {
+            e.preventDefault();
+            // Click on Pickup Action button | drop down action
+            let btn = VSUtil.closestLimited(e.target, '.btn_pickup_action');
+            if (btn) {
+                let p = btn.parentElement;
+                let shipment_id = btn.dataset.id;
+                let sender_id = btn.dataset.senderid;
+                let status_id = btn.dataset.statusid;
+        
+                let dropdownMenu = p.querySelector('.dropdown-menu');
+                if (!dropdownMenu || dropdownMenu.length === 0) {
+                    p.insertAdjacentHTML('afterbegin', mThis.createDropdownMenuHtml_pickup(shipment_id, sender_id, status_id));
+                    dropdownMenu = p.querySelector('.dropdown-menu');
+                    dropdownMenu.setAttribute('style',` right:0px;`);
+                }
+        
+                if (mThis.prev_dropdownMenu && mThis.prev_dropdownMenu !== dropdownMenu) {
+                    mThis.prev_dropdownMenu.classList.remove('show');
+                }
+        
+                dropdownMenu.classList.toggle('show');
+                if (dropdownMenu.classList.contains('show')) {
+                    mThis.prev_dropdownMenu = dropdownMenu;
+                }
+                return;
+            }
+
+            //Click on "Arrive" button, the shortcut button in shipment_tr
+            btn = VSUtil.closestLimited(e.target,'.pkl_btn_receive');
+            if(btn){
+                        if(!AuthManager.allowed(222)) return;
+                        const shipment_tr = btn.closest('tr');
+                        cv_interact.confirm('ទទួលទំនិញទាំងអស់ក្នុងបញ្ជាមួយនេះ?',{'context':"update"},e =>{
+                            if(e){
+                               if (mThis.shm_prev_editing_row) {
+                                   mThis.saveItem(mThis.shm_prev_editing_row, btn, success => {
+                                       if (success){
+                                          mThis.receiveItems_all(shipment_tr, null);
+                                       }
+                                   });
+                               }
+                               else mThis.receiveItems_all(shipment_tr, null);
+                            }
+                  });
+                return;
+            }
+
+            //Click on Pick button | Pick Order
+            btn = VSUtil.closestLimited(e.target,'.pkl_btn_pick');
+            if(btn){
+                //if(!AuthManager.allowed() ) return; 
+                const shipment_tr = btn.closest('tr');
+                if (mThis.shm_prev_editing_row) {
+                    mThis.saveItem(mThis.shm_prev_editing_row, (item_saved) => {
+                        if (item_saved) {
+                            mThis.pickItems(shipment_tr, btn, (sucess,d) => {
+                                if (sucess){
+                                    shipment_tr.dataset.statusid = d.status_id;
+                                    btn.style.display ='none';
+                                }
+                            });
+                        }
+                    });
+                }
+                else {
+                    mThis.pickItems(shipment_tr,(success,d) => {
+                        if (success){
+                            shipment_tr.dataset.statusid = d.status_id;
+                            btn.style.display ='none';
+                        }
+                    });
+                }
+                return;
+            }
+
+            //Click on Change Status
+            btn = VSUtil.closestLimited(e.target,'.change-order-status');
+            if(btn){
+                let tr = btn.closest('tr');
+                mThis.changeOrderStatus(tr);
+                return;
+            }
+
+            //Click on Dropdown menu item : "Change Status"
+            btn = VSUtil.closestLimited(e.target,'._pl_pa_change_status');
+            if(btn){
+                let tr = btn.closest('tr');
+                mThis.changeOrderStatus(tr);
+                return;
+            }
+
+            //Click on Dropdown menu item : "Assign Driver"
+            btn = VSUtil.closestLimited(e.target,'._pl_pa_assign_driver');
+            if(btn){
+                let tr = btn.closest('tr');
+                mThis.assignDriver(tr,null);
+                return;
+            }
+
+              //Click Driver lnk to quickly assign driver  "Quick Assign Driver" by clicking on Pencil icon
+              btn = VSUtil.closestLimited(e.target,'.lnk-assign-driver');
+              if(btn){
+                  if(!AuthManager.allowed(221)) return;
+                  let tr = btn.closest('tr');
+                  console.log(tr);
+                  mThis.assignDriver(tr,btn);
+                  return;
+              }
+                
+            //Click on Delete Order: Dropdown menu item
+            btn = VSUtil.getElementByClass(e.target,'_pl_pa_delete');
+            if(btn){
+                if (!AuthManager.allowed(229)) return;
+                let tr = btn.closest('tr');
+                mThis.deleteOrder(tr); 
+                return;
+            }
+
+            //Click on Arrive button
+            btn = VSUtil.getElementByClass(e.target,'_pl_pa_receive');
+            if(btn){
+                let shipment_tr = btn.closest('tr');
+                cv_interact.confirm('ទទួលទំនិញទាំងអស់ក្នុងបញ្ជាមួយនេះ?',{'context':"update"},e =>{
+                     if(e){
+                        if (mThis.shm_prev_editing_row) {
+                            mThis.saveItem(mThis.shm_prev_editing_row, null, (success) => {
+                                if (success){
+                                    mThis.receiveItems_all(shipment_tr, null);
+                                }
+                            });
+                        }
+                        else mThis.receiveItems_all(shipment_tr, null);
+                     }
+                });
+                return;
+            }
+
+            //Click on Save item
+            btn = VSUtil.getElementByClass(e.target,'pkl_btn_save');
+            if(btn){
+                let tr = btn.closest('tr');
+                mThis.saveItem(tr, btn,(e) =>{
+                    if(e){
+                        btn.closest('div.edit-actions').remove();
+                    }
+                });
+                return;
+            }
+
+             //Click on Delete item
+             btn = VSUtil.getElementByClass(e.target,'pkl_btn_delete');
+             if(btn){
+                 let tr = btn.closest('tr');
+                 mThis.deleteItem(tr);
+                 return;
+             }
+
+             //Click on Delete item
+             btn = VSUtil.getElementByClass(e.target,'pkl_btn_cancel_edit');
+             if(btn){
+                 let tr = btn.closest('tr');
+                 mThis.setItemReadOnly(tr, true, null);
+                 return;
+             }
+
+             //Click on map_link
+             btn = VSUtil.getElementByClass(e.target,'lnk_map_link');
+             if (btn){
+                 const href = btn.getAttribute('href');
+                 window.open(href,'_blank');
+                 return;
+             }
+
+             btn = VSUtil.getElementByClass(e.target,'pkl_btn_edit');
+             if (btn){
+                 const tr = btn.closest('tr');
+                 mThis.beginEditItem(tr,null,btn);
+                 return;
+             }
+             
+             btn = VSUtil.getElementByClass(e.target,'pkl_btn_print_barcode');
+             if (btn){
+                 const tr = btn.closest('tr');
+                 let barcode = tr.dataset.barcode;
+                 window.open([main_view.base_url, '/package_barcode/', barcode ? barcode : 'unknown'].join(''), '_blank');
+                 return;
+             }
+ 
+            //  const clickOnElement = e.target.tagName;
+            //  if (['TR','TD'].indexOf(clickOnElement) >= 0){
+            //     mThis.showQuickButtons(VSUtil.closestLimited(e.target,'tr.order'));
+            //  }
         });
 
         mThis.tblSenders.addEventListener('click', e => {
@@ -679,7 +987,24 @@ var SuppliersComponent = new function(){
     this.changeSenderStatus = () => {
         return;
     }
+    this.createDropdownMenuHtml_pickup = function (shipment_id, sender_id, status_id) {
+        let html = ['<div class="dropdown-menu bg-white shadow" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '">',
+            '<a class="dropdown-item _pl_pa_assign_driver" href="javascript:void(0)"><i class="fa fa-biking" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '"></i> Assign Driver (Pickup)</a>',
+            `<a href="javascript:void(0)" class="dropdown-item btn-set-price-list border-bottom pb-2" data-id="${shipment_id}" data-pricelistid="" data-merchantname="" data-status="">
+                <i class="fa-regular fa-list-alt fs-5"></i>
+                <span class="ps-2 trans-text" data-langprop="titles.Set Price List">Set Price List</span>
+            </a>`,
+            
+            '<a class="dropdown-item btn-set-price-list" href="javascript:void(0)"><i class="fa fa-shipping-fast"></i> Set Price List</a>',
+            '<div class="dropdown-divider"></div>',
+            '<a class="dropdown-item _pl_pa_delete" href="javascript:void(0)"><i class="fa fa-trash" style="color:red"></i> Delete Pickup</a>',
+            '<a class="dropdown-item _pl_pa_change_status" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue"></i> Change Order Status</a>',
+            // '<a class="dropdown-item _pl_pa_change_driver" href="javascript:void(0)"><i class="fa fa-user"></i> Change Driver (Pickup)</a>',
+            '</div>'].join('');
+        return html;
+    };
 }
+
 
 const SupplierDialog = new function(){
     const mThis = this;

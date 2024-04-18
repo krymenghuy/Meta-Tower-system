@@ -4,14 +4,27 @@ var ReportCenterComponent = new function(){
     this.title_prop = "Report Center";
     this.self = main_view.appContent.children('#_rpc_reportCenterComponent');
     this.base_url = main_view.base_url; 
-    this.api_fetch_report_list = [this.base_url,'/api/report-center/report-list'].join('');
-    this.api_fetch_report_filter_options = [this.base_url,'/api/report-center/filter-options'].join('');
+    this.api_fetch_report_list = [this.base_url,'/dms/report-center/report-list'].join('');
+    this.api_fetch_report_filter_options = [this.base_url,'/dms/report-center/filter-options'].join('');
     
-    this.report_url =[this.base_url,'/dms-gen-report'].join('');
+    //** This is default report route
+    this.report_url =[this.base_url,'/dms-gen-report'].join(''); 
+
+    //*** Special report route by report name or code
     this.special_routes = {
         'hs_merchant_invoice': [this.base_url,'/hs-merchant-invoice'].join(''),
         'hs_merchant_invoice_v2': [this.base_url,'/hs-merchant-invoice-v2'].join(''),
-        'merchant_invoice': [this.base_url,'/merchant-invoice'].join('')
+        'merchant_invoice': [this.base_url,'/merchant-invoice'].join(''),
+        'salesmodule_lead_list': [this.base_url,'/sales-module-report'].join(''),
+        'salesmodule_package_count_by_merchant': [this.base_url,'/sales-module-report'].join(''),
+        'salesmodule_commission_summary': [this.base_url,'/sales-module-report'].join(''),
+        'salessmodule_commission_payments': [this.base_url,'/sales-module-report'].join(''),
+    };
+
+    //*** Report route by category of report
+    // //Route report by category. NOTE category name is Case -sensitive text
+    this.routeByCategory = { 
+       "Sales Module": [this.base_url,'/sales-module-report'].join('')
     };
 
     this.div_report_list = this.self.find('#_rpc_reportlist');
@@ -32,7 +45,7 @@ var ReportCenterComponent = new function(){
             'width':'full',
             'label':'Warehouse',
             'data':"warehouses",
-            //'api_fetch':`${mThis.base_url}/api/settings/options-warehouse`,
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-warehouse`,
             //'api_params':{},
             'name':'wid',
             'value_field':'id',
@@ -42,7 +55,7 @@ var ReportCenterComponent = new function(){
             'type':'select',
             'label':'Driver',
             'data':"drivers",
-            //'api_fetch':`${mThis.base_url}/api/settings/options-driver`,
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-driver`,
             //'api_params':{},
             'multiple':false,
             'name':'driver_id',
@@ -53,7 +66,7 @@ var ReportCenterComponent = new function(){
             'type':'select',
             'allow_choose_all':['daily_packages'],
             'data':"senders",
-            //'api_fetch':`${mThis.base_url}/api/settings/options-sender`,
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-sender`,
             //'api_params':{},
             'label':'Merchant',
             'name':'sender_id',
@@ -76,7 +89,7 @@ var ReportCenterComponent = new function(){
             'name':'sender_pmt_status_id',
             'label':'Payment Status',
             'data':"pmt_statuses",
-            //'api_fetch':`${mThis.base_url}/api/settings/options-pmt-status`,
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
             //'api_params':{},
             'value_field':'id',
             'text_field':'pmt_status',
@@ -87,7 +100,7 @@ var ReportCenterComponent = new function(){
             'name':'driver_pmt_status_id',
             'label':'Payment Status',
             'data':"pmt_statuses",
-            //'api_fetch':`${mThis.base_url}/api/settings/options-pmt-status`,
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
             //'api_params':{},
             'value_field':'id',
             'text_field':'pmt_status',
@@ -95,9 +108,20 @@ var ReportCenterComponent = new function(){
         },
         {
             'type':'select',
+            'name':'sales_agent_id',
+            'label':'Sales Agent',
+            'data':"sales_agents",
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
+            //'api_params':{},
+            'value_field':'id',
+            'text_field':'agent_name',
+            'width':'half'
+        },
+        {
+            'type':'select',
             'name':'delivery_status_id',
             'label':'Delivery Status',
-            //'api_fetch':`${mThis.base_url}/api/settings/options-delivery-status`,
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-delivery-status`,
             //'api_params':{},
             'value_field':'id',
             'text_field':'delivery_status',
@@ -108,7 +132,7 @@ var ReportCenterComponent = new function(){
             'name':'agent_id',
             'label':'Sale Agent',
             'data':"sales_agents",
-            //'api_fetch':`${mThis.base_url}/api/settings/options-sales-agent`,
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-sales-agent`,
             //'api_params':{},
             'value_field':'id',
             'text_field':'agent_name',
@@ -116,10 +140,21 @@ var ReportCenterComponent = new function(){
         },
         {
             'type':'select',
+            'name':'month_year',
+            'label':'Month',
+            'data':"months",
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
+            //'api_params':{},
+            'value_field':'month',
+            'text_field':'month_year',
+            'width':'half'
+        },
+        {
+            'type':'select',
             'name':'completed',
             'label':'Status',
             'data':"complete_statuses",
-            //'api_fetch':`${mThis.base_url}/api/settings/options-complete-status`,
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-complete-status`,
             //'api_params':{},
             'value_field':'id',
             'text_field':'c_status',
@@ -130,7 +165,7 @@ var ReportCenterComponent = new function(){
             'name':'delivery_type',
             'label':'Delivery Type',
             'data':"drivers",
-            //'api_fetch':`${mThis.base_url}/api/settings/options-driver`,
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-driver`,
             //'api_params':{},
             'value_field':'id',
             'text_field':'driver_name',
@@ -141,7 +176,7 @@ var ReportCenterComponent = new function(){
             'name':'trx_type',
             'label':'Trans Type',
             'data':"trx_types",
-            //'api_fetch':`${mThis.base_url}/api/settings/options-trxtype`,
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-trxtype`,
             //'api_params':{},
             'value_field':'trx_type',
             'text_field':'name',
@@ -300,7 +335,7 @@ var ReportCenterComponent = new function(){
                 cv_interact.error('Start date and end date are required');
                 return;
             } 
-            vsapi.call(`${mThis.base_url}/api/export/packages`,p).then(res=>{
+            vsapi.call(`${mThis.base_url}/dms/export/packages`,p).then(res=>{
                 if (res.status_code===200){
                     let rows = res.data;
                     if(!rows[0]){
@@ -324,7 +359,7 @@ var ReportCenterComponent = new function(){
             //Check required report filters
             let req_filters = mThis.required_filters[rpt.code];
             if(!req_filters || !req_filters[0]){
-                mThis.showReport(rpt.code,params);
+                mThis.showReport(rpt,params);
                 return;
             }
 
@@ -333,7 +368,7 @@ var ReportCenterComponent = new function(){
                     cv_interact.warning(`${f.replace('_',' ')} is required`);
                     return false;
                 }else{
-                    this.showReport(rpt.code,params);
+                    this.showReport(rpt,params);
                     // let qstring = mThis.translateToQueryString(params);
                     // let sp = '';
                     // if (qstring) sp ='&';
@@ -359,12 +394,17 @@ var ReportCenterComponent = new function(){
     }
 
         //rpt_params is object
-        this.showReport = (rpt_code, rpt_params)=>{
+        this.showReport = (rpt, rpt_params)=>{
+            const rpt_code = rpt.code;
             let qstring = mThis.translateToQueryString(rpt_params);
             let sp = '';
             if (qstring) sp ='&';
             let p = {'data':`${qstring}${sp}rtype=${rpt_code}`};
-            let report_route = mThis.special_routes[rpt_code] ? mThis.special_routes[rpt_code] : mThis.report_url;
+            let report_route = mThis.routeByCategory[rpt.category];
+            console.log(rpt_code, rpt.category);
+            report_route = report_route ||  (mThis.special_routes[rpt_code] ? mThis.special_routes[rpt_code] : mThis.report_url);
+            //report_route = mThis.special_routes[rpt_code] ? mThis.special_routes[rpt_code] : mThis.report_url;
+
             //console.error(`${report_route}/${p.data}`);
             vsapi.call(mThis.api_encrypt,p,null,false).then(res=>{
                 let d = res.data?res.data:res; 
@@ -445,7 +485,8 @@ var ReportCenterComponent = new function(){
     this.loadReportItems = (onFinish)=>{
         vsapi.call(mThis.api_fetch_report_list,null).then(res=>{
             mThis.div_report_list.empty();
-
+            console.log(res.data);
+            
             let items = StringSanitizer.sanitizeObject(res.data,null,['params']);
             let i=0,c;
              

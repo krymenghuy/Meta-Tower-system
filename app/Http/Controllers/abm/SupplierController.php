@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\abm;
+namespace App\Http\Controllers\Abm;
 
 use App\Http\Controllers\Controller;
-use App\Models\abm\Supplier;
+use App\Models\Abm\Supplier;
 use Illuminate\Http\Request;
 use App\Models\UM;
 use App\Models\JDV;

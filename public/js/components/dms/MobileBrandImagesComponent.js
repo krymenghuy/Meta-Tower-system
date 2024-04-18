@@ -21,7 +21,7 @@ var MobileBrandImagesComponent= new function(){
                FileChooser.chooseFile(null,d=>{
                  if(d){
                    let p = {'photo_data':d.dataUrl,'file_type':d.file_type,'user_class':mThis.elFilter_app.val()};
-                   vsapi.call(`${main_view.base_url}/api/mobile-settings/save-brand-image`,p,null,main_view.apiCluster).then(res=>{
+                   vsapi.call(`${main_view.base_url}/dms/mobile-settings/save-brand-image`,p,null,main_view.apiCluster).then(res=>{
                      if(res.status_code ===200){
                          let imgs = res.data.imgs;
                          mThis.renderImages(imgs);
@@ -47,7 +47,7 @@ var MobileBrandImagesComponent= new function(){
         let p = {'id':pic_id,'user_class':user_class};
         cv_interact.confirm('Delete this picture?',{title:'Delete Brand Picture',context:"delete"},(e)=>{
           if(e){
-            vsapi.call(`${mThis.base_url}/api/mobile-settings/delete-brand-image`,p).then(res => {
+            vsapi.call(`${mThis.base_url}/dms/mobile-settings/delete-brand-image`,p).then(res => {
                 if (res.status_code === 200) 
                   {
                     let imgs = res.data.imgs;
@@ -99,7 +99,7 @@ var MobileBrandImagesComponent= new function(){
 
     this.displayIamges = ()=>{
        let p = {'user_class': (mThis.elFilter_app.val()+'').toLowerCase()}; 
-      vsapi.call(`${mThis.base_url}/api/mobile-settings/brand-images`,p,null,false).then(res => {
+      vsapi.call(`${mThis.base_url}/dms/mobile-settings/brand-images`,p,null,false).then(res => {
            if(res.status_code === 200) {
               let imgs = StringSanitizer.sanitizeObject(res.data,null,['image_url']); 
               mThis.renderImages(imgs);

@@ -11,7 +11,7 @@ const FilterDialog_pickup = new function () {
     this.elFilter_delivery_type = this.self.find('#_pl_filter_dtype');
     this.elFilter_status = this.self.find('#_pl_filter_status');
     this.elFilter_warehouse = this.self.find('#_pl_filter_warehouse');
-
+   
     this.form_data = {};
     this.remembered_filter;
     this.btnOK = this.self.find('#_pl_dlgFilter_btnOK');
@@ -43,7 +43,7 @@ const FilterDialog_pickup = new function () {
             return;
         }
 
-        vsapi.call([mThis.base_url, '/api/getForm_options_pickuplist'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/dms/getForm_options_pickuplist'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let data = res.data;
                 data.warehouses = StringSanitizer.sanitizeObject(data.warehouses);
@@ -117,7 +117,8 @@ var PickupListComponent = new function () {
     this.btnPrint = this.self.find('#_pl_btnPrint');
     this.btnPDF = this.self.find('#_pl_btnPDF');
     this.lnkDailyPackages = this.self.find('#_pl_lnkDailyPackages');
- 
+    this.div_order_list = this.self[0].querySelector('#_pkl_div_order_list');
+
     this.resizeItemListPanel = () => {
         mThis.tblPickups.find('.package_list_wrapper').each(function () {
             let div = $(this);
@@ -139,6 +140,25 @@ var PickupListComponent = new function () {
     this.init = function () {
         if (mThis.initAlready) return;
 
+        const sizeObserver = new ResizeObserver(entries => {
+            for (let entry of entries) {
+              // Do something when the size changes
+              //console.log('Size changed:', entry.target.offsetWidth, entry.target.offsetHeight);
+              mThis.div_order_list.style.width = mThis.self[0].width + 'px';
+              const divExpandableContainer =  mThis.div_order_list.querySelector('div.expandable-row-container');
+              if(divExpandableContainer){
+                divExpandableContainer.style.width = [mThis.div_order_list.width -50,'px'].join('');
+                const div = entry.target.querySelector('div.pkl-order-content');
+                if(div){
+                  //div.style.marginRight = '15px';
+                  div.style.width =[divExpandableContainer.offsetWidth -50,'px'].join('');
+                  //div.style.width = [entry.contentRect.width -180,'px'].join('');
+                }
+              }
+             
+            }
+        });
+        sizeObserver.observe(mThis.self[0]);
         this.cols = [
             {
                 className: 'col_action',
@@ -154,7 +174,7 @@ var PickupListComponent = new function () {
             {
                 className: "request_date",
                 data: function (data, index, tr) {
-                    return ['<span class="pl-request_date">', data.request_date, '</span>',
+                    return ['<span class="pl-request_date text-nowrap">', data.request_date, '</span>',
                         '<span class="pl-request_time">', data.request_time, '</span>'].join('');
                 },
                 title: mThis.trans('Request Date')
@@ -222,7 +242,7 @@ var PickupListComponent = new function () {
             {
                title:"Created By",
                data:(data,index,tr)=>{
-                 return [`<span class="d-block fw-semibold">`,data.create_user,`</span><span class="d-block p-1"></small>`,data.create_date,`</small></span>`].join('');
+                 return [`<span class="d-block fw-semibold">`,data.create_user,`</span><span class="d-block p-1"><small>`,data.create_date,`</small></span>`].join('');
                }
             },
             {
@@ -238,7 +258,7 @@ var PickupListComponent = new function () {
 
         mThis.orderListView = new ListView("_pkl_div_order_list", {
             clientSidePagination: true,
-            fetchApi: `${main_view.base_url}/api/order/list`,
+            fetchApi: `${main_view.base_url}/dms/order/list`,
             // processResponse: (res) => {
             //     return d.items;
             // },
@@ -472,7 +492,7 @@ var PickupListComponent = new function () {
               if(btn){
                   if(!AuthManager.allowed(221)) return;
                   let tr = btn.closest('tr');
-                  console.log(tr);
+               
                   mThis.assignDriver(tr,btn);
                   return;
               }
@@ -636,15 +656,22 @@ var PickupListComponent = new function () {
             let p = { 'id': order_id, 'status_id': status_id };
             cv_interact.confirm('Delete this order?', { title: 'Delete Order', cancelButtonText: "Close", confirmButtonText: "Delete", context: "delete" }, function (e) {
                 if (e) {
-                    vsapi.call([mThis.base_url, '/api/order/delete'].join(''), p).then(res => {
+                    vsapi.call([mThis.base_url, '/dms/order/delete'].join(''), p).then(res => {
                         if (res.status_code === 200) {
-                            mThis.orderListView.showPage(mThis.getFilterData()); 
+                           mThis.orderListView.showPage(mThis.getFilterData()); 
                         } else cv_interact.error(res.error_message);
                     });
                 }
             });
     };
 
+    this.getActiveDrivers = (onFinish)=>{
+        vsapi.call([mThis.base_url, '/dms/settings/options-active-driver'].join(''),null,null,false ).then(res =>{
+            let drivers = res.status_code ==200? res.data: [];
+            onFinish(drivers);
+        });
+    }
+ 
     this.assignDriver = (tr,btn)=>{
         let order_id = tr.dataset.id;
         let status_id = tr.dataset.statusid;
@@ -658,25 +685,28 @@ var PickupListComponent = new function () {
             cv_interact.error('Invalid order identity');
             return;
         }
-        if(!mThis.form_data.drivers) console.error('Failed to fetch driver list for Assign Driver form (pickup)');
-        let option = {manualClosing:btn? false:true, title: 'Assign Driver (Pickup)', 'confirmButtonText':'Assign Now', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': mThis.form_data.drivers, 'blankErrorMessage': "Choose one driver for Pickup Assignment","defaultValue":prev_driver_id};
-        InputBox2.show(option, (data,btnAssign) => {
-            if (data) {
-                p.driver_id = data.value;
-                vsapi.call([mThis.base_url, '/api/order/assign-driver'].join(''), p,(btn || btnAssign),null).then(res => {
-                    if (res.status_code === 200) {
-                        const d = StringSanitizer.sanitizeObject(res.data);
-                        let statusInfo =d.statusInfo;
-                        tr.dataset.driverid  = d.driver_id;
-                        tr.querySelector('td.driver_name .driver-name').textContent = d.driver_name;
-                        mThis.updatePickupStatus(tr, statusInfo);
-                        if(option.manualClosing) InputBox2.close();
-                        cv_interact.success(['The driver ',data.text,' got assigned successfully!'].join(''));
-                    }
-                    else cv_interact.error(res.error_message);
-                });
-            }
+
+        mThis.getActiveDrivers((active_drivers)=>{
+            let option = {manualClosing:btn? false:true, autoClosing:true, title: 'Assign Driver (Pickup)', 'confirmButtonText':'Assign Now', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': active_drivers, 'blankErrorMessage': "Choose one driver for Pickup Assignment","defaultValue":prev_driver_id};
+            InputBox2.show(option, (data,btnAssign) => {
+                if (data) {
+                    p.driver_id = data.value;
+                    vsapi.call([mThis.base_url, '/dms/order/assign-driver'].join(''), p,(btn || btnAssign),null).then(res => {
+                        if (res.status_code === 200) {
+                            const d = StringSanitizer.sanitizeObject(res.data);
+                            let statusInfo =d.statusInfo;
+                            tr.dataset.driverid  = d.driver_id;
+                            tr.querySelector('td.driver_name .driver-name').textContent = d.driver_name;
+                            mThis.updatePickupStatus(tr, statusInfo);
+                            if(option.manualClosing) InputBox2.close();
+                            cv_interact.success(['The driver ',data.text,' got assigned successfully!'].join(''));
+                        }
+                        else cv_interact.error(res.error_message);
+                    });
+                }
+            });
         });
+ 
 
     }
 
@@ -691,7 +721,7 @@ var PickupListComponent = new function () {
         //p.order_id = order_id;
         p.sender_id = sender_id;
         p.allow_create_order = 0;
-        vsapi.call([mThis.base_url, '/api/order/receive'].join(''), p,null,null,null).then(res => {
+        vsapi.call([mThis.base_url, '/dms/order/receive'].join(''), p,null,null,null).then(res => {
             if(res.status_code ==200){
                mThis.hideOrderRow(tr);
                cv_interact.success("Packages arrived at warehouse!");
@@ -718,7 +748,7 @@ var PickupListComponent = new function () {
         p.driver_id = null;
         cv_interact.confirm('Pick this order now?',{'context':'update',title:'Pick Order'}, e =>{
              if(e){
-                vsapi.call([mThis.base_url, '/api/order/pick'].join(''), p,null,null).then(res => {
+                vsapi.call([mThis.base_url, '/dms/order/pick'].join(''), p,null,null).then(res => {
                     if (res.status_code === 200) {
                         let d = StringSanitizer.sanitizeObject(res.data);
                         mThis.updatePickupStatus(tr, d);
@@ -749,7 +779,7 @@ var PickupListComponent = new function () {
             cv_interact.confirm('Delete this package?', { title: 'Delete Package', context: 'delete' }, function (e) {
                 if (e) {
                     let p = {'order_id': order_id, 'package_id': package_id,'id': package_id };
-                    vsapi.call([mThis.base_url, '/api/order/delete-package'].join(''), p).then(res => {
+                    vsapi.call([mThis.base_url, '/dms/order/delete-package'].join(''), p).then(res => {
                         if (res.status_code === 200) {
                             let d = res.data?res.data:{};
                             tr.remove();
@@ -778,7 +808,6 @@ var PickupListComponent = new function () {
 
             let iType = 'text';
             if (['delivery_type', 'df_payer', 'cod'].indexOf(c) >= 0) iType = 'select';
-            // if (['delivery_type', 'df_payer', 'cod'].indexOf(c) >= 0) iType = 'select';
             else if (c === 'zone_code') iType = 'select2';
             else if (c === 'receiver_phone') iType = 'phone';
             else if (['delivery_fee', 'base_fee', 'price', 'fees', 'actual_kg', 'billed_kg', 'driver_total'].indexOf(c) >= 0) iType = 'number';
@@ -803,7 +832,7 @@ var PickupListComponent = new function () {
              }
              else if (['billed_kg','actual_kg'].indexOf(c) >=0){
                 disp_value = [d[c],' kg'].join('');  
-             }  
+             }
             let readOnly = "0";
             html_row = [html_row, '<td data-value="', val, '" data-field="', c, '" data-readonly="', readOnly, '" data-inputtype="', iType, '" class="', c, ' text-nowrap">', disp_value, '</td>'].join('');
             i++;
@@ -824,7 +853,7 @@ var PickupListComponent = new function () {
           '<th>',
           '<div class="d-flex justify-content-between align-items-center gap-2">',
           '<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" style="font-weight:bold;width:50px" class="pkl-lnk_add_item"><div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-plus fs-5 text-success"></i><span class="fs-5-08">Add</span></div></a>',
-          '<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" class="pkl_btn_magic_entry"><i class="fa fa-cube fs-5 text-warning"></i></a>',
+          //'<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" class="pkl_btn_magic_entry"><i class="fa fa-cube fs-5 text-warning"></i></a>',
           '</div>',
           '</th>',
           '<th>TYPE</th>',
@@ -846,9 +875,7 @@ var PickupListComponent = new function () {
       }
 
     this.createPackageTable_html = (order_id,sender_id)=>{
-       let html = [`<table class="pkl-package-table table">`,
-                        // mThis.createPackageTable_thead_html(order_id,sender_id),
-                    `<tbody></tbody>`,`</table>`].join('');
+       let html = [`<table class="pkl-package-table table">`,mThis.createPackageTable_thead_html(order_id,sender_id),`<tbody></tbody>`,`</table>`].join('');
        return html; 
     }
 
@@ -863,7 +890,7 @@ var PickupListComponent = new function () {
         } 
         let tbody = table.querySelector('tbody');
         let tr_id = DUtil.createGUID();
-        // console.log(tr_id);
+        
         /**
          * Set defeault object "d" that must be at least {"order_id","sender_id","status_id",[barcode]}
          * price = 0, fees =0  are all default values when creating new item
@@ -871,7 +898,6 @@ var PickupListComponent = new function () {
         
         if (!d) d = {"sender_id":sender_id,"order_id":order_id,"status_id":1,"fees":0,"price":0};
         let html_row = this.createItemRow_html(d,tr_id);
-        console.log(html_row);
         //prepend html string to tbody
         tbody.insertAdjacentHTML('afterbegin',html_row);
         let new_tr = tbody.querySelector(['tr#', tr_id].join(''));
@@ -921,7 +947,7 @@ var PickupListComponent = new function () {
         const sender_id = order_tr.dataset.senderid;
         let html = [
         `<div class="d-flex flex-column p-2 w-100">`,
-          `<div class="pkl-header-panel d-flex flex-row justify-content-between w-100">`,
+          `<div class="pkl-header-panel d-flex flex-row flex-wrap justify-content-between w-100">`,
             `<div class="d-flex flex-row gap-2">`,
                 `<button type="button" data-id="`,order_id,`" data-viewname="items" class="btn-show btn-show-items btn btn-sm btn-secondary"><span>Items</span></button>`, 
                 `<button type="button" data-id="`,order_id,`" data-viewname="images" class="btn-show btn-show-images btn btn-sm btn-primary"><span>Photos</span></button>`, 
@@ -931,7 +957,7 @@ var PickupListComponent = new function () {
             `<button class="btn btn-sm btn-success"><i class="fa fa-print"></i></button>`,
             `</div>`,
          `</div>`, 
-          `<div style="margin:15px;"> <div data-id="`,order_id,`" class="pkl-order-content p-1 mt-2">This is content</div></div>`,
+          `<div><div style="margin:auto;" data-id="`,order_id,`" class="pkl-order-content p-1 mt-2 overflow-x-auto">This is content</div></div>`,
         `</div>`].join('');
         container.innerHTML = html;
         
@@ -1000,7 +1026,7 @@ var PickupListComponent = new function () {
         let p = mThis.getItem(tr);
         if(!p) return;
         p.sender_id = tr.dataset.senderid;
-        vsapi.call([mThis.base_url, '/api/package/price-info'].join(''), p,null,false).then(res => {
+        vsapi.call([mThis.base_url, '/dms/package/price-info'].join(''), p,null,false).then(res => {
             if (res.status_code === 200) {
                 let cod_fee = 0;
                 let delivery_fee = 0;
@@ -1050,24 +1076,21 @@ var PickupListComponent = new function () {
     //displayItemList  | renderPackageTable
     this.displayOrderItems = (div, order_id,sender_id,btn=null) => {
         let p = { 'order_id': order_id };
-        console.log(p);
         // const content_panel_class = 'pkl-order-content';
         // const div = container.querySelector(content_panel_class);
         //div.style.display= 'none';
-        div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
+        div.innerHTML = '<div class="d-flex flex-column justify-content-center align-items-center h-100 w-100"><div class="animation-line" style="height:2px;margin:0;"></div></div>';
         let html = '';
         const header_cols = mThis.createPackageTable_thead_html(order_id,sender_id);
-        vsapi.call([mThis.base_url, '/api/order/package-list'].join(''), p,btn,false,null).then(res => {
+        vsapi.call([mThis.base_url, '/dms/order/package-list'].join(''), p,btn,false,null).then(res => {
             if (res.status_code === 200) {
                 let packages = StringSanitizer.sanitizeObject(res.data,null,['size']);
-                console.log(packages);  
                 let i = 0, c =null;
                 do {
                     c = packages[i];
                     if (!c) break;
                     c.order_id = order_id;
                     html = [html,mThis.createItemRow_html(c,null)].join('');
-                    html = ``;
                     i++;
                 } while (c);
                 if (i > 0){
@@ -1077,6 +1100,8 @@ var PickupListComponent = new function () {
                     html = [`<div class="p-2 d-flex justify-content-center gap-2"><span class="h5 text-center p-1 fw-semibold">មិនទាន់បញ្ចូលកញ្ចប់ទំនិញ</span><a href="javascript:void(0)" data-orderid="`,order_id,`" data-senderid ="`,sender_id,`" class="pkl-lnk_add_item mt-2"><span class="p-2 border border-primary rounded-4">Add Item</span></a></div>`].join('');
                 }
                 div.innerHTML = html;
+                div.style.width =[mThis.div_order_list.offsetWidth -50,'px'].join('');
+                //mThis.div_order_list.style.width = [mThis.self[0].width - 50,'px'].join(''); 
                 //div.style.display ='block';
                 //if (i > 0) mThis.setItemCount(order_id)
             }
@@ -1087,7 +1112,7 @@ var PickupListComponent = new function () {
     this.displayOrderImages = (div,order_id,sender_id=null,btn = null)=>{
         div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
         let p = {'id': order_id};
-        vsapi.call(`${mThis.base_url}/api/order/package-photos`,p,btn,false,null).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/order/package-photos`,p,btn,false,null).then(res => {
             let html = null;
             let cnt =0;
             if(res.status_code === 200){
@@ -1158,7 +1183,7 @@ var PickupListComponent = new function () {
                      if(e){
                         const img_id = btn.dataset.id;
                          let p = {"photo_ids":img_id};
-                         vsapi.call(`${main_view.base_url}/api/order/delete-photos`,p,null).then(res=>{
+                         vsapi.call(`${main_view.base_url}/dms/order/delete-photos`,p,null).then(res=>{
                             mThis.displayOrderImages(div,order_id,sender_id,btn); 
                          });
                      }
@@ -1382,8 +1407,8 @@ var PickupListComponent = new function () {
             mThis.pkl_prev_editing_row = null;
             return;
         }
-        console.log(p);
-        vsapi.call([main_view.base_url, '/api/order/package-details'].join(''), p).then(res => {
+
+        vsapi.call([main_view.base_url, '/dms/order/package-details'].join(''), p).then(res => {
             if (res) {
                 let d = StringSanitizer.sanitizeObject(res.data,null,['size']);
                 if (!d.status_id) d.status_id = 1;
@@ -1455,7 +1480,7 @@ var PickupListComponent = new function () {
         p.order_id = tr.dataset.orderid;
         p.package_id = tr.dataset.id;
 
-        vsapi.call([mThis.base_url, '/api/order/save-package'].join(''), p, lnk).then(res => {
+        vsapi.call([mThis.base_url, '/dms/order/save-package'].join(''), p, lnk).then(res => {
             if (res.status_code === 200) {
                 let data = res.data;
                 let packageInfo = StringSanitizer.sanitizeObject(data.package,null,['size','receiver_address']);
@@ -1537,7 +1562,6 @@ var PickupListComponent = new function () {
         let i = 0;
         tr.querySelectorAll('td').forEach(td =>{
             let col_name = td.dataset.field;
-            console.log(col_name);
             if (i === 0) {
                 let html_buttons;
                 html_buttons = ['<div class="edit-actions d-flex flex-row gap-2 mt-3">',
@@ -1548,14 +1572,14 @@ var PickupListComponent = new function () {
                 td.innerHTML = null;
                 td.insertAdjacentHTML('beforeend',html_buttons);
             }
+
             if (i > 0) {
                 let val = data[col_name];
-               
                 let disp_value = val;
                 switch (col_name) {
                     case 'cod': {
                         val = data.cod;
-                        disp_value = '  ';
+                        disp_value = 'Yes';
                         if (val == 0) disp_value = 'No';
                         break;
                     }
@@ -1572,9 +1596,7 @@ var PickupListComponent = new function () {
                     }
                     case 'delivery_type': {
                         disp_value = DUtil.properCase(disp_value);
-                        // disp_value = null;
-                        // console.log(disp_value);
-                        break; 
+                        break;
                     }
                     case 'size': {
                         disp_value = null;
@@ -1598,7 +1620,6 @@ var PickupListComponent = new function () {
                 td.innerHTML = null;
                 let field_name = td.dataset.field;
                 let inputType = td.dataset.inputtype;
-                console.log(inputType);
                 let input_html;
                 let is_readOnly = null;
                 let readOnly = 0;
@@ -1669,11 +1690,12 @@ var PickupListComponent = new function () {
   
         //Set onChange, onClick, onBlur event handler for SELECT, INPUT elements on this row "tr" for editing item
         mThis.setEditor_events(tr);
+
         tr.dataset.editing = 1;
         mThis.pkl_prev_editing_row = tr;
 
         if (data) {
-        if (!data.delivery_type) data = null;
+            if (!data.delivery_type) data = null;
         }
         mThis.org_item_data = data;
     }
@@ -1854,11 +1876,11 @@ var PickupListComponent = new function () {
 
     //begin::translate Column headers
     this.col_titles = {
-        'Request Date': 'Request Date',
+        'Request Date': 'Date',
         'Order ID': 'Order ID',
         'Merchant': 'Merchant',
         'Vehicle': 'Vehicle',
-        'Product Type': 'Product Type',
+        'Product Type': 'Category',
         'Quantity': 'Quantity',
         'Pickup Address': 'Pickup Address',
         'Collector': 'Collector',
@@ -2003,9 +2025,11 @@ var PickupListComponent = new function () {
     }
 }
 
+/** general filter dialog */
 const DMSFilterDialog = new function () {
     let mThis = this;
-    this.options = {};
+    this.options = {"default":{}};
+     
     const html = `<div class="modal fade" id="_mainGenFilter" tabindex="-1" role="dialog" aria-labelledby="_mainGenFilterTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
         <div class="modal-content">
@@ -2041,12 +2065,22 @@ const DMSFilterDialog = new function () {
         //Click on Submit or OK
         btn = VSUtil.closestLimited(e.target, '.btn-filter-ok');
         if (btn) {
-            let p = mThis.getData(); 
+            let p = mThis.getData();
+            mThis.default = p;
             mThis.options.onClose({
                 "paramString": mThis.translateToQueryString(p),
                 "data": p
             });
-            if(mThis.options.filterButton) mThis.options.filterButton.querySelector('.filter-info').innerHTML = '<span class="shadow-lg rounded-5 pl-2 pr-2 bg-danger" style="min-width:7px">F</span>';
+
+            if(mThis.options.filterButton) {
+                let span = mThis.options.filterButton.querySelector('.filter-info');
+                if(!span){
+                    mThis.options.filterButton.insertAdjacentHTML('beforeend','<span class="filter-info"> <span class="shadow-lg rounded-5 pl-2 pr-2 bg-danger" style="min-width:7px">F</span> </span>');
+                    span = mThis.options.filterButton.querySelector('.filter-info');
+                }
+                span.innerHTML = '<span class="shadow-lg rounded-5 pl-2 pr-2 bg-danger" style="min-width:7px">F</span>';
+            } 
+           
             mThis.self.modal('hide');
             return;
         }
@@ -2065,7 +2099,7 @@ const DMSFilterDialog = new function () {
                     return null;
                 }
             }
-            p[f] = el.value;
+            p[f] = el.value; 
         });
         return p;
     };
@@ -2074,33 +2108,55 @@ const DMSFilterDialog = new function () {
         const div = mThis.modalBody.children('div.row')[0];
         div.innerHTML = '';
         let html = '';
-
+        let cnt = 0;
+        let len = '-12';
         for (const field_name in fields) {
             if (fields.hasOwnProperty(field_name)) {
                 const field = fields[field_name];
                 let input_html = field.type === 'select' ? `<select data-required=""${field.required} class="modal-select2 data-input" data-field="${field_name}"></select>` : `<input type="text" class="form-control data-input" data-required=""${field.required} data-field="${field_name}"/>`;
+                if (cnt > 3) len = '-6'; else len ='col#';
                 html = [html,
-                    `<div class="form-group col-lg-6">
+                    `<div class="form-group col-lg${len}">
                 <label for="`, field_name, `" class="form-label">`, field.label, `</label>
                 <div>`, input_html, `</div> 
               </div>`
                 ].join('');
+                cnt++;
             }
         }
-
+        let colLen = '-6';
+        if(cnt <= 3){
+               //if number of filer fields less than 3 then use modal-md
+            const div = mThis.self[0].querySelector('div.modal-dialog');
+            div.classList.remove('modal-lg');
+            div.classList.add('modal-md');
+            colLen ='-12';
+        }else{
+            //if number of filer fields greater than 3 then use modal-lg
+            const div = mThis.self[0].querySelector('div.modal-dialog');
+            div.classList.remove('modal-md');
+            div.classList.add('modal-lg');
+        } 
+        html = html.replace(/col#/g, colLen);
         div.innerHTML = html;
+        let def = mThis.default || {};
+
         div.querySelectorAll('.data-input').forEach(el => {
+            const field_name = el.dataset.field;
             if (el.classList.contains('modal-select2')) {
-                const field_name = el.dataset.field;
                 const field = fields[field_name];
+                def[field_name] = def[field_name]  || field.defaultValue;
                 let value_field = field.value_field;
                 let text_field = field.text_field;
                 value_field = value_field ? value_field : 'id';
                 text_field = text_field ? text_field : 'name';
-                VSUtil.setComboItems(el, field.data, value_field, text_field, null, `(All ${field.label})`, field.defaultValue);
+                let items = (typeof field.data ==='function')? field.data() : field.data;
+                if (field.all_option) items.unshift(fields.all_option);
+                VSUtil.setComboItems(el, items, value_field, text_field, field.show_all_option, `(All ${field.label})`, def[field_name]);
                 $(el).select2({ width: "100%" }); //.val(field.defaultValue).trigger('change');
-                if(field.defaultValue) el.dispatchEvent(new Event('change'));
-            } else {
+                if(def[field_name] ) el.dispatchEvent(new Event('change'));
+            } else if(fields[field_name].type =='date') {
+                el.value = def[field_name] || "";
                 DateTimePicker.init(el);
             }
         });
@@ -2170,7 +2226,7 @@ const PickupStatusDialog = new function () {
         else if (status_id == 5 || status_id == 6) { }
 
         let p = { 'order_id': mThis.order_id, 'driver_id': driver_id, 'status_id': status_id };
-        vsapi.call([mThis.base_url, '/api/updateOrderStatus'].join(''), p, mThis.btnOK).then(res => {
+        vsapi.call([mThis.base_url, '/dms/updateOrderStatus'].join(''), p, mThis.btnOK).then(res => {
             if (res.status_code === 200) {
                 let result = StringSanitizer.sanitizeObject(res.data);
                 let x = {};
@@ -2380,7 +2436,7 @@ let PickupRequestDialog = new function () {
 
     this.elSender.on('change', (e) => {
         let m = { 'sender_id': mThis.elSender.val() };
-        vsapi.call([mThis.base_url, '/api/getVendorAddress'].join(''), m).then(res => {
+        vsapi.call([mThis.base_url, '/dms/getVendorAddress'].join(''), m).then(res => {
             let address = "";
             if (res.status_code === 200) address = StringSanitizer.sanitizeOut(address);
             mThis.elPickupAddress.val(address);
@@ -2405,7 +2461,7 @@ let PickupRequestDialog = new function () {
             return;
         }
 
-        vsapi.call([mThis.base_url, '/api/savePickupRequest'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/dms/savePickupRequest'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 mThis.self.modal('hide');
                 mThis.btnSaveRequest.prop('disabled', false);
@@ -2525,7 +2581,7 @@ let PickupRequestDialog = new function () {
         if (!delivery_type) delivery_type = mThis.elDeliveryType.val();
         let p = { 'sender_id': sender_id, 'delivery_type': delivery_type, 'zone_code': zone_code, 'billed_kg': billed_kg, 'cod': cod };
 
-        vsapi.call([mThis.base_url, '/api/package/price-info'].join(''), p, null, false).then(res => {
+        vsapi.call([mThis.base_url, '/dms/package/price-info'].join(''), p, null, false).then(res => {
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
                 let base_fee = 0;
@@ -2630,7 +2686,7 @@ let PickupRequestDialog = new function () {
             onFinish();
             return;
         }
-        vsapi.call([mThis.base_url, '/api/getFormData_pickup_request'].join(''), null, null).then(res => {
+        vsapi.call([mThis.base_url, '/dms/getFormData_pickup_request'].join(''), null, null).then(res => {
             if (res.status_code === 200) {
                 let data = res.data;
                 data.vehicle_types = StringSanitizer.sanitizeObject(data.vehicle_types);
@@ -2818,7 +2874,7 @@ let PerformPickupDialog = new function () {
             data: function (data,index,tr) {
                 let items = [{ 'delivery_type': 'normal' }, { 'delivery_type': 'fast' }];
                 data.delivery_type = (data.delivery_type + '').toLowerCase();
-                let d = { "inputType": "select2", "data": data, "cssClass": "form-control", "columnName": "delivery_type", "combo_items": items, "valueMember": "delivery_type", "textMember": "delivery_type" };
+                let d = { "inputType": "select2", "data": data, "cssClass": "", "columnName": "delivery_type", "combo_items": items, "valueMember": "delivery_type", "textMember": "delivery_type" };
                 return EditableTable.makeTableCellEditor(d);
             },
             title: 'Delivery Type'
@@ -3063,7 +3119,7 @@ let PerformPickupDialog = new function () {
             return;
         }
         let p = { 'sender_id': sender_id, 'delivery_type': delivery_type, 'zone_code': zone_code, 'billed_kg': billed_kg, 'cod': cod };
-        vsapi.call([mThis.base_url, '/api/package/price-info'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/dms/package/price-info'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
                 EditableTable.setCellValue(tr, 'base_fee', d.base_fee);
@@ -3154,7 +3210,7 @@ let PerformPickupDialog = new function () {
         if (!def) def = {};
         def.warehouse_id = main_view.DEF_TO_WAREHOUSE_ID;
         VSUtil.setComboItems(mThis.elToWarehouse, PickupListComponent.form_data.warehouses, 'id', 'warehouse_name', false, null, def.warehouse_id);
-        vsapi.call([mThis.base_url, '/api/getComboItems_driver'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/dms/getComboItems_driver'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 let text1 = LocaleManager.trans('Not picked by driver');
@@ -3166,7 +3222,7 @@ let PerformPickupDialog = new function () {
 
     this.loadOrderInfo = (order_id, onFinish) => {
         let p = { 'order_id': order_id ? order_id : 0, "context": "0" };
-        vsapi.call([mThis.base_url, '/api/order/info'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/dms/order/info'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
                 let packages = d.packages ? d.packages : [];
@@ -3190,7 +3246,7 @@ let PerformPickupDialog = new function () {
         if (!p.driver_id) p.driver_id = 0;
         p.pick_on_arrival = (pick_on_arrival == true) ? 1 : 0;
 
-        vsapi.call([mThis.base_url, '/api/performPickup'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/dms/performPickup'].join(''), p).then(res => {
             if (res.status_code === 200) {
 
                 let d = StringSanitizer.sanitizeObject(res.data);
@@ -3540,7 +3596,7 @@ let VerifyPackageDialog = new function () {
             cv_interact.confirm('Are you sure to delete this package?', { title: 'Delete Package', confirmButtonText: 'Delete', cancelButtonText: 'Close', context: 'delete' }, function (e) {
                 if (e) {
                     let p = { 'barcode': barcode, 'package_id': package_id };
-                    vsapi.call([mThis.base_url, '/api/deletePackage'].join(''), p).then(res => {
+                    vsapi.call([mThis.base_url, '/dms/deletePackage'].join(''), p).then(res => {
                         if (res.status_code === 200) {
                             mThis.packages = mThis.removePackageRow(tr);
                             tr.remove();
@@ -3641,7 +3697,7 @@ let VerifyPackageDialog = new function () {
         }
 
         let p = { 'sender_id': sender_id, 'delivery_type': delivery_type, 'zone_code': zone_code, 'billed_kg': billed_kg, 'cod': cod };
-        vsapi.call([mThis.base_url, '/api/package/price-info'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/dms/package/price-info'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
                 EditableTable.setCellValue(tr, 'base_fee', d.base_fee);
@@ -3723,7 +3779,7 @@ let VerifyPackageDialog = new function () {
         if (!def) def = {};
         def.warehouse_id = main_view.DEF_TO_WAREHOUSE_ID;
         VSUtil.setComboItems(mThis.elToWarehouse, PickupListComponent.form_data.warehouses, 'id', 'warehouse_name', false, 0, def.warehouse_id);
-        vsapi.call([mThis.base_url, '/api/getComboItems_driver'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/dms/getComboItems_driver'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let items = StringSanitizer.sanitizeObject(res.data);
                 let text1 = LocaleManager.trans('To Be Assigned');
@@ -3735,7 +3791,7 @@ let VerifyPackageDialog = new function () {
 
     this.loadOrderInfo = (order_id, onFinish) => {
         let p = { 'order_id': order_id ? order_id : 0, "context": 1 };
-        vsapi.call([mThis.base_url, '/api/getOrderInfo'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/dms/getOrderInfo'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
                 let packages = d.packages ? d.packages : [];
@@ -3760,7 +3816,7 @@ let VerifyPackageDialog = new function () {
         if (!p.driver_id) p.driver_id = 0;
         //p.id = order_id;
         p.allow_create_order = 1;
-        vsapi.call([mThis.base_url, '/api/delivery-order/receive'].join(''), p,null).then(res => {
+        vsapi.call([mThis.base_url, '/dms/delivery-order/receive'].join(''), p,null).then(res => {
             if (res.status_code === 200) {
                 if (typeof onDone === 'function')
                     onDone(res.data);
@@ -4137,7 +4193,7 @@ const QuickOrderDialog = new function () {
     this.elPickupAddress = this.self.find('#_plq_pikcup_address');
 
     this.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${mThis.base_url}/api/quick-order/form-options`, null, null).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/quick-order/form-options`, null, null).then(res => {
 
             const d = (res.status_code === 200) ? res.data : {};
             VSUtil.setComboItems(mThis.elWarehouse, d.warehouses, 'id', 'warehouse_name', null, null, null);
@@ -4166,7 +4222,7 @@ const QuickOrderDialog = new function () {
 
     this.elSender.on('change', (e) => {
         let m = { 'sender_id': mThis.elSender.val() };
-        vsapi.call([mThis.base_url, '/api/merchant/address'].join(''), m).then(res => {
+        vsapi.call([mThis.base_url, '/dms/merchant/address'].join(''), m).then(res => {
             let address = (res.status_code === 200) ? res.data : '';
             mThis.elPickupAddress.val(address);
         });
@@ -4175,7 +4231,7 @@ const QuickOrderDialog = new function () {
     this.btnCreate.on('click', (e) => {
         const p = mThis.getFormData(false);
         if (!p) return;
-        vsapi.call(`${mThis.base_url}/api/quick-order/create`, p, mThis.btnCreate).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/quick-order/create`, p, mThis.btnCreate).then(res => {
             if (res.status_code === 200) {
                 cv_interact.success('New order created');
                 mThis.self.modal('hide');
@@ -4250,7 +4306,7 @@ const ItemEntryDialog = new function(){
         },false);
         
         // let p = mThis.getInput();
-        // vsapi.call(`${main_view.base_url}/api/order/save-package`,p,mThis.btnSaveAndNext,null).then(res =>{
+        // vsapi.call(`${main_view.base_url}/dms/order/save-package`,p,mThis.btnSaveAndNext,null).then(res =>{
         //      if(res.status_code ===200){
         //         const d = res.data;
         //         if(mThis.current_index >=0){
@@ -4268,7 +4324,7 @@ const ItemEntryDialog = new function(){
   
     this.savePackage =(btn,onFinish = null,closeDialog=true)=>{
         let p = mThis.getInput();
-        vsapi.call(`${main_view.base_url}/api/order/save-package`,p,btn,null).then(res =>{
+        vsapi.call(`${main_view.base_url}/dms/order/save-package`,p,btn,null).then(res =>{
             if(res.status_code ===200){
                 const d = res.data;
                 if(mThis.current_index >=0){
@@ -4276,7 +4332,7 @@ const ItemEntryDialog = new function(){
                     if(item){
                         item.package_id = d.package_id;
                         item.barcode = d.barcode;
-                        console.log('image_id = ',item.id,'save success barcode = ' + mThis.options.items[mThis.current_index].barcode);
+                        //console.log('image_id = ',item.id,'save success barcode = ' + mThis.options.items[mThis.current_index].barcode);
                     }
                 }
                 if (closeDialog){
@@ -4341,7 +4397,7 @@ const ItemEntryDialog = new function(){
                 return;
              }
              mThis.api_details_in_progress = true;
-             vsapi.call(`${main_view.base_url}/api/order/package-details`,x,btn,false).then(res=>{
+             vsapi.call(`${main_view.base_url}/dms/order/package-details`,x,btn,false).then(res=>{
                  if(res.status_code ===200){
                     const d = res.data;
                     mThis.setPackageDetails(d);
@@ -4380,7 +4436,7 @@ const ItemEntryDialog = new function(){
        if(mThis.form_data.delivery_zones){
          onFinish();
        }else{
-           vsapi.call(`${main_view.base_url}/api/settings/options-delivery-zone`,null,null,false).then(res=>{
+           vsapi.call(`${main_view.base_url}/dms/settings/options-delivery-zone`,null,null,false).then(res=>{
             if(res.status_code ==200){
                 mThis.form_data.delivery_zones = res.data;
                 VSUtil.setComboItems(mThis.elZone,mThis.form_data.delivery_zones,'zone_code','zone_name',null,'Select Zone',null);

@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\abm;
+namespace App\Http\Controllers\Abm;
 
 use App\Http\Controllers\Controller;
-use App\Models\abm\OverseaShipment;
-use App\Models\abm\OverseaItem;
+use App\Models\Abm\OverseaShipment;
+use App\Models\Abm\OverseaItem;
 use Illuminate\Http\Request;
 use App\Models\UM;
 use App\Models\JDV;

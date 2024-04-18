@@ -38,7 +38,7 @@ var OrderImagesComponent = new function(){
                 let p = {'id':id};
                 cv_interact.confirm("Delete this image?",{title:"Delete Image",context:"delete"},e => {
                 if(e){
-                    vsapi.call(`${mThis.base_url}/api/img-order/delete-image`,p).then(res=>{
+                    vsapi.call(`${mThis.base_url}/dms/img-order/delete-image`,p).then(res=>{
                         if(res.status_code ===200){
                             let tr = btn.closest('tr');
                             const prev_tr = tr.previousElementSibling;
@@ -80,7 +80,7 @@ var OrderImagesComponent = new function(){
                 let p = {'id': id};
                 cv_interact.confirm("Delete this order?",{title:"Delete Order",context:"delete"},e => {
                     if(e){
-                    vsapi.call(`${mThis.base_url}/api/img-order/delete-order`,p).then(res=>{
+                    vsapi.call(`${mThis.base_url}/dms/img-order/delete-order`,p).then(res=>{
                         if(res.status_code ===200){
                             mThis.displayOrderImages();
                         }else cv_interact.error(res.error_message);
@@ -123,7 +123,7 @@ var OrderImagesComponent = new function(){
         let div_wrapper = detail_tr.find('div.expandable-row-container');
         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
         let p = {'id': orderImage_id};
-        vsapi.call(`${mThis.base_url}/api/img-order/images`,p,null,false).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/img-order/images`,p,null,false).then(res => {
             let html = null;
             let cnt =0;
             if(res.status_code === 200){
@@ -214,7 +214,7 @@ var OrderImagesComponent = new function(){
 
     this.displayOrderImages = () => {
         let p = {'search_value': mThis.elSearch.val(),'start_date': mThis.elFilter_start_date.val(),'end_date': mThis.elFilter_end_date.val(),'sender_name': mThis.elFilter_sender.val()};
-        vsapi.call(`${mThis.base_url}/api/img-order/list`,p,null,null).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/img-order/list`,p,null,null).then(res => {
             if(res.status_code === 200){
                 if(mThis.table){
                     mThis.tblOrderImage.DataTable().clear().destroy();
@@ -293,7 +293,7 @@ var OrderImagesComponent = new function(){
         });
 
         // let p = {"search_value":mThis.elSearch.val(), "order_date":mThis.elFilter_date.val(),"sender":mThis.elFilter_sender.val()};
-        // vsapi.call(`${main_view.base_url}/api/merchant/v2/order-images`,null).then(res=>{
+        // vsapi.call(`${main_view.base_url}/dms/merchant/v2/order-images`,null).then(res=>{
         //     if(res.status_code === 200){
         //          let data = res.data;
         //     }

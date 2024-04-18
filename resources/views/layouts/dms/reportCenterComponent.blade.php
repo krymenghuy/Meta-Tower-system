@@ -57,15 +57,12 @@
     }
 </style>
 
-<div id="_rpc_reportCenterComponent" style="display:none;padding:15px">
-    <div class="d-flex p-3 bg-white rounded-3 border">
+<div id="_rpc_reportCenterComponent" class="m-3" style="display:none;">
+    <div class="d-flex p-3 bg-white shadow-lg rounded-3 border">
         <div class="row w-100">
             <div class="col-lg-6">
                 <div class="report-wrapper w-100 justify-content-between">
                     <div class="div-table w-100 text-dark" id="_rpc_reportlist"></div>
-                    <div class="d-flex align-items-center justify-content-center w-100 h-100">
-                        <img src="{{ asset('assets/images/icons/report.png') }}" alt="" style="width:12vw" />
-                    </div>
                 </div>
             </div>
             <div class="col-lg-6">

@@ -16,13 +16,13 @@ var DriverBalancesCompoment = new (function () {
     this.elSearch = this.self.find("#_dbl_search_driver");
     this.div_container = this.self.find("#div_driver_balances");
 
-    this.div_summary = this.self.find("#_dbl_div_summary")[0];
+    this.div_summary = this.self[0].querySelector("#_dbl_div_summary");
+    this.div_alert_list = this.self[0].querySelector('#_dbl_alert_list');
     this.elDriverAmount = this.div_summary.querySelector("#_dbl_driver_amount");
-    this.elDriverAmountCurrency = this.div_summary.querySelector(
-        "#_dbl_driver_currency"
-    );
-    this.elPackageCount = this.div_summary.querySelector("#_dbl_package_count");
 
+    this.elDriverAmountCurrency = this.div_summary.querySelector("#_dbl_driver_currency");
+    this.elPackageCount = this.div_summary.querySelector("#_dbl_package_count");
+     
     this.view_name = "date";
 
     mThis.cols = [
@@ -129,7 +129,27 @@ var DriverBalancesCompoment = new (function () {
         },
     ];
 
-    /** view_name = date|merchant*/
+    this.setAlertInfo = (d)=>{
+       mThis.div_alert_list.innerHTML = '';
+       let total_count = 0, html = [`<div class="d-flex flex-row gap-2 p-1 mt-1">
+         <a href="javascript:void(0)" class="lnk-list-driver" data-name="overude-all"><span class="dbl-alert-title text-info">All Dues</span></a>
+       </div>`].join('');
+
+       (d || []).map(m =>{
+         let text_color = m.driver_count > 0 ? 'text-danger':'text-success';
+         total_count += m.driver_count; 
+         html =  [html,`<div class="d-flex flex-row gap-2 p-1 mt-1">
+              <a href="javascript:void(0)" class="lnk-list-driver" data-name="`,m.name,`"><span class="dbl-alert-title ${text_color}">`,m.title,`</span><span class="prefix-colon dbl-alert-value ${text_color}">`,m.driver_count,`</span></a>
+           </div>`].join(''); 
+       });
+       mThis.spanOverdueDriverCount = mThis.spanOverdueDriverCount || main_view.side_menus.querySelector("#overdue_driver_count");
+       mThis.spanOverdueDriverCount.textContent = total_count;
+       let vs_show =  (total_count <=0 || !total_count)? 'none':'block'; 
+       mThis.spanOverdueDriverCount.parentNode.style.display = vs_show; 
+       mThis.div_alert_list.innerHTML = html;
+    }
+
+    /** toggle view => view_name = date | merchant*/
     this.initToggleView = (toggle = false) => {
         const icon = this.btnToggleView.querySelector("i");
         if (toggle) {
@@ -155,7 +175,7 @@ var DriverBalancesCompoment = new (function () {
         
         mThis.listView = new ListView("div_driver_balances", {
             clientSidePagination: true,
-            fetchApi: `${main_view.base_url}/api/driver/balances`,
+            fetchApi: `${main_view.base_url}/dms/driver/balances`,
             processResponse: (res) => {
                 let d = res.status_code === 200 ? res.data : {};
 
@@ -168,6 +188,9 @@ var DriverBalancesCompoment = new (function () {
                 mThis.elPackageCount.textContent = [d.total_count, " pcs"].join(
                     ""
                 );
+                //console.log(d.od_cards);
+                //NOTE: od_cards must be array = [{title,value, driver_count,package_count,amount,currency}, {title,value, driver_count,package_count,amount,currency}, ...]
+                mThis.setAlertInfo(d.od_cards);
                 return d.items;
             },
             rowCreated:(data,index,tr)=>{
@@ -181,12 +204,26 @@ var DriverBalancesCompoment = new (function () {
             listContainerClass: null,
         });
 
+        mThis.div_summary.addEventListener('click', e=>{
+             e.preventDefault();
+             //Click on each alert link to view details, listing overdue drivers
+             let lnk = VSUtil.closestLimited(e.target,'.lnk-list-driver');
+             if(lnk){
+                let alert_name = lnk.dataset.name;
+                let p = mThis.getFilterData();
+                p.alert_name = alert_name;
+                p.no_cache =1;
+                mThis.listView.showPage(p); 
+                return;
+             }
+        });
+
         mThis.tblBalances = mThis.listView.getTable();
 
         mThis.tblBalances.addEventListener("click", (e) => {
             e.preventDefault();
 
-            let btn = VSUtil.getElementByClass(e.target, "lnk-receive-pmt");
+            let btn = VSUtil.closestLimited(e.target, ".lnk-receive-pmt");
             if (btn) {
                 if (mThis.view_name === "date") {
                     cv_interact.warning(
@@ -226,7 +263,7 @@ var DriverBalancesCompoment = new (function () {
                                 if (e) {
                                     vsapi
                                         .call(
-                                            `${main_view.base_url}/api/driver/payment/settle-zero`,
+                                            `${main_view.base_url}/dms/driver/payment/settle-zero`,
                                             p,
                                             null
                                         )
@@ -251,7 +288,7 @@ var DriverBalancesCompoment = new (function () {
 
                     const op = {
                         id: id,
-                        prep_api: `${main_view.base_url}/api/driver/payment/form-options`,
+                        prep_api: `${main_view.base_url}/dms/driver/payment/form-options`,
                         type: trans_type,
                         agent_name: driver.name,
                         showCheck: false,
@@ -276,14 +313,15 @@ var DriverBalancesCompoment = new (function () {
                                 trans_type == "receive" ? "receive" : "pay";
                             vsapi
                                 .call(
-                                    `${main_view.base_url}/api/driver/payment/${api_method}`,
+                                    `${main_view.base_url}/dms/driver/payment/${api_method}`,
                                     p,
                                     btnOK
                                 )
                                 .then((res) => {
                                     if (res.status_code === 200) {
+                                        const no_cache = 1;
                                         mThis.listView.showPage(
-                                            mThis.getFilterData()
+                                            mThis.getFilterData(no_cache)
                                         );
                                         PmtDialog.close();
                                         cv_interact.success("Payment success");
@@ -298,7 +336,7 @@ var DriverBalancesCompoment = new (function () {
             }
 
             //Click on view package list
-            btn = VSUtil.getElementByClass(e.target, "lnk-view-packages");
+            btn = VSUtil.closestLimited(e.target, ".lnk-view-packages");
             if (btn) {
                 let finish_date = null;
                 const tr = btn.closest('tr');
@@ -346,22 +384,22 @@ var DriverBalancesCompoment = new (function () {
             }
         });
 
-        this.btnExport.on("click", (e) => {
-            e.preventDefault();
-            VSRoute.loadScript(
-                `${main_view.asset_url}/js/xlsx/xlsx.full.min.js`
-            ).then(() => {
-                mThis.exportToExcel_payables();
-            });
-            mThis.initAlready = true;
-        });
+        // this.btnExport.on("click", (e) => {
+        //     e.preventDefault();
+        //     VSRoute.loadScript(
+        //         `${main_view.asset_url}/js/xlsx/xlsx.full.min.js`
+        //     ).then(() => {
+        //         mThis.exportToExcel_payables();
+        //     });
+        //     mThis.initAlready = true;
+        // });
 
-        mThis.elSearch.on("keyup", (e) => {
-            e.preventDefault();
-            setTimeout(() => {
-                mThis.listView.showPage(mThis.getFilterData());
-            }, 250);
-        });
+        // mThis.elSearch.on("keyup", (e) => {
+        //     e.preventDefault();
+        //     setTimeout(() => {
+        //         mThis.listView.showPage(mThis.getFilterData());
+        //     }, 250);
+        // });
 
         mThis.elFilter_driver.on("change", function (e) {
             e.preventDefault();
@@ -396,7 +434,7 @@ var DriverBalancesCompoment = new (function () {
         let p = mThis.getFilterData();
         p.driver_id = driver_id;
         vsapi
-            .call(`${main_view.base_url}/api/driver/balances`, p, false)
+            .call(`${main_view.base_url}/dms/driver/balances`, p, false)
             .then((res) => {
                 if (res.status_code === 200) {
                     let d = res.data;
@@ -411,7 +449,7 @@ var DriverBalancesCompoment = new (function () {
     this.loadFilterOptions = (onFinish) => {
         vsapi
             .call(
-                `${main_view.base_url}/api/settings/options-driver`,
+                `${main_view.base_url}/dms/settings/options-driver`,
                 null,
                 null,
                 false
@@ -431,7 +469,7 @@ var DriverBalancesCompoment = new (function () {
             });
     };
 
-    this.getFilterData = () => {
+    this.getFilterData = (no_cache= 0) => {
         let p = {
             warehouse_id: 1,
             view_name: mThis.view_name,
@@ -445,6 +483,7 @@ var DriverBalancesCompoment = new (function () {
         };
         //In case of user search => Ensure the database query starts with first page
         if (p.search_value || p.driver_id > 0) p.current_page = 1;
+        p.no_cache = no_cache;
         return p;
     };
 
@@ -489,7 +528,7 @@ var DriverBalancesCompoment = new (function () {
 
     // this.exportToExcel_payables = ()=>{
     //    let p = {'type':mThis.elFilter_type.val(),'driver_id':mThis.elFilter_driver.val(),'start_date':mThis.elFilter_startDate.val(),'end_date':mThis.elFilter_endDate.val()};
-    //     vsapi.call(`${main_view.base_url}/api/merchant/outstanding-balances`,p,null,false).then(res => {
+    //     vsapi.call(`${main_view.base_url}/dms/merchant/outstanding-balances`,p,null,false).then(res => {
     //         if(res.status_code===200){
     //             let items = res.data;
     //             let file_name ='merchant-payables';

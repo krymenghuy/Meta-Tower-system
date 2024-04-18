@@ -16,7 +16,7 @@ var generalSettingsComponent = new function(){
     this.elTextEditor = this.self.find('#_textEditor');
 
    this.displayBusinessTypes = ()=>{
-     vsapi.call(`${mThis.base_url}/api/getBusinessTypes`,null).then(res => {
+     vsapi.call(`${mThis.base_url}/dms/getBusinessTypes`,null).then(res => {
          if(res.status_code === 200) {
              mThis.tblBusinessTypes_body.empty();
              let rows = StringSanitizer.sanitizeObject(res.data);
@@ -33,7 +33,7 @@ var generalSettingsComponent = new function(){
    }
 
    this.displayProductTypes = ()=>{
-    vsapi.call(`${mThis.base_url}/api/getProductTypes`,null).then(res => {
+    vsapi.call(`${mThis.base_url}/dms/getProductTypes`,null).then(res => {
         if(res.status_code === 200) {
             mThis.tblProductTypes_body.empty();
             let rows = StringSanitizer.sanitizeObject(res.data);
@@ -53,7 +53,7 @@ var generalSettingsComponent = new function(){
         let text = 'This is test message';
         let p = {'phone_number':'010428632','text':text};
         alert(JSON.stringify(p));
-        vsapi.call(`${mThis.base_url}/api/sendMessage`,p).then(res =>{
+        vsapi.call(`${mThis.base_url}/dms/sendMessage`,p).then(res =>{
             alert(res);
         });
      });
@@ -84,7 +84,7 @@ var generalSettingsComponent = new function(){
         p[mThis.option.key_field] = tr.data('id');   
         cv_interact.confirm('Delete this item?','Delete Item',function(e){
             if(e){
-                vsapi.call(`${mThis.base_url}/api/',mThis.option.deleteMethod`,p).then(res => {
+                vsapi.call(`${mThis.base_url}/dms/',mThis.option.deleteMethod`,p).then(res => {
                     if(res.status_code === 200) {
                         mThis.displayItems();
                     }
@@ -94,7 +94,7 @@ var generalSettingsComponent = new function(){
         
      }
      this.displayItems = ()=>{
-        vsapi.call(`${mThis.base_url}/api/getCom`,p).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/getCom`,p).then(res => {
             if(res.status_code === 200) {
                 mThis.displayItems();
             }

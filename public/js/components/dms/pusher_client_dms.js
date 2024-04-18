@@ -26,7 +26,7 @@ let PusherClient = new function(){
         cluster: 'mt1',
         useTLS:true,
         disableStats:true,
-        // authEndpoint:"/api/broadcast/auth",
+        // authEndpoint:"/dms/broadcast/auth",
         //authTransport:'ajax', //two options = {'ajax','jsonp'}. The default is "ajax"
         authorizer: function authorizer(channel, options){
             return {

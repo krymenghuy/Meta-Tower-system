@@ -73,5 +73,5 @@
 </style>
 
 <div id="_main_dashboardComponent" style="display:none;padding:15px">
-    <h1>Heloo</h1>
+    <h1>Hello</h1>
 </div>

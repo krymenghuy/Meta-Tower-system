@@ -48,7 +48,7 @@ var PromotionComponent = new function () {
     let p = { 'id': promo_id, 'user_class': user_class };
     cv_interact.confirm('Delete this promotion?', { title: 'Delete Promotion', confirmButtonText: 'Delete', cancelButtonText: 'Close', context: 'delete' }, (e) => {
       if (e) {
-        vsapi.call([mThis.base_url, '/api/promotion/delete'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/dms/promotion/delete'].join(''), p).then(res => {
           if (res.status_code !== 200) cv_interact.error(res.error_message);
           mThis.displayPromotionList();
         });
@@ -58,7 +58,7 @@ var PromotionComponent = new function () {
 
   this.displayPromotionList = () => {
     let p = { 'user_class': (mThis.elFilter_app.val() + '').toLowerCase() };
-    vsapi.call([mThis.base_url, '/api/promotion/list'].join(''), p).then(res => {
+    vsapi.call([mThis.base_url, '/dms/promotion/list'].join(''), p).then(res => {
       console.log(res);
       if (res.status_code === 200) {
         let imgs = res.data;
@@ -149,7 +149,7 @@ const PromoDialog = new function () {
       return;
     }
     console.log(p);
-    vsapi.call([mThis.base_url, '/api/promotion/save'].join(''), p,mThis.btnOK,false).then(res => {
+    vsapi.call([mThis.base_url, '/dms/promotion/save'].join(''), p,mThis.btnOK,false).then(res => {
       console.log(res);
       if (res.status_code === 200) {
         if (typeof mThis.onClose === 'function') mThis.onClose(p);
@@ -180,7 +180,7 @@ const PromoDialog = new function () {
     mThis.elError.html(null);
     if (id > 0) {
       let p = { 'id': id, 'user_class': mThis.user_class };
-      vsapi.call([mThis.base_url, '/api/promotion/details'].join(''), p,null,null).then(res => {
+      vsapi.call([mThis.base_url, '/dms/promotion/details'].join(''), p,null,null).then(res => {
         if (res.status_code === 200) {
           let d = StringSanitizer.sanitizeObject(res.data, ['.', '-', '?'], ['description', 'image_url']);
           mThis.elCategory.val(d.category);

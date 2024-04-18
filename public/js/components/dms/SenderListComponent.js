@@ -1,22 +1,26 @@
-'use strict';
+"use strict";
 var SenderListComponent = new function(){
     const mThis = this;
     this.title_prop = "Merchants";
     this.base_url = main_view.base_url;
     this.self = main_view.appContent.children('#_main_senderListComponent');
-    this.elFilter_business_type = mThis.self.find('#_sdl_filter_business_type');
+    //this.elFilter_business_type = mThis.self.find('#_sdl_filter_business_type');
     this.elFilter_sender_status = mThis.self.find('#_sdl_filter_sender_status');
     this.div_filter_fields = mThis.self.find('#_sdl_filter_fields')[0];
 
     this.btnNewSender = mThis.self.find('#_sdl_btnNewSender');
+    this.btnFilter = mThis.self.find('#_sdl_btnFilter')[0];
     this.elSearch = mThis.self.find('#_sdl_search_sender');
     this.btnSearch = mThis.self.find('#_sdl_btnSearch');
-    this.tblSenders = mThis.self.find('#_sdl_tblSenders');
-    this.tblSenders_body = mThis.self.find('#_sdl_tblSenders_body');
-    this.sender_dropdown_menu = mThis.tblSenders.find('div.dropdown');
+   // this.tblSenders = mThis.self.find('#_sdl_tblSenders');
+    // this.tblSenders_body = mThis.self.find('#_sdl_tblSenders_body');
+    // this.sender_dropdown_menu = mThis.tblSenders.find('div.dropdown');
 
     this.btnPrint = mThis.self.find('#_sdl_btnPrint');
     this.btnPDF = mThis.self.find('#_sdl_btnPDF');
+    this.form_data = {};
+    //Rememner the last select fitler in FilterDialog or DMSFilterDialog
+    //this.last_filter = {}; 
 
     this.setMerchantPriceList = (sender_id,name=null,span=null,def_price_list_id=null) => {
         mThis.getPriceListItems((items)=>{
@@ -42,22 +46,22 @@ var SenderListComponent = new function(){
                         price_list_id: d.value
                     };
 
-                    // vsapi.call(`${mThis.base_url}/api/merchant/set-price-list`,p,null).then(res => {
-                    //     if(res.status_code === 200){
-                    //         let d = StringSanitizer.sanitizeObject(res.data);
-                    //         span.textContent =d.list_name; 
-                    //         cv_interact.success('Price list ' + d.list_name + ' has been assigned to the merchant successfully');
-                    //     }
-                    //     else
-                    //         cv_interact.error(res.error_message); 
-                    // });
+                    vsapi.call(`${mThis.base_url}/dms/merchant/set-price-list`,p,null).then(res => {
+                        if(res.status_code === 200){
+                            let d = StringSanitizer.sanitizeObject(res.data);
+                            span.textContent =d.list_name; 
+                            cv_interact.success('Price list ' + d.list_name + ' has been assigned to the merchant successfully');
+                        }
+                        else
+                            cv_interact.error(res.error_message); 
+                    });
                 }
             });
         });
     }
 
     this.createAppAccount = (sender_id)=>{
-        const sender = mThis.store_senders[sender_id] || {}; 
+        const sender = mThis.store_senders[sender_id] || {};
         const op = {
             user_id: null,
             open: 'add-user',
@@ -150,7 +154,6 @@ var SenderListComponent = new function(){
                                 <p class="text-nowrap text-capitalize">${item.sender_type}</p>
                            </div>
                         </div>
-
                         <div class="col">
                            <div class="d-flex">
                                 <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Business"></p>
@@ -173,7 +176,6 @@ var SenderListComponent = new function(){
                                 <p class="text-nowrap text-capitalize"><a href="javascript:void(0)" data-referrerid ="${item.referrer_id}">${item.referrer_name ? item.referrer_name : 'គ្មាន'}</a></p>
                             </div>
                         </div>
-                        
                         <div class="col">
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Bank Account"></p>
@@ -189,7 +191,7 @@ var SenderListComponent = new function(){
                         <div class="col position-relative">
                             <div class="d-flex align-items-start justify-content-end gap-2">
                                 <button class="btn btn-sm btn-danger rounded-3 btn-options position-relative text-nowrap" type="button">
-                                    <span class="text-nowrap trans-text" data-langprop="buttons.Options"></span>
+                                    <span class="text-nowrap trans-text" data-langprop="buttons.Action"></span>
                                     <i class="fa-solid fa-caret-down ps-2"></i>
                                     <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
                                         <a href="javascript:void(0)" class="btn-merchant-edit border-bottom pb-2" data-id="${item.id}">
@@ -201,11 +203,15 @@ var SenderListComponent = new function(){
                                             <span class="ps-2 trans-text" data-langprop="titles.Set Price List"></span>
                                         </a>
                                         <a href="javascript:void(0)" class="btn-merchant-delete border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
-                                            <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
+                                            <i class="fa-regular fa-trash-can fs-5 text-warning"></i>
                                             <span class="ps-2 trans-text" data-langprop="titles.Delete Merchant"></span>
                                         </a>
+                                        <a href="javascript:void(0)" class="btn-reverse-to-lead border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
+                                            <i class="fa-regular fa-refresh fs-5 text-warning"></i>
+                                            <span class="ps-2 trans-text" data-langprop="titles.Reverse to Prospect"></span>
+                                        </a>
                                         <a href="javascript:void(0)" class="btn-merchant-delete-special border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
-                                          <i class="fa-regular fa-trash-can fs-5 text-warning"></i>
+                                          <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
                                           <span class="ps-2 trans-text" data-langprop="titles.Delete Special"></span>
                                        </a>
                                         <a href="javascript:void(0)" class="btn-merchant-status border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
@@ -285,7 +291,7 @@ var SenderListComponent = new function(){
                     if(d){
                         const imgContainer = img.parentElement;
                         mThis.setImage(imgContainer,d.dataUrl);
-                        vsapi.call(`${main_view.base_url}/api/merchant/save-profile-picture`,{
+                        vsapi.call(`${main_view.base_url}/dms/merchant/save-profile-picture`,{
                             id: imgContainer.dataset.id,
                             photo: d.dataUrl
                         },false).then(res => {
@@ -334,7 +340,7 @@ var SenderListComponent = new function(){
                 },(e) => {
                     if(e){
                         const imgContainer = lnk.closest('.div-img');
-                        vsapi.call(`${main_view.base_url}/api/merchant/delete-profile-picture`,{
+                        vsapi.call(`${main_view.base_url}/dms/merchant/delete-profile-picture`,{
                             id: imgContainer.dataset.id
                         },false).then(res => {
                             if(res.status_code === 200){
@@ -365,7 +371,7 @@ var SenderListComponent = new function(){
         container.off('click').on('click',e => {
             e.preventDefault();
              
-            let lnk = VSUtil.getElementByClass(e.target,'btn-app-login');
+            let lnk = VSUtil.closestLimited(e.target,'.btn-app-login');
             if(lnk){
                 mThis.createAppAccount(lnk.dataset.id);
                 return;
@@ -397,7 +403,7 @@ var SenderListComponent = new function(){
             div.off('click').on('click',(e) => {
                 e.preventDefault();
 
-                let lnk = VSUtil.getElementByClass(e.target,'btn-merchant-edit');
+                let lnk = VSUtil.closestLimited(e.target,'.btn-merchant-edit');
                 if(lnk){
                     let op = {
                         id: lnk.dataset.id,
@@ -410,7 +416,7 @@ var SenderListComponent = new function(){
                 }
                
                 //Click on Delete Merchant
-                lnk = VSUtil.getElementByClass(e.target,'btn-merchant-delete');
+                lnk = VSUtil.closestLimited(e.target,'.btn-merchant-delete');
                 if(lnk){
                     const id = lnk.dataset.id;
                     let status_code = lnk.dataset.status;
@@ -423,7 +429,7 @@ var SenderListComponent = new function(){
                         context: 'delete'
                     },function(e){
                         if(e){
-                            vsapi.call(`${mThis.base_url}/api/merchant/delete`,{
+                            vsapi.call(`${mThis.base_url}/dms/merchant/delete`,{
                                 id: id
                             },null).then(res => {
                                 if(res.status_code === 200){
@@ -437,8 +443,29 @@ var SenderListComponent = new function(){
                     return;
                 }
  
+                //Click to Reverse a merchant back to be A lead or prospect
+                lnk = VSUtil.closestLimited(e.target, '.btn-reverse-to-lead');
+                if(lnk){
+                    const id = lnk.dataset.id;
+                    //let status_code = lnk.dataset.status;
+                    let p = {
+                        id: id
+                        //status_code: status_code
+                    };
+                    cv_interact.confirm('Are you sure to reverse this client back to be a lead or prospect?',{'context':'update','title':'Reverse To Lead',confirmButtonText:'Reverse Now'},e =>{
+                         if(e){
+                             vsapi.call([main_view.base_url,'/dms/merchant/reverse-to-lead'].join(''),p,null,null).then(res =>{
+                                 if(res.status_code ==200){
+                                    cv_interact.success('Now the merchant has been reversed back to be a lead with status "in Review"');
+                                    mThis.listView.showPage(mThis.getFitlerData());
+                                 }else cv_interact.error(res.error_message);
+                             });
+                         }
+                    });
+                }
+
                 //Click on Delete Merchant Special (Force delete everything about the merchant)
-                lnk = VSUtil.getElementByClass(e.target, 'btn-merchant-delete-special');
+                lnk = VSUtil.closestLimited(e.target, '.btn-merchant-delete-special');
 
                 if (lnk) {
                     const id = lnk.dataset.id;
@@ -463,7 +490,7 @@ var SenderListComponent = new function(){
                                 confirm_count++;
                 
                                 if (confirm_count === 7) {
-                                    vsapi.call(`${mThis.base_url}/api/merchant/delete-special`, {
+                                    vsapi.call(`${mThis.base_url}/dms/merchant/delete-special`, {
                                         id: id
                                     }, null).then(res => {
                                         if (res.status_code === 200) {
@@ -485,7 +512,7 @@ var SenderListComponent = new function(){
                 }
  
                 //Click on Set Price List
-                lnk = VSUtil.getElementByClass(e.target,'btn-set-price-list');
+                lnk = VSUtil.closestLimited(e.target,'.btn-set-price-list');
                 if(lnk){
                     const id = lnk.dataset.id;
                     let pl_id = lnk.dataset.pricelistid;
@@ -496,12 +523,13 @@ var SenderListComponent = new function(){
                 }
 
                 //Click on Change Status
-                lnk = VSUtil.getElementByClass(e.target,'btn-merchant-status');
+                lnk = VSUtil.closestLimited(e.target,'.btn-merchant-status');
                 if(lnk){
                     let sender_id = lnk.dataset.id;
                     let status_code = Validator.properCase(lnk.dataset.status);
                     let option = {
                         title: 'Set Merchant Status',
+                        confirmButtonText:'OK',
                         dataLabel: "Merchant status",
                         valueMember: "status_code",
                         textMember: "name",
@@ -524,7 +552,7 @@ var SenderListComponent = new function(){
                                 status_code: d.value
                             };
 
-                            vsapi.call(`${mThis.base_url}/api/merchant/update-status`,p).then(res => {
+                            vsapi.call(`${mThis.base_url}/dms/merchant/update-status`,p).then(res => {
                                 if(res.status_code === 200){
                                     mThis.elFilter_sender_status.val(d.value).trigger('change');
                                 }
@@ -537,14 +565,14 @@ var SenderListComponent = new function(){
                 }
 
                 //Click on create mobile app account
-                lnk = VSUtil.getElementByClass(e.target,'btn-create-app-account');
+                lnk = VSUtil.closestLimited(e.target,'.btn-create-app-account');
                 if(lnk){
                     mThis.createAppAccount(lnk.dataset.id);
                     return;
                 }
 
                 //Click on "Delete Special" => Force delete merchant information and related data
-                lnk = VSUtil.getElementByClass(e.target,'btn-merchant-delete-sepcial');
+                lnk = VSUtil.closestLimited(e.target,'.btn-merchant-delete-sepcial');
                 if(lnk){
                     let op = {
                         id: lnk.dataset.studentid
@@ -555,10 +583,10 @@ var SenderListComponent = new function(){
                         context: 'delete'
                     },(e) => {
                         if(e){
-                            vsapi.call(`${main_view.base_url}/api/student/delete-special`,op,null).then(res => {
+                            vsapi.call(`${main_view.base_url}/dms/student/delete-special`,op,null).then(res => {
                                 if(res.status_code === 200){
                                     cv_interact.success('The student has been deleted permanently');
-                                    mThis.studentListView.showPage(mThis.getFilterData());
+                                    mThis.listView.showPage(mThis.getFilterData());
                                 }
                                 else
                                     cv_interact.error(res.error_message);
@@ -577,18 +605,25 @@ var SenderListComponent = new function(){
 
         //Do not allow filter to be applied yet. I means that filter SELECT's change event wont refresh the merchant list
         mThis.allow_filter = false;
-        vsapi.call(`${mThis.base_url}/api/merchant/form-options`, null,null,main_view.apiCluster).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/merchant/form-options`, null,null,main_view.apiCluster).then(res => {
             let d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
             VSUtil.setComboItems(mThis.elFilter_sender_status, d.sender_statuses, 'status_code', 'status_name', true, '(All Status)', mThis.def_filter.status_code);
-            VSUtil.setComboItems(mThis.elFilter_business_type, d.business_types, 'business_type', 'business_type', true, '(All Business Types)', 0);
+            //VSUtil.setComboItems(mThis.elFilter_business_type, d.business_types, 'business_type', 'business_type', true, '(All Business Types)', 0);
             VSUtil.setComboItems(SenderDialog.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
             onFinish();
+           
+            (d.sales_agents || []).unshift({"id":-1,"agent_name":"(No Agent)"});
+            (d.sales_agents || []).unshift({"id":null,"agent_name":"(All Sales Agents)"});
+
+            (d.business_types || []).unshift({"code":null,"business_type":"(All Business Types)"});
+            (d.sender_statuses || []).unshift({"status_code":null,"status_name":"(All Statuses)"});
+            mThis.form_data = d;
             mThis.allow_filter = true;
         });
     }
 
     this.getPriceListItems = (onFinish) => {
-        vsapi.call(`${mThis.base_url}/api/getComboItems_price_list`,null,false).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/getComboItems_price_list`,null,false).then(res => {
             let items = res.status_code ===200? res.data: [];
             onFinish(items); 
         });
@@ -598,7 +633,7 @@ var SenderListComponent = new function(){
         if(mThis.initAlready) return;
 
         mThis.listView = new ListView('_sdl_sender_list', {
-            fetchApi: `${main_view.base_url}/api/merchant/list`,
+            fetchApi: `${main_view.base_url}/dms/merchant/list`,
             apiCluster: main_view.apiCluster,
             perPage: 3,
             renderItems: (items, list_container) => {
@@ -618,6 +653,54 @@ var SenderListComponent = new function(){
             };
         });
 
+        this.btnFilter.addEventListener('click', e=>{
+            const options = {
+                "title":"Filter Merchants",
+                "filterButton":mThis.btnFilter,
+                "fields": {
+                    "branch_id": {
+                        "label": "Branch",
+                        "type": "select",
+                        "required": 1,
+                        "value_field": "id",
+                        "text_field": "branch_name",
+                        "data": mThis.form_data.branches,
+                        //"defaultValue": mThis.last_filter.branch_id || 1
+                    },
+                    "status_code": {
+                        "label": "Status",
+                        "type": "select",
+                        "required": 0,
+                        "value_field": "status_code",
+                        "text_field": "status_name",
+                        "data": mThis.form_data.sender_statuses,
+                        //"defaultValue": mThis.last_filter.status_code || mThis.elFilter_sender_status.val()
+                    },
+                    "business_type": {
+                        "label": "Business Type",
+                        "type": "select",
+                        "value_field": "code",
+                        "text_field": "business_type",
+                        "data":mThis.form_data.business_types,
+                        //"defaultValue": mThis.last_filter.business_type
+                    },
+                    "sales_agent_id": {
+                        "label": "Referred By",
+                        "type": "select",
+                        "value_field": "id",
+                        "text_field": "agent_name",
+                        "data": mThis.form_data.sales_agents,
+                        //"defaultValue": mThis.last_filter.sales_agent_id
+                    }
+                },
+                'onClose': d => {
+                    //mThis.last_filter = d.data;
+                    mThis.elFilter_sender_status.val(d.data.status_code).trigger('change');
+                }
+            };
+            DMSFilterDialog.show(options);
+        });
+
         this.btnNewSender.on('click', function(e){
             e.preventDefault();
             let op = {
@@ -625,27 +708,32 @@ var SenderListComponent = new function(){
                 onClose: (d) =>{
                     mThis.listView.showPage(mThis.getFitlerData());  
                 }
-            } 
+            }
+            // if (mThis.form_data && op.fields){
+            //     op.fields['business_type'].data = mThis.form_data.business_types;
+            //     op.fields['sales_agent_id'].data = mThis.form_data.sales_agents;
+            // } 
             SenderDialog.show(op);
         });
 
-        mThis.tblSenders.addEventListener('click', e => {
-            e.preventDefault();
-            //Click on action button;
-            let btn = VSUtil.getElementByClass(e.target, 'btn_sender_action');
-            if(btn){
-                return;
-            }
-        });
+        // mThis.tblSenders.addEventListener('click', e => {
+        //     e.preventDefault();
+        //     //Click on action button;
+        //     let btn = VSUtil.closestLimited(e.target, '.btn_sender_action');
+        //     if(btn){
+        //         return;
+        //     }
+        // });
 
-        document.addEventListener('click', e => {
-            let container = mThis.sender_dropdown_menu.parent();
-            if(container){
-                if(!container.is(e.target) && container.has(e.target).length === 0){
-                    mThis.sender_dropdown_menu.removeClass('show');
-                }
-            }
-        });
+        // document.addEventListener('click', e => {
+        //     if(!mThis.sender_dropdown_menu) return;
+        //     let container = mThis.sender_dropdown_menu.parent();
+        //     if(container){
+        //         if(!container.is(e.target) && container.has(e.target).length === 0){
+        //             mThis.sender_dropdown_menu.removeClass('show');
+        //         }
+        //     }
+        // });
 
         mThis.elSearch.on('keyup', () => {
             clearTimeout(mThis.search_timeout);
@@ -662,12 +750,15 @@ var SenderListComponent = new function(){
     }
 
     this.getFitlerData = () => {
-        let p = {
-            search_value: mThis.elSearch.val()
-        };
+        let p = DMSFilterDialog.getData();
+        p.search_value = mThis.elSearch.val();
+        p.status_code = mThis.elFilter_sender_status.val();
         mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
             let f= el.dataset.field;
             p[f] = el.value;
+
+            //Remember last selected filter that is the combition between filter fields on SenderListComponent and the filter fields on DMSFilterDialog as well;
+            //mThis.last_filter[f] = el.value;
         });
         return p;
     }
@@ -718,7 +809,7 @@ const SenderDialog = new function(){
 
     this.prepareData = (id,def, onFinish) => {
         if(!def) def = {};
-        vsapi.call(`${mThis.base_url}/api/merchant/form-options`,{
+        vsapi.call(`${mThis.base_url}/dms/merchant/form-options`,{
             id: id
         },null).then(res => {
             let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
@@ -734,9 +825,11 @@ const SenderDialog = new function(){
     this.btnSave.on('click', function(e){
         e.preventDefault();
         let p = mThis.getData();
-        vsapi.call(`${mThis.base_url}/api/merchant/save`, p).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/merchant/save`, p).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
+                const d = res.data ?? {};
+                if(d.info_message) cv_interact.info(d.info_message);
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
             }
             else
@@ -763,6 +856,7 @@ const SenderDialog = new function(){
     }
 
     this.setData = (d) => {
+        d =d ?? {};
         mThis.body.querySelectorAll('.data-input').forEach(el =>{
             el.value = null;
         });
@@ -770,7 +864,6 @@ const SenderDialog = new function(){
 
         let bank_accounts = d.bank_accounts;
         d.bank_accounts = null;
-        
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el =>{ 
             const data_member = el.dataset.field;
             if(el.tagName.toLowerCase() === 'select'){
@@ -780,13 +873,16 @@ const SenderDialog = new function(){
                     cancelable: true
                 });
                 el.dispatchEvent(event);
+            } else if (el.tagName ==='IMG'){
+                el.setAttribute('src',d[f] || '');
             }
             else{
-                el.value = d[data_member];
+                el.value = d[data_member] || '';
             }
         });
 
         let i = 0, c = null;
+        bank_accounts = bank_accounts ?? [];
         do{
             c = bank_accounts[i];
             if(!c) break;
@@ -800,6 +896,10 @@ const SenderDialog = new function(){
             });
             i++;
         }while(c);
+
+        //if (d.id > 0){
+            mThis.remember_original_bank_info(d); /** remember original bank account info and will compare this value with the last update values before user click Save button */
+        //}
     }
 
     this.getData = () => {
@@ -810,17 +910,43 @@ const SenderDialog = new function(){
             p[data_member] = el.value;
         });
         p.banks = mThis.getBanks();
+        p.bank_account_changed = (mThis.org_bank_account_info && mThis.org_bank_account_info != mThis.new_bank_account_info);
+        p.bank_account_changed =  p.bank_account_changed? 1:0;
         return p;
+    }
+
+    /** d is bank_accounts */
+    this.remember_original_bank_info = (d) => {
+        mThis.org_bank_account_info = null;
+        //pernission 285 to change bank account
+        let readOnly =true;
+        if (!d) readOnly =false;
+        else if (AuthManager.allowed(285)) readOnly = false;
+        console.log('readonly = ',readOnly);
+        let div = mThis.div_bank_account.querySelector('div.primary_bank_panel');
+        div.querySelectorAll('.data-input').forEach(el => {
+            mThis.org_bank_account_info = [mThis.org_bank_account_info,el.value].join('');
+            el.readOnly = readOnly;
+        });
+   
+        div = mThis.div_bank_account.querySelector('div.secondary_bank_panel');
+   
+        div.querySelectorAll('.data-input').forEach(el =>{
+            mThis.org_bank_account_info = [mThis.org_bank_account_info,el.value].join('');
+            el.readOnly = readOnly;
+        });
     }
 
     this.getBanks = () => {
         let ps = [];
         let p = {};
         p.is_primary = 1;
+        mThis.new_bank_account_info = null;
         let div = mThis.div_bank_account.querySelector('div.primary_bank_panel');
         div.querySelectorAll('.data-input').forEach(el => {
-            let dataMember = el.dataset.field;
-            p[dataMember] = el.value;
+            let f = el.dataset.field;
+            p[f] = el.value;
+            mThis.new_bank_account_info = [mThis.new_bank_account_info,el.value].join('');
         });
         p.id = div.dataset.id;
         ps.push(p);
@@ -829,8 +955,9 @@ const SenderDialog = new function(){
         let p1 = {};
         p1.is_primary = 0;
         div.querySelectorAll('.data-input').forEach(el =>{
-            let dataMember = el.dataset.field;
-            p1[dataMember] = el.value;
+            let f = el.dataset.field;
+            p1[f] = el.value;
+            mThis.new_bank_account_info = [mThis.new_bank_account_info,el.value].join('');
         });
         p1.id = div.dataset.id;
         ps.push(p1);

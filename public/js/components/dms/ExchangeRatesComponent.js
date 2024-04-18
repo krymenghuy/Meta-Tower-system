@@ -12,7 +12,7 @@ var ExchangeRatesComponent = new function(){
     this.btnNew_Currency = this.self.find('#_ecr_currency');
 
     this.loadFilter_options_month = ()=>{
-        vsapi.call(`${mThis.base_url}/api/currency/options-month`,null,false).then(res=>{
+        vsapi.call(`${mThis.base_url}/dms/currency/options-month`,null,false).then(res=>{
             if(res.status_code===200){
                 let items = res.data;
                 let latest_mnonth = null; // (items || []).first().year_month;
@@ -41,7 +41,7 @@ var ExchangeRatesComponent = new function(){
 
             InputBox1.show(op,(d)=>{
                 let p = {'currency_pair':d};
-                vsapi.call(`${mThis.base_url}/api/currency/create-currency-pair`,p).then(res => {
+                vsapi.call(`${mThis.base_url}/dms/currency/create-currency-pair`,p).then(res => {
                     if(res.status_code === 200){
                          //here
                     }
@@ -101,7 +101,7 @@ var ExchangeRatesComponent = new function(){
                 let  p ={id: btn.dataset.id};
                 cv_interact.confirm('Delete this exchange rate?',{title:'delete rate',context:'delete'},e => {
                     if(e){
-                        vsapi.call(`${mThis.base_url}/api/currency/delete-exchange-rate`,p).then(res => {
+                        vsapi.call(`${mThis.base_url}/dms/currency/delete-exchange-rate`,p).then(res => {
                             if(res.status_code === 200){
                                 mThis.displayExchangeRate();
                             }
@@ -119,10 +119,10 @@ var ExchangeRatesComponent = new function(){
             if(btn){
                 const x_date = btn.closest('tr').querySelector('td.x-date').textContent;
                 const buy_rate = btn.closest('tr').querySelector('td.buy-rate').textContent;
-                cv_interact.confirm(['ច្បាស់ឬអត់? ដាក់អត្រាប្តូរប្រាក់ ',buy_rate,' សំរាប់រាល់ទំនិញមកដល់ថ្ងៃ ',x_date,'?'].join(''),{context:'update','title':'Apply Exchange Rate'},e=>{
+                cv_interact.confirm(['ច្បាស់ឬអត់? អនុវត្តអត្រាប្តូរប្រាក់ ',buy_rate,' សំរាប់រាល់ទំនិញដែលមកដល់ថ្ងៃ ',x_date,'?'].join(''),{context:'update','title':'Apply Exchange Rate'},e=>{
                     if(e){
                        let p = {'id':btn.dataset.id};
-                       vsapi.call(`${main_view.base_url}/api/currency/apply-exchange-rate`,p,null).then(res=>{
+                       vsapi.call(`${main_view.base_url}/dms/currency/apply-exchange-rate`,p,null).then(res=>{
                           if(res.status_code === 200){
                            let d = res.data;   
                            cv_interact.success(['Exchange rate ',d.buy_rate,' is applied to ',d.affected_count,' packages arrived on ',d.x_date].join(''));
@@ -138,7 +138,7 @@ var ExchangeRatesComponent = new function(){
 
     this.displayExchangeRate = () => {
         let p = {'x_month':mThis.filter_month.val(),'currency_pair':mThis.filter_pair.val()};
-        vsapi.call(`${mThis.base_url}/api/currency/exchange-rate-list`,p).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/currency/exchange-rate-list`,p).then(res => {
             if(mThis.table){
                 mThis.tblRate.DataTable().clear().destroy();
                 //NOTE that ...DataTable().clear() will clear only tbody, and NOT <thead> section, so we need to ensure that the target table is cleared all, remmining only tags "<table></table>"
@@ -243,8 +243,8 @@ const ExchangeRatesDialog = new function(){
         //"errorId":"_apl_dlgAppt_error",
         //"saveButtonId":"_ecr_dlgExchangeRate_btnSave",
         "instance":this,
-        "apiSave":`${mThis.base_url}/api/currency/save-exchange-rate`,
-        "apiGet":`${mThis.base_url}/api/currency/exchange-rate-info`,
+        "apiSave":`${mThis.base_url}/dms/currency/save-exchange-rate`,
+        "apiGet":`${mThis.base_url}/dms/currency/exchange-rate-info`,
         //"identityProp":"id",
         "modifyTitle":"Modify Exchange Rate",
         "createTitle":"New Exchange Rate",

@@ -12,7 +12,7 @@ namespace App\ScriptManagement;
                 'single_file'=>1,
                 'output_file'=>'/dist/js/primary-loader.js?v=2',
                 'files'=>[
-                    '/js/components/dms/loader.js'
+                    '/assets/js/loader.js'
                 ]
             ],
             'priority-one'=>[
@@ -83,9 +83,9 @@ namespace App\ScriptManagement;
                         '/js/layout/abm/main.js',
                         '/assets/js/formUtils.js',
                         '/js/components/abm/dms.utils.js',
-                        '/js/components/abm/CustomerListComponent.js',
-                        '/js/components/abm/DialogFilter.js',
-                        //'/js/components/UnauthComponent.js',
+                        //'/js/components/abm/CustomersComponent.js',
+                        //'/js/components/abm/DialogFilter.js',
+ 
                         '/js/components/abm/PDFReport.js',
                         '/assets/js/ImageBox.js',
                         '/assets/js/ImageHelper.js',
@@ -99,9 +99,6 @@ namespace App\ScriptManagement;
                         'assets/js/pusher/pusher.min.js',
                         '/js/components/abm/pusher_client_houxpress.js',
                         //'/js/components/abm/pusher_client_dms.js'
-                        'j
-                        s/components/dms/ReportCenterComponent.js',
-                        //'/assets/js/InputBoxes.js',
                         //start Components abm
 
                         '/js/components/abm/CustomersComponent.js',
@@ -118,7 +115,7 @@ namespace App\ScriptManagement;
                'dms-components'=>[
                     'attr'=>'defer',
                     'single_file'=>1,
-                    'output_file'=>'/dist/js/dms.components.js?v=203',
+                    'output_file'=>'/dist/js/dms.components.js?v=204',
                     'files'=>[
                         '/assets/js/VSRoute.js',
                         '/js/layout/dms/main.js?v=1',
@@ -144,23 +141,26 @@ namespace App\ScriptManagement;
                         '/assets/js/InputBoxes.js',
                         'js/components/dms/LocationComponent.js?v=1',
                         'js/components/dms/MobileBrandImagesComponent.js',
+                        'js/components/dms/MobileTCComponent.js',
+                        'js/components/dms/MobilePrivacyComponent.js',
                         'js/components/dms/PackageListComponent.js',
                         'js/components/dms/FindPersonDialog.js',
                         'js/components/dms/PickupListComponent.js',
-                        'js/components/dms/MagicEntryUtil.js',
-                        'js/components/dms/MagicEntryDialog.js',
+                        // 'js/components/dms/MagicEntryUtil.js',
+                        // 'js/components/dms/MagicEntryDialog.js',
                         'js/components/dms/PriceSettingsComponent.js',
                         'js/components/dms/ProductCategoriesComponent.js',
                         'js/components/dms/RemarksComponent.js',
                         'js/components/dms/OrderImagesComponent.js',
                         'js/components/dms/PromotionComponent.js',
                         'js/components/dms/ReportCenterComponent.js',
+                        'js/components/dms/SocialMediaComponent.js',
                         'js/components/dms/SalesAgentsComponent.js',
                         'js/components/dms/SenderListComponent.js?v=1',
                         'js/components/dms/SenderPaymentComponent.js',
                         'js/components/dms/TripListComponent.js',
-                        'js/components/dms/RoleManagementComponent.js',
-                        'js/components/dms/UserManagementComponent.js',
+                        'js/components/um/RoleManagementComponent.js',
+                        'js/components/um/UserManagementComponent.js',
                         'assets/js/pusher/pusher.min.js',
                         '/js/components/dms/pusher_client_houxpress.js',
                         //'/js/components/dms/pusher_client_dms.js'
