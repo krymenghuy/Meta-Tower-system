@@ -33,6 +33,7 @@ use App\Http\Controllers\Dms\CategoryController;
 use App\Http\Controllers\Dms\RemarksController;
 use App\Http\Controllers\Dms\WebReportController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\UMController;
 use App\Http\Controllers\Dms\SalesCommissionPolicyController;
  
  //begin:: api without Authentication
@@ -40,6 +41,7 @@ use App\Http\Controllers\Dms\SalesCommissionPolicyController;
         // Route::post('logout', [ApiController::class,'logout_mobile']);
         // Route::post('auth/login', [ApiController::class, 'externalLogin']);
         Route::post('admin/login', [LoginController::class, 'apiLogin']);
+        Route::post('vs-encrypt038111', [UMController::class, 'encryptData']);
         //Route::post('contact-info', [MobileAppSettingsController::class, 'getContactInfo']);
     });
 //end:: api without Authentication

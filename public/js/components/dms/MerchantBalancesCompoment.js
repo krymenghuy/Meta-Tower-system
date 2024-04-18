@@ -381,7 +381,7 @@ var MerchantBalancesCompoment = new (function () {
                 };
                 vsapi
                     .call(
-                        `${main_view.base_url}/dms/encryptData`,
+                        `${main_view.base_url}/dms/vs-encrypt038111`,
                         data,
                         false,
                         false

@@ -6,13 +6,14 @@ use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\Dms\WebReportController;
 
 use App\Http\Controllers\NotificationController;
- 
+use App\Http\Controllers\UMController; 
  
  //begin:: api without Authentication
     Route::middleware([CustomRateLimiter::class])->group(function(){
         // Route::post('logout', [ApiController::class,'logout_mobile']);
         // Route::post('auth/login', [ApiController::class, 'externalLogin']);
         Route::post('admin/login', [LoginController::class, 'apiLogin']);
+        Route::post('vs-encrypt038111', [UMController::class, 'encryptData']);
         //Route::post('contact-info', [MobileAppSettingsController::class, 'getContactInfo']);
     });
 //end:: api without Authentication

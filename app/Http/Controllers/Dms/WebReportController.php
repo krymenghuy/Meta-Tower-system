@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Dms;
+use App\Http\Controllers\Controller;
 use App\Models\Dms\GeneralSettings;
 use App\Models\UM;
 use Illuminate\Http\Request;
