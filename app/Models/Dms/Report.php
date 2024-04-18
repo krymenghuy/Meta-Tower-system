@@ -4,7 +4,7 @@ namespace App\Models\Dms;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\Dms\UM;
+use App\Models\UM;
 // use Carbon\Carbon;
 use App\Models\Dms\CompanyProfile;
 use Session;

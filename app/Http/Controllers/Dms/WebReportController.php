@@ -1,18 +1,17 @@
 <?php
 
 namespace App\Http\Controllers\Dms;
-
 use App\Models\Dms\GeneralSettings;
-use App\Models\Dms\UM;
+use App\Models\UM;
 use Illuminate\Http\Request;
 use App\Models\Dms\Report;
 use Session;
 use Carbon\Carbon;
-use App\Models\Dms\JDV;
+use App\Models\JDV;
 use DB;
-use PHPUnit\TextUI\XmlConfiguration\Generator;
+//use PHPUnit\TextUI\XmlConfiguration\Generator;
 
-class WebReportController extends Controller{
+class WebReportController extends Controller {
     protected $reportModel;
     public function __construct(){
        $this->reportModel = new Report();

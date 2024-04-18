@@ -225,6 +225,7 @@
                                 @include('layouts.dms.promotionComponent')
                                 @include('layouts.dms.deliveryZoneComponent')
                                 @include('layouts.dms.priceSettingsComponent')
+                                @include('layouts.dms.socialMediaComponent')
                                 @include('layouts.dms.exchangeRatesComponent')
                                 @include('layouts.dms.productCategoriesComponent')
                                 @include('layouts.dms.remarksComponent')

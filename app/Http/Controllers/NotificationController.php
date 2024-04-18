@@ -1,14 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\Dms;
+namespace App\Http\Controllers;
 use App\Models\Dms\Notifier;
 use Illuminate\Http\Request;
-use App\Models\Dms\JDV;
-use App\Models\Dms\UM;
+use App\Models\JDV;
+use App\Models\UM;
 
 class NotificationController extends Controller
 {
-   
     function getNotificationListByUser(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);

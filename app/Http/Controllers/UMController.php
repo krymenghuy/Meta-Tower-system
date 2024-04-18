@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Dms;
+namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Dms\UM;
-use App\Models\Dms\JDV;
+use App\Models\UM;
+use App\Models\JDV;
 use Session;
 // use Sanitizer;
 use Localization;

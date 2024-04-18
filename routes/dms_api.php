@@ -41,9 +41,10 @@ use App\Http\Controllers\Dms\SalesCommissionPolicyController;
     Route::middleware([CustomRateLimiter::class])->group(function(){
         // Route::post('logout', [ApiController::class,'logout_mobile']);
         // Route::post('auth/login', [ApiController::class, 'externalLogin']);
-        Route::post('admin/login', [LoginController::class, 'apiLogin']);
         //Route::post('contact-info', [MobileAppSettingsController::class, 'getContactInfo']);
     });
+    Route::post('admin/login', [LoginController::class, 'apiLogin']);
+
 //end:: api without Authentication
 
 //begin:: Admin notifications
@@ -429,9 +430,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('mobile-settin
    
 //end::ReportController
  
-    Route::group(['middleware' => 'cors'], function(){
-        Route::post('package-photos-all', [ApiController::class, 'getPackagePhotos']);
-    });
+    // Route::group(['middleware' => 'cors'], function(){
+    //     Route::post('package-photos-all', [ApiController::class, 'getPackagePhotos']);
+    // });
  
 
 //begin::Currency APIs

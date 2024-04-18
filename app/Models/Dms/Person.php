@@ -4,10 +4,9 @@ namespace App\Models\Dms;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use DB;
-use App\Models\Dms\DV;
+use App\Models\DV;
 use App\Models\Dms\Invoice\InvoiceSettings;
-use Intervention\Image\Facades\Image;
-
+  
 class Person //extends Model
 {
    // use HasFactory;

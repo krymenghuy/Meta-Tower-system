@@ -2,8 +2,8 @@
 namespace App\Http\Controllers\Dms;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\Dms\UM;
-use App\Models\Dms\JDV;
+use App\Models\UM;
+use App\Models\JDV;
 use DB;
 
 class RemarksController extends Controller

@@ -5,7 +5,7 @@ namespace App\Models\Dms;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 //use App\Models\Dms\PrivateStorage;
-use App\Models\Dms\DV;
+use App\Models\DV;
 use App\Models\Dms\PublicStorage;
 //use Session;
 use DB;

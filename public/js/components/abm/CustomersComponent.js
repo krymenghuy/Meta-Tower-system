@@ -288,7 +288,7 @@ var CustomersComponent = new function(){
         });
        mThis.initAlready = true;
     }
-    //END: SalesAgentComponent.init() 
+    //END: CustomerComponent.init() 
 
     this.changeAgentStatus = (agent_id, def_status_code)=>{
         //alert('Change agent commission here');
@@ -357,7 +357,7 @@ const CustomerDialog = new function(){
     this.btnSave = this.self[0].querySelector('#_cul_dlgCustomer_btnSave');
     
     this.divPhoto = this.self[0].querySelector('#_agent_profile_photo');
-    this.divLoginInfo = this.body.querySelector('.div_login_info');
+    //this.divLoginInfo = this.body.querySelector('.div_login_info');
     this.elPhoneNumber = this.body.querySelector('#_cul_phone_number');
     this.elLoginName = this.body.querySelector('#_cul_login_name');
     this.elPassword = this.body.querySelector('#_cul_password');
@@ -474,7 +474,7 @@ const CustomerDialog = new function(){
             }
         });
         mThis.imgBox.setImage(d.photo || d.image_url);
-        mThis.divLoginInfo.style.display = d.name ? 'none':'block';
+        //mThis.divLoginInfo.style.display = d.name ? 'none':'block';
     }
 
     this.getData = ()=>{

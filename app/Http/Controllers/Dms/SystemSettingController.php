@@ -9,7 +9,6 @@ use App\Models\Dms\SystemSetting;
 class SystemSettingController extends Controller
 {
     protected $sys_settings;
-
     public function __construct(){
         $this->sys_settings = new SystemSetting();
     }

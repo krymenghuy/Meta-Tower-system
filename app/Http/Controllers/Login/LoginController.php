@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Login;
-
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UM;
@@ -10,7 +9,7 @@ use Config;
 use Session;
 //use Cookie;
 use Auth;
-
+use App\Models\JDV;
 //use App\Security\PHPCrypto;
 class LoginController extends Controller
 {
@@ -24,6 +23,7 @@ class LoginController extends Controller
         $app_id = Config::get('app.app_id');
         $login_name = $request->login_name;
         $pwd = $request->password;
+        // return JDV::result($inputs);
 
         $result = $this->UMModel->verifyUser($app_id, $login_name, $pwd);
         // if ($result->status === 'OK') {
