@@ -31,7 +31,7 @@ var ReportCenterComponent = new function(){
     this.div_filter_fields = this.self.find('#_rpc_filter_fields');
     this.no_filter_wrapper = this.self.find('#_rpc_no_filter_text_wrapper');
     this.selected_report_name = this.self.find('#_rpc_selected_report_name');
-    this.api_encrypt = [`${mThis.base_url}/api/encryptData`].join('');
+    this.api_encrypt = [`${mThis.base_url}/api/vs-encrypt031181`].join('');
  
     /** object to store report information */
     this.reports = {};
@@ -401,7 +401,6 @@ var ReportCenterComponent = new function(){
             if (qstring) sp ='&';
             let p = {'data':`${qstring}${sp}rtype=${rpt_code}`};
             let report_route = mThis.routeByCategory[rpt.category];
-            console.log(rpt_code, rpt.category);
             report_route = report_route ||  (mThis.special_routes[rpt_code] ? mThis.special_routes[rpt_code] : mThis.report_url);
             //report_route = mThis.special_routes[rpt_code] ? mThis.special_routes[rpt_code] : mThis.report_url;
 

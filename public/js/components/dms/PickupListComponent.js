@@ -687,18 +687,18 @@ var PickupListComponent = new function () {
         }
 
         mThis.getActiveDrivers((active_drivers)=>{
-            let option = {manualClosing:btn? false:true, autoClosing:true, title: 'Assign Driver (Pickup)', 'confirmButtonText':'Assign Now', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': active_drivers, 'blankErrorMessage': "Choose one driver for Pickup Assignment","defaultValue":prev_driver_id};
+            let option = {autoClose:false, title: 'Assign Driver (Pickup)', 'confirmButtonText':'Assign Now', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': active_drivers, 'blankErrorMessage': "Choose one driver for Pickup Assignment","defaultValue":prev_driver_id};
             InputBox2.show(option, (data,btnAssign) => {
                 if (data) {
                     p.driver_id = data.value;
-                    vsapi.call([mThis.base_url, '/dms/order/assign-driver'].join(''), p,(btn || btnAssign),null).then(res => {
+                    vsapi.call([mThis.base_url, '/dms/order/assign-driver'].join(''), p,(InputBox2.btnOK || btn),null).then(res => {
                         if (res.status_code === 200) {
                             const d = StringSanitizer.sanitizeObject(res.data);
                             let statusInfo =d.statusInfo;
                             tr.dataset.driverid  = d.driver_id;
                             tr.querySelector('td.driver_name .driver-name').textContent = d.driver_name;
                             mThis.updatePickupStatus(tr, statusInfo);
-                            if(option.manualClosing) InputBox2.close();
+                            InputBox2.self.modal('hide');
                             cv_interact.success(['The driver ',data.text,' got assigned successfully!'].join(''));
                         }
                         else cv_interact.error(res.error_message);
