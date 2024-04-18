@@ -352,7 +352,7 @@ const CustomerDialog = new function(){
     this.elAgentType = this.self[0].querySelector('#_cul_agent_type');
     this.onClose = null;
         
-    this.body = this.self[0].querySelector('div.modal-body');
+    this.body = this.self[0].querySelector('#_cul_dlgCustomer_body');
     this.agent_fields_panel = this.self[0].querySelector('#_cul_dlgCustomer_fields');
     this.btnSave = this.self[0].querySelector('#_cul_dlgCustomer_btnSave');
     

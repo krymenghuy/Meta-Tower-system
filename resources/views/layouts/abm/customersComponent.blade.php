@@ -38,8 +38,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body" id="_cul_dlgSalesAgent_body">
-                <div id="_cul_dlgSalesAgent_fields" class="d-flex flex-column">
+            <div class="modal-body" id="_cul_dlgCustomer_body">
+                <div id="_cul_dlgCustomer_fields" class="d-flex flex-column">
                    <div class="row">
                      <div class="col-xs-12 col-md-12 col-lg-3">
                         <div class="d-flex align-items-center"> <div id="_agent_profile_photo" style="height:230px" class="mt-2"></div></div>
