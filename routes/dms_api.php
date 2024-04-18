@@ -32,8 +32,8 @@ use App\Http\Controllers\Dms\CurrencyController;
 use App\Http\Controllers\Dms\CategoryController;
 use App\Http\Controllers\Dms\RemarksController;
 use App\Http\Controllers\Dms\WebReportController;
-
-use App\Http\Controllers\Dms\NotificationController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\UMController;
 use App\Http\Controllers\Dms\SalesCommissionPolicyController;
  
 
@@ -41,6 +41,8 @@ use App\Http\Controllers\Dms\SalesCommissionPolicyController;
     Route::middleware([CustomRateLimiter::class])->group(function(){
         // Route::post('logout', [ApiController::class,'logout_mobile']);
         // Route::post('auth/login', [ApiController::class, 'externalLogin']);
+        Route::post('admin/login', [LoginController::class, 'apiLogin']);
+        Route::post('vs-encrypt038111', [UMController::class, 'encryptData']);
         //Route::post('contact-info', [MobileAppSettingsController::class, 'getContactInfo']);
     });
     Route::post('admin/login', [LoginController::class, 'apiLogin']);
