@@ -18,8 +18,12 @@ use App\Http\Controllers\SocialMediaController;
 use App\Http\Controllers\CurrencyController; 
 use App\Http\Controllers\WebReportController;
 
-use App\Http\Controllers\NotificationController;
- 
+use App\Http\Controllers\Dms\NotificationController;
+
+// use App\Http\Controllers\abm\CustomerController;
+use App\Http\Controllers\ShipmentController;
+use App\Http\Controllers\abm\OverseaShipmentController;
+use App\Http\Controllers\abm\SupplierController;
  
  //begin:: api without Authentication
     Route::middleware([CustomRateLimiter::class])->group(function(){
@@ -44,4 +48,17 @@ use App\Http\Controllers\NotificationController;
    Route::post('report-center/reports-by-category', [WebReportController::class, 'getReportListByCategory']);
    Route::post('report-center/filter-options', [WebReportController::class, 'getReportFilterOptions']);
 
+    });
+
+    Route::middleware([CustomRateLimiter::class])->prefix('os_suppliers')->group(function(){
+        Route::post('/save', [SupplierController::class, 'save']);
+        Route::post('/list', [SupplierController::class, 'getSuplierList']);
+        Route::post('/list-paginate', [SupplierController::class, 'getSuplierListPaginate']);
+    });
+    Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->group(function(){
+        Route::post('/save', [OverseaShipmentController::class, 'save']);
+        Route::post('/Shipment-list', [OverseaShipmentController::class, 'getOverseaShipmentList']);
+    
+        Route::post('/create-item', [OverseaShipmentController::class, 'createOverseaItem']);
+        Route::post('/item-list', [OverseaShipmentController::class, 'getOverseaItemList']);
     });

@@ -8,7 +8,7 @@ var CustomersComponent = new function(){
     this.elFilter_agent_type = this.self[0].querySelector('#_cul_filter_customer_type');
     this.elFilter_agent_status = this.self[0].querySelector ('#_cul_filter_customer_status');
     
-    this.btnNewSalesAgent = this.self.find('#_cul_btnNew');
+    this.btnNewCustomer = this.self.find('#_cul_btnNew');
     this.elSearch = this.self.find('#_cul_search_agent');
     this.btnSearch = this.self.find('#_cul_btnSearch');
     this.btnPrint = this.self.find('#_cul_btnPrint');
@@ -133,7 +133,7 @@ var CustomersComponent = new function(){
             'beforeRender':()=>{}
         });
 
-        mThis.tblSalesAgents = mThis.agentListView.getTable();
+        mThis.tblCustomers = mThis.agentListView.getTable();
  
         mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=> {
             el.addEventListener('change',e=>{
@@ -144,17 +144,17 @@ var CustomersComponent = new function(){
             });
         }); 
         
-        this.btnNewSalesAgent.on('click',function(e){
+        this.btnNewCustomer.on('click',function(e){
             let op = {
                 'id':null,
                 'onClose':(d)=>{
                     mThis.agentListView.showPage(mThis.getFilterData());
                 }
             };
-            SalesAgentDialog.show(op);
+            CustomerDialog.show(op);
         });
 
-        mThis.tblSalesAgents.querySelector('tbody').addEventListener('click', e=> {
+        mThis.tblCustomers.querySelector('tbody').addEventListener('click', e=> {
             e.preventDefault();
 
               //Click on Change Status
@@ -210,7 +210,7 @@ var CustomersComponent = new function(){
                         mThis.agentListView.showPage(mThis.getFilterData());
                     }
                 };
-                SalesAgentDialog.show(op);
+                CustomerDialog.show(op);
                 return;
             }
  
@@ -344,17 +344,17 @@ var CustomersComponent = new function(){
       
 };
  
-const SalesAgentDialog = new function(){
+const CustomerDialog = new function(){
     let mThis = this;
-    this.self = main_view.appContent.children('#_cul_dlgSalesAgent');
+    this.self = main_view.appContent.children('#_cul_dlgCustomer');
     this.base_url =main_view.base_url;
-    this.elTitle = this.self[0].querySelector('#_cul_dlgSalesAgentTitle');
+    this.elTitle = this.self[0].querySelector('#_cul_dlgCustomerTitle');
     this.elAgentType = this.self[0].querySelector('#_cul_agent_type');
     this.onClose = null;
         
-    this.body = this.self[0].querySelector('#_cul_dlgSalesAgent_body');
-    this.agent_fields_panel = this.self[0].querySelector('#_cul_dlgSalesAgent_fields');
-    this.btnSave = this.self[0].querySelector('#_cul_dlgSalesAgent_btnSave');
+    this.body = this.self[0].querySelector('#_cul_dlgCustomer_body');
+    this.agent_fields_panel = this.self[0].querySelector('#_cul_dlgCustomer_fields');
+    this.btnSave = this.self[0].querySelector('#_cul_dlgCustomer_btnSave');
     
     this.divPhoto = this.self[0].querySelector('#_agent_profile_photo');
     this.divLoginInfo = this.body.querySelector('.div_login_info');

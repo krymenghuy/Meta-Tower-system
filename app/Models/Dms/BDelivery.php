@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Models\Dms\Dms;
+namespace App\Models\Dms;
 
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
-use App\Models\Dms\DV;
+use App\Models\DV;
 //use Session;
 use Sanitizer;
 //use App\Models\Dms\UM;

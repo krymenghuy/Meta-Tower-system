@@ -1,41 +1,42 @@
 <?php
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Login\LoginController;
-use App\Http\Controllers\PickupRequestController;
-use App\Http\Controllers\OrderImageController;
-use App\Http\Controllers\PackageController;
+// use App\Http\Controllers\Login\LoginController;
+use App\Http\Controllers\Dms\PickupRequestController;
+use App\Http\Controllers\Dms\OrderImageController;
+use App\Http\Controllers\Dms\PackageController;
 // use App\Http\Controllers\LocationController;
 
-use App\Http\Controllers\SenderController;
-use App\Http\Controllers\LeadController;
-use App\Http\Controllers\DriverController;
-use App\Http\Controllers\CompletedPackageController;
-use App\Http\Controllers\CompanyProfileController;
-use App\Http\Controllers\DeliveryZoneController;
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\PriceController; /** PriceController is for actual delivery prices by zone by service type and by weight */
-use App\Http\Controllers\PriceListController; /** PriceListController is for quoted proce list */
-use App\Http\Controllers\PosterController;
-use App\Http\Controllers\DeliveryTripController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\SalesAgentController;
-use App\Http\Controllers\CommentController;
-use App\Http\Controllers\MobileAppSettingsController;
-use App\Http\Controllers\SocialMediaController;
-use App\Http\Controllers\PromotionController;
-use App\Http\Controllers\GeneralSettingsController;
-use App\Http\Controllers\TransactionController;
-use App\Http\Controllers\SystemSettingController;
+use App\Http\Controllers\Dms\SenderController;
+use App\Http\Controllers\Dms\LeadController;
+use App\Http\Controllers\Dms\DriverController;
+use App\Http\Controllers\Dms\CompletedPackageController;
+use App\Http\Controllers\Dms\CompanyProfileController;
+use App\Http\Controllers\Dms\DeliveryZoneController;
+use App\Http\Controllers\Dms\ReportController;
+use App\Http\Controllers\Dms\PriceController; /** PriceController is for actual delivery prices by zone by service type and by weight */
+use App\Http\Controllers\Dms\PriceListController; /** PriceListController is for quoted proce list */
+use App\Http\Controllers\Dms\PosterController;
+use App\Http\Controllers\Dms\DeliveryTripController;
+use App\Http\Controllers\Dms\DashboardController;
+use App\Http\Controllers\Dms\SalesAgentController;
+use App\Http\Controllers\Dms\CommentController;
+use App\Http\Controllers\Dms\MobileAppSettingsController;
+use App\Http\Controllers\Dms\SocialMediaController;
+use App\Http\Controllers\Dms\PromotionController;
+use App\Http\Controllers\Dms\GeneralSettingsController;
+use App\Http\Controllers\Dms\TransactionController;
+use App\Http\Controllers\Dms\SystemSettingController;
 //use App\Http\Controllers\ApiController;
-use App\Http\Controllers\CurrencyController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\RemarksController;
-use App\Http\Controllers\WebReportController;
+use App\Http\Controllers\Dms\CurrencyController;
+use App\Http\Controllers\Dms\CategoryController;
+use App\Http\Controllers\Dms\RemarksController;
+use App\Http\Controllers\Dms\WebReportController;
 
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\SalesCommissionPolicyController;
+use App\Http\Controllers\Dms\NotificationController;
+use App\Http\Controllers\Dms\SalesCommissionPolicyController;
  
+
  //begin:: api without Authentication
     Route::middleware([CustomRateLimiter::class])->group(function(){
         // Route::post('logout', [ApiController::class,'logout_mobile']);
@@ -47,10 +48,11 @@ use App\Http\Controllers\SalesCommissionPolicyController;
 
 //begin:: Admin notifications
     Route::middleware('auth.api', CustomRateLimiter::class)->group(function(){
-            Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
-            Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
-            Route::post('unread-count',[NotificationController::class,'getUnreadCount']);
-            Route::post('mark-read-all',[NotificationController::class,'markReadAll']);
+        Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
+        Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
+        //Route::post('notifications',[ApiController::class,'getNotificationList_admin']);
+        Route::post('unread-count',[ApiController::class,'getUnreadCount']);
+        Route::post('mark-read-all',[ApiController::class,'markReadAll']);
     });
  //end:: Admin Notification
   

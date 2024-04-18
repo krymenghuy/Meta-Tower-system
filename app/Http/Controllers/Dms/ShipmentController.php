@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dms;
 
 use App\Models\Dms\Shipment;
 use Illuminate\Http\Request;

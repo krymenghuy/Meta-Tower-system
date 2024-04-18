@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Dms;
 use Illuminate\Http\Request;
 use App\Models\Dms\UM;
 use App\Models\Dms\JDV;
