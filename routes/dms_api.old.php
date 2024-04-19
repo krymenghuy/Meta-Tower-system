@@ -48,6 +48,7 @@ use App\Models\SystemSetting;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\abm\OverseaShipmentController;
 use App\Http\Controllers\abm\SupplierController;
+use App\Http\Controllers\abm\SalesAgentsController;
 
 /*
 /*
@@ -470,11 +471,25 @@ Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->grou
 
 Route::prefix('customer')->group(function(){
     Route::post('/save',[CustomerController::class,'save']);
+    Route::post('/save-sc',[CustomerController::class,'save_sc']);
     Route::post('/delete',[CustomerController::class,'deleteCustomer']);
     Route::post('/list-all',[CustomerController::class,'getList_all']);
     Route::post('/details',[CustomerController::class,'getCustomerDetails']);
     Route::post('/form-options',[CustomerController::class,'getFormOptions']);
     Route::post('/list',[CustomerController::class,'getList']);
+    Route::post('/set-price-list', [CustomerController::class, 'setPriceList']);
+    Route::post('/save-profile-picture', [CustomerController::class, 'saveProfilePicture']);
+    Route::post('/delete-profile-picture', [CustomerController::class, 'deleteProfilePicture']);
+});
+
+Route::prefix('sales-agents')->group(function(){
+    Route::post('/save', [SalesAgentsController::class, 'saveSalesAgents']);
+    // Route::post('/delete', [SalesAgentsController::class, 'deleteSalesAgent']);
+    // Route::post('/update-status', [SalesAgentController::class, 'updateStatus']);
+     Route::post('/list', [SalesAgentController::class, 'getList']);
+    // Route::post('/form-options', [SalesAgentController::class, 'getFormOptions']);
+    // Route::post('/details', [SalesAgentController::class, 'getDetails']);
+    // Route::post('/commission-policy', [SalesAgentController::class, 'getCommissionPolicyDetails']);
 });
 
  

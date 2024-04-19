@@ -12,6 +12,7 @@ use App\Http\Controllers\UMController;
 use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\abm\OverseaShipmentController;
 use App\Http\Controllers\abm\SupplierController;
+use App\Http\controllers\abm\CustomerController;
  
  //begin:: api without Authentication
     Route::middleware([CustomRateLimiter::class])->group(function(){
@@ -50,4 +51,17 @@ use App\Http\Controllers\abm\SupplierController;
     
         Route::post('/create-item', [OverseaShipmentController::class, 'createOverseaItem']);
         Route::post('/item-list', [OverseaShipmentController::class, 'getOverseaItemList']);
+    });
+
+    Route::prefix('customers')->group(function(){
+        Route::post('/save',[CustomerController::class,'save']);
+        Route::post('/save-sc',[CustomerController::class,'save_sc']);
+        Route::post('/delete',[CustomerController::class,'deleteCustomer']);
+        Route::post('/list-all',[CustomerController::class,'getList_all']);
+        Route::post('/details',[CustomerController::class,'getCustomerDetails']);
+        Route::post('/form-options',[CustomerController::class,'getFormOptions']);
+        Route::post('/list',[CustomerController::class,'getList']);
+        Route::post('/set-price-list', [CustomerController::class, 'setPriceList']);
+        Route::post('/save-profile-picture', [CustomerController::class, 'saveProfilePicture']);
+        Route::post('/delete-profile-picture', [CustomerController::class, 'deleteProfilePicture']);
     });

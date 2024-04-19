@@ -199,14 +199,14 @@
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li> -->
 
-            <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(209); ?>>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(209); ?>>
                 <a href="SalesAgentsComponent" modid="209" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/general_report.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Sales Agents"></span>
                 </a>
-            </li> -->
+            </li>
              
             <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(222);?>>
                 <a href="LeadListComponent" modid="222" class="menu-item kt-menu__link">
