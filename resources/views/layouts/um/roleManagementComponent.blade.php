@@ -41,21 +41,101 @@
   .tr-disallowed td.prn-name {
     color: #000;
   }
-</style>
+  .card:hover{
+    cursor: pointer;
+    border:1px solid green !important;
+    
+  }
 
+  .row{
+    width: 100%;
+    flex-wrap:nowrap;
+    overflow: scroll;
+  }
+  .box{
+    width: 3000px;
+  }
+  
+ 
+</style>
+ 
 <div id="_um_roleManagementComponent" style="width:auto;display:none;margin:15px 15px 15px">
+
+
+  <div class="row">
+    <div class="col-sm-2 box">
+    <div class="card   shadow p-3 border rounded-3 m-3">
+      <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
+          <span class="data-input text-success fs-5 fw-semibold" data-field="title">Customer</span>
+          <img style="width:100px;" src="https://dms.vectoranet.com/uploads/public/1_data/default/images/default-user.png"  alt="">
+      </div>
+          <span class="pg-alert-card-line" style="width:100%"></span>
+          <span class="data-input text-muted p-1" style="font-size:0.8em" >Total People:</span>
+    </div> 
+    </div> 
+
+    <div class="col-sm-2 box">
+    <div class="card   shadow p-3 border rounded-3 m-3">
+      <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
+          <span class="data-input text-success fs-5 fw-semibold" data-field="title">Customer</span>
+          <img style="width:100px;" src="https://dms.vectoranet.com/uploads/public/1_data/default/images/default-user.png"  alt="">
+      </div>
+          <span class="pg-alert-card-line" style="width:100%"></span>
+          <span class="data-input text-muted p-1" style="font-size:0.8em" >Total People:</span>
+    </div> 
+    </div>   
+    
+    <div class="add">
+        <button class="btn  text-white">
+        <img style="width:50px;" src="{{ asset('assets/images/logo/new-button-emoji.png') }}"  alt="">
+
+        </button>
+    </div>
+    
+  </div>
+
+   
+
+
+    
+    
+      
+        
+  </div>
+
+  <div class="d-flex flex-fow gap-2 justify-content-start mt-3 shadow border rounded-3 ">
+    <div class="tab-header gap-2 set-parent-active m-3 p-2">
+      <button class="btn-um-application btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
+        <span class="text-nowrap">Application</span>
+      </button>
+      <button class="btn-um-roles btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
+          <span class="text-nowrap">Roles</span>
+      </button>
+      <button class="btn-um-permissions btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
+          <span class="text-nowrap">Permissions</span>
+      </button>
+      <button class="btn-um-permissions btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
+        <span class="text-nowrap">Permissions</span>
+      </button>
+      <button class="btn-um-reports btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
+          <span class="text-nowrap">Reports</span>
+      </button>
+      <button class="btn-um-lock btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="761" data-user="013777999" data-lock="lock">
+          <span class="text-nowrap">Lock</span>
+      </button>
+      <button class="btn-um-set-password btn btn-sm btn-outline-danger rounded-4 mr3" data-id="761" data-user="013777999" data-lock="lock">
+          <span class="text-nowrap">Set Password</span>
+      </button>
+    </div>
+
+  </div>
+  
+</div>
+
       
   <div id="_um_roleListPanel" style="display:none">
     <div class="row">
-    <div class="card text-danger bg-primary mb-3" style="max-width: 18rem;">
-          <div class="card-header">Header</div>
-            <div class="card-body">
-              <h5 class="card-title">Primary card title</h5>
-              <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-            </div>
-          </div>
-        
-    </div>
+    
   </div>
   
 </div>
