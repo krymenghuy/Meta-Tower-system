@@ -120,7 +120,7 @@ var DeliveryZoneComponent = new function () {
     mThis.btnPrint.on('click', (e) => {
       e.preventDefault();
       let p = mThis.getFilterData();
-      vsapi.call(`${main_view.base_url}/dms/zone/list-all`, p, null).then(res => {
+      vsapi.call(`${main_view.base_url}/api/zone/list-all`, p, null).then(res => {
         let zones = res.status_code == 200 ? res.data : [];
         let d = mThis.processZoneList_print(zones);
         let op = { 'title': 'Delviery Zone List', 'title_color': 'blue', 'subTitle': 'Destination Zones', 'header_columns': d.titles };
@@ -259,7 +259,7 @@ const ZoneDialog = new function () {
   this.elCity.off('change').on('change', function () {
     let p = { 'city_id': mThis.elCity.val() };
 
-    vsapi.call(`${mThis.base_url}/dms/location/options-district`, p).then(res => {
+    vsapi.call(`${mThis.base_url}/api/location/options-district`, p).then(res => {
       if (res.status_code === 200) {
         let rows = StringSanitizer.sanitizeObject(res.data);
         VSUtil.setComboItems(mThis.elDistrict, rows, 'id', 'district', true, '(Select District)', mThis.district_id);
@@ -270,7 +270,7 @@ const ZoneDialog = new function () {
 
   mThis.elDistrict.off('change').on('change', function () {
     let p = { 'district_id': $(this).val() };
-    vsapi.call(`${mThis.base_url}/dms/location/options-commune`, p).then(res => {
+    vsapi.call(`${mThis.base_url}/api/location/options-commune`, p).then(res => {
       if (res.status_code === 200) {
         let rows = StringSanitizer.sanitizeObject(res.data);
         VSUtil.setComboItems(mThis.elCommune, rows, 'id', 'commune', true, '(Select Commune)', mThis.commune_id);
@@ -280,7 +280,7 @@ const ZoneDialog = new function () {
 
   mThis.elCountry.off('change').on('change', function () {
     let p = { 'country_id': $(this).val() };
-    vsapi.call(`${mThis.base_url}/dms/location/options-city`, p).then(res => {
+    vsapi.call(`${mThis.base_url}/api/location/options-city`, p).then(res => {
       if (res.status_code === 200) {
         let rows = StringSanitizer.sanitizeObject(res.data);
         let val = mThis.elCity.val();
@@ -351,7 +351,7 @@ const ZoneDialog = new function () {
   this.prepareFormData = (zone_id, def, onFinish) => {
     //mThis.loadCountries(def,mThis.elCountry);
     // let p = {'zone_id':mThis.zone_id};
-    // vsapi.call(`${mThis.base_url}/dms/getDeliveryZoneDetails`,p).then(res => {
+    // vsapi.call(`${mThis.base_url}/api/getDeliveryZoneDetails`,p).then(res => {
     //       if(res.status_code === 200){
     //               let d = StringSanitizer.sanitizeObject(res.data);
     //               if(!option.def) option.def = {};
@@ -372,7 +372,7 @@ const ZoneDialog = new function () {
 
   // this.loadCountries = (def)=>{
   //    if(!def) def = {};
-  //    vsapi.call(`${mThis.base_url}/dms/location/options-country`,null).then(res => {
+  //    vsapi.call(`${mThis.base_url}/api/location/options-country`,null).then(res => {
   //      if(res.status_code === 200){
   //        let rows = StringSanitizer.sanitizeObject(res.data);
   //        VSUtil.setComboItems(mThis.elCountry,rows,'id','name',true,'(Select Country)',def.country_id);

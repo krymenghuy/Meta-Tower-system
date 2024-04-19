@@ -60,16 +60,17 @@ use App\Http\Controllers\Dms\SalesCommissionPolicyController;
  //end:: Admin Notification
   
    Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
-   Route::post('report-center/report-list', [WebReportController::class, 'getReportList']);
-   Route::post('report-center/reports-by-category', [WebReportController::class, 'getReportListByCategory']);
-   Route::post('report-center/filter-options', [WebReportController::class, 'getReportFilterOptions']);
+    Route::post('person/find', [PackageController::class, 'findPersons']);
+    Route::post('report-center/report-list', [WebReportController::class, 'getReportList']);
+    Route::post('report-center/reports-by-category', [WebReportController::class, 'getReportListByCategory']);
+    Route::post('report-center/filter-options', [WebReportController::class, 'getReportFilterOptions']);
 
- //*** begin::legacy APIs from previous version
-   Route::post('export/packages', [ReportController::class, 'getPackageList_export']);
-   Route::post('dashboard/data', [DashboardController::class, 'getDashboardData']);
-   Route::post('getPriceInfoByPackage', [PackageController::class, 'getPriceInfoByPackage']);
-   Route::post('getZoneName', [DeliveryZoneController::class, 'getZoneName']);
-   Route::post('getZoneInfo', [DeliveryZoneController::class, 'getZoneInfo']);
+    //*** begin::legacy APIs from previous version
+    Route::post('export/packages', [ReportController::class, 'getPackageList_export']);
+    Route::post('dashboard/data', [DashboardController::class, 'getDashboardData']);
+    Route::post('getPriceInfoByPackage', [PackageController::class, 'getPriceInfoByPackage']);
+    Route::post('getZoneName', [DeliveryZoneController::class, 'getZoneName']);
+    Route::post('getZoneInfo', [DeliveryZoneController::class, 'getZoneInfo']);
 
    Route::post('getMerchantsByPriceList', [PriceController::class, 'getMerchantsByPriceList']);
    Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceListIdBySearchValue']);

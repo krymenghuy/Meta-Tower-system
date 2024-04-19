@@ -6,7 +6,7 @@ var FindPersonDialog = new function() {
     this.self = main_view.appContent.children('#dg_dlgFindPerson');
     this.base_url = main_view.base_url;
     this.tblPersons = this.self.find('#dg_tblPersons');
-    this.tblPersons_body = this.self.find('#dg_tblPersons_body');
+    this.tblPersons_body = this.self.find('#dg_tblPersons');
     this.elSearch = this.self.find('#dg_person_search');
 
     this.btnFind = this.self.find('#dg_btnFindPerson');
@@ -95,7 +95,7 @@ var FindPersonDialog = new function() {
             'role':mThis.option.role
             //,'findBy':mThis.elFindBy.val()
         };
-        vsapi.call([mThis.base_url,'/api/person/find'].join(''),p,null,mThis.apiSearchCluster).then(res=>{
+        vsapi.call([mThis.base_url,'/dms/person/find'].join(''),p,null,mThis.apiSearchCluster).then(res=>{
             if(res.status_code ===200){
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 mThis.displayPersons(rows);
