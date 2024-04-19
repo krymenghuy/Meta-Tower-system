@@ -5,6 +5,12 @@
         background-color: #16c0985c;
         border: 2px solid #008767;
     }
+    .btn-act-inactive{
+        padding: 4px 20px;
+        color: #fe1f1f;
+        background-color: #ff000059;
+        border: 2px solid #fe1f1f;
+    }
     td .d-block{
         padding: 18px 0;
     }
@@ -26,7 +32,7 @@
                 </button>
             </div>
             <div class="d-flex gap-2" id="_sdl_filter_fields">
-                <div class="min-width-select">
+                <div class="min-width-select d-none">
                     <select id="_sdl_filter_business_type" class="d-none modal-select2 filter-field" data-field="business_type"></select>
                 </div>
                 <div class="min-width-select">
@@ -53,7 +59,7 @@
         </div>
     </div>
     <div class="rounded-3 mt-3 bg-white ">
-        <div id="_sdl_sender_list" ></div>
+        <div id="_sdl_supplier_list" ></div>
     </div>
 </div>
 
@@ -69,8 +75,9 @@
             <div class="modal-body">
                 <div class="row" id="div_merchant_info">
                     <div class="form-group col-lg-6">
-                        <label for="code" class="form-label trans-text" data-langprop="titles.Merchant ID"></label>
+                        <label for="id" class="form-label trans-text" data-langprop="titles.Supplier ID"></label>
                         <input type="text" class="form-control data-input" data-field="id" placeholder="AUTO" readonly/>
+                        <input type="hidden" class="form-control data-input" data-field="code" placeholder="AUTO" readonly/>
                     </div>
                     <div class="form-group col-lg-6">
                         <label for="name" class="form-label trans-text" data-langprop="titles.Merchant Name"></label>
@@ -92,12 +99,14 @@
                     </div>
                     <div class="col-lg-6">
                         <label for="sales_agent_id" class="form-label trans-text" data-langprop="titles.Referrer"></label>
-                        <select id="_sdl_sales_agent" class="modal-select2 data-input" data-field=" "></select>
+                        <select id="_sdl_sales_agent" class="modal-select2 data-input" data-field="sales_agent_id"></select>
                     </div>
                     <div class="form-group col-lg-12">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Address"></label>
                         <textarea class="form-control data-input" data-field="address"></textarea>
                     </div>
+                    <input type="hidden" class="form-control data-input" data-field="status_code"  />
+
                 </div>
                 
             </div>

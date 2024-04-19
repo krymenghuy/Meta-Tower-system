@@ -198,7 +198,7 @@
                         <div class="animation-line line--loader d-none" id="vs_loader"></div>
                     </div>
                     <!--Removed class "kt-content" from this DIV -->
-                    <div id="_p2" class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content" style="margin-top:-15px">
+                    <div id="_p2" class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content" style="margin-top: 15px">
                         <div id="_p1" class="row">
                             <div class="col-lg-12 shadow-box ps-4" id="_app_content">
                                 @include('layouts.abm.dashboardComponent')
