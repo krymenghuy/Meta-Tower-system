@@ -1,4 +1,6 @@
 'use strict';
+
+
 var UserManagementComponent = new function(){
     const mThis = this;
     this.title_prop = "User Management";
@@ -9,9 +11,10 @@ var UserManagementComponent = new function(){
     this.btnPdf = mThis.self.querySelector('#_um_btn_pdf');
     this.containerPagination = mThis.self.querySelector('#container_pagination_um');
 
+
+
     this.init = () => {
         if(mThis.initAlready) return;
-
         mThis.userListView = new ListView('_um_container',{
             fetchApi: `${main_view.base_url}/api/user/list-paginate`,
             perPage: 5,
@@ -22,12 +25,13 @@ var UserManagementComponent = new function(){
             },
             listContainerClass: null
         });
- 
-        mThis.btnNew.onclick = function(e){
+
+        mThis.btnNew.onclick = function(e)
+        {
             e.preventDefault();
             const op = {
                 user_id: null,
-                user_class: mThis.elfilter_userclass.value, 
+                user_class: mThis.elfilter_userclass.value,
                 default: {
                     user_class: mThis.elfilter_userclass.value
                 },
@@ -36,7 +40,8 @@ var UserManagementComponent = new function(){
                     mThis.userListView.showPage(mThis.getFilterData());
                 }
             };
-            if (op.user_class == 0 || !op.user_class || op.user_class == ''){
+            if(op.user_class == 0 || !op.user_class || op.user_class == '')
+            {
                 cv_interact.warning('Please select a user class');
                 return;
             }
@@ -45,7 +50,8 @@ var UserManagementComponent = new function(){
         };
 
         let timeOut = null;
-        mThis.elSearch.onkeyup = function(e){
+        mThis.elSearch.onkeyup = function(e)
+        {
             e.preventDefault();
             clearTimeout(timeOut);
             timeOut = setTimeout(()=>{
@@ -53,12 +59,14 @@ var UserManagementComponent = new function(){
             },250);
         }
 
-        mThis.elfilter_userclass.onchange = function(e){
+        mThis.elfilter_userclass.onchange = function(e)
+        {
             e.preventDefault();
             mThis.userListView.showPage(mThis.getFilterData());
         }
 
-        mThis.btnPdf.onclick = function(e){
+        mThis.btnPdf.onclick = function(e)
+        {
             e.preventDefault();
             const html = `<ul class="list-filter-um">
                 <li class="_um_permissions">
@@ -70,7 +78,7 @@ var UserManagementComponent = new function(){
                     <a href="javascript:void(0)">Modules</a>
                 </li>
             </ul>`;
-            DialogFilter(e,{},html,(div) => {
+            FilterDialog(e,{},html,(div) => {
                 div.classList.remove('p-3'),
                 div.style.left = 'unset',
                 div.style.right = 10+'px';
@@ -83,17 +91,20 @@ var UserManagementComponent = new function(){
     //END::UserManagementComponnet.init()
 
     this.setPrint = (div) => {
-        div.onclick = function(e){
+        div.onclick = function(e)
+        {
             e.preventDefault();
 
             let lnk = VSUtil.getElementByClass(e.target,'_um_permissions');
-            if(lnk){
+            if(lnk)
+            {
                 mThis.loadFormPrint('permissions','api/permission/list');
                 return;
             }
 
             lnk = VSUtil.getElementByClass(e.target,'_um_modules');
-            if(lnk){
+            if(lnk)
+            {
                 mThis.loadFormPrint('modules','api/module/list');
                 return;
             }
@@ -105,7 +116,8 @@ var UserManagementComponent = new function(){
             if(res.status_code === 200){
                 const d = res.data;
                 let html = '', tbody = '';
-                switch(open){
+                switch(open)
+                {
                     case 'permissions':
                         html = `<table class="table table-bordered">
                             <thead>
@@ -118,11 +130,11 @@ var UserManagementComponent = new function(){
                             <tbody>
                                 <h3 class="text-center">User Permissions</h3>
                                 ${tbody='',
-                                d && d.forEach(item => {
+                                (d || []).forEach(item => {
                                     tbody += `<tr>
-                                        <td class="fw-bold">${item.id ? item.id : ''}</td>
-                                        <td>${item.name ? item.name : ''}</td>
-                                        <td>${item.module_name ? item.module_name : ''}</td>
+                                        <td class="fw-bold">${item.id || ''}</td>
+                                        <td>${item.name || ''}</td>
+                                        <td>${item.module_name || ''}</td>
                                     </tr>`;
                                 }), tbody}
                             </tbody>
@@ -140,11 +152,11 @@ var UserManagementComponent = new function(){
                             <tbody>
                                 <h3 class="text-center">User Modules</h3>
                                 ${tbody='',
-                                d && d.forEach(item => {
+                                (d || []).forEach(item => {
                                     tbody += `<tr>
-                                        <td class="fw-bold">${item.id ? item.id : ''}</td>
-                                        <td>${item.ref_code ? item.ref_code : ''}</td>
-                                        <td>${item.module_name ? item.module_name : ''}</td>
+                                        <td class="fw-bold">${item.id || ''}</td>
+                                        <td>${item.ref_code || ''}</td>
+                                        <td>${item.module_name || ''}</td>
                                     </tr>`;
                                 }), tbody}
                             </tbody>
@@ -154,12 +166,13 @@ var UserManagementComponent = new function(){
                         break;
                 }
 
-                if(html){
+                if(html)
+                {
                     let myWindow = window.open('','PRINT');
                     myWindow.document.write(`<!DOCTYPE html>
                     <html >
                         <head>
-                            <title class="text-capitalize">User ${open ? open : ''}</title>
+                            <title class="text-capitalize">User ${open || ''}</title>
                             <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
                             <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/ksm_style.css"/>
                             <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/vsstyle.css"/>
@@ -174,31 +187,33 @@ var UserManagementComponent = new function(){
                     },500);
                 }
             }
-            else{
-                cv_interact.error(res.error_message);
+            else
+            {
+                cv_interact.error(res.error_message ?? 'Failed to load data!');
             }
         });
     }
 
     this.renderUserList = (div,items) => {
-        items = items ? items : [];
-        if (!AuthManager){
+        items = items ?? [];
+        if(!AuthManager)
+        {
             console.error('Authentication Management does not seems to work properly. You may need to refresh page');
             return;
         }
         //AuthManager() provides current user information
-        AuthManager.init((user_data)=>{
+        AuthManager.init((user_data) => {
            mThis.beginRenderUsers(div,items,user_data.user);
         });
     }
 
-    this.beginRenderUsers = (div,items,current_user)=>{
+    this.beginRenderUsers = (div,items,current_user) => {
         const d = current_user;
         let html = '';
         items.forEach(user => {
-            let cls_lock_class = (user.status.toLowerCase() =='active')? '':'border-danger border-2';
-            const login_name_text = current_user.id == user.id? [user.login_name,' <span class="text-danger">(You)</span>'].join('') : user.login_name; 
-            html = [html,`<div data-roleid="`,(user.role_id || user.primary_role_id),`" class="${user.id === d.id ? 'set-half-border ' : ''}w-100 rounded-2 p-3 shadow-lg bg-white mb-3 position-relative">
+            let cls_lock_class = (user.status && user.status.toLowerCase() == 'active' ) ? '' : 'border-danger border-2';
+            const login_name_text = current_user.id == user.id ? [user.login_name,' <span class="text-danger">(You)</span>'].join('') : user.login_name;
+            html = [html,`<div data-roleid="`,(user.role_id || user.primary_role_id),`" class="${user.id === d.id ? 'set-half-border ' : ''}w-100 rounded-2 p-3 shadow bg-white mb-3 position-relative">
                 <div class="scope-user row gy-2">
                     <div class="col-lg-2">
                         <div class="d-flex h-100">
@@ -215,11 +230,11 @@ var UserManagementComponent = new function(){
                             </p>
                             <p class="text-nowrap">
                                 <span class="text-capitalize text-width-user">Full Name :</span>
-                                <span class="text-capitalize">${user.full_name ? user.full_name : 'N/A'}</span>
+                                <span class="text-capitalize">${user.full_name || 'N/A'}</span>
                             </p>
                             <p class="text-nowrap">
                                 <span class="text-capitalize text-width-user">User Class :</span>
-                                <span class="text-capitalize">${user.user_class ? user.user_class : 'N/A'}</span>
+                                <span class="text-capitalize">${user.user_class || 'N/A'}</span>
                             </p>
                             <p class="text-nowrap">
                                 <span class="text-capitalize text-width-user">Role :</span>
@@ -259,52 +274,54 @@ var UserManagementComponent = new function(){
                         </div>
                     </div>
                 </div>
-                <div style="min-height:35px" class="d-flex justify-content-left gap-3 pl-2 pt-2 w-100 custom-btn border-top border-secondary">
+                <div style="min-height:35px" class="d-flex justify-content-left gap-3 pl-2 pt-2 w-100 custom-buttons border-top border-secondary">
                     <button class="btn-um-roles btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
-                        <span class="text-nowrap">Roles</span>
+                        <span class="text-nowrap">`,LocaleManager.trans('Roles','titles'),`</span>
                     </button>
                     <button class="btn-um-permissions btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
-                        <span class="text-nowrap">Permissions</span>
+                        <span class="text-nowrap">`,LocaleManager.trans('Permissions','titles'),`</span>
                     </button>
                     <button class="btn-um-modules btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
-                        <span class="text-nowrap">Modules</span>
+                        <span class="text-nowrap">`,LocaleManager.trans('Modules','titles'),`</span>
                     </button>
                     <button class="btn-um-reports btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
-                        <span class="text-nowrap">Reports</span>
+                        <span class="text-nowrap">`,LocaleManager.trans('Reports','titles'),`</span>
                     </button>
                     <button class="btn-um-lock btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}" data-lock="${user.is_locked ? 'unlock' : 'lock'}">
-                        <span class="text-nowrap">${user.is_locked ? 'Unlock' : 'Lock'}</span>
+                        <span class="text-nowrap">`,user.is_locked ? LocaleManager.trans('Unlock','titles') : LocaleManager.trans('Lock','titles') ,`</span>
                     </button>
                     <button class="btn-um-set-password btn btn-sm btn-outline-primary rounded-4" data-id="${user.id}" data-user="${user.login_name}">
-                        <span class="text-nowrap">Set Password</span>
+                        <span class="text-nowrap">`,LocaleManager.trans('Set Password','titles'),`</span>
                     </button>
                 </div>
             </div>`].join('');
         });
-        
+
         div.innerHTML = html;
         const parent = div.parentElement;
         parent.style.height = (window.innerHeight - 240)+'px';
-        window.onresize = function(e){
+        window.onresize = function(e)
+        {
             e.preventDefault();
             parent.style.height = (window.innerHeight - 240)+'px';
         }
         mThis.setMenuAction(div.querySelectorAll('.btn-action'));
-        div.querySelectorAll('.custom-btn').forEach(contain => {
-            mThis.setEvent(contain);
+        div.querySelectorAll('.custom-buttons').forEach(ctn => {
+            mThis.setEvent(ctn);
         });
     }
 
     this.setMenuAction = (buttons) => {
         buttons.forEach(btn => {
-            btn.onclick = function(e){
+            btn.onclick = function(e)
+            {
                 e.preventDefault();
-                const id = e.target.parentElement.dataset.id,
+                const id = (e.target.dataset.id || e.target.parentElement.dataset.id),
                 user_name = e.target.parentElement.dataset.user,
                 is_locked = e.target.parentElement.dataset.lock,
                 role_id = e.target.parentElement.dataset.roleid;
-
-                if(id){
+                if(id)
+                {
                     const html = [`<ul class="list-unstyled set-bottom-border pb-0 mb-0">
                         <li class="p-2 text-nowrap btn-um-delete" data-id="${id}" data-user="${user_name}">
                             <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
@@ -314,61 +331,74 @@ var UserManagementComponent = new function(){
                             <i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>
                             <span class="ps-2">Edit</span>
                         </li>
-                        <li class="p-2 text-nowrap btn-um-lock" data-id="${id}" data-user="${user_name}" data-lock="${is_locked}">
-                            ${is_locked === 'lock' ? '<i class="fa-solid fa-ban text-danger fs-5"></i>' : '<i class="fa-solid fa-lock-open text-success fs-5"></i>'}
-                            <span class="ps-2 text-capitalize">${is_locked}</span>
-                        </li>
-                        <li class="p-2 text-nowrap btn-um-set-password" data-id="${id}" data-user="${user_name}">
-                            <i class="fa-solid fa-user-lock fs-5 text-primary-emphasis"></i>
-                            <span class="ps-2">Set Password</span>
-                        </li>`,
-                        //`<li role="separator" class="dropdown-divider"></li>`,
-                        `<li class="p-2 text-nowrap btn-um-permissions" data-id="${id}" data-user="${user_name}">
-                            <i class="fa-solid fa-user-pen fs-5 text-warning-emphasis"></i>
-                            <span class="ps-2">Permissions</span>
-                        </li>
-                        <li class="p-2 text-nowrap btn-um-modules" data-id="${id}" data-user="${user_name}">
-                          <i class="fa-solid fa-user-pen fs-5 text-warning-emphasis"></i>
-                          <span class="ps-2">Modules</span>
-                        </li>
-                        <li class="p-2 text-nowrap btn-um-reports" data-id="${id}" data-user="${user_name}">
-                            <i class="fa-regular fa-rectangle-list fs-5 text-primary"></i>
-                            <span class="ps-2">Reports</span>
-                        </li>
                     </ul>`].join('');
-                    //const btn = VSUtil.closestLimited(e.target,'.btn-action');
-                    DialogFilter(e,{},html,(div) => {
-                        div.classList.remove('p-3');
-                        div.classList.add('p-2');
-                        div.style.left = 'unset',
-                        mThis.setEvent(div,btn);
+                    // const html = [`<ul class="list-unstyled set-bottom-border pb-0 mb-0">
+                    //     <li class="p-2 text-nowrap btn-um-delete" data-id="${id}" data-user="${user_name}">
+                    //         <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
+                    //         <span class="ps-2">Delete</span>
+                    //     </li>
+                    //     <li class="p-2 text-nowrap btn-um-modify" data-roleid="${role_id}" data-id="${id}" data-user="${user_name}">
+                    //         <i class="fa-regular fa-pen-to-square fs-5 text-warning"></i>
+                    //         <span class="ps-2">Edit</span>
+                    //     </li>
+                    //     <li class="p-2 text-nowrap btn-um-lock" data-id="${id}" data-user="${user_name}" data-lock="${is_locked}">
+                    //         ${is_locked === 'lock' ? '<i class="fa-solid fa-ban text-danger fs-5"></i>' : '<i class="fa-solid fa-lock-open text-success fs-5"></i>'}
+                    //         <span class="ps-2 text-capitalize">${is_locked}</span>
+                    //     </li>
+                    //     <li class="p-2 text-nowrap btn-um-set-password" data-id="${id}" data-user="${user_name}">
+                    //         <i class="fa-solid fa-user-lock fs-5 text-primary-emphasis"></i>
+                    //         <span class="ps-2">Set Password</span>
+                    //     </li>`,
+                    //     `<li class="p-2 text-nowrap btn-um-permissions" data-id="${id}" data-user="${user_name}">
+                    //         <i class="fa-solid fa-user-pen fs-5 text-warning-emphasis"></i>
+                    //         <span class="ps-2">Permissions</span>
+                    //     </li>
+                    //     <li class="p-2 text-nowrap btn-um-modules" data-id="${id}" data-user="${user_name}">
+                    //       <i class="fa-solid fa-user-pen fs-5 text-warning-emphasis"></i>
+                    //       <span class="ps-2">Modules</span>
+                    //     </li>
+                    //     <li class="p-2 text-nowrap btn-um-reports" data-id="${id}" data-user="${user_name}">
+                    //         <i class="fa-regular fa-rectangle-list fs-5 text-primary"></i>
+                    //         <span class="ps-2">Reports</span>
+                    //     </li>
+                    // </ul>`].join('');
+                    // const dynamicBtnsListCtn = document.body;
+                    FilterDialog(e,{},html,(div) => {
+                        mThis.setEvent(div);
                     });
                 }
             };
         });
     }
 
-    this.setEvent = (div,button=null) => {
-        div.onclick = function(e){
+    this.setEvent = (div) => {
+        if(!div) return;
+        div.onclick = function(e)
+        {
             e.preventDefault();
-            let btn = VSUtil.getElementByClass(e.target,'btn-um-delete');
-            if(btn){
+            let btn = VSUtil.closestLimited(e.target,'.btn-um-delete');
+            if(btn)
+            {
                 let op = {
                     user_id: btn.dataset.id
                 };
                 if(!AuthManager.allowed(101)) return;
-                if(op.user_id){
+                if(op.user_id)
+                {
                     cv_interact.confirm('Delete this user?',{
                         title: 'Delete User',
                         context: 'delete'
                     },(e) => {
-                        if(e){
+                        if(e)
+                        {
                             vsapi.call(`${main_view.base_url}/api/user/delete`,op,null).then(res => {
-                                if(res.status_code === 200){
+                                if(res.status_code === 200)
+                                {
                                     mThis.userListView.showPage(mThis.getFilterData());
                                 }
-                                else{
-                                    cv_interact.error(res.error_message);
+                                else
+                                {
+                                    cv_interact.error(res.error_message ?? 'Something went wrong 312!');
                                 }
                             });
                         }
@@ -377,14 +407,15 @@ var UserManagementComponent = new function(){
                 return;
             }
 
-            btn = VSUtil.getElementByClass(e.target,'btn-um-modify');
-            if(btn){
+            btn = VSUtil.closestLimited(e.target,'.btn-um-modify');
+            if(btn)
+            {
                 //get primary role_id. If user does not have primary role_id, then do not allow edit information
-                const role_id = div.dataset.roleid; 
+                const role_id = div.dataset.roleid;
                 // if(!role_id || role_id==0){
                 //   cv_interact.warning('This user must have one role, so that it is possible to view or edit user information');
                 //   return;
-                // } 
+                // }
                 let op = {
                     user_id: btn.dataset.id,
                     default:{
@@ -400,8 +431,9 @@ var UserManagementComponent = new function(){
                 return;
             }
 
-            btn = VSUtil.getElementByClass(e.target,'btn-um-lock');
-            if(btn){
+            btn = VSUtil.closestLimited(e.target,'.btn-um-lock');
+            if(btn)
+            {
                 let op = {
                     user_id: btn.dataset.id,
                     user_name: btn.dataset.user,
@@ -409,21 +441,24 @@ var UserManagementComponent = new function(){
                 };
                 if(!AuthManager.allowed(113)) return;
                 const action =(op.action || '').toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
-                cv_interact.confirm(['Do you want to ',op.action,' user ',op.user_name.replace(/^\w/, (c) => c.toUpperCase()),'?'].join(''),{
-                    title: `${op.action} User`,
+                cv_interact.confirm(['Do you want to ',op.action || '',' user ',op.user_name.replace(/^\w/, (c) => c.toUpperCase()),'?'].join(''),{
+                    title: `${op.action || ''} User`,
                     context: `update`,
-                    confirmButtonText:`${action} Now`
+                    confirmButtonText:`${action || ''} Now`
                 },(e) => {
-                    if(e){
+                    if(e)
+                    {
                         delete(op.user_name);
                         vsapi.call(`${main_view.base_url}/api/user/set-lock-status`,op,null,false).then(res => {
-                            if(res.status_code === 200){
+                            if(res.status_code === 200)
+                            {
                                 const parentElement = button ? button.closest('.scope-user') : div.previousElementSibling;
-                                btn = button ? btn = button : btn;
+                                btn = button ? button : btn;
                                 mThis.resetUserStatus(parentElement,btn,op);
                             }
-                            else{
-                                cv_interact.error(res.error_message);
+                            else
+                            {
+                                cv_interact.error(res.error_message ?? 'Something went wrong!');
                             }
                         });
                     }
@@ -432,7 +467,8 @@ var UserManagementComponent = new function(){
             }
 
             btn = VSUtil.closestLimited(e.target,'.btn-um-set-password');
-            if(btn){
+            if(btn)
+            {
                 let op = {
                     button:null,
                     user_id: btn.dataset.id,
@@ -449,7 +485,8 @@ var UserManagementComponent = new function(){
             }
 
             btn = VSUtil.closestLimited(e.target,'.btn-um-roles');
-            if(btn){
+            if(btn)
+            {
                 let op = {
                     button:null,
                     user_id: btn.dataset.id,
@@ -462,7 +499,8 @@ var UserManagementComponent = new function(){
             }
 
             btn = VSUtil.closestLimited(e.target,'.btn-um-permissions');
-            if(btn){
+            if(btn)
+            {
                 let op = {
                     button:null,
                     user_id: btn.dataset.id,
@@ -474,21 +512,9 @@ var UserManagementComponent = new function(){
                 return;
             }
 
-            btn = VSUtil.getElementByClass(e.target,'btn-um-modules');
-            if(btn){
-                let op = {
-                    button:null,
-                    user_id: btn.dataset.id,
-                    user_name: btn.dataset.user,
-                    open: 'modules'
-                };
-                if(op.user_id && op.user_id !== 'undefined')
-                    AddUserDialog.show(op);
-                return;
-            }
-            
-            btn = VSUtil.getElementByClass(e.target,'btn-um-modules');
-            if(btn){
+            btn = VSUtil.closestLimited(e.target,'.btn-um-modules');
+            if(btn)
+            {
                 let op = {
                     button:null,
                     user_id: btn.dataset.id,
@@ -500,8 +526,23 @@ var UserManagementComponent = new function(){
                 return;
             }
 
-            btn = VSUtil.getElementByClass(e.target,'btn-um-reports');
-            if(btn){
+            btn = VSUtil.closestLimited(e.target,'.btn-um-modules');
+            if(btn)
+            {
+                let op = {
+                    button:null,
+                    user_id: btn.dataset.id,
+                    user_name: btn.dataset.user,
+                    open: 'modules'
+                };
+                if(op.user_id && op.user_id !== 'undefined')
+                    AddUserDialog.show(op);
+                return;
+            }
+
+            btn = VSUtil.closestLimited(e.target,'.btn-um-reports');
+            if(btn)
+            {
                 let op = {
                     button:null,
                     user_id: btn.dataset.id,
@@ -519,9 +560,11 @@ var UserManagementComponent = new function(){
         const containerIcon = div.querySelector('.width-locked-icon');
         const img = div.querySelector('img.img-user-profile');
         let btnAction = null;
-        if(btn.classList.contains('btn-action')){
+        if(btn.classList.contains('btn-action'))
+        {
             btnAction = div.nextElementSibling.querySelector('.btn-um-lock');
-            if(options.action === 'lock'){
+            if(options.action === 'lock')
+            {
                 btn.dataset.lock = 'unlock',
                 btnAction.dataset.lock = 'unlock',
                 btnAction.children[0].textContent = 'Unlock';
@@ -536,16 +579,19 @@ var UserManagementComponent = new function(){
                 if(img) img.classList.remove('border-danger','border-2');
             }
         }
-        else{
+        else
+        {
             btnAction = div.querySelector('.btn-action');
-            if(options.action === 'lock'){
+            if(options.action === 'lock')
+            {
                 btn.dataset.lock = 'unlock',
                 btnAction.dataset.lock = 'unlock';
                 btn.children[0].textContent = 'Unlock';
                 containerIcon.innerHTML = '<i class="fa-solid fa-ban fs-4 text-danger"></i>';
                 if(img) img.classList.add('border-2','border-danger');
             }
-            else{
+            else
+            {
                 btn.dataset.lock = 'lock',
                 btnAction.dataset.lock = 'lock';
                 btn.children[0].textContent = 'Lock';
@@ -564,8 +610,9 @@ var UserManagementComponent = new function(){
 
     this.prepareFormOption = (onFinish=null) => {
         vsapi.call(`${main_view.base_url}/api/user/options-user-class`,null,null,false).then(res => {
-            if(res.status_code === 200){
-                const d = res.data,
+            if(res.status_code === 200)
+            {
+                const d = res.data ?? [],
                 el = mThis.elfilter_userclass;
                 VSUtil.setComboItems(el,d,'user_class','user_class_name',true,'All',0);
                 if(typeof onFinish === 'function') onFinish();
@@ -593,51 +640,62 @@ const AddUserDialog = new function(){
     this.btnSave = mThis.self.querySelector('#dlg_um_btn_save');
     this.btnClose = mThis.self.querySelector('#dlg_um_btn_close');
     this.selected_options = {};
-    
+
     /** Set event handlers */
     this.saveData = (modal,btnSave,end_point,options) => {
-        btnSave.onclick = function(e){
+        btnSave.onclick = function(e)
+        {
             e.preventDefault();
             let p = null;
-            if(options.open === 'add-user'){
+            if(options.open === 'add-user')
+            {
                 p = mThis.getDataForm(modal);
                 //p.user_id = options.user_id;
                 p.id = options.user_id;
-                if(p.password === p.confirm_password){
+                if(p.password === p.confirm_password)
+                {
                     delete(p.confirm_password);
                     vsapi.call([main_view.base_url,end_point].join(''),p,btnSave).then(res => {
-                        if(res.status_code === 200){
+                        if(res.status_code === 200)
+                        {
                             $(mThis.self).modal('hide');
-                            let msg =['New login "',p.login_name,'"', (p.full_name? ` for ${p.full_name}`:''),' has been created successfully!'].join('');
-                            if(p.id > 0 || p.user_id > 0) msg = ['Account info for user ',(p.full_name? p.full_name: p.login_name),' was successfully updated'].join('');
+                            let msg =['New login "',p.login_name || '','"', (p.full_name ? ` for ${p.full_name}`:''),' has been created successfully!'].join('');
+                            if(p.id > 0 || p.user_id > 0) msg = ['Account info for user ',(p.full_name ?? p.login_name),' was successfully updated'].join('');
                             cv_interact.success(msg);
                             if(typeof options.onClose === 'function') options.onClose();
                         }
-                        else{
-                            cv_interact.error(res.error_message);
+                        else
+                        {
+                            cv_interact.error(res.error_message ?? 'Something went wrong!');
                         }
                     });
                 }
-                else{
+                else
+                {
                     cv_interact.warning("Password and confirm password not match");
                 }
             }
-            else{
+            else
+            {
                 p = mThis.getDataForm(modal);
                 p.login_name = options.user_name;
-                if(p.password == p.confirm_password){
+                if(p.password == p.confirm_password)
+                {
                     delete(p.confirm_password);
                     vsapi.call(`${main_view.base_url+end_point}`,p,btnSave).then(res => {
-                        if(res.status_code === 200){
+                        if(res.status_code === 200)
+                        {
                             $(mThis.self).modal('hide');
                             if(typeof options.onClose === 'function') options.onClose();
                         }
-                        else{
-                            cv_interact.error(res.error_message);
+                        else
+                        {
+                            cv_interact.error(res.error_message ?? 'Something went wrong!');
                         }
                     });
                 }
-                else{
+                else
+                {
                     cv_interact.warning("Passwords do not match");
                 }
             }
@@ -659,7 +717,8 @@ const AddUserDialog = new function(){
     this.setImage = (btn_chooser,image) => {
         const div = btn_chooser.parentElement;
         let html = '';
-        if(image){
+        if(image)
+        {
             html = `<img class="w-100 h-100 object-fit-scale data-input" src="${image}" alt="" data-field="photo"/>
             <div class="position-absolute top-0 end-0 rounded-3 bg-dark p-2">
                 <a href="javascript:void(0)" class="btn-um-delete-img">
@@ -667,7 +726,8 @@ const AddUserDialog = new function(){
                 </a>
             </div>`;
         }
-        else{
+        else
+        {
             html = `<div id="_um_profile_show" class="d-flex align-items-center justify-content-center rounded-3 w-100 h-100">
                 <i class="fa-regular fa-image text-muted fs-5"></i>
             </div>`;
@@ -679,7 +739,8 @@ const AddUserDialog = new function(){
 
     this.setDeleteImage = (div) => {
         const btn_delete = div.querySelector('.btn-um-delete-img');
-        btn_delete.onclick = function(e){
+        btn_delete.onclick = function(e)
+        {
             e.preventDefault();
             const html = `<div id="_um_profile_show" class="d-flex align-items-center justify-content-center rounded-3 w-100 h-100">
                 <i class="fa-regular fa-image text-muted fs-5"></i>
@@ -691,10 +752,12 @@ const AddUserDialog = new function(){
 
     this.setChooseImage = (div) => {
         const btn_chooser = div.querySelector('#_um_profile_show');
-        btn_chooser.onclick = function(e){
+        btn_chooser.onclick = function(e)
+        {
             e.preventDefault();
             FileChooser.chooseFile(null,(d) => {
-                if(d){
+                if(d)
+                {
                     mThis.setImage(btn_chooser,d.dataUrl);
                 }
             });
@@ -705,16 +768,19 @@ const AddUserDialog = new function(){
         let inputList = [];
 
         div.querySelectorAll('.data-validate').forEach(el => {
-            el.nextElementSibling.onclick = function(e){
+            el.nextElementSibling.onclick = function(e)
+            {
                 e.preventDefault();
                 const elChild = this.children[0];
-                if(el.type === 'password'){
+                if(el.type === 'password')
+                {
                     el.type = 'text';
                     elChild.classList.add('text-success'),
                     elChild.classList.remove('text-muted');
                     return;
                 }
-                else{
+                else
+                {
                     el.type = 'password';
                     elChild.classList.remove('text-success'),
                     elChild.classList.add('text-muted');
@@ -724,50 +790,58 @@ const AddUserDialog = new function(){
         });
         if(!inputList[0]) return;
 
-        inputList[0].oninput = function(e){
+        inputList[0].oninput = function(e)
+        {
             e.preventDefault();
-            if((this.value === inputList[1].value) && !(this.value === '')){
+            if((this.value === inputList[1].value) && !(this.value === ''))
+            {
                 this.classList.remove('border-danger');
                 inputList[1].classList.remove('border-danger');
             }
-            else{
+            else
+            {
                 this.classList.add('border-danger');
                 inputList[1].classList.add('border-danger');
             }
         };
 
-        inputList[1].oninput = function(e){
+        inputList[1].oninput = function(e)
+        {
             e.preventDefault();
-            if((this.value === inputList[0].value) && !(this.value === '')){
+            if((this.value === inputList[0].value) && !(this.value === ''))
+            {
                 this.classList.remove('border-danger');
                 inputList[0].classList.remove('border-danger');
             }
-            else{
+            else
+            {
                 this.classList.add('border-danger');
                 inputList[0].classList.add('border-danger');
             }
         };
- }
-      
+    }
+
     this.renderCreateUser = (modalDiv,options, onFinish) => {
         const def = options.default || {};
         const div = modalDiv.querySelector('.modal-body');
         vsapi.call(`${main_view.base_url}/api/user/form-options`,null,options.button,false).then(res => {
-            if(res.status_code === 200){
+            if(res.status_code === 200)
+            {
                 const d = res.data;
                 let option = '';
-                let user_id = options.user_id > 0?options.user_id:options.id;
-                let user_class = user_id > 0? 'Official': (def.user_class? def.user_class:' Official');
-                user_class = user_class.replace(/_/g,' ');
+                let user_id = options.user_id > 0 ? options.user_id : options.id;
+                let user_class = user_id > 0 ? 'Official': (def.user_class ?? ' Official');
+                user_class = user_class.replace(/\_/g,' ');
                 let password_fields = '';
-                
-                if(!user_id || user_id == 0){
+
+                if(!user_id || user_id == 0)
+                {
                     password_fields = `<div class="row gy-2">
                     <div class="col-lg-6">
                         <div class="form-group">
                             <label for="password" class="form-label trans-text" data-langprop="titles.Password"></label>
                             <div class="input-group flex-nowrap">
-                                <input type="password" class="form-control ${user_id > 0 ? '' : 'data-input'} data-validate" ${user_id > 0 ? '' : 'data-field="password"'} autocomplete="off" ${user_id >0 ? 'readonly' : ''}/>
+                                <input type="password" class="form-control ${user_id > 0 ? '' : 'data-input'} data-validate" ${user_id > 0 ? '' : 'data-field="password"'} autocomplete="off" ${user_id > 0 ? 'readonly' : ''}/>
                                 <div class="input-group-text" role="button">
                                     <i class="fa-regular fa-eye fs-5 text-muted"></i>
                                 </div>
@@ -807,8 +881,8 @@ const AddUserDialog = new function(){
                                         <div class="width-select-dialog">
                                             <select class="modal-select2 data-input user-class" data-field="user_class" ${options.user_id ? ' disabled' : ''}>
                                                 ${option=null,
-                                                d && d.user_classes.forEach(op => {
-                                                    option += `<option value="${op.user_class}">${op.user_class_name}</option>`;
+                                                (d.user_classes || []).forEach(op => {
+                                                    option += `<option value="${op.user_class}">${op.user_class_name || ''}</option>`;
                                                 }),option+'<option value="" selected></option>'}
                                             </select>
                                         </div>
@@ -843,7 +917,7 @@ const AddUserDialog = new function(){
                     <div class="row gy-2">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="offical_id" class="um_label_official_code form-label trans-text" data-langprop="titles.${user_class? VSUtil.properCase(user_class):'Official'} ID"></label>
+                                <label for="offical_id" class="um_label_official_code form-label trans-text" data-langprop="titles.${user_class ? VSUtil.properCase(user_class) : 'Official'} ID"></label>
                                 <input type="text" class="form-control data-input" data-field="official_code"/>
                             </div>
                         </div>
@@ -872,38 +946,44 @@ const AddUserDialog = new function(){
                     });
                 });
 
-                if(options.user_id > 0){
+                if(options.user_id > 0)
+                {
                    mThis.loadFormDetails(div,options);
                 }
-                else{
+                else
+                {
                     mThis.setUserFormData(div,def);
                 }
-                
+
                 LocaleManager.translateZone(div);
 
                 onFinish();
                 /** Set select' events => when user choose User class, show only suitable roles */
-                if(elUserClass){
-                    elUserClass.onchange = (e)=>{
+                if(elUserClass)
+                {
+                    elUserClass.onchange = (e) => {
                         e.preventDefault();
                         vsapi.call(`${main_view.base_url}/api/role/options-role`,{
                             user_class: elUserClass.value
-                        },null,false).then(res=>{
+                        },null,false).then(res => {
                             let roles = res.status_code === 200 ? res.data: [];
-                            let def_role_id = mThis.selected_options.role_id? mThis.selected_options.role_id: ((roles[0]? roles[0].id:null));
-                            if(labelOfficialId){
-                                let u_class = (elUserClass.value || '').replace(/_/g,' ');
+                            let def_role_id = mThis.selected_options.role_id ? mThis.selected_options.role_id: ((roles[0]? roles[0].id : null));
+                            if(labelOfficialId)
+                            {
+                                let u_class = (elUserClass.value || '').replace(/\_/g,' ');
                                 labelOfficialId.textContent = [VSUtil.properCase(u_class),' ID'].join('');
                             }
                             VSUtil.setComboItems(elUserRole,roles,'id','name',null,null, def_role_id);
                         });
                     }
                 }
-                elUserClass.dispatchEvent(new Event('change',{bubbles:true}));
+                elUserClass.dispatchEvent(new Event('change',{
+                    bubbles:true,
+                    cancelable: false
+                }));
                 mThis.validatePassword(div);
                 mThis.setChooseImage(div);
                 mThis.saveData(div,mThis.btnSave,'/api/user/save',options);
-              
             }
         });
     }
@@ -915,23 +995,28 @@ const AddUserDialog = new function(){
         if(!d.login_name) d.login_name = d.phone_number || d.email;
         div.querySelectorAll('.data-input').forEach(el => {
             const f = el.dataset.field;
-            if(el.nodeName.toLowerCase() === 'select'){
-                el.value = d[f] ? d[f] : '';
-                if(f === 'official_code') el.setAttribute('readOnly',(d[f]?true:false));  
+            if(el.nodeName.toLowerCase() === 'select')
+            {
+                el.value = d[f] ?? '';
+                if(f === 'official_code') el.setAttribute('readOnly',(d[f] ? true : false));
                 /* because when user_class changes then role list also change */
                 else if(f ==='user_class') mThis.selected_options.role_id = d.role_id;
-                el.dispatchEvent(new Event('change'));
+                el.dispatchEvent(new Event('change',{
+                    bubbles: true,
+                    cancelable: false
+                }));
             }
             else
-                el.value = d[f] ? d[f] : '';
+                el.value = d[f] ?? '';
         });
     }
 
     this.loadFormDetails = (div, options) => {
         vsapi.call(`${main_view.base_url}/api/user/details`,{
-            id: options.id || options.user_id 
+            id: options.id || options.user_id
         },null,false).then(res => {
-            if(res.status_code === 200){
+            if(res.status_code === 200)
+            {
                 const d = res.data || {};
                 mThis.setUserFormData(div,d);
             }
@@ -971,18 +1056,37 @@ const AddUserDialog = new function(){
     this.renderPermissions = (modalDiv,options,onFinish) => {
         const div = modalDiv.querySelector('.modal-body');
         const purpose = options.open === 'roles' ? 'role' : options.open === 'modules' ? 'modules' : options.open === 'reports' ? 'reports' : 'permissions';
-        const type = options.open.toLowerCase(); 
+        const type = options.open.toLowerCase();
+
+        let op_html = '',
+        option_list_html = '';
+        const option_list = ['Roles','Permissions','Modules','Reports'];
+        option_list.forEach(op => {
+            op_html += `<option value="${op.toLowerCase()}" ${op.toLowerCase() === options.open ? 'selected' : ''}>${op || ''}</option>`;
+        });
+
         mThis.controlApiDisplay(options,(d) => {
-            const html = `<div class="form-group">
-                <input type="search" class="form-control data-input" placeholder="Search ${purpose} by number or name"/>
+            modalDiv.style.display ='none';
+            const html = `<div class="d-flex justify-content-center">
+                <div class="d-flex gap-2 align-items-center mb-2 custom-buttons container-tab">
+                    ${option_list_html='',
+                        (option_list || []).forEach(op => {
+                            option_list_html  =[option_list_html, `<button style="width:109px" class="btn btn-sm rounded-5 btn-${op.toLowerCase() === options.open ? 'primary' : 'outline-primary'}" type="button" role="button">${op || ''}</button>`].join('');
+                        }),
+                    option_list_html}
+                </div>
             </div>
-            <div class="table-responsive p-2 border rounded-3 table-responsive-hover">
+            <div class="d-flex">
+                <select class="d-none form-select w-25 rounded-end-0 border-end-0" disabled>${op_html}</select>
+                <input type="search" class="form-control data-input w-100 rounded-4" placeholder="Search ${purpose} by number or name"/>
+            </div>
+            <div class="table-responsive p-2 border rounded-3 table-responsive-hover mt-2">
                 <table class="table">
                     <thead>
                         <tr>
                             <th class="text-nowrap">Status</th>
-                            ${(type ==='roles' || type==='reports')? '': `<th class="text-nowrap">Code</th>`}
-                            <th class="text-nowrap text-capitalize">${options.open ? options.open : 'Permissions'}</th>
+                            ${(type ==='roles' || type === 'reports')? '': `<th class="text-nowrap">Code</th>`}
+                            <th class="text-nowrap text-capitalize">${options.open ?? 'Permissions'}</th>
                             ${((type === 'permissions')) ? `<th class="text-nowrap text-capitalize">Modules</th>` : ''}
                             <th class="text-nowarp">Action</th>
                         </tr>
@@ -991,17 +1095,19 @@ const AddUserDialog = new function(){
                 </table>
                 <div class="container-pagination"></div>
             </div>`;
+
             div.innerHTML = html;
             const tbody = div.querySelector('tbody'),
             containerPagination = div.querySelector('.container-pagination');
             mThis.controlActionOnTbody(tbody,options);
             mThis.createPagination(containerPagination,d);
-            
+            modalDiv.style.display ='none';
             onFinish();
 
             const inputSearch = div.querySelector('input.data-input');
             let timeOut = null;
-            inputSearch.onkeyup = function(e){
+            inputSearch.onkeyup = function(e)
+            {
                 e.preventDefault();
                 options.search_value = this.value;
                 clearTimeout(timeOut);
@@ -1014,11 +1120,16 @@ const AddUserDialog = new function(){
                 },250);
             }
 
-            containerPagination.onclick = function(e){
+            containerPagination.onclick = function(e)
+            {
                 e.preventDefault();
                 const target = e.target;
-                if((target.nodeName.toLowerCase() === 'a') || (target.parentElement.nodeName.toLowerCase() === 'a')){
+                // if click by id or tag <i>
+                if((target.id == 'btn_incre') || target.tagName == 'I' || (target.id == 'btn_decre'))
+                {
                     options.current_page = target.dataset.page;
+                    //** if click on <i> mean child is trigged so get the current from parent */
+                    if(target.tagName == 'I') options.current_page = target.parentElement.dataset.page;
                     mThis.controlApiDisplay(options,(d) => {
                         tbody.innerHTML = mThis.renderTableBody(d.data,options);
                         mThis.controlActionOnTbody(tbody,options);
@@ -1026,7 +1137,90 @@ const AddUserDialog = new function(){
                     });
                 }
             }
+
+            mThis.setEventSelect(div,tbody,containerPagination,options);
+            mThis.setEventToTab(div,tbody,containerPagination,options);
         });
+    }
+
+    this.setEventToTab = (div,tbody,containerPagination,options) => {
+        const containerTab = div.querySelector('div.container-tab'),
+        btnTabList = containerTab.querySelectorAll('button.btn');
+        let is_active = containerTab.querySelector('button.btn-primary');
+
+        btnTabList.forEach(btn => {
+            btn.onclick = function(e)
+            {
+                e.preventDefault();
+                if(is_active) is_active.classList.replace('btn-primary','btn-outline-primary');
+                this.classList.replace('btn-outline-primary','btn-primary');
+                is_active = this;
+                mThis.setSelectOption(div,this.textContent);
+            }
+        });
+    }
+
+    this.setEventSelect = (div,tbody,containerPagination,op) => {
+        const elSelect = div.querySelector('select.form-select'),
+        elThead = div.querySelector('thead'),
+        containerTab = div.querySelector('div.container-tab');
+
+        elSelect.onchange = function(e)
+        {
+            e.preventDefault();
+            const elInput = this.nextElementSibling;
+            elInput.placeholder = `Search ${this.value} by number or name`;
+
+            mThis.elTitle.innerHTML = '';
+            // mThis.elTitle.textContent = LocaleManager.trans(`Add/Remove ${this.value.replace(/^\w/, (c) => c.toUpperCase()) || ''} for ${op.user_name ? op.user_name.replace(/^\w/g,c => c.toUpperCase()) : ''}`,'titles');
+
+            op.open = this.value;
+            op.current_page = 1;
+            mThis.setTableHeader(elThead,op);
+            mThis.setTabButton(containerTab,op);
+            mThis.controlApiDisplay(op,(d) => {
+                tbody.innerHTML = mThis.renderTableBody(d.data,op);
+                mThis.controlActionOnTbody(tbody,op);
+                mThis.createPagination(containerPagination,d);
+            });
+        }
+    }
+
+    this.setSelectOption = (div,value) => {
+        const elSelect = div.querySelector('select.form-select');
+        elSelect.value = value.toLowerCase();
+        elSelect.dispatchEvent(new Event('change',{
+            bubbles: true,
+            cancelable: false
+        }));
+    }
+
+    this.setTabButton = (div,op) => {
+        const btnTabList = div.querySelectorAll('button.btn');
+        btnTabList.forEach(btn => {
+            if(btn.textContent.toLowerCase() === op.open)
+            {
+                btn.classList.add('btn-primary');
+                btn.classList.remove('btn-outline-primary');
+            }
+            else
+            {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-primary');
+            }
+        });
+    }
+
+    this.setTableHeader = (thead,op) => {
+        const type = op.open.toLowerCase();
+
+        thead.innerHTML = `<tr>
+            <th class="text-nowrap">Status</th>
+            ${(type ==='roles' || type === 'reports')? '': `<th class="text-nowrap">Code</th>`}
+            <th class="text-nowrap text-capitalize">${op.open ?? 'Permissions'}</th>
+            ${((type === 'permissions')) ? `<th class="text-nowrap text-capitalize">Modules</th>` : ''}
+            <th class="text-nowarp">Action</th>
+        </tr>`;
     }
 
     this.createPagination = (div,d) => {
@@ -1035,107 +1229,129 @@ const AddUserDialog = new function(){
         endPage = d.last_page,
         list = null;
 
-        if((startPage === currentPage) && (currentPage < endPage)){
-            list = `<li>
-                <a href="javascript:void(0)" data-page="${startPage}">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:void(0)" data-page="${currentPage}">${currentPage}</a>
-            </li>
-            <li>
-                <a href="javascript:void(0)" data-page="${parseInt(currentPage)+1}">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </a>
-            </li>
-            <li>${d.to ? d.to : ''} of ${d.total ? d.total : ''}</li>`;
+        //** show pagination props if list have more than 1 page */
+        if(endPage > 1 && currentPage > 0){
+            const disableATag = 'pointer-events:none;opacity:0.6;';
+            list = `<li >
+                    <a id="btn_decre" href="javascript:void(0)" data-page="${currentPage - 1}" style="${currentPage <=1 ? disableATag:''}">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </a>
+                </li>
+                    <li>
+                        <a href="javascript:void(0)" data-page="${currentPage}">${currentPage}</a>
+                    </li>
+                   <li >
+                   <a id="btn_incre" href="javascript:void(0)" data-page="${parseInt(currentPage) + 1}"  style="${currentPage == endPage ? disableATag : ''}">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </a>
+                </li>
+            <li>${d.to ? d.to+' of' : ''}  ${d.total> 0?  d.total : ''}</li>`;
         }
-        else if((startPage < currentPage) && (currentPage < endPage)){
-            list = `<li>
-                <a href="javascript:void(0)" data-page="${parseInt(currentPage)-1}">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:void(0)" data-page="${currentPage}">${currentPage}</a>
-            </li>
-            <li>
-                <a href="javascript:void(0)" data-page="${parseInt(currentPage)+1}">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </a>
-            </li>
-            <li>${d.to ? d.to : ''} of ${d.total ? d.total : ''}</li>`;
-        }
-        else if((startPage < currentPage) && (currentPage === endPage)){
-            list = `<li>
-                <a href="javascript:void(0)" data-page="${parseInt(currentPage)-1}">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:void(0)" data-page="${currentPage}">${currentPage}</a>
-            </li>
-            <li>
-                <a href="javascript:void(0)" data-page="${currentPage}">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </a>
-            </li>
-            <li>${d.to ? d.to+' of' : ''}  ${d.total ? d.total : ''}</li>`;
-        }
-        else if((startPage === currentPage) && (currentPage === endPage)){
-            list = `<li>
-                <a href="javascript:void(0)" data-page="${currentPage}">
-                    <i class="fa-solid fa-chevron-left"></i>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:void(0)" data-page="${currentPage}">${currentPage}</a>
-            </li>
-            <li>
-                <a href="javascript:void(0)" data-page="${currentPage}">
-                    <i class="fa-solid fa-chevron-right"></i>
-                </a>
-            </li>
-            <li>${d.to ? d.to+' of' : ''}  ${d.total ? d.total : ''}</li>`;
-        }
+        // if((startPage === currentPage) && (currentPage < endPage))
+        // {
+        //     list = `${ currentPage <=1 ? '': `<li>
+        //     <a href="javascript:void(0)" data-page="${startPage}">
+        //         <i class="fa-solid fa-chevron-left"></i>
+        //     </a>
+        // </li>`}
+        //     <li>
+        //         <a href="javascript:void(0)" data-page="${currentPage}">${currentPage}</a>
+        //     </li>
+        //     ${endPage == currentPage ? '' : `<li>
+        //     <a href="javascript:void(0)" data-page="${parseInt(currentPage)+1}">
+        //         <i class="fa-solid fa-chevron-right"></i>
+        //     </a>
+        // </li>`}
+        //     <li>${d.to ?? ''} of ${d.total ?? ''}</li>`;
+        // }
+        // else if((startPage < currentPage) && (currentPage < endPage))
+        // {
+        //     list = `${currentPage <= 1? '' : `<li>
+        //     <a href="javascript:void(0)" data-page="${parseInt(currentPage)-1}">
+        //         <i class="fa-solid fa-chevron-left"></i>
+        //     </a>
+        // </li>`}
+        //     <li>
+        //         <a href="javascript:void(0)" data-page="${currentPage}">${currentPage}</a>
+        //     </li>
+        //     ${endPage == currentPage ? '' : `<li>
+        //     <a href="javascript:void(0)" data-page="${parseInt(currentPage)+1}">
+        //         <i class="fa-solid fa-chevron-right"></i>
+        //     </a>
+        // </li>`}
+        //     <li>${d.to ?? ''} of ${d.total ?? ''}</li>`;
+        // }
+        // else if((startPage < currentPage) && (currentPage === endPage))
+        // {
+        //     list = `${currentPage <= 1 ? '': `<li>
+        //     <a href="javascript:void(0)" data-page="${parseInt(currentPage)-1}">
+        //         <i class="fa-solid fa-chevron-left"></i>
+        //     </a>
+        // </li>`}
+        //     <li>
+        //         <a href="javascript:void(0)" data-page="${currentPage}">${currentPage}</a>
+        //     </li>
+        //     ${endPage == currentPage ? '' : `<li>
+        //     <a href="javascript:void(0)" data-page="${parseInt(currentPage)+1}">
+        //         <i class="fa-solid fa-chevron-right"></i>
+        //     </a>
+        // </li>`}
+        //     <li>${d.to ? d.to+' of' : ''}  ${d.total ?? ''}</li>`;
+        // }
+        // else if((startPage === currentPage) && (currentPage === endPage))
+        // {
+        //     list = `${currentPage <= 1 ? '':`<li>
+        //     <a href="javascript:void(0)" data-page="${currentPage}">
+        //         <i class="fa-solid fa-chevron-left"></i>
+        //     </a>
+        // </li>`}
+        //     <li>
+        //         <a href="javascript:void(0)" data-page="${currentPage}">${currentPage}</a>
+        //     </li>
+        //     ${endPage == currentPage ? '' : `<li>
+        //     <a href="javascript:void(0)" data-page="${parseInt(currentPage)+1}">
+        //         <i class="fa-solid fa-chevron-right"></i>
+        //     </a>
+        // </li>`}
+        //     <li>${d.to ? d.to+' of' : ''}  ${d.total> 0?  d.total : ''}</li>`;
+        // }
 
-        div.innerHTML = `<ul>${list ? list : ''}</ul>`;
+        div.innerHTML = `<ul>${list ?? ''}</ul>`;
     }
 
     this.renderTableBody = (d,options) => {
-        let tbody = '';
+        let tbody = ``;
         const check_icon = `<i class="fa fa-check text-success fs-5 p-0 m-0"></i>`,
         cross_icon = `<i class="fa fa-times text-danger fs-5 p-0 m-0"></i>`;
 
         switch(options.open){
             case 'roles':
                 (d || []).forEach(item => {
-                    tbody = [`<tr>
+                    tbody = `<tr>
                         <td class="align-middle">
-                            <span class="p-2 rounded-3 d-flex align-items-center justify-content-center bg-success-subtle" style="width:33px">${item.allowed ? check_icon : cross_icon}</span>
+                            <div class="text-center btn-action p-2 rounded-3 " style="width:fit-content;" data-status="${item.allowed}" data-id="${item.id}"><span class="chg_icon">${item.allowed ? check_icon : cross_icon}</span></div>
                         </td>
-                        <td class="align-middle text-capitalize">${item.name ? item.name : ''}</td>
-                        <td class="align-middle">`,
-                          `<button class="btn-action btn btn-sm btn-outline-${item.allowed ? 'warning' : 'primary'}" data-id="${item.id}" data-status="${item.allowed}">
-                             <span>${item.allowed ? 'Remove' : 'Add'}</span>
-                          </button>`,
-                        `</td>
-                    </tr>`].join('');
+                        <td class="align-middle text-capitalize">${item.name ?? ''}</td>
+                        <td class="align-middle">
+                            <button class="btn-action btn btn-sm btn-outline-${item.allowed ? 'warning' : 'primary'}" data-id="${item.id}" data-status="${item.allowed}">
+                                <span>${item.allowed ? 'Remove' : 'Add'}</span>
+                            </button>
+                        </td>
+                    </tr>`;
                 });
                 break;
             case 'permissions':
                 (d || []).forEach(item => {
                     tbody += `<tr>
                         <td class="align-middle">
-                            <span class="p-2 rounded-3 bg-${item.allowed ? 'success text-white' : 'dark-subtle'}">${item.allowed ? 'Allowed' : 'Denied'}</span>
+                            <div class="text-center btn-action p-2 rounded-3 " data-status="${item.allowed}" data-id="${item.id}"><span class="chg_icon">${item.allowed ? check_icon : cross_icon}</span></div>
                         </td>
-                        <td class="align-middle">${item.id ? item.id : ''}</td>
-                        <td class="align-middle text-capitalize">${item.name ? item.name : ''}</td>
-                        <td class="align-middle text-capitalize">${item.module_name ? item.module_name : ''}</td>
+                        <td class="align-middle">${item.id ?? ''}</td>
+                        <td class="align-middle text-capitalize">${item.name ?? ''}</td>
+                        <td class="align-middle text-capitalize">${item.module_name ?? ''}</td>
                         <td class="align-middle">
                             <button class="btn-action btn btn-sm btn-outline-${item.allowed ? 'warning' : 'primary'}" data-id="${item.id}" data-status="${item.allowed}">
-                                <span>${item.allowed ? 'Remove' : 'Add'}</span>
+                                <span class="chg_text">${item.allowed ? 'Remove' : 'Add'}</span>
                             </button>
                         </td>
                     </tr>`;
@@ -1145,13 +1361,13 @@ const AddUserDialog = new function(){
                 (d || []).forEach(item => {
                     tbody += `<tr>
                         <td class="align-middle">
-                            <span class="p-2 rounded-3 bg-${item.access ? 'success text-white' : 'dark-subtle'}">${item.access ? 'Allowed' : 'Denied'}</span>
+                            <div class="text-center btn-action p-2 rounded-3 " data-status="${item.allowed}" data-id="${item.id}"><span class="chg_icon">${item.allowed ? check_icon : cross_icon}</span></div>
                         </td>
-                        <td class="align-middle">${item.id ? item.id : ''}</td>
-                        <td class="align-middle text-capitalize">${item.module_name ? item.module_name : ''}</td>
+                        <td class="align-middle">${item.id ?? ''}</td>
+                        <td class="align-middle text-capitalize">${item.module_name ?? ''}</td>
                         <td class="align-middle">
-                            <button class="btn-action btn btn-sm btn-outline-${item.access ? 'warning' : 'primary'}" data-id="${item.id}" data-status="${item.access}">
-                                <span>${item.access ? 'Remove' : 'Add'}</span>
+                                <button class="btn-action btn btn-sm btn-outline-${item.allowed ? 'warning' : 'primary'}" data-id="${item.id}" data-status="${item.allowed}">
+                                <span class="chg_text">${item.allowed ? 'Remove' : 'Add'}</span>
                             </button>
                         </td>
                     </tr>`;
@@ -1161,13 +1377,13 @@ const AddUserDialog = new function(){
                 (d || []).forEach(item => {
                     tbody += `<tr>
                         <td class="align-middle">
-                            <span class="p-2 rounded-3 bg-${item.allowed ? 'success text-white' : 'dark-subtle'}">${item.allowed ? 'Allowed' : 'Denied'}</span>
+                            <div class="text-center btn-action p-2 rounded-3 " data-status="${item.allowed}" data-id="${item.id}"><span class="chg_icon">${item.allowed ? check_icon : cross_icon}</span></div>
                         </td>
-                        <td class="align-middle text-uppercase">${item.name ? item.name : ''}</td>
+                        <td class="align-middle text-uppercase">${item.name ?? ''}</td>
                         <td class="align-middle">
                             <button class="btn-action btn btn-sm btn-outline-${item.allowed ? 'warning' : 'primary'}" data-id="${item.id}" data-status="${item.allowed}">
-                                <span>${item.allowed ? 'Remove' : 'Add'}</span>
-                            </button>
+                            <span class="chg_text">${item.allowed ? 'Remove' : 'Add'}</span>
+                        </button>
                         </td>
                     </tr>`;
                 });
@@ -1180,18 +1396,24 @@ const AddUserDialog = new function(){
 
     this.controlActionOnTbody = (tbody,options) => {
         let btnList = null;
-        switch(options.open){
+        switch(options.open)
+        {
             case 'roles':
-                let previousRole = null, previousRoleId = null, previousBtn = null;
+                let previousRole = null,
+                previousRoleId = null,
+                previousBtn = null;
+
                 btnList = tbody.querySelectorAll('.btn-action');
                 btnList.forEach(btn => {
-                    if(parseInt(btn.dataset.status)){
+                    if(parseInt(btn.dataset.status))
+                    {
                         previousRoleId = btn.dataset.id,
                         previousRole = btn.closest('tr').cells[2].textContent,
                         previousBtn = btn;
                     }
 
-                    btn.onclick = function(e){
+                    btn.onclick = function(e)
+                    {
                         e.preventDefault();
                         const allowed = parseInt(this.dataset.status),
                         p = {
@@ -1199,10 +1421,12 @@ const AddUserDialog = new function(){
                             role_id: this.dataset.id
                         };
 
-                        if(allowed){
+                        if(allowed)
+                        {
                             if(!AuthManager.allowed(108)) return;
                             vsapi.call(`${main_view.base_url}/api/user/role/delete`,p, null,false).then(res => {
-                                if(res.status_code === 200){
+                                if(res.status_code === 200)
+                                {
                                     mThis.resetRowForRole(this,{
                                         btn: previousBtn,
                                         roles: previousRole,
@@ -1213,27 +1437,33 @@ const AddUserDialog = new function(){
                                         previousRoleId = d.role_id;
                                     });
                                 }
-                                else{
-                                    cv_interact.error(res.error_message);
+                                else
+                                {
+                                    cv_interact.error(res.error_message ?? 'Something went wrong 221!');
                                 }
                             });
                         }
-                        else{
-                            if(parseInt(previousRoleId)){
+                        else
+                        {
+                            if(parseInt(previousRoleId))
+                            {
                                 if(!AuthManager.allowed(107)) return;
                                 cv_interact.confirm(`${previousRole.replace(/^\w/, (c) => c.toUpperCase())} previous role must be removed before adding new role. Continue now?`,{
                                     title: 'Delete Role',
                                     context: 'delete',
                                     confirmButtonText: 'Remove'
                                 },(e) => {
-                                    if(e){
+                                    if(e)
+                                    {
                                         vsapi.call(`${main_view.base_url}/api/user/role/delete`,{
                                             user_id: p.user_id,
                                             role_id: previousRoleId
-                                        },btn,false).then(res => {
-                                            if(res.status_code === 200){
-                                                vsapi.call(`${main_view.base_url}/api/user/role/add`,p,null,false).then(res => {
-                                                    if(res.status_code === 200){
+                                        },false,false,false).then(res => {
+                                            if(res.status_code === 200)
+                                            {
+                                                vsapi.call(`${main_view.base_url}/api/user/role/add`,p,false,false,false).then(res => {
+                                                    if(res.status_code === 200)
+                                                    {
                                                         mThis.resetRowForRole(this,{
                                                             btn: previousBtn,
                                                             roles: previousRole,
@@ -1244,21 +1474,25 @@ const AddUserDialog = new function(){
                                                             previousRoleId = d.role_id;
                                                         });
                                                     }
-                                                    else{
-                                                        cv_interact.error(res.error_message);
+                                                    else
+                                                    {
+                                                        cv_interact.error(res.error_message ?? 'Something went wrong 111!');
                                                     }
                                                 });
                                             }
-                                            else{
-                                                cv_interact.error(res.error_message);
+                                            else
+                                            {
+                                                cv_interact.error(res.error_message ?? 'Something went wrong 112!');
                                             }
                                         });
                                     }
                                 });
                             }
-                            else{
+                            else
+                            {
                                 vsapi.call(`${main_view.base_url}/api/user/role/add`,p,btn,false).then(res => {
-                                    if(res.status_code === 200){
+                                    if(res.status_code === 200)
+                                    {
                                         mThis.resetRowForRole(this,{
                                             btn: previousBtn,
                                             roles: previousRole,
@@ -1269,8 +1503,9 @@ const AddUserDialog = new function(){
                                             previousRoleId = d.role_id;
                                         });
                                     }
-                                    else{
-                                        cv_interact.error(res.error_message);
+                                    else
+                                    {
+                                        cv_interact.error(res.error_message ?? 'Something went wrong 113!');
                                     }
                                 });
                             }
@@ -1281,7 +1516,8 @@ const AddUserDialog = new function(){
             case 'permissions':
                 btnList = tbody.querySelectorAll('.btn-action');
                 btnList.forEach(btn => {
-                    btn.onclick = function(e){
+                    btn.onclick = function(e)
+                    {
                         e.preventDefault();
                         const allowed = parseInt(this.dataset.status),
                         p = {
@@ -1289,25 +1525,31 @@ const AddUserDialog = new function(){
                             prn_id: this.dataset.id
                         };
 
-                        if(allowed){
+                        if(allowed)
+                        {
                             if(!AuthManager.allowed(111)) return;
                             vsapi.call(`${main_view.base_url}/api/user/permission/delete`,p, null,false).then(res => {
-                                if(res.status_code === 200){
+                                if(res.status_code === 200)
+                                {
                                     mThis.resetRow(this);
                                 }
-                                else{
-                                    cv_interact.error(res.error_message);
+                                else
+                                {
+                                    cv_interact.error(res.error_message ?? 'Something went wrong!');
                                 }
                             });
                         }
-                        else{
+                        else
+                        {
                             if(!AuthManager.allowed(105)) return;
                             vsapi.call(`${main_view.base_url}/api/user/permission/add`,p,null,false).then(res => {
-                                if(res.status_code === 200){
+                                if(res.status_code === 200)
+                                {
                                     mThis.resetRow(this);
                                 }
-                                else{
-                                    cv_interact.error(res.error_message);
+                                else
+                                {
+                                    cv_interact.error(res.error_message ?? 'Something went wrong 114!');
                                 }
                             });
                         }
@@ -1317,7 +1559,8 @@ const AddUserDialog = new function(){
             case 'modules':
                 btnList = tbody.querySelectorAll('.btn-action');
                 btnList.forEach(btn => {
-                    btn.onclick = function(e){
+                    btn.onclick = function(e)
+                    {
                         e.preventDefault();
                         const allowed = parseInt(this.dataset.status),
                         p = {
@@ -1325,25 +1568,31 @@ const AddUserDialog = new function(){
                             mod_id: this.dataset.id
                         };
 
-                        if(allowed){
+                        if(allowed)
+                        {
                             if(!AuthManager.allowed(115)) return;
                             vsapi.call(`${main_view.base_url}/api/user/module/delete`,p,null,false).then(res => {
-                                if(res.status_code === 200){
+                                if(res.status_code === 200)
+                                {
                                     mThis.resetRow(this);
                                 }
-                                else{
-                                    cv_interact.error(res.error_message);
+                                else
+                                {
+                                    cv_interact.error(res.error_message ?? 'Something went wrong 116!');
                                 }
                             });
                         }
-                        else{
+                        else
+                        {
                             if(!AuthManager.allowed(114)) return;
                             vsapi.call(`${main_view.base_url}/api/user/module/add`,p,null,false).then(res => {
-                                if(res.status_code === 200){
+                                if(res.status_code === 200)
+                                {
                                     mThis.resetRow(this);
                                 }
-                                else{
-                                    cv_interact.error(res.error_message);
+                                else
+                                {
+                                    cv_interact.error(res.error_message ?? 'Something went wrong 117!');
                                 }
                             });
                         }
@@ -1353,7 +1602,8 @@ const AddUserDialog = new function(){
             case 'reports':
                 btnList = tbody.querySelectorAll('.btn-action');
                 btnList.forEach(btn => {
-                    btn.onclick = function(e){
+                    btn.onclick = function(e)
+                    {
                         e.preventDefault();
                         const allowed = parseInt(this.dataset.status),
                         p = {
@@ -1361,25 +1611,31 @@ const AddUserDialog = new function(){
                             prn_id: this.dataset.id
                         };
 
-                        if(allowed){
+                        if(allowed)
+                        {
                             if(!AuthManager.allowed(111)) return;
                             vsapi.call(`${main_view.base_url}/api/user/permission/delete`,p,null,false).then(res => {
-                                if(res.status_code === 200){
+                                if(res.status_code === 200)
+                                {
                                     mThis.resetRow(this);
                                 }
-                                else{
-                                    cv_interact.error(res.error_message);
+                                else
+                                {
+                                    cv_interact.error(res.error_message ?? 'Something went wrong 118!');
                                 }
                             });
                         }
-                        else{
+                        else
+                        {
                             if(!AuthManager.allowed(105)) return;
-                            vsapi.call(`${main_view.base_url}/api/user/permission/add`,p,btn,false).then(res => {
-                                if(res.status_code === 200){
+                            vsapi.call(`${main_view.base_url}/api/user/permission/add`,p,null,false).then(res => {
+                                if(res.status_code === 200)
+                                {
                                     mThis.resetRow(this);
                                 }
-                                else{
-                                    cv_interact.error(res.error_message);
+                                else
+                                {
+                                    cv_interact.error(res.error_message ?? 'Something went wrong 119!');
                                 }
                             });
                         }
@@ -1394,35 +1650,50 @@ const AddUserDialog = new function(){
     this.resetRow = (btn) => {
         const tr = btn.closest('tr'),
         status = btn.dataset.status,
-        firstCol = tr.cells[0];
+        firstCol = tr.cells[0],
+        lstCol = tr.cells[tr.cells.length - 1];
+        const check_icon = `<i class="fa fa-check text-success fs-5 p-0 m-0"></i>`,
+        cross_icon = `<i class="fa fa-times text-danger fs-5 p-0 m-0"></i>`;
+        // firstCol.children[0].innerHTML = parseInt(status) ? check_icon : cross_icon;
+        if(parseInt(status))
+        {
 
-        if(parseInt(status)){
-            btn.dataset.status = 0,
-            btn.classList.add('btn-outline-primary'),
-            btn.classList.remove('btn-outline-warning'),
-            btn.children[0].textContent = 'Add',
-            firstCol.children[0].classList.add('bg-dark-subtle'),
-            firstCol.children[0].classList.remove('bg-success','text-white'),
-            firstCol.children[0].textContent = 'Denied';
+            // btn.dataset.status = 0
+            firstCol.children[0].dataset.status = 0;
+            lstCol.children[0].dataset.status = 0;
+           
+            // btn.children[0].textContent = 'Add'
+            // firstCol.children[0].classList.add('bg-dark-subtle')
+            // firstCol.children[0].classList.remove('bg-success','text-white')
+            firstCol.children[0].innerHTML = cross_icon;
+            lstCol.children[0].textContent = 'Add';
+            lstCol.children[0].classList.add('btn-outline-primary')
+            lstCol.children[0].classList.remove('btn-outline-warning')
         }
-        else{
-            btn.dataset.status = 1,
-            btn.classList.add('btn-outline-warning'),
-            btn.classList.remove('btn-outline-primary'),
-            btn.children[0].textContent = 'Remove',
-            firstCol.children[0].classList.add('bg-success','text-white'),
-            firstCol.children[0].classList.remove('bg-dark-subtle'),
-            firstCol.children[0].textContent = 'Allowed';
+        else
+        {
+
+            // btn.dataset.status = 1,
+            firstCol.children[0].dataset.status = 1;
+            lstCol.children[0].dataset.status = 1;
+           
+            // btn.children[0].textContent = 'Remove',
+            // firstCol.children[0].classList.add('bg-success','text-white'),
+            // firstCol.children[0].classList.remove('bg-dark-subtle'),
+            firstCol.children[0].innerHTML = check_icon;
+            lstCol.children[0].classList.add('btn-outline-warning'),
+            lstCol.children[0].classList.remove('btn-outline-primary'),
+            lstCol.children[0].textContent = 'Remove';
         }
     }
 
     this.resetRowForRole = (btn, previousObject, onFinish = null) => {
         const tr = btn.closest('tr'),
-        status = btn.dataset.status,
-        firstCol = tr.cells[0];
-
+        firstCol = tr.cells[0],lstCol = tr.cells[tr.cells.length - 1];
+        const status = btn.dataset.status;
         let previousRow = null,previousRowFirstCol = null;
-        if(previousObject.btn){
+        if(previousObject.btn)
+        {
             previousRow = previousObject.btn.closest('tr');
             previousRowFirstCol = previousRow.cells[0];
         }
@@ -1430,14 +1701,18 @@ const AddUserDialog = new function(){
         let check_icon = `<i class="fa fa-check text-success fs-5"></i>`;
         let cross_icon = `<i class="fa fa-times text-danger fs-5"></i>`;
 
-        if(parseInt(status)){
-            btn.classList.add('btn-outline-primary'),
-            btn.classList.remove('btn-outline-warning'),
-            btn.children[0].textContent = 'Add',
-            btn.dataset.status = 0,
+        if(parseInt(status))
+        {
+            lstCol.children[0].classList.add('btn-outline-primary'),
+            lstCol.children[0].classList.remove('btn-outline-warning'),
+            lstCol.children[0].textContent = 'Add',
+            lstCol.children[0].dataset.status = 0,
+            firstCol.children[0].dataset.status = 0,
             firstCol.children[0].innerHTML = cross_icon;
+            
 
-            if(previousObject.btn && (parseInt(previousObject.btn.dataset.status) === parseInt(status))){
+            if(previousObject.btn && (parseInt(previousObject.btn.dataset.status) === parseInt(status)))
+            {
                 previousObject.btn.classList.add('btn-outline-warning'),
                 previousObject.btn.classList.remove('btn-outline-primary'),
                 previousObject.btn.children[0].textContent = 'Remove',
@@ -1445,7 +1720,8 @@ const AddUserDialog = new function(){
                 previousRowFirstCol.children[0].innerHTML = check_icon;
             }
 
-            if(typeof onFinish === 'function'){
+            if(typeof onFinish === 'function')
+            {
                 onFinish({
                     btn: null,
                     roles: null,
@@ -1453,14 +1729,17 @@ const AddUserDialog = new function(){
                 });
             }
         }
-        else{
-            btn.classList.add('btn-outline-warning'),
-            btn.classList.remove('btn-outline-primary'),
-            btn.children[0].textContent = 'Remove',
-            btn.dataset.status = 1,
+        else
+        {
+            lstCol.children[0].classList.add('btn-outline-warning'),
+            lstCol.children[0].classList.remove('btn-outline-primary'),
+            lstCol.children[0].textContent = 'Remove',
+            lstCol.children[0].dataset.status = 1,
+            firstCol.children[0].dataset.status = 1,
             firstCol.children[0].innerHTML = check_icon;
 
-            if(previousObject.btn){
+            if(previousObject.btn)
+            {
                 previousObject.btn.classList.add('btn-outline-primary'),
                 previousObject.btn.classList.remove('btn-outline-warning'),
                 previousObject.btn.children[0].textContent = 'Add',
@@ -1468,7 +1747,8 @@ const AddUserDialog = new function(){
                 previousRowFirstCol.children[0].innerHTML = cross_icon;
             }
 
-            if(typeof onFinish === 'function'){
+            if(typeof onFinish === 'function')
+            {
                 onFinish({
                     btn: btn,
                     roles: tr.cells[2].textContent,
@@ -1480,7 +1760,8 @@ const AddUserDialog = new function(){
 
     this.controlApiDisplay = (options,onFinish=null) => {
         let end_point = null, params = null;
-        switch(options.open){
+        switch(options.open)
+        {
             case 'roles':
                 end_point = 'api/user/role/list';
                 params = {
@@ -1517,11 +1798,18 @@ const AddUserDialog = new function(){
                 end_point = null;
                 break;
         }
-        if(end_point){
+
+        if(end_point)
+        {
             vsapi.call(`${main_view.base_url}/${end_point}`,params,options.button,false).then(res => {
-                if(res.status_code === 200){
+                if(res.status_code === 200)
+                {
                     const d = res.data;
                     if(typeof onFinish === 'function') onFinish(d);
+                }
+                else
+                {
+                    cv_interact.error(res.error_message || 'Failed to loaded resources!');
                 }
             });
         }
@@ -1529,26 +1817,27 @@ const AddUserDialog = new function(){
 
     this.controlModalBody = (options, modal, onFinish) => {
         const open = options.open;
-        switch(open){
+        switch(open)
+        {
             case 'add-user':
                 mThis.btnClose.innerHTML = `<span>${LocaleManager.trans('Cancel','buttons')}</span>`;
                 if(options.user_id > 0)
                 {
-                    mThis.elTitle.textContent = LocaleManager.trans('Modify User Account','titles');
+                    mThis.elTitle.innerHTML = LocaleManager.trans('Modify User Account','titles');
                     mThis.btnSave.innerHTML = `<span>${LocaleManager.trans('Save','buttons')}</span>`;
-                }   
+                }
                 else
                 {
-                    mThis.elTitle.textContent = LocaleManager.trans('New User Account','titles');
+                    mThis.elTitle.innerHTML = LocaleManager.trans('New User Account','titles');
                     mThis.btnSave.innerHTML = `<span>${LocaleManager.trans('Create','buttons')}</span>`;
                 }
                 modal.querySelector('.modal-dialog').classList.add('modal-lg');
                 mThis.btnSave.removeAttribute('style');
-                mThis.renderCreateUser(modal,options,onFinish); 
+                mThis.renderCreateUser(modal,options,onFinish);
                 break;
             case 'reset-password':
                 mThis.btnClose.innerHTML = `<span>${LocaleManager.trans('Cancel','buttons')}</span>`;
-                mThis.elTitle.textContent = LocaleManager.trans('Set New Password','titles');
+                mThis.elTitle.innerHTML = LocaleManager.trans('Set New Password','titles');
                 modal.querySelector('.modal-dialog').classList.remove('modal-lg');
                 mThis.btnSave.innerHTML =  `<span>${LocaleManager.trans('OK','buttons')}</span>`;
                 mThis.btnSave.removeAttribute('style');
@@ -1559,8 +1848,8 @@ const AddUserDialog = new function(){
             case 'modules':
             case 'reports':
                 mThis.btnClose.innerHTML = `<span>${LocaleManager.trans('OK','buttons')}</span>`;
-                const purpose = open === 'roles' ? 'Role' : open === 'modules' ? 'Modules' : open === 'reports' ? 'Reports' : 'Permissions';
-                mThis.elTitle.textContent = LocaleManager.trans(`Add/Remove ${purpose} for ${options.user_name ? options.user_name.replace(/^\w/, (c) => c.toUpperCase()) : 'Super Admin'}`,'titles');
+                const purpose = open === 'roles' ? 'Role' : (open === 'modules' ? 'Modules' : (open === 'reports' ? 'Reports' : 'Permissions'));
+                mThis.elTitle.innerHTML = LocaleManager.trans(`Add/Remove ${purpose} for <b>${options.user_name ? options.user_name.replace(/^\w/, (c) => c.toUpperCase()) : 'Admin'} </b>`,'titles');
                 modal.querySelector('.modal-dialog').classList.add('modal-lg');
                 mThis.btnSave.style.display = 'none';
                 mThis.renderPermissions(modal,options,onFinish);
@@ -1569,13 +1858,13 @@ const AddUserDialog = new function(){
                 break;
         }
     }
-    /** 
-     * For AddUserDialog can also be called from Merchant List or Driver List screen by providing with the default values in "options.default". 
+    /**
+     * For AddUserDialog can also be called from Merchant List or Driver List screen by providing with the default values in "options.default".
      * The "options.default" is the default values to fill in the Create User Form.  options.default = {"official_code":sender.code,"user_class":"merchant","phone_number":sender.phone_number,"full_name":sender.name}
     */
     this.show = (options=null) => {
         if(!options) options = {};
-        mThis.controlModalBody(options,this.self,()=>{
+        mThis.controlModalBody(options,this.self,() => {
             const modalDiv = $(this.self);
             modalDiv.modal({
                 backdrop: 'static'
