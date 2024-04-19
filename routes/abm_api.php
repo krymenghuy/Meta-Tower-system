@@ -53,7 +53,7 @@ use App\Http\controllers\abm\CustomerController;
         Route::post('/item-list', [OverseaShipmentController::class, 'getOverseaItemList']);
     });
 
-    Route::prefix('customer')->group(function(){
+    Route::prefix('customers')->group(function(){
         Route::post('/save',[CustomerController::class,'save']);
         Route::post('/save-sc',[CustomerController::class,'save_sc']);
         Route::post('/delete',[CustomerController::class,'deleteCustomer']);

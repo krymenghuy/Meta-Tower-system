@@ -230,7 +230,7 @@ class Customer //extends Model
     $branch_id = $ss->branch_id;
 
     $current_page = isset($d->current_page) ? $d->current_page : 1;
-    $per_page = isset($d->per_page) ? $d->per_page : 10;
+    $per_page = isset($d->per_page) ? $d->per_page : 7;
     if (!is_numeric($current_page))
       $current_page = 1;
     $skip_rows = ($current_page - 1) * $per_page;
@@ -271,7 +271,7 @@ class Customer //extends Model
     //  $query = DB::table('sender as s')->join('sender_classes as sc ','sc.id','s.id')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_types_id LIMIT 1) AS agent_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at, sc.sender_class')->where('s.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
     $query = DB::table('sender as s')
       ->join('sender_classes as sc', 'sc.sender_id', '=', 's.id')
-      ->selectRaw(' sc.sender_class,  s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_types_id LIMIT 1) AS agent_type,s.sales_agent_id AS referrer_id ' . $select_referrer_name . ',s.create_user,formatTime(s.create_date) AS created_at')
+      ->selectRaw(' sc.sender_class,  s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_types_id LIMIT 1) AS os_agent_type,s.sales_agent_id AS referrer_id ' . $select_referrer_name . ',s.create_user,formatTime(s.create_date) AS created_at')
       ->where('s.branch_id', $branch_id)
       //->where('sender_class','oversea')
       ->whereRaw($str_agent)
@@ -317,7 +317,7 @@ class Customer //extends Model
     $select_referrer_name = ',(SELECT r.`name` FROM sales_agents as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name';
     $query = DB::table('sender as s')
     ->join('sender_classes as sc', 'sc.sender_id', '=', 's.id')
-
+  
     ->selectRaw(' sc.sender_class ,s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.create_date,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.sales_agent_id AS referrer_id ' . $select_referrer_name . ',s.create_user,formatTime(s.create_date) AS created_at')->where('s.branch_id', $branch_id)->whereRaw($str_search)->whereRaw($str_status)->orderBy('s.id', 'DESC');
     $rows = $query->get();
     foreach ($rows as $row) {
@@ -363,6 +363,7 @@ class Customer //extends Model
     //$data->closing_statuses = DB::table('closing_statuses AS cs')->selectRaw('scs.id,cs.name AS closing_status')->get();
     $data->price_list = DB::table('price_list_names AS l')->where('branch_id', $branch_id)->selectRaw('l.id,l.name as price_list')->get();
     $data->sender_types = DB::table('sender_type')->selectRaw('id,name as sender_type')->get();
+    $data->os_agent_types = DB::table('os_agent_types')->selectRaw('id, name as os_agent_type')->get();
 
     return $data;
   }
