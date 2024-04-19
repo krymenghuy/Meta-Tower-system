@@ -236,23 +236,33 @@ class Customer //extends Model
     $skip_rows = ($current_page - 1) * $per_page;
 
     $status = isset($d->status_code) ? $d->status_code : 'active';
-    //$sender_type_id = isset($d->sender_type_id)? $d->sender_type_id:null;
+    $sender_type_id = isset($d->sender_type_id)? $d->sender_type_id:null;
     $business_type = isset($d->business_type) ? $d->business_type : null;
     $search_value = isset($d->search_value) ? $d->search_value : null;
     $sales_agent_id = isset($d->sales_agent_id) ? $d->sales_agent_id : null;
     $str_agent = '11=11';
+    $str_sender = '10=10';
     /** $sales_agent_id = -1 means "To query merchants who are not referred by any sales agent " 
      *  $sales_agent_id = null or zero => means query merchants either refered by agent or no referrer
      */
+
+     if ($sender_type_id == -1)
+     $str_sender = 's.sender_type_id IS NULL';
+ else if($sender_type_id > 0)
+   $str_sender = 's.sender_type_id ='.$sender_type_id;
+
     if ($sales_agent_id == -1)
       $str_agent = 's.sales_agent_id IS NULL';
     else if ($sales_agent_id > 0)
       $str_agent = 's.sales_agent_id =' . $sales_agent_id;
-    //$str_sender_type = null;
+    
     $str_business_type = '1=1';
     $str_status = '3=3'; // Active, Inactive
     $str_search = '2=2';
-    //$str_agent = null;
+    //$str_agent = '4=4';
+
+   
+    
 
     if ($search_value) {
       $search_value = escape_like_str($search_value);
@@ -263,6 +273,7 @@ class Customer //extends Model
         $business_type = escape_like_str($business_type);
         $str_business_type = 's.business_type LIKE \'%' . $business_type . '%\'';
       }
+      
       if (in_array(strtolower($status), ['active', 'inactive']))
         $str_status = 's.status_code =\'' . $status . '\'';
     }
@@ -277,6 +288,8 @@ class Customer //extends Model
       ->whereRaw($str_agent)
       ->whereRaw($str_search)
       ->whereRaw($str_status)
+      ->whereRaw($str_sender)->orderBy('s.id','DESC')
+
       ->whereRaw($str_business_type)->orderBy('s.id', 'DESC');
 
     $count_query = clone $query;

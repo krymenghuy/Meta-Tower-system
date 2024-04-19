@@ -9,11 +9,11 @@ var CustomersComponent = new function(){
     this.elFilter_customer_status = this.self[0].querySelector ('#_cul_filter_customer_status');
     
     this.btnNewCustomer = this.self.find('#_cul_btnNew');
-    this.elSearch = this.self.find('#_cul_search_agent');
+    this.elSearch = this.self.find('#_cul_search_customer');
     this.btnSearch = this.self.find('#_cul_btnSearch');
     this.btnPrint = this.self.find('#_cul_btnPrint');
          
-    this.div_filter_fields = this.self[0].querySelector('#_cul_filter_fields');
+    this.div_filter_fields = this.self[0].querySelector('#div_filter_fields');
     this.form_data= {};
     this.store_agents = {};
  
@@ -75,7 +75,7 @@ var CustomersComponent = new function(){
         className: 'align-middle text-capitalize',
         data: (data, index, tr) => {
           const status_class = (data.status_code || '').toLowerCase()==='active'? 'border-success text-success text-center': 'border-warning text-warning text-center';  
-          return ['<a href="javascript:void(0)" class="d-block lnk-agent-status" data-id ="',data.id,'" data-status="',data.status_code,'"><span style="display:block;width:80px;" class="border rounded-5 p-2 ',status_class,'">',data.status_code,'</span></a>'].join(''); 
+          return ['<a href="javascript:void(0)" class="d-block lnk-customer-status" data-id ="',data.id,'" data-status="',data.status_code,'"><span style="display:block;width:80px;" class="border rounded-5 p-2 ',status_class,'">',data.status_code,'</span></a>'].join(''); 
         }
     },
     
@@ -86,7 +86,7 @@ var CustomersComponent = new function(){
           return ['<div class="d-flex gap-2">',
           //'<a href="javascript:void(0)" class="btn-customer-status" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-dollar text-success fs-5"></i></a>',
           '<a href="javascript:void(0)" class="btn-customer-edit" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-edit text-primary fs-5"></i></a>',
-          '<a href="javascript:void(0)" class="btn-customer-login" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-user text-primary fs-5"></i></a>',
+          //'<a href="javascript:void(0)" class="btn-customer-login" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-user text-primary fs-5"></i></a>',
           '<a href="javascript:void(0)" class="btn-customer-delete" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-trash-can text-danger fs-5"></i></a>',
           '</div>'].join(''); 
         }
@@ -96,14 +96,13 @@ var CustomersComponent = new function(){
     this.loadFilterData = (def = {},onFinish)=>{
         if(!def) {
             def={}
-            def.agent_type_id =1;
+            def.sender_types_id =1;
             def.status_code ='Active';
         }
        
         vsapi.call([mThis.base_url,'/abm/customers/form-options'].join(''),{'id':null},null,main_view.apiCluster).then(res => {
                 let d = res.status_code ===200?  StringSanitizer.sanitizeObject(res.data) : {};  
-                //VSUtil.setComboItems(mThis.elFilter_customer_type,d.sender_types,'id','sender_type',true,'(All Sender)',def.sender_type_id);
-                //VSUtil.setComboItems(mThis.elFilter_customer_status,d.statuses,'status_code','status_name',true,'(All Status)',def.status_code);
+                VSUtil.setComboItems(mThis.elFilter_customer_status,d.customer_statuses,'status_code','status_name',true,'(All Status)',def.status_code);
                 onFinish();
         });
     }
@@ -129,130 +128,128 @@ var CustomersComponent = new function(){
 
         mThis.tblCustomers = mThis.customerListView.getTable();
  
-        mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=> {
-            el.addEventListener('change',e=>{
-              e.preventDefault();
-              if(!mThis.filter_disabled){
-                 mThis.customerListView.showPage(mThis.getFilterData());
-              }
-            });
-        }); 
+        // mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=> {
+        //     el.addEventListener('change',e=>{
+        //       e.preventDefault();
+        //       if(!mThis.filter_disabled){
+        //          mThis.customerListView.showPage(mThis.getFilterData());
+        //       }
+        //     });
+        // }); 
         
-       
+        // mThis.tblCustomers.querySelector('tbody').addEventListener('click', e=> {
+        //     e.preventDefault();
 
-        mThis.tblCustomers.querySelector('tbody').addEventListener('click', e=> {
-            e.preventDefault();
-
-              //Click on Change Status
-              let lnk = VSUtil.closestLimited(e.target,'.lnk-customer-status');
-              if(lnk){
-                  let agent_id = lnk.dataset.id;
-                  let status_code = Validator.properCase(lnk.dataset.status);
-                  let option = {
-                      confirmButtonText:'OK',
-                      title: 'Set Customer Status',
-                      dataLabel: "Status",
-                      valueMember: "status_code",
-                      textMember: "status_code",
-                      blankErrorMessage: "Please select a correct status",
-                      //data: [],
-                      defaultValue: status_code,
-                      autoClose:true
-                  };
+        //       //Click on Change Status
+        //       let lnk = VSUtil.closestLimited(e.target,'.lnk-customer-status');
+        //       if(lnk){
+        //           let agent_id = lnk.dataset.id;
+        //           let status_code = Validator.properCase(lnk.dataset.status);
+        //           let option = {
+        //               confirmButtonText:'OK',
+        //               title: 'Set Customer Status',
+        //               dataLabel: "Status",
+        //               valueMember: "status_code",
+        //               textMember: "status_code",
+        //               blankErrorMessage: "Please select a correct status",
+        //               //data: [],
+        //               defaultValue: status_code,
+        //               autoClose:true
+        //           };
                   
-                  this.getLeadStatuses().then(statuses => {
-                      option.data = statuses;
-                      InputBox2.show(option,(d)=>{
-                          if(d) {
-                              let p = {
-                                  id: agent_id,
-                                  status_code: d.value
-                              };
-                              vsapi.call(`${mThis.base_url}/abm/customers/update-status`,p).then(res => {
-                                  if(res.status_code === 200){
-                                      mThis.elFilter_agent_status.value =  d.value;
-                                      mThis.elFilter_agent_status.dispatchEvent(new Event('change'));
-                                      //mThis.elFilter_sender_status.dispatchEvent(new Event('change'));
-                                      const new_status = res.data? `to ${res.data.new_status}`: null;
-                                      cv_interact.info([`Customer status has been changed `,d.new_status].join(''));
-                                      //InputBox2.self.modal('hide');
-                                  }
-                                  else
-                                      cv_interact.error(res.error_message); 
-                              });
-                          }
-                      });
-                  });
-                  return;
-              }
+        //           this.getLeadStatuses().then(statuses => {
+        //               option.data = statuses;
+        //               InputBox2.show(option,(d)=>{
+        //                   if(d) {
+        //                       let p = {
+        //                           id: agent_id,
+        //                           status_code: d.value
+        //                       };
+        //                       vsapi.call(`${mThis.base_url}/abm/customers/update-status`,p).then(res => {
+        //                           if(res.status_code === 200){
+        //                               mThis.elFilter_agent_status.value =  d.value;
+        //                               mThis.elFilter_agent_status.dispatchEvent(new Event('change'));
+        //                               //mThis.elFilter_sender_status.dispatchEvent(new Event('change'));
+        //                               const new_status = res.data? `to ${res.data.new_status}`: null;
+        //                               cv_interact.info([`Customer status has been changed `,d.new_status].join(''));
+        //                               //InputBox2.self.modal('hide');
+        //                           }
+        //                           else
+        //                               cv_interact.error(res.error_message); 
+        //                       });
+        //                   }
+        //               });
+        //           });
+        //           return;
+        //       }
 
-            //Click on Edit
-            let btn = VSUtil.getElementByClass(e.target,'btn-customer-edit');
-            if(btn){
-                let agent_id = btn.dataset.id;
-                let op = {
-                    id:agent_id,
-                    onClose: d => {
-                        mThis.agentListView.showPage(mThis.getFilterData());
-                    }
-                };
-                CustomerDialog.show(op);
-                return;
-            }
+        //     //Click on Edit
+        //     let btn = VSUtil.getElementByClass(e.target,'btn-customer-edit');
+        //     if(btn){
+        //         let agent_id = btn.dataset.id;
+        //         let op = {
+        //             id:agent_id,
+        //             onClose: d => {
+        //                 mThis.agentListView.showPage(mThis.getFilterData());
+        //             }
+        //         };
+        //         CustomerDialog.show(op);
+        //         return;
+        //     }
  
-            //Click on Modify Login "btn-customer-login"
-            btn = VSUtil.closestLimited(e.target,'.btn-customer-login');
-            if(btn){
+        //     //Click on Modify Login "btn-customer-login"
+        //     btn = VSUtil.closestLimited(e.target,'.btn-customer-login');
+        //     if(btn){
                     
-                    const agent = mThis.store_agents[btn.dataset.id] || {};
-                    const op = {
-                        user_id: agent.user_id,
-                        open: 'add-user',
-                        default: {
-                            official_code: agent.code,
-                            user_class: "abm_customer",
-                            phone_number: agent.phone_number,
-                            full_name: agent.name
-                        },
-                        onClose: () => {
-                            if(mThis.agentListView.current_page > 1) mThis.elSearch.val(agent.phone_number);
-                            mThis.agentListView.showPage(mThis.getFilterData());
-                        }
-                    };
-                    if(!AuthManager.allowed(100)) return;
-                    AddUserDialog.show(op);
-                return;
-            }
+        //             const agent = mThis.store_agents[btn.dataset.id] || {};
+        //             const op = {
+        //                 user_id: agent.user_id,
+        //                 open: 'add-user',
+        //                 default: {
+        //                     official_code: agent.code,
+        //                     user_class: "abm_customer",
+        //                     phone_number: agent.phone_number,
+        //                     full_name: agent.name
+        //                 },
+        //                 onClose: () => {
+        //                     if(mThis.agentListView.current_page > 1) mThis.elSearch.val(agent.phone_number);
+        //                     mThis.agentListView.showPage(mThis.getFilterData());
+        //                 }
+        //             };
+        //             if(!AuthManager.allowed(100)) return;
+        //             AddUserDialog.show(op);
+        //         return;
+        //     }
 
-            //Click on Delete
-            btn = VSUtil.closestLimited(e.target,'.btn-customer-delete');
-            if(btn){
+        //     //Click on Delete
+        //     btn = VSUtil.closestLimited(e.target,'.btn-customer-delete');
+        //     if(btn){
 
-                let agent_id = btn.dataset.id;
-                let status_code = btn.dataset.status;
-                let p = {'id':agent_id,'status_code':status_code};
-                cv_interact.confirm('Delete this customer?',{title:'Delete Customer',context:'delete'},function(e){
-                    if(e){
-                        vsapi.call([mThis.base_url,'/abm/customers/delete'].join(''),p,btn,false).then(res=>{
-                            if(res.status_code===200) {
-                                mThis.agentListView.showPage(mThis.getFilterData());
-                            }
-                            else cv_interact.error(res.error_message);
-                        });
-                    }
-                });
-                return;
-            }
+        //         let agent_id = btn.dataset.id;
+        //         let status_code = btn.dataset.status;
+        //         let p = {'id':agent_id,'status_code':status_code};
+        //         cv_interact.confirm('Delete this customer?',{title:'Delete Customer',context:'delete'},function(e){
+        //             if(e){
+        //                 vsapi.call([mThis.base_url,'/abm/customers/delete'].join(''),p,btn,false).then(res=>{
+        //                     if(res.status_code===200) {
+        //                         mThis.agentListView.showPage(mThis.getFilterData());
+        //                     }
+        //                     else cv_interact.error(res.error_message);
+        //                 });
+        //             }
+        //         });
+        //         return;
+        //     }
 
-             //Click on Change Status
-             btn = VSUtil.getElementByClass(e.target,'btn-customer-status');
-             if(btn){
-                let agent_id = btn.dataset.id; 
-                let def_status_code = btn.dataset.status;
-                mThis.changeAgentStatus(agent_id,def_status_code); 
-                 return;
-             }
-        });
+        //      //Click on Change Status
+        //      btn = VSUtil.getElementByClass(e.target,'btn-customer-status');
+        //      if(btn){
+        //         let agent_id = btn.dataset.id; 
+        //         let def_status_code = btn.dataset.status;
+        //         mThis.changeAgentStatus(agent_id,def_status_code); 
+        //          return;
+        //      }
+        // });
        
         mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
             el.onchange = (e)=>{
@@ -285,14 +282,15 @@ var CustomersComponent = new function(){
         mThis.btnSearch.on('click',function(){
             mThis.customerListView.showPage(mThis.getFilterData());
         });
+        
        mThis.initAlready = true;
     }
     //END: CustomerComponent.init() 
 
-    this.changeAgentStatus = (agent_id, def_status_code)=>{
-        //alert('Change agent commission here');
-        return;
-    }
+    // this.changeAgentStatus = (agent_id, def_status_code)=>{
+    //     //alert('Change agent commission here');
+    //     return;
+    // }
 
     this.getFilterData = ()=>{
         let p = {};
@@ -304,27 +302,27 @@ var CustomersComponent = new function(){
        return p; 
     }
 
-    this.getLeadStatuses = () => {
-        if(mThis.form_data.statuses){
-            return new Promise((resolve) =>{
-                resolve( mThis.form_data.statuses);
-            });
-        }
+    // this.getLeadStatuses = () => {
+    //     if(mThis.form_data.statuses){
+    //         return new Promise((resolve) =>{
+    //             resolve( mThis.form_data.statuses);
+    //         });
+    //     }
 
-        return new Promise((resolve, reject) => {
-            vsapi.call(`${main_view.base_url}/abm/settings/options-customer-status`, null, false).then(res => {
-               if(res.status_code == 200){
-                 mThis.form_data.statuses = res.data;
-                 resolve(mThis.form_data.statuses);
-               }else{
-                cv_interact.error(res.error_message);
-               }
-            }).catch(error => {
-                cv_interact.error('Failed to load status options');
-                reject(error); // Reject with the error
-            });
-        });
-    }
+    //     return new Promise((resolve, reject) => {
+    //         vsapi.call(`${main_view.base_url}/abm/customers/form-options`, null, false).then(res => {
+    //            if(res.status_code == 200){
+    //              mThis.form_data.statuses = res.data;
+    //              resolve(mThis.form_data.statuses);
+    //            }else{
+    //             cv_interact.error(res.error_message);
+    //            }
+    //         }).catch(error => {
+    //             cv_interact.error('Failed to load status options');
+    //             reject(error); // Reject with the error
+    //         });
+    //     });
+    // }
 
     this.show = (options = {})=>{
         mThis.init() ; // NOTE: init once only based on mThis.initAlready = true or false
@@ -343,78 +341,3 @@ var CustomersComponent = new function(){
       
 };
  
-const CustomerDialog = new function(){
-    const mThis = this;
-    this.self = main_view.appContent.children('#_cul_dlgCustomer');
-    this.base_url =main_view.base_url;
-    this.elTitle = this.self[0].querySelector('#_cul_dlgCustomerTitle');
-
-    //this.elAgentType = this.self[0].querySelector('#_cul_agent_type');
-    this.onClose = null;
-    this.body =  this.self.find('.modal-body')[0];
-
-    this.body = this.self[0].querySelector('#_cul_dlgCustomer_body');
-    this.btnSave = this.self[0].querySelector('#_cul_dlgCustomer_btnSave');
- 
-    this.options = {};
-
-    
-  
-
-    this.show = (options)=>{
-        console.log(options);
-        mThis.options = options || {};
-        mThis.elTitle.innerHTML = options.title;
-        if (mThis.options.id > 0) {
-            // mThis.elTitle.innerHTML = "Customer Details";
-            // let p = {'id':mThis.options.id};
-            // vsapi.call([main_view.base_url,'/abm//customers/details'].join(''),p,null).then(res=>{
-            //     if(res.status_code === 200){
-            //         let d = res.data;
-            //        d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
-            //         mThis.prepareData(d, () => {
-            //             mThis.setData(d);
-            //             mThis.self.modal({
-            //                 backdrop:'static'
-            //             });
-            //         });
-            //     }
-            // });
-        }
-        else{
-            mThis.elTitle.innerHTML =  "New Customer";
-           // mThis.prepareData({'agent_type_id':1}, ()=>{
-                mThis.setData(null);
-                mThis.self.modal({
-                    backdrop:'static'
-                });       
-           // });
-        }
-    }
-
-    // this.setData = (d)=>{
-    //     d = d || {};
-    //     mThis.body.querySelectorAll('.data-input').forEach(el =>{
-    //         const f = el.dataset.field;
-    //         el.value = d[f] ?? '';
-    //         if(el.tagName ==='SELECT'){
-    //              el.dispatchEvent(new Event('change'));
-    //         }else if(el.tagName ==='IMG'){
-    //             el.setAttribute('src',d[f] || '');
-    //         }
-    //     });
-    //     mThis.imgBox.setImage(d.photo || d.image_url);
-    //     //mThis.divLoginInfo.style.display = d.name ? 'none':'block';
-    // }
-
-    // this.getData = ()=>{
-    //     let p = {};
-    //     p.id = mThis.options.id;
-    //     mThis.agent_fields_panel.querySelectorAll('.data-input').forEach(el =>{
-    //         const f = el.dataset.field;
-    //        if(el.tagName ==='IMG') p[f] = el.getAttribute('src');
-    //        else p[f] = el.value;
-    //     });
-    //     return p;
-    // }
-}

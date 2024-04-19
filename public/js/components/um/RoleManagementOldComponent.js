@@ -15,13 +15,13 @@ var RoleManagementComponent = new function(){
         }
         main_view.setTitle(mThis.title_prop);
         $(mThis.self).siblings().hide();
-        // RoleListPanel.show();
+        RoleListPanel.show();
         $(mThis.self).fadeIn(200);
     };
 
-    // this.hide = function(){
-    //     $(mThis.self).hide();
-    // };
+    this.hide = function(){
+        $(mThis.self).hide();
+    };
 };
 
 var RoleListPanel = new function(){

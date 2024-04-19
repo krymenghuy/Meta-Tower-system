@@ -634,7 +634,7 @@ const CustomerDialog = new function(){
     this.base_url = main_view.base_url;
     this.options = {};
     
-    this.elTitle = this.self.find('.modal-_cuslist_dlgCustomer');
+    this.elTitle = this.self.find('#_cuslist_dlgCustomerTitle');
     this.btnSave =  this.self.find('#_cuslist_dlgCustomer_btnSave');
     this.elBusinessType =  this.self.find('#_cuslist_business_type');
     this.elSalesAgent =  this.self.find('#_cuslist_sales_agent');

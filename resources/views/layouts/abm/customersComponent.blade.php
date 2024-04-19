@@ -1,13 +1,17 @@
-<div id="_main_customersComponent" class="mt-5" style="display:none;">
+<div id="_main_customersComponent"  style="display:none;">
     <div class="d-flex w-100  justify-content-between bg-white shadow rounded-3  p-3" id="div_filter_fields">
         <div class="d-flex flex-row gap-2  ">
             <div class="d-flex flex-row gap-1">
-            <input type="text" class="form-control" id="_cul_search_agent" placeholder="Search Customer">
+            <input type="text" class="form-control" id="_cul_search_customer" placeholder="Search Customer">
             <button id="_cul_btnSearch" class="btn btn-primary ml-2 mr-2" type="button"><i class="fa fa-search"></i></button>
         </div>
-        <div class="d-flex gap-2 ">
-            <select  id="_cul_filter_agent_type" class="modal-select2 filter-field " data-field="agent_type_id"></select>
-            <select  id="_cul_filter_agent_status" class="modal-select2 filter-field" data-field="status_code"></select>
+    
+            <div class="d-flex gap-2 ">
+            
+            <select  id="_cul_filter_customer_status" class="modal-select2 filter-field" data-field="status_code">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+            </select>
             </div>
         </div>
 
@@ -18,7 +22,7 @@
 
     </div>
 
-    <div class="d-flex mt-2 flex-row justify-content-between bg-white shadow-lg rounded-3 p-3 mb-2" id="_cul_filter_fields">
+    <div class="d-flex mt-2 flex-row justify-content-between bg-white shadow-lg rounded-3 p-3 mb-2" id="div_filter_fields">
         <div class="d-flex gap-2">
         </div>
         <div class="d-flex gap-2">
@@ -42,7 +46,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row" id="_cul_dlgCustomer_body">
+                <div class="row" id="_cul_dlgCustomer_body">//id use in dialog
                     <div class="form-group col-lg-6">
                         <label for="code" class="form-label trans-text" data-langprop="titles. ID"></label>
                         <input type="text" class="form-control data-input" data-field="code" placeholder="AUTO" readonly/>
@@ -59,7 +63,7 @@
                     </div>
 
                     <div class="form-group col-lg-6">
-                        <label for="sender_type" class="form-label trans-text" data-langprop="titles.Customer Type"></label>
+                        <label for="os_agent_types" class="form-label trans-text" data-langprop="titles.Customer Type"></label>
                         <select class="modal-select2 data-input" id="_cul_sender_type" data-field="sender_type_id"></select>
                     </div>
 
