@@ -1,7 +1,7 @@
 <?php
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Login\LoginController;
+// use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\Dms\PickupRequestController;
 use App\Http\Controllers\Dms\OrderImageController;
 use App\Http\Controllers\Dms\PackageController;
@@ -36,6 +36,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UMController;
 use App\Http\Controllers\Dms\SalesCommissionPolicyController;
  
+
  //begin:: api without Authentication
     Route::middleware([CustomRateLimiter::class])->group(function(){
         // Route::post('logout', [ApiController::class,'logout_mobile']);
@@ -44,14 +45,17 @@ use App\Http\Controllers\Dms\SalesCommissionPolicyController;
         Route::post('vs-encrypt038111', [UMController::class, 'encryptData']);
         //Route::post('contact-info', [MobileAppSettingsController::class, 'getContactInfo']);
     });
+    Route::post('admin/login', [LoginController::class, 'apiLogin']);
+
 //end:: api without Authentication
 
 //begin:: Admin notifications
     Route::middleware('auth.api', CustomRateLimiter::class)->group(function(){
-            Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
-            Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
-            Route::post('unread-count',[NotificationController::class,'getUnreadCount']);
-            Route::post('mark-read-all',[NotificationController::class,'markReadAll']);
+        Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
+        Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
+        //Route::post('notifications',[ApiController::class,'getNotificationList_admin']);
+        Route::post('unread-count',[ApiController::class,'getUnreadCount']);
+        Route::post('mark-read-all',[ApiController::class,'markReadAll']);
     });
  //end:: Admin Notification
   

@@ -75,7 +75,7 @@
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Dashboard"></span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Dashboard">ds</span>
                 </a>
             </li>
 
