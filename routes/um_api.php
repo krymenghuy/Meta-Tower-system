@@ -16,6 +16,7 @@ Route::middleware([CustomRateLimiter::class])->group(function(){
     Route::post('auth/auth-data', [UMController::class, 'getAuthData']);
 
     Route::post('encryptData', [UMController::class, 'encryptData']);
+    Route::post('vs-encrypt031181', [UMController::class, 'encryptData']);
     Route::post('allowed', [UMController::class, 'allowed']);
     Route::get('csrf-token', [UMController::class, 'refreshCsrfToken']);
 });

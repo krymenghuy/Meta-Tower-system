@@ -1,9 +1,11 @@
 <?php
 
 namespace App\Models\Dms;
+
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use App\Models\UM;
+use App\Models\DV;
 use DB;
 use Sanitizer;
 use Illuminate\Pagination\LengthAwarePaginator; 
@@ -135,7 +137,8 @@ class DeliveryZone //extends Model
             'country_id'=>'1|number|exists=loc_countries.id',
             'city_id'=>'0|number|exists=loc_cities.id',
             'district_id'=>'0|number|exists=loc_districts.id',
-            'commune_id'=>'0|number|exists=loc_communes.id'
+            'commune_id'=>'0|number|exists=loc_communes.id',
+            'description'=>'0|string|0-250'
         ];
         $res = validateObject($arr,$v_rule,true,['zone_code'=>['-']],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);

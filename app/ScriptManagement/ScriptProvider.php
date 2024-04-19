@@ -123,7 +123,7 @@ namespace App\ScriptManagement;
                         '/js/layout/dms/main.js?v=1',
                         '/assets/js/formUtils.js',
                         '/js/components/dms/dms.utils.js',
-                        '/js/components/dms/DialogFilter.js',
+                        '/js/components/dms/FilterDialog.js',
                         '/js/components/dms/PDFReport.js',
                         '/assets/js/ImageBox.js',
                         '/assets/js/ImageHelper.js',

@@ -4,8 +4,8 @@ let pdfReport = new function () {
     let mThis = this;
     this.getEncryptData = (qstring, onFinish) => {
         let p = { 'data': qstring };
-        vsapi.call([main_view.base_url, '/api/encryptData'].join(''), p,null,false).then(d => {
-            onFinish(d);
+        vsapi.call([main_view.base_url, '/api/vs-encrypt031181'].join(''), p,null,false).then(res => {
+            onFinish(res.data || res);
         });
     }
 
