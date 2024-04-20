@@ -91,17 +91,24 @@ var SuppliersComponent = new function(){
 
     this.cols = [
         {
-            className: "code",
+            className: "",
             data: (data,index,tr)=>{
-                const sender_info = ['<span class="sender-name d-block">#',data.code||'គ្មាន','</span>'].join('');
-                return sender_info;
+                return "";
             },
             // title: mThis.trans('Sender ID')
-            title: 'tamnail'
+            title: ' '
+        },
+        {
+            title: "Photo",
+            className: ' align-middle',
+            data: (data, a, b) => {
+                let image = data.image_url ? data.image_url : '';
+                return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
+            }
         },
         
         {
-            className: "code",
+            className: "code align-middle",
             data: (data,index,tr)=>{
                 const sender_info = ['<span class="sender-name d-block">#',data.code||'គ្មាន','</span>'].join('');
                 return sender_info;
@@ -110,7 +117,7 @@ var SuppliersComponent = new function(){
             title: 'code '
         },
         {
-            className: "name",
+            className: "name align-middle",
             data: (data,index,tr)=>{
                 const sender_info = ['<span class="sender-name d-block">',data.name,'</span>'].join('');
                 return sender_info;
@@ -119,7 +126,7 @@ var SuppliersComponent = new function(){
             title: 'Name '
         },
         {
-            className: "phone_number",
+            className: "phone_number align-middle",
             data: (data,index,tr)=>{
                 const sender_info = ['<span class="sender-name d-block">',data.phone_number,'</span>'].join('');
                 return sender_info;
@@ -128,7 +135,7 @@ var SuppliersComponent = new function(){
             title: 'phone number '
         },
         {
-            className: "email",
+            className: "email align-middle",
             data: (data,index,tr)=>{
                 const sender_info = ['<span class="sender-name d-block">',data.gmail||'NA','</span>'].join('');
                 return sender_info;
@@ -137,7 +144,7 @@ var SuppliersComponent = new function(){
             title: 'email'
         },
         {
-            className: "address",
+            className: "address align-middle",
             data: (data,index,tr)=>{
                 const sender_info = ['<span class="sender-name d-block">',data.address||'NA','</span>'].join('');
                 return sender_info;
@@ -146,7 +153,7 @@ var SuppliersComponent = new function(){
             title: 'address '
         },
         {
-            className: "price_list_name",
+            className: "price_list_name align-middle",
             data: (data,index,tr)=>{
                 let price_list_html = data.price_list_name ? `<span class="supplier-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-suppliername="${data.name}" class="set-price-list">
                 <i class="fa fa-edit fs-5"></i></a>`;
@@ -158,7 +165,7 @@ var SuppliersComponent = new function(){
         },
 
         {
-            className: "sales_agent_id",
+            className: "sales_agent_id align-middle",
             data: function (data, index, tr) {
                 return ['<span class="pl-request_date d-block">',data.sales_agent||"NA", '</span>'].join('');
             },
@@ -167,7 +174,7 @@ var SuppliersComponent = new function(){
         },
         
         {
-            className: "created_by",
+            className: "created_by align-middle",
             data: function (data, index, tr) {
                 return ['<span class="pl-request_date d-block">',data.create_user||"NA", '</span>'].join('');
             },
@@ -175,7 +182,7 @@ var SuppliersComponent = new function(){
             // title: mThis.trans('Created Date')
         },
         {
-            className: "status",
+            className: "status align-middle",
             data: function (data, index, tr) {
                 return ['<div class="d-block">',data.status_code == 'Active'? '<span class="pl-request_date btn-act rounded-2">Ative</span>' : '<span class="pl-request_date btn-act-inactive rounded-2">Inactive</span>','</div>'].join('');
             },
@@ -183,7 +190,7 @@ var SuppliersComponent = new function(){
             // title: mThis.trans('Created Date')
         },
         {
-            className: 'col_action',
+            className: 'col_action align-middle',
             data: function (data, row, display) {
                 let html = ['<div class="dropdown d-block ">',
                     '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-suppliername="', data.name, '" data-status="', data.status_code='active'? 1 : 2, '"  class="btn_pickup_action " aria-haspopup="true" aria-expanded="false">',
@@ -1078,6 +1085,7 @@ const SupplierDialog = new function(){
     this.elPriceList =  this.self.find('#_sdl_price_list');
     // this.elCOD =  this.self.find('#_sdl_cod');
     // this.elCODFee =  this.self.find('#_sdl_cod_fee');
+    this.divPhoto = this.self[0].querySelector('#_supplier_profile_photo');
 
     this.onClose = null;
     this.elError =  this.self.find('#_sdl_sender_error');
@@ -1085,6 +1093,32 @@ const SupplierDialog = new function(){
     this.body =  this.self.find('.modal-body')[0];
     this.div_sender_info =  this.body.querySelector('#div_merchant_info');
     // this.div_bank_account = this.body.querySelector('#div_bank_account');
+    mThis.imgBox = new ImageBox(mThis.divPhoto,{
+        "dataField":"photo",
+        "cssClass":"data-input ",
+        containerClass:null,
+        // onDeleteImage:()=>{
+        //   alert('Deleting image');
+        //   return false;
+        // },
+        "onLoadImage":(photo) =>{
+            let p = {"id":mThis.options.id,"supplier_id":mThis.options.id,"photo":photo};
+            // console.log(p);
+            if(!p.id) return; 
+            vsapi.call(`${main_view.base_url}/abm/os_suppliers/save-profile-picture`,p,null,null,false).then(res =>{
+                if(res.status_code ===200){
+                    mThis.imgBox.setImage(photo);
+                    cv_interact.success('Photo has been saved');
+                }else cv_interact.error(res.error_message);
+            });
+        },
+        "deleteAPI":{
+            "endPoint":`${main_view.base_url}/dms/sales-app/agent/delete-profile-picture`,
+            "params":()=>{
+                return {"id": mThis.options.id,"sales_agent_id":mThis.options.id}
+            }
+        }
+    });
 
     this.prepareData = (id,def, onFinish) => {
         // console.log(id);
@@ -1179,7 +1213,10 @@ const SupplierDialog = new function(){
         p.id = mThis.options.id;
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
             let data_member = el.dataset.field;
-            p[data_member] = el.value;
+            if(el.tagName ==='IMG') 
+                p[data_member] = el.getAttribute('src');
+            else 
+                p[data_member] = el.value;
         });
         // p.banks = mThis.getBanks();
         return p;

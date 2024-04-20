@@ -31,7 +31,7 @@ class Supplier //extends Model
             'sales_agent_id'=>'0|number',
             'code'=>'0|string|0-25',
             'price_list_id'=>'0|number',
-            'status_code'=>'0|string|default =active',
+            'status_code'=>'0|string|default =Active',
             'photo'=>'0|image'
     ];
         $eml_char = ['$','#','@','!','.','-','_','=','?'];
@@ -126,7 +126,7 @@ class Supplier //extends Model
                 ->join('os_sales_agents as sa','sa.id','s.sales_agent_id')
                 ->whereRaw($str_srch)
                 ->whereRaw($str_where)
-                ->selectRaw('s.id ,s.code, s.name, s.phone_number, s.email, s.address, s.status_code, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.status_code,s.sales_agent_id,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' );
+                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.status_code,s.sales_agent_id,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' );
        
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
@@ -134,11 +134,17 @@ class Supplier //extends Model
         $rows = $query->skip($skip_row)->take($per_page)->get();
         foreach($rows as $row){
             $row->image_url = '';
-            if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($row->branch_id,'merchant','image').$row->photo_file_name;
+            if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($row->branch_id,'general','image').$row->photo_file_name;
             unset($row->photo_file_name);
             if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
         }
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
+        // return $rows;
+
+    }
+
+    static function defaultImage($branch_id){
+        return PublicStorage::getUrl($branch_id,'default','image').'admin-100.png';
     }
 
     function setPriceList($price_list_id,$id=null,$ss =null){
@@ -234,4 +240,17 @@ class Supplier //extends Model
             // if($includeProfilePicture) $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
         return $row;
      }
+
+     function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
+        $id = $id?$id:$this->id;
+        $ss = $ss?$ss:$this->userInfo;
+        $supplier = DB::table('suppliers')->where('id',$id)->selectRaw('id,branch_id,photo_file_name')->first();
+        $delete_image = (!$photo_data || isImage($photo_data));
+        if(!$supplier)return DV::error('Supplier identity is not correct!');
+        if($delete_image){
+          PublicStorage::delete($ss->branch_id,'general','image',$supplier->photo_file_name);
+          DB::table('suppliers')->where('id',$id)->update(['photo_file_name'=>null]);
+        }
+        return PublicStorage::saveImage($ss->branch_id,self::$img_dir, null,$photo_data,null,['id'=>$id,'store'=>'suppliers.photo_file_name']);  
+      }
 }

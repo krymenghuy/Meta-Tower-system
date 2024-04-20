@@ -74,24 +74,32 @@
             </div>
             <div class="modal-body">
                 <div class="row" id="div_merchant_info">
-                    <div class="form-group col-lg-6">
-                        <label for="id" class="form-label trans-text" data-langprop="titles.Supplier ID"></label>
-                        <input type="text" class="form-control data-input" data-field="id" placeholder="AUTO" readonly/>
-                        <input type="hidden" class="form-control data-input" data-field="code" placeholder="AUTO" readonly/>
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label for="name" class="form-label trans-text" data-langprop="titles.Merchant Name"></label>
-                        <input type="text" class="form-control data-input" data-field="name"/>
-                    </div>
+                    <div class="col-xs-12 col-md-12 col-lg-3">
+                        <div class="d-flex align-items-center"> <div id="_supplier_profile_photo" style="height:165px" class="mt-2"></div></div>
+                     </div>
+                     <div class="col-9">
+                        <div class="row">
+                            <div class="form-group col-lg-6">
+                                <label for="id" class="form-label trans-text" data-langprop="titles.Supplier ID"></label>
+                                <input type="text" class="form-control data-input" data-field="id" placeholder="AUTO" readonly/>
+                                <input type="hidden" class="form-control data-input" data-field="code" placeholder="AUTO" readonly/>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label for="name" class="form-label trans-text" data-langprop="titles.Merchant Name"></label>
+                                <input type="text" class="form-control data-input" data-field="name"/>
+                            </div>
+                            
+                            <div class="form-group col-lg-6">
+                                <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
+                                <input class="form-control data-input" type="text" data-field="phone_number"/>
+                            </div>
+                            <div class="form-group col-lg-6">
+                                <label for="email" class="form-label trans-text" data-langprop="titles.Email"></label>
+                                <input type="email" class="form-control data-input" data-field="email"/>
+                            </div>
+                        </div>
+                     </div>
                     
-                    <div class="form-group col-lg-6">
-                        <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
-                        <input class="form-control data-input" type="text" data-field="phone_number"/>
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label for="email" class="form-label trans-text" data-langprop="titles.Email"></label>
-                        <input type="email" class="form-control data-input" data-field="email"/>
-                    </div>
                     
                     <div class="form-group col-lg-6">
                         <label for="price_list_id" class="form-label trans-text" data-langprop="titles.Price List"></label>

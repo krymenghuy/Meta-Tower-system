@@ -193,7 +193,7 @@ const FilterDialog_pickup = new function () {
             return;
         }
 
-        vsapi.call([mThis.base_url, '/api/getForm_options_pickuplist'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/abm/getForm_options_pickuplist'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let data = res.data;
                 data.warehouses = StringSanitizer.sanitizeObject(data.warehouses);
@@ -380,7 +380,7 @@ var ShipmentsComponent = new function () {
 
         mThis.shipmentListView = new ListView("_shm_div_order_list", {
             clientSidePagination: true,
-            fetchApi: `${main_view.base_url}/api/oversea_shipments/Shipment-list`,
+            fetchApi: `${main_view.base_url}/abm/oversea_shipments/Shipment-list`,
             // processResponse: (res) => {
             //     return d.items;
             // },
@@ -1198,7 +1198,7 @@ var ShipmentsComponent = new function () {
         div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
         let html = '';
         const header_cols = mThis.createPackageTable_thead_html(shipment_id,sender_id);
-        vsapi.call([mThis.base_url, '/api/oversea_shipments/item-list'].join(''), p,null,null,null).then(res => {
+        vsapi.call([mThis.base_url, '/abm/oversea_shipments/item-list'].join(''), p,null,null,null).then(res => {
             if (res.status_code === 200) {
                 let packages = StringSanitizer.sanitizeObject(res.data,null,['size']);
                 let i = 0, c =null;
@@ -1597,7 +1597,7 @@ var ShipmentsComponent = new function () {
         console.log(tr.dataset.shipmentid);
         // p.package_id = tr.dataset.id;
 
-        vsapi.call([mThis.base_url, '/api/oversea_shipments/create-item'].join(''), p, lnk).then(res => {
+        vsapi.call([mThis.base_url, '/abm/oversea_shipments/create-item'].join(''), p, lnk).then(res => {
             if (res.status_code === 200) {
                 let data = res.data;
                 let packageInfo = StringSanitizer.sanitizeObject(data.package,null,['size','receiver_address']);

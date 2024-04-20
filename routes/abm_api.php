@@ -48,6 +48,7 @@ use App\Http\Controllers\abm\SupplierController;
         Route::post('/save', [SupplierController::class, 'save']);
         Route::post('/list', [SupplierController::class, 'getSuplierList']);
         Route::post('/form-options', [SupplierController::class, 'getFormOptions']);
+        Route::post('/save-profile-picture', [SupplierController::class, 'saveProfilePicture']);
         Route::post('/update-status', [SupplierController::class, 'updateSupplierStatus']);
         Route::post('/list-paginate', [SupplierController::class, 'getSuplierListPaginate']);
     });
