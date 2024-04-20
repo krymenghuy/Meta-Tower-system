@@ -38,20 +38,23 @@ class OverseaItem //extends Model
 
         // $check = isExist('shipments',$id,['description'=>$inputs['description']]);
         // if($check) return DV::error('Requirement is already to save...');
-        $save = saveData($ss,'oversea_items',['id'=>$id],$inputs,[],1,0);   
+        $save = saveData($ss,'os_items',['id'=>$id],$inputs,[],1,0);   
         return DV::depends($save,['Item'=>'Created']);
 
     }
 
     function getOverseaItemList($id=null,$ss =null){
         $ss = $ss ?? $this->userInfo;
-        $shipnent_id = $id ?? $this->id;
+        $shipment_id = $id ?? $this->id;
         // return JDV::result($shipnent_id);
 
         $branch_id = $ss->branch_id;
+        $str_where = 'os_items.shipment_id = '.$shipment_id;
+        // return JDV::result($str_where);
+
         // if(empty($shipnent_id)) $shipnent_id =-1;
         // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());
-        return DB::table('oversea_items')->where('shipment_id',$shipnent_id)->selectRaw('item_type, billed_weight, actual_weight, allocated_kg, heigth, weigth, length')->get();
+        return DB::table('os_items')->whereRaw($str_where)->selectRaw('shipment_id,item_type, billed_weight, actual_weight, allocated_kg, heigth, weigth, length')->get();
     }
 
     function List(){

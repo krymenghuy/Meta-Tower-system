@@ -22,7 +22,7 @@
     z-index: 98;
   }
 </style>
-<div id="_main_suppliersComponent" style="display:none;margin:15px">
+<div id="_main_suppliersComponent" style="display:none; margin-right:15px;">
     <div class="d-flex justify-content-between shadow rounded-3 p-3 bg-white">
         <div class="d-flex gap-2">
             <div class="d-flex gap-2">

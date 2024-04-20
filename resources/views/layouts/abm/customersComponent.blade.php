@@ -1,35 +1,42 @@
-<div id="_main_customersComponent" class="m-2" style="display:none;">
-    <div class="w-100">
-        <div class="d-flex flex-row justify-content-between bg-white shadow-lg rounded-3 p-3 mb-2" id="div_filter_fields">
-            <div class="d-flex gap-2">
-              <div class="d-flex flex-row gap-1">
-                <input type="text" class="form-control" id="_cul_search_agent" placeholder="Search agent">
-                <button id="_cul_btnSearch" class="btn btn-primary" type="button"><i class="fa fa-search"></i></button>
-             </div>
-              <div class="d-flex gap-2">
-                <select  id="_cul_filter_agent_type" class="modal-select2 filter-field" data-field="agent_type_id"></select>
-                <select  id="_cul_filter_agent_status" class="modal-select2 filter-field" data-field="status_code"></select>
-              </div>
-            </div>
-            <div class="d-flex gap-2">
-               <button id="_cul_btnNewAgent" class="btn btn-primary" type="button"><i class="fa fa-user-plus"></i> <span class="trans-text" data-langprop="buttons.New Agent"></span></button>
-               <button id="_cul_btnPrint" class="btn btn-secondary" type="button"><i class="fa fa-print"></i> <span class="trans-text" data-langprop="buttons.Print"></span></button>
+<div id="_main_customersComponent"  style="display:none;">
+    <div class="d-flex w-100  justify-content-between bg-white shadow rounded-3  p-3" id="div_filter_fields">
+        <div class="d-flex flex-row gap-2  ">
+            <div class="d-flex flex-row gap-1">
+            <input type="text" class="form-control" id="_cul_search_customer" placeholder="Search Customer">
+            <button id="_cul_btnSearch" class="btn btn-primary ml-2 mr-2" type="button"><i class="fa fa-search"></i></button>
+        </div>
+    
+            <div class="d-flex gap-2 ">
+            
+            <select  id="_cul_filter_customer_status" class="modal-select2 filter-field" data-field="status_code">
+                    <option value="Active">Active</option>
+                    <option value="Inactive">Inactive</option>
+            </select>
             </div>
         </div>
-        <div class="d-flex flex-row justify-content-between bg-white shadow-lg rounded-3 p-3 mb-2" id="_cul_filter_fields">
-            <div class="d-flex gap-2">
-            </div>
-           
-            <div class="d-flex gap-2">
-            </div>
+
+        <div class="d-flex gap-2">
+            <button id="_cul_btnNew" class="btn btn-primary" type="button"><i class="fa fa-user-plus"></i> <span class="trans-text" data-langprop="buttons.New Customer"></span></button>
+            <button id="_cul_btnPrint" class="btn btn-warning" type="button"><i class="fa fa-print"></i> <span class="trans-text" data-langprop="buttons.Print"></span></button>
         </div>
-        <div class="shadow rounded-3 bg-white mt-3 p-2 overflow-hidden">
-            <div id="_cul_customer_list" class="p-2"></div>
-        </div>
+
     </div>
+
+    <div class="d-flex mt-2 flex-row justify-content-between bg-white shadow-lg rounded-3 p-3 mb-2" id="div_filter_fields">
+        <div class="d-flex gap-2">
+        </div>
+        <div class="d-flex gap-2">
+        </div>
+
+    </div>
+
+    <div class="shadow rounded-3 bg-white mt-3 p-2 overflow-hidden">
+        <div id="_cul_customer_list" class="p-2"></div>
+    </div>
+    
 </div>
 
-<div class="modal fade" id="_cul_dlgCustomer" tabindex="-1" role="dialog" aria-labelledby="_cul_dlgCustomerTitle" aria-hidden="true">
+<div class="modal fade" id="CustomerDialog" tabindex="-1" role="dialog" aria-labelledby="_cul_dlgCustomerTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -38,77 +45,55 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body" id="_cul_dlgCustomer_body">
-                <div id="_cul_dlgCustomer_fields" class="d-flex flex-column">
-                   <div class="row">
-                     <div class="col-xs-12 col-md-12 col-lg-3">
-                        <div class="d-flex align-items-center"> <div id="_agent_profile_photo" style="height:230px" class="mt-2"></div></div>
-                     </div>
-                     <div class="col-xs-12 col-lg-9">
-                        <div class="row">
-                            <div class="col-xs-12 col-lg-6">
-                                <label class="form-label">Agent ID</label>
-                                <input type="text" class="form-control data-input" data-field="code" placeholder="AUTO" readOnly>
-                            </div>
-                            <div class="col-xs-12 col-lg-6">
-                                <label class="form-label">Name</label>
-                                <input type="text" class="form-control data-input" data-field="name">
-                            </div>
-                        </div>
+            <div class="modal-body">
+                <div class="row" id="_cul_dlgCustomer_body">//id use in dialog
+                    <div class="form-group col-lg-6">
+                        <label for="code" class="form-label trans-text" data-langprop="titles. ID"></label>
+                        <input type="text" class="form-control data-input" data-field="code" placeholder="AUTO" readonly/>
+                    </div>
 
-                        <div class="row">
-                            <div class="col-xs-12 col-lg-6">
-                                       <label class="form-label">Sex</label>
-                                        <select class="modal-select2 data-input" data-field="sex">
-                                            <option value="F">Female</option>
-                                            <option value="M">Male</option>
-                                            <option value="O">Other</option>
-                                        </select>
-                            </div>
-                            <div class="col-xs-12 col-lg-6">
-                                 <label class="form-label">Agent Type</label>
-                                 <select class="modal-select2 data-input" id="_cul_agent_type" data-field="agent_type_id"></select>
-                            </div>
-                        </div>
-                        
-                     </div>
-                   </div>
- 
-                    <div class="row">
-                        <div class="form-group col-lg-6">
-                            <label class="form-label">Phone Number</label>
-                            <input id="_cul_phone_number" class="form-control data-input" data-field="phone_number" />
-                        </div>
-                        <div class="form-group col-lg-6">
-                            <label class="form-label">Email</label>
-                            <input class="form-control data-input" data-field="email">
-                        </div>
+                    <div class="form-group col-lg-6">
+                        <label for="name" class="form-label trans-text" data-langprop="titles. Name"></label>
+                        <input type="text" class="form-control data-input" data-field="name"/>
                     </div>
-                    <div class="row">
-                        <div class="form-group col-lg-12">
-                            <label class="form-label">Address</label>
-                            <textarea class="form-control data-input" data-field="address"></textarea>
-                        </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="email" class="form-label trans-text" data-langprop="titles.Email"></label>
+                        <input type="email" class="form-control data-input" data-field="email"/>
                     </div>
-                    <div class="div_login_info p-2">
-                        <div class="p-2 d-flex gap-2">
-                            <i class="fa fa-mobile fs-5 mt-1"></i> <span class="fs-5 fw-semibold">Mobile App Account</span>
-                        </div> 
-                        <div class="d-flex flex-row gap-2 mt-1">
-                              <div>
-                                 <label class="form-label">Login name</label>
-                                 <input id="_cul_login_name" class="form-control data-input" data-field="login_name" placeholder="Phone number">
-                              </div> 
-                              <div>
-                                 <label class="form-label">Password</label>
-                                 <input id="_cul_password" type="password" class="form-control data-input" data-field="password">
-                              </div>
-                        </div>
-                      
+
+                    <div class="form-group col-lg-6">
+                        <label for="os_agent_types" class="form-label trans-text" data-langprop="titles.Customer Type"></label>
+                        <select class="modal-select2 data-input" id="_cul_sender_type" data-field="sender_type_id"></select>
                     </div>
-                   
+
+                    <div class="form-group col-lg-6">
+                        <label for="business_type" class="form-label trans-text" data-langprop="titles.Business"></label>
+                        <select class="modal-select2 data-input" data-field="business_type" id="_cul_business_type"></select>
+                    </div>
+
+                    <div class="form-group col-lg-6">
+                        <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
+                        <input class="form-control data-input" type="text" data-field="phone_number"/>
+                    </div>
+
+
+
+                    <div class="form-group col-lg-6">
+                        <label for="price_list_id" class="form-label trans-text" data-langprop="titles.Price List"></label>
+                        <select id="_cul_price_list" class="modal-select2 data-input" data-field="price_list_id"></select>
+                    </div>
+
+
+                    <div class="form-group col-lg-12">
+                        <label for="address" class="form-label trans-text" data-langprop="titles.Address"></label>
+                        <textarea class="form-control data-input" data-field="address"></textarea>
+                    </div>
+
                 </div>
-              
+
+
+                
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default btn-secondary height" data-dismiss="modal"><span class="trans-text" data-langprop="buttons.Cancel"></span></button>

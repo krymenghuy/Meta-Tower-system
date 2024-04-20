@@ -30,6 +30,7 @@ class OverseaShipment //extends Model
             
             'effective_weight'=>'0|number|default =0.00',
             'actual_weight'=>'0|number|default =0.00',
+            'markup_weight'=>'0|number|default =0.00',
             'total_weight'=>'0|number|default =0.00',
             'carrier_total_weight'=>'0|number|default =0.00',
             'total_price'=>'0|number|default =0.00',
@@ -60,7 +61,7 @@ class OverseaShipment //extends Model
 
     function getOverseaShipmentList(){
         // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());
-        return DB::table('os_shipments')->selectRaw('id,sender_id, remarks, zone_code, status_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->get();
+        return DB::table('os_shipments')->selectRaw('id,sender_id, remarks, zone_code, status_id, to_country_id, from_country_id,primary_cp_id,secondary_cp_id,effective_weight,actual_weight,markup_weight,total_weight,carrier_total_weight,total_price,carrier_cost , carrier_special_charge,total_carrier_cost,total_special_charge,receiver_name,receiver_address , formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->get();
     }
 
     

@@ -1760,7 +1760,7 @@ const FilterDialog_package = new function () {
  
 window.addEventListener('message', function(event) {
     if (event.data === 'print_complete') {
-        console.log('User printed');
+       // console.log('User printed');
         // Implement your feedback mechanism here
     }else {
         console.log(event.data);
