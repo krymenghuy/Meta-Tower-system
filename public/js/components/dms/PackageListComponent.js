@@ -520,8 +520,7 @@ var PackageListComponent = new function() {
                         }
                     });
                 });
- 
-
+  
                 //Change merchant
                 mThis.tblPackages.on('click', 'a._pl_pa_change_merchant', function (e) {
                     e.preventDefault();
@@ -529,7 +528,8 @@ var PackageListComponent = new function() {
                     let tr = $(this).closest('tr');
         
                     let package_id = x.data('id');
-                    let option = { 'title': 'Find Merchant', 'role': 'sender', 'singleSelect': true, 'previousDialog': null };
+                    const option = { 'title': 'Find Merchant', 'role': 'sender', 'singleSelect': true, 'previousDialog': null };
+ 
                     FindPersonDialog.show(option, function (ps) {
                         if (ps[0]) {
                             let sender = ps[0];
@@ -944,41 +944,55 @@ var PackageListComponent = new function() {
         }  
    }
 
+   /** This is the old version function findRowByBarcode() */
+    // this.findRowByBarcode = (barcode) => {
+    //     let tr = null;
+    //     mThis.tblPackages[0].querySelectorAll(`tr.package_header`).forEach( tr => {
+    //         if (tr.dataset.barcode == barcode) return false;
+    //     });
+    //     return tr ? tr : {};
+    // }
+
     this.findRowByBarcode = (barcode) => {
-        let tr = null;
-        mThis.tblPackages.find(`tr.package_header`).each(function () {
-            tr = $(this);
-            if (tr.data('barcode') == barcode) return false;
-        });
-        return tr ? tr : {};
+        const headers = mThis.tblPackages[0].getElementsByClassName('package_header');
+        
+        for (const header of headers) {
+            if (header.dataset.barcode === barcode) {
+                return header; // Return immediately when match found
+            }
+        }
+        
+        return {}; // Return an empty object if not found
     }
+ 
+    this.displayDriverData = (tr_html, d) => {
+        // let prev_did = 0;
+        // let cnt = 0;
+        let tr = null;
+        if(!tr_html) return; 
+        if (tr_html instanceof jQuery) tr = tr_html[0]; else tr = tr_html;
+        //if (tr) {
+            tr.dataset.driverid = d.driver_id;
+            tr.querySelector('a._pol_driver_name').textContent = d.driver_name;
+            let lnkStatus = tr.querySelector('td.package-status').querySelector('a._pol_status');
+            lnkStatus.querySelector('.status-text').textContent =  d.status;
+            lnkStatus.querySelector('.status-time').textContent =  'Just now';
+            lnkStatus.dataset.statusid =  d.status_id;
+            tr.dataset.statusid = d.status_id;
 
-    this.displayDriverData = (tr, d) => {
-        let prev_did = 0;
-        let cnt = 0;
-
-        if (tr) {
-            tr.data('driverid', d.driver_id);
-            tr.find('a._pol_driver_name').text(d.driver_name);
-            let lnkStatus = tr.find('td.package-status').find('a._pol_status');
-            lnkStatus.find('.status-text').text(d.status);
-            lnkStatus.find('.status-time').text('Just now');
-            lnkStatus.data('statusid', d.status_id);
-            tr.data('statusid', d.status_id);
-
-            let d_tr = tr.next();
-            if (d_tr.hasClass('package_detail')) {
-                d_tr.find('span.pg-driver').text(d.driver_name);
+            let d_tr = tr.nextSibling;
+            if (d_tr.classList.contains('package_detail')) {
+                d_tr.querySelector('span.pg-driver').textContent = d.driver_name;
             }
 
             //Change the look of Status button according to status_id
             let statusClass = DUtil.getStatusClass(d.status_id);
-            lnkStatus.attr('class', statusClass + ' pg-text _pol_status');
+            //lnkStatus.attr('class', statusClass + ' pg-text _pol_status');
+            if (lnkStatus) lnkStatus.classList.add('pg-text _pol_status',statusClass);
             return true;
-       }
+       //}
    }
-
-
+ 
     this.deletePackage = (barcode,package_id)=>{
         let p = {'barcode':barcode?barcode:'','id':package_id};
        vsapi.call(`${mThis.base_url}/dms/package/delete`,p).then(res => {
@@ -1760,7 +1774,7 @@ const FilterDialog_package = new function () {
  
 window.addEventListener('message', function(event) {
     if (event.data === 'print_complete') {
-       // console.log('User printed');
+        console.log('User printed');
         // Implement your feedback mechanism here
     }else {
         console.log(event.data);

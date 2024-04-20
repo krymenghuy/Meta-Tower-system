@@ -9,7 +9,8 @@ use DB;
 //use Sanitizer;
 //use Config;
 use Illuminate\Pagination\LengthAwarePaginator; 
-use Illuminate\Support\Facades\Log;
+//use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 class Lead //extends Model
 {
     //use HasFactory;
@@ -351,7 +352,7 @@ class Lead //extends Model
         $phone =  ' with phone number: '.$sender->phone_number;
         return DV::error('This prospect already becomes a merchant '.$phone); 
      }
-     $senderModel = new \App\Models\Dms\Sender(null,$ss);
+     $senderModel = new \App\Models\Sender(null,$ss);
      $input =DB::table('leads as l')->where('l.id',$id)->selectRaw('l.name,sales_agent_id,l.phone_number,l.email,address,business_type')->first();
      $input->name_kh = $input->name;
      $input->sender_type_id =1;
@@ -413,7 +414,7 @@ class Lead //extends Model
     $ss = $ss ?? $this->userInfo;
     $lead = DB::table('leads as l')->where('id',$id)->selectRaw('l.id,l.name,l.code,l.client_id')->first();
     if(!$lead) return DV::error('Lead ID ? is does not exist::'.$id);
-    $senderModel = new \App\Models\Dms\Sender(null,$ss);
+    $senderModel = new \App\Models\Sender(null,$ss);
     if($lead->client_id){
       $res = $senderModel->deleteSpecial($lead->client_id,$ss);
       if($res->status === 'Error') return DV::error('This lead was once converted to merchant. Problem in deleting the merchant: '.$res->error_message);
@@ -434,7 +435,7 @@ class Lead //extends Model
     if($err) return DV::error($err);
     $sender = DB::table('sender as s')->where('lead_id',$id)->selectRaw('s.id,s.name,s.phone_number,s.status_code')->first();
     if($sender){
-      $senderModel = new \App\Models\Dms\Sender(null,$ss);
+      $senderModel = new \App\Models\Sender(null,$ss);
       $res = $senderModel->delete($sender->id,$ss);
       if($res->status ==='Error') return DV::error($res->error_message);
     }
@@ -534,7 +535,19 @@ class Lead //extends Model
     $business_type = isset($d->business_type)?$d->business_type:null;
     $sales_agent_id = isset($d->sales_agent_id)? $d->sales_agent_id: null;
     $search_value = isset($d->search_value)?$d->search_value:null;
-   
+    
+    $use_cache =isset($d->use_cache)?$d->use_cache:1;
+    $cache_key = 'leadlist1107_';
+    foreach($d as $key => $val) $cache_key .= $val;
+    $cache_key = str_replace(['/','-','?','@','|'],'',$cache_key);
+    $cache_data = null;
+    if($use_cache){
+      $cache_data = Cache::get($cache_key); 
+      if ($cache_data) {
+        return $cache_data;
+      }
+    }
+
     $str_agent = '7=7';
     $str_dates ='9=9';
     $str_business_type ='1=1';
@@ -575,7 +588,9 @@ class Lead //extends Model
        unset($row->photo_file_name);
        $row->image_url = validateUrl($url,self::defaultImage($ss->branch_id));
      }
-     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+     $data = new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+     Cache::put($cache_key,$data,2*60);
+     return $data;
   }
  
   static function defaultImage($branch_id){
