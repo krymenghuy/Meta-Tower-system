@@ -125,6 +125,7 @@
       </div>
     </div>
   </div>
+  
   <div id="_um_edit_role" style="display:none">
     <div class="bg-white p-3 rounded-3">
       <div class="row">

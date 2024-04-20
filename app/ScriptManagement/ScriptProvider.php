@@ -94,8 +94,8 @@ namespace App\ScriptManagement;
                         '/assets/js/InputBoxes.js',
                         // 'js/components/dms/SenderPaymentComponent.js',
                         // 'js/components/dms/TripListComponent.js',
-                        // 'js/components/dms/RoleManagementComponent.js',
-                        // 'js/components/dms/UserManagementComponent.js',
+                        // 'js/components/abm/RoleManagementComponent.js',
+                        // 'js/components/abm/UserManagementComponent.js',
                         'assets/js/pusher/pusher.min.js',
                         '/js/components/abm/pusher_client_houxpress.js',
                         //'/js/components/abm/pusher_client_dms.js'

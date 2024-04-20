@@ -43,80 +43,101 @@
   }
   .card:hover{
     cursor: pointer;
-    border:1px solid green !important;
+    border:1px solid #ffb822 !important;
     
   }
 
   .row{
     width: 100%;
     flex-wrap:nowrap;
-    overflow: scroll;
+    overflow-x: scroll;
   }
   .box{
     width: 3000px;
   }
+  .role_name_title{
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        width:75px;
+        height:70px;
+        border-radius:10px;
+        background-color: #ffb822 ;
+        color:white;
+        font-size: 20px;
+        
+    }
+    .btn-circle {
+      width: 100px; /* Set width */
+      height: 100px; /* Set height */
+      border-radius: 50%; /* Make it circular */
+      font-size: 24px; /* Set font size */
+    }
   
  
 </style>
- 
-<div id="_um_roleManagementComponent" style="width:auto;display:none;margin:15px 15px 15px">
 
-
-  <div class="row">
-    <div class="col-sm-2 box">
-    <div class="card   shadow p-3 border rounded-3 m-3">
-      <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-          <span class="data-input text-success fs-5 fw-semibold" data-field="title">Customer</span>
-          <img style="width:100px;" src="https://dms.vectoranet.com/uploads/public/1_data/default/images/default-user.png"  alt="">
+<div id="_um_roleManagementComponent">
+  <div class="d-flex">
+    <div class="d-flex gap-2">
+      <div class="input-group input-group-sm flex-nowrap width--search-inner shadow d-none d-sm-none d-md-flex d-lg-flex">
+        <input type="search" class="form-control form-control-sm" placeholder="Search role" id="_um_search_user"/>
+        <div class="input-group-text">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
       </div>
-          <span class="pg-alert-card-line" style="width:100%"></span>
-          <span class="data-input text-muted p-1" style="font-size:0.8em" >Total People:</span>
-    </div> 
-    </div> 
-
-    <div class="col-sm-2 box">
-    <div class="card   shadow p-3 border rounded-3 m-3">
-      <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-          <span class="data-input text-success fs-5 fw-semibold" data-field="title">Customer</span>
-          <img style="width:100px;" src="https://dms.vectoranet.com/uploads/public/1_data/default/images/default-user.png"  alt="">
+      <div class="width--search-inner-sm d-none d-sm-none d-md-none d-lg-block shadow">
+          <select id="_um_filter_userclass" class="modal-select2"></select>
       </div>
-          <span class="pg-alert-card-line" style="width:100%"></span>
-          <span class="data-input text-muted p-1" style="font-size:0.8em" >Total People:</span>
-    </div> 
-    </div>   
-    
-    <div class="add">
-        <button class="btn  text-white">
-        <img style="width:50px;" src="{{ asset('assets/images/logo/new-button-emoji.png') }}"  alt="">
-
+    </div>
+    <div class="justify-content-end w-100 d-none d-sm-none d-md-flex d-lg-flex">
+        <button id="_um_btn_pdf" class="btn btn-sm btn-danger rounded-5" type="button">
+          <i class="fa fa-file-pdf"></i> <span class="trans-text" data-langprop="buttons.PDF"></span>
         </button>
     </div>
-    
   </div>
 
-   
+  <div id="_um_roleListPanel">
+    <div class="row bg-white shadow mt-4">
+      <div class="col-sm-2 box">
 
+        <div id="_cord"></div>
+          <div class="card bg-white shadow p-3 border rounded-3 m-3">
+            <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
+              <span class="data-input text-success fs-5 fw-semibold" data-field="user_class">Customer</span>
+              <span class="data-input text-muted p-1" style="font-size:0.8em" >User Class: Admin</span>
+              <span class=" role_name_title"> 
+                <script>
+                  document.write("Customer".charAt(0).toUpperCase());
+                </script>
+              </span>
+            </div>
+              <span class="pg-alert-card-line" style="width:100%"></span>
+              <span class="data-input text-muted p-1" style="font-size:0.8em" >Total Member: 31</span>
+          </div> 
+      </div> 
 
-    
-    
+        <div class="add  p-5">
+          <button id="_um_btn_new" class="btn btn-sm btn-danger  btn-circle shadow text-nowrap " type="button">
+                      <i class="fa fa-user-plus"><span class="trans-text text-nowrap" data-langprop="buttons.New Role"></span></i>
+          </button>
+        </div>
+    </div>
       
-        
   </div>
 
-  <div class="d-flex flex-fow gap-2 justify-content-start mt-3 shadow border rounded-3 ">
+  <div class="d-flex flex-fow gap-2 justify-content-start m-3 shadow border rounded-3 ">
     <div class="tab-header gap-2 set-parent-active m-3 p-2">
       <button class="btn-um-application btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
         <span class="text-nowrap">Application</span>
       </button>
-      <button class="btn-um-roles btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
-          <span class="text-nowrap">Roles</span>
+      <button class="btn-um-module btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
+          <span class="text-nowrap">Module</span>
       </button>
       <button class="btn-um-permissions btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
           <span class="text-nowrap">Permissions</span>
       </button>
-      <button class="btn-um-permissions btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
-        <span class="text-nowrap">Permissions</span>
-      </button>
+      
       <button class="btn-um-reports btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
           <span class="text-nowrap">Reports</span>
       </button>
@@ -127,21 +148,19 @@
           <span class="text-nowrap">Set Password</span>
       </button>
     </div>
-
   </div>
   
-</div>
+</div> 
+  
+  
+  
 
       
-  <div id="_um_roleListPanel" style="display:none">
-    <div class="row">
-    
-  </div>
   
-</div>
+  
 
 
-<div class="modal fade" id="_um_dlgCreatePrn" tabindex="-1" role="dialog" aria-labelledby="_um_dlgCreatePrnTitle" aria-hidden="true">
+<!-- <div class="modal fade" id="_um_dlgCreatePrn" tabindex="-1" role="dialog" aria-labelledby="_um_dlgCreatePrnTitle" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -215,4 +234,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
