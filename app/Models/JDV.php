@@ -91,13 +91,28 @@ class JDV //extends Model
 
     //DV::result($rows) returns SELECT or query result ready to be encoded as JSON straight to be sent to Browser
     //JDV::result() and DV::result() return query results inhabited under "data" property. Example $res->data = [... query result ...]
-    static function result($rows=[]){
+    static function result($rows = []){
+      $rows = self::replaceNullWithEmptyString($rows);
       //default status_code for create, update, delete is "200"
        return response()->json((object)['status'=>'OK','status_code'=>200,'data'=>$rows]);
    }
 
+   /** $array can be of type array or object */
+   static function replaceNullWithEmptyString($arrayOrObject) {
+    if (is_object($arrayOrObject) || is_array($arrayOrObject)) {
+        foreach ($arrayOrObject as &$value) {
+            if (is_null($value)) {
+                $value = '';
+            } elseif (is_object($value) || is_array($value)) {
+                self::replaceNullWithEmptyString($value);
+            }
+        }
+    } return $arrayOrObject;
+  }
+ 
    static function raw($data){
-    return response()->json($data);
+     $data = self::replaceNullWithEmptyString($data);
+     return response()->json($data);
    }
 
 }
