@@ -193,7 +193,7 @@ const FilterDialog_pickup = new function () {
             return;
         }
 
-        vsapi.call([mThis.base_url, '/api/getForm_options_pickuplist'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/abm/getForm_options_pickuplist'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let data = res.data;
                 data.warehouses = StringSanitizer.sanitizeObject(data.warehouses);
@@ -380,7 +380,7 @@ var ShipmentsComponent = new function () {
 
         mThis.shipmentListView = new ListView("_shm_div_order_list", {
             clientSidePagination: true,
-            fetchApi: `${main_view.base_url}/api/oversea_shipments/Shipment-list`,
+            fetchApi: `${main_view.base_url}/abm/oversea_shipments/Shipment-list`,
             // processResponse: (res) => {
             //     return d.items;
             // },
@@ -404,6 +404,16 @@ var ShipmentsComponent = new function () {
         /** NOTE: tblOrder is Vanila javascript object, whereas mThis.tblPickups is Jquery Object that represents the same table */
         mThis.tblOrders = mThis.shipmentListView.getTable();
         mThis.tblShipments = $(mThis.tblOrders);
+
+        this.container = mThis.shipmentListView.getListContainer();
+        // mThis.setEvents($(mThis.container));
+        // console.log(mThis.container.parentElement); 
+        const parent = mThis.container.parentElement;
+            parent.style.height = (window.innerHeight - 210)+'px';
+            parent.classList.add('overflow-y-auto');
+            window.onresize = () => {
+            parent.style.height = (window.innerHeight - 210)+'px';
+        }
 
         mThis.cfg = new ExpandableRowConfig(mThis.tblShipments.attr('id'), {
             dontExpandByClickingOn: ['pkl_btn_receive','pkl_btn_pick','btn-show','btn_pickup_action','lnk-assign-driver','lnk-set-address'],
@@ -1198,7 +1208,7 @@ var ShipmentsComponent = new function () {
         div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
         let html = '';
         const header_cols = mThis.createPackageTable_thead_html(shipment_id,sender_id);
-        vsapi.call([mThis.base_url, '/api/oversea_shipments/item-list'].join(''), p,null,null,null).then(res => {
+        vsapi.call([mThis.base_url, '/abm/oversea_shipments/item-list'].join(''), p,null,null,null).then(res => {
             if (res.status_code === 200) {
                 let packages = StringSanitizer.sanitizeObject(res.data,null,['size']);
                 let i = 0, c =null;
@@ -1597,7 +1607,7 @@ var ShipmentsComponent = new function () {
         console.log(tr.dataset.shipmentid);
         // p.package_id = tr.dataset.id;
 
-        vsapi.call([mThis.base_url, '/api/oversea_shipments/create-item'].join(''), p, lnk).then(res => {
+        vsapi.call([mThis.base_url, '/abm/oversea_shipments/create-item'].join(''), p, lnk).then(res => {
             if (res.status_code === 200) {
                 let data = res.data;
                 let packageInfo = StringSanitizer.sanitizeObject(data.package,null,['size','receiver_address']);
@@ -1889,7 +1899,9 @@ var ShipmentsComponent = new function () {
     }
 
     this.hideQuickButtons = (tr)=>{
-        let td = tr.querySelector('td.request_date');
+        // console.log(tr);
+        // let td = tr.querySelector('td.request_date');
+        let td = tr.querySelector('td.Created-Date');
         let dx = td.querySelector('div.pkl-quick_action_buttons');
         if (dx){
             dx.remove();
@@ -1902,25 +1914,26 @@ var ShipmentsComponent = new function () {
         let status_id = tr.dataset.statusid;
         if (mThis.prev_quick_buttons) mThis.prev_quick_buttons.style.visibility = 'hidden';
         // let td = tr.querySelector('td.request_date');
-        // let dx = td.querySelector('div.pkl-quick_action_buttons');
-        // if (dx) {
-        //     if (status_id > 3){
-        //         const btn = dx.querySelector('.pkl_btn_pick');
-        //         if(btn) btn.style.visibility='hidden';
-        //     } else{
-        //         const btn = dx.querySelector('.pkl_btn_pick');
-        //         btn.style.visibility='visible';
-        //     }
-        //     dx.style.visibility='visible';
-        //     mThis.prev_quick_buttons = dx;
-        //     return;
-        // }
+        let td = tr.querySelector('td.Created-Date');
+        let dx = td.querySelector('div.pkl-quick_action_buttons');
+        if (dx) {
+            if (status_id > 3){
+                const btn = dx.querySelector('.pkl_btn_pick');
+                if(btn) btn.style.visibility='hidden';
+            } else{
+                const btn = dx.querySelector('.pkl_btn_pick');
+                btn.style.visibility='visible';
+            }
+            dx.style.visibility='visible';
+            mThis.prev_quick_buttons = dx;
+            return;
+        }
 
-        // td.insertAdjacentHTML('afterbegin',['<div id="pkl_quick_buttons_', order_id, '" class="d-flex flex-row gap-2 pkl-quick_action_buttons">',
-        //         (status_id < 3) ? ['<a href="javascript:void(0)" data-senderid="', sender_id, '" data-orderid="', order_id, '" class="pkl_btn_pick pl-1 pr-1 border rounded-3 border-primary">Pick</a>'].join('') : null,
-        //         (status_id < 5) ? ['<a href="javascript:void(0)" data-senderid="', sender_id, '" data-orderid="', order_id, '" class="pkl_btn_receive fw-semi-bold text-success ml-2 border rounded-2 pl-1 pr-1 border-success">Arrive</a>'].join('') : null,
-        //         '</div>'].join(''));
-        // mThis.prev_quick_buttons  = td.querySelector(['#pkl_quick_buttons_',order_id].join(''));
+        td.insertAdjacentHTML('afterbegin',['<div id="pkl_quick_buttons_', order_id, '" class="d-flex flex-row gap-2 pkl-quick_action_buttons">',
+                (status_id < 3) ? ['<a href="javascript:void(0)" data-senderid="', sender_id, '" data-orderid="', order_id, '" class="pkl_btn_pick pl-1 pr-1 border rounded-3 border-primary">Pick</a>'].join('') : null,
+                (status_id < 5) ? ['<a href="javascript:void(0)" data-senderid="', sender_id, '" data-orderid="', order_id, '" class="pkl_btn_receive fw-semi-bold text-success ml-2 border rounded-2 pl-1 pr-1 border-success">Arrive</a>'].join('') : null,
+                '</div>'].join(''));
+        mThis.prev_quick_buttons  = td.querySelector(['#pkl_quick_buttons_',order_id].join(''));
     }
 
     this.getFilterData = ()=>{

@@ -106,7 +106,7 @@ var SalesAgentsComponent = new function(){
             def.status_code ='Active';
         }
        
-        vsapi.call([mThis.base_url,'/dms/sales-module/agent/form-options'].join(''),{'id':null},null,main_view.apiCluster).then(res => {
+        vsapi.call([mThis.base_url,'/abm/os_suppliers/form-options'].join(''),{'id':null},null,main_view.apiCluster).then(res => {
                 let d = res.status_code ===200?  StringSanitizer.sanitizeObject(res.data) : {};  
                 VSUtil.setComboItems(mThis.elFilter_agent_type,d.agent_types,'id','agent_type',true,'(All Types)',def.agent_type_id);
                 VSUtil.setComboItems(mThis.elFilter_agent_status,d.statuses,'status_code','status_name',true,'(All Status)',def.status_code);
@@ -366,7 +366,7 @@ const SalesAgentDialog = new function(){
 
     mThis.imgBox = new ImageBox(mThis.divPhoto,{
         "dataField":"photo",
-        "cssClass":"data-input",
+        "cssClass":"data-input border",
         containerClass:null,
         // onDeleteImage:()=>{
         //   alert('Deleting image');
@@ -481,7 +481,7 @@ const SalesAgentDialog = new function(){
         let p = {};
         p.id = mThis.options.id;
         mThis.agent_fields_panel.querySelectorAll('.data-input').forEach(el =>{
-            const f = el.dataset.field;
+            const f = el.dataset.field; 
            if(el.tagName ==='IMG') p[f] = el.getAttribute('src');
            else p[f] = el.value;
         });
