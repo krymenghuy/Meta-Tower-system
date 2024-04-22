@@ -464,19 +464,6 @@ class UM //extends Model
          else return false;
       }
 
-      function deleteRole($role_id, $ss = null)
-      {
-        $ss = $ss ? $ss : $this->userInfo;
-        $err = self::getDeleteRoleError($role_id, $ss);
-        if ($err) return DV::error($err);
-        $tables = ['um_user_roles','um_user_modules','um_user_permissions'];
-        //if(!$id || $id<=0) return DV::error("Role identifier is not valid",$lang);
-        DB::table('um_roles')->where('id', $role_id)->delete();
-        foreach($tables as $table){
-          DB::table($table)->where('role_id',$role_id)->delete();
-        }
-        return DV::success();
-      }
 
         function addRoleMember($user_id,$role_id,$ss=null){
           $isRoleID = DB::table('um_roles')->where('id',$role_id)->take(1)->value('id');
@@ -568,13 +555,26 @@ class UM //extends Model
       {
         $ss = $ss ? $ss : $this->userInfo;
         $d = (object)$arr;
+        $branch_id = $ss->branch_id;
+
         $current_page = isset($d->current_page) ? $d->current_page : 1;
+        $search_value = isset($d->search_value) ? $d->search_value : null;
+
         $per_page = isset($d->per_page) ? $d->per_page : 10;
         if (!is_numeric($current_page)) $current_page = 1;
         $skip_rows = ($current_page - 1) * $per_page;
+        $str_search = '2=2';
+        if ($search_value) {
+          $search_value = escape_like_str($search_value);
+          $str_search = "(r.name ='$search_value' OR r.name LIKE '%" . $search_value . "%' OR r.user_class ='" . $search_value . "' )";
+        } 
 
         $str_branch = "1=1";
-        $query = DB::table('um_roles AS r')->selectRaw("r.id, r.`name`,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.branch_id = u.branch_id AND ur.role_id = r.id) AS user_count")->whereRaw($str_branch);
+        $query = DB::table('um_roles AS r')
+        ->selectRaw("r.id, r.`name`,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.branch_id = u.branch_id AND ur.role_id = r.id) AS user_count")
+        ->whereRaw($str_branch)
+        ->whereRaw($str_search);
+
         $count_query = clone $query;
         $count = $count_query->count('r.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -592,14 +592,7 @@ class UM //extends Model
 
        }
 
-      //   function getRoleById($id,$ss =null) {
-      //     $ss = $ss ?? $this->userInfo;
-      //     $branch_id = $ss->branch_id;
-      //     $id = $d->role_id;
-      //     $rows= DB::table('um_roles')->where('branch_id',$branch_id)->where('id',$id)->selectRaw('id,name,user_class')->limit(1)->get();
-      //     foreach($rows as $row) return $row;
-      //     return null;
-      // }
+      
 
         function getUserList($arr,$ss=null){
             $branch_id = 1;//$ss ? $ss->branch_id : 1;
@@ -695,6 +688,13 @@ class UM //extends Model
          $rows = DB::table('um_users as u')->join('um_user_roles as ur','ur.user_id','=','u.id')->where('u.branch_id',$branch_id)->whereRaw($str_roles)->selectRaw("u.id,u.login_name as staff_name,u.full_name")->get();
          return $rows;
     }
+    function getRoleById($id,$ss) {
+      $ss = $ss ?? $this->userInfo;
+      $branch_id = $ss->branch_id;
+      $rows= DB::table('um_roles')->where('branch_id',$branch_id)->where('id',$id)->selectRaw('id,name,user_class')->limit(1)->get();
+      foreach($rows as $row) return $row;
+      return null;
+  }
 
     // function person_exists($id){
     //    $rows = DB::table('persons as p')->where('id',$id)->selectRaw('id')->limit(1)->get();
@@ -984,6 +984,18 @@ class UM //extends Model
           DB::table('um_user_roles')->where('user_id',$id)->delete();
           DB::table('um_users')->where('id',$id)->delete();
           return DV::success();
+      }
+      
+      function deleteRole($role_id, $ss = null)
+      {
+        $ss = $ss ? $ss : $this->userInfo;
+        $tables = ['um_user_roles','um_user_modules','um_user_permissions'];
+        //if(!$id || $id<=0) return DV::error("Role identifier is not valid",$lang);
+        DB::table('um_roles')->where('id', $role_id)->delete();
+        foreach($tables as $table){
+          DB::table($table)->where('role_id',$role_id)->delete();
+        }
+        return DV::success();
       }
 
       function setUserStatus($status_code, $user_id,$updateProfile = true,$ss = null)
@@ -1788,7 +1800,12 @@ class UM //extends Model
             $str_search = '(r.name LIKE \'%' . $search_value . '%\' OR r.id = \''.$search_value.'\')';
             $skip_rows = 0;
         }
-        $query = DB::table('um_roles as r')->whereRaw($str_search)->where('r.app_id',$app_id)->selectRaw('r.id,r.name,r.app_id')->orderBy('r.id','DESC');
+        $query = DB::table('um_roles as r')
+        ->where('r.app_id',$app_id)
+        ->whereRaw($str_search)
+
+        ->selectRaw('r.id,r.name,r.app_id')
+        ->orderBy('r.id','DESC');
         $count_query = clone $query;
         $count = $count_query->count('r.id');
         if($search_value && $count > 0) $per_page = $count;

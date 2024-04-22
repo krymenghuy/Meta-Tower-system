@@ -360,6 +360,7 @@ class Customer //extends Model
   }
 
 
+
   static function getFormOptions($id, $ss)
   {
     $branch_id = $ss->branch_id;

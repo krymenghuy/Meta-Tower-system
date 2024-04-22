@@ -52,8 +52,24 @@
 
          <div class="pg-alert-card card shadow p-2 border rounded-3 mr-3" data-statusid="9" data-name="overdue_failed">
             <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-               <span class="data-input text-dark fs-5 fw-semibold" data-field="title"></span>
+               <span class="data-input text-dark fs-5 fw-semibold" data-field="title">Chhorng</span>
                <a href="javascript:void(0)" class="lnk-alert-list" data-statusid="9"><span class="data-input fs-5 fw-semibold" data-field="value">0 pcs</h5></a>
+            </div>
+            <span class="pg-alert-card-line" style="width:100%"></span>
+           <span class="data-input text-muted p-1" style="font-size:0.8em" data-field="time_ago">Last 10 days</span>
+         </div>
+         <div class="pg-alert-card card shadow p-2 border rounded-3 mr-3" data-statusid="9" data-name="overdue_failed">
+            <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
+               <span class="data-input text-dark fs-5 fw-semibold" data-field="title">Chhorng</span>
+               <a href="javascript:void(0)" class="lnk-alert-list" data-statusid="9"><span class="data-input fs-5 fw-semibold" data-field="value">0 pcs</h5></a>
+            </div>
+            <span class="pg-alert-card-line" style="width:100%"></span>
+           <span class="data-input text-muted p-1" style="font-size:0.8em" data-field="time_ago">Last 10 days</span>
+         </div>
+         <div class="pg-alert-card card shadow p-2 border rounded-3 mr-3" data-statusid="6" data-name="overdue_od">
+            <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
+               <span class="data-input text-dark fs-5 fw-semibold" data-field="title">Overdue</span>
+               <a href="javascript:void(0)" class="lnk-alert-list" data-statusid="6"><span class="data-input fs-5 fw-semibold" data-field="value">3 pcs</h5></a>
             </div>
             <span class="pg-alert-card-line" style="width:100%"></span>
            <span class="data-input text-muted p-1" style="font-size:0.8em" data-field="time_ago">Last 10 days</span>
