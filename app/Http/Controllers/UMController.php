@@ -160,7 +160,7 @@ class UMController extends Controller
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code != 200) return $ss; //user not authenticated
     $role_id = $req->role_id ? $req->role_id : $req->id;
-    $role = $this->UMModel->getRoleById($role_id);
+    $role = $this->UMModel->getRoleById($role_id,$ss);
     return JDV::result($role);
   }
 
