@@ -48,12 +48,13 @@ class SalesAgent //extends Model
 
     static function saveBankAccount($arr,$id,$ss){
         $d = (object)$arr;
+        if(!$id) return DV::error('Sales Agent Identity is not valid');
         $x = DB::table('sales_agents')->where('id',$id)->update([
            'account_number'=>isset($d->account_number)? $d->account_number:null,
            'account_name'=>isset($d->account_name)? $d->account_name:null,
            'bank_name'=>isset($d->bank_name)?$d->bank_name:null
         ]); 
-      return DV::depends($x,null);
+      return DV::depends(1,null,'Failed to save bank account information');
     }
 
     static function getBankAccount($id){
@@ -142,7 +143,7 @@ class SalesAgent //extends Model
                     ]);
                     $d->user_id  = DB::getPdo()->lastInsertId();
 
-                    $um = new \App\Models\Dms\UM();
+                    $um = new \App\Models\UM();
                     $um->addRoleMember($d->user_id,$default_role_id,$ss);
     }
 
@@ -486,6 +487,18 @@ static function list($arr,$ss=null){
         $status_code = isset($d->status_code)? Sanitizer::sanitize($d->status_code):null;
         $agent_type_id =isset($d->agent_type_id)? $d->agent_type_id : null; 
         
+        $use_cache =isset($d->use_cache)?$d->use_cache:1;
+        $cache_key = 'agentlist1108_';
+        foreach($d as $key => $val) $cache_key .= $val;
+        $cache_key = str_replace(['/','-','?','@','|'],'',$cache_key);
+        $cache_data = null;
+        if($use_cache){
+          $cache_data = Cache::get($cache_key); 
+          if ($cache_data) {
+            return $cache_data;
+          }
+        }
+
         $str_agent_type = '3=3';
         $str_status = '1=1';
         $str_search = '2=2';
@@ -503,7 +516,7 @@ static function list($arr,$ss=null){
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
           $row->image_url = '';
-          //$row->mobile_login = \App\Models\Dms\UM::getAccountInfo($row->id,'official_id');
+          //$row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id');
           $url = $row->photo_file_name? $row->image_url = PublicStorage::getUrl($branch_id,self::$photo_dir,'image').$row->photo_file_name:null;
           $row->image_url = validateUrl($url,self::defaultImage($branch_id));
           unset($row->photo_file_name);
@@ -524,7 +537,9 @@ static function list($arr,$ss=null){
           $row->target_count = $countInfo->count; 
           $row->summary_type = $countInfo->summary_type;
         }
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        $data = new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        Cache::put($cache_key,$data,2*50);
+        return $data;
     }
     
     static function getLoginInfo($id,$ss){
@@ -727,7 +742,7 @@ static function list($arr,$ss=null){
     static function getCommissionPolicyDetails($id){
        $agent = DB::table('sales_agents AS a')->where('a.id',$id)->selectRaw('a.branch_id,a.id,a.agent_type_id,a.policy_id')->first();
        if(!$agent) return null;
-       $cm = new \App\Models\Dms\SalesCommissionPolicy($agent->policy_id);
+       $cm = new \App\Models\SalesCommissionPolicy($agent->policy_id);
        $ss = (object)['branch_id'=>$agent->branch_id];
        $pol = self::getPolicyInfo($agent->policy_id,$ss);
        if(!$pol) return null;
@@ -757,7 +772,7 @@ static function list($arr,$ss=null){
    
         foreach($rows as $row){
           $row->image_url = '';
-          //$row->mobile_login = \App\Models\Dms\UM::getAccountInfo($row->id,'official_id');
+          //$row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id');
           if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($branch_id,strtolower($ss->user_class),'image').$row->photo_file_name;
           unset($row->photo_file_name);
           $pol = self::getPolicyInfo($row->policy_id,$ss);

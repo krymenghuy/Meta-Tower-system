@@ -103,7 +103,7 @@ let PusherClient = new function(){
         else toastr.info(msg,data.title);
 
         if(PackageListComponent.self.is(':visible')){
-            let tr = PackageListComponent.findRowByBarcode(data.bar_code?data.bar_code:data.barcode);
+            let tr = PackageListComponent.findRowByBarcode(data.barcode || data.bar_code);
             PackageListComponent.displayDriverData(tr,{"driver_id":data.driver_id,"driver_name":data.driver_name,'status':data.status,'status_id':data.status_id});
         }
         if (TripListComponent.self.is(':visible')){

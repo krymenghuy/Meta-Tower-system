@@ -33,16 +33,24 @@ use App\Http\controllers\abm\CustomerController;
     });
  //end:: Admin Notification
   
-   Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
-   Route::post('report-center/report-list', [WebReportController::class, 'getReportList']);
-   Route::post('report-center/reports-by-category', [WebReportController::class, 'getReportListByCategory']);
-   Route::post('report-center/filter-options', [WebReportController::class, 'getReportFilterOptions']);
+    Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
+        Route::post('report-center/report-list', [WebReportController::class, 'getReportList']);
+        Route::post('report-center/reports-by-category', [WebReportController::class, 'getReportListByCategory']);
+        Route::post('report-center/filter-options', [WebReportController::class, 'getReportFilterOptions']);
 
     });
+
+     //begin::PriceController
+    Route::post('os_suppliers/set-price-list', [SupplierController::class, 'setSupplierPriceList']);
+    // Route::post('getComboItems_price_list', [PriceController::class, 'getComboItems_price_list']);
+
 
     Route::middleware([CustomRateLimiter::class])->prefix('os_suppliers')->group(function(){
         Route::post('/save', [SupplierController::class, 'save']);
         Route::post('/list', [SupplierController::class, 'getSuplierList']);
+        Route::post('/form-options', [SupplierController::class, 'getFormOptions']);
+        Route::post('/save-profile-picture', [SupplierController::class, 'saveProfilePicture']);
+        Route::post('/update-status', [SupplierController::class, 'updateSupplierStatus']);
         Route::post('/list-paginate', [SupplierController::class, 'getSuplierListPaginate']);
     });
     Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->group(function(){

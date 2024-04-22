@@ -18,7 +18,7 @@ var SuppliersComponent = new function(){
     this.btnPrint = mThis.self.find('#_sdl_btnPrint');
     this.btnPDF = mThis.self.find('#_sdl_btnPDF');
 
-    this.setMerchantPriceList = (supplier_id,name=null,span=null,def_price_list_id=null) => {
+    this.setSupplierPriceList = (supplier_id,name=null,span=null,def_price_list_id=null) => {
         mThis.getPriceListItems((items)=>{
             items.unshift({
                 id: null,
@@ -26,7 +26,7 @@ var SuppliersComponent = new function(){
             });
 
             let option = {
-                title: `Set Price List for ${name ? name : 'Merchant'}`,
+                title: `Set Price List for ${name ? name : 'Supplier'}`,
                 dataLabel: "Price list name",
                 valueMember: "id",
                 textMember: "name",
@@ -41,20 +41,30 @@ var SuppliersComponent = new function(){
                         supplier_id: supplier_id,
                         price_list_id: d.value
                     };
-// console.log(p); 
-                    vsapi.call(`${mThis.base_url}/api/os_suppliers/set-price-list`,p,null).then(res => {
+                    // console.log(p); 
+                    vsapi.call(`${mThis.base_url}/abm/os_suppliers/set-price-list`,p,null).then(res => {
+                        // console.log(res.status_code);
                         if(res.status_code === 200){
                             let d = StringSanitizer.sanitizeObject(res.data);
                             span.textContent = d.list_name; 
-                            cv_interact.success('Price list ' + d.list_name + ' has been assigned to the merchant successfully');
+                            cv_interact.success('Price list ' + d.list_name + ' has been assigned to the supplier successfully');
                             
                         }
                         else
                             cv_interact.error(res.error_message); 
                     });
+                    // vsapi.call(`${mThis.base_url}/abm/os_suppliers/set-price-list`,p,null).then(res => {
+                    //     if(res.status_code === 200){
+                    //         let d = StringSanitizer.sanitizeObject(res.data);
+                    //         span.textContent =d.list_name; 
+                    //         cv_interact.success('Price list ' + d.list_name + ' has been assigned to the merchant successfully');
+                    //     }
+                    //     else
+                    //         cv_interact.error(res.error_message); 
+                    // });
                 }
-                mThis.self.siblings().hide();
-                mThis.self.hide().fadeIn(250);	
+                // mThis.self.siblings().hide();
+                // mThis.self.hide().fadeIn(250);	
             });
         });
     }
@@ -80,9 +90,25 @@ var SuppliersComponent = new function(){
     }
 
     this.cols = [
+        {
+            className: "",
+            data: (data,index,tr)=>{
+                return "";
+            },
+            // title: mThis.trans('Sender ID')
+            title: ' '
+        },
+        {
+            title: "Photo",
+            className: ' align-middle',
+            data: (data, a, b) => {
+                let image = data.image_url ? data.image_url : '';
+                return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
+            }
+        },
         
         {
-            className: "code",
+            className: "code align-middle",
             data: (data,index,tr)=>{
                 const sender_info = ['<span class="sender-name d-block">#',data.code||'គ្មាន','</span>'].join('');
                 return sender_info;
@@ -91,7 +117,7 @@ var SuppliersComponent = new function(){
             title: 'code '
         },
         {
-            className: "name",
+            className: "name align-middle",
             data: (data,index,tr)=>{
                 const sender_info = ['<span class="sender-name d-block">',data.name,'</span>'].join('');
                 return sender_info;
@@ -100,7 +126,7 @@ var SuppliersComponent = new function(){
             title: 'Name '
         },
         {
-            className: "phone_number",
+            className: "phone_number align-middle",
             data: (data,index,tr)=>{
                 const sender_info = ['<span class="sender-name d-block">',data.phone_number,'</span>'].join('');
                 return sender_info;
@@ -109,7 +135,7 @@ var SuppliersComponent = new function(){
             title: 'phone number '
         },
         {
-            className: "email",
+            className: "email align-middle",
             data: (data,index,tr)=>{
                 const sender_info = ['<span class="sender-name d-block">',data.gmail||'NA','</span>'].join('');
                 return sender_info;
@@ -118,7 +144,7 @@ var SuppliersComponent = new function(){
             title: 'email'
         },
         {
-            className: "address",
+            className: "address align-middle",
             data: (data,index,tr)=>{
                 const sender_info = ['<span class="sender-name d-block">',data.address||'NA','</span>'].join('');
                 return sender_info;
@@ -127,9 +153,9 @@ var SuppliersComponent = new function(){
             title: 'address '
         },
         {
-            className: "price_list_name",
+            className: "price_list_name align-middle",
             data: (data,index,tr)=>{
-                let price_list_html = data.price_list_name ? `<span class="merchant-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-merchantname="${data.name}" class="set-price-list">
+                let price_list_html = data.price_list_name ? `<span class="supplier-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-suppliername="${data.name}" class="set-price-list">
                 <i class="fa fa-edit fs-5"></i></a>`;
                 const sender_info = ['<span class="sender-name d-block">',price_list_html,'</span>'].join('');
                 return sender_info;
@@ -137,9 +163,18 @@ var SuppliersComponent = new function(){
             // title: mThis.trans('Sender ID')
             title: 'price list '
         },
+
+        {
+            className: "sales_agent_id align-middle",
+            data: function (data, index, tr) {
+                return ['<span class="pl-request_date d-block">',data.sales_agent||"NA", '</span>'].join('');
+            },
+            title: 'Sales Agent'
+            // title: mThis.trans('Created Date')
+        },
         
         {
-            className: "created_by",
+            className: "created_by align-middle",
             data: function (data, index, tr) {
                 return ['<span class="pl-request_date d-block">',data.create_user||"NA", '</span>'].join('');
             },
@@ -147,18 +182,18 @@ var SuppliersComponent = new function(){
             // title: mThis.trans('Created Date')
         },
         {
-            className: "status",
+            className: "status align-middle",
             data: function (data, index, tr) {
-                return ['<div class="d-block">',data.status_code = 'active'? '<span class="pl-request_date btn-act rounded-2">Ative</span>' : '<span class="pl-request_date btn-act rounded-2">Inactive</span>','</div>'].join('');
+                return ['<div class="d-block">',data.status_code == 'Active'? '<span class="pl-request_date btn-act rounded-2">Ative</span>' : '<span class="pl-request_date btn-act-inactive rounded-2">Inactive</span>','</div>'].join('');
             },
             title: 'status'
             // title: mThis.trans('Created Date')
         },
         {
-            className: 'col_action',
+            className: 'col_action align-middle',
             data: function (data, row, display) {
-                let html = ['<div class="dropdown d-block">',
-                    '<a href="javascript:void(0)" data-orderid="', data.zone_code, '" data-senderid="', data.code, '" class="btn_pickup_action" aria-haspopup="true" aria-expanded="false">',
+                let html = ['<div class="dropdown d-block ">',
+                    '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-suppliername="', data.name, '" data-status="', data.status_code='active'? 1 : 2, '"  class="btn_pickup_action " aria-haspopup="true" aria-expanded="false">',
                     '<i class="fa fa-chevron-down" style="color:#8DC63F;font-size:1.5em"></i>',
                     '</a>',
                     '</div>'].join('');
@@ -361,7 +396,7 @@ var SuppliersComponent = new function(){
                     if(d){
                         const imgContainer = img.parentElement;
                         mThis.setImage(imgContainer,d.dataUrl);
-                        vsapi.call(`${main_view.base_url}/api/merchant/save-profile-picture`,{
+                        vsapi.call(`${main_view.base_url}/abm/merchant/save-profile-picture`,{
                             id: imgContainer.dataset.id,
                             photo: d.dataUrl
                         },false).then(res => {
@@ -410,7 +445,7 @@ var SuppliersComponent = new function(){
                 },(e) => {
                     if(e){
                         const imgContainer = lnk.closest('.div-img');
-                        vsapi.call(`${main_view.base_url}/api/merchant/delete-profile-picture`,{
+                        vsapi.call(`${main_view.base_url}/abm/merchant/delete-profile-picture`,{
                             id: imgContainer.dataset.id
                         },false).then(res => {
                             if(res.status_code === 200){
@@ -430,7 +465,9 @@ var SuppliersComponent = new function(){
     }
 
     this.setEvents = (container) => {
-        const div =  container.find('.w-options');
+        const div =  container.find('.table');
+        console.log(container);
+        // const div =  container.find('.col_action');
         const btn = container.find('.btn-options');
 
         btn.off('click').on('click',function(e){
@@ -450,31 +487,36 @@ var SuppliersComponent = new function(){
             //click on Set Price List
             lnk = VSUtil.getElementByClass(e.target,'set-price-list');
             if(lnk){
-                mThis.setMerchantPriceList(lnk.dataset.id,lnk.dataset.merchantname,lnk.parentElement,null);
+                // console.log(lnk);
+                mThis.setSupplierPriceList(lnk.dataset.id,lnk.dataset.suppliername,lnk.parentElement,null);
                 return;
             }
          });
 
         if(div.length !== 0){
-            let prev_div = null;
-            $(document).off('click').on('mouseup',function(e){
-                e.preventDefault();
-                if((!div.is(e.target) && div.has(e.target).length === 0) && prev_div){
-                    prev_div.hide('fast');
-                }
-                else{
-                    if((!div.is(e.target) && div.has(e.target).length === 0) && (!btn.is(e.target) && btn.has(e.target).length === 0)){
-                        prev_div = div;
-                        div.hide('fast');
-                    }
-                }
-            });
+            // let prev_div = null;
+            // prev_div = div.find('.dropdown-menu');
+            // console.log(prev_div);
+            // $(document).off('click').on('mouseup',function(e){
+            //     e.preventDefault();
+            //     if((!div.is(e.target) && div.has(e.target).length === 0) && prev_div){
+            //         prev_div.hide('fast');
+            //     }
+            //     else{
+            //         if((!div.is(e.target) && div.has(e.target).length === 0) && (!btn.is(e.target) && btn.has(e.target).length === 0)){
+            //             prev_div = div;
+            //             div.hide('fast');
+            //         }
+            //     }
+            // });
 
             div.off('click').on('click',(e) => {
                 e.preventDefault();
+                
 
-                let lnk = VSUtil.getElementByClass(e.target,'btn-merchant-edit');
+                let lnk = VSUtil.getElementByClass(e.target,'btn-supplier-edit');
                 if(lnk){
+                    console.log(lnk);
                     let op = {
                         id: lnk.dataset.id,
                         onClose:()=>{
@@ -484,9 +526,18 @@ var SuppliersComponent = new function(){
                     SupplierDialog.show(op);                     
                     return;
                 }
-               
+                // Click on Set Price List
+                lnk = VSUtil.getElementByClass(e.target,'btn-set-price-list');
+                if(lnk){
+                    const id = lnk.dataset.id;
+                    let pl_id = lnk.dataset.pricelistid;
+                    let name = lnk.dataset.suppliername;
+                    let span = container.find('.supplier-price-list')[0];
+                    mThis.setSupplierPriceList(id,name, span ? span.parentElement : null ,pl_id); 
+                    return;
+                }
                 //Click on Delete Merchant
-                lnk = VSUtil.getElementByClass(e.target,'btn-merchant-delete');
+                lnk = VSUtil.getElementByClass(e.target,'btn-supplier-delete');
                 if(lnk){
                     const id = lnk.dataset.id;
                     let status_code = lnk.dataset.status;
@@ -499,7 +550,7 @@ var SuppliersComponent = new function(){
                         context: 'delete'
                     },function(e){
                         if(e){
-                            vsapi.call(`${mThis.base_url}/api/merchant/delete`,{
+                            vsapi.call(`${mThis.base_url}/abm/merchant/delete`,{
                                 id: id
                             },null).then(res => {
                                 if(res.status_code === 200){
@@ -539,7 +590,7 @@ var SuppliersComponent = new function(){
                                 confirm_count++;
                 
                                 if (confirm_count === 7) {
-                                    vsapi.call(`${mThis.base_url}/api/merchant/delete-special`, {
+                                    vsapi.call(`${mThis.base_url}/abm/merchant/delete-special`, {
                                         id: id
                                     }, null).then(res => {
                                         if (res.status_code === 200) {
@@ -566,19 +617,19 @@ var SuppliersComponent = new function(){
                     const id = lnk.dataset.id;
                     let pl_id = lnk.dataset.pricelistid;
                     let name = lnk.dataset.merchantname;
-                    let span = container.find('.merchant-price-list')[0];
-                    mThis.setMerchantPriceList(id,name, span ? span.parentElement : null ,pl_id); 
+                    let span = container.find('.supplier-price-list')[0];
+                    mThis.setSupplierPriceList(id,name, span ? span.parentElement : null ,pl_id); 
                     return;
                 }
 
                 //Click on Change Status
-                lnk = VSUtil.getElementByClass(e.target,'btn-merchant-status');
+                lnk = VSUtil.getElementByClass(e.target,'btn-supplier-status');
                 if(lnk){
                     let supplier_id = lnk.dataset.id;
                     let status_code = Validator.properCase(lnk.dataset.status);
                     let option = {
-                        title: 'Set Merchant Status',
-                        dataLabel: "Merchant status",
+                        title: 'Set Supplier Status',
+                        dataLabel: "Supplier status",
                         valueMember: "status_code",
                         textMember: "name",
                         blankErrorMessage: "Please select a correct Status",
@@ -600,9 +651,11 @@ var SuppliersComponent = new function(){
                                 status_code: d.value
                             };
 
-                            vsapi.call(`${mThis.base_url}/api/merchant/update-status`,p).then(res => {
+                            vsapi.call(`${mThis.base_url}/abm/os_suppliers/update-status`,p).then(res => {
                                 if(res.status_code === 200){
                                     mThis.elFilter_sender_status.val(d.value).trigger('change');
+                                    cv_interact.success('The status has been updated');
+                                    mThis.listView.showPage(mThis.getFilterData());
                                 }
                                 else
                                     cv_interact.error(res.error_message); 
@@ -631,10 +684,10 @@ var SuppliersComponent = new function(){
                         context: 'delete'
                     },(e) => {
                         if(e){
-                            vsapi.call(`${main_view.base_url}/api/student/delete-special`,op,null).then(res => {
+                            vsapi.call(`${main_view.base_url}/abm/student/delete-special`,op,null).then(res => {
                                 if(res.status_code === 200){
                                     cv_interact.success('The student has been deleted permanently');
-                                    mThis.studentListView.showPage(mThis.getFilterData());
+                                    mThis.ListView.showPage(mThis.getFilterData());
                                 }
                                 else
                                     cv_interact.error(res.error_message);
@@ -653,7 +706,7 @@ var SuppliersComponent = new function(){
 
         //Do not allow filter to be applied yet. I means that filter SELECT's change event wont refresh the merchant list
         mThis.allow_filter = false;
-        vsapi.call(`${mThis.base_url}/api/merchant/form-options`, null,null,main_view.apiCluster).then(res => {
+        vsapi.call(`${mThis.base_url}/abm/os_suppliers/form-options`, null,null,main_view.apiCluster).then(res => {
             let d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
             VSUtil.setComboItems(mThis.elFilter_sender_status, d.sender_statuses, 'status_code', 'status_name', true, '(All Status)', mThis.def_filter.status_code);
             VSUtil.setComboItems(mThis.elFilter_business_type, d.business_types, 'business_type', 'business_type', true, '(All Business Types)', 0);
@@ -664,7 +717,7 @@ var SuppliersComponent = new function(){
     }
 
     this.getPriceListItems = (onFinish) => {
-        vsapi.call(`${mThis.base_url}/api/getComboItems_price_list`,null,false).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/getComboItems_price_list`,null,false).then(res => {
             let items = res.status_code ===200? res.data: [];
             onFinish(items); 
         });
@@ -673,8 +726,8 @@ var SuppliersComponent = new function(){
     this.initOnce = () => {
         if(mThis.initAlready) return;
 
-        mThis.listView = new ListView('_sdl_sender_list', {
-            fetchApi: `${main_view.base_url}/api/os_suppliers/list-paginate`,
+        mThis.listView = new ListView('_sdl_supplier_list', {
+            fetchApi: `${main_view.base_url}/abm/os_suppliers/list-paginate`,
             apiCluster: main_view.apiCluster,
             tableClass: "table header-uppercase",
             perPage: 10,
@@ -682,10 +735,10 @@ var SuppliersComponent = new function(){
             rowCreated:(data,index,tr)=>{
                 
               tr.dataset.id = data.id;  
-              tr.classList.add('shipment');
-              tr.setAttribute('id',['shipment_',data.id].join('')); 
+              tr.classList.add('supplier');
+              tr.setAttribute('id',['supplier_',data.id].join('')); 
             //   tr.dataset.statusid = data.status_id;
-              tr.dataset.senderid = data.sender_id;
+            //   tr.dataset.senderid = data.sender_id;
             //   tr.dataset.driverid = data.driver_id?data.driver_id:''; 
             }, 
             // renderItems: (items, list_container) => {
@@ -696,6 +749,7 @@ var SuppliersComponent = new function(){
         });
 
         this.container = mThis.listView.getListContainer();
+        mThis.setEvents($(mThis.container));
         // console.log(mThis.container.parentElement); 
         const parent = mThis.container.parentElement;
             parent.style.height = (window.innerHeight - 210)+'px';
@@ -736,15 +790,16 @@ var SuppliersComponent = new function(){
             let btn = VSUtil.closestLimited(e.target, '.btn_pickup_action');
             if (btn) {
                 let p = btn.parentElement;
-                let shipment_id = btn.dataset.id;
-                let sender_id = btn.dataset.senderid;
-                let status_id = btn.dataset.statusid;
+                let supplier_id = btn.dataset.id;
+                let pricelist_id = btn.dataset.pricelistid;
+                let supplier_name = btn.dataset.suppliername;
+                let status_code = btn.dataset.status;
         
                 let dropdownMenu = p.querySelector('.dropdown-menu');
                 if (!dropdownMenu || dropdownMenu.length === 0) {
-                    p.insertAdjacentHTML('afterbegin', mThis.createDropdownMenuHtml_pickup(shipment_id, sender_id, status_id));
+                    p.insertAdjacentHTML('afterbegin', mThis.createDropdownMenuHtml_pickup(supplier_id, pricelist_id, supplier_name ,status_code));
                     dropdownMenu = p.querySelector('.dropdown-menu');
-                    dropdownMenu.setAttribute('style',` right:0px;`);
+                    dropdownMenu.setAttribute('style',` left: -130px;`);
                 }
         
                 if (mThis.prev_dropdownMenu && mThis.prev_dropdownMenu !== dropdownMenu) {
@@ -959,12 +1014,13 @@ var SuppliersComponent = new function(){
 
     this.getFitlerData = () => {
         let p = {
-            search_value: mThis.elSearch.val()
+            search_value: mThis.elSearch.val(),
         };
         mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
             let f= el.dataset.field;
             p[f] = el.value;
         });
+
         return p;
     }
 
@@ -987,18 +1043,26 @@ var SuppliersComponent = new function(){
     this.changeSenderStatus = () => {
         return;
     }
-    this.createDropdownMenuHtml_pickup = function (shipment_id, sender_id, status_id) {
-        let html = ['<div class="dropdown-menu bg-white shadow" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '">',
-            '<a class="dropdown-item _pl_pa_assign_driver" href="javascript:void(0)"><i class="fa fa-biking" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '"></i> Assign Driver (Pickup)</a>',
-            `<a href="javascript:void(0)" class="dropdown-item btn-set-price-list border-bottom pb-2" data-id="${shipment_id}" data-pricelistid="" data-merchantname="" data-status="">
+    this.createDropdownMenuHtml_pickup = function (supplier_id, pricelist_id, supplier_name ,status) {
+        let html = [
+            '<div class="dropdown-menu bg-white shadow" data-id="', supplier_id, '" data-pricelistid="', pricelist_id, '" data-suppliername="', supplier_name, '">',
+            // '<a class="dropdown-item _pl_pa_assign_driver" href="javascript:void(0)"><i class="fa fa-biking" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '"></i> Assign Driver (Pickup)</a>',
+            `<a href="javascript:void(0)" class="dropdown-item btn-set-price-list border-bottom pb-2" data-id="${supplier_id}" data-pricelistid="${pricelist_id}" data-suppliername="${supplier_name}" data-status="${status}">
                 <i class="fa-regular fa-list-alt fs-5"></i>
                 <span class="ps-2 trans-text" data-langprop="titles.Set Price List">Set Price List</span>
             </a>`,
-            
-            '<a class="dropdown-item btn-set-price-list" href="javascript:void(0)"><i class="fa fa-shipping-fast"></i> Set Price List</a>',
-            '<div class="dropdown-divider"></div>',
-            '<a class="dropdown-item _pl_pa_delete" href="javascript:void(0)"><i class="fa fa-trash" style="color:red"></i> Delete Pickup</a>',
-            '<a class="dropdown-item _pl_pa_change_status" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue"></i> Change Order Status</a>',
+            `<a href="javascript:void(0)" class="dropdown-item btn-supplier-edit border-bottom pb-2" data-id="${supplier_id}" >
+                <i class="fa-regular fa-pen-to-square fs-5 text-success"></i>
+                <span class="ps-2 trans-text" data-langprop="titles.Modify Supplier">Modify Supplier</span>
+            </a>`,
+            `<a href="javascript:void(0)" class="dropdown-item btn-supplier-delete border-bottom pb-2" data-id="${supplier_id}" data-status="${status}">
+                <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
+                <span class="ps-2 trans-text" data-langprop="titles.Delete Supplier">Delete Supplier</span>
+            </a>`,    
+            `<a href="javascript:void(0)" class="dropdown-item btn-supplier-status border-bottom pb-2" data-id="${supplier_id}" data-status="${status}">
+                <i class="fa-regular fa-circle-stop fs-5 text-primary"></i>
+                <span class="ps-2 trans-text" data-langprop="titles.Change Status">Change Status</span>
+            </a>`,
             // '<a class="dropdown-item _pl_pa_change_driver" href="javascript:void(0)"><i class="fa fa-user"></i> Change Driver (Pickup)</a>',
             '</div>'].join('');
         return html;
@@ -1021,6 +1085,7 @@ const SupplierDialog = new function(){
     this.elPriceList =  this.self.find('#_sdl_price_list');
     // this.elCOD =  this.self.find('#_sdl_cod');
     // this.elCODFee =  this.self.find('#_sdl_cod_fee');
+    this.divPhoto = this.self[0].querySelector('#_supplier_profile_photo');
 
     this.onClose = null;
     this.elError =  this.self.find('#_sdl_sender_error');
@@ -1028,13 +1093,41 @@ const SupplierDialog = new function(){
     this.body =  this.self.find('.modal-body')[0];
     this.div_sender_info =  this.body.querySelector('#div_merchant_info');
     // this.div_bank_account = this.body.querySelector('#div_bank_account');
+    mThis.imgBox = new ImageBox(mThis.divPhoto,{
+        "dataField":"photo",
+        "cssClass":"data-input ",
+        containerClass:null,
+        // onDeleteImage:()=>{
+        //   alert('Deleting image');
+        //   return false;
+        // },
+        "onLoadImage":(photo) =>{
+            let p = {"id":mThis.options.id,"supplier_id":mThis.options.id,"photo":photo};
+            // console.log(p);
+            if(!p.id) return; 
+            vsapi.call(`${main_view.base_url}/abm/os_suppliers/save-profile-picture`,p,null,null,false).then(res =>{
+                if(res.status_code ===200){
+                    mThis.imgBox.setImage(photo);
+                    cv_interact.success('Photo has been saved');
+                }else cv_interact.error(res.error_message);
+            });
+        },
+        "deleteAPI":{
+            "endPoint":`${main_view.base_url}/dms/sales-app/agent/delete-profile-picture`,
+            "params":()=>{
+                return {"id": mThis.options.id,"sales_agent_id":mThis.options.id}
+            }
+        }
+    });
 
     this.prepareData = (id,def, onFinish) => {
+        // console.log(id);
         if(!def) def = {};
-        vsapi.call(`${mThis.base_url}/api/merchant/form-options`,{
+        vsapi.call(`${mThis.base_url}/abm/os_suppliers/form-options`,{
             id: id
         },null).then(res => {
             let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
+            // console.log(d);
             // d.bank_accounts = d.bank_accounts || [];
             // VSUtil.setComboItems(mThis.elSenderType, d.sender_types, 'id', 'sender_type', true, '(Select Merchant Type)', def.sender_type_id);
             // VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
@@ -1047,7 +1140,7 @@ const SupplierDialog = new function(){
     this.btnSave.on('click', function(e){
         e.preventDefault();
         let p = mThis.getData();
-        vsapi.call(`${mThis.base_url}/api/os_suppliers/save`, p).then(res => {
+        vsapi.call(`${mThis.base_url}/abm/os_suppliers/save`, p).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
@@ -1058,17 +1151,18 @@ const SupplierDialog = new function(){
     });
 
     this.show = (options) => {
+        // console.log(options);
         if (!options) options = {};
         mThis.options = options;
          
         mThis.prepareData(mThis.options.id,{},data => { 
-            if(data.sender){
-                mThis.elTitle.text("Modify Merchant Information");
+            if(data.supplier){
+                mThis.elTitle.text("Modify Supplier Information");
             }
             else{
-                mThis.elTitle.text("Create Merchant");
+                mThis.elTitle.text("Create Supplier");
             }
-            mThis.setData(data.sender);
+            mThis.setData(data.supplier);
             mThis.self.modal({
                 backdrop: 'static'
             });
@@ -1081,8 +1175,8 @@ const SupplierDialog = new function(){
         });
         if(!d) return;
 
-        let bank_accounts = d.bank_accounts;
-        d.bank_accounts = null;
+        // let bank_accounts = d.bank_accounts;
+        // d.bank_accounts = null;
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el =>{ 
             const data_member = el.dataset.field;
             if(el.tagName.toLowerCase() === 'select'){
@@ -1098,20 +1192,20 @@ const SupplierDialog = new function(){
             }
         });
 
-        let i = 0, c = null;
-        do{
-            c = bank_accounts[i];
-            if(!c) break;
-            let css_class = 'primary_bank_panel';
-            if(c.is_primary == 0) css_class = 'secondary_bank_panel';
-            let div = mThis.body.querySelector('div.'+css_class);
-            div.dataset.id = c.id;
-            div.querySelectorAll('.data-input').forEach(el => {
-                let dataMember = el.dataset.field;
-                el.value = c[dataMember];
-            });
-            i++;
-        }while(c);
+        // let i = 0, c = null;
+        // do{
+        //     c = bank_accounts[i];
+        //     if(!c) break;
+        //     let css_class = 'primary_bank_panel';
+        //     if(c.is_primary == 0) css_class = 'secondary_bank_panel';
+        //     let div = mThis.body.querySelector('div.'+css_class);
+        //     div.dataset.id = c.id;
+        //     div.querySelectorAll('.data-input').forEach(el => {
+        //         let dataMember = el.dataset.field;
+        //         el.value = c[dataMember];
+        //     });
+        //     i++;
+        // }while(c);
     }
 
     this.getData = () => {
@@ -1119,7 +1213,10 @@ const SupplierDialog = new function(){
         p.id = mThis.options.id;
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
             let data_member = el.dataset.field;
-            p[data_member] = el.value;
+            if(el.tagName ==='IMG') 
+                p[data_member] = el.getAttribute('src');
+            else 
+                p[data_member] = el.value;
         });
         // p.banks = mThis.getBanks();
         return p;

@@ -43,7 +43,7 @@ var RoleManagementComponent = new function(){
     this.init = () => {
         if(mThis.initAlready) return;
         let div = document.getElementById('_um_roleListPanel');
-        console.log(div);
+ 
         mThis.userListView = new ListView('_um_roleListPanel',{
             fetchApi: `${main_view.base_url}/api/role/list`,
             perPage: 5,
