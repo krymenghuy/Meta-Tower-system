@@ -98,10 +98,9 @@
   </div>
 
   <div id="_um_roleListPanel">
-    <div class="row bg-white shadow mt-4">
-      <div class="col-sm-2 box">
-
-        <div id="_cord"></div>
+     <div class="row bg-white shadow mt-4">
+     
+      <!-- <div class="col-sm-2 box">
           <div class="card bg-white shadow p-3 border rounded-3 m-3">
             <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
               <span class="data-input text-success fs-5 fw-semibold" data-field="user_class">Customer</span>
@@ -115,14 +114,14 @@
               <span class="pg-alert-card-line" style="width:100%"></span>
               <span class="data-input text-muted p-1" style="font-size:0.8em" >Total Member: 31</span>
           </div> 
-      </div> 
+      </div>  -->
 
         <div class="add  p-5">
           <button id="_um_btn_new" class="btn btn-sm btn-danger  btn-circle shadow text-nowrap " type="button">
                       <i class="fa fa-user-plus"><span class="trans-text text-nowrap" data-langprop="buttons.New Role"></span></i>
           </button>
         </div>
-    </div>
+    </div> 
       
   </div>
 
@@ -149,7 +148,7 @@
       </button>
     </div>
   </div>
-  
+
 </div> 
   
   

@@ -6,8 +6,8 @@ var RoleManagementComponent = new function(){
     this.self = main_view.appContent.children('#_um_roleManagementComponent')[0];
     this.onClose = null;
 
-    this.allow_add_remove_users = true;
-    this.allow_add_remove_role = true;
+    // this.allow_add_remove_users = true;
+    // this.allow_add_remove_role = true;
 
     this.renderCard = (container, data) => {
         let html = '';
@@ -15,21 +15,26 @@ var RoleManagementComponent = new function(){
         // container.style.display = 'none';
         // mThis.store_senders = {};
         (data || []).map(item => {
-            html += `
+            html += ` <div class="col-sm-2 box">
             <div class="card bg-white shadow p-3 border rounded-3 m-3">
-                <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
+              <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
                 <span class="data-input text-success fs-5 fw-semibold" data-field="user_class">Customer</span>
                 <span class="data-input text-muted p-1" style="font-size:0.8em" >User Class: Admin</span>
-                    <span class=" role_name_title"> 
-                        <script>
-                        document.write("Customer".charAt(0).toUpperCase());
-                        </script>
-                    </span>
-
-                </div>
-                    <span class="pg-alert-card-line" style="width:100%"></span>
-                    <span class="data-input text-muted p-1" style="font-size:0.8em" >Total Member: 31</span>
-                </div> 
+                <span class=" role_name_title"> 
+                  <script>
+                    document.write("Customer".charAt(0).toUpperCase());
+                  </script>
+                </span>
+              </div>
+                <span class="pg-alert-card-line" style="width:100%"></span>
+                <span class="data-input text-muted p-1" style="font-size:0.8em" >Total Member: 31</span>
+            </div> 
+        </div> 
+            
+            
+      
+              
+        
             
             `
         });
@@ -41,14 +46,16 @@ var RoleManagementComponent = new function(){
         console.log(div);
         mThis.userListView = new ListView('_um_roleListPanel',{
             fetchApi: `${main_view.base_url}/api/role/list`,
-            perPage: 10,
-            paginationContainer: mThis.containerPagination,
+            perPage: 5,
+            display:'card',
+            clientSidePagination:true,
+            //agpinationContainer: mThis.containerPagination,
             apiCluster: main_view.apiCluster,
-            // renderItems: (items,list_container) => {
-            //     console.log(items); 
-            //     mThis.renderCard(list_container,items);
-            // },
-            // listContainerClass: null
+            renderItems: (items,list_container) => {
+                console.log(items); 
+                mThis.renderCard(list_container,items);
+            },
+            listContainerClass: null
         });
         mThis.initAlready = true;
     }
@@ -75,337 +82,337 @@ var RoleManagementComponent = new function(){
     // };
 };
 
-const RoleListPanel = new function(){
-    const mThis = this;
-    this.self = RoleManagementComponent.self.querySelector('#_um_roleListPanel');
-    this.btnClose = mThis.self.querySelector('#_um_btnCloseRoleList');
-    this.lnkNewRole = mThis.self.querySelector('#_um_lnkNewRole');
-    this.elSearchUser = mThis.self.querySelector('#_um_search_user_role');
-    if(!RoleManagementComponent.allow_add_remove_role) mThis.lnkNewRole.style.display = 'none';
-    this.tblRoles = mThis.self.querySelector('#_um_tblRoles');
-    this.tblRoles_body = mThis.self.querySelector('#_um_tblRoles_body');
+// const RoleListPanel = new function(){
+//     const mThis = this;
+//     this.self = RoleManagementComponent.self.querySelector('#_um_roleListPanel');
+//     this.btnClose = mThis.self.querySelector('#_um_btnCloseRoleList');
+//     this.lnkNewRole = mThis.self.querySelector('#_um_lnkNewRole');
+//     this.elSearchUser = mThis.self.querySelector('#_um_search_user_role');
+//     if(!RoleManagementComponent.allow_add_remove_role) mThis.lnkNewRole.style.display = 'none';
+//     this.tblRoles = mThis.self.querySelector('#_um_tblRoles');
+//     this.tblRoles_body = mThis.self.querySelector('#_um_tblRoles_body');
 
-    /** initOnce | init_roleList  **/
-    this.init = () => {
-        if(mThis.initAlready) return;
+//     /** initOnce | init_roleList  **/
+//     this.init = () => {
+//         if(mThis.initAlready) return;
 
-        mThis.elSearchUser.onkeyup = function(e){
-            e.preventDefault();
-            setTimeout(() => {
-                mThis.displayRoleList();
-            }, 200);
-        };
+//         mThis.elSearchUser.onkeyup = function(e){
+//             e.preventDefault();
+//             setTimeout(() => {
+//                 mThis.displayRoleList();
+//             }, 200);
+//         };
 
-        mThis.lnkNewRole.onclick = function(e){
-            e.preventDefault();
-            let onClose = function(e){}
-            EditRolePanel.show({
-                title: "Creating a new role",
-                role_id: null
-            }, onClose);
-        };
+//         mThis.lnkNewRole.onclick = function(e){
+//             e.preventDefault();
+//             let onClose = function(e){}
+//             EditRolePanel.show({
+//                 title: "Creating a new role",
+//                 role_id: null
+//             }, onClose);
+//         };
 
-        mThis.initAlready = true;
-    }
+//         mThis.initAlready = true;
+//     }
 
-    this.setEvent = () => {
-        const trList = mThis.tblRoles_body.querySelectorAll('tr');
-        trList.forEach(tr => {
-            tr.onclick = function(e){
-                e.preventDefault();
-                if(!(e.target.classList.contains('btn_role_action') || e.target.parentElement.classList.contains('btn_role_action'))){
-                    let role_id = this.dataset.roleid;
-                    mThis.selected_role_name = this.dataset.rolename;
-                    mThis.selected_role_id = role_id;
-                    if(mThis.prev_selected_role_row) mThis.prev_selected_role_row.classList.remove('row-selected');
-                    this.classList.toggle('row-selected');
-                    if(this.classList.contains('row-selected')) mThis.prev_selected_role_row = this;
-                    RoleTabView.show(role_id, null);
-                }
-            }
-        });
+//     this.setEvent = () => {
+//         const trList = mThis.tblRoles_body.querySelectorAll('tr');
+//         trList.forEach(tr => {
+//             tr.onclick = function(e){
+//                 e.preventDefault();
+//                 if(!(e.target.classList.contains('btn_role_action') || e.target.parentElement.classList.contains('btn_role_action'))){
+//                     let role_id = this.dataset.roleid;
+//                     mThis.selected_role_name = this.dataset.rolename;
+//                     mThis.selected_role_id = role_id;
+//                     if(mThis.prev_selected_role_row) mThis.prev_selected_role_row.classList.remove('row-selected');
+//                     this.classList.toggle('row-selected');
+//                     if(this.classList.contains('row-selected')) mThis.prev_selected_role_row = this;
+//                     RoleTabView.show(role_id, null);
+//                 }
+//             }
+//         });
 
-        trList.forEach(tr => {
-            tr.onmouseover = function(e){
-                e.preventDefault();
-                let td_action = this.querySelector('td.col_action');
-                td_action.querySelector('a').style.display = 'block';
-            }
+//         trList.forEach(tr => {
+//             tr.onmouseover = function(e){
+//                 e.preventDefault();
+//                 let td_action = this.querySelector('td.col_action');
+//                 td_action.querySelector('a').style.display = 'block';
+//             }
 
-            tr.onmouseleave = function(e){
-                e.preventDefault();
-                let td_action = this.querySelector('td.col_action');
-                td_action.querySelector('a').style.display = 'none';
-                let btn_class_action = td_action.querySelector('a.dropdown-item');
-                if(btn_class_action){
-                    btn_class_action.style.display = 'none';
-                    btn_class_action.closest('.dropdown-menu').classList.remove('show');
-                }
-            }
-        });
+//             tr.onmouseleave = function(e){
+//                 e.preventDefault();
+//                 let td_action = this.querySelector('td.col_action');
+//                 td_action.querySelector('a').style.display = 'none';
+//                 let btn_class_action = td_action.querySelector('a.dropdown-item');
+//                 if(btn_class_action){
+//                     btn_class_action.style.display = 'none';
+//                     btn_class_action.closest('.dropdown-menu').classList.remove('show');
+//                 }
+//             }
+//         });
 
-        const btnRoleList = mThis.tblRoles_body.querySelectorAll('a.btn_role_action');
-        btnRoleList.forEach(btn => {
-            btn.onclick = function(e){
-                console.log(e);
-                e.preventDefault();
-                let p = this.parentElement;
-                let role_id = this.dataset.roleid,
-                role_name = this.dataset.rolename;
+//         const btnRoleList = mThis.tblRoles_body.querySelectorAll('a.btn_role_action');
+//         btnRoleList.forEach(btn => {
+//             btn.onclick = function(e){
+//                 console.log(e);
+//                 e.preventDefault();
+//                 let p = this.parentElement;
+//                 let role_id = this.dataset.roleid,
+//                 role_name = this.dataset.rolename;
 
-                let dropdownMenu = p.querySelector('.dropdown-menu');
-                if(!dropdownMenu){
-                    p.innerHTML += mThis.createDropdownMenuHtml_role(role_id, role_name);
-                    dropdownMenu = p.querySelector('.dropdown-menu');
-                }
-                if(mThis.prev_dropdownMenu) mThis.prev_dropdownMenu.classList.remove('show');
+//                 let dropdownMenu = p.querySelector('.dropdown-menu');
+//                 if(!dropdownMenu){
+//                     p.innerHTML += mThis.createDropdownMenuHtml_role(role_id, role_name);
+//                     dropdownMenu = p.querySelector('.dropdown-menu');
+//                 }
+//                 if(mThis.prev_dropdownMenu) mThis.prev_dropdownMenu.classList.remove('show');
 
-                dropdownMenu.classList.toggle('show');
-                dropdownMenu.style.top = e.clientY+'px';
-                dropdownMenu.style.left = e.clientX+'px';
+//                 dropdownMenu.classList.toggle('show');
+//                 dropdownMenu.style.top = e.clientY+'px';
+//                 dropdownMenu.style.left = e.clientX+'px';
 
-                if(dropdownMenu.classList.contains('show')) mThis.prev_dropdownMenu = dropdownMenu;
-                e.stopImmediatePropagation();
+//                 if(dropdownMenu.classList.contains('show')) mThis.prev_dropdownMenu = dropdownMenu;
+//                 e.stopImmediatePropagation();
 
-                const btnDelete = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_delete');
-                btnDelete.onclick = function(e){
-                    e.preventDefault();
-                    let role_id = this.parentElement.dataset.roleid;
-                    cv_interact.confirm('Delete this role?', {
-                        title: 'Delete Role',
-                        context: 'delete'
-                    },(e) => {
-                        if(e){
-                            mThis.deleteRole(role_id);
-                        }
-                    });
-                    e.stopImmediatePropagation();
-                };
+//                 const btnDelete = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_delete');
+//                 btnDelete.onclick = function(e){
+//                     e.preventDefault();
+//                     let role_id = this.parentElement.dataset.roleid;
+//                     cv_interact.confirm('Delete this role?', {
+//                         title: 'Delete Role',
+//                         context: 'delete'
+//                     },(e) => {
+//                         if(e){
+//                             mThis.deleteRole(role_id);
+//                         }
+//                     });
+//                     e.stopImmediatePropagation();
+//                 };
 
-                const btnModify = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_modify');
-                btnModify.onclick = function(e){
-                    e.preventDefault();
-                    let role_id = this.parentElement.dataset.roleid;
-                    EditRolePanel.show({
-                        title: "Renaming existing role",
-                        role_id: role_id
-                    });
-                    e.stopImmediatePropagation();
-                };
+//                 const btnModify = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_modify');
+//                 btnModify.onclick = function(e){
+//                     e.preventDefault();
+//                     let role_id = this.parentElement.dataset.roleid;
+//                     EditRolePanel.show({
+//                         title: "Renaming existing role",
+//                         role_id: role_id
+//                     });
+//                     e.stopImmediatePropagation();
+//                 };
 
-                const btnAddMember = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_add_member');
-                btnAddMember.onclick = function(e){
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    let role_id = this.parentElement.dataset.roleid;
-                    let role = {
-                        id: role_id,
-                        name: RoleListPanel.selected_role_name
-                    };
-                    mThis.addRoleMember(role, function(new_user_count){
-                        if(new_user_count){
-                            mThis.updateSelectRole('col_user_count', new_user_count);
-                            RoleTabView.show(role_id, 'users');
-                        }
-                    });
-                };
+//                 const btnAddMember = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_add_member');
+//                 btnAddMember.onclick = function(e){
+//                     e.preventDefault();
+//                     e.stopImmediatePropagation();
+//                     let role_id = this.parentElement.dataset.roleid;
+//                     let role = {
+//                         id: role_id,
+//                         name: RoleListPanel.selected_role_name
+//                     };
+//                     mThis.addRoleMember(role, function(new_user_count){
+//                         if(new_user_count){
+//                             mThis.updateSelectRole('col_user_count', new_user_count);
+//                             RoleTabView.show(role_id, 'users');
+//                         }
+//                     });
+//                 };
 
-                const btnAddModule = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_add_module');
-                btnAddModule.onclick = function(e){
-                    e.preventDefault();
-                    let role_id = this.parentElement.dataset.roleid;
-                    mThis.addAccessibleModule(role_id, function(e){
-                        if(e){
-                            RoleTabView.show(role_id, 'modules');
-                        }
-                    });
-                    e.stopImmediatePropagation();
-                };
+//                 const btnAddModule = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_add_module');
+//                 btnAddModule.onclick = function(e){
+//                     e.preventDefault();
+//                     let role_id = this.parentElement.dataset.roleid;
+//                     mThis.addAccessibleModule(role_id, function(e){
+//                         if(e){
+//                             RoleTabView.show(role_id, 'modules');
+//                         }
+//                     });
+//                     e.stopImmediatePropagation();
+//                 };
 
-                const btnPrns = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_role_prns');
-                btnPrns.onclick = function(e){
-                    e.preventDefault();
-                    RoleManagementComponent.self.querySelector('#_um_roleprn_lnk_add').dispatchEvent(new Event('click'));
-                    e.stopImmediatePropagation();
-                };
-            }
-        });
-    }
+//                 const btnPrns = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_role_prns');
+//                 btnPrns.onclick = function(e){
+//                     e.preventDefault();
+//                     RoleManagementComponent.self.querySelector('#_um_roleprn_lnk_add').dispatchEvent(new Event('click'));
+//                     e.stopImmediatePropagation();
+//                 };
+//             }
+//         });
+//     }
 
-    this.createDropdownMenuHtml_role = function(role_id, role_name){
-        const html = `<div class="dropdown-menu bg-white shadow position-fixed /*top-left-unset*/" data-roleid="${role_id}" data-rolename="${role_name}">
-            <a class="dropdown-item _um_ra_delete" href="javascript:void(0)">
-                <i class="fa fa-times text-danger pe-2"></i>
-                <span>Delete Role</span>
-            </a>
-            <a class="dropdown-item _um_ra_modify" href="javascript:void(0)">
-                <i class="fa fa-edit text-secondary pe-2"></i>
-                <span>Modify Role</span>
-            </a>
-            <div class="dropdown-divider"></div>
-            <a class="dropdown-item _um_ra_add_member" href="javascript:void(0)">
-                <i class="fa fa-user text-primary pe-2"></i>
-                <span>Add Member<span>
-            </a>
-            <a class="dropdown-item _um_ra_add_module" href="javascript:void(0)">
-                <i class="fa fa-list-alt text-secondary pe-2"></i>
-                <span>Add Access Module</span>
-            </a>
-            <a class="dropdown-item _um_ra_role_prns" href="javascript:void(0)">
-                <i class="fa fa-list-alt text-secondary pe-2"></i>
-                <span>Manage Permissions</span>
-            </a>
-        </div>`;
-        return html;
-    }
+//     this.createDropdownMenuHtml_role = function(role_id, role_name){
+//         const html = `<div class="dropdown-menu bg-white shadow position-fixed /*top-left-unset*/" data-roleid="${role_id}" data-rolename="${role_name}">
+//             <a class="dropdown-item _um_ra_delete" href="javascript:void(0)">
+//                 <i class="fa fa-times text-danger pe-2"></i>
+//                 <span>Delete Role</span>
+//             </a>
+//             <a class="dropdown-item _um_ra_modify" href="javascript:void(0)">
+//                 <i class="fa fa-edit text-secondary pe-2"></i>
+//                 <span>Modify Role</span>
+//             </a>
+//             <div class="dropdown-divider"></div>
+//             <a class="dropdown-item _um_ra_add_member" href="javascript:void(0)">
+//                 <i class="fa fa-user text-primary pe-2"></i>
+//                 <span>Add Member<span>
+//             </a>
+//             <a class="dropdown-item _um_ra_add_module" href="javascript:void(0)">
+//                 <i class="fa fa-list-alt text-secondary pe-2"></i>
+//                 <span>Add Access Module</span>
+//             </a>
+//             <a class="dropdown-item _um_ra_role_prns" href="javascript:void(0)">
+//                 <i class="fa fa-list-alt text-secondary pe-2"></i>
+//                 <span>Manage Permissions</span>
+//             </a>
+//         </div>`;
+//         return html;
+//     }
 
-    this.addRoleMember = function(role = {}, onFinish = null){
-        let role_id = role.id;
-        let p = {};
-        p.role_id = 0;
+//     this.addRoleMember = function(role = {}, onFinish = null){
+//         let role_id = role.id;
+//         let p = {};
+//         p.role_id = 0;
 
-        vsapi.call(`${main_view.base_url}/api/getComboItems_user`,p).then(res => {
-            if(res.status_code === 200){
-                let rows = res.data;
-                let option = {};
-                option.title = `Add user to ${role.name} role`;
-                option.data = StringSanitizer.sanitizeObject(rows, ['(', ')', '@', '.', '-'], ['login_name']);
-                option.valueMember = "id";
-                option.textMember = "login_name";
-                option.dataLabel = "Select User";
-                option.blankErrorMessage = "Choose a user login";
+//         vsapi.call(`${main_view.base_url}/api/getComboItems_user`,p).then(res => {
+//             if(res.status_code === 200){
+//                 let rows = res.data;
+//                 let option = {};
+//                 option.title = `Add user to ${role.name} role`;
+//                 option.data = StringSanitizer.sanitizeObject(rows, ['(', ')', '@', '.', '-'], ['login_name']);
+//                 option.valueMember = "id";
+//                 option.textMember = "login_name";
+//                 option.dataLabel = "Select User";
+//                 option.blankErrorMessage = "Choose a user login";
 
-                InputBox2.show(option,function(d){
-                    if(d){
-                        let p = {};
-                        p.role_id = role_id;
-                        p.user_id = d.value;
-                        vsapi.call(`${main_view.base_url}/api/addRoleMember`,p).then(res => {
-                            if(res.status_code === 200){
-                                let d = res.data;
-                                onFinish(d.user_count);
-                            }
-                            else
-                                cv_interact.error(res.error_message);
-                        });
-                    }
-                });
-            }
-            else
-                cv_interact.error(res.error_message);
-        });
-    }
+//                 InputBox2.show(option,function(d){
+//                     if(d){
+//                         let p = {};
+//                         p.role_id = role_id;
+//                         p.user_id = d.value;
+//                         vsapi.call(`${main_view.base_url}/api/addRoleMember`,p).then(res => {
+//                             if(res.status_code === 200){
+//                                 let d = res.data;
+//                                 onFinish(d.user_count);
+//                             }
+//                             else
+//                                 cv_interact.error(res.error_message);
+//                         });
+//                     }
+//                 });
+//             }
+//             else
+//                 cv_interact.error(res.error_message);
+//         });
+//     }
 
-    this.addAccessibleModule = function (role_id, onFinish) {
-        vsapi.call(`${main_view.base_url}/api/getComboItems_module`,null).then(res => {
-            if(res.status_code === 200){
-                let rows = StringSanitizer.sanitizeObject(res.data);
-                let option = {};
-                option.title = "Choose Module";
-                option.dataLabel = "Select Module";
-                rows.unshift({
-                    id: null,
-                    name: '(Select Application Module)'
-                });
-                option.data = rows;
-                option.valueMember = "id";
-                option.textMember = "name";
-                option.btnOKText = "Add Now";
-                option.defaultValue = null;
-                option.blankErrorMessage = 'Please choose a module';
-                InputBox2.show(option,function(d){
-                    if(d){
-                        let p = {};
-                        p.role_id = role_id;
-                        p.module_id = d.value;
-                        vsapi.call(`${main_view.base_url}/api/addAccessibleModule`,p).then(res => {
-                            if(res.status_code === 200){
-                                onFinish(true);
-                            }
-                            else
-                                cv_interact.error(res.error_message);
-                        });
-                    }
-                });
-            }
-        });
-    }
+//     this.addAccessibleModule = function (role_id, onFinish) {
+//         vsapi.call(`${main_view.base_url}/api/getComboItems_module`,null).then(res => {
+//             if(res.status_code === 200){
+//                 let rows = StringSanitizer.sanitizeObject(res.data);
+//                 let option = {};
+//                 option.title = "Choose Module";
+//                 option.dataLabel = "Select Module";
+//                 rows.unshift({
+//                     id: null,
+//                     name: '(Select Application Module)'
+//                 });
+//                 option.data = rows;
+//                 option.valueMember = "id";
+//                 option.textMember = "name";
+//                 option.btnOKText = "Add Now";
+//                 option.defaultValue = null;
+//                 option.blankErrorMessage = 'Please choose a module';
+//                 InputBox2.show(option,function(d){
+//                     if(d){
+//                         let p = {};
+//                         p.role_id = role_id;
+//                         p.module_id = d.value;
+//                         vsapi.call(`${main_view.base_url}/api/addAccessibleModule`,p).then(res => {
+//                             if(res.status_code === 200){
+//                                 onFinish(true);
+//                             }
+//                             else
+//                                 cv_interact.error(res.error_message);
+//                         });
+//                     }
+//                 });
+//             }
+//         });
+//     }
 
-    this.show = function(options = {}){
-        mThis.init(); //init once or one time only
-        mThis.selected_role_id = null;
-        mThis.selected_role_name = null;
+//     this.show = function(options = {}){
+//         mThis.init(); //init once or one time only
+//         mThis.selected_role_id = null;
+//         mThis.selected_role_name = null;
 
-        mThis.displayRoleList();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
-    }
+//         mThis.displayRoleList();
+//         $(mThis.self).siblings().hide();
+//         $(mThis.self).fadeIn(200);
+//     }
 
-    this.displayRoleList = function(){
-        vsapi.call(`${main_view.base_url}/api/role/list`,{
-            search_value: mThis.elSearchUser.value
-        },main_view.apiCluster).then(res => {
-            if(res.status_code === 200){
-                let rows = StringSanitizer.sanitizeObject(res.data);
-                mThis.tblRoles_body.innerHTML = '';
-                let i = 0, c;
-                do{
-                    c = rows[i];
-                    if(!c) break;
-                    if(!c.user_count) c.user_count = 0;
+//     this.displayRoleList = function(){
+//         vsapi.call(`${main_view.base_url}/api/role/list`,{
+//             search_value: mThis.elSearchUser.value
+//         },main_view.apiCluster).then(res => {
+//             if(res.status_code === 200){
+//                 let rows = StringSanitizer.sanitizeObject(res.data);
+//                 mThis.tblRoles_body.innerHTML = '';
+//                 let i = 0, c;
+//                 do{
+//                     c = rows[i];
+//                     if(!c) break;
+//                     if(!c.user_count) c.user_count = 0;
 
-                    let dropdown_container_html = `<div class="dropdown">
-                        <a href="javascript:void(0)" data-roleid="${c.id}" data-rolename="${c.name}" class="vs-btn-sm-outline-round btn_role_action" aria-haspopup="true" aria-expanded="false" style="display:none">
-                            <i class="fa fa-chevron-down text-danger fs-5"></i>
-                        </a>
-                    </div>`;
+//                     let dropdown_container_html = `<div class="dropdown">
+//                         <a href="javascript:void(0)" data-roleid="${c.id}" data-rolename="${c.name}" class="vs-btn-sm-outline-round btn_role_action" aria-haspopup="true" aria-expanded="false" style="display:none">
+//                             <i class="fa fa-chevron-down text-danger fs-5"></i>
+//                         </a>
+//                     </div>`;
 
-                    let display_user_class = (c.user_class + '').replace(/\_/g,' ');
-                    let html = `<tr data-roleid="${c.id}" data-rolename="${c.name}">
-                        <td class="col_action" style="width:70px">${dropdown_container_html}</td>
-                        <td>
-                            <span class="fw-bold" style="font-size:1.1em">${c.name}</span>
-                            <div>
-                                <span class="set-text-gray">User class: </span>
-                                <span class="ps-2 fw-bold text-capitalize set-text-green">${display_user_class}</span>
-                            </div>
-                        </td>
-                        <td class="col_user_count">
-                            <span class="d-block" style="padding-top:15px">${c.user_count} members</span>
-                        </td>
-                    </tr>`;
-                    mThis.tblRoles_body.innerHTML += html;
-                    i++;
-                }while(c);
+//                     let display_user_class = (c.user_class + '').replace(/\_/g,' ');
+//                     let html = `<tr data-roleid="${c.id}" data-rolename="${c.name}">
+//                         <td class="col_action" style="width:70px">${dropdown_container_html}</td>
+//                         <td>
+//                             <span class="fw-bold" style="font-size:1.1em">${c.name}</span>
+//                             <div>
+//                                 <span class="set-text-gray">User class: </span>
+//                                 <span class="ps-2 fw-bold text-capitalize set-text-green">${display_user_class}</span>
+//                             </div>
+//                         </td>
+//                         <td class="col_user_count">
+//                             <span class="d-block" style="padding-top:15px">${c.user_count} members</span>
+//                         </td>
+//                     </tr>`;
+//                     mThis.tblRoles_body.innerHTML += html;
+//                     i++;
+//                 }while(c);
                 
-                if(mThis.tblRoles_body.querySelector('._um_item_action_button')){
-                    mThis.tblRoles_body.querySelector('._um_item_action_button').style.display = 'none';
-                }
-                RoleTabView.show(0, 'users');
-                mThis.setEvent();
-            }
-        });
-    };
+//                 if(mThis.tblRoles_body.querySelector('._um_item_action_button')){
+//                     mThis.tblRoles_body.querySelector('._um_item_action_button').style.display = 'none';
+//                 }
+//                 RoleTabView.show(0, 'users');
+//                 mThis.setEvent();
+//             }
+//         });
+//     };
 
-    this.updateSelectRole = function(col_name, data){
-        let selected_class_name = 'row-selected';
-        mThis.tblRoles_body.querySelector(`tr.${selected_class_name}>td.${col_name}`).innerHTML = data;
-    }
+//     this.updateSelectRole = function(col_name, data){
+//         let selected_class_name = 'row-selected';
+//         mThis.tblRoles_body.querySelector(`tr.${selected_class_name}>td.${col_name}`).innerHTML = data;
+//     }
 
   
 
-    this.deleteRole = function(id){
-        let p = {};
-        p.role_id = id ? id : 0;
-        vsapi.call(`${main_view.base_url}/api/deleteRole`,p).then(res => {
-            if(res.status_code === 200){
-                mThis.displayRoleList();
-            }
-            else
-                cv_interact.error(re.error_message);
-        });
-    }
-};
+//     this.deleteRole = function(id){
+//         let p = {};
+//         p.role_id = id ? id : 0;
+//         vsapi.call(`${main_view.base_url}/api/deleteRole`,p).then(res => {
+//             if(res.status_code === 200){
+//                 mThis.displayRoleList();
+//             }
+//             else
+//                 cv_interact.error(re.error_message);
+//         });
+//     }
+// };
 
 // const EditRolePanel = new function(){
 //     const mThis = this;
@@ -500,7 +507,7 @@ const RoleListPanel = new function(){
 
 // const RoleTabView = new function(){
 //     const mThis = this;
-//     this.self = RoleManagementComponent.self.querySelector('#_um_roleTabView');
+//     this.self = RoleManagementComponent.self[0].querySelector('#_um_roleTabView');
 //     this.tabHeader = mThis.self.querySelector('div.tab-header');
 //     this.cur_view = 'users';
 
