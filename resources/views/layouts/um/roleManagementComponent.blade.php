@@ -133,7 +133,7 @@
           <span class="text-nowrap">Permissions</span>
       </button>
     </div> -->
-    <div class="col-lg-12 _test_scroll">
+    <div class="col-lg-12 ">
         <div class="tab-view" id="_um_roleTabView">
           <div class="tab-header gap-2 set-parent-active mt-3 ">
             <a href="javascript:void(0)" class="tab-button" data-viewname="appication" id="_um_roletab_button_application" data-target="tab_panel_application">
@@ -143,22 +143,14 @@
               <span class="bg-white p-2 mr-3 rounded-3">MODULES</span>
             </a>
             <a href="javascript:void(0)" class="tab-button" data-viewname="report" id="_um_roletab_button_report" data-target="tab_panel_report">
-              <span class="bg-white p-2 mr-3 rounded-3">MODULES</span>
+              <span class="bg-white p-2 mr-3 rounded-3">Report</span>
             </a>
             <a href="javascript:void(0)" class="tab-button" data-viewname="permissions" id="_um_roletab_button_prns" data-target="tab_panel_prns">
               <span class="bg-white rounded-3 p-2 mr-3">PERMISSIONS</span>
             </a>
           </div>
           <div class="tab-body">
-            <div class="tab-panel border-style1 p-3 bg-white mt-4 rounded-3" data-viewname="users" id="_um_tab_panel_users" style="height:40vw">
-              <span class="text-body-secondary fw-bold fs-6" id="_um_roletab_users_text">Members of the selected role</span>
-              <a href="javascript:void(0)" id="_um_lnkAddRemMember">
-                (<i class="fa fa-plus fs-5 text-success"></i>)
-              </a>
-              <div class="border p-3 mt-2 rounded-3">
-                 <div class="w-100" id="_div_role_members">Display Query Data Here</div>
-              </div>
-            </div>
+            
             <div class="tab-panel border-style1 p-3 rounded-3 bg-white mt-4" data-viewname="modules" id="_um_tab_panel_modules" style="height:40vw">
               <span class="text-body-secondary fw-bold" id="_um_roletab_module_text">Accessible modules</span>
               <a href="javascript:void(0)" id="_um_lnkAddModule">

@@ -117,6 +117,7 @@ var RoleManagementComponent = new function(){
     }
 
 };
+
 const RoleDialog = new function(){
         const mThis = this;
         this.self = main_view.appContent.find('#roleDialog');
