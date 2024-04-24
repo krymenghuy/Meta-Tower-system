@@ -1,17 +1,15 @@
 <?php
 
 namespace App\Models\Dms;
-
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\UM;
 use App\Models\Dms\GeneralSettings;
 use DB;
 use Carbon\Carbon;
 use Sanitizer;
 //use Data Validator
 use App\Models\DV;
-use App\Models\Notifier;
+use App\Models\UM;
 use Illuminate\Pagination\LengthAwarePaginator; 
 use Illuminate\Support\Facades\Cache;
 //use Illuminate\Support\Facades\Log;
@@ -69,7 +67,7 @@ function getMyTasks($id=null,$ss=null){
   //count number of trips, NOT packages
   $data->delivery_count = count($rows);
 
-  $selectCols='o.id AS order_id,o.code AS order_code, o.delivery_type, s.id AS sender_id,s.`name` AS sender_name,s.phone_number AS sender_phone,o.pickup_address,o.loc_lat,o.loc_lng, ps.name AS `status`, o.status_id,formatDate(o.create_date) AS request_date, o.qty,o.actual_pkg_count, o.driver_id,o.completed';
+  $selectCols='o.id AS order_id,o.code AS order_code, o.delivery_type, s.id AS sender_id,s.`name` AS sender_name,s.phone_number AS sender_phone,o.pickup_address,IFNULL(o.loc_lat,0) AS loc_lat,IFNULL(o.loc_lng,0) AS loc_lng, ps.name AS `status`, o.status_id,formatDate(o.create_date) AS request_date, o.qty,o.actual_pkg_count, o.driver_id,o.completed';
   $rows = DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->where('o.branch_id',$branch_id)->where('o.driver_id',$driver_id)->where('o.status_id',2)->selectRaw($selectCols)->orderByRaw("o.create_date DESC")->get();
   $data->pickups = $rows;
   $data->pickup_count = count($rows);
@@ -121,7 +119,7 @@ function getMyTaskCounts($id=null,$ss=null){
   if (!(bool)strtotime($date)) $date = date('Y-m-d');
   $str_dates ='DATE(o.create_date) = \''.$date.'\' ';
   //Important NOTE: o.status_id <=3 so that after driver picks order => the Accepted pickup list is updated
-  return DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->selectRaw("o.id AS order_id,o.code AS order_code, o.delivery_type, o.request_date, o.sender_id,s.name AS sender_name, s.email AS sender_email, s.phone_number AS sender_phone, o.product_type, o.qty,o.actual_pkg_count, o.request_vehicle_type, o.pickup_address, o.status_id, ps.name AS status,o.loc_lat,o.loc_lng" )->where('o.branch_id',$branch_id)->whereRaw($str_dates)->where('o.driver_id',$driver_id)->whereRaw('IFNULL(completed,0)=0 AND o.status_id <3')->get(); 
+  return DB::table('order AS o')->join('sender AS s','s.id','=','o.sender_id')->join('package_statuses AS ps','ps.id','=','o.status_id')->selectRaw("o.id AS order_id,o.code AS order_code, o.delivery_type, o.request_date, o.sender_id,s.name AS sender_name, s.email AS sender_email, s.phone_number AS sender_phone, o.product_type, o.qty,o.actual_pkg_count, o.request_vehicle_type, o.pickup_address, o.status_id, ps.name AS status,IFNULL(o.loc_lat,0) AS loc_lat,IFNULL(o.loc_lng,0) AS loc_lng" )->where('o.branch_id',$branch_id)->whereRaw($str_dates)->where('o.driver_id',$driver_id)->whereRaw('IFNULL(completed,0)=0 AND o.status_id <3')->get(); 
 }
 
  //return list of avaialable pickup request for driver to accept. This data is specific to driver as to Where the driver is now, and available orders can appear accordingly
@@ -597,8 +595,8 @@ static function defaultImage($branch_id){
       $ss = $ss ?? $this->userInfo;
       $driver_id = $driver_id ?? $this->id; 
       $branch_id = $ss->branch_id;
-      $loc_lat = isset($d['loc_lat'])?$d['loc_lat']:null;
-      $loc_lng = isset($d['loc_lng'])?$d['loc_lng']:null;
+      $loc_lat = isset($d['loc_lat'])?$d['loc_lat']:0;
+      $loc_lng = isset($d['loc_lng'])?$d['loc_lng']:0;
       
       DB::table('driver_location')->where('branch_id',$branch_id)->where('driver_id',$driver_id)->delete();
       DB::table('driver_location')->insert([
@@ -1254,7 +1252,7 @@ function getUnpaidPackages($arr = [], $id = null, $ss = null)
        DB::table('driver')->where('id',$id)->where('branch_id',$branch_id)->update([
            'status_code'=>$status_code
        ]);
-       $um = new \App\Models\Dms\UM();
+       $um = new \App\Models\UM();
        $user_id = DB::table('um_users')->where('official_id',$id)->take(1)->value('id');
        $update_profile = false;
        $res = $um->setUserStatus($status_code,$user_id,$update_profile);

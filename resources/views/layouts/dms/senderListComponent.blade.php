@@ -107,6 +107,10 @@
                         <label for="address" class="form-label trans-text" data-langprop="titles.Address"></label>
                         <textarea class="form-control data-input" data-field="address"></textarea>
                     </div>
+                    <div class="form-group col-lg-12">
+                        <label for="address_link" class="form-label trans-text" data-langprop="titles.Pin Address"></label>
+                        <textarea class="form-control data-input" data-field="address_link"></textarea>
+                    </div>
                 </div>
                 <div class="row" id="div_bank_account">
                     <div class="col-lg-6" style="margin-top:15px">
