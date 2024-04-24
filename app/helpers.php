@@ -61,9 +61,7 @@ function api_response($data,$error_code=300,$error_message=null) {
 }
 
 function escape_like_str($portion) {
-    $specialChars = ['\\', '%', '_','\''];
-    $escapedPortion = addcslashes($portion, implode('', $specialChars));
-    return $escapedPortion;
+    return mb_convert_encoding(trim(str_replace(['\\', '%', '_', '\''], ['\\\\', '\\%', '\\_', '\\\''], $portion)), 'UTF-8');
 }
  
 function isExists($table,$pk,$checkCol,$inputValue,$updateID=null){

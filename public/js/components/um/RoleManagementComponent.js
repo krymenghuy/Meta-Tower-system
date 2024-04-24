@@ -4,99 +4,96 @@ var RoleManagementComponent = new function(){
     this.title_prop = 'Role Management';
     this.base_url = main_view.base_url;
     this.self = main_view.appContent.children('#_um_roleManagementComponent');
-
-   
-
-    this.lnkNewRole = this.self.find('#_lnkNewRole');
-    this.elSearch = this.self.find('#_search_role');
-    this.btnSearch = this.self.find('#_role_btnSearch');
-    this.btnPrint = this.self.find('#_cul_btnPrint');
+ 
+    this.lnkNewRole = this.self[0].querySelector('#_lnkNewRole');
+    this.elSearch = this.self[0].querySelector('#_search_role');
+    this.btnSearch = this.self[0].querySelector('#_role_btnSearch');
+    this.btnPrint = this.self[0].querySelector('#_cul_btnPrint');
     this.div_filter_fields = this.self[0].querySelector('#div_filter_fields');
-    
+    this.div_role_list = this.self[0].querySelector('div#_um_rolelist');    
 
-    this.renderCard = (container, data) => {
+    this.renderRoleCards = (data, container = null) => {
         let html = '';
         let cnt = 0;
-        // container.style.display = 'none';
-        // mThis.store_senders = {};
+        container = container || mThis.div_role_list;
+        
         (data || []).map(item => {
-            html += ` <div class="col-sm-2 box">
-            <div class="card bg-white shadow p-3 border rounded-3 m-3">
-              <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-                <span class="data-input text-success " style="font-size:0.8em" data-field="user_class">${item.name}</span>
-                <span class="data-input text-muted p-1" style="font-size:0.8em" >User Class: ${item.user_class}</span>
-                <span class=" role_name_title">
-                ${item.name.charAt(0).toUpperCase()} 
-                 
+            html = [ html,`<div class="col-sm-2">
+            <div class="card bg-white shadow p-2 border rounded-3 d-flex flex-column justify-content-between" style="height:20vh;min-width:120px;">
+               <div class="d-flex flex-column justify-content-center align-items-center p-2">
+                  <span class="data-input text-success text-center" style="font-size:1em" data-field="user_class">${item.name}</span>
+                  <span class="role_name_title mt-2">
+                    ${item.name.charAt(0).toUpperCase()} 
                 </span>
               </div>
                 <span class="pg-alert-card-line" style="width:100%"></span>
                 <span class="data-input text-muted p-1" style="font-size:0.8em" >Total Member: ${item.user_count}</span>
-            </div> 
-        </div>
-        
-         `
+
+                <div class="border-top border-1">
+                 <span class="text-muted p-1">${item.user_class}</span>
+                </div>
+            </div>
+           
+         </div>`].join('');
 
         });
         container.innerHTML = html;
-        container.style.display = 'flex';
     }
+
+    this.loadRoles = (filter, onFinish)=>{
+        vsapi.call(`${main_view.base_url}/api/role/list`,filter,null,false).then(res =>{
+           const roles = res.status_code ==200? res.data : [];
+           onFinish(roles); 
+        });
+       
+    }
+
     this.init = () => {
         if(mThis.initAlready) return;
-        let div = document.getElementById('_card');
- 
-        mThis.roleListView = new ListView('_card',{
-            fetchApi: `${main_view.base_url}/api/role/list-paginate`,
-            perPage: 20,
-            display:'card',
-           //clientSidePagination:true,
-            apiCluster: main_view.apiCluster,
-            renderItems: (items,list_container) => {
-                console.log(items); 
-                mThis.renderCard(list_container,items);
-            },
-            listContainerClass: null
-            
-        });
-        mThis.lnkNewRole.on('click',function(e){
+        
+        mThis.lnkNewRole.addEventListener('click', e =>{
             e.preventDefault();
             let op = {
                 'id': null,
                 'onclose':(d)=>{
-                    mThis.roleListView.showPage(mThis.getFilterData());
+                    mThis.loadRoles(mThis.getFilterData(), roles =>{
+                        this.renderRoleCards(roles);
+                    }); 
                 }
             }
             RoleDialog.show(op);
-        })
+        });
+
         mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
             el.onchange = (e)=>{
                 e.preventDefault();
-                mThis.roleListView.showPage(mThis.getFilterData());
+                mThis.loadRoles(mThis.getFilterData(), roles =>{
+                    this.renderRoleCards(roles);
+                });
             }
         });
-        mThis.elSearch.on('keyup',function(e){
+
+        mThis.elSearch.addEventListener('keyup',e =>{
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(()=>{
-                mThis.roleListView.showPage(mThis.getFilterData());
+                mThis.loadRoles(mThis.getFilterData(), roles =>{
+                    this.renderRoleCards(roles);
+                });
+
             },250);
         });     
-        
-        mThis.btnSearch.on('click',function(){
-            mThis.roleListView.showPage(mThis.getFilterData());
-        });
-        
-        
-      
+          
         mThis.initAlready = true;
     }
+
     this.getFilterData = ()=>{
         let p = {};
         mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
          let f = el.dataset.field;
           p[f] = el.value;
        });
-       p.search_value = mThis.elSearch.val();
+       p.search_value = mThis.elSearch.value;
        return p; 
     }
   
@@ -104,19 +101,19 @@ var RoleManagementComponent = new function(){
         mThis.init();
         if(!options) options={};
         main_view.setTitle(mThis.title_prop);
-
-
-        
+         
         main_view.setTitle(mThis.title_prop);
-        mThis.roleListView.showPage(mThis.getFilterData(),null,() => {
-            $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+
+        mThis.loadRoles(this.getFilterData(), roles =>{
+            mThis.renderRoleCards(roles,null);
         });
-        
-       
+
+        mThis.self.siblings().hide();
+        mThis.self.fadeIn(200);
     }
 
 };
+
 const RoleDialog = new function(){
         const mThis = this;
         this.self = main_view.appContent.find('#roleDialog');
