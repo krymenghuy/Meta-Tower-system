@@ -52,6 +52,7 @@
     flex-wrap:nowrap;
     overflow: scroll;
   }
+  
  
   .box{
     width: 3000px;
@@ -68,7 +69,11 @@
         font-size: 20px;
         
     }
-  
+    .set-parent-active .active span {
+    border:1px solid #ffb822 !important;
+    background-color: #dfdfdf87 !important;
+    color: #0022ff;
+}
   
  
 </style>
@@ -98,72 +103,112 @@
   <div id="_um_roleListPanel">
      <div class="row _row bg-white shadow ml-1 mt-4">
         <div id="_card">
-      <!-- <div class="col-sm-2 box">
-            <div class="card bg-white shadow p-3 border rounded-3 m-3">
-              <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-                <span class="data-input text-success fs-5 fw-semibold" data-field="user_class">Customer</span>
-                <span class="data-input text-muted p-1" style="font-size:0.8em" >User Class: Admin</span>
-                <span class=" role_name_title"> 
-                  <script>
-                    document.write("Customer".charAt(0).toUpperCase());
-                  </script>
-                </span>
-              </div>
-                <span class="pg-alert-card-line" style="width:100%"></span>
-                <span class="data-input text-muted p-1" style="font-size:0.8em" >Total Member: 31</span>
-            </div> 
-        </div>  -->
+    
         </div>
 
       </div> 
   </div>
 
   <div class="d-flex flex-fow gap-2 justify-content-start mt-3 shadow border rounded-3 ">
-    <!-- <div class="tab-header gap-2 set-parent-active m-3 p-2">
-      <button class="btn-um-application btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
-        <span class="text-nowrap">Application</span>
-      </button>
-      <button class="btn-um-module btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
-          <span class="text-nowrap">Module</span>
-      </button>
-       <button class="btn-um-reports btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
-          <span class="text-nowrap">Reports</span>
-      </button>
-      <button class="btn-um-permissions btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
-          <span class="text-nowrap">Permissions</span>
-      </button>
-    </div> -->
-    <div class="col-lg-12 ">
+
+    
+    <div class="col-lg-12" id="_um_tblRoles" >
         <div class="tab-view" id="_um_roleTabView">
           <div class="tab-header gap-2 set-parent-active mt-3 ">
-            <a href="javascript:void(0)" class="tab-button" data-viewname="appication" id="_um_roletab_button_application" data-target="tab_panel_application">
-              <span class="bg-white p-2 mr-3  rounded-3">Application</span>
-            </a>
-            <a href="javascript:void(0)" class="tab-button" data-viewname="modules" id="_um_roletab_button_modules" data-target="tab_panel_modules">
-              <span class="bg-white p-2 mr-3 rounded-3">MODULES</span>
-            </a>
-            <a href="javascript:void(0)" class="tab-button" data-viewname="report" id="_um_roletab_button_report" data-target="tab_panel_report">
-              <span class="bg-white p-2 mr-3 rounded-3">Report</span>
+            <a href="javascript:void(0)" class="tab-button" data-viewname="users" id="_um_roletab_button_users" data-target="tab_panel_users">
+                <span class="bg-white p-2 mr-3 rounded-3">USERS</span>
+              </a>
+            
+            <a href="javascript:void(0)" class="tab-button" data-viewname="applications" id="_um_roletab_button_applications" data-target="tab_panel_application">
+              <span class="bg-white p-2 mr-3  rounded-3">APPLICATIONS</span>
             </a>
             <a href="javascript:void(0)" class="tab-button" data-viewname="permissions" id="_um_roletab_button_prns" data-target="tab_panel_prns">
               <span class="bg-white rounded-3 p-2 mr-3">PERMISSIONS</span>
             </a>
+           
+            <a href="javascript:void(0)" class="tab-button" data-viewname="reports" id="_um_roletab_button_report" data-target="tab_panel_report">
+              <span class="bg-white p-2 mr-3 rounded-3">REPORTS</span>
+            </a>
+            
           </div>
           <div class="tab-body">
-            
-            <div class="tab-panel border-style1 p-3 rounded-3 bg-white mt-4" data-viewname="modules" id="_um_tab_panel_modules" style="height:40vw">
-              <span class="text-body-secondary fw-bold" id="_um_roletab_module_text">Accessible modules</span>
+
+
+            <div class="tab-panel border-style1 p-3 bg-white mt-4 rounded-3" data-viewname="users" id="_um_tab_panel_users" style="height:40vw">
+             
+            <span class="text-body-secondary fw-bold fs-6" id="_um_roletab_users_text">Members of the selected role</span>
+              <a href="javascript:void(0)"  id="_um_lnkAddRemMember">
+                <span>(<i class="fa fa-plus fs-5 text-success"></i>)</span>
+              </a>
+              <div class="border p-3 mt-2 rounded-3">
+                 <div class="w-100  _member_scroll overflow-auto " id="_div_role_members"style="height:300px;"></div>
+              </div>
+            </div>
+
+          <!-- <div class="tab-panel border-style1 p-3 rounded-3 bg-white mt-4" data-viewname="applications" id="_um_tab_panel_applications" style="height:40vw">
+              <span class="text-body-secondary fw-bold" id="_um_roletab_module_text">Application</span>
               <a href="javascript:void(0)" id="_um_lnkAddModule">
                 (<i class="fa fa-plus fs-5 text-success"></i>)
               </a>
               <div style="height:10px;border-bottom:1.2px solid orange;margin-bottom:15px"></div>
               <div class="table-responsive table-responsive-hover border rounded-3" style="height:90%">
                 <table id="_um_tblRoleModules" class="table fixed-body-table no-cell-border">
-                  <tbody id="_um_tblRoleModules_body"></tbody>
+                  <tbody id="_um_tblRoleModules_body">
+                  
+                  </tbody>
+                </table>
+              </div>
+            </div> -->
+            <div class="tab-panel border-style1 p-3 rounded-3 bg-white mt-4" data-viewname="applications" id="_um_tab_panel_applications" style="height:40vw">
+              <span class="text-body-secondary fw-bold" id="_um_roletab_application_text">Application</span>
+              <a href="javascript:void(0)" id="_um_lnkAddApplication">
+                (<i class="fa fa-plus fs-5 text-success"></i>)
+              </a>
+              <div style="height:10px;border-bottom:1.2px solid orange;margin-bottom:15px"></div>
+              <div class="table-responsive table-responsive-hover border rounded-3" style="height:90%">
+                <table id="_um_tblRoleApplications" class="table fixed-body-table no-cell-border">
+                  <tbody id="_um_tblRoleApplication_body">
+                    <div class="app   p-3 m-3 ">
+                    <div class="form-check ">
+                      <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+                      <i class="fas fa-cog"></i>
+                      <label class="form-check-label fw-bold text-capitalize " for="flexRadioDefault1">
+                        DMS
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+                      <i class="fa fa-cube" ></i>
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        ABM
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" checked>
+                      <i class="fas fa-cog"></i>
+                      <label class="form-check-label" for="flexRadioDefault3">
+                        User Management
+                      </label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input " type="radio" name="flexRadioDefault" id="flexRadioDefault4" checked>
+                      <i class="fa fa-cube" ></i>
+                      <label class="form-check-label" for="flexRadioDefault4">
+                        All App
+                      </label>
+                    </div>
+
+                    </div>
+
+                  
+                  </tbody>
                 </table>
               </div>
             </div>
-            <div class="tab-panel border-style1 bg-white rounded-3 mt-4" data-viewname="permissions" id="_um_tab_panel_prns" style="height:40vw">
+
+            
+            
+          <div class="tab-panel border-style1 bg-white rounded-3 mt-4" data-viewname="permissions" id="_um_tab_panel_prns" style="height:40vw">
               <div class="d-flex align-items-center px-2">
                 <a href="javascript:void(0)" id="_um_roleprn_lnk_add">
                   <i class="fa fa-plus fs-5 text-success"></i>
@@ -184,6 +229,21 @@
                 </table>
               </div>
             </div>
+
+            
+          <div class="tab-panel border-style1 p-3 rounded-3 bg-white mt-4" data-viewname="reports" id="_um_tab_panel_reports" style="height:40vw">
+              <span class="text-body-secondary fw-bold" id="_um_roletab_module_text">Report</span>
+              <a href="javascript:void(0)" id="_um_lnkAddModule">
+                (<i class="fa fa-plus fs-5 text-success"></i>)
+              </a>
+              <div style="height:10px;border-bottom:1.2px solid orange;margin-bottom:15px"></div>
+              <div class="table-responsive table-responsive-hover border rounded-3" style="height:90%">
+                <table id="_um_tblRoleModules" class="table fixed-body-table no-cell-border">
+                  <tbody id="_um_tblRoleModules_body"></tbody>
+                </table>
+              </div>
+          </div>
+
           </div>
         </div>
       </div>
@@ -212,12 +272,12 @@
               </div>
               <div class="form-group col-md-6">
                 <label class="control-label">Role Name</label>
-                <input type="text" class="form-control" id="role_name" data-field="name" placeholder="Role name" />
+                <input type="text" class="form-control data-input" id="role_name" data-field="name" placeholder="Role name" />
               </div>
               <div class="form-group col-md-6">
                 <label class="control-label ">User Class</label>
                 <div class="min-width-select max-width-select">
-                  <select class="modal-select2" id="user_class" data-field="user_class" placeholder="User Class"></select>
+                  <select class="modal-select2 data-input" id="user_class" data-field="user_class" placeholder="User Class"></select>
                 </div>
               </div>
                     
