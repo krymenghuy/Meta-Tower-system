@@ -446,8 +446,10 @@ class UM //extends Model
         'create_date' => getNowTime()
       ]);
       //$result->role_id = DB::getPdo()->lastInsertId();
+      return DV::depends(['action','saved']);
+
     }
-    return DV::success();
+    return DV::error('something went wrong in saving...!!!');
   }
 
        function role_exists($uss,$name,$id){
@@ -517,7 +519,7 @@ class UM //extends Model
         foreach ($rows as $row) $result->user_count = $row->user_count;
 
         $result->status = 'OK';
-        $result->error_message = null;
+        $result->error_message = 'yes';
         return $result;
     }
 
@@ -548,7 +550,11 @@ class UM //extends Model
       {
         $ss = $ss ? $ss : $this->userInfo;
         $str_branch = "1=1";
-        return DB::table('um_roles AS r')->selectRaw("r.id, r.`name`,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.branch_id = u.branch_id AND ur.role_id = r.id) AS user_count")->whereRaw($str_branch)->get();
+        return DB::table('um_roles AS r')
+        ->selectRaw("r.id, r.`name`,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.branch_id = u.branch_id AND ur.role_id = r.id) AS user_count")
+        ->orderBy('r.id','DESC')
+        ->whereRaw($str_branch)
+        ->get();
       }
 
       function getRoleList_paginate($arr,$ss = null)
@@ -588,7 +594,11 @@ class UM //extends Model
           $role_id = $d->role_id;
           $role_name = self::getRoleName($role_id);
           $search_value = escape_like_str(isset($d->search_value)?$d->search_value:'');
-          return DB::table('um_user_roles AS ur')->join('um_users AS u','u.id','=','ur.user_id')->selectRaw('\''.$role_name.'\' as role_name,\''.$search_value.'\' AS search_value,u.id,u.login_name,u.full_name,u.official_code,u.phone_number, u.email,u.otp_code,u.user_class')->where('u.branch_id',$branch_id)->where('ur.role_id',$role_id)->get();
+          return DB::table('um_user_roles AS ur')
+          ->join('um_users AS u','u.id','=','ur.user_id')
+          ->selectRaw('\''.$role_name.'\' as role_name,\''.$search_value.'\' AS search_value,u.id,u.login_name,u.full_name,u.official_code,u.phone_number,u.status, u.email,u.otp_code,u.user_class')
+          ->where('u.branch_id',$branch_id)
+          ->where('ur.role_id',$role_id)->get();
 
        }
 

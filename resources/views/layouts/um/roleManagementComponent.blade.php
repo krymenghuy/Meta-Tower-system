@@ -52,6 +52,7 @@
     flex-wrap:nowrap;
     overflow: scroll;
   }
+  
  
   .box{
     width: 3000px;
@@ -172,12 +173,12 @@
               </div>
               <div class="form-group col-md-6">
                 <label class="control-label">Role Name</label>
-                <input type="text" class="form-control" id="role_name" data-field="name" placeholder="Role name" />
+                <input type="text" class="form-control data-input" id="role_name" data-field="name" placeholder="Role name" />
               </div>
               <div class="form-group col-md-6">
                 <label class="control-label ">User Class</label>
                 <div class="min-width-select max-width-select">
-                  <select class="modal-select2" id="user_class" data-field="user_class" placeholder="User Class"></select>
+                  <select class="modal-select2 data-input" id="user_class" data-field="user_class" placeholder="User Class"></select>
                 </div>
               </div>
                     
