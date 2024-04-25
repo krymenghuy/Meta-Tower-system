@@ -18,6 +18,7 @@ use DB;
 // use Carbon\Carbon;
 use Exception;
 // use Localization;
+use App\Models\JDV;
 use Sanitizer;
 use Config;
 //use Illuminate\Contracts\Session\Session as SessionSession;
@@ -589,6 +590,7 @@ class UM //extends Model
 
       function getRoleMembers($arr,$ss){
           $ss =$ss?$ss:$this->userInfo;
+          // return JDV::result($arr);
           $d = (object)$arr;
           $branch_id = $ss->branch_id;
           $role_id = $d->role_id;

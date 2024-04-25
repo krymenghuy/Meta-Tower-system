@@ -26,8 +26,8 @@ use App\Http\controllers\abm\CustomerController;
 
 //begin:: Admin notifications
     Route::middleware('auth.api', CustomRateLimiter::class)->group(function(){
-            Route::get('pending-requests', [NotificationController::class, 'getPendingRequests']);
-            Route::get('notifications', [NotificationController::class, 'getNotificationListByUser']);
+            Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
+            Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
             Route::get('unread-count',[NotificationController::class,'getUnreadCount']);
             Route::get('mark-read-all',[NotificationController::class,'markReadAll']);
     });
@@ -59,6 +59,7 @@ use App\Http\controllers\abm\CustomerController;
     
         Route::post('/create-item', [OverseaShipmentController::class, 'createOverseaItem']);
         Route::post('/item-list', [OverseaShipmentController::class, 'getOverseaItemList']);
+        Route::post('/delete-item', [OverseaShipmentController::class, 'deleteOrderitem']);
     });
 
     Route::prefix('customers')->group(function(){

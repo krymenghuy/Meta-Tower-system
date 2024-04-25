@@ -5,6 +5,7 @@ use DB;
 use App\Models\DV;
 use App\Models\JDV;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Sanitizer;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 
@@ -17,29 +18,227 @@ class OverseaItem //extends Model
         $this->userInfo =$userInfo;
     }
 
+    function validatePackages($ss,$shipment,$items){
+        $branch_id = $ss->branch_id;
+        $max_price = 1000;
+        $c = null;
+        $i = 0;
+        $success_count = 0;
+        
+      $packageModel = new \App\Models\Dms\Package();
+      $success_items = []; 
+      $sender_id = $shipment->sender_id;
+      if (!$sender_id) return DV::error('The provided Merchant ID is empty and is not correct'); 
+        do{
+           $c = isset($items[$i])? (object)$items[$i]:null;
+           if(!$c) break;
+            $c->shipment_id = isset($shipment->id)? $shipment->id: (isset($shipment->shipment_id)? $shipment->shipment_id:null); 
+            $c->item_type = isset($c->item_type) ? $c->item_type: $shipment->item_type;
+            // $remarks = isset($c->remarks) ? $c->remarks: '';
+            // if(!isset($c->delivery_notes)) $c->delivery_notes = $remarks;
+            // $c->warehouse_id = isset($shipment->warehouse_id) ? $shipment->warehouse_id:  null;
+            // if (!isPhoneNumber($c->receiver_phone)) return DV::error('Receiver phone is not correct');
+            // if (!$c->warehouse_id) return DV::error('No warehouse ID provided for package with reeiver phone '.$c->receiver_phone);
+            /** Default df_payer to "sender". NOTE: that mobile app does not send df_payer via "create-delivery-shipment" */
+            // $c->df_payer = isset($c->df_payer)? $c->df_payer : 'sender';
+            // if(!in_array(strtolower($c->df_payer),['sender','receiver'])) return DV::error('Fee payer must be Sender or Receiver. Given value is '.$c->df_payer); 
+            // $c->forwarding_cost = floatval(isset($c->forwarding_cost)?$c->forwarding_cost:0);
+            // $c->forwarding_cost =  $c->forwarding_cost ?? 0;
+            $c->billed_weight = floatval(isset($c->billed_weight) ? $c->billed_weight:0);
+            $c->billed_weight = $c->billed_weight ?? 0;             
+            $c->dim_x = floatval(isset($c->dim_x) ? $c->dim_x:  0);
+            $c->dim_x  =$c->dim_x ?? 0;
+            $c->dim_y = floatval(isset($c->dim_y) ? $c->dim_y:  0);
+            $c->dim_y = $c->dim_y ?? 0;
+            $c->dim_h = floatval(isset($c->dim_h) ? $c->dim_h: 0);
+            $c->dim_h = $c->dim_h ?? 0;
+            $c->actual_weight = floatval(isset($c->actual_weight) ? $c->actual_weight: 0);
+            $c->actual_weight = $c->actual_weight ?? 0;
+            $c->allocated_kg = floatval(isset($c->allocated_kg) ? $c->allocated_kg: 0);
+            $c->allocated_kg = $c->allocated_kg ?? 0;
+            // $c->delivery_type = isset($c->delivery_type) ? $c->delivery_type: $shipment->delivery_type;
+            // if (!in_array(strtolower($c->delivery_type),['normal','fast'])) return DV::error('Service type must be either Normal or Fast'); 
+            
+            // $c->zone_code = isset($c->zone_code)?$c->zone_code:null;
+            // $zone = $this->getZoneByCode($branch_id,$c->zone_code);
+            // if(!$zone) return DV::error('Zone code ? does not exist. Given zone code is '.(!$c->zone_code? 'Empty':$c->zone_code).'::'.$c->zone_code);
+            // if (!DeliveryZone::isCovered($zone->zone_code)) return DV::error('Zone ? is not within our coverage area::'.$zone->zone_name.' ('.$zone->zone_code.')');
+            
+            // $c->zone_name = $zone->zone_name;
+            // if(!isset($c->receiver_phone)) return DV::error('Receiver phone number is required');
+            // $c->receiver_phone = str_replace(' ','',$c->receiver_phone);
+            // if(!isset($c->receiver_name)) $c->receiver_name = $c->receiver_phone;
+            /** If no receiver address then use remarks as receiver address */
+            // if(!isset($c->receiver_address)) $c->receiver_address = $c->zone_name;
+            // if (!$c->receiver_address) $c->receiver_address = $c->zone_name; 
+            // if (!$c->delivery_notes) $c->delivery_notes = $remarks;
+            //Process item BilledWeight
+            
+             //Process package size
+             $size = isset($c->size)?$c->size:null;
+             if($size){
+                 $m = (object)$size;
+                 if (isset($m->length)){
+                     $c->dim_x =$m->length;
+                     $c->dim_y =$m->width;
+                     $c->dim_h =$m->height;
+                 }
+             }else{
+                     $c->dim_x =0;
+                     $c->dim_y =0;
+                     $c->dim_h =0;
+             }
+            $c->billed_weight = floatval($c->billed_weight)?$c->billed_weight:0; 
+            if (!$c->billed_weight){
+                $systematic_billed_kg = $this->getBilledWeight($c->dim_x,$c->dim_y,$c->dim_h, $c->actual_weight);
+                $c->billed_weight = $systematic_billed_kg;
+                // return JDV::result($c->billed_weight);
+            }
+
+            //  return JDV::result($size);
+
+
+           //end process pacakge size
+
+            // $p = $packageModel->getDeliveryPriceInfo($branch_id,$sender_id,$c->delivery_type,$c->zone_code,$c->billed_kg,$c->cod);
+        //    return JDV::result($p);
+            
+            // if($p->status ==='Error'){
+            //    return DV::error($p->error_message.' Zone: '.$c->zone_code);
+            // }else{
+            //   $base_fee = $p->base_fee;
+            //   $delivery_fee = $p->delivery_fee;
+            //   $cod_fee_percent = is_numeric($p->cod_fee_percent)?$p->cod_fee_percent:0;
+            //   if(!isset($c->cod)) $c->cod = $p->cod;
+            // }
+
+             if(!is_numeric($c->price)) $c->price =0;
+
+             /** ensure the price and cod are always correct and consistent */
+            //  $c->cod_fee =0;
+            
+            //  if($c->price > 0) 
+            //  {
+            //     if ($c->price >$max_price) return DV::error('ថ្លៃទំនិញធំបំផុតគឺ '.$max_price.' USD');
+            //     $c->cod =1;
+            //  }
+            //  else{
+            //     if($c->price < 0) return DV::error('ថ្លៃទំនិញមិនត្រឹមត្រូវ');
+            //      $c->cod =0;  
+            //  }
+            //  $cod_amount =0;
+            //  if ($c->cod ==1) {
+            //    $c->cod_fee = ($c->price + $base_fee + $delivery_fee) * $cod_fee_percent/100;
+            //    $cod_amount = $c->price;
+            //  }
+             //assume that Seller/Merrchant always has to pay taxi fee
+            //  $driver_total = $cod_amount;
+            //  $sender_total = $c->cod_fee + $c->forwarding_cost;
+       
+            //  if (strtolower($c->df_payer) ==='receiver') {
+            //     $driver_total += $base_fee + $delivery_fee;
+            //  }else{
+            //     $sender_total += $base_fee + $delivery_fee; 
+            //  }
+            //  $c->delivery_fee = $delivery_fee;
+            //  $c->base_fee = $base_fee;
+            //  $c->sender_total = $sender_total;
+             $c->item_total = $c->price;
+            //  $c->outstanding =0;
+            //  if(!isset($c->status_id)) $c->status_id =1;
+            //  $c->sender_id = $sender_id;
+             unset($c->size);
+            // return JDV::result($c);
+
+             $success_items[] = $c;
+             $success_count++;
+             $i++;
+      }while($c);
+
+      return (object)[
+        'status'=>'OK',
+        'status_code'=>200,
+        'success_items'=>$success_items,
+        'success_count'=>$success_count
+      ];
+    }
+    
+    function getBilledWeight($dim_x, $dim_y, $dim_h, $actual_weight, $adjusted_kg =0) {
+        // return JDV::result($dim_h.$dim_y.$dim_x);
+        $dim_x = floatval($dim_x) ?? 0;
+        $dim_y = floatval($dim_y) ?? 0;
+        $dim_h = floatval($dim_h) ?? 0;
+        $actual_weight = floatval($actual_weight) ?? 0;
+        $adjusted_kg = floatval($adjusted_kg) ?? 0;
+        $b = ($dim_x * $dim_y * $dim_h)/5000; //culculate size 
+
+        if ($b > $actual_weight) 
+          return ($b + $adjusted_kg);
+        else
+           return ($actual_weight + $adjusted_kg);  
+    }
+
     function createOverseaItem($arr, $id=null,$ss=null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'item_type'=>'0|string|1,20 |default = doc',
+            'item_type'=>'1|string|0-20|default = doc',
             'shipment_id'=>'0|number|',
             'billed_weight'=>'0|number|default =0.00',
             'actual_weight'=>'0|number|default =0.00',
             'allocated_kg'=>'0|number|default =0.00',
-            'heigth'=>'0|number|default =0.00',
-            'weigth'=>'0|number|default =0.00',
-            'length'=>'0|number|default =0.00',
+            'price'=>'0|number|default =0.00',
+            'item_total'=>'0|number|default =0.00',
+            // 'heigth'=>'0|number|default =0.00',
+            // 'weigth'=>'0|number|default =0.00',
+            // 'length'=>'0|number|default =0.00',
+            'size'=>'0|array|0-100',
         ];
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
-        // return JDV::result($inputs);
-
+        
+        $d = (object)$res->values;
+        // return JDV::result($d->shipment_id);
+        $shipment_id = $d->shipment_id;
+        $shipmentInfo = DB::table('os_shipments as os')->where('os.id',$shipment_id)->selectRaw('os.id,os.sender_id')->take(1)->first();
+        if(!$shipmentInfo) return DV::error('Shipment Information is missing');
+        $shipment = (object)['shipment_id'=>$shipmentInfo->id,'sender_id'=>$shipmentInfo->sender_id,'item_type'=>$d->item_type];
+        // $m = (object)$d->size;
+        // if (isset($m->length)){
+        //     $d->dim_x =$m->length;
+        //     $d->dim_y =$m->width;
+        //     $d->dim_h =$m->height;
+        // return JDV::result($d);
+        // }
+        $p_res = self::validatePackages($ss,$shipment,[$d]);
+        // return JDV::result($p_res);
+        if ($p_res->status ==='Error') return DV::error($p_res->error_message);
+        $item = null;
+        if($p_res->success_items[0]){
+            $item = $p_res->success_items[0];
+        }
+        if (!$item) return DV::error('Package data was not acceptable maybe it is not completely correct!');
+        $item->shipment_id = $shipment_id;
+        if(!isset( $item->status_id)) $item->status_id =1;
         // $check = isExist('shipments',$id,['description'=>$inputs['description']]);
         // if($check) return DV::error('Requirement is already to save...');
-        $save = saveData($ss,'os_items',['id'=>$id],$inputs,[],1,0);   
-        return DV::depends($save,['Item'=>'Created']);
+        // $is_insert = !$save;
+        $save = saveData($ss,'os_items',['id'=>$id],(array)$item,[],1,0);   
+        // $pkg_count = $shipmentInfo->package_count;
+        // if ($is_insert){
+        //     $pkg_count++;
+        //     DB::table('os_shipment')->where('id',$order_id)->update(['qty'=>$pkg_count,'actual_pkg_count'=>$pkg_count]);
+        // }
+        $item->size = $d->dim_x." ".$d->dim_y." ".$d->dim_h; 
+        // return JDV::result($item->size);
+
+        return DV::depends($save,[
+            'Item'=>'Created',
+            'package'=>(object)$item, /** Newly created pacakge details **/
+        ],'Failed to save item information');
 
     }
 
@@ -54,7 +253,7 @@ class OverseaItem //extends Model
 
         // if(empty($shipnent_id)) $shipnent_id =-1;
         // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());
-        return DB::table('os_items')->whereRaw($str_where)->selectRaw('shipment_id,item_type, billed_weight, actual_weight, allocated_kg, heigth, weigth, length')->get();
+        return DB::table('os_items')->whereRaw($str_where)->selectRaw('id,shipment_id,item_type, billed_weight, actual_weight, price , item_total, allocated_kg ,status_id, CONCAT(dim_x,\' \',dim_y,\' \',dim_h) AS size')->orderBy('id', 'desc')->get();
     }
 
     function List(){
@@ -107,6 +306,58 @@ class OverseaItem //extends Model
         $rows = $query->skip($skip_row)->take($per_page)->get();
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
     }
+
+    function deleteOrderitem($arr=[],$ss){
+        $d = (object)$arr;
+        $ss = $ss?$ss:$this->userInfo;
+        $branch_id = $ss->branch_id;
+        $shipment_id = isset($d->shipment_id)? Sanitizer::sanitize($d->shipment_id):null;
+        $item_id = isset($d->item_id)? Sanitizer::sanitize($d->item_id):null;
+        // return JDV::result('shipment_id:'.$shipment_id);
+        
+        $result = (object)array('status'=>'OK','error_message'=>null);
+        $rows = DB::table('os_items AS o')->where('branch_id',$branch_id)->where('o.id',$item_id)->selectRaw('status_id')->limit(1)->get();
+        foreach($rows as $row) $status_id = $row->status_id;
+
+        if(empty($status_id)) {
+        //   return JDV::result('status_id:'.$status_id);
+           $result->error_message = "Cannot delete item because item identity is not valid";
+           $result->status ='Error';
+           return $result;
+        }
+
+        if($status_id >5){
+
+          $result->error_message = "Cannot delete package with status higher than `Arrived Warehouse`";
+          $result->status ='Error';
+          return $result;
+        }
+        
+        /*** deleting package will affect driver's commission, company's revenue, etc ***/
+
+        $count = 0;
+        if($status_id >=5){
+            DB::table('os_items')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$item_id)->delete();
+            $count = DB::table('os_items as p')->where('p.shipment_id',$shipment_id)->count('p.id');
+        } else {
+            DB::table('os_items')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$item_id)->delete();
+            $count = DB::table('os_items as r')->where('r.shipment_id',$shipment_id)->count('r.id'); 
+
+        }       
+        // DB::table('os_shipments')->where('id',$shipment_id)->update([
+        //     'qty'=>$count,
+        //     'actual_pkg_count'=>$count
+        // ]);
+
+        // try{
+        //    DB::table('order_images')->where('package_id',$package_id)->update(['package_id'=>null,'qr_code'=>null]); 
+        // }catch(\Throwable $e){
+        //    Log::error($e->getMessage());
+        //    Log::error($e->getTraceAsString());
+        // }
+
+        return DV::depends(1,['item_count'=>$count]);
+     }
 
     function details($id,$ss){
         $id = $id ?? $this->id;
