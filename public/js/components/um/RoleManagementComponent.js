@@ -4,244 +4,92 @@ var RoleManagementComponent = new function(){
     this.title_prop = 'Role Management';
     this.base_url = main_view.base_url;
     this.self = main_view.appContent.children('#_um_roleManagementComponent');
-
-   
-
-    this.lnkNewRole = this.self.find('#_lnkNewRole');
-    this.elSearch = this.self.find('#_search_role');
-    this.btnSearch = this.self.find('#_role_btnSearch');
-    this.btnPrint = this.self.find('#_cul_btnPrint');
+    this.div_role_list = this.self[0].querySelector('div#_um_rolelist');    
+ 
+    this.lnkNewRole = this.self[0].querySelector('#_lnkNewRole');
+    this.elSearch = this.self[0].querySelector('#_search_role');
+    this.btnPrint = this.self[0].querySelector('#_cul_btnPrint');
     this.div_filter_fields = this.self[0].querySelector('#div_filter_fields');
-    //this.tblRoles = mThis.self.querySelector('#_um_tblRoles');
-    this.tblRoles_body = this.self[0].querySelector('#_um_roleListPanel');
-    
-    
 
-    this.renderCard = (container, data) => {
+    this.renderRoleCards = (data, container = null) => {
         let html = '';
         let cnt = 0;
-        // container.style.display = 'none';
-        // mThis.store_senders = {};
+        container = container || mThis.div_role_list;
+        
         (data || []).map(item => {
-            html += ` <div data-roleid="${item.id}" data-rolename="${item.name}" class="col-sm-2 lnk_card box">
-            <div class="card bg-white shadow p-3 border rounded-3 m-3">
-                <div class="dropdown d-flex justify-content-end mb-3">
-                    <a href="javascript:void(0)" data-roleid="${item.id}" data-rolename="${item.name}" class="vs-btn-sm-outline-round btn_role_action" aria-haspopup="true" aria-expanded="false" style="">
-                        <i class="fa fa-duotone fa-bars d-flex"></i>
-                    </a>
-                </div>
-                <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-              
-                <span class="data-input text-success " style="font-size:0.8em" data-field="user_class">${item.name}</span>
-                <span class="data-input text-muted p-1" style="font-size:0.8em" >User Class: ${item.user_class}</span>
-                <span class=" role_name_title">
-                ${item.name.slice(0, 3).toUpperCase()} 
-                 
+            html = [ html,`<div class="col-sm-2">
+            <div class="card bg-white shadow p-2 border rounded-3 d-flex flex-column justify-content-between" style="height:20vh;min-width:120px;">
+               <div class="d-flex flex-column justify-content-center align-items-center p-2">
+                  <span class="data-input text-success text-center" style="font-size:1em" data-field="user_class">${item.name}</span>
+                  <span class="role_name_title mt-2">
+                    ${item.name.charAt(0).toUpperCase()} 
                 </span>
               </div>
                 <span class="pg-alert-card-line" style="width:100%"></span>
                 <span class="data-input text-muted p-1" style="font-size:0.8em" >Total Member: ${item.user_count}</span>
-                
-            </div> 
-        </div>
-        
-         `
+
+                <div class="border-top border-1">
+                 <span class="text-muted p-1">${item.user_class}</span>
+                </div>
+            </div>
+           
+         </div>`].join('');
 
         });
         container.innerHTML = html;
-        container.style.display = 'flex';
     }
+
+    this.loadRoles = (filter, onFinish)=>{
+        vsapi.call(`${main_view.base_url}/api/role/list`,filter,null,false).then(res =>{
+           const roles = res.status_code ==200? res.data : [];
+           onFinish(roles); 
+        });
+       
+    }
+
     this.init = () => {
         if(mThis.initAlready) return;
-        let div = document.getElementById('_card');
- 
-        mThis.roleListView = new ListView('_card',{
-            fetchApi: `${main_view.base_url}/api/role/list-paginate`,
-            perPage: 25,
-            display:'card',
-           //clientSidePagination:true,
-            apiCluster: main_view.apiCluster,
-            renderItems: (items,list_container) => {
-             //   console.log(items); 
-                mThis.renderCard(list_container,items);
-                RoleTabView.show(0, 'users');
-                mThis.setEvent();
-            },
-            listContainerClass: null
-            
-        });
-        // let pagination = div.querySelector('ul.pagination');
-
-        // pagination.classList.add('d-flex' , 'justify-content-end');
-        //console.log('pagination',pagination);
         
-        mThis.lnkNewRole.on('click',function(e){
+        mThis.lnkNewRole.addEventListener('click', e =>{
             e.preventDefault();
             let op = {
                 'id': null,
                 'onclose':(d)=>{
-                    mThis.roleListView.showPage(mThis.getFilterData());
+                    mThis.loadRoles(mThis.getFilterData(), roles =>{
+                        this.renderRoleCards(roles);
+                    }); 
                 }
             }
             RoleDialog.show(op);
-        })
+        });
+
         mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
             el.onchange = (e)=>{
                 e.preventDefault();
-                mThis.roleListView.showPage(mThis.getFilterData());
+                mThis.loadRoles(mThis.getFilterData(), roles =>{
+                    this.renderRoleCards(roles);
+                });
             }
         });
-        mThis.elSearch.on('keyup',function(e){
+
+        mThis.elSearch.addEventListener('keyup',e =>{
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(()=>{
-                mThis.roleListView.showPage(mThis.getFilterData());
+                mThis.loadRoles(mThis.getFilterData(), roles =>{
+                    this.renderRoleCards(roles);
+                });
+
             },250);
         });     
-        
-        mThis.btnSearch.on('click',function(){
-            mThis.roleListView.showPage(mThis.getFilterData());
-        });
-        
-        
-      
+          
         mThis.initAlready = true;
-    }
-    this.setEvent = () => {
-        const cardList = mThis.tblRoles_body.querySelectorAll('div.lnk_card');
-        console.log(cardList);
-        cardList.forEach(card => {
-            card.onclick = function(e){
-                e.preventDefault();
-                // if(!(e.target.classList.contains('btn_role_action') || e.target.parentElement.classList.contains('btn_role_action'))){
-                    let role_id = this.dataset.roleid;
-                // console.log('dfgh');
-
-                    mThis.selected_role_name = this.dataset.rolename;
-                    // console.log('name',selected_role_name);
-                    mThis.selected_role_id = role_id;
-                    if(mThis.prev_selected_role_row) mThis.prev_selected_role_row.classList.remove('row-selected');
-                    this.classList.toggle('row-selected');
-                    if(this.classList.contains('row-selected')) mThis.prev_selected_role_row = this;
-                    RoleTabView.show(role_id, null);
-                // }
-            }
-        });
-
-        cardList.forEach(card => {
-            card.onmouseover = function(e){
-                e.preventDefault();
-                // let td_action = this.querySelector('td.col_action');
-                // td_action.querySelector('a').style.display = 'block';
-            }
-
-            card.onmouseleave = function(e){
-                e.preventDefault();
-                // let td_action = this.querySelector('td.col_action');
-                // td_action.querySelector('a').style.display = 'none';
-                // let btn_class_action = td_action.querySelector('a.dropdown-item');
-                // if(btn_class_action){
-                //     btn_class_action.style.display = 'none';
-                //     btn_class_action.closest('.dropdown-menu').classList.remove('show');
-                // }
-            }
-        });
-
-        const btnRoleList = mThis.tblRoles_body.querySelectorAll('a.btn_role_action');
-        btnRoleList.forEach(btn => {
-            btn.onclick = function(e){
-                console.log(e);
-                e.preventDefault();
-                let p = this.parentElement;
-                let role_id = this.dataset.roleid,
-                role_name = this.dataset.rolename;
-
-                let dropdownMenu = p.querySelector('.dropdown-menu');
-                if(!dropdownMenu){
-                    p.innerHTML += mThis.createDropdownMenuHtml_role(role_id, role_name);
-                    dropdownMenu = p.querySelector('.dropdown-menu');
-                }
-                if(mThis.prev_dropdownMenu) mThis.prev_dropdownMenu.classList.remove('show');
-
-                dropdownMenu.classList.toggle('show');
-                dropdownMenu.style.top = e.clientY+'px';
-                dropdownMenu.style.left = e.clientX+'px';
-
-                if(dropdownMenu.classList.contains('show')) mThis.prev_dropdownMenu = dropdownMenu;
-                e.stopImmediatePropagation();
-
-                const btnDelete = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_delete');
-                btnDelete.onclick = function(e){
-                    e.preventDefault();
-                    let role_id = this.parentElement.dataset.roleid;
-                    cv_interact.confirm('Delete this role?', {
-                        title: 'Delete Role',
-                        context: 'delete'
-                    },(e) => {
-                        if(e){
-                            mThis.deleteRole(role_id);
-                        }
-                    });
-                    e.stopImmediatePropagation();
-                };
-
-                const btnModify = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_modify');
-                btnModify.onclick = function(e){
-                    e.preventDefault();
-                    let role_id = this.parentElement.dataset.roleid;
-                    EditRolePanel.show({
-                        title: "Renaming existing role",
-                        role_id: role_id
-                    });
-                    e.stopImmediatePropagation();
-                };
-
-                const btnAddMember = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_add_member');
-                btnAddMember.onclick = function(e){
-                    e.preventDefault();
-                    e.stopImmediatePropagation();
-                    let role_id = this.parentElement.dataset.roleid;
-                    let role = {
-                        id: role_id,
-                        name: RoleManagementComponent.selected_role_name
-                    };
-                    mThis.addRoleMember(role, function(new_user_count){
-                        if(new_user_count){
-                            mThis.updateSelectRole('col_user_count', new_user_count);
-                            RoleTabView.show(role_id, 'users');
-                        }
-                    });
-                };
-
-                const btnAddModule = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_add_module');
-                btnAddModule.onclick = function(e){
-                    e.preventDefault();
-                    let role_id = this.parentElement.dataset.roleid;
-                    mThis.addAccessibleModule(role_id, function(e){
-                        if(e){
-                            RoleTabView.show(role_id, 'modules');
-                        }
-                    });
-                    e.stopImmediatePropagation();
-                };
-
-                const btnPrns = mThis.tblRoles_body.querySelector('tr > td.col_action a._um_ra_role_prns');
-                btnPrns.onclick = function(e){
-                    e.preventDefault();
-                    RoleManagementComponent.self.querySelector('#_um_roleprn_lnk_add').dispatchEvent(new Event('click'));
-                    e.stopImmediatePropagation();
-                };
-            }
-        });
     }
 
     this.getFilterData = ()=>{
         let p = {};
-        mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
-         let f = el.dataset.field;
-          p[f] = el.value;
-       });
-       p.search_value = mThis.elSearch.val();
+       
+       p.search_value = mThis.elSearch.value;
        return p; 
     }
     this.addRoleMember = function(role = {}, onFinish = null){
@@ -321,17 +169,15 @@ var RoleManagementComponent = new function(){
         mThis.selected_role_name = null;
         if(!options) options={};
         main_view.setTitle(mThis.title_prop);
-
-
-        
+         
         main_view.setTitle(mThis.title_prop);
-        mThis.roleListView.showPage(mThis.getFilterData(),null,() => {
-            
-            $(mThis.self).siblings().hide();
-            $(mThis.self).fadeIn(200);
+
+        mThis.loadRoles(this.getFilterData(), roles =>{
+            mThis.renderRoleCards(roles,null);
         });
-        
-       
+
+        mThis.self.siblings().hide();
+        mThis.self.fadeIn(200);
     }
     this.updateSelectRole = function(col_name, data){
         let selected_class_name = 'row-selected';

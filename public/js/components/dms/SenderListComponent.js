@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 var SenderListComponent = new function(){
     const mThis = this;
     this.title_prop = "Merchants";
@@ -36,17 +36,18 @@ var SenderListComponent = new function(){
                 textMember: "name",
                 blankErrorMessage: "Please a price list",
                 data: items,
-                defaultValue: def_price_list_id
+                defaultValue: def_price_list_id,
+                autoClose:true
             };
 
-            InputBox2.show(option,(d)=>{
+            InputBox2.show(option,(d,btn)=>{
                 if(d) {
                     let p = {
                         sender_id: sender_id,
                         price_list_id: d.value
                     };
 
-                    vsapi.call(`${mThis.base_url}/dms/merchant/set-price-list`,p,null).then(res => {
+                    vsapi.call(`${mThis.base_url}/dms/merchant/set-price-list`,p,btn).then(res => {
                         if(res.status_code === 200){
                             let d = StringSanitizer.sanitizeObject(res.data);
                             span.textContent =d.list_name; 
@@ -378,7 +379,7 @@ var SenderListComponent = new function(){
             }
  
             //click on Set Price List
-            lnk = VSUtil.getElementByClass(e.target,'set-price-list');
+            lnk = VSUtil.closestLimited(e.target,'.set-price-list');
             if(lnk){
                 mThis.setMerchantPriceList(lnk.dataset.id,lnk.dataset.merchantname,lnk.parentElement,null);
                 return;

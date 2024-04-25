@@ -30,7 +30,7 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('user')->group(
     Route::post('/options-user', [UMController::class, 'getComboItems_user']);
     //Route::post('/otions-user', [UMController::class, 'getComboItems_user']);
     Route::post('/options-work-location', [UMController::class, 'getComboItems_workloc']);
-    Route::post('/role/list', [UMController::class, 'getUserRoles']);
+    Route::post('/role/list', [UMController::class, 'getRoleList']);
     Route::post('/role/add', [UMController::class, 'addRoleMember']);
     Route::post('/role/delete', [UMController::class, 'removeRoleMember']);
     Route::post('/deactivate-me', [UMController::class, 'deactivateMySelf']);
