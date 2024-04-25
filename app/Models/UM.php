@@ -551,7 +551,7 @@ class UM //extends Model
         $ss = $ss ? $ss : $this->userInfo;
         $str_branch = "1=1";
         return DB::table('um_roles AS r')
-        ->selectRaw("r.id, r.`name`,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.branch_id = u.branch_id AND ur.role_id = r.id) AS user_count")
+        ->selectRaw("r.id, r.`name`,r.create_date,r.create_user,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.branch_id = u.branch_id AND ur.role_id = r.id) AS user_count")
         ->orderBy('r.id','DESC')
         ->whereRaw($str_branch)
         ->get();
