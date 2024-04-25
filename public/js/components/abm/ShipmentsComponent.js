@@ -313,10 +313,10 @@ var ShipmentsComponent = new function () {
             {
                 className: "Created Date",
                 data: function (data, index, tr) {
-                    return ['<span class="pl-request_date">',data.invoice_cmt||"NA", '</span>',
-                        '<span class=" d-block p-1">', data.invoice_id||"#00000", '</span>'].join('');
+                    const sender_info = ['<span class="sender-name d-block">', data.shipment_id||"#00000",'</span>'].join('');
+                    return sender_info;
                 },
-                title: 'Invoice ID'
+                title: 'Shipment ID'
                 // title: mThis.trans('Created Date')
             },
             {
@@ -1069,6 +1069,7 @@ var ShipmentsComponent = new function () {
              }
              else if (['billed_weight','actual_weight','allocated_kg'].indexOf(c) >=0){
                 disp_value = [d[c],' kg'].join('');  
+                // console.log('allocated_kg',disp_value);
              }
             let readOnly = "0";
             
@@ -1131,7 +1132,7 @@ var ShipmentsComponent = new function () {
          * price = 0, fees =0  are all default values when creating new item
         */
         
-        if (!d) d = {"sender_id":sender_id,"shipment_id":shipment_id,"status_id":1,"fees":0,"price":0};
+        if (!d) d = {"sender_id":sender_id,"shipment_id":shipment_id,"status_id":1,"price":0};
         let html_row = this.createItemRow_html(d,tr_id);
         //prepend html string to tbody
         tbody.insertAdjacentHTML('afterbegin',html_row);
@@ -1323,7 +1324,7 @@ var ShipmentsComponent = new function () {
             if (res.status_code === 200) {
                 let packages = StringSanitizer.sanitizeObject(res.data,null,['size']);
                 let i = 0, c =null;
-                console.log(res.data);
+                // console.log(res.data);
                 do {
                     c = packages[i];
                     if (!c) break;
@@ -1610,6 +1611,18 @@ var ShipmentsComponent = new function () {
                     else if (col_name == 'actual_weight') {
                         val = data.actual_weight;
                         disp_value = [data.actual_weight,' kg'].join('');
+                    }
+                    else if (col_name == 'allocated_kg') {
+                        val = data.allocated_kg;
+                        disp_value = [data.allocated_kg,' kg'].join('');
+                    }
+                    else if (col_name == 'price') {
+                        val = data.price;
+                        disp_value = [data.price,' USD'].join('');
+                    }
+                    else if (col_name == 'item_total') {
+                        val = data.item_total;
+                        disp_value = [data.item_total,' USD'].join('');
                     }
                     else if (col_name == 'size') {
                         console.log('data.size',data.size);
@@ -4343,7 +4356,7 @@ const ShipmentDialog = new function () {
             const d = (res.status_code === 200) ? res.data : {};
             VSUtil.setComboItems(mThis.elWarehouse, d.warehouses, 'id', 'warehouse_name', null, null, null);
             mThis.elWarehouse.val(d.warehouses[0].id).trigger('change'); 
-            // VSUtil.setComboItems(mThis.elSender, d.senders, 'id', 'sender_name', null, null, null);
+            VSUtil.setComboItems(mThis.elSender, d.senders, 'id', 'sender_name', null, null, null);
             // VSUtil.setComboItems(mThis.elProductType, d.product_types, 'product_type', 'product_type', null, null, null);
             // VSUtil.setComboItems(mThis.elVehicleType, d.vehicle_types, 'code', 'vehicle_type', null, null,d.vehicle_types[0]?d.vehicle_types[0].code:'');
             onFinish(d);
@@ -4375,10 +4388,11 @@ const ShipmentDialog = new function () {
 
     this.btnCreate.on('click', (e) => {
         const p = mThis.getFormData(false);
+        console.log('p',p);
         if (!p) return;
-        vsapi.call(`${mThis.base_url}/dms/quick-order/create`, p, mThis.btnCreate).then(res => {
+        vsapi.call(`${mThis.base_url}/abm/oversea_shipments/save`, p, mThis.btnCreate).then(res => {
             if (res.status_code === 200) {
-                cv_interact.success('New order created');
+                cv_interact.success('New shipment created');
                 mThis.self.modal('hide');
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
             } else cv_interact.error(res.error_message);

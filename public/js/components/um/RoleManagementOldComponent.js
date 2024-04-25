@@ -856,6 +856,7 @@ const RoleTabView = new function(){
         p.role_id = role_id;
         p.search_value = RoleListPanel.elSearchUser.value;
         RoleManagementComponent.self.querySelector('#_um_roletab_users_text').textContent = `Members of ${RoleListPanel.selected_role_name} role`;
+        console.log(RoleManagementComponent);
         mThis.roleMemberListView.showPage(p);  
     }
 

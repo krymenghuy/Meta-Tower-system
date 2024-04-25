@@ -554,54 +554,46 @@
                             <select id ="_plq_secondary_cp_id" class="modal-select2 data-input" data-field="secondary_cp_id"></select>
                         </div>
                     </div>
+                    <!-- <div class="form-group col-md-6">
+                        <span class="simple-label">effective_weight</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="effective_weight" />
+                    <!-- </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">effective_weight</span>
-                        <input type="number" class="form-control data-input" data-field="effective_weight" />
-                    </div>
+                        <span class="simple-label">actual_weight</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="actual_weight" />
+                    <!-- </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">actual_weight</span>
-                        <input type="number" class="form-control data-input" data-field="actual_weight" />
-                    </div>
+                        <span class="simple-label">markup_weight</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="markup_weight" />
+                    <!-- </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">markup_weight</span>
-                        <input type="number" class="form-control data-input" data-field="markup_weight" />
-                    </div>
+                        <span class="simple-label">total_weight</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="total_weight" />
+                    <!-- </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">total_weight</span>
-                        <input type="number" class="form-control data-input" data-field="total_weight" />
-                    </div>
+                        <span class="simple-label">carrier_total_weight</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="carrier_total_weight" />
+                    <!-- </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">carrier_total_weight</span>
-                        <input type="number" class="form-control data-input" data-field="carrier_total_weight" />
-                    </div>
+                        <span class="simple-label">total_price</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="total_price" />
+                    <!-- </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">total_price</span>
-                        <input type="number" class="form-control data-input" data-field="total_price" />
-                    </div>
+                        <span class="simple-label">carrier_cost</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="carrier_cost" />
+                    <!-- </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">carrier_cost</span>
-                        <input type="number" class="form-control data-input" data-field="carrier_cost" />
-                    </div>
+                        <span class="simple-label">carrier_special_charge</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="carrier_special_charge" />
+                    <!-- </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">carrier_special_charge</span>
-                        <input type="number" class="form-control data-input" data-field="carrier_special_charge" />
-                    </div>
+                        <span class="simple-label">total_carrier_cost</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="total_carrier_cost" />
+                    <!-- </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">total_carrier_cost</span>
-                        <input type="number" class="form-control data-input" data-field="total_carrier_cost" />
-                    </div>
-                    <div class="form-group col-md-6">
-                        <span class="simple-label">total_special_charge</span>
-                        <input type="number" class="form-control data-input" data-field="total_special_charge" />
-                    </div>
-                    <div class="form-group col-md-6">
-                        <span class="simple-label">receiver_name</span>
-                        <input id="_plq_pikcup_address" class="form-control data-input" data-field="receiver_name" />
-                    </div>
-                    <div class="form-group col-md-6">
-                        <span class="simple-label">receiver_address</span>
-                        <input type="number" class="form-control data-input" data-field="receiver_address" />
-                    </div>
+                        <span class="simple-label">total_special_charge</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="total_special_charge" />
+                    <!-- </div> -->
                     <div class="form-group col-md-6">
                         <span class="simple-label">receiver_name</span>
                         <input id="_plq_pikcup_address" class="form-control data-input" data-field="receiver_name" />
@@ -609,6 +601,10 @@
                     <div class="form-group col-md-6">
                         <span class="simple-label">remarks</span>
                         <input id="_plq_pikcup_address" class="form-control data-input" data-field="remarks" />
+                    </div>
+                    <div class="form-group col-md-12">
+                        <span class="simple-label">receiver_address</span>
+                        <input type="text" class="form-control data-input" data-field="receiver_address" />
                     </div>
                 </div>
             </div>

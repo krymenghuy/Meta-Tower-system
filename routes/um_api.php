@@ -4,6 +4,92 @@ use App\Http\Controllers\UMController;
 use App\Http\Controllers\PusherController;
 use App\Http\Middleware\CustomRateLimiter;
 
+
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('user')->group(function () {
+
+    //update api for user
+    Route::post('/save', [UMController::class, "saveUser"]);
+    Route::post('/delete', [UMController::class, "deleteUser"]);
+    Route::post('/form-options', [UMController::class, "getUserFormOption"]);
+    Route::post('/list', [UMController::class, "getUserList"]);
+    Route::post('/list-paginate', [UMController::class, "getUserList_paginate"]);
+
+    Route::post('/permission/add', [UMController::class, "addPermissionToUser"]);
+    Route::post('/permission/delete', [UMController::class, "removeUserPermission"]);
+    Route::post('/permission/list-paginate', [UMController::class, "getUserPermissions_paginate"]);
+    Route::post('/permission/list', [UMController::class, "getUserPermissions"]);
+    Route::post('/report/permission', [UMController::class, "getUserViewReportPermissionListPaginate"]);
+
+    Route::post('/module/add', [UMController::class, "addModuleToUser"]);
+    Route::post('/module/delete', [UMController::class, "removeUserModule"]);
+    Route::post('/module/list', [UMController::class, "getModuleList"]);
+
+    Route::post('/info', [UMController::class, 'getUserInfo']);
+    Route::post('/details', [UMController::class, 'getUserDetails']);
+
+    Route::post('/options-user', [UMController::class, 'getComboItems_user']);
+    //Route::post('/otions-user', [UMController::class, 'getComboItems_user']);
+    Route::post('/options-work-location', [UMController::class, 'getComboItems_workloc']);
+    Route::post('/role/list', [UMController::class, 'getRoleList']);
+    Route::post('/role/add', [UMController::class, 'addRoleMember']);
+    Route::post('/role/delete', [UMController::class, 'removeRoleMember']);
+    Route::post('/deactivate-me', [UMController::class, 'deactivateMySelf']);
+    Route::post('/extended-details', [UMController::class, 'getUserExtendedDetails']);
+
+    Route::post('/set-status', [UMController::class, 'setUserStatus']);
+    Route::post('/unlock', [UMController::class, 'unlockUser']);
+    Route::post('/set-lock-status', [UMController::class, 'setLockStatus']);
+    Route::post('/exists', [UMController::class, 'user_exists']);
+    Route::post('/security/authenticate', [UMController::class, 'verifyUser']);
+    Route::post('/security/change-pwd', [UMController::class, 'changePassword']);
+    Route::post('/security/set-pwd', [UMController::class, 'setPassword']);
+    Route::post('/security/change-login', [UMController::class, 'changeLoginName']);
+    Route::post('/options-user-class', [UMController::class, 'getComboItems_userclass']);
+    Route::post('current/access-modules', [UMController::class, 'getAccessibleModules_current_user']);
+});
+
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('role')->group(function () {
+
+    //update api for role
+    Route::post('/save', [UMController::class, "saveRole"]);
+    Route::post('/delete', [UMController::class, "deleteRole"]);
+    Route::post('/options-role', [UMController::class, 'getComboItems_role']);
+    Route::post('/details', [UMController::class, 'getRoleById']);
+    Route::post('/list-paginate', [UMController::class, "getRoleList_paginate"]);
+    Route::post('/list', [UMController::class, "getRoleList"]);
+    Route::post('/create', [UMController::class, 'createApplication']);
+    Route::post('/list-application',[UMController::class,'listApplication']);
+
+
+
+    Route::post('/permission/list-paginate', [UMController::class, "getRolePermissions_paginate"]);
+    Route::post('/permission/add', [UMController::class, "addPermissionToRole"]);
+    Route::post('/permission/delete', [UMController::class, "removeRolePermission"]);
+
+    Route::post('/exists', [UMController::class, 'role_exists']);
+    Route::post('/members/add', [UMController::class, 'addRoleMember']);
+    Route::post('/members/remove', [UMController::class, 'removeRoleMember']);
+    Route::post('/add-member', [UMController::class, 'addRoleMember']);
+    Route::post('/remove-member', [UMController::class, 'removeRoleMember']);
+    Route::post('/members/list', [UMController::class, 'getRoleMembers']);
+    Route::post('/members', [UMController::class, 'getRoleMembers']);
+    
+
+    Route::post('/access-modules', [UMController::class, 'getAccessibleModules']);
+    Route::post('/access-module/list', [UMController::class, 'getAccessibleModules']);
+    Route::post('/access-module/list-all', [UMController::class, 'getAccessibleModules_all']);
+    Route::post('access-module/add', [UMController::class, 'addAccessibleModule']);
+    Route::post('access-module/remove', [UMController::class, 'removeAccessibleModule']);
+    Route::post('/permissions', [UMController::class, 'getPermissionsByRole']);
+
+    Route::post('/permission/add', [UMController::class, 'addPermissionToRole']);
+    Route::post('/permission/remove', [UMController::class, 'removePermissionFromRole']);
+    Route::post('/add-permission', [UMController::class, 'addPermissionToRole']);
+    Route::post('/remove-permission', [UMController::class, 'removePermissionFromRole']);
+
+    //Route::post('/permissions', [UMController::class, 'getPermissionsByLoginName']);
+});
+
 Route::middleware([CustomRateLimiter::class])->prefix('settings')->group(function(){
     Route::get('/lang', [UMController::class, 'getLang']);
     Route::post('/save-lang', [UMController::class, 'saveLang']);
@@ -22,11 +108,12 @@ Route::middleware([CustomRateLimiter::class])->group(function(){
 });
  
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('application')->group(function(){
-    Route::post('/create', [UMController::class, 'createApplication']);
     Route::post('/delete', [UMController::class, "saveUser"]);
     Route::post('/module/create', [UMController::class, 'createModule']);
     Route::post('/module/delete', [UMController::class, 'deleteModule']);
     Route::post('/module/list', [UMController::class, 'getModuleList']);
+    Route::post('/create', [UMController::class, 'createApplication']);
+
     Route::post('/module/option-module', [UMController::class, 'getComboItems_module']);
 });
  
@@ -58,77 +145,3 @@ Route::post('addRoleMember', [UMController::class, 'addRoleMember']);
 Route::post('addAccessibleModule', [UMController::class, 'addAccessibleModule']);
 Route::post('getUserRoles', [UMController::class, 'getUserRoles']);
 
-Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('user')->group(function () {
-    Route::post('/form-options', [UMController::class, "getUserFormOption"]);
-    Route::post('/list', [UMController::class, "getUserList"]);
-    Route::post('/list-paginate', [UMController::class, "getUserList_paginate"]);
-
-    Route::post('/save', [UMController::class, "saveUser"]);
-    Route::post('/delete', [UMController::class, "deleteUser"]);
-    Route::post('/permission/add', [UMController::class, "addPermissionToUser"]);
-    Route::post('/permission/delete', [UMController::class, "removeUserPermission"]);
-    Route::post('/permission/list-paginate', [UMController::class, "getUserPermissions_paginate"]);
-    Route::post('/permission/list', [UMController::class, "getUserPermissions"]);
-    Route::post('/report/permission', [UMController::class, "getUserViewReportPermissionListPaginate"]);
-
-    Route::post('/module/add', [UMController::class, "addModuleToUser"]);
-    Route::post('/module/delete', [UMController::class, "removeUserModule"]);
-    Route::post('/module/list', [UMController::class, "getModuleList"]);
-
-    Route::post('/info', [UMController::class, 'getUserInfo']);
-    Route::post('/details', [UMController::class, 'getUserDetails']);
-
-    Route::post('/options-user', [UMController::class, 'getComboItems_user']);
-    //Route::post('/otions-user', [UMController::class, 'getComboItems_user']);
-    Route::post('/options-work-location', [UMController::class, 'getComboItems_workloc']);
-    Route::post('/role/list', [UMController::class, 'getUserRoles']);
-    Route::post('/role/add', [UMController::class, 'addRoleMember']);
-    Route::post('/role/delete', [UMController::class, 'removeRoleMember']);
-    Route::post('/deactivate-me', [UMController::class, 'deactivateMySelf']);
-    Route::post('/extended-details', [UMController::class, 'getUserExtendedDetails']);
-
-    Route::post('/set-status', [UMController::class, 'setUserStatus']);
-    Route::post('/unlock', [UMController::class, 'unlockUser']);
-    Route::post('/set-lock-status', [UMController::class, 'setLockStatus']);
-    Route::post('/exists', [UMController::class, 'user_exists']);
-    Route::post('/security/authenticate', [UMController::class, 'verifyUser']);
-    Route::post('/security/change-pwd', [UMController::class, 'changePassword']);
-    Route::post('/security/set-pwd', [UMController::class, 'setPassword']);
-    Route::post('/security/change-login', [UMController::class, 'changeLoginName']);
-    Route::post('/options-user-class', [UMController::class, 'getComboItems_userclass']);
-    Route::post('current/access-modules', [UMController::class, 'getAccessibleModules_current_user']);
-});
-
-Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('role')->group(function () {
-    Route::post('/list-paginate', [UMController::class, "getRoleList_paginate"]);
-    Route::post('/list', [UMController::class, "getRoleList"]);
-    Route::post('/permission/list-paginate', [UMController::class, "getRolePermissions_paginate"]);
-    Route::post('/permission/add', [UMController::class, "addPermissionToRole"]);
-    Route::post('/permission/delete', [UMController::class, "removeRolePermission"]);
-
-    Route::post('/save', [UMController::class, "saveRole"]);
-    Route::post('/delete', [UMController::class, "deleteRole"]);
-    Route::post('/exists', [UMController::class, 'role_exists']);
-    Route::post('/members/add', [UMController::class, 'addRoleMember']);
-    Route::post('/members/remove', [UMController::class, 'removeRoleMember']);
-    Route::post('/add-member', [UMController::class, 'addRoleMember']);
-    Route::post('/remove-member', [UMController::class, 'removeRoleMember']);
-    Route::post('/members/list', [UMController::class, 'getRoleMembers']);
-    Route::post('/members', [UMController::class, 'getRoleMembers']);
-    Route::post('/options-role', [UMController::class, 'getComboItems_role']);
-    Route::post('/details', [UMController::class, 'getRoleById']);
-
-    Route::post('/access-modules', [UMController::class, 'getAccessibleModules']);
-    Route::post('/access-module/list', [UMController::class, 'getAccessibleModules']);
-    Route::post('/access-module/list-all', [UMController::class, 'getAccessibleModules_all']);
-    Route::post('access-module/add', [UMController::class, 'addAccessibleModule']);
-    Route::post('access-module/remove', [UMController::class, 'removeAccessibleModule']);
-    Route::post('/permissions', [UMController::class, 'getPermissionsByRole']);
-
-    Route::post('/permission/add', [UMController::class, 'addPermissionToRole']);
-    Route::post('/permission/remove', [UMController::class, 'removePermissionFromRole']);
-    Route::post('/add-permission', [UMController::class, 'addPermissionToRole']);
-    Route::post('/remove-permission', [UMController::class, 'removePermissionFromRole']);
-
-    //Route::post('/permissions', [UMController::class, 'getPermissionsByLoginName']);
-});

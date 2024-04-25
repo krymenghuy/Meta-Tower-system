@@ -43,105 +43,167 @@
   }
   .card:hover{
     cursor: pointer;
-    border:1px solid green !important;
+    border:1px solid #ffb822 !important;
     
   }
 
-  .row{
+  ._row{
     width: 100%;
     flex-wrap:nowrap;
     overflow: scroll;
   }
+  
+ 
   .box{
     width: 3000px;
   }
-  
- 
-</style>
- 
-<div id="_um_roleManagementComponent" style="width:auto;display:none;margin:15px 15px 15px">
-
-
-  <div class="row">
-    <div class="col-sm-2 box">
-    <div class="card   shadow p-3 border rounded-3 m-3">
-      <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-          <span class="data-input text-success fs-5 fw-semibold" data-field="title">Customer</span>
-          <img style="width:100px;" src="https://dms.vectoranet.com/uploads/public/1_data/default/images/default-user.png"  alt="">
-      </div>
-          <span class="pg-alert-card-line" style="width:100%"></span>
-          <span class="data-input text-muted p-1" style="font-size:0.8em" >Total People:</span>
-    </div> 
-    </div> 
-
-    <div class="col-sm-2 box">
-    <div class="card   shadow p-3 border rounded-3 m-3">
-      <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-          <span class="data-input text-success fs-5 fw-semibold" data-field="title">Customer</span>
-          <img style="width:100px;" src="https://dms.vectoranet.com/uploads/public/1_data/default/images/default-user.png"  alt="">
-      </div>
-          <span class="pg-alert-card-line" style="width:100%"></span>
-          <span class="data-input text-muted p-1" style="font-size:0.8em" >Total People:</span>
-    </div> 
-    </div>   
-    
-    <div class="add">
-        <button class="btn  text-white">
-        <img style="width:50px;" src="{{ asset('assets/images/logo/new-button-emoji.png') }}"  alt="">
-
-        </button>
-    </div>
-    
-  </div>
-
-   
-
-
-    
-    
-      
+  .role_name_title{
+        display:flex;
+        justify-content:center;
+        align-items:center;
+        width:75px;
+        height:70px;
+        border-radius:10px;
+        background-color: #ffb822 ;
+        color:white;
+        font-size: 20px;
         
-  </div>
+    }
+   
+</style>
 
-  <div class="d-flex flex-fow gap-2 justify-content-start mt-3 shadow border rounded-3 ">
-    <div class="tab-header gap-2 set-parent-active m-3 p-2">
-      <button class="btn-um-application btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
-        <span class="text-nowrap">Application</span>
-      </button>
-      <button class="btn-um-roles btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
-          <span class="text-nowrap">Roles</span>
-      </button>
-      <button class="btn-um-permissions btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
-          <span class="text-nowrap">Permissions</span>
-      </button>
-      <button class="btn-um-permissions btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
-        <span class="text-nowrap">Permissions</span>
-      </button>
-      <button class="btn-um-reports btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="360" data-user="01234567890">
-          <span class="text-nowrap">Reports</span>
-      </button>
-      <button class="btn-um-lock btn btn-sm btn-outline-danger rounded-4 mr-3" data-id="761" data-user="013777999" data-lock="lock">
-          <span class="text-nowrap">Lock</span>
-      </button>
-      <button class="btn-um-set-password btn btn-sm btn-outline-danger rounded-4 mr3" data-id="761" data-user="013777999" data-lock="lock">
-          <span class="text-nowrap">Set Password</span>
-      </button>
+<div id="_um_roleManagementComponent" class="p-3" style="display:none">
+   <div class="d-flex flex-row flex-wrap justify-content-between align-items-between p-1 bg-white shadow rounded-3 p-3"  id="div_filter_fields" >
+          <div class="d-flex flex-row gap-2">
+             <input type="search" class="form-control " placeholder="Search role" id="_search_role"/>
+          </div>
+          <div class="d-flex flex-row gap-2">
+              <button  id="_lnkNewRole" class="btn btn-sm btn-primary rounded-5" type="button">
+                 <span class="trans-text text-nowrap" data-langprop="buttons.Add Role"></span></i>
+              </button>
+              <button id="_um_btn_pdf" class="btn btn-sm btn-danger mr-5 rounded-5" type="button">
+                <i class="fa fa-file-pdf"></i>&nbsp;<span class="trans-text text-white" data-langprop="buttons.PDF"></span>
+              </button>
+        </div>
     </div>
+ 
+    <div id="_um_rolelist_wraper" class="w-100 shadow-lg bg-white rounded-3 p-2 overflow-hidden mt-2">
+        <div id="_um_rolelist" class="w-90 d-flex flex-row bg-secondary gap-3 p-1" style="overflow-y:hidden; overflow-x:auto">
+        </div>    
+     </div>
+    <div class="mt-3 w-100 shadow-lg rounded-3 p-2 d-flex flex-row gap-3 bg-white">
+        
+        <div class="w-50 d-flex flex-column">
+           <div class="border border-1 rounded-3 border-secondary p-3">
+                <div class="d-flex flex-row justify-content-between">
+                      <span class="fw-sembold text-muted">Role name: </span>
+                      <span class="fw-sembold">Merchant </span>
+                  </div>
 
-  </div>
-  
+                  <div class="d-flex flex-row justify-content-between">
+                      <span class="fw-sembold text-muted">User Class: </span>
+                      <span class="fw-sembold">Merchant </span>
+                  </div>
+
+                  <div class="d-flex flex-row justify-content-between">
+                      <span class="fw-sembold text-muted">Create Date: </span>
+                      <span class="fw-sembold">NA </span>
+                  </div>
+
+                  <div class="d-flex flex-row justify-content-between">
+                      <span class="fw-sembold text-muted">Created By: </span>
+                      <span class="fw-sembold">NA </span>
+                  </div>
+
+                  <div class="d-flex flex-row gap-2 justify-content-start mt-2">
+                     <button class="btn btn-sm btn-primary rounded-4"><span class="trans-text" data-langprop="buttons.Edit"></span></button>
+                     <button class="btn btn-sm btn-warning rounded-4"><span class="trans-text" data-langprop="buttons.Lock"></span></button>
+                     <button class="btn btn-sm btn-danger rounded-4"><span class="trans-text" data-langprop="buttons.Delete"></span></button>
+                </div>
+           </div>
+         
+        </div>
+        <div class="w-50 d-flex flex-column justify-content-between">
+           <div class="border border-1 rounded-3 border-secondary p-3">
+              <div class="d-flex flex-row justify-content-between">
+                    <span class="fw-sembold text-muted">Members: </span>
+                    <span class="fw-sembold">15 </span>
+                </div>
+
+                <div class="d-flex flex-row justify-content-between">
+                    <span class="fw-sembold text-muted">Applications and Modules: </span>
+                    <span class="fw-sembold">20 </span>
+                </div>
+
+                <div class="d-flex flex-row justify-content-between">
+                    <span class="fw-sembold text-muted">Permissions: </span>
+                    <span class="fw-sembold">110 </span>
+                </div>
+
+                <div class="d-flex flex-row justify-content-between">
+                    <span class="fw-sembold text-muted">Reports: </span>
+                    <span class="fw-sembold">30 </span>
+                </div>
+
+                <div class="d-flex flex-row gap-2 justify-content-start mt-2">
+                     <button class="btn btn-sm btn-primary rounded-4"><span class="trans-text" data-langprop="buttons.Authorization"></span></button>
+                </div>
+           </div>
+        </div>
+
+    </div> 
+
+</div> 
+
+<div class="modal fade" id="roleDialog" tabindex="-1" role="dialog" aria-labelledby="_role_dlgTitle" aria-hidden="true">
+    <div class="modal-dialog modal-md vs-modal-dialog" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title trans-text" id="_role_dlgTitle" data-langprop="titles.Creating a new role"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row" id="_role_dlg_body">
+
+              <div class="form-group col-md-6">
+                  <label class="control-label ">ID</label>
+                  <input type="text" class="form-control data-input" data-field="id" placeholder="Auto" readonly/>
+
+              </div>
+              <div class="form-group col-md-6">
+                <label class="control-label">Role Name</label>
+                <input type="text" class="form-control data-input" id="role_name" data-field="name" placeholder="Role name" />
+              </div>
+              <div class="form-group col-md-6">
+                <label class="control-label ">User Class</label>
+                <div class="min-width-select max-width-select">
+                  <select class="modal-select2 data-input" id="user_class" data-field="user_class" placeholder="User Class"></select>
+                </div>
+              </div>
+                    
+                  
+                    
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-default height" data-dismiss="modal"><span class="trans-text" data-langprop="buttons.Cancel"></span></button>
+                <button type="button" class="btn btn-primary height" id="_role_dlg_btnOK"><span class="trans-text" data-langprop="buttons.Create"></span></button>
+            </div>
+        </div>
+    </div>
 </div>
+  
+  
 
       
-  <div id="_um_roleListPanel" style="display:none">
-    <div class="row">
-    
-  </div>
   
-</div>
+  
 
 
-<div class="modal fade" id="_um_dlgCreatePrn" tabindex="-1" role="dialog" aria-labelledby="_um_dlgCreatePrnTitle" aria-hidden="true">
+<!-- <div class="modal fade" id="_um_dlgCreatePrn" tabindex="-1" role="dialog" aria-labelledby="_um_dlgCreatePrnTitle" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -215,4 +277,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->

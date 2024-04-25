@@ -1,15 +1,14 @@
 <?php
 
 namespace App\Models\Dms;
-
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\Dms\Notifier;
 use App\Models\Dms\PublicStorage;
 use App\Models\Dms\DeliveryZone;
 use App\Models\UM;
 use App\Models\DV;
 use App\Models\JDV;
+use App\Models\Notifier;
 use DB;
 use Sanitizer;
 //use Localization;
@@ -399,7 +398,7 @@ class PickupRequest //extends Model
         $i = 0;
         $success_count = 0;
         
-      $packageModel = new \App\Models\Dms\Package();
+      $packageModel = new \App\Models\Package();
       $success_items = []; 
       $sender_id = $order->sender_id;
       if (!$sender_id) return DV::error('The provided Merchant ID is empty and is not correct'); 
@@ -1184,10 +1183,7 @@ class PickupRequest //extends Model
             $event_data = (object)['branch_id'=>$branch_id,'order_id'=>$order_id,'order_code'=>$data->order_code,'status'=>$data->status,'status_id'=>$data->status_id,'completed'=>$data->completed,'driver_id'=>$data->driver_id,'driver_name'=>$driver_name,'message'=>$message];
             Notifier::notify_admin('pickup_driver_changed',$event_data);
           //end:: inform Web Admin for Live update
-    
-           //begin::Notify Merchant and Driver
-
-           //end::Notify Merchant and Driver
+     
               $data->event_name = 'order_accepted';
               $cdata = [
                   [
@@ -1518,7 +1514,7 @@ class PickupRequest //extends Model
         $data = (object)[];
         $data->zones = DB::table('zones AS z')->selectRaw("z.zone_code,CONCAT(z.zone_code,' | ',z.zone_name) AS zone_name")->where('z.branch_id',$branch_id)->orderByRaw('z.zone_name ASC')->get();
         $data->warehouses = DB::table('warehouses AS h')->selectRaw('h.id,h.name as warehouse_name')->where('branch_id',$branch_id)->orderByRaw('h.name ASC')->get();
-        $data->senders = DB::table('sender AS s')->selectRaw('s.id,s.name as sender_name')->where('s.branch_id',$branch_id)->orderByRaw('s.name ASC')->get();
+        $data->senders = DB::table('sender AS s')->selectRaw('s.id,CONCAT(s.name,\': \',s.code) as sender_name')->where('s.branch_id',$branch_id)->orderByRaw('s.name ASC')->get();
         $data->drivers = DB::table('driver AS d')->selectRaw('d.id,d.name as driver_name')->where('d.branch_id',$branch_id)->orderByRaw('d.name ASC')->get();
         $status_filter ="os.id <=5";
         $data->order_statuses = DB::table('package_statuses AS os')->whereRaw($status_filter)->selectRaw('os.id AS status_id,os.name as status_name, os.display_order')->orderByRaw('os.display_order ASC')->get();
@@ -2140,7 +2136,7 @@ class PickupRequest //extends Model
 
         $cache_key = 'ordersummarycounts_'.$branch_id.$sender_id;
         $cache_data = Cache::get($cache_key);
-        if($cache_data) return $cache_data;
+        if($cache_data !== null) return $cache_data;
 
         //Assuming that $ss->user_class ='merchant' 
         //$status_id <=4, higher status => use packageModel->getPackageCounts_summary()  
@@ -2173,6 +2169,7 @@ class PickupRequest //extends Model
    
     function createQuickOrder($arr,$ss=null){
         $ss =$ss?$ss:$this->userInfo;
+        $branch_id = $ss->branch_id;
         $v_rule = [
         'warehouse_id'=>'1|number|exists=warehouses.id',    
         'sender_id'=>'1|number|exists=sender.id|Merchant or sender identity is not correct',
@@ -2181,12 +2178,16 @@ class PickupRequest //extends Model
         'pickup_address'=>'0|string|800',
         'qty'=>'1|number|0-1000|text=Number of packages should be within reasonable amount|default=0',
         'status_id'=>'1|number|default=1',
-        'detail_type'=>'0|choice|images|items|default=items'
+        'detail_type'=>'0|choice|images|items|default=items',
+        'driver_id'=>'0|number|exists=driver.id'
       ];
       $address_map_chars = ['/', ':', ',', '!', '@', '?', '=', '&', '[', ']', '(', ')', '!', '.', '/', ':', '?', '=', '&', '#', '[', ']', '@', '!', '$', "'", '(', ')', '*', '+', ',', ';', '%'];
       $res = validateObject($arr,$v_rule,true,['pickup_address'=>$address_map_chars],$ss->lang,false,null);
       if($res->error) return DV::error($res->error);
       $inputs = $res->values;
+    
+      $driver_id = $inputs['driver_id'];
+      unset($inputs['driver_id']);
       $inputs['request_date'] = getNowTime();
       $loc = self::getLocation($inputs['pickup_address']);
       if($loc){
@@ -2196,12 +2197,49 @@ class PickupRequest //extends Model
         $inputs['loc_lat'] = null;
         $inputs['loc_lng'] = null;
       }
-      $order_id = saveData($ss,'order',['id'=>null],$inputs,[],1,false);
-      if($order_id){
-        $order_code = $this->getTrackingNumber($ss,$order_id);
-        DB::table('order')->where('id',$order_id)->update(['code'=>$order_code]);
+        $order_code = null;
+        $order_id = saveData($ss,'order',['id'=>null],$inputs,[],1,false);
+        if($order_id){
+                $order_code = $this->getTrackingNumber($ss,$order_id);
+                DB::table('order')->where('id',$order_id)->update(['code'=>$order_code]);
+        }
+        
+        if ($driver_id > 0){
+                $driver = DB::table('driver as d')->where('d.id',$driver_id)->selectRaw('d.id,d.phone_number,d.name,d.status_code')->first();
+                $status_id =2;
+                DB::table('order')->where('id',$order_id)->where('branch_id',$branch_id)->update([
+                    'driver_id'=>$driver_id,
+                    'status_id'=>$status_id  // Status = 'Accepted'
+                ]);
+
+                $data =$this->getOrderInfo_local($branch_id,$order_id,0);
+                $data->qty = $data->qty>0?$data->qty:1;
+                $pickup_address = strpos($data->pickup_address, 'https://map') !== false ? 'តាមផែនទី' : $data->pickup_address;
+                $data->event_name = 'order_accepted';
+                $cdata = [
+                    [
+                        //'event_name'=>'pickup_assigned',
+                        'user_class'=>'driver',
+                        'target_user_id'=>$driver_id,
+                        'persist'=>1,
+                        'data'=>$data,
+                        'title'=>'Pickup',
+                        'message'=>"មានទំនិញ $data->qty កញ្ចប់ត្រូវទៅយកពី​​ $data->sender_name នៅ $pickup_address. Tel: $data->sender_phone"
+                    ],
+                    [
+                        'user_class'=>'merchant',
+                        'target_user_id'=>$data->sender_id,
+                        'persist'=>1,
+                        'data'=>$data,
+                        'title'=>'Order Accepted',
+                        'message'=>"អ្នកបើកបរ $driver->phone_number នឹងមកយកទំនិញ"
+                    ]
+                ];
+                Notifier::notify_mobile($branch_id,$cdata);
+
       }
-      return DV::depends($order_id,['order_id'=>$order_id],'Failed to create quick order');
+      
+      return DV::depends($order_id,['order_id'=>$order_id,'code'=>$order_code],'Failed to create quick order');
     } 
  
     static function getWarehouseIdByDriver_default($driver_id){
@@ -2374,7 +2412,8 @@ class PickupRequest //extends Model
     function getFormOptions($ss){
         return (object)[
           'warehouses'=>GeneralSettings::options_warehouse($ss),
-          'senders'=>GeneralSettings::options_sender($ss),
+          'senders'=>GeneralSettings::options_merchant_active($ss),
+          'drivers'=>GeneralSettings::options_driver_active($ss),
           'zones'=>GeneralSettings::options_zone($ss),
           'vehicle_types'=>GeneralSettings::options_vehicle_type($ss),
           'product_types'=>GeneralSettings::options_product_type($ss)

@@ -3,7 +3,8 @@
 namespace App\Models\Abm;
 
 use App\Models\UM;
-use App\Models\PublicStorage;
+use App\Models\Dms\PublicStorage;
+use App\Models\Dms\GeneralSettings;
 use App\Models\DV;
 use App\Models\JDV;
 use DB;
@@ -246,10 +247,10 @@ class Customer //extends Model
      *  $sales_agent_id = null or zero => means query merchants either refered by agent or no referrer
      */
 
-     if ($sender_type_id == -1)
-     $str_sender = 's.sender_type_id IS NULL';
- else if($sender_type_id > 0)
-   $str_sender = 's.sender_type_id ='.$sender_type_id;
+    if ($sender_type_id == -1)
+      $str_sender = 's.sender_type_id IS NULL';
+    else if($sender_type_id > 0)
+    $str_sender = 's.sender_type_id ='.$sender_type_id;
 
     if ($sales_agent_id == -1)
       $str_agent = 's.sales_agent_id IS NULL';
@@ -260,9 +261,6 @@ class Customer //extends Model
     $str_status = '3=3'; // Active, Inactive
     $str_search = '2=2';
     //$str_agent = '4=4';
-
-   
-    
 
     if ($search_value) {
       $search_value = escape_like_str($search_value);
@@ -295,10 +293,11 @@ class Customer //extends Model
     $count_query = clone $query;
     $count = $count_query->count('s.id');
     $rows = $query->skip($skip_rows)->take($per_page)->get();
-    foreach ($rows as $row) {
+      foreach ($rows as $row) {
       $row->image_url = '';
       // $row->bank_accounts = self::bankAccounts($row->id,null);
       $row->mobile_login = UM::getAccountInfo($row->id, 'official_id', 'customer');
+      // return JDV::result($rows);
       if ($row->photo_file_name)
         $row->image_url = PublicStorage::getUrl($row->branch_id, 'customer', 'image') . $row->photo_file_name;
       unset($row->photo_file_name);
@@ -358,6 +357,7 @@ class Customer //extends Model
       $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
     return $row;
   }
+
 
 
   static function getFormOptions($id, $ss)
