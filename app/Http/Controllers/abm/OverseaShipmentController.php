@@ -49,4 +49,11 @@ class OverseaShipmentController extends Controller
         
         return JDV::result($data);
     }
+
+    function deleteOrderitem(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $res = $this->item->deleteOrderitem($req->all(),$ss);
+        return JDV::raw($res);  
+      }
 }

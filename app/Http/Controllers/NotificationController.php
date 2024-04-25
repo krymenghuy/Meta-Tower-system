@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Models\Dms\Notifier;
+use App\Models\Notifier;
 use Illuminate\Http\Request;
 use App\Models\JDV;
 use App\Models\UM;
