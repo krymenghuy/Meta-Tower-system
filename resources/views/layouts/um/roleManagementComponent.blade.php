@@ -91,67 +91,11 @@
         <div id="_um_rolelist" class="w-90 d-flex flex-row bg-secondary gap-3 p-1" style="overflow-y:hidden; overflow-x:auto">
         </div>    
      </div>
-    <div class="mt-3 w-100 shadow-lg rounded-3 p-2 d-flex flex-row gap-3 bg-white">
-        
-        <div class="w-50 d-flex flex-column">
-           <div class="border border-1 rounded-3 border-secondary p-3">
-                <div class="d-flex flex-row justify-content-between">
-                      <span class="fw-sembold text-muted">Role name: </span>
-                      <span class="fw-sembold">Merchant </span>
-                  </div>
-
-                  <div class="d-flex flex-row justify-content-between">
-                      <span class="fw-sembold text-muted">User Class: </span>
-                      <span class="fw-sembold">Merchant </span>
-                  </div>
-
-                  <div class="d-flex flex-row justify-content-between">
-                      <span class="fw-sembold text-muted">Create Date: </span>
-                      <span class="fw-sembold">NA </span>
-                  </div>
-
-                  <div class="d-flex flex-row justify-content-between">
-                      <span class="fw-sembold text-muted">Created By: </span>
-                      <span class="fw-sembold">NA </span>
-                  </div>
-
-                  <div class="d-flex flex-row gap-2 justify-content-start mt-2">
-                     <button class="btn btn-sm btn-primary rounded-4"><span class="trans-text" data-langprop="buttons.Edit"></span></button>
-                     <button class="btn btn-sm btn-warning rounded-4"><span class="trans-text" data-langprop="buttons.Lock"></span></button>
-                     <button class="btn btn-sm btn-danger rounded-4"><span class="trans-text" data-langprop="buttons.Delete"></span></button>
-                </div>
-           </div>
-         
+     
+    <div id="_um_card" class="mt-3 w-100 shadow-lg rounded-3 p-2 d-flex flex-row gap-3 bg-white">
+        <div id="card1" class="row w-100 p-3">
+       
         </div>
-        <div class="w-50 d-flex flex-column justify-content-between">
-           <div class="border border-1 rounded-3 border-secondary p-3">
-              <div class="d-flex flex-row justify-content-between">
-                    <span class="fw-sembold text-muted">Members: </span>
-                    <span class="fw-sembold">15 </span>
-                </div>
-
-                <div class="d-flex flex-row justify-content-between">
-                    <span class="fw-sembold text-muted">Applications and Modules: </span>
-                    <span class="fw-sembold">20 </span>
-                </div>
-
-                <div class="d-flex flex-row justify-content-between">
-                    <span class="fw-sembold text-muted">Permissions: </span>
-                    <span class="fw-sembold">110 </span>
-                </div>
-
-                <div class="d-flex flex-row justify-content-between">
-                    <span class="fw-sembold text-muted">Reports: </span>
-                    <span class="fw-sembold">30 </span>
-                </div>
-
-                <div class="d-flex flex-row gap-2 justify-content-start mt-2">
-                     <button class="btn btn-sm btn-primary rounded-4"><span class="trans-text" data-langprop="buttons.Authorization"></span></button>
-                </div>
-           </div>
-        </div>
-
-    </div> 
 
 </div> 
 
