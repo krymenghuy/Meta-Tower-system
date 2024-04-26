@@ -53,6 +53,14 @@ use App\Http\controllers\abm\CustomerController;
         Route::post('/update-status', [SupplierController::class, 'updateSupplierStatus']);
         Route::post('/list-paginate', [SupplierController::class, 'getSuplierListPaginate']);
     });
+    Route::middleware([CustomRateLimiter::class])->prefix('os-sales-agents')->group(function(){
+        Route::post('/save', [OsSalesAgentController::class, 'saveSalesAgent']);
+        Route::post('/list', [OsSalesAgentController::class, 'getList']);
+        // Route::post('/form-options', [OsSalesAgentController::class, 'getFormOptions']);
+        // Route::post('/save-profile-picture', [OsSalesAgentController::class, 'saveProfilePicture']);
+        // Route::post('/update-status', [OsSalesAgentController::class, 'updateSupplierStatus']);
+        // Route::post('/list-paginate', [OsSalesAgentController::class, 'getSuplierListPaginate']);
+    });
     Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->group(function(){
         Route::post('/save', [OverseaShipmentController::class, 'save']);
         Route::post('/Shipment-list', [OverseaShipmentController::class, 'getOverseaShipmentList']);
