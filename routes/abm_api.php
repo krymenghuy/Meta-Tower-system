@@ -13,6 +13,7 @@ use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\abm\OverseaShipmentController;
 use App\Http\Controllers\abm\SupplierController;
 use App\Http\controllers\abm\CustomerController;
+use App\Http\controllers\abm\OsSalesAgentController;
  
  //begin:: api without Authentication
     Route::middleware([CustomRateLimiter::class])->group(function(){
