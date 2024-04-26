@@ -93,7 +93,7 @@
      </div>
      
     <div id="_um_card" class="mt-3 w-100 shadow-lg rounded-3 p-2 d-flex flex-row gap-3 bg-white">
-        <div id="card1" class="row w-100 p-3">
+        <div id="card1" class="row w-100 d-flex  flex-column gap-4  p-3">
        
         </div>
 

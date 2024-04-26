@@ -52,7 +52,7 @@ var RoleManagementComponent = new function(){
         container = container || mThis.tblRoles_body;
 
             html += [ html,`
-            <div class="w-50 border border-1 rounded-5 border-secondary p-3 ">
+            <div class="col-6 border border-1 rounded-5 border-secondary  p-3 ">
                 <div  class="d-flex flex-row justify-content-between p-2">
                     <span class="fw-sembold text-muted"> Role name     : </span>
                     <span class="fw-sembold">${item.rolename}</span>
@@ -79,7 +79,7 @@ var RoleManagementComponent = new function(){
                     <button class="btn btn-sm btn-danger rounded-4 ml-3"><span class="trans-text" data-langprop="buttons.Delete">Delete</span></button>
                 </div>
             </div>
-            <div class="w-50 border border-1 rounded-5 border-secondary p-3 ">
+            <div class=" col-6 border border-1 rounded-5 border-secondary p-3 ">
                 <div class="d-flex flex-row justify-content-between p-2">
                     <span class="fw-sembold text-muted">Members : </span>
                     <span class="fw-sembold">${item.user_count} </span>
