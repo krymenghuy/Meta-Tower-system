@@ -22,13 +22,13 @@
 
     </div>
 
-    <div class="d-flex mt-2 flex-row justify-content-between bg-white shadow-lg rounded-3 p-3 mb-2" id="div_filter_fields">
+    <!-- <div class="d-flex mt-2 flex-row justify-content-between bg-white shadow-lg rounded-3 p-3 mb-2" id="div_filter_fields">
         <div class="d-flex gap-2">
         </div>
         <div class="d-flex gap-2">
         </div>
 
-    </div>
+    </div> -->
 
     <div class="shadow rounded-3 bg-white mt-3 p-2 overflow-hidden">
         <div id="_cul_customer_list" class="p-2"></div>
@@ -46,7 +46,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row" id="_cul_dlgCustomer_body">//id use in dialog
+                 <div class="row" id="_cul_dlgCustomer_body"> <!-- id use in dialog -->
                     <div class="form-group col-lg-6">
                         <label for="code" class="form-label trans-text" data-langprop="titles. ID"></label>
                         <input type="text" class="form-control data-input" data-field="code" placeholder="AUTO" readonly/>
@@ -63,8 +63,13 @@
                     </div>
 
                     <div class="form-group col-lg-6">
+                        <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
+                        <input class="form-control data-input" type="text" data-field="phone_number"/>
+                    </div>
+
+                    <div class="form-group col-lg-6">
                         <label for="os_agent_types" class="form-label trans-text" data-langprop="titles.Customer Type"></label>
-                        <select class="modal-select2 data-input" id="_cul_sender_type" data-field="sender_type_id"></select>
+                        <select class="modal-select2 data-input" id="_cul_sender_type" data-field="sender_type"></select>
                     </div>
 
                     <div class="form-group col-lg-6">
@@ -73,15 +78,13 @@
                     </div>
 
                     <div class="form-group col-lg-6">
-                        <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
-                        <input class="form-control data-input" type="text" data-field="phone_number"/>
+                        <label for="agent_name" class="form-label trans-text" data-langprop="titles.Agent Name"></label>
+                        <select id="_cul_agent_name" class="modal-select2 data-input" data-field="agent_name"></select>
                     </div>
-
-
 
                     <div class="form-group col-lg-6">
                         <label for="price_list_id" class="form-label trans-text" data-langprop="titles.Price List"></label>
-                        <select id="_cul_price_list" class="modal-select2 data-input" data-field="price_list_id"></select>
+                        <select id="_cul_price_list" class="modal-select2 data-input" data-field="price_list"></select>
                     </div>
 
 

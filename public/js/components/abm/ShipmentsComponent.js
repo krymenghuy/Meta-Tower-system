@@ -518,7 +518,7 @@ var ShipmentsComponent = new function () {
             sh_parent.classList.add('overflow-y-auto');
             window.onresize = () => {
                 sh_parent.style.height = (window.innerHeight - 190)+'px';
-            }
+        }
 
         mThis.cfg = new ExpandableRowConfig(mThis.tblShipments.attr('id'), {
             dontExpandByClickingOn: ['pkl_btn_receive','pkl_btn_pick','btn-show','btn_pickup_action','lnk-assign-driver','lnk-set-address'],

@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dms\PickupRequestController;
 use App\Http\Controllers\Dms\OrderImageController;
 use App\Http\Controllers\Dms\PackageController;
-// use App\Http\Controllers\LocationController;
+use App\Http\Controllers\Location\LocationController;
 
 use App\Http\Controllers\Dms\SenderController;
 use App\Http\Controllers\Dms\LeadController;
@@ -214,38 +214,38 @@ use App\Http\Controllers\Dms\SalesCommissionPolicyController;
             // Route::post('getSenderPaymentTransactions', [TransactionController::class, 'getSenderPaymentTransactions']);
         //end::TransactionController
 
-    // //begin::LocationController
-    // Route::middleware([CustomRateLimiter::class])->prefix('location')->group(function(){
-    //     Route::post('/countries', [LocationController::class, 'getCountryList']);
-    //     Route::post('/cities', [LocationController::class, 'getCityList']);
-    //     Route::post('/districts', [LocationController::class, 'getDistrictList']);
-    //     Route::post('/communes', [LocationController::class, 'getCommuneList']);
+    //begin::LocationController
+    Route::middleware([CustomRateLimiter::class])->prefix('location')->group(function(){
+        Route::post('/countries', [LocationController::class, 'getCountryList']);
+        Route::post('/cities', [LocationController::class, 'getCityList']);
+        Route::post('/districts', [LocationController::class, 'getDistrictList']);
+        Route::post('/communes', [LocationController::class, 'getCommuneList']);
 
-    //     Route::post('/options-country',[LocationController::class,'getComboItems_country']);
+        Route::post('/options-country',[LocationController::class,'getComboItems_country']);
 
-    //     Route::post('/options-city',[LocationController::class,'getComboItems_city']);
+        Route::post('/options-city',[LocationController::class,'getComboItems_city']);
 
-    //     Route::post('/options-district',[LocationController::class,'getComboItems_district']);
+        Route::post('/options-district',[LocationController::class,'getComboItems_district']);
 
-    //     Route::post('/options-commune',[LocationController::class,'getComboItems_commune']);
+        Route::post('/options-commune',[LocationController::class,'getComboItems_commune']);
 
-    //     Route::post('/country/save',[LocationController::class,'saveCountry']);
+        Route::post('/country/save',[LocationController::class,'saveCountry']);
 
-    //     Route::post('/country/delete',[LocationController::class,'deleteCountry']);
+        Route::post('/country/delete',[LocationController::class,'deleteCountry']);
 
-    //     Route::post('/city/save',[LocationController::class,'saveCity']);
+        Route::post('/city/save',[LocationController::class,'saveCity']);
 
-    //     Route::post('/city/delete',[LocationController::class,'deleteCity']);
+        Route::post('/city/delete',[LocationController::class,'deleteCity']);
 
-    //     Route::post('/district/save',[LocationController::class,'saveDistrict']);
+        Route::post('/district/save',[LocationController::class,'saveDistrict']);
 
-    //     Route::post('/district/delete',[LocationController::class,'deleteDistrict']);
+        Route::post('/district/delete',[LocationController::class,'deleteDistrict']);
 
-    //     Route::post('/commune/save',[LocationController::class,'saveCommune']);
+        Route::post('/commune/save',[LocationController::class,'saveCommune']);
 
-    //     Route::post('/commune/delete',[LocationController::class,'deleteCommune']);
-    // });      
-    // //end::LocationController
+        Route::post('/commune/delete',[LocationController::class,'deleteCommune']);
+    });      
+    //end::LocationController
 
      //begin:: Delivery ZONE
      Route::middleware([CustomRateLimiter::class])->prefix('zone')->group(function(){

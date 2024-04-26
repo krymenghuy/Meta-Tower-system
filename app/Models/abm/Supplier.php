@@ -29,10 +29,10 @@ class Supplier //extends Model
             'email'=>'0|string',
             'address'=>'0|number',
             'sales_agent_id'=>'0|number',
-            'code'=>'0|string|0-25',
+            'code'=>'0|string|0-25',         //Add new code column to table supplier
             'price_list_id'=>'0|number',
             'status_code'=>'0|string|default =Active',
-            'photo'=>'0|image'
+            'photo'=>'0|image'        //Add new photo_file_name to table supplier
     ];
         $eml_char = ['$','#','@','!','.','-','_','=','?'];
         $img_char = ['+',':',',',';','/','\\','=','?'];
