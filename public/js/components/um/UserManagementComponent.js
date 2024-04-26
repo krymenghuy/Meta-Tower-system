@@ -10,9 +10,7 @@ var UserManagementComponent = new function(){
     this.elfilter_userclass = mThis.self.querySelector('#_um_filter_userclass');
     this.btnPdf = mThis.self.querySelector('#_um_btn_pdf');
     this.containerPagination = mThis.self.querySelector('#container_pagination_um');
-
-
-
+ 
     this.init = () => {
         if(mThis.initAlready) return;
         mThis.userListView = new ListView('_um_container',{
