@@ -1,53 +1,15 @@
 <style>
-  table#_um_tblRoleModules>tbody td {
-    padding: 5px;
-    font-size: 18px;
-    margin-top: 5px;
-    font-weight: bold;
-  }
-
-  table#_um_tblRoles td {
-    vertical-align: 'middle';
-    border-top: none;
-    border-bottom: 1px solid #D7DBDB;
-  }
-  tr.user-found td{
-    color:green !important;
-  }
-  table#_um_addprn_tblPrns>thead th {
-    font-size: 1em;
-    font-weight: normal;
-    text-transform: uppercase;
-  }
-
-  .prn_btn_action {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .tr-allowed td.prn-name {
-    color: green;
-  }
-
-  .tr-allowed td.prn-icon::before {
-    content: 'Allowed';
-  }
-
-  .tr-disallowed td.prn-icon::before {
-    content: 'Not Allowed';
-  }
-
-  .tr-disallowed td.prn-name {
+  
+  /* .tr-disallowed td.prn-name {
     color: #000;
-  }
+  } */
   .card:hover{
     cursor: pointer;
     border:1px solid #ffb822 !important;
     
   }
 
-  ._row{
+  /* ._row{
     width: 100%;
     flex-wrap:nowrap;
     overflow: scroll;
@@ -56,7 +18,7 @@
  
   .box{
     width: 3000px;
-  }
+  } */
   .role_name_title{
         display:flex;
         justify-content:center;
@@ -70,6 +32,45 @@
         
     }
    
+ /* Tab header link styles */
+.vs-tab-header a {
+    text-decoration: none;
+    color: #555;
+    padding: 5px 10px;
+    font-size: 14px;
+    transition: color 0.3s ease;
+    position: relative; /* Ensure the :after pseudo-element is positioned relative to the link */
+}
+
+/* Highlight active tab */
+.vs-tab-header a.active {
+    color: #007bff; /* Change to your preferred active color */
+}
+
+/* Underline effect on span */
+.vs-tab-header a span::after {
+    content: '';
+    position: absolute;
+    left: 10px;
+    bottom: 0;
+    width: 80%; /* Adjust as needed */
+    height: 2px; /* Adjust as needed */
+    background-color: #007bff; /* Change to your preferred active color */
+    transition: width 0.3s ease; /* Smooth transition for underline */
+    transform: scaleX(0); /* Initially hide the underline */
+    transform-origin: left; /* Start the underline from the left */
+}
+
+.vs-tab-header a.active span::after {
+    transform: scaleX(1); /* Show the underline for active tab */
+}
+
+/* Optional hover effect */
+.vs-tab-header a:hover {
+    background-color: #f5f5f5; /* Change to your preferred hover background color */
+}
+
+  
 </style>
 
 <div id="_um_roleManagementComponent" class="p-3" style="display:none">
@@ -88,63 +89,58 @@
     </div>
  
     <div id="_um_rolelist_wraper" class="w-100 shadow-lg bg-white rounded-3 p-2 overflow-hidden mt-2">
-        <div id="_um_rolelist" class="w-90 d-flex flex-row bg-secondary gap-3 p-1" style="overflow-y:hidden; overflow-x:auto">
+        <div id="_um_rolelist" class="w-90 d-flex flex-row bg-secondary gap-3 p-2" style="overflow-y:hidden; overflow-x:auto">
         </div>    
      </div>
      
-    <div id="_um_card" class="mt-3 w-100 shadow-lg rounded-3 p-2 d-flex flex-row gap-3 bg-white">
-        <div id="card1" class="row w-100 p-3">
-       
+    <div class="mt-3 w-100 d-flex flex-column shadow-lg rounded-3 p-2 d-flex flex-row gap-3 bg-white vs-tab-view" id="_um_role_tab">
+        <div class="d-flex flex-row gap-2 vs-tab-header">
+             <a  href="javascript:void(0)" class="tab-button view_users active" data-target ="view_users"><span class="trans-text" data-langprop="buttons.Users"></span></a>
+             <a  href="javascript:void(0)" class="tab-button view_apps" data-target="view_apps"><span class="trans-text" data-langprop="buttons.Applications"></span></a>
+             <a  href="javascript:void(0)"  class="tab-button view_modules" data-target="view_modules"><span class="trans-text" data-langprop="buttons.Modules"></span></a>
+             <a  href="javascript:void(0)" class="tab-button view_permissions" data-target="view_permissions"><span class="trans-text" data-langprop="buttons.Permissions"></span></a>
+             <a   href="javascript:void(0)" class="tab-button view_reports" data-target="view_reports"><span class="trans-text" data-langprop="buttons.Reports"></span></a>
         </div>
-
-</div> 
-
-<div class="modal fade" id="roleDialog" tabindex="-1" role="dialog" aria-labelledby="_role_dlgTitle" aria-hidden="true">
-    <div class="modal-dialog modal-md vs-modal-dialog" role="dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title trans-text" id="_role_dlgTitle" data-langprop="titles.Creating a new role"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="row" id="_role_dlg_body">
-
-              <div class="form-group col-md-6">
-                  <label class="control-label ">ID</label>
-                  <input type="text" class="form-control data-input" data-field="id" placeholder="Auto" readonly/>
-
-              </div>
-              <div class="form-group col-md-6">
-                <label class="control-label">Role Name</label>
-                <input type="text" class="form-control data-input" id="role_name" data-field="name" placeholder="Role name" />
-              </div>
-              <div class="form-group col-md-6">
-                <label class="control-label ">User Class</label>
-                <div class="min-width-select max-width-select">
-                  <select class="modal-select2 data-input" id="user_class" data-field="user_class" placeholder="User Class"></select>
-                </div>
-              </div>
-                    
-                  
-                    
-                    
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-default height" data-dismiss="modal"><span class="trans-text" data-langprop="buttons.Cancel"></span></button>
-                <button type="button" class="btn btn-primary height" id="_role_dlg_btnOK"><span class="trans-text" data-langprop="buttons.Create"></span></button>
-            </div>
+        <div class="w-100 p-1 mt-2 vs-tab-body">
+           <div id="view_users" data-view="view_users" class="tab-page w-100" style="display:none">
+               <div class="h-100 d-flex flex-column flex-wrap p-3">
+                  <div class="d-flex flex-row gap-2">
+                      <button class="btn btn-sm btn-primary rounded-4"><span class="trans-text" data-langprop="buttons.Add Member"></span></button>
+                      <button class="btn btn-sm btn-info rounded-4"><span class="trans-text" data-langprop="buttons.Create User"></span></button>
+                  </div>
+                  <div class="">
+                     <div class="w-100" id="_um_role_user_list"></div>
+                  </div>
+               </div>
+           </div>
+           <div id="view_apps" data-view="view_apps" class="tab-page w-100" style="display:none">
+               <div class="h-100">
+                  <div class="" id="_um_role_app_list"></div>
+               </div>
+           </div>
+           <div id="view_modules" data-view="view_modules" class="tab-page w-100" style="display:none">
+               <div class="h-100">
+                  <div class="" id="_um_role_mod_list"></div>
+               </div>
+           </div>
+           <div id="view_permissions" data-view="view_permissions" class="tab-page w-100" style="display:none">
+               <div class="h-100">
+                  <div class="" id="_um_role_prn_list"></div>
+               </div>
+           </div>
+           <div id="view_reports" data-view="view_reports" class="tab-page w-100" style="display:none">
+               <div class="h-100">
+                  <div class="" id="_um_role_report_list"></div>
+               </div>
+           </div>
         </div>
     </div>
-</div>
-  
-  
+         
 
-      
+</div> 
   
   
+   
 
 
 <!-- <div class="modal fade" id="_um_dlgCreatePrn" tabindex="-1" role="dialog" aria-labelledby="_um_dlgCreatePrnTitle" aria-hidden="true">

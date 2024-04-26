@@ -278,9 +278,9 @@ var PackageListComponent = new function() {
         //FilterDialog_package.loadFilterData();
 
         mThis.listView = new ListView('_pgl_package_list', {
-            'columns':mThis.cols,
+            columns: mThis.cols,
             // 'clientSidePagination':true,
-            'processResponse':(res)=>{
+            processResponse:(res)=>{
                const d = res.data || {}; 
                //display summary data
                mThis.setSelected_alert_card(0); //clear alert card selection
@@ -303,7 +303,6 @@ var PackageListComponent = new function() {
             //'paginationContainer': document.querySelector('#test_div'),
             'apiCluster':main_view.apiCluster,
             'fetchApi': `${main_view.base_url}/dms/package/list`,
-            'apiCluster': main_view.apiCluster,
             'tableClass':'table header-uppercase table',
             'perPage': 10,
             'rowCreated':(data,index,tr) =>{

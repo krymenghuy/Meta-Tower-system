@@ -72,7 +72,9 @@ class UMController extends Controller
 
   function saveRole(Request $req)
   {
-    $ss = UM::getUserInfoByToken($req, -1);
+    $role_id = $req->id ?? $req->role_id;
+    $prn_id = $role_id > 0 ? 104 : 102;
+    $ss = UM::getUserInfoByToken($req, $prn_id);
     if ($ss->status_code != 200) return $ss; //user not authenticated
     $res = $this->UMModel->saveRole($req->all(), $ss);
     return JDV::raw($res);
@@ -80,7 +82,7 @@ class UMController extends Controller
 
   function deleteRole(Request $req)
   {
-    $ss = UM::getUserInfoByToken($req, -1);
+    $ss = UM::getUserInfoByToken($req, 101);
     if ($ss->status_code != 200) return $ss; //user not authenticated
     $id = $req->role_id ? $req->role_id : $req->id;
     $r = $this->UMModel->deleteRole($id, $ss);
@@ -150,7 +152,8 @@ class UMController extends Controller
   {
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code != 200) return $ss; //user not authenticated
-    $role_id = $req->role_id ? $req->role_id : $req->id;
+    $role_id = $req->role_id ?? $req->id;
+    $req['role_id'] = $role_id;
     $r = $this->UMModel->getRoleMembers($req->all(), $ss);
     return JDV::result($r);
   }
@@ -358,6 +361,15 @@ class UMController extends Controller
     if ($ss->status_code !== 200) return JDV::raw($ss);
     $mods = $this->UMModel->getComboItems_module($ss);
     return JDV::result($mods);
+  }
+
+  /** accessible applications by a role */
+  function getRoleApps(Request $req)
+  {
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code !== 200) return JDV::raw($ss);
+    $apps = $this->UMModel->getRoleApps($req->role_id, $ss);
+    return JDV::json($apps);
   }
 
   function getAccessibleModules(Request $req)
