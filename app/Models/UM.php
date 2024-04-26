@@ -415,7 +415,16 @@ class UM //extends Model
          SMS::send($phone_number,$text,$sender_name);
       }
 
-      function saveRole($arr = [], $ss = null)
+  static function getSubscriptionId ($user_id){
+     $row = DB::table('um_users as u')->where('u.id',$user_id)->selectRaw('u.subs_id')->take(1)->first();
+     if(!$row) return null;
+     $subs_id  = $row->subs_id;
+     $sub = DB::table('um_subscriptions as b')->where('subs_id',$subs_id)->selectRaw('subs_id,primary_email,phone_number')->first();
+     if(!$sub) return null;
+     return $sub->subs_id; 
+  }
+
+  function saveRole($arr = [], $ss = null)
   {
     $ss = $ss ? $ss : $this->userInfo;
     $branch_id = $ss ? $ss->branch_id : null;
@@ -429,28 +438,30 @@ class UM //extends Model
     if (!isset($d->id)) $d->id = 0;
     if (empty(self::$app_id)) return DV::error("app id is not valid");
     if (!self::correctUserClass($user_class)) return DV::error("User class cannot be empty", $ss->lang);
-
+    $subs_id = self::getSubscriptionId($ss->user_id);
+    if(!$subs_id) return DV::error('Subscription ID is not found!');
     if ($d->id > 0) {
       if ($this->role_exists($ss, $d->name, $d->id)) return DV::error("Role name already exists", $ss->lang);
       DB::table('um_roles')->where('id', $d->id)->update(['name' => $d->name, 'User_class' => $user_class]);
-      //$result->role_id = $d->id;
+      return DV::depends(['action','updated']);
     } else {
 
       if ($this->role_exists($ss, $d->name, null)) return DV::error("Role name already in use", $ss->lang);
-
+      $nowTime = getNowTime();
       DB::table('um_roles')->insert([
+        'subs_id'=>$subs_id,
         'user_class' => $user_class,
         'name' => $d->name,
         'app_id' => self::$app_id,
         'branch_id' => $branch_id,
         'create_user' => $ss->login_name,
-        'create_date' => getNowTime()
+        'create_date' => $nowTime,
+        'update_user' => $ss->login_name,
+        'update_date' => $nowTime
       ]);
-      //$result->role_id = DB::getPdo()->lastInsertId();
-      return DV::depends(['action','saved']);
-
+      return DV::depends(['action','created']);
     }
-    return DV::error('something went wrong in saving...!!!');
+     
   }
 
        function role_exists($uss,$name,$id){
@@ -566,10 +577,10 @@ class UM //extends Model
 
         $current_page = isset($d->current_page) ? $d->current_page : 1;
         $search_value = isset($d->search_value) ? $d->search_value : null;
-
         $per_page = isset($d->per_page) ? $d->per_page : 10;
-        if (!is_numeric($current_page)) $current_page = 1;
         $skip_rows = ($current_page - 1) * $per_page;
+        if (!is_numeric($current_page)) $current_page = 1;
+
         $str_search = '2=2';
         if ($search_value) {
           $search_value = escape_like_str($search_value);
@@ -592,21 +603,28 @@ class UM //extends Model
           $ss =$ss?$ss:$this->userInfo;
           // return JDV::result($arr);
           $d = (object)$arr;
-          $branch_id = $ss->branch_id;
-          $role_id = $d->role_id;
+           
+          $current_page = isset($d->current_page) ? $d->current_page : 1;
+          $search_value = isset($d->search_value) ? $d->search_value : null;
+          $per_page = isset($d->per_page) ? $d->per_page : 10;
+          $skip_rows = ($current_page - 1) * $per_page;
+          if (!is_numeric($current_page)) $current_page = 1;
+
+          $role_id = $d->role_id ?? -1;
           $role_name = self::getRoleName($role_id);
           $search_value = escape_like_str(isset($d->search_value)?$d->search_value:'');
-          return DB::table('um_user_roles AS ur')
+          $query = DB::table('um_user_roles AS ur')
           ->join('um_users AS u','u.id','=','ur.user_id')
-          ->selectRaw('\''.$role_name.'\' as role_name,\''.$search_value.'\' AS search_value,u.id,u.login_name,u.full_name,u.official_code,u.phone_number,u.status, u.email,u.otp_code,u.user_class')
-          ->where('u.branch_id',$branch_id)
-          ->where('ur.role_id',$role_id)->get();
-
+          ->selectRaw('\''.$role_name.'\' as role_name,\''.$search_value.'\' AS search_value,u.id,u.login_name,u.full_name,u.official_code,u.phone_number,u.status,formatTime(u.create_date) as create_date, formatTime(u.last_login_date) AS last_login_date, u.create_user, u.email,u.otp_code,u.user_class')
+          // ->where('u.branch_id',$branch_id)
+          ->where('ur.role_id',$role_id);
+          $count_query = clone $query;
+          $count = $count_query->count('u.id');
+          $rows = $query->skip($skip_rows)->take($per_page)->get();
+          return new LengthAwarePaginator($rows, $count, $per_page, $current_page);    
        }
-
-      
-
-        function getUserList($arr,$ss=null){
+  
+      function getUserList($arr,$ss=null){
             $branch_id = 1;//$ss ? $ss->branch_id : 1;
             $str_user_class = "1=1";
             $d = (object)$arr;
@@ -751,7 +769,11 @@ class UM //extends Model
           if ($user_id > 0){
              if(!self::allowed(112)) return  DV::error('You need permission number ? to update user information::'.'112');
           }else{
-            if(!self::allowed(100)) return  DV::error('You need permission number ? to update user information::'.'100');
+             if(!self::allowed(100)) return  DV::error('You need permission number ? to update user information::'.'100');
+
+             $subs_id = self::getSubscriptionId($ss->user_id);
+             if(!$subs_id) return DV::error('Subscription ID is not found!');
+             $inputs['subs_id'] = $subs_id;
           }
           $official_id = null;
           $official_code = null;
@@ -1381,13 +1403,40 @@ class UM //extends Model
          return $rows;
     }
 
-      function getAccessibleModules($role_id,$ss){
+  function getAccessibleModules($role_id,$ss){
         $ss = $ss?$ss:$this->userInfo;
         $role_id = Sanitizer::sanitize($role_id);
         return DB::select(DB::raw("SELECT m.id, m.disabled, m.module_name AS `name`, m.module_name_native as name_native, m.icon_image, m.target_url FROM um_app_modules AS m INNER JOIN um_role_modules AS rm ON m.id = rm.module_id WHERE IFNULL(m.hidden,0) =0 AND m.app_id ='".self::$app_id."' AND rm.role_id ='$role_id' ORDER BY m.disabled, m.module_name ASC"));
+  }
+  
+  /*** $arr = ['email','full_name','phone_number','start_date'] */
+  function createSubscription($arr,$ss){
+     $def_lang = 'en';
+     $v_rule = [
+       'email'=>'1|email',
+       'full_name'=>'1|string|150',
+       'phone_number'=>'0|phone',
+       'start_date'=>'0|date'
+     ];
+     $res = validateObject($arr,$v_rule,1,[],$def_lang,false,null);
+     if($res->error) return DV::error($res->error);
+     $inputs = $res->values;
+     $d = (object)$inputs;
+     if(!$d->start_date) $inputs['start_date'] = getNowTime();
+     $inputs['subs_id'] = createUUID();
+     $inputs['create_date'] = getNowTime();
+     $inputs['create_user'] = $ss->full_name;
+     $inputs['update_date'] = getNowTime();
+     $inputs['update_user'] = $ss->full_name;
+     DB::table('um_subscriptions')->insert($inputs);
+     return DV::depends(1);
+  }
 
-    }
-    function addAccessibleModule($module_id, $role_id, $ss = null)
+  function getRoleApps($role_id, $ss){
+     
+  }
+
+  function addAccessibleModule($module_id, $role_id, $ss = null)
   {
     $ss = $ss ? $ss : $this->userInfo;
     $branch_id = $ss ? $ss->branch_id : null;
