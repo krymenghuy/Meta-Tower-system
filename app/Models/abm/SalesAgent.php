@@ -56,6 +56,8 @@ class SalesAgent //extends Model
          'phone_number'=>'1|phone',
          'email'=>'0|email',
          'address'=>'0|address',
+         'status_code' => '0|choice|Active,Inactive|default=Active', //Add status_code to table os_sales_agents
+        //  'agent_type_id'=>'1|number|exists=sales_agent_types.id',
 
       ];
       $email_chars = ['@','-','.','_'];
@@ -448,20 +450,20 @@ static function list($arr,$ss=null){
         $skip_rows = ($current_page -1) * $per_page;
 
         $status_code = isset($d->status_code)? Sanitizer::sanitize($d->status_code):null;
-        $agent_type_id =isset($d->agent_type_id)? $d->agent_type_id : null; 
+        $agent_type =isset($d->agent_type)? $d->agent_type : null; 
         
         $str_agent_type = '3=3';
         $str_status = '1=1';
         $str_search = '2=2';
         if($search_value){
           $search_value = escape_like_str($search_value);
-           $str_search = ' (d.code =\''.$search_value.'\' OR d.name LIKE \'%'.$search_value.'%\' OR d.phone_number =\''.$search_value.'\')';
+          $str_search = ' (d.status_code =\''.$search_value.'\' OR d.name LIKE \'%'.$search_value.'%\' OR d.phone_number =\''.$search_value.'\')';
         }else{
-          $str_agent_type = $agent_type_id? 'd.agent_type_id ='.$agent_type_id : '3=3';
+          $str_agent_type = $agent_type? 'd.agent_type ='.$agent_type : '3=3';
           $str_status = $status_code? 'd.status_code =\''.$status_code.'\'' : '1=1';
         }
        
-        $query = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.email,d.status_id,d.phone_number,d.address,t.id as agent_type_id,t.name AS agent_type,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date'); 
+        $query = DB::table('os_sales_agents AS d')->where('branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.status_code,d.email,d.phone_number,d.address,d.agent_type,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date'); 
         $count_query = clone $query;
         $count = $count_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -709,7 +711,7 @@ static function list($arr,$ss=null){
 
     static function details($id,$ss){ 
         $branch_id = $ss->branch_id;
-        $row = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('d.id',$id)->selectRaw('d.id,d.name,d.policy_id,d.agent_type_id,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,d.commission,t.id AS agent_type_id,t.name AS agent_type,d.photo_file_name,formatDate(d.create_date) AS create_date')->take(1)->first(); 
+        $row = DB::table('os_sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('d.id',$id)->selectRaw('d.id,d.name,d.policy_id,d.agent_type_id,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,d.commission,t.id AS agent_type_id,t.name AS agent_type,d.photo_file_name,formatDate(d.create_date) AS create_date')->take(1)->first(); 
         if($row){
            $pol = self::getPolicyInfo($row->policy_id,$ss);
            $row->policy_name = $pol? $pol->name: 'NA';

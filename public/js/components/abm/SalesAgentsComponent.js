@@ -106,7 +106,7 @@ var SalesAgentsComponent = new function () {
         title: "Email",
         className: "align-middle text-capitalize",
         data: (data,index,tr)=>{
-            return ['<span class="d-block text-nowrap">',data.email,'</span>','<span class="d-block text-nowrap">',data.phone_number,'</span>'].join('');
+            return ['<span class="d-block text-nowrap">',data.email||'N/A','</span>','<span class="d-block text-nowrap">',data.phone_number,'</span>'].join('');
         }
     },
    
@@ -138,8 +138,8 @@ var SalesAgentsComponent = new function () {
         title: "Status",
         className: 'align-middle text-capitalize',
         data: (data, index, tr) => {
-          const status_class = (data.status_id || '').toLowerCase()==='active'? 'border-success text-success text-center': 'border-danger text-danger text-center';  
-          return ['<a href="javascript:void(0)" class="d-block lnk-agent-status" data-id ="',data.id,'" data-status="',data.status_id,'"><span style="display:block;width:80px;" class="border rounded-5 p-2 ',status_class,'">',data.status_id,'</span></a>'].join(''); 
+          const status_class = (data.status_code || '').toLowerCase()==='active'? 'border-success text-success text-center': 'border-danger text-danger text-center';  
+          return ['<a href="javascript:void(0)" class="d-block lnk-agent-status" data-id ="',data.id,'" data-status="',data.status_code,'"><span style="display:block;width:80px;" class="border rounded-5 p-2 ',status_class,'">',data.status_code,'</span></a>'].join(''); 
         }
     },
     {
@@ -161,10 +161,13 @@ var SalesAgentsComponent = new function () {
         if(mThis.initAlready) return;
 
         mThis.salesAgentsListView = new ListView('_sale_agent_list',{
-            'fetchApi':`${main_view.base_url}/api/sales-agents/list`,
+            'fetchApi':`${main_view.base_url}/abm/os-sales-agents/list`,
             'columns': mThis.cols,
             apiCluster:main_view.apiCluster,
             'tableClass':"table header-light-blue header-uppercase",
+            'processResponse':(res)=>{
+                return res.data;    
+            },
             'rowCreated':(data, index, tr) => {
                 tr.dataset.id = data.id;
                 mThis.store_agents[data.id] = {

@@ -130,7 +130,8 @@ class Package //extends Model
       $base_fee =-1;
       $billed_kg = $billed_kg?$billed_kg:0;
       //$today = date('Y-m-d');
-      $table ="price_list AS l";
+      $table ="price_list_backup AS l";
+      // $table ="price_list AS l";
       
       $cod_fee_percent =0;
       $dTypes =['fast','normal','Fast','Normal']; 

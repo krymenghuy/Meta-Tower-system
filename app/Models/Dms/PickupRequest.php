@@ -6,6 +6,8 @@ namespace App\Models\Dms;
 use App\Models\Dms\PublicStorage;
 use App\Models\Dms\DeliveryZone;
 use App\Models\UM;
+use App\Models\DV;
+use App\Models\JDV;
 use App\Models\Notifier;
 use DB;
 use Sanitizer;
@@ -389,7 +391,7 @@ class PickupRequest //extends Model
     /** Validate data for each package that is created by Merchant or Driver or Admin. If one package failed, the Order WILL NOT be saved  
      * @order = {"warehouse_id""sender_id","product_type","delivery_type"}
     */
- function validatePackages($ss,$order,$items){
+    function validatePackages($ss,$order,$items){
         $branch_id = $ss->branch_id;
         $max_price = 1000;
         $c = null;
@@ -400,7 +402,7 @@ class PickupRequest //extends Model
       $success_items = []; 
       $sender_id = $order->sender_id;
       if (!$sender_id) return DV::error('The provided Merchant ID is empty and is not correct'); 
-     do{
+        do{
            $c = isset($items[$i])? (object)$items[$i]:null;
            if(!$c) break;
             $c->order_id = isset($order->id)? $order->id: (isset($order->order_id)? $order->order_id:null); 
@@ -461,8 +463,12 @@ class PickupRequest //extends Model
                      $c->dim_y =0;
                      $c->dim_h =0;
              }
+
            //end process pacakge size
+
             $p = $packageModel->getDeliveryPriceInfo($branch_id,$sender_id,$c->delivery_type,$c->zone_code,$c->billed_kg,$c->cod);
+        //    return JDV::result($p);
+            
             if($p->status ==='Error'){
                return DV::error($p->error_message.' Zone: '.$c->zone_code);
             }else{
@@ -1804,7 +1810,10 @@ class PickupRequest //extends Model
         if(!$orderInfo) return DV::error('Order Information is missing');
         $pickup_driver_id = $orderInfo->driver_id; 
         $order = (object)['order_id'=>$orderInfo->id,'sender_id'=>$orderInfo->sender_id,'product_type'=>$d->product_type,'delivery_type'=>$d->delivery_type,'warehouse_id'=>$warehouse_id];
+        
         $p_res = self::validatePackages($ss,$order,[$d]);
+        // return JDV::result($p_res);
+
         if ($p_res->status ==='Error') return DV::error($p_res->error_message);
         $item = null;
         if($p_res->success_items[0]){
@@ -1838,6 +1847,7 @@ class PickupRequest //extends Model
                 ]);
             }
         }
+
 
         $item->size = $d->dim_x." ".$d->dim_y." ".$d->dim_h; 
         $item->barcode = $barcode;

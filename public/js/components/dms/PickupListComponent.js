@@ -801,7 +801,7 @@ var PickupListComponent = new function () {
         let html_row = null;
         do {
             c = display_cols[i];
-            if (!c) break;
+            if (!c) break;  
             let val = null;
             if (c != 'size') val = StringSanitizer.sanitizeOut(d[c]);
             else val = DUtil.sanitizePackageSize(d[c]);
@@ -837,6 +837,7 @@ var PickupListComponent = new function () {
             html_row = [html_row, '<td data-value="', val, '" data-field="', c, '" data-readonly="', readOnly, '" data-inputtype="', iType, '" class="', c, ' text-nowrap">', disp_value, '</td>'].join('');
             i++;
         } while (c);
+        console.log('status_id',d.status_id);
 
         d.id = d.id || d.package_id;
         let td_action = ['<td class="col_action"><div class="view-actions d-flex gap-3">',
@@ -1477,6 +1478,7 @@ var PickupListComponent = new function () {
         if (!tr) return;
         //tr is the package tr , NOT order_tr
         let p = mThis.getItem(tr);
+        console.log(p);
         p.order_id = tr.dataset.orderid;
         p.package_id = tr.dataset.id;
 
@@ -1484,7 +1486,7 @@ var PickupListComponent = new function () {
             if (res.status_code === 200) {
                 let data = res.data;
                 let packageInfo = StringSanitizer.sanitizeObject(data.package,null,['size','receiver_address']);
-
+// console.log('packageInfo',packageInfo);
                 if (!data.delivery_type) console.error('Problem in api/order/save-package  because this method returns delivery_type (result.data.delivery_type) as NULL or empty');
                 data.delivery_type = (packageInfo.delivery_type || '').toLowerCase();
 
@@ -1504,6 +1506,7 @@ var PickupListComponent = new function () {
                 if (typeof onFinish === 'function') onFinish(false);
             }
         });
+
     }
 
     this.beginEditItem = (tr, data =null,lnk = null) => {

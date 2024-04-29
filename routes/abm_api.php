@@ -13,6 +13,7 @@ use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\abm\OverseaShipmentController;
 use App\Http\Controllers\abm\SupplierController;
 use App\Http\controllers\abm\CustomerController;
+use App\Http\controllers\abm\OsSalesAgentController;
  
  //begin:: api without Authentication
     Route::middleware([CustomRateLimiter::class])->group(function(){
@@ -26,8 +27,8 @@ use App\Http\controllers\abm\CustomerController;
 
 //begin:: Admin notifications
     Route::middleware('auth.api', CustomRateLimiter::class)->group(function(){
-            Route::get('pending-requests', [NotificationController::class, 'getPendingRequests']);
-            Route::get('notifications', [NotificationController::class, 'getNotificationListByUser']);
+            Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
+            Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
             Route::get('unread-count',[NotificationController::class,'getUnreadCount']);
             Route::get('mark-read-all',[NotificationController::class,'markReadAll']);
     });
@@ -53,12 +54,21 @@ use App\Http\controllers\abm\CustomerController;
         Route::post('/update-status', [SupplierController::class, 'updateSupplierStatus']);
         Route::post('/list-paginate', [SupplierController::class, 'getSuplierListPaginate']);
     });
+    Route::middleware([CustomRateLimiter::class])->prefix('os-sales-agents')->group(function(){
+        Route::post('/save', [OsSalesAgentController::class, 'saveSalesAgent']);
+        Route::post('/list', [OsSalesAgentController::class, 'getList']);
+        // Route::post('/form-options', [OsSalesAgentController::class, 'getFormOptions']);
+        // Route::post('/save-profile-picture', [OsSalesAgentController::class, 'saveProfilePicture']);
+        // Route::post('/update-status', [OsSalesAgentController::class, 'updateSupplierStatus']);
+        // Route::post('/list-paginate', [OsSalesAgentController::class, 'getSuplierListPaginate']);
+    });
     Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->group(function(){
         Route::post('/save', [OverseaShipmentController::class, 'save']);
         Route::post('/Shipment-list', [OverseaShipmentController::class, 'getOverseaShipmentList']);
     
         Route::post('/create-item', [OverseaShipmentController::class, 'createOverseaItem']);
         Route::post('/item-list', [OverseaShipmentController::class, 'getOverseaItemList']);
+        Route::post('/delete-item', [OverseaShipmentController::class, 'deleteOrderitem']);
     });
 
     Route::prefix('customers')->group(function(){

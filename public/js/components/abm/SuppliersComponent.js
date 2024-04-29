@@ -5,7 +5,7 @@ var SuppliersComponent = new function(){
     this.base_url = main_view.base_url;
     this.self = main_view.appContent.children('#_main_suppliersComponent');
     this.elFilter_business_type = mThis.self.find('#_sdl_filter_business_type');
-    this.elFilter_sender_status = mThis.self.find('#_sdl_filter_sender_status');
+    this.elFilter_sender_status = mThis.self.find('#_sdl_filter_supplier_status');
     this.div_filter_fields = mThis.self.find('#_sdl_filter_fields')[0];
 
     this.btnNewSupplier = mThis.self.find('#_sdl_btnNewSupplier');
@@ -752,10 +752,10 @@ var SuppliersComponent = new function(){
         mThis.setEvents($(mThis.container));
         // console.log(mThis.container.parentElement); 
         const parent = mThis.container.parentElement;
-            parent.style.height = (window.innerHeight - 210)+'px';
+            parent.style.height = (window.innerHeight - 190)+'px';
             parent.classList.add('overflow-y-auto');
             window.onresize = () => {
-            parent.style.height = (window.innerHeight - 210)+'px';
+            parent.style.height = (window.innerHeight - 190)+'px';
         }
 
         mThis.tblSenders = mThis.listView.getListContainer();

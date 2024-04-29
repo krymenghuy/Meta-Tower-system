@@ -36,7 +36,7 @@
                     <select id="_sdl_filter_business_type" class="d-none modal-select2 filter-field" data-field="business_type"></select>
                 </div>
                 <div class="min-width-select">
-                    <select id="_sdl_filter_sender_status" class="modal-select2 filter-field" data-field="status_code">
+                    <select id="_sdl_filter_supplier_status" class="modal-select2 filter-field" data-field="status_code">
                         <option value="Active">Active</option>
                         <option value="Inactive">Inactive</option>
                     </select>

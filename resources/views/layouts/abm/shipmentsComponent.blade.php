@@ -133,7 +133,7 @@
             </div>
         </div>
     </div>
-    <div id="order_list_wrapper" class="shadow-lg bg-white rounded-3 border p-3 mt-3 overflow-auto " style="">
+    <div id="order_list_wrapper" class="shadow-lg bg-white rounded-3 border p-0 mt-3 overflow-auto " style="">
         <div id="_shm_div_order_list" class=" overflow-auto w-100"></div>
     </div>
 </div>
@@ -520,35 +520,93 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="form-group col-lg-12">
-                        <span class="simple-label">Warehouse</span>
-                        <select id="_plq_warehouse" class="modal-select2 data-input" data-field="warehouse_id"></select>
+                    <div class="form-group col-lg-6">
+                        <span class="simple-label">zone_code</span>
+                        <select id="_plq_warehouse" class="modal-select2 data-input" data-field="zone_code"></select>
                     </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">Merchant</span>
+                        <span class="simple-label">Customer</span>
                         <div>
                             <select id="_plq_sender" class="modal-select2 data-input" data-field="sender_id"></select>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">Product Type</span>
+                        <span class="simple-label">from_country_id</span>
                         <div>
-                            <select id="_plq_product_type" class="modal-select2 data-input" data-field="product_type"></select>
+                            <select id="_plq_from_country_id" class="modal-select2 data-input" data-field="from_country_id"></select>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">Vehicle Type</span>
+                        <span class="simple-label">to_country_id</span>
+                        <!-- <div>
+                            <select id ="_plq_to_country_id" class="modal-select2 data-input" data-field="to_country_id"></select>
+                        </div> -->
+                        <input type="number" class="form-control data-input" data-field="to_country_id" />  
+
+                    </div>
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">primary_cp_id</span>
                         <div>
-                            <select id ="_plq_vehicle_type" class="modal-select2 data-input" data-field="request_vehicle_type"></select>
+                            <select id ="_plq_primary_cp_id" class="modal-select2 data-input" data-field="primary_cp_id"></select>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">Number of packages</span>
-                        <input type="number" class="form-control data-input" data-field="qty" />
+                        <span class="simple-label">secondary_cp_id</span>
+                        <div>
+                            <select id ="_plq_secondary_cp_id" class="modal-select2 data-input" data-field="secondary_cp_id"></select>
+                        </div>
+                    </div>
+                    <!-- <div class="form-group col-md-6">
+                        <span class="simple-label">effective_weight</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="effective_weight" />
+                    <!-- </div>
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">actual_weight</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="actual_weight" />
+                    <!-- </div>
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">markup_weight</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="markup_weight" />
+                    <!-- </div>
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">total_weight</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="total_weight" />
+                    <!-- </div>
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">carrier_total_weight</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="carrier_total_weight" />
+                    <!-- </div>
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">total_price</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="total_price" />
+                    <!-- </div>
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">carrier_cost</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="carrier_cost" />
+                    <!-- </div>
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">carrier_special_charge</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="carrier_special_charge" />
+                    <!-- </div>
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">total_carrier_cost</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="total_carrier_cost" />
+                    <!-- </div>
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">total_special_charge</span> -->
+                        <input type="hidden" class="form-control data-input" data-field="total_special_charge" />
+                    <!-- </div> -->
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">receiver_name</span>
+                        <input id="_plq_pikcup_address" class="form-control data-input" data-field="receiver_name" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">remarks</span>
+                        <input id="_plq_pikcup_address" class="form-control data-input" data-field="remarks" />
                     </div>
                     <div class="form-group col-md-12">
-                        <span class="simple-label">Pickup Address</span>
-                        <input id="_plq_pikcup_address" class="form-control data-input" data-field="pickup_address" />
+                        <span class="simple-label">receiver_address</span>
+                        <input type="text" class="form-control data-input" data-field="receiver_address" />
                     </div>
                 </div>
             </div>

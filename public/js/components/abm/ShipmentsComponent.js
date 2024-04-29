@@ -193,7 +193,7 @@ const FilterDialog_pickup = new function () {
             return;
         }
 
-        vsapi.call([mThis.base_url, '/abm/getForm_options_pickuplist'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/dms/getForm_options_pickuplist'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let data = res.data;
                 data.warehouses = StringSanitizer.sanitizeObject(data.warehouses);
@@ -257,7 +257,7 @@ var ShipmentsComponent = new function () {
     this.order_list_wrapper = this.self.find('#order_list_wrapper');
 
     this.btnNewRequest = this.self.find('#_pl_btnNewPickup');
-    this.btnNewQuickOrder = this.self.find('#btn_newQuickOrder');
+    this.btnNewShipment = this.self.find('#btn_newQuickOrder');
 
     this.elSearchPickup = this.self.find('#_pl_search');
     this.btnSearch = this.self.find('#_pl_btnSearch');
@@ -313,10 +313,10 @@ var ShipmentsComponent = new function () {
             {
                 className: "Created Date",
                 data: function (data, index, tr) {
-                    return ['<span class="pl-request_date">',data.invoice_cmt||"NA", '</span>',
-                        '<span class=" d-block p-1">', data.invoice_id||"#00000", '</span>'].join('');
+                    const sender_info = ['<span class="sender-name d-block">', data.shipment_id||"#00000",'</span>'].join('');
+                    return sender_info;
                 },
-                title: 'Invoice ID'
+                title: 'Shipment ID'
                 // title: mThis.trans('Created Date')
             },
             {
@@ -328,41 +328,146 @@ var ShipmentsComponent = new function () {
                 // title: mThis.trans('Sender ID')
                 title: 'Sender ID'
             },
+            
             {
                 className: "zone_code",
-                data: function (data,index,tr) {
-                    // let cls_special_status_class = mThis.getSpecialStatusClass(data.status_id);
-                    return ['<div><div class="pl-order-special-status"><span class="rounded-3 pl-order-special-status-text ', 'NA', '"></span></div><span class="rounded-3 order-code">', data.zone_code, '</span></div>'].join('');
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.zone_code||'NA','</span>'].join('');
+                    return sender_info;
                 },
-                // title: mThis.trans('Zone Code')
-                title: 'Zone Code'
+                // title: mThis.trans('Sender ID')
+                title: 'zone code'
             },
             {
-                className: "total_billed_weight",
-                data: function (data,index,tr) {
-                    // let cls_special_status_class = mThis.getSpecialStatusClass(data.status_id);
-                    return ['<div><div class="pl-order-special-status d-flex justify-content-between"><span class="rounded-3 pl-order-special-status-text "> ', data.total_billed_weight||"0.00", ' </span> <span class="rounded-3 order-code text-info">','kg', '</span> </div></div>'].join('');
+                className: "sender_id",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.from_country_id||'NA','</span>'].join('');
+                    return sender_info;
                 },
-                // title: mThis.trans('Zone Code')
-                title: 'total billed weight'
+                // title: mThis.trans('Sender ID')
+                title: 'from country id'
             },
             {
-                className: "total_actual_weight",
-                data: function (data,index,tr) {
-                    // let cls_special_status_class = mThis.getSpecialStatusClass(data.status_id);
-                    return ['<div><div class="pl-order-special-status d-flex justify-content-between"><span class="rounded-3 pl-order-special-status-text "> ', data.total_actual_weight||"0.00", ' </span> <span class="rounded-3 order-code text-info">','kg', '</span> </div></div>'].join('');
+                className: "to_country_id",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.to_country_id||'NA','</span>'].join('');
+                    return sender_info;
                 },
-                // title: mThis.trans('Zone Code')
-                title: 'total actual weight'
+                // title: mThis.trans('Sender ID')
+                title: 'to country id'
             },
             {
-                title:"Price",
-                data:(data,index,tr)=>{
-                  return ['<div><div class="pl-order-special-status d-flex justify-content-between"><span class="rounded-3 pl-order-special-status-text "> ', data.price||"0.00", ' </span> <span class="rounded-3 order-code text-info">','$', '</span> </div></div>'].join('');
-                }
-             },
+                className: "primary_cp_id",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.primary_cp_id||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'primary cp id'
+            },
+            {
+                className: "secondary_cp_id",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.secondary_cp_id||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'secondary cp id'
+            },
+            {
+                className: "actual_weight",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.actual_weight||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'actual weight'
+            },
+            {
+                className: "markup_weight",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.markup_weight||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'markup weight'
+            },
             
-           
+            {
+                className: "total_weight",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.total_weight||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'total weight'
+            },
+            {
+                className: "carrier_total_weight",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.carrier_total_weight||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'carrier total weight'
+            },
+            {
+                className: "total price",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.total_price||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'total price'
+            },
+            {
+                className: "carrier_cost",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.carrier_cost||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'carrier cost'
+            },
+
+            {
+                className: "carrier special charge",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.carrier_special_charge||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'carrier special charge'
+            },
+            {
+                className: "total carrier cost",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.total_carrier_cost||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'total carrier cost'
+            },
+            {
+                className: "receiver_name",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.receiver_name||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'receiver name'
+            },
+            {
+                className: "receiver_address",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.receiver_address||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'receiver address'
+            },
+            
+            
             {
                 title:"Remarks",
                 data:(data,index,tr)=>{
@@ -405,14 +510,14 @@ var ShipmentsComponent = new function () {
         mThis.tblOrders = mThis.shipmentListView.getTable();
         mThis.tblShipments = $(mThis.tblOrders);
 
-        this.container = mThis.shipmentListView.getListContainer();
+        this.sh_container = mThis.shipmentListView.getListContainer();
         // mThis.setEvents($(mThis.container));
         // console.log(mThis.container.parentElement); 
-        const parent = mThis.container.parentElement;
-            parent.style.height = (window.innerHeight - 210)+'px';
-            parent.classList.add('overflow-y-auto');
+        const sh_parent = mThis.sh_container.parentElement;
+            sh_parent.style.height = (window.innerHeight - 190)+'px';
+            sh_parent.classList.add('overflow-y-auto');
             window.onresize = () => {
-            parent.style.height = (window.innerHeight - 210)+'px';
+                sh_parent.style.height = (window.innerHeight - 190)+'px';
         }
 
         mThis.cfg = new ExpandableRowConfig(mThis.tblShipments.attr('id'), {
@@ -429,7 +534,7 @@ var ShipmentsComponent = new function () {
                 container.dataset.statusid = status_id;
                 detail_tr.dataset.statusid = status_id;
                 detail_tr.dataset.orderid = shipment_id;
-                mThis.displayOrderDetails(container,parent_tr,view_name);
+                mThis.displayShipmentDetails(container,parent_tr,view_name);
                 mThis.showQuickButtons(parent_tr);
             },
             onClose:(container, detail_tr, parent_tr)=>{
@@ -663,6 +768,7 @@ var ShipmentsComponent = new function () {
             btn = VSUtil.getElementByClass(e.target,'pkl_btn_save');
             if(btn){
                 let tr = btn.closest('tr');
+                console.log(btn);
                 mThis.saveItem(tr, btn,(e) =>{
                     if(e){
                         btn.closest('div.edit-actions').remove();
@@ -739,7 +845,7 @@ var ShipmentsComponent = new function () {
             });
         });
  
-        mThis.btnNewQuickOrder.on('click', (e) => {
+        mThis.btnNewShipment.on('click', (e) => {
             if(!AuthManager.allowed(220)) return;
             const options = {
                 'title': 'Quick Order',
@@ -747,7 +853,7 @@ var ShipmentsComponent = new function () {
                    mThis.shipmentListView.showPage(mThis.getFilterData());
                 }
             };
-            QuickOrderDialog.show(options);
+            ShipmentDialog.show(options);
         });
 
         mThis.btnNewRequest.on('click', function (e) {
@@ -790,7 +896,7 @@ var ShipmentsComponent = new function () {
             let p = { 'id': shipment_id, 'status_id': status_id };
             cv_interact.confirm('Delete this order?', { title: 'Delete Order', cancelButtonText: "Close", confirmButtonText: "Delete", context: "delete" }, function (e) {
                 if (e) {
-                    vsapi.call([mThis.base_url, '/api/order/delete'].join(''), p).then(res => {
+                    vsapi.call([mThis.base_url, '/dms/order/delete'].join(''), p).then(res => {
                         if (res.status_code === 200) {
                            mThis.shipmentListView.showPage(mThis.getFilterData()); 
                         } else cv_interact.error(res.error_message);
@@ -817,7 +923,7 @@ var ShipmentsComponent = new function () {
         InputBox2.show(option, (data,btnAssign) => {
             if (data) {
                 p.driver_id = data.value;
-                vsapi.call([mThis.base_url, '/api/order/assign-driver'].join(''), p,(btn || btnAssign),null).then(res => {
+                vsapi.call([mThis.base_url, '/dms/order/assign-driver'].join(''), p,(btn || btnAssign),null).then(res => {
                     if (res.status_code === 200) {
                         const d = StringSanitizer.sanitizeObject(res.data);
                         let statusInfo =d.statusInfo;
@@ -845,7 +951,7 @@ var ShipmentsComponent = new function () {
         //p.order_id = order_id;
         p.sender_id = sender_id;
         p.allow_create_order = 0;
-        vsapi.call([mThis.base_url, '/api/order/receive'].join(''), p,null,null,null).then(res => {
+        vsapi.call([mThis.base_url, '/dms/order/receive'].join(''), p,null,null,null).then(res => {
             if(res.status_code ==200){
                mThis.hideOrderRow(tr);
                cv_interact.success("Packages arrived at warehouse!");
@@ -872,7 +978,7 @@ var ShipmentsComponent = new function () {
         p.driver_id = null;
         cv_interact.confirm('Pick this order now?',{'context':'update',title:'Pick Order'}, e =>{
              if(e){
-                vsapi.call([mThis.base_url, '/api/order/pick'].join(''), p,null,null).then(res => {
+                vsapi.call([mThis.base_url, '/dms/order/pick'].join(''), p,null,null).then(res => {
                     if (res.status_code === 200) {
                         let d = StringSanitizer.sanitizeObject(res.data);
                         mThis.updatePickupStatus(tr, d);
@@ -889,25 +995,26 @@ var ShipmentsComponent = new function () {
 
     this.deleteItem = (tr) => {
         if (!tr || tr.length === 0) return;
-        let package_id = tr.dataset.id || tr.dataset.pid;
+        let item_id = tr.dataset.id || tr.dataset.pid;
         let status_id = tr.dataset.statusid;
-        let order_id = tr.dataset.orderid;
+        let shipment_id = tr.dataset.shipmentid;
          
         if (status_id > 5) {
             cv_interact.warning('Cannot delete this package');
             return;
         }
-        if (!package_id)
+        if (!item_id)
             tr.remove();
         else {
             cv_interact.confirm('Delete this package?', { title: 'Delete Package', context: 'delete' }, function (e) {
                 if (e) {
-                    let p = {'order_id': order_id, 'package_id': package_id,'id': package_id };
-                    vsapi.call([mThis.base_url, '/api/order/delete-package'].join(''), p).then(res => {
+                    let p = {'shipment_id': shipment_id, 'item_id': item_id,'id': item_id };
+                    console.log('p',p);
+                    vsapi.call([mThis.base_url, '/abm/oversea_shipments/delete-item'].join(''), p).then(res => {
                         if (res.status_code === 200) {
                             let d = res.data?res.data:{};
                             tr.remove();
-                            mThis.setItemCount(order_id, d.package_count);
+                            mThis.setItemCount(shipment_id, d.package_count);
                         }
                         else cv_interact.error(res.error_message);
                     });
@@ -920,31 +1027,32 @@ var ShipmentsComponent = new function () {
      * IMPORTANT:  @d = {"order_id","sender_id","status_id",["barcode"]}
     */
     this.createItemRow_html = (d ={},tr_id=null) => {
-        const display_cols = ['item_type', 'billed_weight', 'actual_weight', 'heigth', 'weigth', 'length' , 'allocated_kg'];
+        const display_cols = ['item_type' , 'size' , 'price' , 'actual_weight', 'allocated_kg' , 'billed_weight' , 'item_total'];
         let i = 0, c=null;
         let html_row = null;
         // console.log(d);
         do {
             c = display_cols[i];
-            if (!c) break;
+            if (!c) break;  
             let val = null;
-            //if (c != 'size') 
-            val = StringSanitizer.sanitizeOut(d[c]);
-            // else val = DUtil.sanitizePackageSize(d[c]);
+            if (c != 'size') 
+                val = StringSanitizer.sanitizeOut(d[c]);
+            else 
+                val = DUtil.sanitizePackageSize(d[c]);
 
             let iType = 'text';
             if (['item_type'].indexOf(c) >= 0) iType = 'select';
             // else if (c === 'zone_code') iType = 'select2';
             // else if (c === 'receiver_phone') iType = 'phone';
-            else if (['actual_kg', 'billed_weight', 'actual_weight', 'heigth', 'weigth', 'length','allocated_kg'].indexOf(c) >= 0) iType = 'number';
+            else if (['actual_kg', 'billed_weight', 'actual_weight','allocated_kg','price','item_total'].indexOf(c) >= 0) iType = 'number';
 
             let disp_value = val;
             if (c === 'item_type') {
-                console.log(disp_value);
+                // console.log('val',val);
                 // console.log(DUtil.properCase(d.item_type));
                 // disp_value = DUtil.properCase(d.item_type);
-                disp_value = 'doc';
-                if (val === 0) disp_value = 'non-doc';
+                disp_value = 'Doc';
+                if (val == 'nondoc') disp_value = 'Non-Doc';
             }
             // else if (c === 'zone_name' || c === 'zone_code') {
             //     val = d.zone_code;
@@ -952,23 +1060,24 @@ var ShipmentsComponent = new function () {
             // }
             // else if (c === 'delivery_type')
             //     disp_value = DUtil.properCase(d.delivery_type);
-            // else if (c === 'size')
-            //     disp_value = DUtil.getFriendlySize(d.size);
-            // else if (['price','base_fee','delivery_fee','fees','driver_total','sender_total'].indexOf(c) >=0)
-            //  {
-            //     d.currency_code = d.currency_code || 'USD';
-            //     disp_value = [d[c],' ',d.currency_code].join('');
-            //  }
-             else if (['billed_weight','actual_weight'].indexOf(c) >=0){
+            else if (c === 'size')
+                disp_value = DUtil.getFriendlySize(d.size);
+            else if (['price','item_total'].indexOf(c) >=0)
+             {
+                d.currency_code = d.currency_code || 'USD';
+                disp_value = [d[c],' ',d.currency_code].join('');
+             }
+             else if (['billed_weight','actual_weight','allocated_kg'].indexOf(c) >=0){
                 disp_value = [d[c],' kg'].join('');  
+                // console.log('allocated_kg',disp_value);
              }
             let readOnly = "0";
             
-            console.log(val);
+            // console.log(val);
             html_row = [html_row, '<td data-value="', val, '" data-field="', c, '" data-readonly="', readOnly, '" data-inputtype="', iType, '" class="', c, ' text-nowrap">', disp_value, '</td>'].join('');
             i++;
         } while (c);
-
+        // console.log('status_id',d.status_id);
         d.id = d.id || d.package_id;
         let td_action = ['<td class="col_action"><div class="view-actions d-flex gap-3">',
             (d.status_id <= 5) ? '<a href="javascript:void(0)" class="pkl_btn_delete" data-toggle="tooltip" data-placement="right" data-title="Delete package"><i class="fa fa-trash fs-5 text-danger"></i></a>' : null,
@@ -976,24 +1085,27 @@ var ShipmentsComponent = new function () {
             `<a href="javascript:void(0)" class="pkl_btn_print_barcode" data-barcode="${d.barcode}" data-toggle="tooltip" data-placement="right" data-title="Print barcode"><i class="fa fa-barcode text-success fs-5"></i></a>`,
             , '</div></td>'].join('');
         tr_id = tr_id || DUtil.createGUID();
-        return ['<tr id="', tr_id, '" data-barcode="', d.barcode, '" data-orderid="', d.order_id, '" data-senderid="', d.sender_id, '" data-id="', d.id, '" data-statusid="', d.status_id, '" class="pkl-package-row pkl_', (d.id?d.id:0), '">', td_action, html_row, '</tr>'].join('');
+        return ['<tr id="', tr_id, '" data-barcode="', d.barcode, '" data-shipmentid="', d.shipment_id, '" data-senderid="', d.sender_id, '" data-id="', d.id, '" data-statusid="', d.status_id, '" class="pkl-package-row pkl_', (d.id?d.id:0), '">', td_action, html_row, '</tr>'].join('');
     }
 
-    this.createPackageTable_thead_html = (shipment_id,sender_id)=>{
+    this.createPackageTable_thead_html = (shipment_id,sender_id)=>{``
         let thead_html = ['<thead><tr>',
-          '<th>',
-          '<div class="d-flex justify-content-between align-items-center gap-2">',
-          '<a data-senderid="', sender_id, '" data-shipmentid="', shipment_id, '" href="javascript:void(0)" style="font-weight:bold;width:50px" class="pkl-lnk_add_item"><div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-plus fs-5 text-success"></i><span class="fs-5-08">Add</span></div></a>',
-        //   '<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" class="pkl_btn_magic_entry"><i class="fa fa-cube fs-5 text-warning"></i></a>',
-          '</div>',
-          '</th>',
-          '<th>TYPE</th>',
-          '<th>BIILED WEIGHT</th>',
-          '<th>ACTUAL WEIGHT</th>',
-          '<th>HEIGHT</th>',
-          '<th>WEIGHT</th>',
-          '<th>LENGTH</th>',
-          '<th>ALLOCATED KG</th>',
+            '<th>',
+                '<div class="d-flex justify-content-between align-items-center gap-2">',
+                '<a data-senderid="', sender_id, '" data-shipmentid="', shipment_id,'" href="javascript:void(0)" style="font-weight:bold;width:50px" class="pkl-lnk_add_item"><div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-plus fs-5 text-success"></i><span class="fs-5-08">Add</span></div></a>',
+                //   '<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" class="pkl_btn_magic_entry"><i class="fa fa-cube fs-5 text-warning"></i></a>',
+                '</div>',
+            '</th>', 
+            '<th>TYPE</th>',
+            '<th>SIZE</th>',
+        //   '<th>HEIGHT</th>',
+        //   '<th>WEIGHT</th>',
+        //   '<th>LENGTH</th>',
+            '<th>PRICE</th>',
+            '<th>ALLOCATED KG</th>',
+            '<th>ACTUAL WEIGHT</th>',
+            '<th>BIILED WEIGHT</th>',
+            '<th>TOTAL</th>',
           '</tr></thead>'].join(''); 
          return thead_html; 
       }
@@ -1020,7 +1132,7 @@ var ShipmentsComponent = new function () {
          * price = 0, fees =0  are all default values when creating new item
         */
         
-        if (!d) d = {"sender_id":sender_id,"shipment_id":shipment_id,"status_id":1,"fees":0,"price":0};
+        if (!d) d = {"sender_id":sender_id,"shipment_id":shipment_id,"status_id":1,"price":0};
         let html_row = this.createItemRow_html(d,tr_id);
         //prepend html string to tbody
         tbody.insertAdjacentHTML('afterbegin',html_row);
@@ -1065,7 +1177,7 @@ var ShipmentsComponent = new function () {
     //    if (span) span.textContent = count;
     }
     
-    this.displayOrderDetails = (container,shipment_tr,def_view='items')=>{
+    this.displayShipmentDetails = (container,shipment_tr,def_view='items')=>{
         container.innerHTML = null;
         const shipment_id = shipment_tr.dataset.id;
         const sender_id = shipment_tr.dataset.senderid;
@@ -1151,7 +1263,7 @@ var ShipmentsComponent = new function () {
         let p = mThis.getItem(tr);
         if(!p) return;
         p.sender_id = tr.dataset.senderid;
-        vsapi.call([mThis.base_url, '/api/package/price-info'].join(''), p,null,false).then(res => {
+        vsapi.call([mThis.base_url, '/dms/package/price-info'].join(''), p,null,false).then(res => {
             if (res.status_code === 200) {
                 let cod_fee = 0;
                 let delivery_fee = 0;
@@ -1201,22 +1313,23 @@ var ShipmentsComponent = new function () {
     //displayItemList  | renderPackageTable
     this.displayOverseaItems = (div, shipment_id,sender_id,btn=null) => {
         let p = { 'id':  shipment_id};
-        console.log(p);
+        // console.log(p);
         // const content_panel_class = 'pkl-order-content';
         // const div = container.querySelector(content_panel_class);
         //div.style.display= 'none';
-        div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
+        div.innerHTML = '<div class="d-flex justify-content-center flex-column align-items-center animation-line" style="height:2px;margin:0;"></div>';
         let html = '';
         const header_cols = mThis.createPackageTable_thead_html(shipment_id,sender_id);
         vsapi.call([mThis.base_url, '/abm/oversea_shipments/item-list'].join(''), p,null,null,null).then(res => {
             if (res.status_code === 200) {
                 let packages = StringSanitizer.sanitizeObject(res.data,null,['size']);
                 let i = 0, c =null;
-                console.log(res.data);
+                // console.log(res.data);
                 do {
                     c = packages[i];
                     if (!c) break;
                     c.shipment_id = shipment_id;
+                    // console.log('c',c);
                     html = [html,mThis.createItemRow_html(c,null)].join('');
                     i++;
                 } while (c);
@@ -1224,7 +1337,7 @@ var ShipmentsComponent = new function () {
                    html = [`<table class="table pkl-package-table">`,header_cols,`<tbody>`, html ,`</tbody></table>`].join('');
                 }else{
                     mThis.shm_prev_editing_row = null;
-                    html = [`<div class="p-2 d-flex justify-content-center gap-2"><span class="h5 text-center p-1 fw-semibold">មិនទាន់បញ្ចូលកញ្ចប់ទំនិញ</span><a href="javascript:void(0)" data-orderid="`,shipment_id,`" data-senderid ="`,sender_id,`" class="pkl-lnk_add_item mt-2"><span class="p-2 border border-primary rounded-4">Add Item</span></a></div>`].join('');
+                    html = [`<div class="p-2 d-flex justify-content-center gap-2"><span class="h5 text-center p-1 fw-semibold">មិនទាន់បញ្ចូលកញ្ចប់ទំនិញ</span><a href="javascript:void(0)" data-shipmentid="`,shipment_id,`" data-senderid ="`,sender_id,`" class="pkl-lnk_add_item mt-2"><span class="p-2 border border-primary rounded-4">Add Item</span></a></div>`].join('');
                 }
                 div.innerHTML = html;
                 //div.style.display ='block';
@@ -1377,7 +1490,7 @@ var ShipmentsComponent = new function () {
         if(!tr || !tr.innerHTML) return null;
         let i = 0;
         let p = {};
-        let reqiured_fields = ['delivery_type', 'receiver_phone', 'zone_code', 'df_payer', 'cod']
+        let reqiured_fields = ['item_type']
         let is_editing_mode = tr.dataset.editing;
         if (is_editing_mode == 1 || is_editing_mode == true) {
             p.barcode = tr.dataset.barcode;
@@ -1417,18 +1530,14 @@ var ShipmentsComponent = new function () {
         }
         else {
             p.barcode = tr.dataset.barcode;
-
+            p.shipment_id = tr.dataset.shipmentid;
             tr.querySelectorAll('td').forEach(td =>{
                 td.classList.remove('td-has_error');
                 if (i > 0) {
                     let f = td.dataset.field;
                     p[f] = td.dataset.value;
-                    if (f == 'delivery_type')
-                        p.delivery_type = DUtil.properCase(p.delivery_type);
-                    else if (f == 'zone_code' || f == 'zone_name') {
-                        p.zone_code = p[f];
-                        p.zone_name = td.textContent;
-                    }
+                    if (f == 'item_type')
+                        p.item_type = DUtil.properCase(p.item_type);
                     else if (f == 'size') {
                         if (p.size) {
                             p.size = DUtil.processPackageSize(p.size);
@@ -1455,7 +1564,8 @@ var ShipmentsComponent = new function () {
 
     this.setItemReadOnly = (tr, refresh = false, data =null) => {
         if (refresh) data = null;
-        let pid = tr.dataset.id;
+        console.log('data:',data);
+        let pid = tr.dataset.shipmentid;
         let order_id = tr.dataset.orderid;
         let p = { 'package_id': pid, 'order_id': order_id };
         if (!pid || pid <= 0) {
@@ -1490,38 +1600,38 @@ var ShipmentsComponent = new function () {
                     let val = data[col_name];
                     let disp_value = val;
 
-                    if (col_name == 'cod') {
-                        disp_value = 'Yes';
-                        if (data.cod == 0) disp_value = 'No';
+                    if (col_name == 'item_type') {
+                        val = data.item_type;
+                        disp_value = DUtil.properCase(data.item_type);
                     }
-                    else if (col_name == 'zone_name' || col_name == 'zone_code') {
-                        disp_value = data.zone_name;
-                        val = data.zone_code;
+                    else if (col_name == 'billed_weight') {
+                        val = data.billed_weight;
+                        disp_value = [data.billed_weight,' kg'].join('');
                     }
-                    else if (col_name == 'delivery_type') {
-                        val = data.delivery_type;
-                        disp_value = DUtil.properCase(data.delivery_type);
+                    else if (col_name == 'actual_weight') {
+                        val = data.actual_weight;
+                        disp_value = [data.actual_weight,' kg'].join('');
                     }
-                    else if (col_name == 'billed_kg') {
-                        val = data.billed_kg;
-                        disp_value = [data.billed_kg,' kg'].join('');
+                    else if (col_name == 'allocated_kg') {
+                        val = data.allocated_kg;
+                        disp_value = [data.allocated_kg,' kg'].join('');
                     }
-                    else if (col_name == 'actual_kg') {
-                        val = data.actual_kg;
-                        disp_value = [data.actual_kg,' kg'].join('');
+                    else if (col_name == 'price') {
+                        val = data.price;
+                        disp_value = [data.price,' USD'].join('');
+                    }
+                    else if (col_name == 'item_total') {
+                        val = data.item_total;
+                        disp_value = [data.item_total,' USD'].join('');
                     }
                     else if (col_name == 'size') {
+                        console.log('data.size',data.size);
                         if (data.size || typeof data.size === 'string')
                             disp_value = DUtil.getFriendlySize(data.size);
                         else if(data.size) {
                             val = [data.size.width, ' ', data.size.length, ' ', data.size.height].join('');
                             disp_value = DUtil.getFriendlySize(val);
                         }
-                    }
-                    else if (['base_fee','price','fees','delivery_fee','driver_total','sender_total'].indexOf(col_name) >=0) {
-                        val = data[col_name];
-                        data.currency_code = data.currency_code || 'USD';
-                        disp_value = [data[col_name],' ',data.currency_code].join('');
                     }
                     td.dataset.value =  val;
                     td.innerHTML =  disp_value;
@@ -1533,7 +1643,7 @@ var ShipmentsComponent = new function () {
             return;
         }
 
-        vsapi.call([main_view.base_url, '/api/order/package-details'].join(''), p).then(res => {
+        vsapi.call([main_view.base_url, '/dms/order/package-details'].join(''), p).then(res => {
             if (res) {
                 let d = StringSanitizer.sanitizeObject(res.data,null,['size']);
                 if (!d.status_id) d.status_id = 1;
@@ -1603,17 +1713,18 @@ var ShipmentsComponent = new function () {
         //tr is the package tr , NOT shipment_tr
         let p = mThis.getItem(tr);
 
+        console.log('tr',tr);
+        console.log('p',p);
         p.shipment_id = tr.dataset.shipmentid;
         console.log(tr.dataset.shipmentid);
-        // p.package_id = tr.dataset.id;
-
+        p.package_id = tr.dataset.id;
         vsapi.call([mThis.base_url, '/abm/oversea_shipments/create-item'].join(''), p, lnk).then(res => {
             if (res.status_code === 200) {
                 let data = res.data;
-                let packageInfo = StringSanitizer.sanitizeObject(data.package,null,['size','receiver_address']);
+                let packageInfo = StringSanitizer.sanitizeObject(data.package,null,['size']);
                 console.log(packageInfo);
-                console.log(data.item_type);
-                if (!data.item_type) console.error('Problem in api/order/save-package because this method returns delivery_type (result.data.delivery_type) as NULL or empty');
+                console.log('item',data.package.item_type);
+                if (!data.package.item_type) console.error('Problem in api/order/save-package because this method returns delivery_type (result.data.delivery_type) as NULL or empty');
                 // data.item_type = (packageInfo.item_type || '').toLowerCase();
 
                 // tr.dataset.id = packageInfo.package_id;
@@ -1672,7 +1783,7 @@ var ShipmentsComponent = new function () {
 
     /** make item row editable */
     this.makeRowEditable = (tr,data)=>{
-        // const readOnlyFields = ['fees', 'base_fee', 'delivery_fee', 'driver_total'];
+        const readOnlyFields = ['billed_weight','item_total'];
         const def_min_width ='90px';
         const minWidths = {
             // "cod":"100px",
@@ -1684,7 +1795,7 @@ var ShipmentsComponent = new function () {
             "weigth":"200px",
             // "remarks":"250px",
             "length":"200px",
-            // "price":"120px"
+            "price":"120px"
         };
          
         let i = 0;
@@ -1755,12 +1866,12 @@ var ShipmentsComponent = new function () {
                 let is_readOnly = null;
                 let readOnly = 0;
 
-                // if (readOnlyFields.indexOf(col_name) >= 0) readOnly = 1;
-                // if (readOnly == 1 || readOnly==true) {
-                //     if (['number','phone','email','input','text'].indexOf(inputType) >=0 || !inputType)
-                //         is_readOnly = " readonly";
-                //     else if (['select2','select'].indexOf(inputType) >=0) is_readOnly = " disabled";
-                // }
+                if (readOnlyFields.indexOf(col_name) >= 0) readOnly = 1;
+                if (readOnly == 1 || readOnly==true) {
+                    if (['number','phone','email','input','text'].indexOf(inputType) >=0 || !inputType)
+                        is_readOnly = " readonly";
+                    else if (['select2','select'].indexOf(inputType) >=0) is_readOnly = " disabled";
+                }
                 let style_min_width = minWidths[field_name]? [' style="min-width: ',minWidths[field_name],';"'].join('') : ['style="min-width:',def_min_width,'" '].join('');
                 if (inputType === 'number')
                     input_html = ['<input type="number" class="form-control col-input" value="', val, '" ',style_min_width, is_readOnly, '>'].join('');
@@ -1902,7 +2013,8 @@ var ShipmentsComponent = new function () {
         // console.log(tr);
         // let td = tr.querySelector('td.request_date');
         let td = tr.querySelector('td.Created-Date');
-        let dx = td.querySelector('div.pkl-quick_action_buttons');
+        console.log(td);
+            let dx = td.querySelector('div.pkl-quick_action_buttons');
         if (dx){
             dx.remove();
         }
@@ -1922,7 +2034,7 @@ var ShipmentsComponent = new function () {
                 if(btn) btn.style.visibility='hidden';
             } else{
                 const btn = dx.querySelector('.pkl_btn_pick');
-                btn.style.visibility='visible';
+                // btn.style.visibility='visible';
             }
             dx.style.visibility='visible';
             mThis.prev_quick_buttons = dx;
@@ -1942,7 +2054,7 @@ var ShipmentsComponent = new function () {
 
     this.show = (options = null) => {
         mThis.init(); //InitOnce one time only
-        if(AuthManager.allowed(220,true)) mThis.btnNewQuickOrder.show(); else mThis.btnNewQuickOrder.hide();
+        if(AuthManager.allowed(220,true)) mThis.btnNewShipment.show(); else mThis.btnNewShipment.hide();
         mThis.shipmentListView.showPage(mThis.getFilterData());
         mThis.self.siblings().hide();
         main_view.setTitle(mThis.title_prop);
@@ -2326,7 +2438,7 @@ const PickupStatusDialog = new function () {
         else if (status_id == 5 || status_id == 6) { }
 
         let p = { 'order_id': mThis.order_id, 'driver_id': driver_id, 'status_id': status_id };
-        vsapi.call([mThis.base_url, '/api/updateOrderStatus'].join(''), p, mThis.btnOK).then(res => {
+        vsapi.call([mThis.base_url, '/dms/updateOrderStatus'].join(''), p, mThis.btnOK).then(res => {
             if (res.status_code === 200) {
                 let result = StringSanitizer.sanitizeObject(res.data);
                 let x = {};
@@ -3642,7 +3754,7 @@ let VerifyPackageDialog = new function () {
             cv_interact.confirm('Are you sure to delete this package?', { title: 'Delete Package', confirmButtonText: 'Delete', cancelButtonText: 'Close', context: 'delete' }, function (e) {
                 if (e) {
                     let p = { 'barcode': barcode, 'package_id': package_id };
-                    vsapi.call([mThis.base_url, '/api/deletePackage'].join(''), p).then(res => {
+                    vsapi.call([mThis.base_url, '/dms/deletePackage'].join(''), p).then(res => {
                         if (res.status_code === 200) {
                             mThis.packages = mThis.removePackageRow(tr);
                             tr.remove();
@@ -3743,7 +3855,7 @@ let VerifyPackageDialog = new function () {
         }
 
         let p = { 'sender_id': sender_id, 'delivery_type': delivery_type, 'zone_code': zone_code, 'billed_kg': billed_kg, 'cod': cod };
-        vsapi.call([mThis.base_url, '/api/package/price-info'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/dms/package/price-info'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
                 EditableTable.setCellValue(tr, 'base_fee', d.base_fee);
@@ -3825,7 +3937,7 @@ let VerifyPackageDialog = new function () {
         if (!def) def = {};
         def.warehouse_id = main_view.DEF_TO_WAREHOUSE_ID;
         VSUtil.setComboItems(mThis.elToWarehouse, ShipmentsComponent.form_data.warehouses, 'id', 'warehouse_name', false, 0, def.warehouse_id);
-        vsapi.call([mThis.base_url, '/api/getComboItems_driver'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/dms/getComboItems_driver'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let items = StringSanitizer.sanitizeObject(res.data);
                 let text1 = LocaleManager.trans('To Be Assigned');
@@ -3837,7 +3949,7 @@ let VerifyPackageDialog = new function () {
 
     this.loadOrderInfo = (order_id, onFinish) => {
         let p = { 'order_id': order_id ? order_id : 0, "context": 1 };
-        vsapi.call([mThis.base_url, '/api/getOrderInfo'].join(''), p).then(res => {
+        vsapi.call([mThis.base_url, '/dms/getOrderInfo'].join(''), p).then(res => {
             if (res.status_code === 200) {
                 let d = StringSanitizer.sanitizeObject(res.data);
                 let packages = d.packages ? d.packages : [];
@@ -3862,7 +3974,7 @@ let VerifyPackageDialog = new function () {
         if (!p.driver_id) p.driver_id = 0;
         //p.id = order_id;
         p.allow_create_order = 1;
-        vsapi.call([mThis.base_url, '/api/delivery-order/receive'].join(''), p,null).then(res => {
+        vsapi.call([mThis.base_url, '/dms/delivery-order/receive'].join(''), p,null).then(res => {
             if (res.status_code === 200) {
                 if (typeof onDone === 'function')
                     onDone(res.data);
@@ -4227,7 +4339,7 @@ let EditableTable = new function () {
     };
 }
 
-const QuickOrderDialog = new function () {
+const ShipmentDialog = new function () {
     let mThis = this;
     this.base_url = main_view.base_url;
     this.self = main_view.appContent.children('#_pl_dlgEmptyOrder');
@@ -4239,14 +4351,14 @@ const QuickOrderDialog = new function () {
     this.elPickupAddress = this.self.find('#_plq_pikcup_address');
 
     this.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${mThis.base_url}/api/quick-order/form-options`, null, null).then(res => {
+        vsapi.call(`${mThis.base_url}/dms/quick-order/form-options`, null, null).then(res => {
 
             const d = (res.status_code === 200) ? res.data : {};
             VSUtil.setComboItems(mThis.elWarehouse, d.warehouses, 'id', 'warehouse_name', null, null, null);
-            mThis.elWarehouse.val(d.warehouses[0].id).trigger('change');
+            mThis.elWarehouse.val(d.warehouses[0].id).trigger('change'); 
             VSUtil.setComboItems(mThis.elSender, d.senders, 'id', 'sender_name', null, null, null);
-            VSUtil.setComboItems(mThis.elProductType, d.product_types, 'product_type', 'product_type', null, null, null);
-            VSUtil.setComboItems(mThis.elVehicleType, d.vehicle_types, 'code', 'vehicle_type', null, null,d.vehicle_types[0]?d.vehicle_types[0].code:'');
+            // VSUtil.setComboItems(mThis.elProductType, d.product_types, 'product_type', 'product_type', null, null, null);
+            // VSUtil.setComboItems(mThis.elVehicleType, d.vehicle_types, 'code', 'vehicle_type', null, null,d.vehicle_types[0]?d.vehicle_types[0].code:'');
             onFinish(d);
         });
     }
@@ -4268,7 +4380,7 @@ const QuickOrderDialog = new function () {
 
     this.elSender.on('change', (e) => {
         let m = { 'sender_id': mThis.elSender.val() };
-        vsapi.call([mThis.base_url, '/api/merchant/address'].join(''), m).then(res => {
+        vsapi.call([mThis.base_url, '/dms/merchant/address'].join(''), m).then(res => {
             let address = (res.status_code === 200) ? res.data : '';
             mThis.elPickupAddress.val(address);
         });
@@ -4276,10 +4388,11 @@ const QuickOrderDialog = new function () {
 
     this.btnCreate.on('click', (e) => {
         const p = mThis.getFormData(false);
+        console.log('p',p);
         if (!p) return;
-        vsapi.call(`${mThis.base_url}/api/quick-order/create`, p, mThis.btnCreate).then(res => {
+        vsapi.call(`${mThis.base_url}/abm/oversea_shipments/save`, p, mThis.btnCreate).then(res => {
             if (res.status_code === 200) {
-                cv_interact.success('New order created');
+                cv_interact.success('New shipment created');
                 mThis.self.modal('hide');
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
             } else cv_interact.error(res.error_message);
@@ -4370,7 +4483,7 @@ const ItemEntryDialog = new function(){
   
     this.savePackage =(btn,onFinish = null,closeDialog=true)=>{
         let p = mThis.getInput();
-        vsapi.call(`${main_view.base_url}/api/order/save-package`,p,btn,null).then(res =>{
+        vsapi.call(`${main_view.base_url}/dms/order/save-package`,p,btn,null).then(res =>{
             if(res.status_code ===200){
                 const d = res.data;
                 if(mThis.current_index >=0){
@@ -4443,7 +4556,7 @@ const ItemEntryDialog = new function(){
                 return;
              }
              mThis.api_details_in_progress = true;
-             vsapi.call(`${main_view.base_url}/api/order/package-details`,x,btn,false).then(res=>{
+             vsapi.call(`${main_view.base_url}/dms/order/package-details`,x,btn,false).then(res=>{
                  if(res.status_code ===200){
                     const d = res.data;
                     mThis.setPackageDetails(d);
@@ -4482,7 +4595,7 @@ const ItemEntryDialog = new function(){
        if(mThis.form_data.delivery_zones){
          onFinish();
        }else{
-           vsapi.call(`${main_view.base_url}/api/settings/options-delivery-zone`,null,null,false).then(res=>{
+           vsapi.call(`${main_view.base_url}/dms/settings/options-delivery-zone`,null,null,false).then(res=>{
             if(res.status_code ==200){
                 mThis.form_data.delivery_zones = res.data;
                 VSUtil.setComboItems(mThis.elZone,mThis.form_data.delivery_zones,'zone_code','zone_name',null,'Select Zone',null);
