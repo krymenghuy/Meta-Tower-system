@@ -1,7 +1,8 @@
 <?php
 
 namespace App\Models;
-use App\Models\Dms\DV;
+// use LaravelFCM\Facades\FCM;
+use App\Models\DV;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use DB;
@@ -133,6 +134,7 @@ class Notifier
     $app_id = getAppIdByUserClass($user_class);
     $expiry_time = convertDate(Carbon::now()->addDay(2));
     $message = self::sanitizeString($d->message);
+    $category_id =1; //default category
     DB::table('notifications')->insert([
       'app_id'=>$app_id,
       //"event_name"=>$event_name,
@@ -144,6 +146,7 @@ class Notifier
       'message'=>$message,
       'image_url'=>isset($d->image_url)?$d->image_url:null,
       'expiry_time'=>$expiry_time,
+      'category_id'=>$category_id,
       'create_date'=>getNowTime()
     ]);
  }
@@ -178,7 +181,27 @@ class Notifier
   // static function notify_mobile($branch_id,$data=[]):void{ ... }
 ***/
 
-static function notify_mobile($branch_id,$data=[]){
+static function getCategory($category_id) {
+  $cache_key = 'notifCat_' . $category_id;
+  $data = Cache::get($cache_key);
+
+  if ($data !== null) {
+      return $data;
+  }
+
+  $row = DB::table('notif_categories as c')
+            ->where('c.id', $category_id)
+            ->selectRaw('id, notif_category AS name, text_color, title_color')
+            ->first();
+  if (!$row) {
+      $row = (object) ['id' => 1, 'text_color' => 'black', 'title_color' => 'black'];
+  }
+  Cache::put($cache_key, $row, 60*30); // Cache for 30 minutes
+
+  return $row;
+}
+ 
+static function notify_mobile($branch_id,$data=[],$category_id = 1){
   $i=0;
   $c = null;
   $res = null;
@@ -186,7 +209,7 @@ static function notify_mobile($branch_id,$data=[]){
       if(!isset($data[$i])) break;
       $c = (object)$data[$i];
       $str_topic = null;
-      $user_id = isset($c->user_id)? $c->user_id:null;
+      $user_id = isset($c->user_id) ? $c->user_id : null;
       //Cancel notification when there is $official_id provided, but the $user_id is not found! => It means that a merchant has profile, but does not have login account on mobile app yet
       $cancel_notif = false;
       if($user_id ===null || $user_id ==''){
@@ -197,27 +220,24 @@ static function notify_mobile($branch_id,$data=[]){
             $cancel_notif =true;
             //Log::info("Notify to user_class =$c->user_class, target_user_id = $official_id, user_id = \"No mobile login yet\" , message =$c->message ");
           }
-
         }
       }
-    
       if(!$cancel_notif){
-        $user_class = isset($c->user_class)?$c->user_class:'no_user_class';
-        $app_id = getAppIdByUserClass($user_class);
+        $user_class = isset($c->user_class)?$c->user_class:'no_user_class'; 
         $persist = isset($c->persist)?$c->persist:null;
         $image_url = isset($c->image_url)?$c->image_url:null;
-        $custom_data = isset($c->data)?$c->data:null;
-        if($user_id===null || $user_id=='')
+        $custom_data = isset($c->data)? $c->data:null;
+        if (is_array( $custom_data ) &&  !isset($custom_data[0]))  $custom_data = null; //This is VERY IMPORTANT to avoid silent error and Live Notification not appear on mobile 
+        if($user_id===null || $user_id=='' || $user_id ==0)
           $str_topic = $branch_id.topic_prefix($user_class).'general';
         else
           $str_topic = $branch_id.topic_prefix($user_class).'private'.$user_id;
-
             $notification = [
                 //"condition"=>" 'private' in topics",
                 'topic'=>$str_topic,
                 'title' => isset($c->title)?$c->title:'DMS',
                 //'body' =>$c->message."($str_topic)", //message body
-                'body' =>$c->message." ($str_topic)",
+                'body' =>$c->message, //." ($str_topic)",
                 //'android_channel_id' => isset($d->channelId)?$d->channelId:null,
                 'icon' => isset($c->image_url)?$c->image_url:null,
                 'sound' =>isset($c->sound)?$c->sound:'default'
@@ -235,7 +255,9 @@ static function notify_mobile($branch_id,$data=[]){
             $res = self::fcm_send($user_class,$str_topic,$notification,$custom_data);
             //if(isset($res->message_id) && $res->message_id) $succeeded =1;
             if($persist ==1 || $persist==true){
+                $app_id = getAppIdByUserClass($user_class);
                 try{
+                  $category_id = $category_id ?? 1;
                   $expiry_time = Carbon::now()->addDay(3);
                   //Save notification in db table
                   DB::table('notifications')->insert(array(
@@ -248,6 +270,7 @@ static function notify_mobile($branch_id,$data=[]){
                     'message'=>isset($c->message)?$c->message:'',
                     'image_url'=>$image_url,
                     'expiry_time'=>$expiry_time,
+                    'category_id'=>$category_id,
                     'create_date'=>getNowTime()
                   ));
                 }catch(\Exception $e){
@@ -257,7 +280,6 @@ static function notify_mobile($branch_id,$data=[]){
                 }
               
             }
-
       }
       $i++;
   }while($c);
@@ -275,7 +297,7 @@ static function notify_mobile($branch_id,$data=[]){
     static function markReadAll_admin($d =null){
         return null;
     }
-
+ 
     //$d= {'branch_id','user_class','user_id'}
     static function getNotificationListByUser($ss){
        $user_id = null;
@@ -298,22 +320,21 @@ static function notify_mobile($branch_id,$data=[]){
         $str_date = '1=1'; //'DATE(create_date) =\''.date('Y-m-d').'\'';
         $str_read ='1=1';
         if (in_array(strtolower($user_class),['merchant','driver','sales_agent'])){
-            $str_read = 'is_read(n.id,'.($user_id?$user_id:0).') =0 AND IFNULL(is_read,0)=0';
+            $str_read = 'is_read(n.id,'.($user_id? $user_id:0).') =0 AND IFNULL(is_read,0)=0';
         }else{
-            $str_read ='DATEDIFF(now(),n.create_date) <=30';
+            $str_read = 'DATEDIFF(now(),n.create_date) <=30';
         }
-        return DB::table('notifications AS n')->where('n.branch_id',$branch_id)->whereRaw($more_wheres)->whereRaw($str_date)->whereRaw($str_read)->selectRaw("n.id,is_read(n.id,n.user_id) AS is_read,CASE IFNULL(user_id,0) WHEN 0 THEN 'all' ELSE 'me' END AS target_user,message,title,image_url,create_date")->orderBy('n.id','DESC')->get();
+        return DB::table('notifications AS n')->join('notif_categories as c','c.id','=','n.category_id')->where('n.branch_id',$branch_id)->whereRaw($more_wheres)->whereRaw($str_date)->whereRaw($str_read)->selectRaw('n.id,is_read(n.id,n.user_id) AS is_read,CASE IFNULL(user_id,0) WHEN 0 THEN \'all\' ELSE \'me\' END AS target_user,message,title,image_url,c.text_color, c.title_color, formatTime(n.create_date) AS create_date')->orderBy('n.id','DESC')->get();
     }
 
     //$notification = ['title','body','icon'=>null,'sound'=>'default']
-    static function fcm_send($user_class,$topic_name,$notification=[],$custom_data=array()) {
+    static function fcm_send($user_class,$topic_name,$notification=[],$custom_data=array()){
       //$apiKey = 'AIzaSyD5hjn0SeDJTHasyISJhnXIRVrj-0ZUdRU';
       $apiKey =getServerKey($user_class);
       //if(!is_array($custom_data)) $custom_data = (array)$custom_data;
       $fields = array('to' => '/topics/'.$topic_name, 'notification' => $notification, 'data'=>$custom_data);
       $headers = array('Authorization: key='.$apiKey, 'Content-Type: application/json', 'priority' => 10);
       $url = 'https://fcm.googleapis.com/fcm/send';
-
       // var_dump($fields);
 
       $ch = curl_init();
@@ -327,7 +348,7 @@ static function notify_mobile($branch_id,$data=[]){
       $result = curl_exec($ch);
       curl_close($ch);
 
-      return $result;
+       return $result;
     }
 
       //for mobile user to remove unread-count for specific notifcaition
@@ -398,14 +419,14 @@ static function notify_mobile($branch_id,$data=[]){
         $cach_key = 'unreadnotif_'.$user_id;
         $cnt = Cache::get($cach_key);
         if($cnt !==null){
-          Log::info('cached unread-count = '.$cnt);
+          //Log::info('cached unread-count = '.$cnt);
           return $cnt;
         }
         if($user_class) $str_user_class ='n.user_class =\''.$user_class.'\'';
         $rows = DB::table('notifications AS n')->whereRaw($str_user_class)->where('n.user_id',$user_id)->whereRaw('is_read(n.id,n.user_id) =0')->selectRaw('COUNT(n.id) AS cnt')->get();
         foreach($rows as $row){
           Cache::put($cach_key,$row->cnt,35);
-          Log::info('queried unread-count = '.$row->cnt);
+          //Log::info('queried unread-count = '.$row->cnt);
           return $row->cnt;
         }
         Cache::put($cach_key,0,35);

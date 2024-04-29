@@ -660,7 +660,7 @@ const AddUserDialog = new function(){
                             let msg =['New login "',p.login_name || '','"', (p.full_name ? ` for ${p.full_name}`:''),' has been created successfully!'].join('');
                             if(p.id > 0 || p.user_id > 0) msg = ['Account info for user ',(p.full_name ?? p.login_name),' was successfully updated'].join('');
                             cv_interact.success(msg);
-                            if(typeof options.onClose === 'function') options.onClose();
+                            if(typeof options.onClose === 'function') options.onClose(p);
                         }
                         else
                         {
