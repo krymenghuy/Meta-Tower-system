@@ -367,7 +367,7 @@ class UM //extends Model
             if(empty($password)) return DV::error("New password is required");
             $app_id =self::getAppIdByUserClass($user_class);
             if(!$app_id) return DV::error('User class is not valid');
-            if(!self::existsBy('login_name',$login_name,$app_id)) return "Login name does not exist";//here
+            if(!self::existsBy('login_name',$login_name,$app_id)) return "Login name does not exist";
             $str_user_class ="1=1";
             if($user_class) $str_user_class ="user_class='$user_class'";
            $hpwd = PASSWORD_HASH($password,PASSWORD_DEFAULT);
@@ -486,6 +486,23 @@ class UM //extends Model
           return $this->addRoleMember_internal($ss,$role_id,$user_id);
         }
 
+        function addRoleMembers($user_ids,$role_id,$ss=null){
+          $isRoleID = DB::table('um_roles')->where('id',$role_id)->take(1)->value('id');
+          if(!$isRoleID) return DV::error('Role does not exists');
+          if(!$user_ids) return DV::error('No user IDs given');
+          $sts = explode('|',$user_ids);
+          $success_count = 0 ;
+          $user_count = 0;
+          foreach($sts as $user_id){
+             $res = $this->addRoleMember_internal($ss,$role_id,$user_id);
+             if($res->status_code ==200){
+                $user_count = $res->data['user_count'];
+                $success_count++;
+             } 
+          }
+          return DV::depends(1, ['role_id'=>$role_id, 'user_count'=>$user_count, 'success_count'=>$success_count], 'Failed to add role members to role '.$role_id);  
+       }
+         
       protected function addRoleMember_internal($uss,$role_id,$user_id){
         $branch_id = $uss->branch_id;
         $lang = $uss->lang;
@@ -498,15 +515,14 @@ class UM //extends Model
             'user_id'=>$user_id,
             'role_id'=>$role_id,
             'is_primary_role' => 1,
-            'app_id'=>self::$app_id,
             'branch_id'=>$branch_id
         ]);
         DB::table("um_users")->where("id",$user_id)->update(["user_class"=>$user_class]);
-         $rows = DB::select(DB::raw("SELECT COUNT(ur.user_id) AS user_count FROM um_user_roles as ur WHERE ur.app_id ='".self::$app_id."' AND ur.role_id ='$role_id'"));
+         $rows = DB::select(DB::raw("SELECT COUNT(ur.user_id) AS user_count FROM um_user_roles as ur WHERE ur.role_id ='$role_id'"));
          $user_count = 0;
           foreach($rows as $row) $user_count = $row->user_count;
 
-        return DV::depends(1,['user_count'=>$user_count],'Failed to add user to the given role');
+        return DV::depends(1,['role_id'=>$role_id,'user_count'=>$user_count],'Failed to add user to the given role');
     }
 
     function removeAccessibleModule($module_id, $role_id, $ss = null) {
@@ -526,13 +542,9 @@ class UM //extends Model
         $result = (object)array('status' => 'Error');
         // ->where('app_id', self::$app_id)
         DB::table('um_user_roles')->where('role_id', $role_id)->where('user_id', $user_id)->delete();
-        $rows = DB::table('um_user_roles')->where('app_id', self::$app_id)->where('role_id', $role_id)->selectRaw("COUNT(user_id) AS user_count")->get();
-        $result->user_count = 0;
-        foreach ($rows as $row) $result->user_count = $row->user_count;
-
-        $result->status = 'OK';
-        $result->error_message = 'yes';
-        return $result;
+        $row = DB::table('um_user_roles')->where('role_id', $role_id)->selectRaw("COUNT(user_id) AS user_count")->get()->first();
+        $user_count = $row? $row->user_count : 0;
+        return DV::depends(1,['user_count'=>$user_count,'role_id'=>$role_id]);  
     }
 
     //     function removeRoleMember($d){
@@ -558,15 +570,31 @@ class UM //extends Model
           return DB::table('um_user_roles AS u')->where('u.branch_id',$branch_id)->where('u.app_id',$app_id)->where('u.user_id',$user_id)->selectRaw("u.id,u.name")->get();
       }
 
-      function getRoleList($ss = null)
+      function getRoleList($arr, $ss = null)
       {
         $ss = $ss ? $ss : $this->userInfo;
-        $str_branch = "1=1";
-        return DB::table('um_roles AS r')
+        //$str_branch = "1=1";
+        $d = (object)$arr;
+        $search_value = isset($d->search_value)? $d->search_value: null;
+        $str_search = '7=7';
+        if($search_value){
+          $search_value = escape_like_str($search_value);
+          $str_search = '(r.name LIKE \'%'.$search_value.'%\')';
+        }
+        $rows = DB::table('um_roles AS r')
         ->selectRaw("r.id, r.`name`,r.create_date,r.create_user,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.branch_id = u.branch_id AND ur.role_id = r.id) AS user_count")
         ->orderBy('r.id','DESC')
-        ->whereRaw($str_branch)
+        ->whereRaw($str_search)
         ->get();
+        if($search_value && !isset($rows[0])){
+          $str_search = '(r.id IN (SELECT ur.role_id FROM um_user_roles AS ur INNER JOIN um_users as u ON ur.user_id = u.id WHERE u.login_name LIKE \'%'.$search_value.'%\' OR u.phone_number = \''.$search_value.'\' OR u.official_code = \''.$search_value.'\' OR u.full_name LIKE \'%'.$search_value.'%\') )';
+          $rows = DB::table('um_roles AS r')
+          ->selectRaw('\''.$search_value.'\' AS user_search_value,' ."r.id, r.`name`,r.create_date,r.create_user,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.branch_id = u.branch_id AND ur.role_id = r.id) AS user_count")
+          ->orderBy('r.id','DESC')
+          ->whereRaw($str_search)
+          ->get();
+        }
+        return $rows;
       }
 
       function getRoleList_paginate($arr,$ss = null)
@@ -601,9 +629,10 @@ class UM //extends Model
 
       function getRoleMembers($arr,$ss){
           $ss =$ss?$ss:$this->userInfo;
-          // return JDV::result($arr);
+          $branch_id = $ss->branch_id;
+
           $d = (object)$arr;
-           
+
           $current_page = isset($d->current_page) ? $d->current_page : 1;
           $search_value = isset($d->search_value) ? $d->search_value : null;
           $per_page = isset($d->per_page) ? $d->per_page : 10;
@@ -612,15 +641,27 @@ class UM //extends Model
 
           $role_id = $d->role_id ?? -1;
           $role_name = self::getRoleName($role_id);
-          $search_value = escape_like_str(isset($d->search_value)?$d->search_value:'');
+          $search_value = escape_like_str(isset($d->search_value)?$d->search_value:null);
+          $str_search = '7=7';
+          if($search_value){
+              $str_search = '(u.login_name LIKE \'%'.$search_value.'%\' OR u.official_code LIKE \'%'.$search_value.'%\' OR u.phone_number = \''.$search_value.'\' OR u.full_name LIKE \'%'.$search_value.'%\')';
+          }
           $query = DB::table('um_user_roles AS ur')
           ->join('um_users AS u','u.id','=','ur.user_id')
-          ->selectRaw('\''.$role_name.'\' as role_name,\''.$search_value.'\' AS search_value,u.id,u.login_name,u.full_name,u.official_code,u.phone_number,u.status,formatTime(u.create_date) as create_date, formatTime(u.last_login_date) AS last_login_date, u.create_user, u.email,u.otp_code,u.user_class')
+          ->selectRaw('\''.$role_name.'\' as role_name,\''.$search_value.'\' AS search_value,u.id,u.login_name,u.full_name,u.official_code,u.phone_number,formatTime(u.create_date) as create_date, formatTime(u.last_login_date) AS last_login_date, u.is_locked,u.status, u.create_user, u.email,u.lang,u.otp_code,u.user_class')
           // ->where('u.branch_id',$branch_id)
-          ->where('ur.role_id',$role_id);
+          ->where('ur.role_id',$role_id)->whereRaw($str_search);
           $count_query = clone $query;
           $count = $count_query->count('u.id');
           $rows = $query->skip($skip_rows)->take($per_page)->get();
+          foreach($rows as $row){
+            $role = self::getPrimaryRole($row->id);
+            if($role){
+               $row->role_id = $role->id;
+               $row->role_name = $role->name;
+            } 
+            $row->image_url = self::getUserPhoto($branch_id,$row->user_class,$row->id);
+          }
           return new LengthAwarePaginator($rows, $count, $per_page, $current_page);    
        }
   

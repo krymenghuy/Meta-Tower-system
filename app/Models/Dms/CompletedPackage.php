@@ -124,12 +124,12 @@ class CompletedPackage //extends Model
           if((!$d->driver_id || $d->driver_id ==-1) && $d->pickup_driver_id > 0)  $use_date ='arrival_date';
           if ((bool)strtotime($start_date) || (bool)strtotime($end_date)){
               if($use_date === 'finish_date'){
-                 $str_dates = "DATE(p.delivery_time) >= '$start_date' AND DATE(delivery_time) <='$end_date'";
-              }else $str_dates = "DATE(p.arrival_time) >= '$start_date' AND DATE(arrival_time) <='$end_date'";
+                 $str_dates = "DATE(p.delivery_time) BETWEEN '$start_date' AND '$end_date'";
+              }else $str_dates = "DATE(p.arrival_time) BETWEEN '$start_date' AND '$end_date'";
           }
             $more_wheres = 'p.warehouse_id = '.$warehouse_id.' AND IFNULL(p.outstanding,0) =0 '.$str_delivery_type.$str_driver.$str_pickup_driver.$str_zone.$str_sender.$str_status;
           }
-          $select_cols ='p.id,p.collectible,p.delivery_id, p.order_id, p.zone_code, formatTime(p.delivery_time) AS finish_time, p.delivery_type, p.qr_code AS barcode,p.delivery_notes, p.failure_notes, CASE IFNULL(p.failure_notes,\'\') WHEN \'\' THEN p.delivery_notes ELSE p.failure_notes END AS remarks,HEX(p.driver_pmt_status_id) as driver_pmt_status_id, 
+          $select_cols ='p.id,p.collectible,p.delivery_id, p.order_id, p.zone_code, formatTime(p.delivery_time) AS finish_time, p.delivery_type, p.qr_code AS barcode,p.delivery_notes, p.failure_notes,p.return_notes,'.' CASE IFNULL(p.failure_notes,\'\') WHEN \'\' THEN p.delivery_notes ELSE p.failure_notes END AS remarks,'.'HEX(p.driver_pmt_status_id) as driver_pmt_status_id, 
           formatTime(p.arrival_time) AS `arrival_time`, formatTime(p.last_checkout_time) AS last_checkout_time, formatTime(p.first_checkout_time) AS first_checkout_time, s.sender_type_id, st.name AS sender_type, (select x.name from driver as x WHERE x.id = p.driver_id LIMIT 1) AS driver_name, p.driver_id,'.
           '(select x.name from driver as x WHERE x.id = p.pickup_driver_id LIMIT 1) AS pickup_driver_name,'.
           '(IFNULL(p.base_fee,0) + IFNULL(p.delivery_fee,0) +IFNULL(p.cod_fee,0)) AS fees, 

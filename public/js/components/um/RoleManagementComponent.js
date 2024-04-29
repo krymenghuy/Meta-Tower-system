@@ -8,18 +8,19 @@ var RoleManagementComponent = new function(){
     this.tblCard_body = this.self[0].querySelector('div#_um_card');    
 //  console.log(mThis.tblCard_body);
     this.lnkNewRole = this.self[0].querySelector('#_lnkNewRole');
-    this.elSearch = this.self[0].querySelector('#_search_role');
+    this.elSearchRole = this.self[0].querySelector('#_search_role');
     this.btnPrint = this.self[0].querySelector('#_cul_btnPrint');
     this.div_filter_fields = this.self[0].querySelector('#div_filter_fields');
-      
+     
     this.renderRoleCards = (data, container = null) => {;
         let html = '';
-        //let cnt = 0;
+        let cnt = 0;
         container = container || mThis.tblRoles_body;
-         
-        (data || []).map(item => { 
-            html = [ html,`<div data-roleid="${item.id}" data-role data-rolecreatedate="${item.create_date}" data-rolecreateuser="${item.create_user}" data-roleuserclass="${item.user_class}" data-rolename="${item.name}" class="col-sm-2 role-card">
-            <div class="card bg-white shadow p-2 border rounded-3 d-flex flex-column justify-content-between" data-roleid="${item.id}" style="height:20vh;min-width:120px;">
+        
+        container.innerHTML =  '<div class="d-flex flex-column justify-content-center align-items-center h-100 w-100"><div class="animation-line" style="height:2px;margin:0;"></div></div>';
+        (data || []).map(item =>{ 
+            html = [ html,`<div data-roleid="${item.id}" data-usersearchvalue="`,item.user_search_value,`" data-userclass="${item.user_class}" data-rolename="${item.name}" class="col-sm-2 role-card">
+            <div class="card-content card bg-white shadow p-2 border rounded-3 d-flex flex-column justify-content-between" data-roleid="${item.id}" style="height:20vh;min-width:120px;">
                <div class="d-flex flex-column justify-content-center align-items-center p-2">
                   <span class="data-input text-success text-center" style="font-size:1em" data-field="user_class">${item.name}</span>
                   <span class="role_name_title mt-2">
@@ -35,87 +36,59 @@ var RoleManagementComponent = new function(){
             </div>
            
          </div>`].join('');
-
+          cnt++;
         });
         container.innerHTML = html;
+
+        /** Hide RoleTabView if there initially because there is no Role selected at first */
+          if(!mThis.selected_role){
+            try{
+                RoleTabView.self.classList.remove('d-flex');
+                RoleTabView.self.style.display= 'none';
+            }catch (e){
+                console.error(e);
+            };
+          }   
         container.onclick = e =>{
             e.preventDefault();
             let card = VSUtil.closestLimited(e.target, 'div.role-card');
-            if(card){
-                let tole_id = card.dataset.roleid || card.dataset.id;
-                RoleTabView.displayContent(tole_id);
+            if(card){  
+               Array.from(container.children).map(x =>{
+                    if(x !== card) x.classList.remove('selected');
+                });
+                card.classList.add('selected');
+
+                let role_id = card.dataset.roleid || card.dataset.id;
+                let user_class = card.dataset.userclass; 
+                let role_name = card.dataset.rolename || card.dataset.name; 
+                RoleTabView.displayContent({"role_id":role_id,"user_class":user_class, "name":role_name});
                 return;
             }
         };
+
+       let card = null; 
+       let user_search_value = null;
+       if(cnt ===1){
+            card = container.querySelector('div.role-card');
+            if(card) user_search_value = card.dataset.usersearchvalue;
+       }else if (cnt >1 ){
+            card = container.querySelectorAll('div.role-card')[0]; 
+       }else{
+          container.innerHTML = '<div class="d-flex flex-column justify-content-center align-items-center h-100 w-100"><h5>No roles were found!</h5></div>'
+       }
+
+       let role = null;
+       if(card){
+         role = {
+            "role_id":card.dataset.roleid || card.dataset.id,
+            "name":card.dataset.rolename || card.dataset.name,
+            "user_class":card.dataset.userclass
+         }
+         card.classList.add('selected');
+       }
+       RoleTabView.displayContent(role,null,{"user_search_value":user_search_value}); 
     }
-
-    // this.displayRoleDetails = (item, container) => {
-    //     let html = '';
-    //     //let cnt = 0;
-    //     container = container || mThis.tblRoles_body;
-
-    //         html = [ html,`
-    //         <div class="w-50 border border-1 rounded-5 border-secondary p-3 ">
-    //             <div  class="d-flex flex-row justify-content-between p-2">
-    //                 <span class="fw-sembold text-muted"> Role name     : </span>
-    //                 <span class="fw-sembold">${item.rolename}</span>
-    //             </div>
-
-    //             <div class="d-flex flex-row justify-content-between p-2">
-    //                 <span class="fw-sembold text-muted"> User Class    : </span>
-    //                 <span class="fw-sembold">${item.roleuserclass}</span>
-    //             </div>
-
-    //             <div class="d-flex flex-row justify-content-between p-2">
-    //                 <span class="fw-sembold text-muted"> Create Date    : </span>
-    //                 <span class="fw-sembold">${item.rolecreatedate}</span>
-    //             </div>
-
-    //             <div class="d-flex flex-row justify-content-between p-2">
-    //                 <span class="fw-sembold text-muted"> Created By     : </span>
-    //                 <span class="fw-sembold">${item.rolecreateuser}</span>
-    //             </div>
-
-    //             <div class="d-flex flex-row gap-2 justify-content-start mt-2">
-    //                 <button class="btn btn-sm btn-primary rounded-4 ml-3"><span class="trans-text" data-langprop="buttons.Edit">Edit</span></button>
-    //                 <button class="btn btn-sm btn-warning text-white rounded-4 ml-3"><span class="trans-text" data-langprop="buttons.Lock">Lock</span></button>
-    //                 <button class="btn btn-sm btn-danger rounded-4 ml-3"><span class="trans-text" data-langprop="buttons.Delete">Delete</span></button>
-    //             </div>
-    //         </div>
-    //         <div class="w-50 border border-1 rounded-5 border-secondary p-3 ">
-    //             <div class="d-flex flex-row justify-content-between p-2">
-    //                 <span class="fw-sembold text-muted">Members : </span>
-    //                 <span class="fw-sembold">${item.user_count} </span>
-    //             </div>
-
-    //             <div class="d-flex flex-row justify-content-between p-2">
-    //                 <span class="fw-sembold text-muted">Applications and Modules : </span>
-    //                 <span class="fw-sembold">20 </span>
-    //             </div>
-
-    //             <div class="d-flex flex-row justify-content-between p-2">
-    //                 <span class="fw-sembold text-muted">Permissions : </span>
-    //                 <span class="fw-sembold">110 </span>
-    //             </div>
-
-    //             <div class="d-flex flex-row justify-content-between p-2">
-    //                 <span class="fw-sembold text-muted">Reports : </span>
-    //                 <span class="fw-sembold">30 </span>
-    //             </div>
-
-    //             <div class="d-flex flex-row gap-2 justify-content-start mt-2">
-    //                 <button class="btn btn-sm btn-primary ml-3 rounded-4"><span class="trans-text" data-langprop="buttons.Authorization">Authorization</span></button>
-    //             </div>
-
-    //         </div>
-    //    `].join('');
-     
-
-    //     container.innerHTML = ['<div class="d-flex flex-row gap-3 flex-wrap justify-content-between">',html,'</div>'].join('');
-   
-
-    // }
-
+ 
 
     /** displayItems() display items by category as its header similiar to Report Center's reports display layout */
     this.displayItems = (data, div) => {
@@ -137,23 +110,35 @@ var RoleManagementComponent = new function(){
     }
 
     this.loadRoles = (filter, onFinish)=>{
+        filter = filter || {"search_value":mThis.elSearchRole.value};
         vsapi.call(`${main_view.base_url}/api/role/list`,filter,null,false).then(res =>{
            const roles = res.status_code ==200? res.data : [];
            onFinish(roles); 
         });
-       
     }
 
     this.init = () => {
         if(mThis.initAlready) return;
         
+        mThis.elSearchRole.onkeyup = e =>{
+            e.preventDefault();
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(()=>{
+                let p = mThis.getFilterData();
+                console.log(p);
+                mThis.loadRoles(p, roles =>{
+                    mThis.renderRoleCards(roles);
+                });
+            },250);
+        };
+
         mThis.lnkNewRole.addEventListener('click', e =>{
             e.preventDefault();
             let op = {
                 'id': null,
                 'onclose':(d)=>{
                     mThis.loadRoles(mThis.getFilterData(), roles =>{
-                        this.renderRoleCards(roles);
+                        mThis.renderRoleCards(roles);
                     }); 
                 }
             }
@@ -164,73 +149,26 @@ var RoleManagementComponent = new function(){
             el.onchange = (e)=>{
                 e.preventDefault();
                 mThis.loadRoles(mThis.getFilterData(), roles =>{
-                    this.renderRoleCards(roles);
+                    mThis.renderRoleCards(roles);
                 });
             }
         });
-
-        mThis.elSearch.addEventListener('keyup',e =>{
-            e.preventDefault();
-            clearTimeout(mThis.search_timeout);
-            mThis.search_timeout = setTimeout(()=>{
-                mThis.loadRoles(mThis.getFilterData(), roles =>{
-                    this.renderRoleCards(roles);
-                });
-
-            },250);
-        });     
-          
+     
         mThis.initAlready = true;
     }
  
     this.getFilterData = ()=>{
         let p = {};
-       
-       p.search_value = mThis.elSearch.value;
-       return p; 
+        p.search_value = mThis.elSearchRole.value;
+        return p; 
     }
-    this.addRoleMember = function(role = {}, onFinish = null){
-        let role_id = role.id;
-        let p = {};
-        p.role_id = 0;
-
-        vsapi.call(`${main_view.base_url}/api/getComboItems_user`,p).then(res => {
-            if(res.status_code === 200){
-                let rows = res.data;
-                let option = {};
-                option.title = `Add user to ${role.name} role`;
-                option.data = StringSanitizer.sanitizeObject(rows, ['(', ')', '@', '.', '-'], ['login_name']);
-                option.valueMember = "id";
-                option.textMember = "login_name";
-                option.dataLabel = "Select User";
-                option.blankErrorMessage = "Choose a user login";
-
-                InputBox2.show(option,function(d){
-                    if(d){
-                        let p = {};
-                        p.role_id = role_id;
-                        p.user_id = d.value;
-                        vsapi.call(`${main_view.base_url}/api/roles/add-member`,p).then(res => {
-                            if(res.status_code === 200){
-                                let d = res.data;
-                                onFinish(d.user_count);
-                            }
-                            else
-                                cv_interact.error(res.error_message);
-                        });
-                    }
-                });
-            }
-            else
-                cv_interact.error(res.error_message);
-        });
-    }
-   
+    
     this.show = (options)=>{
+        options = options || {};
         mThis.init();
-        mThis.selected_role_id = null;
-        mThis.selected_role_name = null;
-        if(!options) options={};
+        mThis.selected_role = null;
+        mThis.options = options;
+
         main_view.setTitle(mThis.title_prop);
          
         main_view.setTitle(mThis.title_prop);
@@ -263,9 +201,17 @@ const RoleTabView = new function(){
    
     const user_cols = [
         {
+            title:"Photo",
+            data:(data,index,tr)=>{
+                return [`<img src="`,data.image_url,`" class="image-student-tbl">`].join('');
+            }
+ 
+         },
+        {
            title:"Loin Name",
            data:(data,index,tr)=>{
-               return data.login_name;
+               let lock_html = data.is_locked ==1? '<span class="d-block text-danger fw-sembold p-1">Locked</span>' : '';
+               return [data.login_name,lock_html].join('');
            }
 
         },
@@ -284,23 +230,23 @@ const RoleTabView = new function(){
  
          },
          {
-            title:"Official ID",
+            title:"Primary Role",
             data:(data,index,tr)=>{
-                return data.official_code;
+                return ['<span class="d-block">',data.role_name,'</span>','<span class="text-left p-1">',`<span class="text-muted">`,` ID: </span>`,(data.official_code || 'NA'),'</span>'].join('');
             }
  
          },
         {
-           title:"Start Date",
+           title:"Last Login",
            data:(data,index,tr)=>{
-               return [`<span class="d-block p-1">Last login: `,data.last_login_date,`</span>`,`<span class="d-block p-1">Created: `,data.create_date,`</span>`].join('');
+               return [`<span class="d-block p-1">Last login: `,data.last_login_date,`</span>`].join('');
            }
 
         },
         {
            title:"Created By",
            data:(data,index,tr)=>{
-               return data.create_user;
+               return ['<span class="d-block">', data.create_user ,'</span><span class="d-block text-muted"><small>',data.create_date,'</small></span>'].join('');
            }
 
         },
@@ -308,15 +254,98 @@ const RoleTabView = new function(){
             title:"Action",
             data:(data,index,tr)=>{
                 return [`<div class="d-flex gap-2 flex-wrap">`,
-                `<a href="javascript:void(0)" class="lnk-edit-user"><i class="fa fa-edit"></i></a>`,
-                `<a href="javascript:void(0)" class="lnk-remove-user"><i class="fa fa-key text-warning"></i></a>`,
-                `<a href="javascript:void(0)" class="lnk-remove-user"><i class="fa fa-lock text-danger"></i></a>`,
-                `<a href="javascript:void(0)" class="lnk-remove-user"><i class="fa fa-trash text-danger"></i></a>`,
+                `<a data-id="`,data.id,`" href="javascript:void(0)" class="lnk-edit-user"><i class="fa fa-edit"></i></a>`,
+                `<a data-id="`,data.id,`" href="javascript:void(0)" class="lnk-reset-password"><i class="fa fa-key text-warning"></i></a>`,
+                `<a data-id="`,data.id,`" href="javascript:void(0)" data-action="`,(data.is_locked ==1? 'unlock':'lock'),`" class="lnk-lock-user"><i class="${data.is_locked==1? 'fa fa-unlock text-info':'fa fa-lock text-danger'}"></i></a>`,
+                `<a data-id="`,data.id,`" href="javascript:void(0)" class="lnk-remove-user"><i class="fa fa-trash text-danger"></i></a>`,
                 `</div>`].join('');
             }
  
          }
   ]; 
+
+ 
+/** begin: UserPanel defintion */
+ this.UserPanel = new function(){
+    //NOTE  "mThis" refers to RoleTabView instance
+    const that = this;
+    this.divSelf =  mThis.tabBody.querySelector('#view_users');
+    this.btnAddRoleMember = this.divSelf.querySelector('#_um_role_add_member');
+    this.btnCreateUser = this.divSelf.querySelector('#_um_role_create_user');
+    this.elSearchUser = this.divSelf.querySelector('#_um_role_search_user');
+ 
+    //createUser
+    this.createLogin = (user_class=null)=>{
+        const op = {
+            user_id: null,
+            open: 'add-user',
+            default: {
+                official_code: "",
+                user_class: mThis.selected_role.user_class,
+                role_id:mThis.selected_role.role_id,
+                phone_number: "",
+                full_name: ""
+            },
+            onClose: (user) => {
+                if (user){
+                    that.elSearchUser.value =  user.login_name;
+                    mThis.userListView.showPage(that.getFilterData());
+                }
+            }
+        };
+        if(!AuthManager.allowed(100)) return;
+        AddUserDialog.show(op);
+    }
+  
+    this.getFilterData = ()=>{
+         return {"role_id":mThis.selected_role? mThis.selected_role.role_id: -1, "search_value":that.elSearchUser.value};
+    }
+
+    this.btnAddRoleMember.onclick = e =>{
+        e.preventDefault();
+        if (!mThis.selected_role) {
+            cv_interact.error('No role selected!');
+            return;
+        }
+
+        let op = {
+            "multiple_select": true,
+            "user_class": null,
+            "onClose":(users) =>{
+                let ids = '';
+                let cnt = 0;
+                users.map(u =>{
+                    ids = [ids, (ids? '|':'') ,(u.id || u.user_id)].join('');
+                    if(u.id > 0) cnt++;
+                }); 
+               let p = {"role_id":mThis.selected_role.role_id, "user_ids":ids,'is_primary':1};
+               vsapi.call([main_view.base_url, '/api/role/add-members'].join(''),p,null,false).then(res =>{
+                  if(res.status_code == 200){
+                     let d = res.data;
+                     mThis.userListView.showPage(RoleTabView.UserPanel.getFilterData());
+                     cv_interact.success([d.success_count,' users have been added as members of ', (mThis.selected_role.name || 'the role. NOTE that any user is allowed to have only one role as primary role')].join(''));
+                  } else cv_interact.error(res.error_message);
+               });
+            }
+        };
+        FindUserDialog.show(op);
+    }
+
+    this.btnCreateUser.onclick = e =>{
+        e.preventDefault();
+        that.createLogin(null);
+        //alert('Create user in role ID = ' + mThis.selected_role_id);
+    }
+   
+    this.elSearchUser.onkeyup = e =>{
+        e.preventDefault();
+        setTimeout(()=>{
+           mThis.userListView.showPage(that.getFilterData());
+        },250);
+    };  
+ }
+/** end: Userpanel defintion */
+ 
 
     //begin::init RoleTabView
         this.initOnce = ()=>{
@@ -333,7 +362,7 @@ const RoleTabView = new function(){
                 if(lnk){
                     let page_id = lnk.dataset.target;
                     let view_name = lnk.dataset.view;
-                    mThis.displayContent(mThis.selected_role_id,view_name);
+                    mThis.displayContent(mThis.selected_role,view_name);
                     mThis.setActivePage(page_id, lnk); 
                     return;
                 }
@@ -341,19 +370,137 @@ const RoleTabView = new function(){
             });
 
             mThis.userListView = new ListView('_um_role_user_list',{     
-              tableClass:'table',
+              tableClass:'table user-table',
               columns: user_cols,
               perPage:6,        
-               fetchApi:[main_view.base_url,'/api/roles/members'].join(''),
+               fetchApi:[main_view.base_url,'/api/role/members'].join(''),
                processResponse:(res)=>{
-                   console.log(res);
                    return res.data;
                },
                apiCluster:null,
-               rowCreated:(data,index,tr)=>{
-                 tr.dataset.id = data.id;
+               rowCreated:(data,index,tr) => {
+                 tr.dataset.id = data.id || data.user_id;
+                 tr.dataset.login = data.login_name;
+                 tr.dataset.fullname = data.full_name;
+                 tr.dataset.userclass = data.user_class;
+                 tr.dataset.roleid = data.role_id;
                }
             }); 
+ 
+            mThis.tblUsers = mThis.userListView.getTable();
+            mThis.tblUsers.onclick = e=>{
+               e.preventDefault();
+
+              //Click on Remove User
+               let lnk = VSUtil.closestLimited(e.target,'.lnk-remove-user');
+               if (lnk){
+                 cv_interact.confirm(['Are you sure to remove the selected user from ',mThis.selected_role_name || 'the role', '?'].join(''),{"title":"Remove User","context":'delete', "confirmButtonText":"Remove"},e =>{
+                     if(e){
+                         let user_id = lnk.dataset.id || lnk.dataset.userid;
+                         let p = {"role_id":mThis.selected_role.role_id, "user_id":user_id};
+                         console.log(p);
+                         vsapi.call([main_view.base_url, '/api/role/remove-member'].join(''),p,null,false).then(res =>{
+                             if(res.status_code===200){
+                                 mThis.userListView.showPage(RoleTabView.UserPanel.getFilterData());
+                             }else cv_interact.warning(res.error_message);
+                         });
+                     }
+                 } );
+                 return;
+               }
+
+               //Click on reset password
+               lnk = VSUtil.closestLimited(e.target,'.lnk-reset-password');
+               if(lnk){
+                    if(!AuthManager.allowed(109)) return;
+                    let user_id = lnk.dataset.id || lnk.dataset.userid;
+                    let tr = VSUtil.closestLimited(e.target,'tr');
+                    let user_name = tr.dataset.fullname;
+
+                    let op = {
+                        button:lnk,
+                        user_id: user_id,
+                        user_name: user_name,
+                        open: 'reset-password',
+                        onClose: () => {
+                            mThis.userListView.showPage(mThis.UserPanel.getFilterData(), mThis.userListView.current_page);
+                        }
+                    };
+                    if(op.user_id && op.user_id !== 'undefined') AddUserDialog.show(op);
+                    return;
+               }
+
+             //Click on lock user
+             lnk = VSUtil.closestLimited(e.target,'.lnk-lock-user');
+             if(lnk){
+                if(!AuthManager.allowed(113)) return;
+                    let user_id = lnk.dataset.id || lnk.dataset.userid;
+                    let tr = VSUtil.closestLimited(e.target,'tr');
+                    let user_name = tr.dataset.fullname;
+                    let login_name = tr.dataset.login;
+                    //let islocked = tr.dataset.islocked;
+                    let action = lnk.dataset.action; //islocked ==1? 'unlock': 'lock';
+                    let op = {
+                        user_id: user_id,
+                        user_name: user_name,
+                        action: action
+                    };
+                     action =(action || '').toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
+                    cv_interact.confirm(['Do you want to ',action.toLowerCase() ,' user ',user_name.replace(/^\w/, (c) => c.toUpperCase()),'?'].join(''),{
+                        title: `${action || ''} User`,
+                        context: `update`,
+                        confirmButtonText:`${action || ''} Now`
+                    },(e) => {
+                        if(e)
+                        {
+                            delete(op.user_name);
+                            vsapi.call(`${main_view.base_url}/api/user/set-lock-status`,op,lnk,false).then(res => {
+                                if(res.status_code === 200)
+                                {
+                                    mThis.UserPanel.elSearchUser.value = login_name;
+                                    mThis.userListView.showPage(mThis.UserPanel.getFilterData(),mThis.userListView.current_page); 
+                                }
+                                else cv_interact.error(res.error_message);
+                               
+                            });
+                        }
+                    });
+                    
+                return;
+             }
+
+
+            //Click on edit user
+             lnk = VSUtil.closestLimited(e.target,'.lnk-edit-user');
+             if(lnk){
+                  if(!AuthManager.allowed(112)) return;
+                  let user_id = lnk.dataset.id || lnk.dataset.userid;
+                  let tr = VSUtil.closestLimited(e.target,'tr'); 
+                  //get primary role_id. If user does not have primary role_id, then do not allow edit information
+                  const role_id = tr.dataset.roleid;
+                  const user_class = tr.dataset.userclass;
+                  // if(!role_id || role_id==0){
+                  //   cv_interact.warning('This user must have one role, so that it is possible to view or edit user information');
+                  //   return;
+                  // }
+                  let op = {
+                      user_id: user_id,
+                      role_id: role_id,
+                      default:{
+                          user_class: user_class
+                      },
+                      open: 'add-user',
+                      onClose: () => {
+                          mThis.userListView.showPage(mThis.UserPanel.getFilterData(), mThis.userListView.current_page);
+                      }
+                  };
+                  if(op.user_id > 0) AddUserDialog.show(op); else cv_interact.error('User ID is unexpectedly missing or No user ID is selected');
+             
+                 return;
+            } 
+
+            };
+
 
             mThis.initAlready = true ;
         }
@@ -388,38 +535,52 @@ const RoleTabView = new function(){
         }
     }
 
-    this.displayContent = (role_id,view_name = null) =>{
+    // @role = {"role_id","user_class"}
+    this.displayContent = (role,view_name = null,op=null) =>{
+         op = op || {};
+         //remember role_id
+         mThis.selected_role = role;
+        if(!role || (!role.role_id || role.role_id ==0)){
+            RoleTabView.self.classList.remove('d-flex');
+            RoleTabView.self.style.display='none';
+            return;
+        }
         view_name = view_name || mThis.last_view_name;
-        let api = null;
-      
+        const role_id = role.role_id;
+ 
         switch(view_name){
             case 'view_users':
-                mThis.userListView.showPage({"role_id":role_id});
-                mThis.setActivePage(view_name);
-                console.log(role_id);
+                mThis.userListView.showPage({"role_id":role_id,"search_value":op.user_search_value});
+                
               break;
             case 'view_applications':
-                api = [main_view.base_url, '/api/roles/apps'].join(''); 
+                //mThis.appListView.showPage({"role_id":role_id});
                break;
+            case 'view_apps':
+                //mThis.moduleListView.showPage({"role_id":role_id});
+               break;   
             case 'view_modules':
-                api = [main_view.base_url, '/api/roles/modules'].join(''); 
+                //mThis.moduleListView.showPage({"role_id":role_id});
                break;   
             case 'view_permissions':
-                api = [main_view.base_url, '/api/roles/permissions'].join(''); 
+                //mThis.permissionListView.showPage({"role_id":role_id});
                break;
             case 'view_reports':
-                api = [main_view.base_url, '/api/roles/reports'].join(''); 
+                //mThis.reportListView.showPage({"role_id":role_id});
               break;
             default:
-                break;                        
+                RoleTabView.self.classList.remove('d-flex');
+                RoleTabView.self.style.display='none';
+                return;
+                //break;                        
         }
-        console.log('Active Page: ',view_name, ' Role: ', role_id);
-        let p = {"role_id":role_id};
-
-       
-        //remember role_id
-        mThis.selected_role_id = role_id;
-
+        RoleTabView.self.classList.add('d-flex');
+        //RoleTabView.self[0].style.display='block';
+        mThis.setActivePage(view_name);
+        //console.log('Active Page: ',view_name, ' Role: ', role_id);
+        //let p = {"role_id":role_id};
+  
+      
         // vsapi.call(api,p,null,false).then(res =>{
         //    if(res.status_code ==200){
         //       console.log(res.data); 
@@ -430,6 +591,159 @@ const RoleTabView = new function(){
 }
 /**end:: vs-tab-view for role details */
 
+
+//begin:: FindUserDialog
+const FindUserDialog = new function () {
+    let mThis = this;
+    this.self = main_view.appContent.children('#_um_dlgFindUser');
+    this.elTitle = this.self[0].querySelector('.modal-title');
+    this.elSearch = this.self[0].querySelector('.search-user');
+    this.btnOK = this.self[0].querySelector('#_um_dlgFindUser_btnOK');
+ 
+    this.options = {};
+    const found_student_cols = [
+       {
+         "title":"Login Name",
+         "data":(data,index,tr)=>{
+            return data.login_name;
+         }
+       },
+       {
+        "title":"Full Name",
+        "data":(data,index,tr)=>{
+           return data.full_name;
+        }
+      },
+      {
+        "title":"ID",
+        "data":(data,index,tr)=>{
+           return data.official_code;
+        }
+      },
+      {
+        "title":"Phone Number",
+        "data":(data,index,tr)=>{
+           return data.phone_number;
+        }
+      },
+      {
+        "title":"User Class",
+        "data":(data,index,tr)=>{
+           return data.user_class;
+        }
+      },
+      {
+        "title":"Role Name",
+        "data":(data,index,tr)=>{
+           return data.role_name;
+        }
+      }
+    ];
+
+    this.foundUserList = new ListView('_um_role_found_user_list',{
+         columns:found_student_cols,
+         fetchApi:[main_view.base_url, '/api/user/list'].join(''),
+         apiCluster:null,
+         clientSidePagination:false,
+         perPage:5,
+         rowCreated:(data,index,tr)=>{
+            tr.dataset.id = data.id || data.user_id;
+            tr.dataset.login =  data.login_name;
+            tr.dataset.name = data.full_name;
+            tr.dataset.officialcode = data.official_code;
+            tr.dataset.phonenumber = data.phone_number;
+            tr.dataset.email = data.email;
+            tr.dataset.rolename = data.role_name;
+            tr.dataset.roleid = data.role_id;
+            tr.dataset.userclass = data.user_class;
+         }
+    });
+
+    mThis.tblUsers = this.foundUserList.getTable();
+
+    /** find User on FindUserDialog */
+    mThis.elSearch.addEventListener('keyup', e => {
+        e.preventDefault();
+        setTimeout(()=>{
+            mThis.foundUserList.showPage({"search_value":mThis.elSearch.value});
+        },250);
+       
+    });
+
+    this.tblUsers.addEventListener('click', e => {
+        e.preventDefault();
+        let tr = e.target.closest('tr');
+        if (tr) {
+            tr.classList.toggle('selected');
+            tr.querySelector('td:first-child').classList.toggle('checked');
+        }
+    });
+    
+ 
+    this.btnOK.onclick =  e => {
+        e.preventDefault();
+        let users = mThis.getSelection();
+        if (!users[0]) {
+            cv_interact.warning("No users selected");
+            return;
+        }
+        if (typeof mThis.options.onClose === 'function') mThis.options.onClose(users);
+        mThis.self.modal('hide');
+    };
+
+    this.getSelection = () => {
+        let ps = [];
+        mThis.tblUsers.querySelectorAll('tr.selected').forEach(tr => {
+            const d = tr.dataset;
+            ps.push({ "id": d.id, "login_name":d.login, "name": d.name, "user_class": d.userclass, "role_name":d.rolename, "role_id":d.roleid });
+        }); 
+        return ps;
+    }
+
+    // this.findUsers = () => {
+    //     let val = mThis.elSearch.value;
+    //     let p = { 'user_class': mThis.options.user_class, 'search_value': val };
+    //     vsapi.call(`${main_view.base_url}/api/user/list`, p, null, false).then(res => {
+    //         if (res.status_code === 200) {
+    //             let d = StringSanitizer.sanitizeObject(res.data, null, ['image_url', 'login_name']);
+    //             mThis.renderUsers(d);
+    //         }
+    //     })
+    // }
+
+    this.renderUsers = (users = []) => {
+        const tbody = mThis.tblUsers.querySelector('tbody');
+        tbody.innerHTML = '';
+        let cnt = 0;
+        let html = '';
+        (users || []).map(user => {
+            html = [html, `<tr data-id="${user.id}"><td class="checkbox"></td>`,
+            `<td>`, user.login_name, `</td>`,
+            `<td>`, user.full_name, `</td>`,
+            `<td>`, user.phone_number ? user.phone_number : 'Not Available', `</td>`,
+            `<td>`, user.user_class, `</td>`,
+            `<td>`,user.role_name,`</td>`,
+            `</tr>`].join('');
+            cnt++;
+        });
+        if (cnt === 0) html = `<tr><td colspan="100%"><div class="p-3 text-center text-secondary w-100"> No matched users!</div></td></tr>`;
+        tbody.innerHTML = html;
+    }
+ 
+    this.show = (options = null) => {
+        options = options || {};
+        mThis.options = options;
+        mThis.onSelect = options.onSelect;
+        mThis.elSearch.value  = '';
+        //mThis.tblUsers.querySelector('tbody').innerHTML = '<tr><td colspan="100%"><div class="w-100 d-flex flex-wrap justify-content-center p-3"><h5>Search for users</h5> </div></td></tr>';
+
+        mThis.self.modal({
+            'backdrop': "static"
+        });
+    }
+}
+//end:: FindUserDialog
+ 
 // const RoleDialog = new function(){
 //         const mThis = this;
 //         this.self = main_view.appContent.find('#roleDialog');
@@ -813,24 +1127,7 @@ const RoleTabView = new function(){
 //         });
 //     };
 
-//     mThis.lnkAddRoleMember.onclick = function(e){
-//         e.preventDefault();
-//         if(!RoleManagementComponent.selected_role_id){
-//             cv_interact.error('No role selected!');
-//             return;
-//         }
-
-//         let role = {
-//             id: mThis.role_id,
-//             name: RoleManagementComponent.selected_role_name
-//         };
-//         RoleManagementComponent.addRoleMember(role,function(new_user_count){
-//             if(new_user_count){
-//                 RoleManagementComponent.updateSelectRole('col_user_count', new_user_count);
-//                 mThis.displayRoleMembers(mThis.role_id);
-//             }
-//         });
-//     };
+ 
 
 //     this.setEventModules = () => {
 //         const btnModuleRemoveList = mThis.tblModules_body.querySelectorAll('a._um_ma_remove');

@@ -1631,9 +1631,9 @@ ul.list-filter-um li:not(li:last-child) {
     -webkit-box-orient: vertical;
 }
 
-.swal2-html-container{
+/* .swal2-html-container{
     text-transform: capitalize;
-}
+} */
 
 .margin-float{
     margin-top: -6%;

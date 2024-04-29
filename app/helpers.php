@@ -1918,7 +1918,7 @@ function createUUIDV1()
               $str_months = $str_months.($str_months? ' OR ': '') . ' (' .$year_col_expression.' = '.$year.' AND '.$month_col_expression.' IN ('.implode(',',$q_months[$year]).'))';
             }
             return (object)[
-                'sql'=>$str_months,
+                'sql'=>'('.$str_months.')',
                 'years'=>$years,
                 'months'=>$q_months,
                 'last_month_info'=>(object)['month'=>$end_month,'year'=>$end_year],
