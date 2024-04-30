@@ -127,6 +127,17 @@ var CustomersComponent = new function(){
         });
 
         mThis.tblCustomers = mThis.customerListView.getTable();
+
+        
+        this.sh_container = mThis.customerListView.getListContainer();
+        // mThis.setEvents($(mThis.container));
+        // console.log(mThis.container.parentElement); 
+        const sh_parent = mThis.sh_container.parentElement;
+            sh_parent.style.height = (window.innerHeight - 190)+'px';
+            sh_parent.classList.add('overflow-y-auto');
+            window.onresize = () => {
+                sh_parent.style.height = (window.innerHeight - 190)+'px';
+        }
  
         // mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=> {
         //     el.addEventListener('change',e=>{
@@ -340,4 +351,119 @@ var CustomersComponent = new function(){
     }
       
 };
+
+const CustomerDialog = new function(){
+    const mThis = this;
+    this.self = main_view.appContent.find('#CustomerDialog');
+    this.base_url = main_view.base_url;
+    this.options = {};
+    
+    this.elTitle = this.self.find('#_cul_dlgCustomerTitle');
+    this.btnSave =  this.self.find('#_cul_dlgCustomer_btnSave');
+    this.elBusinessType =  this.self.find('#_cul_business_type');
+    this.elSalesAgent =  this.self.find('#_cul_sales_agent');
+    this.elPriceList =  this.self.find('#_cul_price_list');
+    this.elCustomerType = this.self.find('#_cul_sender_type') ;
+    this.onClose = null;
+    this.body =  this.self.find('.modal-body')[0];
+    this.div_sender_info =  this.body.querySelector('#_cul_dlgCustomer_body');
+  
+    
+    // this.body = this.self.find('.modal-body')[0];
+  
+    this.prepareData = (id,def, onFinish) => {
+        if(!def) def = {};
+        vsapi.call(`${mThis.base_url}/abm/customers/form-options`,{id: id },null).then(res => {
+            let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
+            // VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No Sales Agent)', def.sales_agent_id);
+            VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
+            VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'price_list', true, '(Price List)', def.price_list_id);
+            VSUtil.setComboItems(mThis.elCustomerType,d.sender_types,'id','sender_type',true,'(Customer Type)',def.sender_type_id);
+            console.log(d);
+
+            mThis.form_data = d;
+            onFinish(d);
+        });
+    }
+
+    this.btnSave.on('click', function(e){
+        e.preventDefault();
+        let p = mThis.getData();
+        console.log(p);
+        vsapi.call(`${mThis.base_url}/abm/customers/save`, p).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
+
+            }
+            else
+                cv_interact.error(res.error_message);
+        });
+        
+     });
+      this.setData = (d) => {
+        d = d || {};
+        console.log(d);
+        // mThis.body.querySelectorAll('.data-input').forEach(el =>{
+        //     el.value = null;
+        // });
+        mThis.div_sender_info.querySelectorAll('.data-input').forEach(el =>{ 
+            const data_member = el.dataset.field;
+            if(el.tagName.toLowerCase() === 'select'){
+
+                el.value = d[data_member];
+                let event = new Event('change',{
+                    bubbles: true,
+                    cancelable: true
+                });
+                el.dispatchEvent(event);
+            }
+            else{
+                el.value = d[data_member]?? '';
+            }
+        });
+  
+       
+    }
+    
+
+    this.getData = () => {
+        let p = {};
+        p.id = mThis.options.id;
+        mThis.self[0].querySelectorAll('.data-input').forEach(el=>{
+            let f = el.dataset.field;
+            
+            p [f] = el.value;
+        });
+        
+        
+        return p;
+    }
+
+    this.show = (options) => {
+        if (!options) options = {};
+        mThis.options = options;
+       // console.log('grth');
+         
+        mThis.prepareData(mThis.options.id,{},data => {
+            if(data.sender){
+                
+                mThis.elTitle.text("Modify Customer");
+            }
+            else{
+                mThis.elTitle.text("Create Customer");
+            }
+// console.log(data.customer);
+            mThis.setData(data.sender);
+
+            mThis.self.modal({
+                backdrop: 'static'
+            });
+        });
+    }
+
+  
+
+  
+}
  

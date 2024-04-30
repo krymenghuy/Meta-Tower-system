@@ -91,7 +91,7 @@ class Customer //extends Model
     $ss = $ss ?? $this->userInfo;
     $branch_id = $ss->branch_id;
     $v_rule = [
-      'id' => '0|identity=1',
+      // 'id' => '0|identity=1',
       'lead_id' => '0|number',
       'name' => '1|string|0-100',
       'name_kh' => '0|string|0-100',
@@ -125,7 +125,7 @@ class Customer //extends Model
     $res = validateObject($arr, $v_rule, true, ['email' => ['-', '.', ',', '@', '_']], $ss->lang, false, $checkUnque);
     if ($res->error)
       return DV::error($res->error);
-    $id = $id ?? $res->id;
+    // $id = $id ?? $res->id;
     $inputs = $res->values;
     $d = (object) $inputs;
     

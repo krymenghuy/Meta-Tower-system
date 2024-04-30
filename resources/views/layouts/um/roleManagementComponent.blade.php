@@ -69,14 +69,31 @@
 .vs-tab-header a:hover {
     background-color: #f5f5f5; /* Change to your preferred hover background color */
 }
-
+div.role-card.selected > div.card-content {
+   border:2px solid green !important;
+}
+.user-table td{
+  vertical-align: middle;
+}
   
+  tr.selected{
+     background-color: #72B3E6;
+  }
+  tr.selected td{
+      color:#fff;
+  }
+  #_um_rolelist{
+    overflow:hidden;
+  }
+  #_um_rolelist:hover{
+     overflow:auto;
+  }
 </style>
 
 <div id="_um_roleManagementComponent" class="p-3" style="display:none">
    <div class="d-flex flex-row flex-wrap justify-content-between align-items-between p-1 bg-white shadow rounded-3 p-3"  id="div_filter_fields" >
           <div class="d-flex flex-row gap-2">
-             <input type="search" class="form-control " placeholder="Search role" id="_search_role"/>
+             <input type="search" class="form-control border border-secondary rounded-4" placeholder="Search role or user" id="_search_role"/>
           </div>
           <div class="d-flex flex-row gap-2">
               <button  id="_lnkNewRole" class="btn btn-sm btn-primary rounded-5" type="button">
@@ -89,11 +106,11 @@
     </div>
  
     <div id="_um_rolelist_wraper" class="w-100 shadow-lg bg-white rounded-3 p-2 overflow-hidden mt-2">
-        <div id="_um_rolelist" class="w-90 d-flex flex-row bg-secondary gap-3 p-2" style="overflow-y:hidden; overflow-x:auto">
+        <div id="_um_rolelist" class="w-90 d-flex flex-row bg-secondary gap-3 p-2">
         </div>    
      </div>
      
-    <div class="mt-3 w-100 d-flex flex-column shadow-lg rounded-3 p-2 d-flex flex-row gap-3 bg-white vs-tab-view" id="_um_role_tab">
+    <div style="display:none" class="mt-3 w-100 flex-column shadow-lg rounded-3 p-2 d-flex flex-row gap-3 bg-white vs-tab-view" id="_um_role_tab">
         <div class="d-flex flex-row gap-2 vs-tab-header">
              <a  href="javascript:void(0)" class="tab-button view_users active" data-target ="view_users"><span class="trans-text" data-langprop="buttons.Users"></span></a>
              <a  href="javascript:void(0)" class="tab-button view_apps" data-target="view_apps"><span class="trans-text" data-langprop="buttons.Applications"></span></a>
@@ -103,12 +120,17 @@
         </div>
         <div class="w-100 p-1 mt-2 vs-tab-body">
            <div id="view_users" data-view="view_users" class="tab-page w-100" style="display:none">
-               <div class="h-100 d-flex flex-column flex-wrap p-3">
+               <div class="h-100 d-flex flex-column flex-wrap pl-3 pr-3">
                   <div class="d-flex flex-row gap-2">
-                      <button class="btn btn-sm btn-primary rounded-4"><span class="trans-text" data-langprop="buttons.Add Member"></span></button>
-                      <button class="btn btn-sm btn-info rounded-4"><span class="trans-text" data-langprop="buttons.Create User"></span></button>
+                     <div>
+                        <input type="text" class="form-control form-control-sm rounded-4 border border-secondary" id="_um_role_search_user" placeholder="Search user">
+                     </div>
+                      <div class="d-flex pt-2 gap-2">
+                        <a href="javascript:void(0)" id="_um_role_add_member" class=""><span class="trans-text pr-2 pl-2 p-1 bg-primary text-white border border-primary rounded-4" data-langprop="buttons.Add Member"></span></a>
+                        <a href="javascript:void(0)" id="_um_role_create_user" class=""><span class="trans-text pr-2 pl-2 p-1 bg-primary text-white border border-primary rounded-4" data-langprop="buttons.Create User"></span></a>
+                      </div>
                   </div>
-                  <div class="">
+                  <div class="mt-2">
                      <div class="w-100" id="_um_role_user_list"></div>
                   </div>
                </div>
@@ -142,8 +164,38 @@
   
    
 
+<div class="modal fade" id="_um_dlgFindUser" tabindex="-1" role="dialog" aria-labelledby="_um_dlgFindUser_title" aria-hidden="true">
+  <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title trans-text" id="_um_dlgFindUser_title" data-langprop="titles.Find Users">Find Users</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="form-group col-6">
+            <div class="input-group">
+              <input type="text" class="form-control search-user" placeholder="Search user" />
+            </div>
+          </div>
+        </div>
 
-<!-- <div class="modal fade" id="_um_dlgCreatePrn" tabindex="-1" role="dialog" aria-labelledby="_um_dlgCreatePrnTitle" aria-hidden="true">
+        <div class="p-2 m-2 w-100">
+          <div id="_um_role_found_user_list"></div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary trans-text" data-dismiss="modal" data-langprop="buttons.Cancel"></button>
+        <button type="button" class="btn btn-primary trans-text" id="_um_dlgFindUser_btnOK" data-langprop="buttons.OK"></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<div class="modal fade" id="_um_dlgCreatePrn" tabindex="-1" role="dialog" aria-labelledby="_um_dlgCreatePrnTitle" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -217,4 +269,4 @@
       </div>
     </div>
   </div>
-</div> -->
+</div>

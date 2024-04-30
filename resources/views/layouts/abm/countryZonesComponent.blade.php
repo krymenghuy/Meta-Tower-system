@@ -1,6 +1,6 @@
 <div id="_sttn_deliveryZoneComponent" style="display:none;padding:15px">
   <div class="d-flex justify-content-between p-2 bg-white rounded-3 p-3 shadow">
-    <div class="d-flex gap-2">
+  <div class="d-flex gap-2">
       <input id="_sttn_zone_search" type="text" class="form-control" placeholder="Search zone">
       <button type ="button" id="_sttn_btnSearch" class="btn btn-primary">
         <i class="la la-search fs-5"></i>
@@ -15,6 +15,7 @@
         <i class="fas fa-print fs-5"></i>
         <span class="trans-text" data-langprop="buttons.Print"></span>
       </button>
+     
     </div>
   </div>
   <div id="_sttn_delivery_zones" class="d-flex flex-column shadow rounded-3 bg-white p-3 mt-3"></div>
@@ -24,7 +25,7 @@
   <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="_sttn_dlgZoneTitle">Delivery Zone</h5>
+        <h5 class="modal-title" id="_sttn_dlgZoneTitle"> Zone</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -34,14 +35,14 @@
         <div class="row">
           <div class="col-lg-6">
             <div class="form-group">
-              <label for="country_code" class="col-form-label">Country Code</label>
-              <input type="text" class="form-control data-input" data-field="country_code" placeholder="country code ">
+              <label for="country_code" class="col-form-label">Country Name</label>
+              <input type="text" class="form-control data-input" data-field="name" placeholder="country name">
             </div>
           </div>
           <div class="col-lg-6">
             <div class="form-group">
-              <label for="country_name" class="col-form-label">Country Name</label>
-              <input type="text" class="form-control data-input" data-field="country_name" placeholder="name country">
+              <label for="country_name" class="col-form-label">Country Code</label>
+              <input type="text" class="form-control data-input" data-field="code" placeholder="code country">
             </div>
           </div>
           

@@ -30,11 +30,11 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('user')->group(
     Route::post('/options-user', [UMController::class, 'getComboItems_user']);
     //Route::post('/otions-user', [UMController::class, 'getComboItems_user']);
     Route::post('/options-work-location', [UMController::class, 'getComboItems_workloc']);
-    Route::post('/role/list', [UMController::class, 'getRoleList']);
-    Route::post('/role/add', [UMController::class, 'addRoleMember']);
-    Route::post('/role/delete', [UMController::class, 'removeRoleMember']);
-    Route::post('/deactivate-me', [UMController::class, 'deactivateMySelf']);
-    Route::post('/extended-details', [UMController::class, 'getUserExtendedDetails']);
+    //Route::post('/role/list', [UMController::class, 'getRoleList']);
+    // Route::post('/role/add', [UMController::class, 'addRoleMember']);
+    // Route::post('/role/delete', [UMController::class, 'removeRoleMember']);
+    // Route::post('/deactivate-me', [UMController::class, 'deactivateMySelf']);
+    // Route::post('/extended-details', [UMController::class, 'getUserExtendedDetails']);
 
     Route::post('/set-status', [UMController::class, 'setUserStatus']);
     Route::post('/unlock', [UMController::class, 'unlockUser']);
@@ -49,7 +49,6 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('user')->group(
 });
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('role')->group(function () {
-
     //update api for role
     Route::post('/save', [UMController::class, "saveRole"]);
     Route::post('/delete', [UMController::class, "deleteRole"]);
@@ -136,13 +135,29 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('permission')->
     // Route::post('/list-paginate', [UMController::class,'getPermissionListPaginate']);
 });
 
-Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('roles')->group(function () {
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('role')->group(function () {
     Route::post('/save', [UMController::class, 'saveRole']);
     Route::post('/delete', [UMController::class, "deleteRole"]);
-    Route::post('/list',[UMController::class, "getRoleList"]);
-    Route::post('/list',[UMController::class, "getRoleList_paginate"]);
+    Route::post('/list-all',[UMController::class, "getRoleList"]);
+    Route::post('/list-paginate',[UMController::class, "getRoleList_paginate"]);
     Route::post('/details', [UMController::class, "getRoleDetails"]);
-   
+  
+    Route::post('/add-member',[UMController::class, "addRoleMember"]);
+    Route::post('/add-members',[UMController::class, "addRoleMembers"]);
+    Route::post('/remove-member',[UMController::class, "removeRoleMember"]);
+
+    Route::post('/add-app',[UMController::class, "addRoleApp"]);
+    Route::post('/remove-app',[UMController::class, "removeRoleApp"]);
+
+    Route::post('/add-module',[UMController::class, "addRoleModule"]);
+    Route::post('/remove-module',[UMController::class, "removeRoleModule"]);
+
+    Route::post('/add-permission',[UMController::class, "addRolePermission"]);
+    Route::post('/remove-permission',[UMController::class, "removeRolePermission"]);
+
+    Route::post('/add-report',[UMController::class, "addRoleReport"]);
+    Route::post('/remove-report',[UMController::class, "removeRoleReport"]);
+
     Route::post('/users',[UMController::class, "getRoleMembers"]);
     Route::post('/members',[UMController::class, "getRoleMembers"]);
     Route::post('/apps',[UMController::class, "getRoleApps"]);

@@ -8,6 +8,7 @@ use App\Models\DV;
 use App\Models\Location\City;
 use DB;
 use Illuminate\Support\Facades\Cache;
+use Carbon\Carbon;
 
 class Country //extends Model
 {
@@ -33,7 +34,11 @@ class Country //extends Model
         return DV::success();
     }
     
-    static function cache($minutes=30){
+    // static function cache($minutes=30){
+    //     $countries = DB::table('loc_countries AS c')->select('c.id','c.name','c.name_kh','c.nationality','c.nationality_kh')->orderBy('c.name','ASC')->get();
+    //     Cache::put('countries',$countries,$minutes);
+    // }
+     static function cache($minutes=30){
         $countries = DB::table('loc_countries AS c')->select('c.id','c.name','c.name_kh','c.nationality','c.nationality_kh')->orderBy('c.name','ASC')->get();
         Cache::put('countries',$countries,$minutes);
     }
@@ -55,15 +60,49 @@ class Country //extends Model
        return (object)['id'=>null,'name'=>''];
     }
 
-    static function list($ss){
+    static function list($arr,$ss){
          //$str_where ="1=1";
-         return Cache::remember('countries',60,function(){
-            return DB::table('loc_countries AS c')->select('c.id','c.name','c.name_kh','c.code','c.standard_zone','c.nationality','c.nationality_kh','c.create_user','c.create_date')->orderBy('c.name','ASC')->get();
-         });
+         $branch_id = $ss->branch_id;
+         $d = (object)$arr;
+         $search_value =isset($d->search_value)?$d->search_value:null;
+     
+         $str_search = '2=2';
+         if($search_value){
+             $search_value = escape_like_str($search_value);
+             $str_search = '(c.name LIKE \'%'.$search_value.'%\')';
+         }
+         //return Cache::remember('countries',60,function(){
+           
+           
+            return DB::table('loc_countries AS c')
+            ->where('c.branch_id',$branch_id)
+            ->whereRaw($str_search)
+            ->selectRaw('c.id,c.name,c.name_kh,c.code,c.standard_zone,c.nationality,c.nationality_kh,c.create_user,formatDate(c.create_date) as create_date')
+            
+            ->orderBy('c.name','ASC')->get();
+
+         //});
         
          //Cache::put('countries',$countries,15);
          //return $countries;
      }
+
+
+    //  static function list($arr,$ss){
+    //      //$str_where ="1=1";
+        
+    //      return Cache::remember('countries',60,function(){
+    //         return DB::table('loc_countries AS c')
+    //         ->where('c.branch_id',$branch_id)
+    //         ->where($str_search)
+    //         ->select('c.id','c.name','c.name_kh','c.code','c.standard_zone','c.nationality','c.nationality_kh','c.create_user','c.create_date')
+            
+    //         ->orderBy('c.name','ASC')->get();
+    //      });
+        
+    //      //Cache::put('countries',$countries,15);
+    //      //return $countries;
+    //  }
 
      static function save($d,$ss){
         $sanitize_rules = [];

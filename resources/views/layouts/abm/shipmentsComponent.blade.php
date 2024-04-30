@@ -538,9 +538,11 @@
                     </div>
                     <div class="form-group col-md-6">
                         <span class="simple-label">to_country_id</span>
-                        <div>
+                        <!-- <div>
                             <select id ="_plq_to_country_id" class="modal-select2 data-input" data-field="to_country_id"></select>
-                        </div>
+                        </div> -->
+                        <input type="number" class="form-control data-input" data-field="to_country_id" />  
+
                     </div>
                     <div class="form-group col-md-6">
                         <span class="simple-label">primary_cp_id</span>

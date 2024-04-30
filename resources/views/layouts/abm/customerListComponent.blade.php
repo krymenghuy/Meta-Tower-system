@@ -57,7 +57,7 @@
 </div>
 
 
-<div class="modal fade" id="_cuslist_dlgCustomer" tabindex="-1" role="dialog" aria-labelledby="_cuslist_dlgCustomerTitle" aria-hidden="true">
+<div class="modal fade" id="CustomerDialog" tabindex="-1" role="dialog" aria-labelledby="_cuslist_dlgCustomerTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -72,7 +72,7 @@
                         <label for="code" class="form-label trans-text" data-langprop="titles. ID"></label>
                         <input type="text" class="form-control data-input" data-field="code" placeholder="AUTO" readonly/>
                     </div>
-<!-- 
+                    <!-- 
                     <div class="form-group col-lg-6">
                         <label for="sender_class" class="form-label trans-text" data-langprop="titles. Sender Class"></label>
                         <input type="text" class="form-control data-input" data-field="sender_class"/>

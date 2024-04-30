@@ -93,10 +93,20 @@ class UMController extends Controller
   {
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code != 200) return $ss; //user not authenticated
-    $role_id = $req->role_id ? $req->role_id : $req->id;
-    $user_id = $req->user_id;
-    $r = $this->UMModel->addRoleMember($user_id, $role_id, $ss);
-    return JDV::result($r);
+    $role_id = $req->role_id ?? $req->id;
+    $user_id =$req->user_id;
+    $res = $this->UMModel->addRoleMember($user_id, $role_id, $ss);
+    return JDV::raw($res);
+  }
+
+  function addRoleMembers(request $req)
+  {
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code != 200) return $ss; //user not authenticated
+    $role_id = $req->role_id ?? $req->id;
+    $user_ids =$req->user_ids ?? $req->user_id;
+    $res = $this->UMModel->addRoleMembers($user_ids, $role_id, $ss);
+    return JDV::raw($res);
   }
 
   function removeRoleMember(Request $req)
@@ -105,8 +115,8 @@ class UMController extends Controller
     if ($ss->status_code != 200) return $ss; //user not authenticated
     $role_id = $req->role_id ? $req->role_id : $req->id;
     $user_id = $req->user_id;
-    $r = $this->UMModel->removeRoleMember($user_id, $role_id, $ss);
-    return JDV::result($r);
+    $res = $this->UMModel->removeRoleMember($user_id, $role_id, $ss);
+    return JDV::raw($res);
   }
 
   function getUserRoles(Request $req)
@@ -136,7 +146,7 @@ class UMController extends Controller
   {
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code != 200) return JDV::raw($ss); //user not authenticated
-    $roles = $this->UMModel->getRoleList($ss);
+    $roles = $this->UMModel->getRoleList($req->all(),$ss);
     return JDV::result($roles);
   }
 
@@ -154,7 +164,8 @@ class UMController extends Controller
     if ($ss->status_code != 200) return $ss; //user not authenticated
     $role_id = $req->role_id ?? $req->id;
     $req['role_id'] = $role_id;
-    $r = $this->UMModel->getRoleMembers($req->all(), $ss);
+    $um = new UM();
+    $r = $um->getRoleMembers($req->all(), $ss);
     return JDV::result($r);
   }
 

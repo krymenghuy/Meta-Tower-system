@@ -95,23 +95,22 @@ var LocationComponent = new function(){
             let rows = StringSanitizer.sanitizeObject(res.data);
             console.log(res.data);
             let i=0,c;
-            let html = [`<div>`,
+            let html = ['`<div class="text-danger">',
                     `<tr>`,
-                        `<th  class="text-danger text-uppercase">Country Name</th>`,
-                        `<th  class="text-danger text-uppercase">Country Code</th>`,
-                        `<th  class="text-danger text-uppercase">Standard Code</th>`,
-                        `<tr/>`,
-                    `</div>`
-
-            ];
+                        `<th>Zone</th>`,
+                        `<th>Country </th>`,
+                        `<th>Country Code</th>`,
+                        `<th>Action</th>`,
+                      `<tr/>`,
+                    '</div>'];
                         mThis.tblCountries_body.append(html);
             do{
                 c = rows[i];
                 if(!c) break;
                  let html2 = ['<tr data-name="',c.name,'" data-id="',c.id,'">',
-                 '<td class="col_country_name">',c.name,'</td>',
-                 '<td class="col_country_code">',c.code,'</td>',
-                 '<td class="col_country_standard">',c.standard_zone,'</td>',
+                 '<td class="col_country_standard ">',c.standard_zone,'</td>',
+                 '<td class="col_country_name text-success text-uppercase">',c.name,'</td>',
+                 '<td class="col_country_code text-uppercase text-primary">',c.name.slice(0, 3).toUpperCase(),'</td>',
                  '<td class="col_action"><a data-id="',c.id,'" data-name="',c.name,'" href="javascript:void(0)" class="_sttn_loc_delete_country btn btn-sm btn-outline-danger rounded-5"><i class="fa fa-times"></i></a></td>',
                 ,'</tr>'].join('');
                 
