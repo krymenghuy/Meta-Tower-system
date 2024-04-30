@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Dms\PickupRequestController;
 use App\Http\Controllers\Dms\OrderImageController;
 use App\Http\Controllers\Dms\PackageController;
-// use App\Http\Controllers\LocationController;
+//use App\Http\Controllers\Location\LocationController;
 
 use App\Http\Controllers\Dms\SenderController;
 use App\Http\Controllers\Dms\LeadController;
@@ -214,7 +214,7 @@ use App\Http\Controllers\Dms\SalesCommissionPolicyController;
             // Route::post('getSenderPaymentTransactions', [TransactionController::class, 'getSenderPaymentTransactions']);
         //end::TransactionController
 
-    // //begin::LocationController
+    //begin::LocationController
     // Route::middleware([CustomRateLimiter::class])->prefix('location')->group(function(){
     //     Route::post('/countries', [LocationController::class, 'getCountryList']);
     //     Route::post('/cities', [LocationController::class, 'getCityList']);
@@ -245,7 +245,7 @@ use App\Http\Controllers\Dms\SalesCommissionPolicyController;
 
     //     Route::post('/commune/delete',[LocationController::class,'deleteCommune']);
     // });      
-    // //end::LocationController
+    //end::LocationController
 
      //begin:: Delivery ZONE
      Route::middleware([CustomRateLimiter::class])->prefix('zone')->group(function(){

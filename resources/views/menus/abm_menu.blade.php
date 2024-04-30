@@ -246,7 +246,7 @@
                     </ul>
                 </div>
             </li>
-            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" <?php v_display(null,[220,210,102,221,216,212]);?>>
+             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" <?php v_display(null,[220,210,102,221,216,212]);?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/general_settings.svg') }}" />
@@ -307,7 +307,7 @@
                         </li>
                     </ul>
                 </div>
-            </li> -->
+            </li> --> 
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"<?php v_display(null, [100, 101]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">

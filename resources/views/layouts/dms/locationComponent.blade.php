@@ -88,6 +88,57 @@
             </div>
           </div>
         </div>
+      </div> 
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="_sttn_dlgZon" tabindex="-1" role="dialog" aria-labelledby="_sttn_dlgZoneTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="_sttn_dlgZoneTitle"> Zone</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label for="country_code" class="col-form-label">Country Name</label>
+              <input type="text" class="form-control data-input" data-field="name" placeholder="country name">
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label for="country_name" class="col-form-label">Country Code</label>
+              <input type="text" class="form-control data-input" data-field="code" placeholder="code country">
+            </div>
+          </div>
+          
+        </div>
+        <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+              <label for="standard_zone" class="col-form-label">Standard Zone</label>
+              <input type="text" class="form-control data-input" data-field="standard_zone" placeholder="standard zone">
+            </div>
+          </div>
+          
+         
+        </div>
+       
+      </div>
+      <div class="modal-footer">
+        <span class="error_text" id="_sttn_dlgZone_error"></span>
+        <button type="button" class="btn btn-warning" data-dismiss="modal">
+          <span>Cancel</span>
+        </button>
+        <button type="button" class="btn btn-primary" id="_sttn_dlgZone_btnOK">
+          <span>OK</span>
+        </button>
       </div>
     </div>
   </div>
