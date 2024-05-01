@@ -61,15 +61,15 @@ var LocationComponent = new function(){
           });
     });
 
-    mThis.tblCountries_body.on('mouseover','tr',function(e){
-      // let td_action = $(this).find('td.col_action');
-      // td_action.find('a.').css('display','block');
-      $(this).find('td.col_action>a._sttn_loc_delete_country').show();
-    }).on('mouseleave','tr',function(e){
-      // let td_action = $(this).find('td.col_action');
-      // td_action.find('a').css('display','none');
-      $(this).find('td.col_action>a._sttn_loc_delete_country').hide();
-    });
+    // mThis.tblCountries_body.on('mouseover','tr',function(e){
+    //   // let td_action = $(this).find('td.col_action');
+    //   // td_action.find('a.').css('display','block');
+    //   $(this).find('td.col_action>a._sttn_loc_delete_country').show();
+    // }).on('mouseleave','tr',function(e){
+    //   // let td_action = $(this).find('td.col_action');
+    //   // td_action.find('a').css('display','none');
+    //   $(this).find('td.col_action>a._sttn_loc_delete_country').hide();
+    // });
   
     mThis.tblCountries.on('click','tr', function(e) {
       e.preventDefault();
@@ -83,6 +83,7 @@ var LocationComponent = new function(){
       }
       ZoneTabView.show(mThis.selected_country_id,null,false);
       ZoneTabView.loadComboItems_zone(mThis.selected_country_id,'city',null);
+     // alert(123);
     });
 
     this.displayCountries = function(){
@@ -95,23 +96,21 @@ var LocationComponent = new function(){
             let rows = StringSanitizer.sanitizeObject(res.data);
             console.log(res.data);
             let i=0,c;
-            let html = ['`<div class="text-danger">',
-                    `<tr>`,
+            let html = ['<tr class=" color-text bg-info">',
                         `<th>Zone</th>`,
                         `<th>Country </th>`,
                         `<th>Country Code</th>`,
-                        `<th>Action</th>`,
-                      `<tr/>`,
-                    '</div>'];
+                        `<th>Action</th>`, 
+                      '<tr/>'].join('');
                         mThis.tblCountries_body.append(html);
             do{
                 c = rows[i];
                 if(!c) break;
-                 let html2 = ['<tr data-name="',c.name,'" data-id="',c.id,'">',
-                 '<td class="col_country_standard ">',c.standard_zone,'</td>',
-                 '<td class="col_country_name text-success text-uppercase">',c.name,'</td>',
-                 '<td class="col_country_code text-uppercase text-primary">',c.name.slice(0, 3).toUpperCase(),'</td>',
-                 '<td class="col_action"><a data-id="',c.id,'" data-name="',c.name,'" href="javascript:void(0)" class="_sttn_loc_delete_country btn btn-sm btn-outline-danger rounded-5"><i class="fa fa-times"></i></a></td>',
+                 let html2 = ['<tr  data-name="',c.name,'" data-id="',c.id,'">',
+                 '<td class="col_country_standard  ms-5 ">',c.standard_zone,'</td>',
+                 '<td class="col_country_name  text-uppercase">',c.name,'</td>',
+                 '<td class="col_country_code text-uppercase ">',c.code,'</td>',
+                 '<td class="col_action"><a data-id="',c.id,'" data-name="',c.name,'" href="javascript:void(0)" class="_sttn_loc_delete_country btn btn-sm text-danger rounded-5"><i class="fa-solid fa-trash ms-1"></i></a></td>',
                 ,'</tr>'].join('');
                 
                 mThis.tblCountries_body.append(html2);
@@ -287,7 +286,7 @@ var ZoneTabView = new function(){
       method_name = 'location/options-village';
     }
      
-     vsapi.call([mThis.base_url,'/dms/',method_name].join(''),p,null,LocationComponent.apiCluster).then((res)=>{
+     vsapi.call([mThis.base_url,'/api/',method_name].join(''),p,null,LocationComponent.apiCluster).then((res)=>{
         if (res.status_code===200){
               let rows = StringSanitizer.sanitizeObject(res.data);
           
@@ -386,7 +385,7 @@ var ZoneTabView = new function(){
                   InputBox1.show(option,function(d){
                     if(d){
                        let p = {'id':id,'country_id':CountryListPanel.selected_country_id,'name':d,'name_kh':d};
-                       vsapi.call([mThis.base_url,'/dms/location/city/save'].join(''),p).then((res)=>{
+                       vsapi.call([mThis.base_url,'/api/location/city/save'].join(''),p).then((res)=>{
                          if(res.status_code===200) {
                             mThis.displayCities(CountryListPanel.selected_country_id);
                          } else cv_interact.error(res.error_message);
@@ -420,7 +419,7 @@ var ZoneTabView = new function(){
                   InputBox1.show(option,function(d){
                     if(d){
                         let p = {'city_id':mThis.elFilter_city.val(),'name':d,'name_kh':d};
-                        vsapi.call([mThis.base_url,'/dms/location/district/save'].join(''),p,null,false).then((res)=>{
+                        vsapi.call([mThis.base_url,'/api/location/district/save'].join(''),p,null,false).then((res)=>{
                           if(res.status_code === 200) {
                               mThis.elFilter_city.trigger('change'); 
                               //mThis.displayDistricts(p.city_id);
@@ -444,7 +443,7 @@ var ZoneTabView = new function(){
                 InputBox1.show(option,function(d){
                   if(d){
                         let p = {'district_id':mThis.elFilter_district.val(),'name':d,'name_kh':d};
-                        vsapi.call([mThis.base_url,'/dms/location/commune/save'].join(''),p).then((res)=>{
+                        vsapi.call([mThis.base_url,'/api/location/commune/save'].join(''),p).then((res)=>{
                           if(res.status_code===200) {
                             mThis.displayCommunes(p.district_id);
                           } else cv_interact.error(res.error_message);
@@ -460,7 +459,7 @@ var ZoneTabView = new function(){
                //p.id = p.city_id;
                cv_interact.confirm('Delete this city?',{title:'Delete City',context:'delete'},function(e){
                  if(e){
-                   vsapi.call([mThis.base_url,'/dms/location/city/delete'].join(''),p).then((res)=>{
+                   vsapi.call([mThis.base_url,'/api/location/city/delete'].join(''),p).then((res)=>{
                      if(res.status_code===200){
                          mThis.displayCities(mThis.country_id);
                      } else cv_interact.error(res.error_message);
@@ -477,7 +476,7 @@ var ZoneTabView = new function(){
               //p.id = p.city_id;
               cv_interact.confirm('Delete this commune?',{'title':'Delete Commune',context:'delete'},function(e){
                 if(e){
-                  vsapi.call([mThis.base_url,'/dms/location/commune/delete'].join(''),p,null,false).then(res=>{
+                  vsapi.call([mThis.base_url,'/api/location/commune/delete'].join(''),p,null,false).then(res=>{
                     if(res.status_code===200){
                       mThis.displayCommunes(mThis.elFilter_district.val());
                     } else cv_interact.error(res.error_message);
@@ -493,7 +492,7 @@ var ZoneTabView = new function(){
               //p.id = p.city_id;
               cv_interact.confirm('Delete this distrinct?',{title:'Delete District',context:'delete'},function(e){
                 if(e){
-                  vsapi.call([mThis.base_url,'/dms/location/district/delete'].join(''),p).then((res)=>{
+                  vsapi.call([mThis.base_url,'/api/location/district/delete'].join(''),p).then((res)=>{
                     if(res.status_code===200){
                       mThis.displayDistricts(mThis.elFilter_city.val());
                     } else cv_interact.error(res.error_message);
@@ -537,7 +536,7 @@ var ZoneTabView = new function(){
             });
          //end::define specific elements
 
-         this.displayCities = function(country_id) {
+          this.displayCities = function(country_id) {
           //let div = mThis.tblCities.parent();
           //div.removeClass('animate-slide-left');
            
@@ -545,7 +544,7 @@ var ZoneTabView = new function(){
                  p.country_id = country_id;
                  mThis.tblCities_body.empty();
 
-                 vsapi.call([mThis.base_url,'/dms/location/cities'].join(''),p,null,LocationComponent.apiCluster).then((res)=>{
+                 vsapi.call([mThis.base_url,'/api/location/cities'].join(''),p,null,LocationComponent.apiCluster).then((res)=>{
                      if (res.status_code===200){
                           let rows = StringSanitizer.sanitizeObject(res.data);
                           let i=0, c;
@@ -567,9 +566,19 @@ var ZoneTabView = new function(){
                      }
 
                  });
-         }  
+                  // this.sh_container = mThis.tblCities.getListContainer();
+              // mThis.setEvents($(mThis.container));
+              // console.log(mThis.container.parentElement); 
+              const sh_parent = mThis.tblCities;
+              console.log(sh_parent.parentElement);
+                  sh_parent[0].style.height = (window.innerHeight - 190)+'px';
+                  sh_parent[0].classList.add('overflow-y-auto');
+                  window.onresize = () => {
+                      sh_parent[0].style.height = (window.innerHeight - 190)+'px';
+                  }
+          }  
 
-         this.displayDistricts = function(city_id,isOnSelectChange=false) {
+          this.displayDistricts = function(city_id,isOnSelectChange=false) {
              //let div = mThis.tblDistricts.parent();
              //div.removeClass('effect-zoomin');
              if(!isOnSelectChange){
@@ -585,7 +594,7 @@ var ZoneTabView = new function(){
              p.city_id = city_id;
              mThis.tblDistricts_body.empty();
 
-             vsapi.call([mThis.base_url,'/dms/location/districts'].join(''),p,null,LocationComponent.apiCluster).then(res=>{   
+             vsapi.call([mThis.base_url,'/api/location/districts'].join(''),p,null,LocationComponent.apiCluster).then(res=>{   
                if(res.status_code===200){
                 let rows = StringSanitizer.sanitizeObject(res.data);
                 let i =0, c;
@@ -609,79 +618,79 @@ var ZoneTabView = new function(){
              });
           };  
 
-         this.displayCommunes = function(district_id, isOnSelectChange=false){
-              //let div = mThis.tblCommunes.parent();
-              //div.removeClass('effect-slide-up');
-              if(!isOnSelectChange){
-                mThis.elFilter_district.val(district_id).trigger('change');
-                return;
-              }
-
-              let p = {};
-              if(!district_id) district_id = mThis.elFilter_district.val(); 
-              p.district_id = district_id;
-              mThis.tblCommunes_body.empty();
-              vsapi.call([mThis.base_url,'/dms/location/communes'].join(''),p,null,LocationComponent.apiCluster).then(res=>{   
-                if(res.status_code===200){
-                      let rows = StringSanitizer.sanitizeObject(res.data);
-                      let i =0, c;
-                    do{
-                      c = rows[i];
-                      if(!c) break;
-                        let html = ['<tr data-id"',c.id,'">',
-                        '<td class="col_commune_name">',c.name,'</td>',
-                        '<td class="col_district_name">',c.district,'</td>',
-                        '<td class="col_city_name">',c.city,'</td>',
-                        '<td class="col_action">',
-                        '<a href="#" class="_sttn_loc_edit_commune" data-id="',c.id,'"><i class="fa fa-edit" style="color:green;font-size:1.2em"></i></a>&nbsp;&nbsp;',
-                        '<a href="#" class="_sttn_loc_delete_commune" data-id="',c.id,'"><i class="fa fa-times" style="color:red;font-size:1.3em"></i></a>',
-                        '</td>',
-                        '</tr>'].join('');   
-                        mThis.tblCommunes_body.append(html);
-                      i++;
-                    }while(c);
-                    //div.addClass('effect-slide-up');
+          this.displayCommunes = function(district_id, isOnSelectChange=false){
+                //let div = mThis.tblCommunes.parent();
+                //div.removeClass('effect-slide-up');
+                if(!isOnSelectChange){
+                  mThis.elFilter_district.val(district_id).trigger('change');
+                  return;
                 }
 
-              }); 
-         }    
+                let p = {};
+                if(!district_id) district_id = mThis.elFilter_district.val(); 
+                p.district_id = district_id;
+                mThis.tblCommunes_body.empty();
+                vsapi.call([mThis.base_url,'/api/location/communes'].join(''),p,null,LocationComponent.apiCluster).then(res=>{   
+                  if(res.status_code===200){
+                        let rows = StringSanitizer.sanitizeObject(res.data);
+                        let i =0, c;
+                      do{
+                        c = rows[i];
+                        if(!c) break;
+                          let html = ['<tr data-id"',c.id,'">',
+                          '<td class="col_commune_name">',c.name,'</td>',
+                          '<td class="col_district_name">',c.district,'</td>',
+                          '<td class="col_city_name">',c.city,'</td>',
+                          '<td class="col_action">',
+                          '<a href="#" class="_sttn_loc_edit_commune" data-id="',c.id,'"><i class="fa fa-edit" style="color:green;font-size:1.2em"></i></a>&nbsp;&nbsp;',
+                          '<a href="#" class="_sttn_loc_delete_commune" data-id="',c.id,'"><i class="fa fa-times" style="color:red;font-size:1.3em"></i></a>',
+                          '</td>',
+                          '</tr>'].join('');   
+                          mThis.tblCommunes_body.append(html);
+                        i++;
+                      }while(c);
+                      //div.addClass('effect-slide-up');
+                  }
+
+                }); 
+          }    
        
-         this.editCommune = (id,name,district_id)=>{
+          this.editCommune = (id,name,district_id)=>{
             let option = {title:'Rename Commune','blankErrorMessage':'Location name cannot be empty','btnOKText':'Save Change','dataLabel':'Commune Name','defaultValue':name};
             InputBox1.show(option,function(d){
                let p = {'id':id,'name':d,'district_id':district_id};
 
-               vsapi.call([mThis.base_url,'/dms/location/commune/save'].join(''),p).then((res)=>{
+               vsapi.call([mThis.base_url,'/api/location/commune/save'].join(''),p).then((res)=>{
                  if(res.status_code===200) {
                      mThis.displayCommunes(district_id);
                  } else cv_interact.error(res.error_message);
                });
             }); 
-         }
+          }
          
-         this.editDistrict = (id,name,city_id)=>{
+          this.editDistrict = (id,name,city_id)=>{
           let option = {title:'Rename District','blankErrorMessage':'Location name cannot be empty','btnOKText':'Save Change','dataLabel':'District Name','defaultValue':name};
           InputBox1.show(option,function(d){
              let p = {'id':id,'name':d,'city_id':city_id};
-             vsapi.call([mThis.base_url,'/dms/location/district/save'].join(''),p).then((res)=>{
+             vsapi.call([mThis.base_url,'/api/location/district/save'].join(''),p).then((res)=>{
                if(res.status_code===200) {
                   mThis.displayDistricts(city_id);
                } else cv_interact.error(res.error_message);
              });
           }); 
-       }
+          }
 
-       this.editCity = (id,name,country_id)=>{
+          this.editCity = (id,name,country_id)=>{
         let option = {title:'Rename City','blankErrorMessage':'Location name cannot be empty','btnOKText':'Save Change','dataLabel':'City Name','defaultValue':name};
         InputBox1.show(option,function(d){
            let p = {'id':id,'name':d,'country_id':country_id};
-           vsapi.call([mThis.base_url,'/dms/location/city/save'].join(''),p).then((res)=>{
+           vsapi.call([mThis.base_url,'/api/location/city/save'].join(''),p).then((res)=>{
              if(res.status_code===200) {
                mThis.displayCities(country_id);
              } else cv_interact.error(res.error_message);
            });
         }); 
-     }          
+          }          
   //end::THIS CODE BLOCK IS NOT PART OF GENERAL SRCRIPT FOR TAB_VIEW OBJECT
 }
 //end::ZoneTabview

@@ -36,7 +36,7 @@ var CountryZonesComponent  = new function () {
       title: "Country Code",
       className: "align-middle ",
       data: (data, index, tr) => {
-        return ['<div class="ms-5 text-warning  ">',data.name.slice(0, 3).toUpperCase(),'</div>'].join('');
+        return ['<div class="ms-5 text-capitalize">',data.code,'</div>'].join('');
       }
     },
    
@@ -56,8 +56,8 @@ var CountryZonesComponent  = new function () {
       data: (data, index, tr) => {
         return [`<div class="d-flex align-item-center gap-2">
           
-          <a href="javascript:void(0)" data-id ="${data.id}" class="_sttn_zon_delete btn btn-sm btn-outline-danger align-item-center rounded-5">
-          <i class="fa fa-times ms-2  "></i>
+          <a href="javascript:void(0)" data-id ="${data.id}" class="_sttn_zon_delete btn  text-danger align-item-center rounded-5">
+          <i class="fa-solid fa-trash ms-1"></i>
           </a>
         </div>`].join('');
       }
@@ -124,6 +124,7 @@ var CountryZonesComponent  = new function () {
 
       ZoneDialog1.show(options);
     });
+   
 
     mThis.tblZones.addEventListener('click', e => {
       e.preventDefault();

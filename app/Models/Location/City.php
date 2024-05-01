@@ -70,7 +70,7 @@ class City //extends Model
         $inputs = $res->values;
         $name_kh = $inputs['name_kh'];
         $name_kh = $name_kh?$name_kh:$inputs['name'];
-        $id = saveData($ss,'loc_cities',['id'=>$id],$inputs,[],0);
+        $id = saveData($ss,'loc_cities',['id'=>$id],$inputs,[],1,0);
         if($id >0) return DV::success(["city"=>$inputs]);
         return DV::error("something wrong during saving city name");
      }
