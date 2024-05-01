@@ -15,7 +15,7 @@
             </div>
         </div>
        
-        <div class="d-flex gap-2">
+        <div class="d-flex gap-2" id="_sdl_filter_fields">
             <div class="d-flex flex-row gap2 ml-3">
                 <select  id="_sale_agent_filter_type" class="modal-select2 filter-field" data-field="agent_type">
                 </select>
@@ -47,7 +47,7 @@
     <div class="modal-dialog modal-lg" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="_sale_agent_dlgTitle">New Sales Agents</h5>
+                <h5 class="modal-title" id="_sale_agent_dlgTitle">   Sales Agents</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -70,7 +70,7 @@
                         <label for="sex" class="form-label trans-text">Sex</label>
                         <div class="">
                             <select class="modal-select2 data-input" data-field="sex">
-                                <option value=""></option>
+                                <option value="">(Select Sex)</option>
                                 <option value="M">Male</option>
                                 <option value="F">Female</option>
                             </select>
@@ -78,7 +78,14 @@
                     </div>
                     <div class="col-lg-3">
                             <label class="form-label trans-text">Agent Type</label>
-                            <select class="form-control data-input" id="_sal_agent_type" data-field="agent_type_id"></select>
+                            <!-- <select id="_sal_agent_type" class="modal-select2 data-input" data-field="agent_types_id"></select> -->
+                            <!-- <select class="form-control data-input" id="_sal_agent_type" data-field="agent_types_id"></select> -->
+                            <select class="modal-select2 data-input" data-field="agent_type">
+                                <option value="">(Select SalesAgent Type)</option>
+                                <option value="Client_affiliate">Client-Affiliate</option>
+                                <option value="Freelancer">Freelancer</option>
+                                <option value="Full_time">Full-Time</option>
+                            </select>
                     </div>
                     <div class="col-lg-6">
                             <label class="form-label trans-text">Phone Number</label>

@@ -7,7 +7,7 @@ var PriceSettingsComponent = new function () {
 
   this.elSearch_pl = this.self.find('#ps_pl_search_merchant');
 
-  this.elFilter_price_list = this.self.find('#ps-filter_price_list');
+  this.elFilter_price_list = this.self.find('#ps_filter_price_list');
   this.elZones = this.self.find('#ps-filter_zones');
   this.tblPrices = this.self.find('#ps-tbl-prices');
 
@@ -189,7 +189,7 @@ var PriceSettingsComponent = new function () {
         let items = StringSanitizer.sanitizeObject(res.data);
         let b = def_list_id;
         if (!b) b = mThis.elFilter_price_list.val();
-        VSUtil.setComboItems(mThis.elFilter_price_list, items, 'id', 'name', false, null, b);
+        // VSUtil.setComboItems(mThis.elFilter_price_list, items, 'id', 'name', false, null, b);
         if (mThis.elFilter_price_list.val() > 0) mThis.displayPrices();
       }
     });

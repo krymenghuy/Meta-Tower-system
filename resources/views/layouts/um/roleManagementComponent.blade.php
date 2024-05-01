@@ -191,8 +191,7 @@ div.role-card.selected > div.card-content {
       </div>
     </div>
   </div>
-</div
-
+</div>
 
 
 <div class="modal fade" id="_um_dlgCreatePrn" tabindex="-1" role="dialog" aria-labelledby="_um_dlgCreatePrnTitle" aria-hidden="true">

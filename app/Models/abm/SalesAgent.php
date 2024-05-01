@@ -6,8 +6,9 @@ namespace App\Models\Abm;
 use DB;
 use Sanitizer;
 use App\Models\DV;
+use App\Models\JDV;
 use Illuminate\Pagination\LengthAwarePaginator; 
-use App\Models\PublicStorage;
+use App\Models\Dms\PublicStorage;
 use Carbon\Carbon;
 use App\Models\Sender;
 use Config;
@@ -30,14 +31,18 @@ class SalesAgent //extends Model
     function delete($id=null,$ss =null){
        $id = $id ?? $this->id;
        $ss = $ss ?? $this->userInfo;
-       $this->deleteProfilePhoto($id,$ss);
-       $x = DB::table('sales_agents')->where('id',$id)->delete();
+      //  $this->deleteProfilePhoto($id,$ss);
+       $x = DB::table('os_sales_agents as o')->where('o.id',$id)->delete();
+      //  return JDV::result($x);
        if($x){
-        DB::table('sender')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
-        DB::table('leads')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
-        DB::table('um_users')->where('official_id',$id)->where('user_class','sales_agent')->delete();
-       }
+        DB::table('suppliers')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
+        // DB::table('leads')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
+        // DB::table('um_users')->where('official_id',$id)->where('user_class','sales_agent')->delete();
+       }else
        return DV::depends(1,'Failed to delete sales agent'); 
+
+       return DV::depends($x,['id'=>$id],'sales agent has deleted'); 
+
     }
 
     static function getPolicyId($agent_type_id){
@@ -50,26 +55,49 @@ class SalesAgent //extends Model
       $ss = $ss ?? $this->userInfo;
       $id = $id ?? $this->id;
       $v_rule = [
-         'name'=>'1|string|1-150',
-         'sex'=>'1|choice|M,F,O',
-         'agent_type'=>'1|choice|client-affiliate,freelancer|default=client-affiliate',
-         'phone_number'=>'1|phone',
-         'email'=>'0|email',
-         'address'=>'0|address',
-         'status_code' => '0|choice|Active,Inactive|default=Active', //Add status_code to table os_sales_agents
+        'name'=>'1|string|1-150',
+        'sex'=>'1|choice|M,F,O',
+        'agent_type'=>'1|choice|client_affiliate,freelancer,full_time|default=client_affiliate',
+        'phone_number'=>'1|phone',
+        'email'=>'0|email',
+        'address'=>'0|address',
+        'status_code' => '0|choice|Active,Inactive|default=Active', //Add status_code to table os_sales_agents
         //  'agent_type_id'=>'1|number|exists=sales_agent_types.id',
+        'code'=>'0|string|0-25',         //Add new code column to table os_sales_agent
+        'photo'=>'0|image'        //Add new photo_file_name to table os_sales_agent
+
 
       ];
       $email_chars = ['@','-','.','_'];
+      $img_char = ['+',':',',',';','/','\\','=','?'];
       $address_chars = ['.','#'];
       $branch_id = $ss->branch_id;
-      $res = validateObject($arr,$v_rule,true,['address'=>$address_chars,'email'=>$email_chars],$ss->lang,false,null);
+      $res = validateObject($arr,$v_rule,true,['address'=>$address_chars,'email'=>$email_chars,'photo'=>$img_char],$ss->lang,false,null);
       if($res->error) return DV::error($res->error);
       $inputs = $res->values;
       $d = (object)$inputs;
+      $photo = $d->photo;
+      unset($inputs['photo']);
       $created = !$id;
       $create_login = $created;
+      $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
       $id = saveData($ss,'os_sales_agents',['id'=>$id],$inputs,[],1,false);
+      if($id>0){
+        $new_code = null;
+
+        if($delete_prev_image){
+          $file_name = DB::table('os_sales_agents as s')->where('s.id',$id)->take(1)->value('s.photo_file_name');
+          if($file_name) PublicStorage::delete($branch_id,self::$photo_dir,'image',$file_name);
+          DB::table('os_sales_agents as s')->where('s.id',$id)->update(['photo_file_name'=>null]);
+        }
+        PublicStorage::saveImage($branch_id,self::$photo_dir,null,$photo,null,['id'=>$id,'store'=>'os_sales_agents.photo_file_name']);  
+        
+        if($created){
+            $new_code  = self::setAgentCode($ss,5);
+            DB::table('os_sales_agents')->where('id',$id)->update(['code'=>$new_code]);
+        }
+
+    }
 
       return DV::depends($id,['id'=>$id],'Failed to save sales agent');
     }
@@ -164,7 +192,7 @@ class SalesAgent //extends Model
         return (object)[
            'details'=>$d, 
            'statuses'=>DB::table('sales_agent_statuses AS ss')->selectRaw('ss.code As status_code,ss.name AS status_name')->get(),
-           'agent_types'=> DB::table('sales_agent_types')->selectRaw('id,name AS agent_type')->get(),
+           'agent_types'=> DB::table('os_agent_types')->selectRaw('name as id,name AS agent_type')->get(),
         ];
     }
 
@@ -367,8 +395,8 @@ class SalesAgent //extends Model
   }
   function updateStatus($status_code,$id=null){
     if(!in_array(strtolower($status_code),['active','inactive'])) return DV::error('Status code is not correct');
-    DB::table('sales_agents')->where('id',$id)->update(['status_code'=>$status_code]);
-    return DV::depends(1);
+    DB::table('os_sales_agents')->where('id',$id)->update(['status_code'=>$status_code]);
+    return DV::depends(1,['update'=>'don']);
   }
     //Called by Sales mobile app to update user profile quickly
    function updateProfile_mobile($arr = [],$id= null,$ss =null){
@@ -459,23 +487,29 @@ static function list($arr,$ss=null){
           $search_value = escape_like_str($search_value);
           $str_search = ' (d.status_code =\''.$search_value.'\' OR d.name LIKE \'%'.$search_value.'%\' OR d.phone_number =\''.$search_value.'\')';
         }else{
-          $str_agent_type = $agent_type? 'd.agent_type ='.$agent_type : '3=3';
+          $str_agent_type = $agent_type? 'd.agent_type =\''.$agent_type.'\'' : '3=3';
           $str_status = $status_code? 'd.status_code =\''.$status_code.'\'' : '1=1';
         }
        
-        $query = DB::table('os_sales_agents AS d')->where('branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.status_code,d.email,d.phone_number,d.address,d.agent_type,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date'); 
+        $query = DB::table('os_sales_agents AS d')
+        ->where('branch_id',$branch_id)
+        ->whereRaw($str_search)
+        ->whereRaw($str_status)
+        ->whereRaw($str_agent_type)
+        ->selectRaw('d.id,d.code,d.name,d.status_code,d.email,d.phone_number,d.address,d.photo_file_name,d.agent_type,d.branch_id,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date')->orderBy('d.code', 'DESC'); ; 
         $count_query = clone $query;
         $count = $count_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-        // foreach($rows as $row){
-        //   $row->image_url = '';
+        foreach($rows as $row){
+          $row->image_url = '';
         //   //$row->mobile_login = \App\Models\UM::getAccountInfo($row->id,'official_id');
-        //   //$url = $row->photo_file_name? $row->image_url = PublicStorage::getUrl($branch_id,self::$photo_dir,'image').$row->photo_file_name:null;
-        //   //$row->image_url = validateUrl($url,self::defaultImage($branch_id));
-        //   //unset($row->photo_file_name);
+          if($row->photo_file_name) $row->image_url = PublicStorage::getUrl($row->branch_id,self::$photo_dir,'image').$row->photo_file_name;
+          // $url = $row->photo_file_name? $row->image_url = PublicStorage::getUrl($branch_id,self::$photo_dir,'image').$row->photo_file_name:null;
+          // $row->image_url = validateUrl($url,self::defaultImage($branch_id));
+          unset($row->photo_file_name);
         //   //$pol = self::getPolicyInfo($row->policy_id,$ss);
         //   //$row->policy_name = $pol? $pol->name: 'NA';
-        //   if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
+          if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
         //   $user_info = self::getLoginInfo(  $row->id,$ss);
         //   if($user_info){
         //      $row->login_name = $user_info->login_name;
@@ -489,7 +523,7 @@ static function list($arr,$ss=null){
         //   $row->count_type = $countInfo->count_type;
         //   $row->target_count = $countInfo->count; 
         //   $row->summary_type = $countInfo->summary_type;
-        // }
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
     
@@ -711,15 +745,18 @@ static function list($arr,$ss=null){
 
     static function details($id,$ss){ 
         $branch_id = $ss->branch_id;
-        $row = DB::table('os_sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('d.id',$id)->selectRaw('d.id,d.name,d.policy_id,d.agent_type_id,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,d.commission,t.id AS agent_type_id,t.name AS agent_type,d.photo_file_name,formatDate(d.create_date) AS create_date')->take(1)->first(); 
-        if($row){
-           $pol = self::getPolicyInfo($row->policy_id,$ss);
-           $row->policy_name = $pol? $pol->name: 'NA';
-           $url = $row->photo_file_name? PublicStorage::getUrl($branch_id,self::$photo_dir,'image').$row->photo_file_name: null;
-           $url = validateUrl($url,self::defaultImage($branch_id));
-           $row->photo = $url;
-           $row->image_url = $url;
-        } 
+        $row = DB::table('os_sales_agents AS d')
+        // ->join('sales_agent_types AS t','t.id','=','d.agent_type_id')
+        ->where('d.id',$id)
+        ->selectRaw('d.id,d.name,d.agent_type,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,formatDate(d.create_date) AS create_date')->take(1)->first(); 
+        // if($row){
+        //    $pol = self::getPolicyInfo($row->policy_id,$ss);
+        //    $row->policy_name = $pol? $pol->name: 'NA';
+        //    $url = $row->photo_file_name? PublicStorage::getUrl($branch_id,self::$photo_dir,'image').$row->photo_file_name: null;
+        //    $url = validateUrl($url,self::defaultImage($branch_id));
+        //    $row->photo = $url;
+        //    $row->image_url = $url;
+        // } 
         return $row;
     }
 

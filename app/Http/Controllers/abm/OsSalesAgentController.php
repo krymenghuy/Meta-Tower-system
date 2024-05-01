@@ -97,9 +97,9 @@ class OsSalesAgentController extends Controller
    function deleteSalesAgent(Request $req) {
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
-      $id = $req->id;
+      $id = $req->id ?? $req->agent_id;
       $agent = new SalesAgent($id,$ss);
-      return JDV::raw($agent->delete());
+      return JDV::raw($agent->delete($id,$ss));
    }
 
    /** Send OTP in case of Forget Password */
