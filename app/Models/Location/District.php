@@ -30,7 +30,7 @@ class District //extends Model
         if(!$district_id) $district_id =-1;
         //Commune::deleteByParent($district_id); 
         $x = DB::table('loc_districts')->where('id',$district_id)->delete();
-        return DV::success();
+        return DV::success(['action','deleted']);
     }
 
      static function list($city_id=null,$ss){

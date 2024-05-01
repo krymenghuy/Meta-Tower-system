@@ -13,6 +13,7 @@ use App\Http\Controllers\ShipmentController;
 use App\Http\Controllers\abm\OverseaShipmentController;
 use App\Http\Controllers\abm\SupplierController;
 use App\Http\controllers\abm\CustomerController;
+use App\Http\Controllers\abm\CountryZoneController;
 use App\Http\controllers\abm\OsSalesAgentController;
  
  //begin:: api without Authentication
@@ -83,3 +84,14 @@ use App\Http\controllers\abm\OsSalesAgentController;
         Route::post('/save-profile-picture', [CustomerController::class, 'saveProfilePicture']);
         Route::post('/delete-profile-picture', [CustomerController::class, 'deleteProfilePicture']);
     });
+
+    
+   //begin:: Counties_Zone_Code
+
+   Route::prefix('country')->group(function(){
+    Route::post('/save',[CountryZoneController::class,'save']);
+    Route::post('/delete',[CountryZoneController::class,'delete']);
+    Route::post('/list-all',[CountryZoneController::class,'getCountryZoneList_all']);
+    Route::post('/details',[CountryZoneController::class,'details']);
+
+});

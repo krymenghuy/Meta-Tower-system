@@ -60,14 +60,14 @@ class CountryZone //extends Model
             $str_search = '(z.country_code LIKE \'%'.$search_value.'%\' OR z.country_name LIKE \'%'.$search_value.'%\')';
         }
         $str_active ='IFNULL(z.inactive,0)=0';
-        return DB::table('country_zones AS z')->where('z.branch_id',$branch_id)->whereRaw($str_search)->selectRaw('z.country_code,z.country_name,z.standard_zone')->get();
+        return DB::table('loc_countries AS z')->where('z.branch_id',$branch_id)->whereRaw($str_search)->selectRaw('z.name')->get();
     }
     function details($id,$ss){
         $branch_id = $ss->branch_id;
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
 
-        $row = DB::table('country_zones')->where('id',$id)->selectRaw('id,country_code,country_name,standard_zone,create_user')->first();
+        $row = DB::table('country_zones')->where('id',$id)->where('branch_id',$branch_id)->selectRaw('id,country_code,country_name,standard_zone,create_user')->first();
         return $row;
     }
     function delete($id){

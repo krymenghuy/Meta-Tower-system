@@ -191,7 +191,7 @@ div.role-card.selected > div.card-content {
       </div>
     </div>
   </div>
-</div
+</div>
 
 
 
