@@ -1,4 +1,5 @@
-<div id="_sttn_locationsComponent" style="display:none;padding:15px">
+
+<div id="_sttn_locationsComponent"   style="display:none;padding:15px; overflow: auto;height: 600px;">
   <div class="bg-white p-3 rounded-3">
     <div class="row">
       <div class="col-lg-6">
