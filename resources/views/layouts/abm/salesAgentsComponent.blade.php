@@ -1,4 +1,4 @@
-<div id="_main_salesAgentsComponent" style="display:none;">
+<div id="_main_salesAgentsComponent" style="display:none; padding-right: 15px;">
     <div class="d-flex justify-content-between shadow rounded-3 mt-3 p-3 bg-white">
         <div class="d-flex gap-2">
             <div class="d-flex flex-row gap2">
@@ -38,7 +38,7 @@
 
     </div>
 
-    <div class="p-2 shadow rounded-3 bg-white mt-2">
+    <div class=" shadow rounded-3 bg-light mt-2">
             <div id="_sale_agent_list"></div>
         </div>
 </div>

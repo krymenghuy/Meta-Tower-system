@@ -17,72 +17,132 @@ var SalesAgentsComponent = new function () {
     this.form_data={};
     this.store_agents = {};
 
-    // this.cols = [
-    
-    //     {
-    //         title: "ID",
-    //         className: "align-middle text-capitalize text-nowrap",
-    //         data: "code"
-    //     },
-    //     {
-    //         title: "Name",
-    //         className: "align-middle text-capitalize text-nowrap",
-    //         data: (data,index,tr)=>{
-    //             let sex = data.sex === 'M' ? 'Male' : 'Female';
-    //             return [`<span class="d-block fw-semibold">`,data.name,`</span><span class="d-block text-muted text-left">`,sex,`</span>`].join('');
-    //         }
-    //     },
-    //     {
-    //         title: "Email",
-    //         className: "align-middle text-capitalize",
-    //         data: (data,index,tr)=>{
-    //             return ['<span class="d-block text-nowrap">',data.email,'</span>','<span class="d-block text-nowrap">',data.phone_number,'</span>'].join('');
-    //         }
-    //     },
-        
-    //     {
-    //         title: "Agents Type",
-    //         className: 'align-middle text-capitalize',
-    //         data: (data, index,tr) => {
-    //             return data.agent_type;
-    //         }
-    //     },
-    //     {
-    //         title: "Start Date",
-    //         className: 'align-middle text-capitalize',
-    //         data: (data, index,tr) =>{
-    //             return ['<span class="d-block text-nowrap">',data.create_date,'</span>'].join('');
-    //         }
-    //     },
-    //     {
-    //         title: "Position",
-    //         className: 'align-middle text-capitalize',
-    //         data: (data, index,tr) =>{
-    //            return ['<span class="d-block text-nowrap">',(data.position_title ?? 'NA'),'</span>'].join('');
-    //         }  
-    //     },
-  
-    //     {
-    //         title: "Status",
-    //         className: 'align-middle text-capitalize',
-    //         data: (data, index, tr) => {
-    //           const status_class = (data.status_code || '').toLowerCase()==='active'? 'border-success text-success text-center': 'border-danger text-danger text-center';  
-    //           return ['<a href="javascript:void(0)" class="d-block lnk-agent-status" data-id ="',data.id,'" data-status="',data.status_code,'"><span style="display:block;width:80px;" class="border rounded-5 p-2 ',status_class,'">',data.status_code,'</span></a>'].join(''); 
-    //         }
-    //     },
-    //     {
-    //         title: "Action",
-    //         className: 'align-middle text-capitalize',
-    //         data: (data, index, tr) => {
-    //           return ['<div class="d-flex gap-2">',
-    //           //'<a href="javascript:void(0)" class="btn-agent-status" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-dollar text-success fs-5"></i></a>',
-    //           '<a href="javascript:void(0)" class="btn-agent-edit" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-edit text-primary fs-5"></i></a>',
-    //           '<a href="javascript:void(0)" class="btn-agent-login" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-user text-primary fs-5"></i></a>',
-    //           '<a href="javascript:void(0)" class="btn-agent-delete" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-trash-can text-danger fs-5"></i></a>',
-    //           '</div>'].join(''); 
-    //         }
-    //     }
-    //   ];
+    this.displaySalesAgents = (container, data=[]) =>{
+        let i =1;
+        console.log(data);
+        let html = `
+                    <table class="table table-light m-0">
+                        <thead class="w-100 bg-info">
+                            <tr>
+                                <th scope="col" style=" width: 13.28%;">PHOTO</th>
+                                <th scope="col" style=" width: 12.28%">ID</th>
+                                <th scope="col" style=" width: 12.28%;">NAME</th>
+                                <th scope="col" style=" width: 14.28%;">EMAIL</th> 
+                                <th scope="col" style=" width: 13.28%;">TYPE</th>
+                                <th scope="col" style=" width: 14.28%;">START DATE</th>
+                                <th scope="col" style=" width: 12.28%;">TAGET COUNT</th>
+                                <th scope="col" style=" width: 12.28%;">STATUS</th>
+                                <th scope="col" style=" width: 12.28%;">ACTION</th>
+                            </tr>
+                        </thead>
+                        
+                    </table>
+
+                    
+                    `;
+        (data ?? []).map(d => {
+            // if(d.sprint_id==id){
+                let image = d.image_url ? d.image_url : '';
+                html +=`
+                        <div class=" text-white rounded-3 mb-3 " style=" height: ;">
+                            <div class="card-body p-0">
+                            <div class="${d.status_code == 'Inactive'?" bg-light-gray ":"bg-white" } callout callout-info  p-0 m-0">
+                                <table class="table table-white text-dark w-100 m-0" >
+                                    <tbody>
+                                        <tr >
+                                            <td class="border-0 align-middle" style=" width: 12.28%;">
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar-group d-flex align-items-center">
+                                                        <a href="javascript:void(0)" class="avatar avatar-sm" data-toggle="tooltip"
+                                                            data-original-title="Ryan Tompson">
+                                                            <img class="image-student-tbl" src="${image}" alt=""/>
+                                                        </a>
+                                                    </div>
+                                                </div> 
+                                            </td>
+                                            <td class="border-0 align-middle" style=" width: 12.28%;">
+                                                <div class="text-left d-flex align-items-center">
+                                                    <div style="line-height: 10px;">
+                                                        ${d.code}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="border-0 align-middle" style=" width: 12.28%;">
+                                                <div class="text-left d-flex align-items-center">
+                                                <div style="line-height: 18px;">
+                                                    ${d.name}
+                                                    <div class="text-left ${d.status_id == 3?"text-light":"text-muted" }">
+                                                        ${d.status_id == 1?"To Do":""}
+                                                        ${d.status_id == 2?"Inprogress":""}
+                                                        ${d.status_id == 3?"Done":""}
+                                                    </div>
+                                                </div>
+                                                </div>
+                                            </td>
+                                            <td class="border-0 align-middle" style=" width:14.28%;">
+                                                <div class="d-flex align-items-center">
+                                                    <div style="line-height: 18px;">
+                                                        ${d.email}
+                                                        <div class="text-left ${d.status_id == 3?"text-light":"text-muted" }">
+                                                            ${d.phone_number}
+                                                        </div>
+                                                            
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="border-0 align-middle" style=" width: 12.28%">
+                                                <div class="text-left  d-flex align-items-center">
+                                                    ${d.agent_type}    
+                                                </div>
+                                            </td>
+                                            <td class="border-0 align-middle" style=" width: 14.28%">
+                                                <div class="text-left d-flex align-items-center">
+                                                    <div class="text-left d-flex align-items-center" style="line-height: 15px;"><i class="far fa-clock me-2 fs-5 text-warning"></i></div>
+                                                    <div class="w-75" style="line-height: 15px;">
+                                                        ${d.create_date}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="border-0 align-middle" style=" width: 12.28%">
+                                                <div class="text-left d-flex align-items-center">
+                                                    <div class="text-left d-flex align-items-center" style="line-height: 15px;"><i class="far fa-clock me-2 fs-5 text-warning"></i></div>
+                                                    <div class="w-75" style="line-height: 15px;">
+                                                        ${d.status}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="border-0 align-middle" style=" width: 12.28%">
+                                                <div class="text-left d-flex align-items-center">
+                                                    <div class="text-left d-flex align-items-center" style="line-height: 15px;"><i class="far fa-clock me-2 fs-5 text-warning"></i></div>
+                                                    <div class="w-75" style="line-height: 15px;">
+                                                        ${d.status_code}
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="border-0 align-middle" style=" width: 14.28%">
+                                                <div class="text-left d-flex align-items-center">
+                                                    <div class="dropdown d-block ">
+                                                        <a href="javascript:void(0)" data-pricelistid="${d.price_list_id}" data-id="${d.id}" data-suppliername="${d.name}" data-status="${data.status_code='active'? 1 : 2}" class="btn_action " aria-haspopup="true" aria-expanded="false">
+                                                            <i class="fa fa-chevron-down" style="color:#8DC63F;font-size:1.5em"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            </div>
+                        </div>
+                        `;
+                        
+                         i++;
+            // } 
+        });
+        container.innerHTML = html;
+        // mThis.taskBtnActionDialog(container);
+    }
 
      
     this.cols = [
@@ -200,20 +260,26 @@ var SalesAgentsComponent = new function () {
 
         mThis.salesAgentsListView = new ListView('_sale_agent_list',{
             'fetchApi':`${main_view.base_url}/abm/os-sales-agents/list`,
-            'columns': mThis.cols,
-            apiCluster:main_view.apiCluster,
-            'tableClass':"table header-light-blue header-uppercase",
+            'apiCluster':main_view.apiCluster,
+            // 'columns': mThis.cols,
+            // 'tableClass':"table header-light-blue header-uppercase",
+            listContainerClass: null,
             'processResponse':(res)=>{
+                console.log(res.data);
                 return res.data;    
             },
-            'rowCreated':(data, index, tr) => {
-                tr.dataset.id = data.id;
-                mThis.store_agents[data.id] = {
-                    code: data.code,
-                    name: data.name,
-                    user_id: data.user_id,
-                    phone_number: data.phone_number
-                };
+            // 'rowCreated':(data, index, tr) => {
+            //     tr.dataset.id = data.id;
+            //     mThis.store_agents[data.id] = {
+            //         code: data.code,
+            //         name: data.name,
+            //         user_id: data.user_id,
+            //         phone_number: data.phone_number
+            //     };
+            // },
+            renderItems: (items, list_container) => {
+                // console.log(items);
+                mThis.displaySalesAgents(list_container, items);
             },
             'beforeRender':()=>{}
         });
@@ -241,7 +307,8 @@ var SalesAgentsComponent = new function () {
         });
 
         // mThis.tblSPY = mThis.salesAgentsListView.getTable();
-        mThis.tblSale_agent = $(mThis.tblSalesAgents);
+        // mThis.tblSale_agent = $(mThis.tblSalesAgents);//old
+        mThis.tblSale_agent = $(mThis.container);
 
         mThis.tblSale_agent[0].addEventListener('click', e => {
             e.preventDefault();

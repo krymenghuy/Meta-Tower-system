@@ -31,7 +31,7 @@ class Commune //extends Model
         if(!$commune_id) $commune_id =-1;
         //Commune::deleteByParent($district_id); 
         $x = DB::table('loc_communes')->where('id',$commune_id)->delete();
-        return DV::success();
+        return DV::depends(['action'=>'deleted']);
     }
      
      static function list($district_id=null,$ss){

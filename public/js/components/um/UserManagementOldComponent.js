@@ -17,6 +17,7 @@ var UserManagementComponent = new function(){
             perPage: 5,
             paginationContainer: mThis.containerPagination,
             apiCluster: main_view.apiCluster,
+            
             renderItems: (items,list_container) => {
                 console.log(items);
                 mThis.renderUserList(list_container,items);

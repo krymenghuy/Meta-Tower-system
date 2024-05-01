@@ -17,7 +17,7 @@ class LocationController extends Controller
    function getComboItems_country(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-        return JDV::result(Country::list($ss));
+        return JDV::result(Country::list($req->all(),$ss));
     } 
    
    function saveCountry(Request $req){
@@ -56,7 +56,7 @@ class LocationController extends Controller
   function getCountryList(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-    return JDV::result(Country::list($ss));
+    return JDV::result(Country::list($req->all(),$ss));
   }
   function getCityList(Request $req){
     $ss = UM::getUserInfoByToken($req,-1);

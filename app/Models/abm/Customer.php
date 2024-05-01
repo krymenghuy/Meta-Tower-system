@@ -198,7 +198,8 @@ class Customer //extends Model
   }
   static function defaultImage($branch_id)
   {
-    return PublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
+    return PublicStorage::getUrl($branch_id,'default','image').'admin-100.png';
+    // return PublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
   }
   static function getProfilePicture($id)
   {
@@ -313,7 +314,7 @@ class Customer //extends Model
       if ($row->photo_file_name)
         $row->image_url = PublicStorage::getUrl($row->branch_id, 'customer', 'image') . $row->photo_file_name;
       unset($row->photo_file_name);
-      //if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
+      if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
     }
 
     return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
