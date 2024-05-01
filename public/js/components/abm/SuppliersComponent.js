@@ -110,7 +110,7 @@ var SuppliersComponent = new function(){
         {
             className: "code align-middle",
             data: (data,index,tr)=>{
-                const sender_info = ['<span class="sender-name d-block">#',data.code||'គ្មាន','</span>'].join('');
+                const sender_info = ['<span class="sender-name d-block text-danger">#',data.code||'គ្មាន','</span>'].join('');
                 return sender_info;
             },
             // title: mThis.trans('Sender ID')
@@ -126,22 +126,11 @@ var SuppliersComponent = new function(){
             title: 'Name '
         },
         {
-            className: "phone_number align-middle",
+            title: "Email",
+            className: "align-middle text-capitalize",
             data: (data,index,tr)=>{
-                const sender_info = ['<span class="sender-name d-block">',data.phone_number,'</span>'].join('');
-                return sender_info;
-            },
-            // title: mThis.trans('Sender ID')
-            title: 'phone number '
-        },
-        {
-            className: "email align-middle",
-            data: (data,index,tr)=>{
-                const sender_info = ['<span class="sender-name d-block">',data.gmail||'NA','</span>'].join('');
-                return sender_info;
-            },
-            // title: mThis.trans('Sender ID')
-            title: 'email'
+                return ['<div class="d-flex p-1" ><i class="fas mt-2 text-success fa-envelope"></i><span class="d-block p-1">',(data.email || 'គ្មាន'),'</span></div>','<div class="d-flex p-1"><i class="fas text-warning fa-phone mt-2"></i><span class="d-block p-1 text-primary">',data.phone_number,'</span></div>'].join('');
+            }
         },
         {
             className: "address align-middle",
@@ -520,7 +509,7 @@ var SuppliersComponent = new function(){
                     let op = {
                         id: lnk.dataset.id,
                         onClose:()=>{
-                            mThis.listView.showPage(mThis.getFitlerData());
+                            mThis.listView.showPage(mThis.getFilterData());
                         }
                     };
                     SupplierDialog.show(op);                     
@@ -554,7 +543,7 @@ var SuppliersComponent = new function(){
                                 id: id
                             },null).then(res => {
                                 if(res.status_code === 200){
-                                    mThis.listView.showPage(mThis.getFitlerData());
+                                    mThis.listView.showPage(mThis.getFilterData());
                                 }
                                 else
                                     cv_interact.error(res.error_message);
@@ -594,7 +583,7 @@ var SuppliersComponent = new function(){
                                         id: id
                                     }, null).then(res => {
                                         if (res.status_code === 200) {
-                                            mThis.listView.showPage(mThis.getFitlerData());
+                                            mThis.listView.showPage(mThis.getFilterData());
                                         } else {
                                             cv_interact.error(res.error_message);
                                         }
@@ -645,7 +634,7 @@ var SuppliersComponent = new function(){
                     };
 
                     InputBox2.show(option,(d)=>{
-                        if(d) {
+                        if(d){
                             let p = {
                                 id: supplier_id,
                                 status_code: d.value
@@ -764,7 +753,7 @@ var SuppliersComponent = new function(){
             el.onchange = e => {
                 e.preventDefault();
                 if(mThis.allow_filter){
-                    mThis.listView.showPage(mThis.getFitlerData());
+                    mThis.listView.showPage(mThis.getFilterData());
                 }
             };
         });
@@ -774,7 +763,7 @@ var SuppliersComponent = new function(){
             let op = {
                 id: null,
                 onClose: (d) =>{
-                    mThis.listView.showPage(mThis.getFitlerData());  
+                    mThis.listView.showPage(mThis.getFilterData());  
                 }
             } 
             SupplierDialog.show(op);
@@ -1001,18 +990,18 @@ var SuppliersComponent = new function(){
         mThis.elSearch.on('keyup', () => {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                mThis.listView.showPage(mThis.getFitlerData());
+                mThis.listView.showPage(mThis.getFilterData());
             }, 250);
         });
 
         mThis.btnSearch.on('click', function(){
-            mThis.listView.showPage(mThis.getFitlerData());
+            mThis.listView.showPage(mThis.getFilterData());
         });
 
         mThis.initAlready = true;
     }
 
-    this.getFitlerData = () => {
+    this.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.val(),
         };
@@ -1028,8 +1017,9 @@ var SuppliersComponent = new function(){
         mThis.initOnce();
         mThis.option = option;
         main_view.setTitle(mThis.title_prop);
+        console.log(mThis.getFilterData());
         mThis.loadFilterData(() => {
-            mThis.listView.showPage(mThis.getFitlerData(),null,() => {
+            mThis.listView.showPage(mThis.getFilterData(),null,() => {
                 mThis.self.siblings().hide();
                 mThis.self.hide().fadeIn(300);
             });
@@ -1078,6 +1068,7 @@ const SupplierDialog = new function(){
     
     this.elTitle = this.self.find('#_sdl_dlgSupplierTitle');
     this.btnSave =  this.self.find('#_sdl_supplier_btnSave');
+    // console.log(mThis.btnSave);
     // this.elSenderType =  this.self.find('#_sdl_sender_sendertype');
     // this.elBusinessType =  this.self.find('#_sdl_sender_businesstype');
     this.elSalesAgent =  this.self.find('#_sdl_sales_agent');

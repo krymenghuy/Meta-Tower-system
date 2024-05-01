@@ -18,6 +18,22 @@ var CustomersComponent = new function(){
     this.store_agents = {};
  
    this.cols = [
+    {
+        className: "",
+        data: (data,index,tr)=>{
+            return "";
+        },
+        // title: mThis.trans('Sender ID')
+        title: ' '
+    },
+    {
+        title: "Photo",
+        className: ' align-middle',
+        data: (data, a, b) => {
+            let image = data.image_url ? data.image_url : '';
+            return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
+        }
+    },
 
     {
         title: " CUSTOMER ID",
@@ -35,7 +51,7 @@ var CustomersComponent = new function(){
         title: "EMAIL",
         className: "align-middle text-capitalize",
         data: (data,index,tr)=>{
-            return ['<div class="d-flex" ><i class="fas mt-2 text-success fa-envelope"></i><span class="d-block p-1">',(data.email ?? 'គ្មាន'),'</span></div>','<div class="d-flex"><i class="fas text-warning fa-phone mt-2"></i><span class="d-block p-1 text-primary">',data.phone_number,'</span></div>'].join('');
+            return ['<div class="d-flex p-1" ><i class="fas mt-2 text-success fa-envelope"></i><span class="d-block p-1">',(data.email || 'គ្មាន'),'</span></div>','<div class="d-flex p-1"><i class="fas text-warning fa-phone mt-2"></i><span class="d-block p-1 text-primary">',data.phone_number,'</span></div>'].join('');
         }
     },
 
@@ -148,8 +164,8 @@ var CustomersComponent = new function(){
         //     });
         // }); 
         
-        // mThis.tblCustomers.querySelector('tbody').addEventListener('click', e=> {
-        //     e.preventDefault();
+        mThis.tblCustomers.querySelector('tbody').addEventListener('click', e=> {
+            e.preventDefault();
 
         //       //Click on Change Status
         //       let lnk = VSUtil.closestLimited(e.target,'.lnk-customer-status');
@@ -195,18 +211,18 @@ var CustomersComponent = new function(){
         //       }
 
         //     //Click on Edit
-        //     let btn = VSUtil.getElementByClass(e.target,'btn-customer-edit');
-        //     if(btn){
-        //         let agent_id = btn.dataset.id;
-        //         let op = {
-        //             id:agent_id,
-        //             onClose: d => {
-        //                 mThis.agentListView.showPage(mThis.getFilterData());
-        //             }
-        //         };
-        //         CustomerDialog.show(op);
-        //         return;
-        //     }
+            let btn = VSUtil.getElementByClass(e.target,'btn-customer-edit');
+            if(btn){
+                // let agent_id = btn.dataset.id;
+                let op = {
+                    id:btn.dataset.id,
+                    onClose: d => {
+                        mThis.agentListView.showPage(mThis.getFilterData());
+                    }
+                };
+                CustomerDialog.show(op);
+                return;
+            }
  
         //     //Click on Modify Login "btn-customer-login"
         //     btn = VSUtil.closestLimited(e.target,'.btn-customer-login');
@@ -260,7 +276,7 @@ var CustomersComponent = new function(){
         //         mThis.changeAgentStatus(agent_id,def_status_code); 
         //          return;
         //      }
-        // });
+        });
        
         mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
             el.onchange = (e)=>{
