@@ -78,6 +78,7 @@ class SalesAgents //extends Model
         DB::table('agent_code_control')->insert(['branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix]);
         return $prefix.$branch_id.formatNumber(1,$len);
     }
+
     static function list($arr,$ss=null){
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
@@ -89,7 +90,7 @@ class SalesAgents //extends Model
         $skip_rows = ($current_page -1) * $per_page;
 
         $status_code = isset($d->status_code)? Sanitizer::sanitize($d->status_code):null;
-        $agent_type_id =isset($d->agent_type_id)? $d->agent_type_id : null; 
+        $agent_type =isset($d->agent_type)? $d->agent_type : null; 
         
         $str_agent_type = '3=3';
         $str_status = '1=1';
@@ -98,11 +99,17 @@ class SalesAgents //extends Model
           $search_value = escape_like_str($search_value);
            $str_search = ' (d.code =\''.$search_value.'\' OR d.name LIKE \'%'.$search_value.'%\' OR d.phone_number =\''.$search_value.'\')';
         }else{
-          $str_agent_type = $agent_type_id? 'd.agent_type_id ='.$agent_type_id : '3=3';
+          $str_agent_type = $agent_type? 'd.agent_type_id ='.$agent_type : '3=3';
           $str_status = $status_code? 'd.status_code =\''.$status_code.'\'' : '1=1';
         }
        
-        $query = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.email,d.phone_number,d.address,d.status_code,t.id as agent_type_id,t.name AS agent_type,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date,d.create_user,photo_file_name'); 
+        $query = DB::table('sales_agents AS d')
+        ->join('sales_agent_types AS t','t.id','=','d.agent_type_id')
+        ->where('branch_id',$branch_id)
+        ->whereRaw($str_search)
+        ->whereRaw($str_status)
+        ->whereRaw($str_agent_type)
+        ->selectRaw('d.id,d.name,d.code,d.email,d.phone_number,d.address,d.status_code,t.id as agent_type_id,t.name AS agent_type,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date,d.create_user,photo_file_name')->orderBy('d.id', 'DESC'); 
         $count_query = clone $query;
         $count = $count_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -111,7 +118,7 @@ class SalesAgents //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-
+    
 
 
 

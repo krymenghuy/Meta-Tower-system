@@ -77,8 +77,8 @@ var LocationComponent = new function(){
       if(mThis.prev_selected_row) mThis.prev_selected_row.removeClass('row-selected');
       el.toggleClass('row-selected');
       if (el.hasClass('row-selected')){
-        mThis.selected_country_id = el.data('countryid');
-        mThis.selected_country_name = el.data('countryname');
+        mThis.selected_country_id = el.data('id');
+        mThis.selected_country_name = el.data('name');
         mThis.prev_selected_row = el;
       }
       ZoneTabView.show(mThis.selected_country_id,null,false);
@@ -386,7 +386,7 @@ var ZoneTabView = new function(){
                   InputBox1.show(option,function(d){
                     if(d){
                        let p = {'id':id,'country_id':CountryListPanel.selected_country_id,'name':d,'name_kh':d};
-                       vsapi.call([mThis.base_url,'dms/location/city/save'].join(''),p).then((res)=>{
+                       vsapi.call([mThis.base_url,'/dms/location/city/save'].join(''),p).then((res)=>{
                          if(res.status_code===200) {
                             mThis.displayCities(CountryListPanel.selected_country_id);
                          } else cv_interact.error(res.error_message);

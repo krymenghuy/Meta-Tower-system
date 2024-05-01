@@ -103,7 +103,7 @@ class Supplier //extends Model
         // return JDV::result($filter->page);
 
         $current_page = isset($d->current_page)?$d->current_page:1;
-        $per_page = isset($d->per_page)?$d->per_page:10;
+        $per_page = isset($d->per_page)?$d->per_page:15;
         $search_value = isset($d->search_value)?$d->search_value:null;
         $status_code = isset($d->status_code)?$d->status_code:null;
         $price_list_id = isset($d->price_list_id)?$d->price_list_id:null;
@@ -126,7 +126,7 @@ class Supplier //extends Model
                 ->join('os_sales_agents as sa','sa.id','s.sales_agent_id')
                 ->whereRaw($str_srch)
                 ->whereRaw($str_where)
-                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.status_code,s.sales_agent_id,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' );
+                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.status_code,s.sales_agent_id,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
        
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
@@ -190,7 +190,7 @@ class Supplier //extends Model
         }
         DB::table('sender_code_control')->insert(array('branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix));
         return $prefix.$branch_id.formatNumber(1,$len);
-      }
+    }
     
     function updateStatus($status_code,$id=null,$ss=null){
         $ss = $ss?$ss:$this->userInfo;
