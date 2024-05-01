@@ -1,5 +1,11 @@
-
-<div id="_sttn_locationsComponent"   style="display:none;padding:15px; overflow: auto;height: 600px;">
+<style>    
+.set-parent-active .active span {
+    border:1px solid #ffb822 !important;
+    background-color: #dfdfdf87 !important;
+    color: #1167c9 !important;    
+  }
+</style>
+<div id="_sttn_locationsComponent"   style="display:none;padding:15px; overflow: auto;height: 95.5%;">
   <div class="bg-white p-3 rounded-3">
     <div class="row">
       <div class="col-lg-6">
@@ -16,9 +22,9 @@
       </div>
       <div class="col-lg-6">
         <div class="tab-view" id="_sttn_loc_subLocationTabView">
-          <div class="tab-header gap-2 set-parent-active">
+          <div class="tab-header gap-2  set-parent-active">
             <a href="javascript:void(0)" class="tab-button" data-viewname="cities" data-target="_sttn_tabpanel_cities">
-              <span class="bg-white rounded-3 p-2 border">CITIES (PROVINCE)</span>
+              <span class="bg-white  rounded-3 p-2 border">CITIES (PROVINCE)</span>
             </a>
             <a href="javascript:void(0)" class="tab-button" data-viewname="districts" data-target="_sttn_tabpanel_districts">
               <span class="bg-white rounded-3 p-2 border">DISTRICTS (KHAN)</span>
@@ -32,8 +38,8 @@
               <a id="_sttn_loc_lnkNewCity" href="javascript:void(0)" class="btn btn-sm btn-outline-success btn-hover">
                 <span>Add City</span>
               </a>
-              <div class="table-responsive p-3 rounded-3 border table-responsive-hover mt-2" style="height:95.5%">
-                <table id="_sttn_loc_tblCities" class="table fixed-body-table">
+              <div id="_sttn_loc_tblCities" class="table-responsive p-3 rounded-3 border table-responsive-hover mt-2" style="height:95.5%">
+                <table  class="table fixed-body-table">
                   <thead></thead>
                   <tbody id="_sttn_loc_tblCities_body"></tbody>
                 </table>

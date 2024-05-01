@@ -82,9 +82,9 @@
                             <!-- <select class="form-control data-input" id="_sal_agent_type" data-field="agent_types_id"></select> -->
                             <select class="modal-select2 data-input" data-field="agent_type">
                                 <option value="">(Select SalesAgent Type)</option>
-                                <option value="Client_affiliate">Client-Affiliate</option>
-                                <option value="Freelancer">Freelancer</option>
-                                <option value="Full_time">Full-Time</option>
+                                <option value="client_affiliate">client-affiliate</option>
+                                <option value="freelancer">freelancer</option>
+                                <option value="full_time">full-time</option>
                             </select>
                     </div>
                     <div class="col-lg-6">
