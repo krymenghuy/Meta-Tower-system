@@ -36,14 +36,14 @@ var CountryZonesComponent  = new function () {
       title: "Country Code",
       className: "align-middle ",
       data: (data, index, tr) => {
-        return ['<div class="ms-5 ">',data.name.slice(0, 3).toUpperCase(),'</div>'].join('');
+        return ['<div class="ms-5 text-warning  ">',data.name.slice(0, 3).toUpperCase(),'</div>'].join('');
       }
     },
    
     {
       title:"Create By",
       data:(data,index,tr)=>{
-        return ['<div class="d-flex align-item-center" ><i class="fas mt-2 text-success fa-user"></i><span class="d-block p-1">',(data.create_user ?? 'គ្មាន'),
+        return ['<div class="d-flex align-item-center text-warning" ><i class="fas mt-2 text-success fa-user"></i><span class="d-block p-1">',(data.create_user ?? 'គ្មាន'),
         '</span></div>','<div class="d-flex"><i class="bi bi-balloon-fill"></i><span class="d-block p-1 text-primary">',data.create_date,'</span></div>'].join('');
         
       }
@@ -56,8 +56,8 @@ var CountryZonesComponent  = new function () {
       data: (data, index, tr) => {
         return [`<div class="d-flex align-item-center gap-2">
           
-          <a href="javascript:void(0)" data-id ="${data.id}" class="_sttn_zon_delete btn btn-sm btn-outline-danger rounded-5">
-          <i class="fa fa-times"></i>
+          <a href="javascript:void(0)" data-id ="${data.id}" class="_sttn_zon_delete btn btn-sm btn-outline-danger align-item-center rounded-5">
+          <i class="fa fa-times ms-2  "></i>
           </a>
         </div>`].join('');
       }
