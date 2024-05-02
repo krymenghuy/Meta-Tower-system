@@ -245,7 +245,7 @@
                         </li>
                     </ul>
                 </div>
-            </li>
+            </li> -->
              <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" <?php v_display(null,[220,210,102,221,216,212]);?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
@@ -257,7 +257,7 @@
                 <div class="kt-menu__submenu">
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(212); ?>>
+                        <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(212); ?>>
                             <a href="ExchangeRatesComponent" modid="212" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/exchange_rate.svg') }}" />
@@ -280,7 +280,7 @@
                                 </span>
                                 <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Remarks"></span>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(102); ?>>
                             <a href="LocationComponent" modid="102" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -307,7 +307,7 @@
                         </li>
                     </ul>
                 </div>
-            </li> --> 
+            </li> 
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"<?php v_display(null, [100, 101]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">

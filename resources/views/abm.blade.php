@@ -207,8 +207,9 @@
                                 @include('layouts.abm.shipmentsComponent')
                                 @include('layouts.abm.suppliersComponent')
                                 @include('layouts.abm.salesAgentsComponent')
-                                
 
+                                @include('layouts.dms.priceSettingsComponent')
+                                
                             </div>
                         </div>
                     </div> 
