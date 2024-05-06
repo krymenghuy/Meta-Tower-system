@@ -114,7 +114,7 @@
       <div class="d-flex gap-2">
         <div class="d-flex gap-2">
           <div class="min-width-select">
-            <select id="ps_filter_price_list" class="modal-select2"></select>
+            <select id="ps-filter_price_list" class="modal-select2"></select>
           </div>
           <div class="d-flex align-items-start">
             <button style="display:none" id="ps-lnk_merchant_list" type="button" class="btn btn-sm btn-primary">

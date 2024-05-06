@@ -1,3 +1,16 @@
+<style>
+  .lnk-tab-head {
+    display: inline-block;
+    padding: 0px 5px 0px 5px;
+    font-size: 1.2em;
+    border-bottom: 1.2px solid #d3d3d3; /* Light grey border */
+    box-shadow: 0 2px 0 0 #f0f0f0; /* Light grey shadow */
+  }
+  .lnk-tab-head.selected{
+    border-bottom: 1.5px solid green; /* Light grey border */
+    box-shadow: 0 2px 0 0 green; /* Light grey shadow */
+  }
+</style>
 <div id="_main_saleAgentsComponent" class="m-2" style="display:none;">
     <div class="w-100">
         <div class="d-flex flex-row justify-content-between bg-white shadow-lg rounded-3 p-3 mb-2" id="div_filter_fields">

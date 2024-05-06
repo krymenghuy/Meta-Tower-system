@@ -110,11 +110,13 @@ var PackageListComponent = new function() {
                             let str_driver = ['<a href="javascript:void(0)" class="_pol_driver_name">',data.driver_name?data.driver_name:'មិនមានអ្នកដឹក','</a>'].join('');
                             
                              //set failure notes | remarks | package ramarks
-                             let notes = (data.status_id==9 || data.status_id==11 || data.status_id ==10)? data.failure_notes:data.delivery_notes;
+                             //let notes = (data.status_id==9 || data.status_id==11 || data.status_id ==10)? data.failure_notes:data.delivery_notes;
                              let cls_status = DUtil.getStatusClass(data.status_id);
-                             const remarks = mThis.sanitizeInput(data.remarks);
-                             const failure_notes = mThis.sanitizeInput(data.failure_notes);
-                             const agent_notes = mThis.sanitizeInput(data.agent_notes);
+                         
+                             let failure_notes = mThis.sanitizeInput(data.failure_notes);
+                             let delivery_notes = mThis.sanitizeInput(data.delivery_notes);
+                             let return_notes = mThis.sanitizeInput(data.return_notes);
+                          
                              let start_time =  data.arrival_time;
                              let finish_time = data.finish_time || data.delivery_time;
                              switch(data.status_id){
@@ -138,7 +140,7 @@ var PackageListComponent = new function() {
                                     break;
                              }
                              const time_to_now = mThis.formatTimeSpan(start_time || data.arrival_time);
-                             return ['<div class="d-flex flex-column flex-wrap">','<a data-remarks="',remarks,'" data-failurenotes ="',failure_notes,'" data-agentnotes="',agent_notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">','<span class="d-block status-text">',data.status,'</span>', '<span class="text-dark"><small class="status-time">',time_to_now,'</small></span>' ,'</a>',str_driver, '</div>'].join('');
+                             return ['<div class="d-flex flex-column flex-wrap">','<a data-failurenotes ="',failure_notes,'" data-deliverynotes="',delivery_notes,'" data-returnnotes="',return_notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">','<span class="d-block status-text">',data.status,'</span>', '<span class="text-dark"><small class="status-time">',time_to_now,'</small></span>' ,'</a>',str_driver, '</div>'].join('');
                         },
                         title:'Status'
                     },
@@ -161,7 +163,62 @@ var PackageListComponent = new function() {
                     }
                 ];
  
+    function getPopoverNotes(status_id, delivery_notes= null, failure_notes= null,return_notes = null){
+        let remarks = null;
+        switch(Number(status_id)){
+            case 5:
+              remarks = delivery_notes? ['<p class="text-info">',delivery_notes,'</p>'].join(''):null;
+              break;
+            case 6:
+                failure_notes = failure_notes ? ['<span class="d-block text-info p-1"><span class="text-muted">Last Failed</span> ',failure_notes ,'</span>'].join('') : null;
+                remarks = [failure_notes,delivery_notes? `<span class="d-block p-1">${delivery_notes}</span>`:null].join('');
+                break;
+            case 9:
+                failure_notes = failure_notes ? ['<span class="d-block text-info p-1"><span class="text-muted">Last Failed </span> ', failure_notes ,'</span>'].join('') : null;
+                remarks = [failure_notes,delivery_notes? `<span class="d-block p-1">${delivery_notes}</span>`: null].join('');
+                break;
+            case 11:
+                let sts = (return_notes || '').split('||');
+                return_notes = ['<span class="p-1 text-danger">',sts[0],'</span>','<span class="text-dark pl-1">',sts[1],'</span>'].join('');
+               
+                failure_notes = failure_notes ? ['<span class="d-block text-dark p-1"><span class="text-info">Last Failed </span> ', failure_notes ,'</span>'].join('') : null;
+                remarks = [return_notes,failure_notes,delivery_notes? `<span class="d-block p-1"> ${delivery_notes}</span>` : null].join('');
+                break;
+            case 8:
+                failure_notes = failure_notes ? ['<span class="d-block text-info p-1"><span class="text-muted">Last Failed </span> ',failure_notes ,'</span>'].join('') : null;
+                remarks = [failure_notes, delivery_notes ? `<span class="d-block p-1"> ${delivery_notes}</span>`: null].join('');
+                break;
+            default:
+                remarks = null;
+                break;
+         }
+         return remarks;
+    }
 
+    this.initStatusPopover = (btnStatus) => {
+        if (!btnStatus) return;
+    
+        // Reset the popover if it's already initialized
+        if ($(btnStatus).data('bs.popover')) {
+            $(btnStatus).popover('dispose');
+        }
+    
+        let failure_notes = btnStatus.dataset.failurenotes;
+        let return_notes = btnStatus.dataset.returnnotes;
+        const delivery_notes = btnStatus.dataset.deliverynotes || btnStatus.dataset.agentnotes;
+        let status_id = btnStatus.dataset.statusid;
+        let remarks = getPopoverNotes(status_id, delivery_notes, failure_notes, return_notes);
+    
+        if (remarks) {
+            // Initialize popover
+            $(btnStatus).popover({
+                html: true,
+                trigger: "hover",
+                content: remarks
+            });
+        }
+    }
+    
     this.setSelected_alert_card = (status_id)=>{
        //  mThis.div_cards = mThis.div_cards || mThis.div_summary.querySelectorAll('div.pg-alert-card');
         mThis.div_cards.forEach(c=>{
@@ -278,7 +335,7 @@ var PackageListComponent = new function() {
         //FilterDialog_package.loadFilterData();
 
         mThis.listView = new ListView('_pgl_package_list', {
-            columns: mThis.cols,
+            columns:mThis.cols,
             // 'clientSidePagination':true,
             processResponse:(res)=>{
                const d = res.data || {}; 
@@ -297,7 +354,11 @@ var PackageListComponent = new function() {
                     mThis.pg_overdue_count_text.innerHTML = d.total_overdue_count;
                 }
                 else mThis.pg_overdue_count_text.closest('div.pg-overdue-count-wrapper').style.display='none';
-            }; 
+              }
+              mThis.div_crosstab_container =  mThis.div_crosstab_container || mThis.div_summary.querySelector('#pg_crosstab_container');
+              mThis.div_crosstab_container.innerHTML = ''; 
+              mThis.loadStatistics();
+              mThis.loadPerformanceStats();
                return d.list;
             },
             //'paginationContainer': document.querySelector('#test_div'),
@@ -319,22 +380,7 @@ var PackageListComponent = new function() {
                //begin::init Popover view
                     const btnStatus = tr.querySelector('._pol_status');
                     //if(btnStatus){
-                        let remarks = btnStatus.dataset.remarks;
-                        let failure_notes = btnStatus.dataset.failurenotes;
-                        if(failure_notes && failure_notes ==remarks) remarks = '';
-                        const agent_notes = mThis.sanitizeInput(data.agent_notes);
-                        let status_id = btnStatus.dataset.statusid;
-                        let cls = 'pg-remarks';
-                        if (status_id == 9) cls = 'pg-remarks-failed';
-                        //const status_id = btnStatus.dataset.statusid;
-                        if (failure_notes || remarks) {
-                            $(btnStatus).popover({
-                                html: true,
-                                trigger: "hover",
-                                title: ["<span class='pg-remarks-title'>Remarks</span>"].join(''),
-                                content: ['<span class="d-block text-danger">',failure_notes,'</span><span class="d-block text-black">',remarks,'</span><span class="d-block text-success">',agent_notes,'</span>'].join('')
-                            });
-                        }
+                        mThis.initStatusPopover(btnStatus);
                     //} 
                //end::Init Popover view
 
@@ -408,7 +454,6 @@ var PackageListComponent = new function() {
                     d.fresh =1;
                     d.search_value = '';
                     mThis.elSearchPackage.value = '';
-                    console.log(d);
                     mThis.listView.showPage(d);
                 }
              };
@@ -462,9 +507,9 @@ var PackageListComponent = new function() {
         // });
          
       //##BEGIN:: tblPackages dropdown menu
-                mThis.tblPackages.on('click', (e) => {
+                mThis.tblPackages[0].addEventListener('click',e => {
                     // Check if the clicked element has the class 'btn_pg_action'
-                    let btn = VSUtil.getElementByClass(e.target,'btn_pg_action');
+                    let btn = VSUtil.closestLimited(e.target,'.btn_pg_action');
                     if (btn) {
                         e.preventDefault();
 
@@ -497,165 +542,144 @@ var PackageListComponent = new function() {
                         }
                         return;
                     }
-                });
- 
-                // $(document).on('click',function(e){
-                //     //e.preventDefault();
-                //     let x = mThis.tblPackages.find('div.dropdown-menu'); 
-                //     let container =  x.parent(); 
-                //     //mThis.package_dropdown_menu.parent(); // div.dropdown
-                //     if(container){
-                //         if (!container.is(e.target) && container.has(e.target).length === 0) {
-                //             //mThis.package_dropdown_menu.removeClass('show');
-                //             x.removeClass('show'); 
-                //         } 
-                //     }
-                // });
 
-                document.addEventListener('click', function (e) {
-                    mThis.tblPackages[0].querySelectorAll('div.dropdown-menu').forEach(dropdownMenu => {
-                        if (!dropdownMenu.parentElement.contains(e.target)) {
-                            dropdownMenu.classList.remove('show');
-                        }
-                    });
-                });
-  
-                //Change merchant
-                mThis.tblPackages.on('click', 'a._pl_pa_change_merchant', function (e) {
-                    e.preventDefault();
-                    let x = $(this).closest('div.dropdown-menu');
-                    let tr = $(this).closest('tr');
-        
-                    let package_id = x.data('id');
-                    const option = { 'title': 'Find Merchant', 'role': 'sender', 'singleSelect': true, 'previousDialog': null };
- 
-                    FindPersonDialog.show(option, function (ps) {
-                        if (ps[0]) {
-                            let sender = ps[0];
-                            let p = { "id": package_id, 'sender_id': sender.id };
-                            vsapi.call(`${mThis.base_url}/dms/package/change-sender`, p).then(res => {
-                                if (res.status_code === 200) {
-                                    let d = StringSanitizer.sanitizeObject(res.data);
-                                    tr.find('.pg-sender_name').text(d.sender_name);
-                                    tr.find('.pg-sender_type').text(d.sender_type);
-                                    tr.find('.pg-sender_phone').text(d.sender_phone);
-                                    cv_interact.info(['Merchant has been changed to ', ps[0].name].join(''));
-                                } else cv_interact.error(res.error_message);
-                            });
-                        }
-                    });
-                });
-
-                //Return to store 
-                mThis.tblPackages.on('click', 'a._pl_pa_quick_return_package', function (e) {
-                    e.preventDefault();
-                    let x = $(this);
-                    let tr = x.closest('tr');
-                    let p = { 'package_id': tr.data('id') };
-                    //let def_driver_id = tr.data('driverid');
-                    cv_interact.confirm('Return this package?', { title: 'Return Package', context: 'update' }, function (e) {
-                        if (e) {
-                            vsapi.call([mThis.base_url, '/dms/returnPackage'].join(''), p).then(res => {
-                                if (res.status_code === 200) {
-                                    //update status on package trail | updatePackageStatus() || displayPackageStatus() || displayStatus()
-                                    let btn = tr.find('a._pol_status');
-                                    btn.data('statusid', 11);
-                                    btn.data('status', 'Returned');
-                                    btn.find('.status-text').text('Returned');
-                                    btn.find('.status-time').text('Just now');
-                                } else cv_interact.error(res.error_message);
-                            });
-                        }
-                    });
-                });
-
-                
-        //**Quick Assign Driver to Delivery
-        mThis.tblPackages.on('click', 'a._pl_pa_quick_assign_driver', function (e) {
-            e.preventDefault();
-            let x = $(this);
-            let tr = x.closest('tr');
-            //let delivery_id = tr.data('did');
-            let def_driver_id = tr.data('driverid'); //not correct this line yet
-            let pacakge_id = tr.data('id');
-            let no_driver_assigned = LocaleManager.trans('No Driver Assigned');
+                //Click on Change merchant
+                    btn = VSUtil.closestLimited(e.target,'._pl_pa_change_merchant');
+                    if(btn){
+                        let x = VSUtil.closestLimited(e.target,'div.dropdown-menu');
+                        let tr = VSUtil.closestLimited(e.target,'tr');
             
-            mThis.getActiveDrivers((active_drivers) =>{
-                    active_drivers.push({ 'id': -1, 'driver_name': `(${no_driver_assigned})` });
-                    let option = { 'autoClose':false, 'confirmButtonText':'Assign Now', 'title': 'Assign Driver', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': active_drivers, 'allowBlankValue':false,'blankErrorMessage': "Please choose one driver", "defaultValue": def_driver_id };
-                    InputBox2.show(option, (d,btnAssign) => {
-                        if (d) {
-                            let p = {};
-                            p.driver_id = d.value; /** d.value = driver id and d.text = driver name **/
-                            p.warehouse_id = FilterDialog_package.elFilter_warehouse.val();
-                            //p.delivery_id = delivery_id;
-                            p.package_id = pacakge_id ? pacakge_id : 0;
-                            if (p.driver_id == -1) p.driver_id = null; //Set driver to "Unassigned"
-                            if (!p.warehouse_id || p.warehouse_id <= 0) {
-                                cv_interact.warning('Warehouse ID is not valid');
+                        let package_id = x.dataset.id;
+                        const option = { 'title': 'Find Merchant', 'role': 'sender', 'singleSelect': true, 'previousDialog': null };
+     
+                        FindPersonDialog.show(option, function (ps) {
+                            if (ps[0]) {
+                                let sender = ps[0];
+                                let p = { "id": package_id, 'sender_id': sender.id };
+                                vsapi.call(`${mThis.base_url}/dms/package/change-sender`, p).then(res => {
+                                    if (res.status_code === 200) {
+                                        let d = StringSanitizer.sanitizeObject(res.data);
+                                        tr.querySelector('.pg-sender_name').textContent =  d.sender_name;
+                                        tr.querySelector('.pg-sender_type').textContent = d.sender_type;
+                                        tr.querySelector('.pg-sender_phone').textContent = d.sender_phone;
+                                        cv_interact.info(['Merchant has been changed to ', ps[0].name].join(''));
+                                    } else cv_interact.error(res.error_message);
+                                });
+                            }
+                        });
+                       return;
+                    }
+
+                     //*** Click on Return to store 
+                       btn = VSUtil.closestLimited(e.target,'a._pl_pa_quick_return_package');
+                        if(btn)
+                        {
+                            let tr = VSUtil.closestLimited(e.target,'tr');
+                            if(tr.dataset.statusid ==11){
+                                cv_interact.warning('The item is already returned');
                                 return;
                             }
-        
-                            //assignDriver()
-                            vsapi.call([mThis.base_url,'/dms/b_assignDeliveryDriver'].join(''),p,btnAssign).then(res=>{
-                                if(res.status_code ===200) {
-                                    let status = 'On Delivery';
-                                    let status_id = 6;
-                                    if (!p.driver_id || p.driver_id <= 0) {
-                                        status = 'At Warehouse';
-                                        status_id = 5;
-                                    }
-                                    InputBox2.self.modal('hide');
-                                    //if(option.manualClosing) InputBox2.self.modal('hide');
-                                    mThis.displayDriverData(tr, { "driver_id": p.driver_id, "driver_name": d.text, 'status': status, 'status_id': status_id });
-                                   
-                                } else cv_interact.error(res.error_message);
-                            });
+                            let p = { 'package_id': tr.dataset.id };
+                            //let def_driver_id = tr.data('driverid');
+                           cv_interact.inputBox('ការបញ្ជូនត្រឡប់វិញ','ហេតុផលក្នុងការបញ្ជូនត្រឡប់វិញ','text',null,{
+                              context:"update",
+                              confirmButtonText:"Return Now",
+                              placeHolder:"remarks",
+                              maxlength:200,
+                              inputValidator:(value)=>{
+                                  if(!value){
+                                      cv_interact.warning('មិនអាចបញ្ជូនត្រឡប់វិញដោយគ្មានហេតុផលទេ!');
+                                      return false;
+                                  }
+
+                              }
+                             }).then(res =>{
+                                 if(res.isConfirmed){
+                                    p.remarks = res.value;
+                                    vsapi.call([mThis.base_url, '/dms/returnPackage'].join(''), p).then(res => {
+                                        if (res.status_code === 200) {
+                                            let d = res.data || {};
+                                            //update status on package trail | updatePackageStatus() || displayPackageStatus() || displayStatus()
+                                            let btn = tr.querySelector('a._pol_status');
+                                            tr.dataset.statusid =11;
+                                            btn.dataset.statusid =  11;
+                                            btn.dataset.status = 'Returned';
+                                            btn.querySelector('.status-text').textContent =  'Returned';
+                                            btn.querySelector('.status-time').textContent =  'Just now';
+                                            btn.dataset.returnnotes = d.remarks;
+                                            //initPopover
+                                            mThis.initStatusPopover(btn);
+                                        } else cv_interact.error(res.error_message);
+                                    });
+                                 } 
+                              }); 
+                                
+                            return;
                         }
-                    });
-            });
+  
+                        //**Click on Assign Driver to Delivery
+                       btn = VSUtil.closestLimited(e.target, 'a._pl_pa_quick_assign_driver');
+                           if(btn){
 
-            // if (!mThis.drivers1) {
-            //     let i = 0, c;
-            //     mThis.drivers1 = [];
-            //     mThis.drivers1.push({ 'id': -1, 'driver_name': `(${no_driver_assigned})` });
-            //     do {
-            //         c = mThis.form_data.drivers[i];
-            //         if (!c) break;
-            //         //Do not show Inactive Drivers, Do not show Driver who has resigned from company in the Assign Driver List
-            //         if (c.id > 0 && (c.status_code || '').toLowerCase() ==='active') mThis.drivers1.push(c);
-            //         i++;
-            //     } while (c);
-            // }
-    
-        });
-                mThis.tblPackages.on('mouseover','tr',function(e){
-                    let x = $(this)[0];
-                    let col_action = x.querySelector('td.col_action');
-                    let btn_barcode = x.querySelector('td.barcode a._pgl_pa_quick_btn_barcode');
-                    if(btn_barcode) btn_barcode.style.visibility ='visible' ;
-                    if(col_action) col_action.querySelector('a.btn_pg_action>i').classList.add('action-button-zoomin');    
-                }).on('mouseleave','tr',function(e) {
-                    let x = $(this)[0];
-                    let col_action = x.querySelector('td.col_action');
-                    let btn_barcode = x.querySelector('td.barcode a._pgl_pa_quick_btn_barcode');
-                    if(btn_barcode) btn_barcode.style.visibility ='hidden';
-                    if(col_action){
-                        col_action.querySelector('a.btn_pg_action>i').classList.remove ('action-button-zoomin');
-                        const dpn = col_action.querySelector('div.dropdown-menu');
-                        if(dpn) { 
-                            const mnu = dpn.querySelector('div.dropdown-menu');
-                            if(mnu) mnu.classList.remove('show');
-                          } 
-                    }
-                    
+                                    let tr = VSUtil.closestLimited(e.target,'tr');
+                                    //let delivery_id = tr.data('did');
+                                    let def_driver_id = tr.dataset.driverid; //not correct this line yet
+                                    let pacakge_id = tr.dataset.id;
+                                    let no_driver_assigned = LocaleManager.trans('No Driver Assigned');
+
+                                        mThis.getActiveDrivers((active_drivers) =>{
+                                            active_drivers.push({ 'id': -1, 'driver_name': `(${no_driver_assigned})` });
+                                            let option = { 'autoClose':false, 'confirmButtonText':'Assign Now', 'title': 'Assign Driver', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': active_drivers, 'allowBlankValue':false,'blankErrorMessage': "Please choose one driver", "defaultValue": def_driver_id };
+                                            InputBox2.show(option, (d,btnAssign) => {
+                                                if (d) {
+                                                    let p = {};
+                                                    p.driver_id = d.value; /** d.value = driver id and d.text = driver name **/
+                                                    p.warehouse_id = FilterDialog_package.elFilter_warehouse.val();
+                                                    //p.delivery_id = delivery_id;
+                                                    p.package_id = pacakge_id ? pacakge_id : 0;
+                                                    if (p.driver_id == -1) p.driver_id = null; //Set driver to "Unassigned"
+                                                    if (!p.warehouse_id || p.warehouse_id <= 0) {
+                                                        cv_interact.warning('Warehouse ID is not valid');
+                                                        return;
+                                                    }
+                                
+                                                    //assignDriver()
+                                                    vsapi.call([mThis.base_url,'/dms/b_assignDeliveryDriver'].join(''),p,btnAssign).then(res=>{
+                                                        if(res.status_code ===200) {
+                                                            let status = 'On Delivery';
+                                                            let status_id = 6;
+                                                            if (!p.driver_id || p.driver_id <= 0) {
+                                                                status = 'At Warehouse';
+                                                                status_id = 5;
+                                                            }
+                                                            InputBox2.self.modal('hide');
+                                                            //if(option.manualClosing) InputBox2.self.modal('hide');
+                                                            mThis.displayDriverData(tr, { "driver_id": p.driver_id, "driver_name": d.text, 'status': status, 'status_id': status_id });
+                                                        
+                                                        } else cv_interact.error(res.error_message);
+                                                    });
+                                                }
+                                            });
+                                    });
+                                  return; 
+                           }  
+                            
+                       //Click on action Log
+                       btn = VSUtil.closestLimited(e.target,'._pl_pa_track_change');
+                       if(btn){
+                          let tr = VSUtil.closestLimited(e.target,'tr')
+                          let id = tr.dataset.id;
+                          alert('view change log for ' + id);
+                         return;
+                       }    
+                   
                 });
- 
+    
 
-       mThis.tblPackages.on('click',e =>{
-           e.preventDefault();
+         mThis.tblPackages[0].addEventListener('click',e =>{
+            e.preventDefault();
 
-           //Click on delete menu item
+           //*** Click on delete menu item
            let btn = VSUtil.getElementByClass(e.target,'_pl_pa_delete');
            if(btn){
                 let package_id = btn.dataset.id;
@@ -670,7 +694,7 @@ var PackageListComponent = new function() {
            }
 
 
-                //Click on barcode menu item
+                //*** Click on barcode menu item
                 btn = VSUtil.closestLimited(e.target,'._cpl_pa_print_barcode');
                 if(btn){
                      
@@ -681,7 +705,7 @@ var PackageListComponent = new function() {
                 }
                
 
-                 //Click on Quick barcode icon
+                 //*** Click on Quick barcode icon
                  btn = VSUtil.closestLimited(e.target,'._pgl_pa_quick_btn_barcode');
                  if(btn){
                     const barcode = btn.dataset.barcode;
@@ -690,92 +714,130 @@ var PackageListComponent = new function() {
                     mThis.countLabelPrint(tr);
                  }
        });
-     
-    //    //Update Delviery status
-    //    mThis.tblPackages.on('click','a._cpl_pa_change_status',function(e){
-    //         e.preventDefault();
-    //         let tr = $(this).closest('tr');
-    //         let delivery_id = tr.data('did');
-    //         let pid = tr.data('pid');
-    //         //let driver_id = tr.data('driverid');
-    //         let def_status_id = tr.data('statusid');
-    //         //let sender_id = tr.data('senderid');
- 
-    //         let option = {
-    //             "title":"Set Package Status",
-    //             "data":mThis.statuses,
-    //             "textMember":"status_name", //status code
-    //             "valueMember":"id",  // status name of delivery. Whereas status_id is used in table order.status_id
-    //             "dataLabel":"Choose package status",
-    //             'blankErrorMessage':'Please select one status',
-    //             'okBtnText':'OK',
-    //             'defaultValue': def_status_id
-    //         };
-
-    //         InputBox2.show(option,function(data) {
-    //             if(data) {
-    //                 let p = {
-    //                     "delivery_id":delivery_id,
-    //                     "package_id":pid,
-    //                     "status_id":data.value
-    //                 };
-                    
-    //                 vsapi.call(`${mThis.base_url}/dms/updatePackageStatus`,p).then(res => {
-    //                     if(res.status_code === 200) {
-    //                         let data = res.data;
-    //                         let td = tr.find('td.package-status');
-    //                         td.find('a.pg-text').text(data.text); 
-    //                         //mThis.ExpandableDetails.refreshPackageData(tr,pid);
-    //                     } else cv_interact.error(res.error_message);
-    //                 });
-    //              }
-    //         });
-    //    });
- 
-        // mThis.tblPackages.on('click','a._cpl_pa_quick_return_package',function(e){
-        //     e.preventDefault();
-        //     let x =$(this);
-        //     let tr = x.closest('tr');
-        //     let p  = {'package_id':tr.data('pid')};
-        //     //let def_driver_id = tr.data('driverid');
-        //     cv_interact.confirm('Return this package?',{title:'Return Package',context:'update'},function(e){
-        //             if(e){
-        //                 vsapi.call(`${mThis.base_url}/dms/returnPackage`,p).then(res => {
-        //                     if(res.status_code === 200){
-        //                        //update status on package trail | updatePackageStatus() || displayPackageStatus() || displayStatus()
-        //                        let btn = tr.find('a._pol_status');
-        //                        btn.data('statusid',11);
-        //                        btn.data('status','Returned');
-        //                        btn.text('Returned');
-        //                     }else cv_interact.error(res.error_message);
-        //                 }); 
-        //             }
-        //     });
-
-          
-        // });
       
-     // //BEGIN:: listen to private event from backend (private channel)
-        //         window.Echo.private(main_view.backend_channel_name).listen( '.package_status_changed',(d) =>{
-        //             let data = d.data;
-        //             toastr.info(DUtil.escapeHtml(data.message),data.title);
-        //             main_view.addNotificationItem({'title':data.title,'message':data.message});
 
-        //             if(mThis.tblPackages.is(':visible')){
-        //                 let tr = mThis.findRowByBarcode(data.bar_code);
-        //                 mThis.displayDriverData(tr,{"driver_id":data.driver_id,"driver_name":data.driver_name,'status':data.status,'status_id':data.status_id});
-        //             }
-                
-        //         });
-        //  //END:: listen to private event from backend (private channel)
+       mThis.tblPackages.on('mouseover','tr',function(e){
+            let x = $(this)[0];
+            let col_action = x.querySelector('td.col_action');
+            let btn_barcode = x.querySelector('td.barcode a._pgl_pa_quick_btn_barcode');
+            if(btn_barcode) btn_barcode.style.visibility ='visible' ;
+            if(col_action) col_action.querySelector('a.btn_pg_action>i').classList.add('action-button-zoomin');    
+      }).on('mouseleave','tr',function(e) {
+            let x = $(this)[0];
+            let col_action = x.querySelector('td.col_action');
+            let btn_barcode = x.querySelector('td.barcode a._pgl_pa_quick_btn_barcode');
+            if(btn_barcode) btn_barcode.style.visibility ='hidden';
+            if(col_action){
+                col_action.querySelector('a.btn_pg_action>i').classList.remove ('action-button-zoomin');
+                const dpn = col_action.querySelector('div.dropdown-menu');
+                if(dpn) { 
+                    const mnu = dpn.querySelector('div.dropdown-menu');
+                    if(mnu) mnu.classList.remove('show');
+                } 
+            }
+        
+       });
 
-        // //initialize class "ExpandableDetails", which is the package's dropdown expanded detail
-        // mThis.ExpandableDetails.init();
-        // mThis.initialized = true;
+       document.addEventListener('click', function (e) {
+        mThis.tblPackages[0].querySelectorAll('div.dropdown-menu').forEach(dropdownMenu => {
+            if (!dropdownMenu.parentElement.contains(e.target)) {
+                dropdownMenu.classList.remove('show');
+            }
+            });
+        });
+
+        // $(document).on('click',function(e){
+        //     //e.preventDefault();
+        //     let x = mThis.tblPackages.find('div.dropdown-menu'); 
+        //     let container =  x.parent(); 
+        //     //mThis.package_dropdown_menu.parent(); // div.dropdown
+        //     if(container){
+        //         if (!container.is(e.target) && container.has(e.target).length === 0) {
+        //             //mThis.package_dropdown_menu.removeClass('show');
+        //             x.removeClass('show'); 
+        //         } 
+        //     }
+        // });
+        
         mThis.initAlready = true;
     }
     //end::PackageListComponent.init() | end::init()
  
+    this.loadPerformanceStats = ()=>{
+        //mThis.div_crosstab_container =  mThis.div_crosstab_container || mThis.div_summary.querySelector('#pg_crosstab_container');
+        //const div = mThis.div_crosstab_container.querySelector('.card-two');
+        //div.innerHTML = '<div class="d-flex flex-column justify-content-center align-items-center h-100 w-100"><div class="animation-line" style="height:2px;margin:0;"></div></div>';
+        vsapi.call([main_view.base_url,`/dms/dashboard/package-performance`].join(''),null,null,false).then(res =>{
+             let d = res.status_code ==200? res.data : {};
+             mThis.displayPerfoStats(d,null);
+        });   
+    } 
+
+    this.loadStatistics = ()=>{
+      //mThis.div_crosstab_container =  mThis.div_crosstab_container || mThis.div_summary.querySelector('#pg_crosstab_container');
+      //const div = mThis.div_crosstab_container.querySelector('.card-one');
+      //div.innerHTML = '<div class="d-flex flex-column justify-content-center align-items-center h-100 w-100"><div class="animation-line" style="height:2px;margin:0;"></div></div>';
+      vsapi.call([main_view.base_url,`/dms/dashboard/package-statistics`].join(''),null,null,false).then(res =>{
+           let d = res.status_code ==200? res.data : {};
+           mThis.displayStatistics(d,null);
+      });   
+    } 
+    
+    this.displayPerfoStats = (data,div =null)=>{
+        let d_html = '<tr><td></td> <td>AW</td> <td>OD</td> <td>Succ</td> <td>Fail</td> <td>Retn</td> <td>Total</td></tr>';
+        (data || []).map( d=>{
+            d_html = [d_html,`<tr>`,`<td>`,d.category,`</td> <td>`,d.at_warehouse,`</td> <td>`,d.on_delivery,,`</td> <td>`,d.delivered,,`</td> <td>`,d.failed,,`</td> <td>`,d.returned,`</td>`,`<td>`,d.total,`</td>`,`</tr>`].join('');
+        });  
+
+      let html = [`<div class="pg-crosstab shadow bg-info">`,
+       `<table><tbody>`,
+          d_html,
+       `</tbody></table>`,
+      `</div>`].join('');
+      mThis.div_crosstab_container =  mThis.div_crosstab_container || mThis.div_summary.querySelector('#pg_crosstab_container');
+      mThis.div_crosstab_container.insertAdjacentHTML('beforeend',html);
+      //div.innerHTML = html;
+    }
+
+    this.displayStatistics = (d,div =null)=>{
+        d = d || {};
+        let html = [`
+        <div class="pg-crosstab shadow bg-danger">
+                    <table>
+                        <tbody>
+                             <tr>
+                                <td></td> 
+                                <td>Pcs</td>
+                                <td>Mers</td>
+                             </tr>
+
+                             <tr>
+                                <td>New</td> 
+                                <td>`,d.new.package_count,`</td>
+                                <td>`,d.new.merchant_count,`</td>
+                             </tr>
+
+                             <tr>
+                                <td>Old</td> 
+                                <td>`,d.old.package_count,`</td>
+                                <td>`,d.old.merchant_count,`</td>
+                             </tr>
+
+                             <tr>
+                                <td>Total</td> 
+                                <td>`,d.total_package,`</td>
+                                <td>`,d.total_merchant,`</td>
+                             </tr>
+
+                        </tbody>
+                    </table>
+              </div>
+        `].join('');
+        mThis.div_crosstab_container =  mThis.div_crosstab_container || mThis.div_summary.querySelector('#pg_crosstab_container');
+        mThis.div_crosstab_container.insertAdjacentHTML('beforeend',html);
+        //div.innerHTML = html;
+    }
+
     this.getActiveDrivers = (onFinish)=>{
         vsapi.call([mThis.base_url, '/dms/settings/options-active-driver'].join(''),null,null,false ).then(res =>{
             let drivers = res.status_code ==200? res.data: [];
@@ -923,6 +985,7 @@ var PackageListComponent = new function() {
           '<a data-id="',package_id,'" class="dropdown-item _pl_pa_delete" href="#"><i class="fa fa-trash-can  text-danger" style="color:red"></i> Delete Package</a>',
           '<a class="dropdown-item _pl_pa_quick_return_package" href="javascript:void(0)"><i class="fa fa-tasks" style="color:blue"></i>Return To Store</a>',
           '<a class="dropdown-item _pl_pa_change_merchant" href="javascript:void(0)"><i class="fa fa-user-check"></i> Change Merchant</a>',
+          //'<a class="dropdown-item _pl_pa_track_change" href="javascript:void(0)"><i class="fa fa-list"></i> Action Log</a>',
         '</div>'].join('');
         return html;
     };
@@ -970,12 +1033,13 @@ var PackageListComponent = new function() {
         let tr = null;
         if(!tr_html) return; 
         if (tr_html instanceof jQuery) tr = tr_html[0]; else tr = tr_html;
+        if(!tr) return;
         //if (tr) {
             tr.dataset.driverid = d.driver_id;
             tr.querySelector('a._pol_driver_name').textContent = d.driver_name;
-            let lnkStatus = tr.querySelector('td.package-status').querySelector('a._pol_status');
+            let lnkStatus = tr.querySelector('td.package-status a._pol_status');
             lnkStatus.querySelector('.status-text').textContent =  d.status;
-            lnkStatus.querySelector('.status-time').textContent =  'Just now';
+            lnkStatus.querySelector('.status-time').textContent =  'Just Now';
             lnkStatus.dataset.statusid =  d.status_id;
             tr.dataset.statusid = d.status_id;
 
@@ -986,8 +1050,9 @@ var PackageListComponent = new function() {
 
             //Change the look of Status button according to status_id
             let statusClass = DUtil.getStatusClass(d.status_id);
-            //lnkStatus.attr('class', statusClass + ' pg-text _pol_status');
-            if (lnkStatus) lnkStatus.classList.add('pg-text _pol_status',statusClass);
+            statusClass = ['pg-text', '_pol_status',' ', statusClass].join(' ').trim(); // Trim extra spaces
+            let classesArray = statusClass.split(" ").filter(Boolean); // Filter out empty strings
+            if (lnkStatus) lnkStatus.classList.add(...classesArray);            
             return true;
        //}
    }

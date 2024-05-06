@@ -109,7 +109,8 @@ var CompletedPackageListComponent = new function() {
                              let cls_status = DUtil.getStatusClass(data.status_id);
                              const remarks = mThis.sanitizeInput(data.remarks);
                              const failure_notes = mThis.sanitizeInput(data.failure_notes);
-                             const agent_notes = mThis.sanitizeInput(data.agent_notes);
+                             const delivery_notes = mThis.sanitizeInput(data.delivery_notes);
+                             const return_notes = mThis.sanitizeInput(data.return_notes);
                              let start_time =  data.arrival_time;
                              let finish_time = data.finish_time || data.delivery_time;
                              switch(data.status_id){
@@ -133,7 +134,7 @@ var CompletedPackageListComponent = new function() {
                                     break;
                              }       
                              const time_to_now = PackageListComponent.formatTimeSpan(start_time || data.arrival_time);
-                             return ['<div class="d-flex flex-column flex-wrap"><a data-remarks="',remarks,'" data-failurenotes ="',failure_notes,'" data-agentnotes="',agent_notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">','<span class="d-block status-text">',data.status,'</span>','<span class="text-dark"><small class="status-time">',time_to_now,'</small></span>','</a>',str_driver,'</div>'].join('');
+                             return ['<div class="d-flex flex-column flex-wrap"><a data-remarks="',remarks,'" data-failurenotes ="',failure_notes,'" data-deliverynotes="',delivery_notes,'" data-returnnotes="',return_notes,'" class="',cls_status,' pg-text _pol_status" data-field="status" data-statusid="',data.status_id,'" data-status="',data.status,'" data-did="',data.delivery_id,'" data-senderid="',data.sender_id,'" href="javascript:;">','<span class="d-block status-text">',data.status,'</span>','<span class="text-dark"><small class="status-time">',time_to_now,'</small></span>','</a>',str_driver,'</div>'].join('');
                         },
                         title:'Status'
                     },
@@ -155,6 +156,62 @@ var CompletedPackageListComponent = new function() {
                     }
                 ];
  
+                function getPopoverNotes(status_id, delivery_notes= null, failure_notes= null,return_notes = null){
+                    let remarks = null;
+                    switch(Number(status_id)){
+                        case 5:
+                          remarks = delivery_notes? ['<p class="text-info">',delivery_notes,'</p>'].join(''):null;
+                          break;
+                        case 6:
+                            failure_notes = failure_notes ? ['<span class="d-block text-info p-1"><span class="text-muted">Last Failed</span> ',failure_notes ,'</span>'].join('') : null;
+                            remarks = [failure_notes,delivery_notes? `<span class="d-block p-1">${delivery_notes}</span>`:null].join('');
+                            break;
+                        case 9:
+                            failure_notes = failure_notes ? ['<span class="d-block text-info p-1"><span class="text-muted">Last Failed </span> ', failure_notes ,'</span>'].join('') : null;
+                            remarks = [failure_notes,delivery_notes? `<span class="d-block p-1">${delivery_notes}</span>`: null].join('');
+                            break;
+                        case 11:
+                            let sts = (return_notes || '').split('||');
+                            return_notes = ['<span class="p-1 text-danger">',sts[0],'</span>','<span class="text-dark pl-1">',sts[1],'</span>'].join('');
+                           
+                            failure_notes = failure_notes ? ['<span class="d-block text-dark p-1"><span class="text-info">Last Failed </span> ', failure_notes ,'</span>'].join('') : null;
+                            remarks = [return_notes,failure_notes,delivery_notes? `<span class="d-block p-1"> ${delivery_notes}</span>` : null].join('');
+                            break;
+                        case 8:
+                            failure_notes = failure_notes ? ['<span class="d-block text-info p-1"><span class="text-muted">Last Failed </span> ',failure_notes ,'</span>'].join('') : null;
+                            remarks = [failure_notes, delivery_notes ? `<span class="d-block p-1"> ${delivery_notes}</span>`: null].join('');
+                            break;
+                        default:
+                            remarks = null;
+                            break;
+                     }
+                     return remarks;
+                }
+       
+    this.initStatusPopover = (btnStatus) => {
+        if (!btnStatus) return;
+    
+        // Reset the popover if it's already initialized
+        if ($(btnStatus).data('bs.popover')) {
+            $(btnStatus).popover('dispose');
+        }
+    
+        let failure_notes = btnStatus.dataset.failurenotes;
+        let return_notes = btnStatus.dataset.returnnotes;
+        const delivery_notes = btnStatus.dataset.deliverynotes || btnStatus.dataset.agentnotes;
+        let status_id = btnStatus.dataset.statusid;
+        let remarks = getPopoverNotes(status_id, delivery_notes, failure_notes, return_notes);
+    
+        if (remarks) {
+            // Initialize popover
+            $(btnStatus).popover({
+                html: true,
+                trigger: "hover",
+                content: remarks
+            });
+        }
+    }
+    
     this.sanitizeInput = (userInput =null) => {
         userInput = userInput || '';
        // Remove HTML tags
@@ -190,28 +247,12 @@ var CompletedPackageListComponent = new function() {
                 tr.dataset.senderid = data.sender_id;
                 tr.dataset.zonecode = data.zone_code || '';
 
-               //begin::init Popover view
-                    const btnStatus = tr.querySelector('._pol_status');
-                    //if(btnStatus){
-                        let remarks = btnStatus.dataset.remarks;
-                        let failure_notes = btnStatus.dataset.failurenotes;
-                        if(failure_notes && failure_notes ==remarks) remarks = '';
-                        const agent_notes = mThis.sanitizeInput(data.agent_notes);
-                        let status_id = btnStatus.dataset.statusid;
-                        let cls = 'pg-remarks';
-                        if (status_id == 9) cls = 'pg-remarks-failed';
-                        //const status_id = btnStatus.dataset.statusid;
-                        if (failure_notes || remarks) {
-                            $(btnStatus).popover({
-                                html: true,
-                                trigger: "hover",
-                                title: ["<span class='pg-remarks-title'>Remarks</span>"].join(''),
-                                content: ['<span class="d-block text-danger">',failure_notes,'</span><span class="d-block text-black">',remarks,'</span><span class="d-block text-success">',agent_notes,'</span>'].join('')
-                            });
-                        }
-                    //} 
-               //end::Init Popover view
-
+                //begin::init Popover view
+                     const btnStatus = tr.querySelector('._pol_status');
+                     //if(btnStatus){
+                         mThis.initStatusPopover(btnStatus);
+                     //} 
+                //end::Init Popover view
 
             },
             'listContainerClass': null

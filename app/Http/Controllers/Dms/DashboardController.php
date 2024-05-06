@@ -26,10 +26,37 @@ class DashboardController extends Controller
         if($cache_data !== null) return JDV::result($cache_data);
         $db = new Dashboard(null,$ss);
         $data = $db->getData($req->all(),$ss);
-        Cache::put($cache_key,$data,15);
+        Cache::put($cache_key,$data,30);
         return JDV::result($data);
     }
-
+     
+    function getPerformanceStats(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss);
+        $cache_key = 'dashbperformancestats_'.$ss->user_class.$ss->user_id;
+        $cache_data = Cache::get($cache_key);
+        if($cache_data !== null) return JDV::result($cache_data);
+        $start_date = date('Y-m-d');
+        $end_date = $start_date;
+        //$db = new Dashboard();
+        $data = Dashboard::getPerformanceStats($start_date,$end_date,$ss);
+        Cache::put($cache_key,$data,5);
+        return JDV::result($data);
+    }
+ 
+    function getPackageStatistics(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !=200) return JDV::raw($ss);
+        $cache_key = 'dashbpgstats_'.$ss->user_class.$ss->user_id;
+        $cache_data = Cache::get($cache_key);
+        if($cache_data !== null) return JDV::result($cache_data);
+        $start_date = date('Y-m-d');
+        $end_date = $start_date;
+        $data = Dashboard::getPackageStatistics($start_date,$end_date,$ss);
+        Cache::put($cache_key,$data,5);
+        return JDV::result($data);
+    }
+    
     function getPayableVendors_table(Request $request){
         $ss = UM::getUserInfoByToken($request,-1);
         if($ss->status_code !=200) return $ss;

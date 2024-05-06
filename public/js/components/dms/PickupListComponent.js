@@ -362,13 +362,13 @@ var PickupListComponent = new function () {
             DMSFilterDialog.show(options);
         });
 
-        mThis.btnPrint.on('click', function (e) {
-            let d = FilterDialog_pickup.getData();
-            let params = ['rtype=pickup_list&wid=', d.warehouse_id, '&date=', d.date, '&search=', mThis.elSearchPickup.val(), '&sid=', d.sender_id, '&dtype=', d.delivery_type, '&stid=', d.status_id].join('');
-            pdfReport.getEncryptData(encodeURI(params), (d) => {
-                window.open([mThis.base_url, '/dms-gen-report/', d].join(''), '_blank');
-            });
-        });
+        // mThis.btnPrint.on('click', function (e) {
+        //     let d = FilterDialog_pickup.getData();
+        //     let params = ['rtype=pickup_list&wid=', d.warehouse_id, '&date=', d.date, '&search=', mThis.elSearchPickup.val(), '&sid=', d.sender_id, '&dtype=', d.delivery_type, '&stid=', d.status_id].join('');
+        //     pdfReport.getEncryptData(encodeURI(params), (d) => {
+        //         window.open([mThis.base_url, '/dms-gen-report/', d].join(''), '_blank');
+        //     });
+        // });
 
         mThis.btnToggleFilter.on('click', () => {
             FilterDialog_pickup.show(null, (d) => {
@@ -1111,7 +1111,7 @@ var PickupListComponent = new function () {
  
     /** displayOrderItems | renderPackagePhotos | renderItemsPhotos */
     this.displayOrderImages = (div,order_id,sender_id=null,btn = null)=>{
-        div.innerHTML = '<div class="animation-line" style="height:2px;margin:0;"></div>';
+        div.innerHTML = '<div class="d-flex flex-column justify-content-center align-items-center h-100 w-100"><div class="animation-line" style="height:2px;margin:0;"></div></div>';
         let p = {'id': order_id};
         vsapi.call(`${mThis.base_url}/dms/order/package-photos`,p,btn,false,null).then(res => {
             let html = null;
@@ -1806,7 +1806,9 @@ var PickupListComponent = new function () {
     }
 
     this.getFilterData = ()=>{
-     return {"search_value":mThis.elSearchPickup.val()};
+        let p = FilterDialog_pickup.getData();
+        p.search_value = mThis.elSearchPickup.val();
+     return p;
     }
 
     this.show = (options = null) => {
@@ -2030,7 +2032,7 @@ var PickupListComponent = new function () {
 
 /** general filter dialog */
 const DMSFilterDialog = new function () {
-    let mThis = this;
+    const mThis = this;
     this.options = {"default":{}};
      
     const html = `<div class="modal fade" id="_mainGenFilter" tabindex="-1" role="dialog" aria-labelledby="_mainGenFilterTitle" aria-hidden="true">
@@ -4191,17 +4193,19 @@ const QuickOrderDialog = new function () {
     this.btnCreate = this.self.find('#_pl_dlgEmptyOrder_btnOK');
     this.elWarehouse = this.self.find('#_plq_warehouse');
     this.elSender = this.self.find('#_plq_sender');
+    this.elQty = this.self.find('#_plq_qty');
     this.elVehicleType = this.self.find('#_plq_vehicle_type');
     this.elProductType = this.self.find('#_plq_product_type');
     this.elPickupAddress = this.self.find('#_plq_pikcup_address');
+    this.elDriver =  this.self.find('#_plq_pickup_driver');
 
     this.prepareFormOptions = (onFinish) => {
         vsapi.call(`${mThis.base_url}/dms/quick-order/form-options`, null, null).then(res => {
-
             const d = (res.status_code === 200) ? res.data : {};
             VSUtil.setComboItems(mThis.elWarehouse, d.warehouses, 'id', 'warehouse_name', null, null, null);
             mThis.elWarehouse.val(d.warehouses[0].id).trigger('change');
             VSUtil.setComboItems(mThis.elSender, d.senders, 'id', 'sender_name', null, null, null);
+            VSUtil.setComboItems(mThis.elDriver, d.drivers, 'id', 'driver_name', null, null, null);
             VSUtil.setComboItems(mThis.elProductType, d.product_types, 'product_type', 'product_type', null, null, null);
             VSUtil.setComboItems(mThis.elVehicleType, d.vehicle_types, 'code', 'vehicle_type', null, null,d.vehicle_types[0]?d.vehicle_types[0].code:'');
             onFinish(d);
@@ -4236,7 +4240,8 @@ const QuickOrderDialog = new function () {
         if (!p) return;
         vsapi.call(`${mThis.base_url}/dms/quick-order/create`, p, mThis.btnCreate).then(res => {
             if (res.status_code === 200) {
-                cv_interact.success('New order created');
+                let d = res.data || {};
+                cv_interact.success([`New order `,d.code,` created`].join(''));
                 mThis.self.modal('hide');
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
             } else cv_interact.error(res.error_message);
@@ -4247,6 +4252,7 @@ const QuickOrderDialog = new function () {
         options = options ? options : {};
         mThis.options = options;
         mThis.prepareFormOptions(() => {
+            mThis.elQty.val(1);
             mThis.self.modal({
                 'backdrop': 'static'
             });

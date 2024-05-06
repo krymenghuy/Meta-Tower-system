@@ -97,8 +97,8 @@ namespace App\ScriptManagement;
                         // 'js/components/abm/RoleManagementComponent.js',
                         // 'js/components/abm/UserManagementComponent.js',
                         'assets/js/pusher/pusher.min.js',
-                        '/js/components/abm/pusher_client_houxpress.js',
-                        //'/js/components/abm/pusher_client_dms.js'
+                        //'/js/components/abm/pusher_client_houxpress.js',
+                        '/js/components/abm/pusher_client_dms.js',
 
                         // '/assets/js/InputBoxes.js',
                         //start Components abm
@@ -147,8 +147,8 @@ namespace App\ScriptManagement;
                         '/assets/js/InputBoxes.js',
                         'js/components/dms/LocationComponent.js?v=1',
                         'js/components/dms/MobileBrandImagesComponent.js',
-                        'js/components/dms/MobileTCComponent.js',
-                        'js/components/dms/MobilePrivacyComponent.js',
+                        // 'js/components/dms/MobileTCComponent.js',
+                        // 'js/components/dms/MobilePrivacyComponent.js',
                         'js/components/dms/PackageListComponent.js',
                         'js/components/dms/FindPersonDialog.js',
                         'js/components/dms/PickupListComponent.js',
@@ -168,8 +168,8 @@ namespace App\ScriptManagement;
                         'js/components/um/RoleManagementComponent.js',
                         'js/components/um/UserManagementComponent.js',
                         'assets/js/pusher/pusher.min.js',
-                        '/js/components/dms/pusher_client_houxpress.js',
-                        //'/js/components/dms/pusher_client_dms.js'
+                        //'/js/components/dms/pusher_client_houxpress.js',
+                       '/js/components/dms/pusher_client_dms.js'
                     ]
 
                     ],
