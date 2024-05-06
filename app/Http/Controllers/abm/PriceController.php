@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\Dms;
+namespace App\Http\Controllers\Abm;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Dms\Price;
+use App\Models\Abm\Price;
 use App\Models\UM;
 use App\Models\JDV;
 

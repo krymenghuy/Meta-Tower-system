@@ -17,8 +17,13 @@ body {
 }
 
 tr.row-selected td {
-  background-color: #3f3cc6;
+  background-color: #2cd512;
   color: #fff;
+}
+tr.color-text th{
+  color: #fad648;
+  text-transform: uppercase;
+
 }
 
 .row-expanded {

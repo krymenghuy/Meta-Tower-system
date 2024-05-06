@@ -82,9 +82,9 @@
                             <!-- <select class="form-control data-input" id="_sal_agent_type" data-field="agent_types_id"></select> -->
                             <select class="modal-select2 data-input" data-field="agent_type">
                                 <option value="">(Select SalesAgent Type)</option>
-                                <option value="client_affiliate">Client-Affiliate</option>
-                                <option value="freelancer">Freelancer</option>
-                                <option value="full_time">Full-Time</option>
+                                <option value="client_affiliate">client-affiliate</option>
+                                <option value="freelancer">freelancer</option>
+                                <option value="full_time">full-time</option>
                             </select>
                     </div>
                     <div class="col-lg-6">
@@ -102,13 +102,15 @@
 
                 </div>
                 <div class="row">
-                        <div class="col-lg-12">
-                            <label class="form-label trans-text">Address</label>
-                            <textarea class="form-control data-input" data-field="address"></textarea>
-                        </div>
+                    <div class="col-lg-12">
+                        <label class="form-label trans-text">Address</label>
+                        <textarea class="form-control data-input" data-field="address"></textarea>
                     </div>
-                 
-                
+                </div>
+                <div class="col-xs-12 col-md-12 col-lg-3">
+                    <div class="d-flex align-items-center"> <div id="_saleAgent_profile_photo" style="height:165px" class="mt-2"></div></div>
+                </div>
+            
             </div>
             <div class="modal-footer">
                 <span id="_sal_agent_error" class="error_text"></span>

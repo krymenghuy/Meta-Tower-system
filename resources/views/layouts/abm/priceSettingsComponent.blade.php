@@ -43,7 +43,7 @@
     font-weight: bold;
     color: grey;
     font-size: 0.9em;
-    text-align: center;
+    /* text-align: center; */
   }
 
   .dd-field-container {
@@ -134,16 +134,34 @@
       </div>
     </div>
   </div>
-  <div class="table-responsive shadow rounded-3 border p-3 bg-white mt-3 table-responsive-hover position-relative">
+  <div class="table-responsive shadow rounded-3 border pe-3 ps-3 pt-0 bg-white mt-3 table-responsive-hover position-relative">
     <table class="table" id="ps-tbl-prices">
       <thead class="position-sticky top-0 bg-white">
         <tr>
-          <th>
-            <span class="ps-below-kg rounded py-2">Below 3 Kg</span>
+          <th scope="col" class="border-0 p-0">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th style=" width: 20%;">
+                    <span class=" rounded py-2">Zone Code</span>
+                  </th>
+                  <th style=" width: 20%;">
+                    <span class=" rounded py-2">Country</span>
+                  </th>
+                  <th style=" width: 20%;">
+                    <span class=" rounded py-2">Doc Price</span>
+                  </th>
+                  <th style=" width: 20%;">
+                    <span class=" rounded py-2">Non-Doc Price</span>
+                  </th>
+                  <th style=" width: 20%;">
+                    <span class=" rounded py-2">Action</span>
+                  </th>
+                </tr>
+              </thead>
+            </table>
           </th>
-          <th>
-            <span class="ps-above-kg rounded py-2">Above 3 Kg</span>
-          </th>
+          
         </tr>
       </thead>
       <tbody></tbody>
@@ -163,17 +181,26 @@
       <div class="modal-body">
         <div class="row">
           <div class="form-group col-lg-6">
-            <span class="simple-label">Select zone, so it will appear in the Zone List</span>
-            <select id="_ps_newzone_zone" class="modal-select2"></select>
+            <label for="" class="control-label">Country</label>
+            <select id="_ps_newzone_zone" class="modal-select2 data-input" data-field="country_id"></select>
           </div>
-          <div class="form-group col-lg-6">
+          <!-- <div class="form-group col-lg-6">
             <a href="javascript:void(0)" id="_ps_btnAddZone">
               <i class="fa fa-plus-circle text-success" style="font-size:1.2em"></i>
             </a>
+          </div> -->
+          
+          <div class="form-group col-lg-6">
+            <label for="" class="control-label">Zone Number</label>
+            <input type="number" id="_ps_newzone_zone_codes" class="form-control data-input" data-field="zone_codes">
           </div>
-          <div class="form-group col-lg-12">
-            <label for="" class="control-label">Zone List</label>
-            <input id="_ps_newzone_zone_codes" class="form-control">
+          <div class="form-group col-lg-6">
+            <label for="" class="control-label">Doc Price</label>
+            <input type="number" id="_ps_doc_price" class="form-control data-input" data-field="doc_price">
+          </div>
+          <div class="form-group col-lg-6">
+            <label for="" class="control-label">Non-Doc Price</label>
+            <input type="number" id="_ps_non_doc_price" class="form-control data-input" data-field="non_doc_price">
           </div>
         </div>
       </div>

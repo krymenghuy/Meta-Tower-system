@@ -513,7 +513,7 @@
     <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title trans-text" id="_pl_dlgEmptyOrderTitle" data-langprop="titles.Quick Order">Quick Order</h5>
+                <h5 class="modal-title trans-text" id="_pl_dlgEmptyOrderTitle" data-langprop="titles.New Shipment"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -531,27 +531,27 @@
                         </div>
                     </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">from_country_id</span>
+                        <span class="simple-label">from country</span>
                         <div>
                             <select id="_plq_from_country_id" class="modal-select2 data-input" data-field="from_country_id"></select>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">to_country_id</span>
-                        <!-- <div>
+                        <span class="simple-label">to country</span>
+                        <div>
                             <select id ="_plq_to_country_id" class="modal-select2 data-input" data-field="to_country_id"></select>
-                        </div> -->
-                        <input type="number" class="form-control data-input" data-field="to_country_id" />  
+                        </div>
+                        <!-- <input type="number" class="form-control data-input" data-field="to_country_id" />   -->
 
                     </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">primary_cp_id</span>
+                        <span class="simple-label">primary cp</span>
                         <div>
                             <select id ="_plq_primary_cp_id" class="modal-select2 data-input" data-field="primary_cp_id"></select>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
-                        <span class="simple-label">secondary_cp_id</span>
+                        <span class="simple-label">secondary cp</span>
                         <div>
                             <select id ="_plq_secondary_cp_id" class="modal-select2 data-input" data-field="secondary_cp_id"></select>
                         </div>

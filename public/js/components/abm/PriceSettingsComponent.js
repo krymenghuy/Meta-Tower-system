@@ -22,7 +22,7 @@ var PriceSettingsComponent = new function () {
       e.preventDefault();
       let id = mThis.elFilter_price_list.val();
       let price_list_name = mThis.elFilter_price_list.find('option:selected').text();
-      let title = ['Merchants who use price list "', price_list_name, '"'].join('');
+      let title = ['Customer who use price list "', price_list_name, '"'].join('');
       let op = { 'title': title, 'price_list_id': id, 'price_list_name': price_list_name };
       MerchantListDialog.show(op);
     });
@@ -104,25 +104,30 @@ var PriceSettingsComponent = new function () {
       e.preventDefault();
       let btnViewZone = $(this);
       let div = $(this).closest('div.ps-zones');
+      console.log(div);
       let zone_codes = div.data('zones');
-      let disp_zones = null;// (zone_codes+'').replace(/|/g,','); 
-      let zons = zone_codes.split('|');
-      let cnt = zons.length;
-      let codes = [];
-      for (let i = 0; i < cnt; i++) {
-        let code = zons[i];
-        if (code) {
-          if (codes.indexOf(code) == -1) codes.push(code);
-        }
-      }
+      let country_id = div.data('country_id');
+      let doc_price = div.data('doc_price');
+      let non_doc_price = div.data('non_doc_price');
+      // let disp_zones = null;// (zone_codes+'').replace(/|/g,','); 
+      // let zons = zone_codes.split('|');
+      // let cnt = zons.length;
+      // let codes = [];
+      // for (let i = 0; i < cnt; i++) {
+      //   let code = zons[i];
+      //   if (code) {
+      //     if (codes.indexOf(code) == -1) codes.push(code);
+      //   }
+      // }
 
-      disp_zones = codes.join(',');
-      let op = { 'title': 'Modify Price Zones', 'def_values': disp_zones, 'price_list_id': mThis.elFilter_price_list.val(), 'closeDialog': false };
+      // disp_zones = codes.join(',');
+      let op = { 'title': 'Modify Price Zones', 'zone_codes': zone_codes, 'country_id': country_id,'doc_price': doc_price,'non_doc_price': non_doc_price,'price_list_id': mThis.elFilter_price_list.val(), 'closeDialog': false };
       PriceLineDialog.show(op, (p) => {
         //p = {price_list_id,zone_codes}
         //Add org zone_codes for updating only zone_codes
         p.org_zone_codes = zone_codes;
-        vsapi.call(`${mThis.base_url}/dms/updateZoneCodes`, p, null, false).then(res => {
+        console.log(p);
+        vsapi.call(`${mThis.base_url}/abm/updateZoneCodes`, p, null, false).then(res => {
           if (res.status_code === 200) {
             mThis.displayZoneCodes(btnViewZone, p.zone_codes);
             PriceLineDialog.hide();
@@ -139,8 +144,9 @@ var PriceSettingsComponent = new function () {
       let zone_codes = $(this).closest('.ps-zones').data('zones');
       let p = { 'zone_codes': zone_codes };
       cv_interact.confirm('Delete this pricing zones?', { title: 'Delete Pricing Zones', context: "delete" }, function (e) {
+        // console.log(p);
         if (e) {
-          vsapi.call(`${mThis.base_url}/dms/deletePriceZones`, p).then(res => {
+          vsapi.call(`${mThis.base_url}/abm/deletePriceZones`, p).then(res => {
             if (res.status_code === 200) {
               mThis.displayPrices();
             } else cv_interact.error(res.error_message);
@@ -172,7 +178,8 @@ var PriceSettingsComponent = new function () {
 
       PriceLineDialog.show(op, (p) => {
         //alert(JSON.stringify(p.zone_codes));
-        vsapi.call(`${mThis.base_url}/dms/savePriceLineZones`, p).then(res => {
+        console.log(p);
+        vsapi.call(`${mThis.base_url}/abm/savePriceLineZones`, p).then(res => {
           if (res.status_code === 200) {
             mThis.displayPrices();
             PriceLineDialog.hide();
@@ -213,24 +220,24 @@ var PriceSettingsComponent = new function () {
       let f = field.data('field');
       let val = (input.val() + '').toLowerCase().trim();
 
-      if (f == 'base_fee') {
+      if (f == 'price_per_kg') {
         if (!val || val < 0) {
           input.addClass('has-error');
           has_error = true;
           return false;
         }
-      } else if (f == 'delivery_fee') {
-        if (!val || val < 0) {
-          input.addClass('has-error');
-          has_error = true;
-          return false;
-        }
-      } else if (f == 'price_option') {
-        if (val != 'fixed' && val != 'per_kg' && val != 'per kg') {
-          input.addClass('has-error');
-          has_error = true;
-          return false;
-        }
+      // } else if (f == 'delivery_fee') {
+      //   if (!val || val < 0) {
+      //     input.addClass('has-error');
+      //     has_error = true;
+      //     return false;
+      //   }
+      // } else if (f == 'price_option') {
+      //   if (val != 'fixed' && val != 'per_kg' && val != 'per kg') {
+      //     input.addClass('has-error');
+      //     has_error = true;
+      //     return false;
+      //   }
       }
       p[f] = input.val();
       if (!has_error) {
@@ -247,14 +254,15 @@ var PriceSettingsComponent = new function () {
       //need to modify html
       let section = that.data('section'); /** @section refers to {'above','below'}. "above" means Above 3 kg (for example) **/
       //need to modify html
-      let delivery_type = that.data('dtype');
+      let item_type = that.data('dtype');
 
       p.id = that.data('id');
       p.price_list_id = price_list_id;
       p.zone_codes = zone_codes;
-      p.section = section;
-      p.delivery_type = delivery_type;
-      vsapi.call(`${mThis.base_url}/dms/savePriceLineInfo`, p).then(res => {
+      // p.section = section;
+      p.item_type = item_type;
+      console.log(p);
+      vsapi.call(`${mThis.base_url}/abm/savePriceLineInfo`, p).then(res => {
         if (res.status_code === 200) {
           that.data('id', res.id);
         } else cv_interact.error(res.error_message);
@@ -282,7 +290,7 @@ var PriceSettingsComponent = new function () {
     btnSave.show();
     div.find('.dd-value').each(function () {
       let el = $(this);
-      el.after($('<input class="dd-input" style="outline:none;margin-top:3px;width:50px"/>').val(el.text()));
+      el.after($('<input class="dd-input" style="outline:none;margin-top:0px;width:60px"/>').val(el.text()));
       el.hide();
     });
   }
@@ -301,10 +309,11 @@ var PriceSettingsComponent = new function () {
   //return html for displaying Prices (base_fee,additional, proce_option) by the given zones
   //d = {'zone_codes','fast_items','normal_items'}
   //@section ={'above','below'}. "below" means for example "Below 5 kg"
-  this.price_by_zones = (d, section) => {
-    let n = d.normal_items ? d.normal_items : {};
-    let f = d.fast_items ? d.fast_items : {};
-    let zones = d.zone_codes;
+  this.price_by_zones = (d) => {
+    let non = d.non_doc_items ? d.non_doc_items : {};
+    let doc = d.doc_items ? d.doc_items : {};
+    let zones = d.doc_items.zone_code;
+    console.log(zones);
     if (!zones) zones = '';
 
     //zones = zones.slice(0,50)
@@ -334,81 +343,132 @@ var PriceSettingsComponent = new function () {
     }while(c);
 
     //set default
-    if (!n.base_fee) n.base_fee = 0;
-    if (!n.delivery_fee) n.delivery_fee = 0;
-    if (!n.price_option) n.price_option = 'Fixed';
+    if (!non.price_list_id) non.price_list_id = 0;
+    if (!non.price_per_kg) non.price_per_kg = 0;
 
-    if (!f.base_fee) f.base_fee = 0;
-    if (!f.delivery_fee) f.delivery_fee = 0;
-    if (!f.price_option) f.price_option = 'Fixed';
+    if (!doc.price_list_id) doc.price_list_id = 0;
+    if (!doc.price_per_kg) doc.price_per_kg = 0;
 
     /** delivery types must be exactly {'Fast','Normal'} for the price list display to be displayed correctly **/
-    let _dtype_fast = 'Fast';
-    let _dtype_normal = 'Normal';
+    let _dtype_doc = 'doc';
+    let _dtype_non_doc = 'non_doc';
 
     //NOTE @zones = 11|15|12  or A1|A10|A15|A33  (List of zone_codes separated by | ). This @zones value must be exactly the same as the one in price_list.zone_codes for Updating or Inserting purpose
-    let html = [`<td>
-      <div class="d-flex flex-column border rounded-3 p-2" style="align-items:justify">
-        <div class="ps-zones d-flex gap-2 justify-content-center" data-zones="${d.zone_codes}">
-          <span class="ps-zones-text">${m_zones}</span>
-          <span class="fs-6">${ex_html}</span>
-          <a href="javascript:void(0)" class="ps-btn_delete_zones">
-            <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-          </a>
-        </div>
-        <div class="d-flex">
-          <div data-value="${_dtype_fast}" class="ps-dtype ps-fast w-50">
-            <span class="ps-dtype-fast-text fs-6">
-              Fast
-              <a href="javascript:void(0)" data-id="${f.id}" data-zones="${d.zone_codes}" data-section="${section}" data-dtype="${_dtype_fast}" class="ps-btn-edit-prices">
-                <i class="fa fa-edit text-warning fs-5"></i>
-              </a>
-              <a style="display:none" href="javascript:void(0)" data-id="${f.id}" data-zones="${d.zone_codes}" data-section="${section}" data-dtype="${_dtype_fast}" class="ps-btn-save-prices">
-                <i class="fa fa-save text-primary fs-5"></i>
-              </a>
-            </span>
-            <div class="dd-field-container fs-6">
-              <div class="dd-field" data-field="base_fee">
-                <span class="dd-label fs-5-08">Base fee</span>
-                <span class="dd-value fs-5-08">${f.base_fee}</span>
+    // let html = [`<td>
+    //   <div class="d-flex flex-column border rounded-3 p-2" style="align-items:justify">
+    //     <div class="ps-zones d-flex gap-2 justify-content-center" data-zones="${d.zone_code}">
+    //       <span class="ps-zones-text">${m_zones}</span>
+    //       <span class="fs-6">${ex_html}</span>
+    //       <a href="javascript:void(0)" class="ps-btn_delete_zones">
+    //         <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+    //       </a>
+    //     </div>
+    //     <div class="d-flex">
+    //       <div data-value="${_dtype_doc}" class="ps-dtype ps-fast w-50">
+    //         <span class="ps-dtype-fast-text fs-6">
+    //           Doc
+    //           <a href="javascript:void(0)" data-id="${doc.id}" data-zones="${d.zone_code}"  data-dtype="${_dtype_doc}" class="ps-btn-edit-prices">
+    //             <i class="fa fa-edit text-warning fs-5"></i>
+    //           </a>
+    //           <a style="display:none" href="javascript:void(0)" data-id="${doc.id}" data-zones="${d.zone_code}"  data-dtype="${_dtype_doc}" class="ps-btn-save-prices">
+    //             <i class="fa fa-save text-primary fs-5"></i>
+    //           </a>
+    //         </span>
+    //         <div class="dd-field-container fs-6">
+    //           <div class="dd-field" data-field="base_fee">
+    //             <span class="dd-label fs-5-08">Price List ID</span>
+    //             <span class="dd-value fs-5-08">${doc.price_list_id}</span>
+    //           </div>
+    //           <div class="dd-field" data-field="delivery_fee">
+    //             <span class="dd-label fs-5-08">Price Per Kg</span>
+    //             <span class="dd-value fs-5-08">${doc.price_per_kg}</span>
+    //           </div>
+              
+    //         </div>
+    //       </div>
+    //       <div data-value="${_dtype_non_doc}" class="ps-dtype ps-normal w-50">
+    //         <span class="ps-dtype-normal-text fs-6">
+    //           Non-Doc
+    //           <a href="javascript:void(0)" data-id="${non.id}" data-zones="${d.zone_code s}" data-dtype="${_dtype_non_doc}" class="ps-btn-edit-prices">
+    //             <i class="fa fa-edit text-warning fs-5"></i>
+    //           </a>
+    //           <a style="display:none" href="javascript:void(0)" data-id="${non.id}"  data-dtype="${_dtype_non_doc}" class="ps-btn-save-prices">
+    //             <i class="fa fa-save fs-5"></i>
+    //           </a>
+    //         </span>
+    //         <div class="dd-field-container fs-6">
+    //           <div class="dd-field" data-field="base_fee">
+    //             <span class="dd-label fs-5-08">Price list ID</span>
+    //             <span class="dd-value fs-5-08">${non.price_list_id}</span>
+    //           </div>
+    //           <div class="dd-field" data-field="delivery_fee">
+    //             <span class="dd-label fs-5-08">Price Per Kg</span>
+    //             <span class="dd-value fs-5-08">${non.price_per_kg}</span>
+    //           </div>
+              
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </td>`].join('');
+
+    let html = [`<td class="border-0 p-0">
+      <div>
+        <table class="table table-hover">
+        <tbody>
+          <tr>
+            <th style=" width: 20%;" scope="row">
+              <div class="ps-zones-text ps-zones">${m_zones}</div>
+            </th>
+            <td style=" width: 20%;">
+              <div class="dd-value fs-5-08 ps-zones">${doc.country_name}</div>
+            </td>
+            <td style=" width: 20%;">
+              <div class="d-flex">
+                <div data-value="${_dtype_doc}" class="ps-dtype ps-zones ps-fast w-50">
+                  <span class="fs-6 dd-field" data-field="price_per_kg">
+                    <span class="dd-value fs-5-08">${doc.price_per_kg}</span>
+                    <a href="javascript:void(0)" data-id="${doc.id}" data-zones="${d.doc_items.zone_code}"  data-dtype="${_dtype_doc}" class="ps-btn-edit-prices">
+                      <i class="fa fa-edit text-warning fs-5"></i>
+                    </a>
+                    <a style="display:none" href="javascript:void(0)" data-id="${doc.id}" data-zones="${d.doc_items.zone_code}"  data-dtype="${_dtype_doc}" class="ps-btn-save-prices">
+                      <i class="fa fa-save text-primary fs-5"></i>
+                    </a>
+                  </span>
+                </div>
               </div>
-              <div class="dd-field" data-field="delivery_fee">
-                <span class="dd-label fs-5-08">Additional fee</span>
-                <span class="dd-value fs-5-08">${f.delivery_fee}</span>
+            </td>
+
+            <td style=" width: 20%;">
+              <div class="d-flex">
+                <div data-value="${_dtype_non_doc}" class="ps-dtype ps-zones ps-normal w-50">
+                  <span class=" fs-6 dd-field" data-field="price_per_kg">
+                    <span class="dd-value fs-5-08">${non.price_per_kg}</span>
+                    <a href="javascript:void(0)" data-id="${non.id}" data-zones="${d.doc_items.zone_code}" data-dtype="${_dtype_non_doc}" class="ps-btn-edit-prices">
+                      <i class="fa fa-edit text-warning fs-5"></i>
+                    </a>
+                    <a style="display:none" href="javascript:void(0)" data-id="${non.id}" data-zones="${d.doc_items.zone_code}" data-dtype="${_dtype_non_doc}" class="ps-btn-save-prices">
+                      <i class="fa fa-save fs-5"></i>
+                    </a>
+                  </span>
+                </div>
               </div>
-              <div class="dd-field" data-field="price_option">
-                <span class="dd-label fs-5-08">Price option</span>
-                <span class="dd-value text-capitalize fs-5-08">${f.price_option}</span>
+            </td>
+
+            <td cstyle=" width: 20%;">
+              <div class="d-flex">
+                <div class="ps-zones d-flex gap-2 justify-content-center"  data-zones="${d.doc_items.zone_code}" data-doc_price="${doc.price_per_kg}" data-non_doc_price="${non.price_per_kg}" data-country_id="${d.doc_items.country_id}">
+                  <span class="fs-6">${ex_html}</span>
+                  <a href="javascript:void(0)" class="ps-btn_delete_zones">
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                  </a>
+                </div>
               </div>
-            </div>
-          </div>
-          <div data-value="${_dtype_normal}" class="ps-dtype ps-normal w-50">
-            <span class="ps-dtype-normal-text fs-6">
-              Normal
-              <a href="javascript:void(0)" data-id="${n.id}" data-zones="${d.zone_codes}" data-section="${section}" data-dtype="${_dtype_normal}" class="ps-btn-edit-prices">
-                <i class="fa fa-edit text-warning fs-5"></i>
-              </a>
-              <a style="display:none" href="javascript:void(0)" data-id="${n.id}" data-zones="${d.zone_codes}" data-section="${section}" data-dtype="${_dtype_normal}" class="ps-btn-save-prices">
-                <i class="fa fa-save fs-5"></i>
-              </a>
-            </span>
-            <div class="dd-field-container fs-6">
-              <div class="dd-field" data-field="base_fee">
-                <span class="dd-label fs-5-08">Base fee</span>
-                <span class="dd-value fs-5-08">${n.base_fee}</span>
-              </div>
-              <div class="dd-field" data-field="delivery_fee">
-                <span class="dd-label fs-5-08">Additional fee</span>
-                <span class="dd-value fs-5-08">${n.delivery_fee}</span>
-              </div>
-              <div class="dd-field" data-field="price_option">
-                <span class="dd-label fs-5-08">Price option</span>
-                <span class="dd-value text-capitalize fs-5-08">${n.price_option}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
     </td>`].join('');
     return html;
   }
@@ -421,13 +481,11 @@ var PriceSettingsComponent = new function () {
   this.createRowHtml = (d) => {
     /** Below X Kg **/
     let section = 'below';
-    let td_html_below = mThis.price_by_zones(d.below, section);
+    console.log(d);
+    let td_html_below = mThis.price_by_zones(d.data);
+   
 
-    /** Above X Kg **/
-    section = 'above';
-    let td_html_above = mThis.price_by_zones(d.above, section);
-
-    return ['<tr>', td_html_below, td_html_above, '</tr>'].join('');
+    return ['<tr>', td_html_below ,'</tr>'].join('');
   }
 
   this.displayZoneCodes = (btn, new_zone_codes) => {
@@ -467,8 +525,9 @@ var PriceSettingsComponent = new function () {
       tbody.empty();
       return;
     }
+    console.log(p);
 
-    vsapi.call(`${mThis.base_url}/dms/getPriceList_data`, p).then(res => {
+    vsapi.call(`${mThis.base_url}/abm/getPriceList_data`, p).then(res => {
       tbody.empty();
       mThis.tblPrices.find('.ps-below-kg').text('5kg and Below');
       mThis.tblPrices.find('.ps-above-kg').text('Above 5 kg');
@@ -483,9 +542,9 @@ var PriceSettingsComponent = new function () {
           i++;
         }while(c);
         const parent = mThis.tblPrices[0].parentElement;
-        parent.style.height = (window.innerHeight - 250)+'px';
+        parent.style.height = (window.innerHeight - 220)+'px';
         window.onresize = function(){
-          parent.style.height = (window.innerHeight - 250)+'px';
+          parent.style.height = (window.innerHeight - 220)+'px';
         }
       }
     });
@@ -503,21 +562,27 @@ var PriceLineDialog = new function () {
   this.elZones = this.self.find('#_ps_newzone_zone_codes');
   //btnAddZone adds each selected zone to the list of zone_codes
   this.btnAddZone = this.self.find('#_ps_btnAddZone');
+  this.options = {};
 
   this.btnOK = this.self.find('#_ps_dlgPriceLine_btnOK');
   this.elError = this.self.find('#_ps_dlgPriceLine_error');
 
   this.loadZones = () => {
-    vsapi.call(`${mThis.base_url}/dms/settings/options-delivery-zone`, null).then(res => {
-      let items = StringSanitizer.sanitizeObject(res.data, null, ['zone_name']);
-      VSUtil.setComboItems(mThis.elZone, items, 'zone_code', 'zone_name', false, null, null);
+    vsapi.call(`${mThis.base_url}/abm/settings/options-country-zone`, null).then(res => {
+      let items = StringSanitizer.sanitizeObject(res.data, null, ['country_name']);
+      VSUtil.setComboItems(mThis.elZone, items, 'id', 'country_name', false, '', null);
+      // VSUtil.setComboItems(mThis.elZone, items, 'id', 'country_name', true, '(Select agent_types Type)', null);
+
     });
   }
 
   //Click to add zone_codes to price_list table
   this.btnOK.on('click', function () {
     mThis.elError.html(null);
-    let p = { 'price_list_id': mThis.price_list_id, 'zone_codes': mThis.elZones.val() };
+    // let p = { 'price_list_id': mThis.price_list_id, 'zone_codes': mThis.elZones.val() };
+    let p = mThis.getData();
+    p.price_list_id = mThis.price_list_id;
+    // console.log(p);
     if (!p.zone_codes) {
       cv_interact.warning('No zone codes provided!');
       return;
@@ -526,23 +591,25 @@ var PriceLineDialog = new function () {
     if (mThis.closeDialog) mThis.self.modal('hide');
   });
 
-  this.elZone.on('change', function () {
-    mThis.btnAddZone.trigger('click');
-  });
+  // this.elZone.on('change', function () {
+    
+  //   mThis.btnAddZone.trigger('click');
+  // });
 
-  mThis.btnAddZone.on('click', function () {
-    let thisVal = mThis.elZone.val();
-    let st = mThis.elZones.val() + '';
-    let ds = [];
-    if (st != '') ds = st.split(',');
-    if (thisVal) {
-      if (ds.indexOf(thisVal) < 0) {
-        ds.push(thisVal);
-      }
-    }
+  // mThis.btnAddZone.on('click', function () {
+  //   let thisVal = mThis.elZone.val();
+  //   let st = mThis.elZones.val() + '';
+  //   let ds = [];
+  //   if (st != '') ds = st.split(',');
+  //   if (thisVal) {
+  //     if (ds.indexOf(thisVal) < 0) {
+  //       ds.push(thisVal);
+  //     }
+  //   }
 
-    mThis.elZones.val(ds.join(','));
-  });
+  //   // mThis.elZones.val(ds.join(','));
+  //   mThis.elZones.val(thisVal);
+  // });
 
   this.hide = () => {
     mThis.self.modal('hide')
@@ -550,17 +617,53 @@ var PriceLineDialog = new function () {
 
   this.show = (option, onClose) => {
     if (!option) option = {};
+    console.log(option);
     mThis.elError.html(null);
     mThis.elTitle.text(option.title);
     mThis.onClose = onClose;
     //price_list_id is required, cannot be empty. It is selected from filter SELECT BOX before showing this modal form
     mThis.price_list_id = option.price_list_id;
+    
+    mThis.setData(option);
 
     mThis.loadZones();
-    mThis.elZones.val(option.def_values);
+    // mThis.elZones.val(option.def_values);
     mThis.self.modal({
       backdrop: 'static'
     });
+  }
+
+  this.setData = (d)=>{
+    d = d || {};
+    mThis.self[0].querySelectorAll('.data-input').forEach(el =>{
+        const f = el.dataset.field;
+        if(el.tagName.toLowerCase() ==='select'){
+             el.value = d[f];
+            //  console.log(f);
+             let event = new Event('change',{
+                bubbles: true,
+                cancelable: true
+             });
+             el.dispatchEvent(event);
+             console.log(el.value);
+
+        }else{
+            el.value = d[f]?? '';
+            console.log(el.value);
+
+        }
+    });
+
+  }
+
+  this.getData = ()=>{
+    let p = {};
+    p.id = mThis.options.id;
+    mThis.self[0].querySelectorAll('.data-input').forEach(el =>{
+        const f = el.dataset.field;
+        p[f] = el.value;
+    });
+    return p;
   }
 }
 //end::PriceLineDialog
@@ -598,6 +701,8 @@ const PriceListDialog = new function () {
     });
 
   });
+
+  
 
   this.getData = () => {
     let p = {};

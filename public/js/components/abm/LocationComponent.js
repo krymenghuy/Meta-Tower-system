@@ -1,4 +1,5 @@
 'use strict';
+
 var LocationComponent = new function(){
     let mThis = this;
     this.title_prop = 'Location Management';
@@ -123,125 +124,125 @@ var LocationComponent = new function(){
  }
 //end::CountryListpanel
 
-const ZoneDialog1 = new function () {
-  let mThis = this;
-  this.self = main_view.appContent.children('#_sttn_dlgZon');
-  this.base_url = main_view.base_url;
-  this.elTitle = this.self.find('#_sttn_dlgZoneTitle');
-  this.elZoneType = this.self.find('#_sttn_zoneType');
-  this.elCountry = this.self.find('#_sttn_zon_country');
-  this.elCity = this.self.find('#_sttn_zon_city');
-  this.elDistrict = this.self.find('#_sttn_zon_district');
-  this.elCommune = this.self.find('#_sttn_zon_commune');
+// const ZoneDialog1 = new function () {
+//   let mThis = this;
+//   this.self = main_view.appContent.children('#_sttn_dlgZon');
+//   this.base_url = main_view.base_url;
+//   this.elTitle = this.self.find('#_sttn_dlgZoneTitle');
+//   this.elZoneType = this.self.find('#_sttn_zoneType');
+//   this.elCountry = this.self.find('#_sttn_zon_country');
+//   this.elCity = this.self.find('#_sttn_zon_city');
+//   this.elDistrict = this.self.find('#_sttn_zon_district');
+//   this.elCommune = this.self.find('#_sttn_zon_commune');
 
-  this.options = {};
-  this.fields = [];
-  this.btnOK = this.self.find('#_sttn_dlgZone_btnOK');
-  this.elError = this.self.find('#_sttn_dlgZone_error');
-  this.self.find('.data-input').each(function () {
-    let el = { dataMember: $(this).data('field'), 'element': $(this) };
-    mThis.fields.push(el);
-  });
+//   this.options = {};
+//   this.fields = [];
+//   this.btnOK = this.self.find('#_sttn_dlgZone_btnOK');
+//   this.elError = this.self.find('#_sttn_dlgZone_error');
+//   this.self.find('.data-input').each(function () {
+//     let el = { dataMember: $(this).data('field'), 'element': $(this) };
+//     mThis.fields.push(el);
+//   });
 
-  this.getData = () => {
-    let p = {};
-    let i = 0, c;
-    do {
-      c = mThis.fields[i];
-      if (!c) break;
-      p[c.dataMember] = c.element.val();
-      i++;
-    } while (c);
+//   this.getData = () => {
+//     let p = {};
+//     let i = 0, c;
+//     do {
+//       c = mThis.fields[i];
+//       if (!c) break;
+//       p[c.dataMember] = c.element.val();
+//       i++;
+//     } while (c);
 
-    //zone_id 
-    p.id = mThis.options.id;
-    return p;
-  }
+//     //zone_id 
+//     p.id = mThis.options.id;
+//     return p;
+//   }
 
-  this.setData = (d) => {
-    let i = 0, c;
-    if (!d) {
+//   this.setData = (d) => {
+//     let i = 0, c;
+//     if (!d) {
 
-      do {
-        c = mThis.fields[i];
-        if (!c) break;
-        c.element.val(null);
-        i++;
-      } while (c);
-      return;
-    }
+//       do {
+//         c = mThis.fields[i];
+//         if (!c) break;
+//         c.element.val(null);
+//         i++;
+//       } while (c);
+//       return;
+//     }
 
-    i = 0;
-    do {
-      c = mThis.fields[i];
-      if (!c) break;
-      c.element.val(d[c.dataMember]);
-      i++;
-    } while (c);
+//     i = 0;
+//     do {
+//       c = mThis.fields[i];
+//       if (!c) break;
+//       c.element.val(d[c.dataMember]);
+//       i++;
+//     } while (c);
 
-    mThis.city_id = d.city_id;
-    mThis.district_id = d.district_id;
-    mThis.commune_id = d.commune_id;
-    mThis.elCountry.trigger('change');
-  }
+//     mThis.city_id = d.city_id;
+//     mThis.district_id = d.district_id;
+//     mThis.commune_id = d.commune_id;
+//     mThis.elCountry.trigger('change');
+//   }
 
 
 
-  this.btnOK.on('click', function (e) {
-    let p = mThis.getData();
-    //console.log(p);
+//   this.btnOK.on('click', function (e) {
+//     let p = mThis.getData();
+//     //console.log(p);
     
-    vsapi.call(`${mThis.base_url}/api/location/country/save`, p, null).then(res => {
-      if (res.status_code === 200) {
-        mThis.self.modal('hide');
-        if (typeof mThis.options.onClose === 'function') mThis.options.onClose(true);
-      } else cv_interact.warning(res.error_message);
-    });
-  });
+//     vsapi.call(`${mThis.base_url}/api/location/country/save`, p, null).then(res => {
+//       if (res.status_code === 200) {
+//         mThis.self.modal('hide');
+//         if (typeof mThis.options.onClose === 'function') mThis.options.onClose(true);
+//       } else cv_interact.warning(res.error_message);
+//     });
+//   });
 
-  this.show = (options = {}) => {
-    mThis.elError.html(null);
-    options = options || {};
-    options.id = options.id || options.zone_id;
-    mThis.options = options;
+//   this.show = (options = {}) => {
+//     mThis.elError.html(null);
+//     options = options || {};
+//     options.id = options.id || options.zone_id;
+//     mThis.options = options;
 
-    mThis.prepareFormData(options.id, options.def, (d) => {
-      if (d.zone) {
-        mThis.elTitle.text('Modify Zone Details');
-      } else {
-        mThis.elTitle.text('New Delivery Zone');
-      }
+//     mThis.prepareFormData(options.id, options.def, (d) => {
+//       if (d.zone) {
+//         mThis.elTitle.text('Modify Zone Details');
+//       } else {
+//         mThis.elTitle.text('New Delivery Zone');
+//       }
 
-      mThis.setData(d.zone);
-      mThis.self.modal({
-        backdrop: 'static'
-      });
-    });
-  }
-  //close::this.show()
+//       mThis.setData(d.zone);
+//       mThis.self.modal({
+//         backdrop: 'static'
+//       });
+//     });
+//   }
+//   //close::this.show()
 
-  this.prepareFormData = (id, def, onFinish) => {
+//   this.prepareFormData = (id, def, onFinish) => {
 
-    vsapi.call(`${main_view.base_url}/api/location/options-country`, { 'id': id }, null).then(res => {
-      let d = res.status_code === 200 ? res.data : {};
-      // VSUtil.setComboItems(mThis.elCountry, d.countries, 'id', 'country', true, '(Select country)', null);
-      // VSUtil.setComboItems(mThis.elZoneType, d.zone_types, 'zone_type', 'zone_type', true, '(Select zone type)', null);
-      onFinish(d);
-    });
-  };
+//     vsapi.call(`${main_view.base_url}/api/location/options-country`, { 'id': id }, null).then(res => {
+//       let d = res.status_code === 200 ? res.data : {};
+//       // VSUtil.setComboItems(mThis.elCountry, d.countries, 'id', 'country', true, '(Select country)', null);
+//       // VSUtil.setComboItems(mThis.elZoneType, d.zone_types, 'zone_type', 'zone_type', true, '(Select zone type)', null);
+//       onFinish(d);
+//     });
+//   };
 
-  // this.loadCountries = (def)=>{
-  //    if(!def) def = {};
-  //    vsapi.call(`${mThis.base_url}/api/location/options-country`,null).then(res => {
-  //      if(res.status_code === 200){
-  //        let rows = StringSanitizer.sanitizeObject(res.data);
-  //        VSUtil.setComboItems(mThis.elCountry,rows,'id','name',true,'(Select Country)',def.country_id);
-  //        if(mThis.elCountry.val() >0) mThis.elCountry.trigger('change');
-  //      }
-  //    });  
-  // } 
+//   // this.loadCountries = (def)=>{
+//   //    if(!def) def = {};
+//   //    vsapi.call(`${mThis.base_url}/api/location/options-country`,null).then(res => {
+//   //      if(res.status_code === 200){
+//   //        let rows = StringSanitizer.sanitizeObject(res.data);
+//   //        VSUtil.setComboItems(mThis.elCountry,rows,'id','name',true,'(Select Country)',def.country_id);
+//   //        if(mThis.elCountry.val() >0) mThis.elCountry.trigger('change');
+//   //      }
+//   //    });  
+//   // } 
 
-}
+// }
 //end::ZoneDialog
 
 

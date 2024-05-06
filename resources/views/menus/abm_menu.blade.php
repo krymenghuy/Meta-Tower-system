@@ -117,14 +117,7 @@
                 </a>
             </li>
 
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
-                <a href="CountryZonesComponent" modid="105" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/delivery_zones.svg') }}" />
-                    </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Country Zone"></span>
-                </a>
-            </li>
+        
             
            
             <li class="kt-menu__section" <?php v_display(null,[205,206,223,219,213]);?>>
@@ -257,6 +250,14 @@
                 <div class="kt-menu__submenu">
                     <span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
+                            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
+                                <a href="CountryZonesComponent" modid="105" class="menu-item kt-menu__link">
+                                    <span class="kt-menu__link-icon">
+                                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/delivery_zones.svg') }}" />
+                                    </span>
+                                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Country Zone"></span>
+                                </a>
+                            </li>
                         <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(212); ?>>
                             <a href="ExchangeRatesComponent" modid="212" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -281,7 +282,7 @@
                                 <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Remarks"></span>
                             </a>
                         </li> -->
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(102); ?>>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(104); ?>>
                             <a href="LocationComponent" modid="102" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/countries_and_cities.svg') }}" />
