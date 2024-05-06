@@ -43,6 +43,8 @@ var SalesAgentsComponent = new function () {
         (data ?? []).map(d => {
             // if(d.sprint_id==id){
                 let image = d.image_url ? d.image_url : '';
+                let cls_status = d.summary_type ==='closed'? 'text-danger':'text-info'; 
+                let str_summary_status = [`<span class="${cls_status}">(`,d.summary_type,`)</span>`].join('');
                 html +=`
                         <div class=" text-white rounded-3 mb-3 " style=" height: ;">
                             <div class="card-body p-0">
@@ -80,13 +82,12 @@ var SalesAgentsComponent = new function () {
                                                 </div>
                                             </td>
                                             <td class="border-0 align-middle" style=" width:14.28%;">
-                                                <div class="d-flex align-items-center">
-                                                    <div style="line-height: 18px;">
-                                                        ${d.email}
-                                                        <div class="text-left ${d.status_id == 3?"text-light":"text-muted" }">
-                                                            ${d.phone_number}
-                                                        </div>
-                                                            
+                                                <div class=" align-items-center" style="line-height: 28px;">
+                                                    <div class="d-flex" >
+                                                        <i class="fas mt-2 me-1 fa-envelope"></i>${d.email || 'គ្មាន'}
+                                                    </div>
+                                                    <div class="d-flex text-left ${d.status_id == 3?"text-light":"text-muted" }">
+                                                        <i class="fas text-secondary fa-phone mt-2 me-1"></i> ${d.phone_number}
                                                     </div>
                                                 </div>
                                             </td>
@@ -97,24 +98,22 @@ var SalesAgentsComponent = new function () {
                                             </td>
                                             <td class="border-0 align-middle" style=" width: 14.28%">
                                                 <div class="text-left d-flex align-items-center">
-                                                    <div class="text-left d-flex align-items-center" style="line-height: 15px;"><i class="far fa-clock me-2 fs-5 text-warning"></i></div>
-                                                    <div class="w-75" style="line-height: 15px;">
+                                                    <div class="text-left d-flex align-items-center" style="line-height: 25px;"><i class="far fa-clock me-2 fs-5 text-warning"></i></div>
+                                                    <div class="w-75" style="line-height: 25px;">
                                                         ${d.create_date}
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="border-0 align-middle" style=" width: 12.28%">
                                                 <div class="text-left d-flex align-items-center">
-                                                    <div class="text-left d-flex align-items-center" style="line-height: 15px;"><i class="far fa-clock me-2 fs-5 text-warning"></i></div>
-                                                    <div class="w-75" style="line-height: 15px;">
-                                                        ${d.status}
+                                                    <div class="w-100" style="line-height: 25px;">
+                                                        <div class="d-flex flex-column"><span class="p-1 ">Achieved in ${d.current_month||''} ,${d.current_year||''}</span> <span class="p-1 text-nowrap">${d.target_count||''} ${d.count_type||'', str_summary_status||''}</span> </div>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td class="border-0 align-middle" style=" width: 12.28%">
                                                 <div class="text-left d-flex align-items-center">
-                                                    <div class="text-left d-flex align-items-center" style="line-height: 15px;"><i class="far fa-clock me-2 fs-5 text-warning"></i></div>
-                                                    <div class="w-75" style="line-height: 15px;">
+                                                    <div class="w-75 ${d.status_code == "Inactive"? "text-danger" : "text-success"}"  style="line-height: 25px;">
                                                         ${d.status_code}
                                                     </div>
                                                 </div>
@@ -509,7 +508,7 @@ var SalesAgentsComponent = new function () {
         mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
             el.onchange = (e)=>{
                 e.preventDefault();
-                mThis.salesAgentsListView.showPage(mThis.getFitlerData());
+                mThis.salesAgentsListView.showPage(mThis.getFilterData());
             }
         });
         
@@ -519,7 +518,7 @@ var SalesAgentsComponent = new function () {
 
     this.setEvents = (container) => {
         const div =  container.find('.table');
-        console.log(container);
+        // console.log(container);
         // const div =  container.find('.col_action');
         const btn = container.find('.btn-options');
 
@@ -546,7 +545,7 @@ var SalesAgentsComponent = new function () {
             }
          });
 
-        if(div.length !== 0){
+        if(container.length !== 0){
             // let prev_div = null;
             // prev_div = div.find('.dropdown-menu');
             // console.log(prev_div);
@@ -563,7 +562,7 @@ var SalesAgentsComponent = new function () {
             //     }
             // });
 
-            div.off('click').on('click',(e) => {
+            container.off('click').on('click',(e) => {
                 e.preventDefault();
                 
                 let lnk = VSUtil.getElementByClass(e.target,'btn-agent-edit');
@@ -572,7 +571,7 @@ var SalesAgentsComponent = new function () {
                     let op = {
                         id: lnk.dataset.id,
                         onClose:()=>{
-                            mThis.salesAgentsListView.showPage(mThis.getFitlerData());
+                            mThis.salesAgentsListView.showPage(mThis.getFilterData());
                         }
                     };
                     SalesAgentDialog.show(op);                     
@@ -606,7 +605,7 @@ var SalesAgentsComponent = new function () {
                                 id: id
                             },null).then(res => {
                                 if(res.status_code === 200){
-                                    mThis.salesAgentsListView.showPage(mThis.getFitlerData());
+                                    mThis.salesAgentsListView.showPage(mThis.getFilterData());
                                 }
                                 else
                                     cv_interact.error(res.error_message);
@@ -646,7 +645,7 @@ var SalesAgentsComponent = new function () {
                                         id: id
                                     }, null).then(res => {
                                         if (res.status_code === 200) {
-                                            mThis.salesAgentsListView.showPage(mThis.getFitlerData());
+                                            mThis.salesAgentsListView.showPage(mThis.getFilterData());
                                         } else {
                                             cv_interact.error(res.error_message);
                                         }
@@ -705,6 +704,8 @@ var SalesAgentsComponent = new function () {
 
                             vsapi.call(`${mThis.base_url}/abm/os-sales-agents/update-status`,p).then(res => {
                                 if(res.status_code === 200){
+                                    console.log(mThis.elFilter_sale_agent_status);
+                                    // mThis.elFilter_sale_agent_status.val(d.value).trigger('change');
                                     mThis.elFilter_sale_agent_status.val(d.value).trigger('change');
                                     cv_interact.success('The status has been updated');
                                     mThis.salesAgentsListView.showPage(mThis.getFilterData());
@@ -752,7 +753,7 @@ var SalesAgentsComponent = new function () {
         }
     }
 
-    this.getFitlerData = () => {
+    this.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.val(),
         };
@@ -770,9 +771,9 @@ var SalesAgentsComponent = new function () {
         if (!options) options = {};
         mThis.options = options;
         main_view.setTitle(mThis.title_prop);
-        // console.log(mThis.getFitlerData());
+        // console.log(mThis.getFilterData());
         mThis.loadFilterData(() => {    
-            mThis.salesAgentsListView.showPage(mThis.getFitlerData(),null,() => {
+            mThis.salesAgentsListView.showPage(mThis.getFilterData(),null,() => {
                 mThis.self.siblings().hide();
                 mThis.self.hide().fadeIn(300);
             });
@@ -820,6 +821,35 @@ const SalesAgentDialog = new function(){
     // this.elAgentType =  this.self.find('#_sal_agent_type');
     this.onClose = null;
     this.body =  this.self.find('.modal-body')[0];
+    this.divPhoto = this.self[0].querySelector('#_saleAgent_profile_photo');
+
+
+    // mThis.imgBox = new ImageBox(mThis.divPhoto,{
+    //     "dataField":"photo",
+    //     "cssClass":"data-input ",
+    //     containerClass:null,
+    //     // onDeleteImage:()=>{
+    //     //   alert('Deleting image');
+    //     //   return false;
+    //     // },
+    //     "onLoadImage":(photo) =>{
+    //         let p = {"id":mThis.options.id,"supplier_id":mThis.options.id,"photo":photo};
+    //         // console.log(p);
+    //         if(!p.id) return; 
+    //         vsapi.call(`${main_view.base_url}/abm/os_suppliers/save-profile-picture`,p,null,null,false).then(res =>{
+    //             if(res.status_code ===200){
+    //                 mThis.imgBox.setImage(photo);
+    //                 cv_interact.success('Photo has been saved');
+    //             }else cv_interact.error(res.error_message);
+    //         });
+    //     },
+    //     "deleteAPI":{
+    //         "endPoint":`${main_view.base_url}/dms/sales-app/agent/delete-profile-picture`,
+    //         "params":()=>{
+    //             return {"id": mThis.options.id,"sales_agent_id":mThis.options.id}
+    //         }
+    //     }
+    // });
 
     this.prepareData = (id,def, onFinish) => {
         // console.log(id);

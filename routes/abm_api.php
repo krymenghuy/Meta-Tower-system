@@ -15,6 +15,8 @@ use App\Http\Controllers\abm\SupplierController;
 use App\Http\controllers\abm\CustomerController;
 use App\Http\Controllers\abm\CountryZoneController;
 use App\Http\controllers\abm\OsSalesAgentController;
+use App\Http\controllers\abm\PriceController;
+use App\Http\controllers\abm\GeneralSettingsController;
  
  //begin:: api without Authentication
     Route::middleware([CustomRateLimiter::class])->group(function(){
@@ -68,6 +70,7 @@ use App\Http\controllers\abm\OsSalesAgentController;
     Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->group(function(){
         Route::post('/save', [OverseaShipmentController::class, 'save']);
         Route::post('/Shipment-list', [OverseaShipmentController::class, 'getOverseaShipmentList']);
+        Route::post('/Shipment-list-paginate', [OverseaShipmentController::class, 'ListPaginate']);
     
         Route::post('/create-item', [OverseaShipmentController::class, 'createOverseaItem']);
         Route::post('/item-list', [OverseaShipmentController::class, 'getOverseaItemList']);
@@ -88,12 +91,23 @@ use App\Http\controllers\abm\OsSalesAgentController;
     });
 
     
+    Route::post('savePriceLineZones', [PriceController::class, 'savePriceLineZones']);
+    Route::post('getPriceList_data', [PriceController::class, 'getPriceList_data']);
+    Route::post('savePriceLineInfo', [PriceController::class, 'savePriceLineInfo']);
+    Route::post('updateZoneCodes', [PriceController::class, 'updateZoneCodes']);
+    Route::post('deletePriceZones', [PriceController::class, 'deletePriceZones']);
+
+    
    //begin:: Counties_Zone_Code
 
-   Route::prefix('country')->group(function(){
-    Route::post('/save',[CountryZoneController::class,'save']);
-    Route::post('/delete',[CountryZoneController::class,'delete']);
-    Route::post('/list-all',[CountryZoneController::class,'getCountryZoneList_all']);
-    Route::post('/details',[CountryZoneController::class,'details']);
+    Route::prefix('country')->group(function(){
+        Route::post('/save',[CountryZoneController::class,'save']);
+        Route::post('/delete',[CountryZoneController::class,'delete']);
+        Route::post('/list-all',[CountryZoneController::class,'getCountryZoneList_all']);
+        Route::post('/details',[CountryZoneController::class,'details']);
+        
+    });
 
-});
+    Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->group(function(){
+        Route::post('/options-country-zone', [GeneralSettingsController::class, 'getComboItems_country_zone']);
+    });

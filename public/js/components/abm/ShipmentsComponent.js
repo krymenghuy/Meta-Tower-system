@@ -310,69 +310,37 @@ var ShipmentsComponent = new function () {
                 title: 'Created Date'
                 // title: mThis.trans('Created Date')
             },
+            
             {
-                className: "Created Date",
-                data: function (data, index, tr) {
-                    const sender_info = ['<span class="sender-name d-block">', data.shipment_id||"#00000",'</span>'].join('');
-                    return sender_info;
-                },
-                title: 'Shipment ID'
-                // title: mThis.trans('Created Date')
-            },
-            {
-                className: "sender_id",
+                className: "from country",
                 data: (data,index,tr)=>{
-                    const sender_info = ['<span class="sender-name d-block">',data.sender_id,'</span>'].join('');
+                    const sender_info = ['<span class="sender-name d-block">',data.from_country||'NA','</span>'].join('');
                     return sender_info;
                 },
                 // title: mThis.trans('Sender ID')
-                title: 'Sender ID'
+                title: 'from country'
+            },
+            {
+                className: "to_country",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.to_country||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'to country '
             },
             
             {
-                className: "zone_code",
+                className: "",
                 data: (data,index,tr)=>{
-                    const sender_info = ['<span class="sender-name d-block">',data.zone_code||'NA','</span>'].join('');
+                    const sender_info = [
+                        `<span class="d-block p-1" >`, data.primary_cp_name||'NA', ` (`,data.primary_cp_phone,`)`,` </span>`,
+                        `<span class="d-block p-1" >`, data.secondary_cp_name||'NA',` (`,data.secondary_cp_phone,`)`, ` </span>`
+                    ].join('');
                     return sender_info;
                 },
                 // title: mThis.trans('Sender ID')
-                title: 'zone code'
-            },
-            {
-                className: "sender_id",
-                data: (data,index,tr)=>{
-                    const sender_info = ['<span class="sender-name d-block">',data.from_country_id||'NA','</span>'].join('');
-                    return sender_info;
-                },
-                // title: mThis.trans('Sender ID')
-                title: 'from country id'
-            },
-            {
-                className: "to_country_id",
-                data: (data,index,tr)=>{
-                    const sender_info = ['<span class="sender-name d-block">',data.to_country_id||'NA','</span>'].join('');
-                    return sender_info;
-                },
-                // title: mThis.trans('Sender ID')
-                title: 'to country id'
-            },
-            {
-                className: "primary_cp_id",
-                data: (data,index,tr)=>{
-                    const sender_info = ['<span class="sender-name d-block">',data.primary_cp_id||'NA','</span>'].join('');
-                    return sender_info;
-                },
-                // title: mThis.trans('Sender ID')
-                title: 'primary cp id'
-            },
-            {
-                className: "secondary_cp_id",
-                data: (data,index,tr)=>{
-                    const sender_info = ['<span class="sender-name d-block">',data.secondary_cp_id||'NA','</span>'].join('');
-                    return sender_info;
-                },
-                // title: mThis.trans('Sender ID')
-                title: 'secondary cp id'
+                title: ' contact persens'
             },
             {
                 className: "actual_weight",
@@ -484,25 +452,29 @@ var ShipmentsComponent = new function () {
         ];
 
         mThis.shipmentListView = new ListView("_shm_div_order_list", {
-            clientSidePagination: true,
-            fetchApi: `${main_view.base_url}/abm/oversea_shipments/Shipment-list`,
+            // clientSidePagination: true,
+            fetchApi: `${main_view.base_url}/abm/oversea_shipments/Shipment-list-paginate`,
+            apiCluster: main_view.apiCluster,
+            tableClass: "table header-uppercase",
+            perPage: 10,
+            columns: mThis.cols,
             // processResponse: (res) => {
-            //     return d.items;
+            //     console.log(res.data);
+            //     return res.data;
             // },
             rowCreated:(data,index,tr)=>{
-                console.log(data.id);
+                console.log(data);
               tr.dataset.id = data.id;  
               tr.classList.add('order');
               tr.classList.add('shipment');
               tr.setAttribute('id',['shipment_',data.id].join('')); 
             //   tr.dataset.statusid = data.status_id;
               tr.dataset.senderid = data.sender_id;
+              tr.dataset.country_zone = data.zone_code;
             //   tr.dataset.driverid = data.driver_id?data.driver_id:''; 
             }, 
-            apiCluster: main_view.apiCluster,
-            tableClass: "table header-uppercase",
-            perPage: 10,
-            columns: mThis.cols,
+
+            
             listContainerClass: null,
         });
 
@@ -1027,10 +999,10 @@ var ShipmentsComponent = new function () {
      * IMPORTANT:  @d = {"order_id","sender_id","status_id",["barcode"]}
     */
     this.createItemRow_html = (d ={},tr_id=null) => {
-        const display_cols = ['item_type' , 'size' , 'price' , 'actual_weight', 'allocated_kg' , 'billed_weight' , 'item_total'];
+        const display_cols = ['item_type' , 'size' , 'price' , 'actual_weight' , 'allocated_kg' , 'billed_weight' , 'item_total'];
         let i = 0, c=null;
         let html_row = null;
-        // console.log(d);
+        console.log(d);
         do {
             c = display_cols[i];
             if (!c) break;  
@@ -1101,10 +1073,10 @@ var ShipmentsComponent = new function () {
         //   '<th>HEIGHT</th>',
         //   '<th>WEIGHT</th>',
         //   '<th>LENGTH</th>',
-            '<th>PRICE</th>',
-            '<th>ALLOCATED KG</th>',
-            '<th>ACTUAL WEIGHT</th>',
-            '<th>BIILED WEIGHT</th>',
+            '<th>PRICE PER KG</th>',
+            '<th>ALLOC. KG</th>',
+            '<th>ACTUAL KG</th>',
+            '<th>BIILED KG</th>',
             '<th>TOTAL</th>',
           '</tr></thead>'].join(''); 
          return thead_html; 
@@ -1119,6 +1091,7 @@ var ShipmentsComponent = new function () {
         if (!div) return;
         let shipment_id = div.dataset.shipmentid;
         let sender_id = div.dataset.senderid;
+        let country_zone = div.dataset.country_zone;
         let table = div.querySelector('table.pkl-package-table');
         if(!table){
             div.innerHTML = mThis.createPackageTable_html(shipment_id,sender_id);
@@ -1132,7 +1105,7 @@ var ShipmentsComponent = new function () {
          * price = 0, fees =0  are all default values when creating new item
         */
         
-        if (!d) d = {"sender_id":sender_id,"shipment_id":shipment_id,"status_id":1,"price":0};
+        if (!d) d = {"sender_id":sender_id,"shipment_id":shipment_id,"status_id":1,"country_zone":country_zone,"price":0};
         let html_row = this.createItemRow_html(d,tr_id);
         //prepend html string to tbody
         tbody.insertAdjacentHTML('afterbegin',html_row);
@@ -1181,6 +1154,7 @@ var ShipmentsComponent = new function () {
         container.innerHTML = null;
         const shipment_id = shipment_tr.dataset.id;
         const sender_id = shipment_tr.dataset.senderid;
+        const country_zone = shipment_tr.dataset.country_zone;
         let html = [
         `<div class="d-flex flex-column p-2 w-100">`,
           `<div class="pkl-header-panel d-flex flex-row justify-content-between w-100">`,
@@ -1199,7 +1173,7 @@ var ShipmentsComponent = new function () {
         
         const div = container.querySelector('div.pkl-order-content');
         if(def_view ==='items'){
-             mThis.displayOverseaItems(div,shipment_id,sender_id);
+             mThis.displayOverseaItems(div,shipment_id,sender_id,country_zone);
         }else{
             mThis.displayOrderImages(div,shipment_id,sender_id);
         }
@@ -1211,7 +1185,7 @@ var ShipmentsComponent = new function () {
             if (btn){
                 const viewname = btn.dataset.viewname;
                 if (viewname ==='items'){
-                     mThis.displayOverseaItems(div,shipment_id,sender_id,btn);
+                     mThis.displayOverseaItems(div,shipment_id,sender_id,country_zone,btn);
                 }else{
                     mThis.displayOrderImages(div,shipment_id,sender_id,btn);
                 }
@@ -1228,8 +1202,10 @@ var ShipmentsComponent = new function () {
             if(btn){
                 let shipment_id = btn.dataset.shipmentid;
                 let sender_id = btn.dataset.senderid;
+                let country_zone = btn.dataset.country_zone;
                 div.dataset.shipmentid = shipment_id;
                 div.dataset.senderid = sender_id;
+                div.dataset.senderid = country_zone;
                 // console.log(div.dataset.senderid);
                 //const item_table = btn.closest('table.pkl-package-table');  
                 //const editing_tr = mThis.getCurrentEditingRow(item_table);
@@ -1311,7 +1287,7 @@ var ShipmentsComponent = new function () {
       return null;
     }
     //displayItemList  | renderPackageTable
-    this.displayOverseaItems = (div, shipment_id,sender_id,btn=null) => {
+    this.displayOverseaItems = (div, shipment_id,sender_id,country_zone,btn=null) => {
         let p = { 'id':  shipment_id};
         // console.log(p);
         // const content_panel_class = 'pkl-order-content';
@@ -1324,7 +1300,7 @@ var ShipmentsComponent = new function () {
             if (res.status_code === 200) {
                 let packages = StringSanitizer.sanitizeObject(res.data,null,['size']);
                 let i = 0, c =null;
-                // console.log(res.data);
+                console.log(packages);
                 do {
                     c = packages[i];
                     if (!c) break;
@@ -1337,7 +1313,7 @@ var ShipmentsComponent = new function () {
                    html = [`<table class="table pkl-package-table">`,header_cols,`<tbody>`, html ,`</tbody></table>`].join('');
                 }else{
                     mThis.shm_prev_editing_row = null;
-                    html = [`<div class="p-2 d-flex justify-content-center gap-2"><span class="h5 text-center p-1 fw-semibold">មិនទាន់បញ្ចូលកញ្ចប់ទំនិញ</span><a href="javascript:void(0)" data-shipmentid="`,shipment_id,`" data-senderid ="`,sender_id,`" class="pkl-lnk_add_item mt-2"><span class="p-2 border border-primary rounded-4">Add Item</span></a></div>`].join('');
+                    html = [`<div class="p-2 d-flex justify-content-center gap-2"><span class="h5 text-center p-1 fw-semibold">មិនទាន់បញ្ចូលកញ្ចប់ទំនិញ</span><a href="javascript:void(0)" data-shipmentid="`,shipment_id,`" data-country_zone="`,country_zone,`" data-senderid ="`,sender_id,`" class="pkl-lnk_add_item mt-2"><span class="p-2 border border-primary rounded-4">Add Item</span></a></div>`].join('');
                 }
                 div.innerHTML = html;
                 //div.style.display ='block';
