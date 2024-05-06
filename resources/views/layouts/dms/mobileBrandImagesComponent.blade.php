@@ -36,6 +36,7 @@
                         <select id="_mobile_brand_app" class="modal-select2">
                             <option value="merchant">Merchant App</option>
                             <option value="driver">Driver App</option>
+                            <option value="sales_agent">Sales App</option>
                         </select>
                     </div>
                     <button id="_mobile_brand_btnAddImage" type="button" class="btn btn-sm btn-outline-success">

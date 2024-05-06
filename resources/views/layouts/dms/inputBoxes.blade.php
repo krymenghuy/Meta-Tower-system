@@ -10,7 +10,6 @@
           <label for="_inputbox1_value" class="col-form-label" id="_inputbox1_label" >Label</label>
           <input type="text" class="form-control" id="_inputbox1_input">
         </div>
-       
         <div>
           <span id="_inputbox1_error" class="error_text"></span>
         </div>

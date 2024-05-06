@@ -75,7 +75,7 @@
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/dashboard.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Dashboard">ds</span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Dashboard"></span>
                 </a>
             </li>
 
@@ -194,13 +194,13 @@
                 </a>
             </li>
  
-            <!-- <li class="kt-menu__section" <?php v_display(null,[207,208,222]);?>>
+            <li class="kt-menu__section" <?php v_display(null,[225,226,227,228,229,230]);?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Sales & Marketing"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
-            </li> -->
+            </li>
 
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(209); ?>>
-                <a href="SalesAgentsComponent" modid="209" class="menu-item kt-menu__link">
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(225); ?>>
+                <a href="SalesAgentsComponent" modid="224" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/general_report.svg') }}" />
                     </span>
@@ -208,50 +208,50 @@
                 </a>
             </li>
              
-            <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(222);?>>
-                <a href="LeadListComponent" modid="222" class="menu-item kt-menu__link">
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(226);?>>
+                <a href="LeadListComponent" modid="224" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_sale_staff.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Leads & Prospects"></span>
                 </a>
-            </li> -->
+            </li>
 
-            <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(100);?>>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(227);?>>
                             <a href="PostersComponent" modid="224" class="menu-item kt-menu__link ">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_users.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color trans-text text-nowrap" data-langprop="menus.Posters"></span>
                             </a>
-            </li> -->
+            </li>
 
-            <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(100);?>>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(228);?>>
                             <a href="SalesCommissionPolicyComponent" modid="224" class="menu-item kt-menu__link ">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_users.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color trans-text text-nowrap" data-langprop="menus.Commission Policies"></span>
                             </a>
-            </li> -->
+            </li>
 
-            <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(100);?>>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(229);?>>
                             <a href="SalesCommissionPaymentsComponent" modid="225" class="menu-item kt-menu__link ">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_users.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color trans-text text-nowrap" data-langprop="menus.Commission Payments"></span>
                             </a>
-            </li> -->
+            </li>
 
-            <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(100);?>>
-                    <a href="CommentsComponent" modid="225" class="menu-item kt-menu__link ">
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(230);?>>
+                    <a href="CommentsComponent" modid="224" class="menu-item kt-menu__link ">
                         <span class="kt-menu__link-icon">
                             <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_users.svg') }}" />
                         </span>
                         <span class="kt-menu__link-text font-color trans-text text-nowrap" data-langprop="menus.Comments"></span>
                    </a>
-            </li> -->
+            </li>
 
             <li class="kt-menu__section" <?php v_display(null,[209]);?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Data & Insights"></h4>

@@ -5,8 +5,9 @@ var ReportCenterComponent = new function(){
     this.self = main_view.appContent.children('#_rpc_reportCenterComponent');
     this.base_url = main_view.base_url; 
     this.api_fetch_report_list = [this.base_url,'/dms/report-center/report-list'].join('');
-    this.api_fetch_report_filter_options = [this.base_url,'/dms/report-center/filter-options'].join('');
-    
+    this.api_fetch_report_list_by_category = [this.base_url,'/api/report-center/reports-by-category'].join('');
+    this.api_fetch_report_filter_options = [this.base_url,'/api/report-center/filter-options'].join('');
+
     //** This is default report route
     this.report_url =[this.base_url,'/dms-gen-report'].join(''); 
 
@@ -27,7 +28,7 @@ var ReportCenterComponent = new function(){
        "Sales Module": [this.base_url,'/sales-module-report'].join('')
     };
 
-    this.div_report_list = this.self.find('#_rpc_reportlist');
+    this.div_report_list = this.self.find('#_rpc_reportlist')[0];
     this.div_filter_fields = this.self.find('#_rpc_filter_fields');
     this.no_filter_wrapper = this.self.find('#_rpc_no_filter_text_wrapper');
     this.selected_report_name = this.self.find('#_rpc_selected_report_name');
@@ -62,6 +63,18 @@ var ReportCenterComponent = new function(){
             'value_field':'id',
             'text_field':'driver_name'
         }, 
+        {
+            type:'select',
+            allow_choose_all:['All Merchant Status'],
+            'data':"sender_statuses",
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-sender`,
+            //'api_params':{},
+            'label':'Merchant Status',
+            'name':'sender_status',
+            'multiple':false,
+            'value_field':'sender_status',
+            'text_field':'sender_status'
+        },
         {
             'type':'select',
             'allow_choose_all':['daily_packages'],
@@ -108,6 +121,17 @@ var ReportCenterComponent = new function(){
         },
         {
             'type':'select',
+            'name':'sales_agent_type',
+            'label':'Agent Type',
+            'data':"sales_agent_types",
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
+            //'api_params':{},
+            'value_field':'sales_agent_type_id',
+            'text_field':'agent_type',
+            'width':'half'
+        },
+        {
+            'type':'select',
             'name':'sales_agent_id',
             'label':'Sales Agent',
             'data':"sales_agents",
@@ -142,6 +166,28 @@ var ReportCenterComponent = new function(){
             'type':'select',
             'name':'month_year',
             'label':'Month',
+            'data':"months",
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
+            //'api_params':{},
+            'value_field':'month',
+            'text_field':'month_year',
+            'width':'half'
+        },
+        {
+            'type':'select',
+            'name':'start_month',
+            'label':'From Month',
+            'data':"months",
+            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
+            //'api_params':{},
+            'value_field':'month',
+            'text_field':'month_year',
+            'width':'half'
+        },
+        {
+            'type':'select',
+            'name':'end_month',
+            'label':'To Month',
             'data':"months",
             //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
             //'api_params':{},
@@ -239,28 +285,7 @@ var ReportCenterComponent = new function(){
                 //el.attr('autocomplete','chrome-off"');
             
              }else if (f.type==='select'){
-               
-                // vsapi.call(f.api_fetch,f.api_params,null,false).then(res=>{
-                //     if(res.status_code ===200){
-                //         let items = res.data;
-                //         if(f.multiple || f.multiple==1){
-                //             let option_all = {};
-                //             option_all[f.text_field] ='(All)';
-                //             option_all[f.value_field] =0;
-                //             items.unshift(option_all);
-                //         }
-                //         if(f.name =='sender_id') items.unshift({'id': 0, 'sender_name':'(All Merchants)'});
-                //         VSUtil.setComboItems(el,items,f.value_field,f.text_field,false,null,null);
-                //         if(!f.def_value) f.def_value = items[0]?items[0][f.value_field]:0; 
-                //         if(f.def_value) el.val(f.def_value).trigger('change');
-                //         else{
-                //             if(items[0] && !items[1]){
-                //                 el.val(items[0][f.value_field]).trigger('change');    
-                //             }
-                //         }
-                //     }
-                //  });
-
+  
                  mThis.initSelect2(el,null,null,f.multiple);
                  const items = d[f.data]? d[f.data]: [];
                  if(f.multiple || f.multiple==1){
@@ -307,26 +332,53 @@ var ReportCenterComponent = new function(){
     /** Initialize reportCenter object only first user's click on Report Center menu */
     this.initOnce = ()=>{
         if (mThis.initAlready) return;
-       
-        mThis.loadReportItems((e)=>{
-            mThis.loadFilterOptions(e.wrapper.height());
+      
+        mThis.loadReportsByCategory(() =>{
+            mThis.loadFilterOptions(mThis.div_report_list.offsetHeight);
             //mThis.renderFilterFields(e.wrapper.height());
         });
 
-        mThis.div_report_list.on('mouseover','.div-row',function(e){
+        // mThis.loadReportItems((e)=>{
+
+        // });
+
+        mThis.div_report_list.addEventListener('click', e =>{
             e.preventDefault();
-            mThis.setReportItemState($(this),'hover');
+            let d = VSUtil.closestLimited(e.target,'a.rpc-group-header');
+            if(d){
+               const div = d.nextSibling; 
+               mThis.toggleShow(div);
+               return;
+            }
+
+            d = VSUtil.closestLimited(e.target,'a.rpc-report');
+            if(d){
+                let id = d.dataset.id; 
+                let code = d.dataset.code;
+                mThis.selectReportItem(id,code);
+                return;
+            }
         });
 
-        mThis.div_report_list.on('mouseleave','.div-row',function(e){
+        mThis.div_report_list.addEventListener('mouseover', e =>{
             e.preventDefault();
-            mThis.setReportItemState($(this),'normal');
+            let d = VSUtil.closestLimited(e.target,'.div-row');
+            if(d){
+                mThis.setReportItemState(d,'hover');
+            }
+           
         });
 
-        mThis.div_report_list.on('click','.div-row',function(e){
+        mThis.div_report_list.addEventListener('mouseleave',e=>{
             e.preventDefault();
-           mThis.selectReportItem($(this));
+            let d = VSUtil.closestLimited(e.target,'.div-row');
+            mThis.setReportItemState(d,'normal');
         });
+
+        // mThis.div_report_list.addEventListener('click','.div-row',function(e){
+        //     e.preventDefault();
+        //    mThis.selectReportItem($(this));
+        // });
         
         this.btnExportPackages.on('click',(e)=>{
             e.preventDefault();
@@ -393,6 +445,19 @@ var ReportCenterComponent = new function(){
         mThis.initAlready = true;
     }
 
+    this.toggleShow = (div) => {
+       let v_show = div.style.display;
+       if(v_show ==='none'){
+           div.classList.add('d-flex');
+           div.style.display ='block';
+       }else{
+        div.classList.remove('d-flex');
+        div.style.display ='none';
+       } 
+    }
+    
+    
+
         //rpt_params is object
         this.showReport = (rpt, rpt_params)=>{
             const rpt_code = rpt.code;
@@ -432,7 +497,7 @@ var ReportCenterComponent = new function(){
     //         window.open(`${report_route}/${d}`,'_blank');
     //     });
     // }
-    
+   
     this.translateToQueryString = (params)=>{
         let q ='';
         for(let prop in params){
@@ -445,47 +510,79 @@ var ReportCenterComponent = new function(){
     }
 
     this.setReportItemState = (div_row,state_name ='hover')=>{
+        if(!div_row) return;
         let hover_color ='orange';
         let normal_color = 'grey';
 
-        let selected = div_row.hasClass('report-selected');
+        let selected = div_row.classList.contains('report-selected');
         if (state_name ==='hover'){
-            div_row.find('span').css('color',hover_color);
+            div_row.querySelector('span').style.color = hover_color;
         }
         else{
-            div_row.find('span').css('color',normal_color);
+            div_row.querySelector('span').style.color = normal_color;
             if (!selected)
-                div_row.find('i').removeClass('fa-check').addClass('fa-list-alt').css('color',normal_color);
+                div_row.querySelectorAll('i').forEach(x => {
+                    x.classList.remove('fa-check');
+                    x.classList.add('fa-list-alt');
+                    x.style.color = normal_color;
+                }); 
         }
     }
   
-    this.selectReportItem = (div_row)=>{
-        mThis.div_report_list.find('.div-row').each(function(){
-            $(this).removeClass('report-selected');
-            mThis.setReportItemState($(this),'normal');
+    this.selectReportItem = (report_id, rpt_code)=>{
+        mThis.div_report_list.querySelectorAll('.rpc-report').forEach( el =>{
+            let id = el.dataset.id;
+            if(id == report_id){
+                el.classList.add('report-selected');
+            }else   el.classList.remove('report-selected');
         });
-
-        div_row.addClass('report-selected');
+         
+        // div_row.querySelectorAll('i').forEach(x =>{
+        //     x.classList.remove('fa-list-alt');
+        //     x.classList.add('fa-check');
+        //     x.style.color = 'green';
+        // });
         
-        div_row.find('i').removeClass('fa-list-alt').addClass('fa-check').css('color','green');
-        const rpt_code = div_row.data('code');
+        //const rpt_code = div_row.dataset.code;
         let rpt = mThis.reports[rpt_code];
         if(!rpt) return null; 
         mThis.selected_report_name.text(rpt.name); 
         mThis.showReportFilters(rpt.params);
     }
 
+    /** render Reports V2 */
+    this.loadReportsByCategory = (onFinish) => {
+        mThis.div_report_list.innerHTML = '<div class="d-flex flex-column justify-content-center align-items-center h-100 w-100"><div class="animation-line" style="height:2px;margin:0;"></div></div>';
+        vsapi.call(mThis.api_fetch_report_list_by_category, null, null, false)
+        .then(res => {
+            const data = res.status_code === 200 ? res.data : {};
+            let html = '';
+            Object.values(data).forEach(cat => {
+                let item_html = '';
+                cat.list.map(rpt =>{
+                    item_html = [item_html,`<a class="rpc-report text-black" href="javascript:void(0)" data-code="`,rpt.code,`" data-id="`,rpt.id,`">`,'<i class="fs-5 fa fa-pointer text-muted"></i> ',rpt.name,`</a>`].join('');
+                    mThis.reports[rpt.code] = rpt;
+                });
+                
+                let group_html = ['<a href="javascript:void(0)" class="rpc-group-header fs-5 d-block" data-category="',cat.category,'" data-categoryid="',cat.id,'">','<span class="text-nowrap fw-semibold p-2">','<img class="rpc-category-icon" src="', main_view.asset_url,'/images/icons/report.png','"> ',cat.category,'</span>','</a>'].join('');
+                group_html = [group_html,`<div class="rpc-reports d-flex flex-column gap-2 justify-content-start align-items-start flex-wrap p-2 overflow-hidden">`,item_html,`</div>`].join('');
+                html = [html, group_html].join('');
+            });
+            mThis.div_report_list.innerHTML = html;
+            onFinish();
+        });
+    }
+    
+    
     this.getSelectedReport = ()=>{
-        let div_row = mThis.div_report_list.find('.report-selected');
-        const rpt_code = div_row.data('code');
+        let div_row = mThis.div_report_list.querySelector('.report-selected');
+        const rpt_code = div_row.dataset.code;
         return mThis.reports[rpt_code];
     }
 
     this.loadReportItems = (onFinish)=>{
         vsapi.call(mThis.api_fetch_report_list,null).then(res=>{
             mThis.div_report_list.empty();
-            console.log(res.data);
-            
             let items = StringSanitizer.sanitizeObject(res.data,null,['params']);
             let i=0,c;
              
@@ -515,6 +612,7 @@ var ReportCenterComponent = new function(){
             mThis.div_report_list.css('min-height','350px');
             mThis.div_report_list.show();
             if (typeof onFinish ==='function') onFinish({'wrapper':mThis.div_report_list});
+          
             //mThis.reports = items;
         });
     }

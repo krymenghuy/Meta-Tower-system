@@ -8,7 +8,7 @@
         </div>
         <div class="input-group flex-nowrap">
             <div class="input-group-text">
-                <span class="trans-text" data-langprop="orders.Start Date">Start Date</span>
+                <span class="trans-text" data-langprop="titles.Start Date">Start Date</span>
             </div>
             <div class="w-100">
                 <input data-select="datepicker" class="form-control" placeholder="Start Date" id="_odi_filter_start_date" />
@@ -16,7 +16,7 @@
         </div>
         <div class="input-group flex-nowrap">
             <div class="input-group-text">
-                <span class="trans-text" data-langprop="orders.End Date">End Date</span>
+                <span class="trans-text" data-langprop="titles.End Date">End Date</span>
             </div>
             <div class="w-100">
                 <input data-select="datepicker" class="form-control" placeholder="End Date" id="_odi_fliter_end_date" />

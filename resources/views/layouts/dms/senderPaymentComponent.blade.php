@@ -171,9 +171,12 @@
                                            <div> <input id="_spmt_filter_pmt_enddate" class="form-control spmt_filter_field" data-field="end_date" data-select="datepicker"> </div>
                                         </div>
                             </div>
-                            <div class="d-flex gap-2">
-                               <div>
-                                    <button id="_spmt_btnPrint" class="btn btn-primary mt-4"><i class="fa fa-print"></i> Print</button>
+                            <div class="d-flex gap-2 pt-2">
+                               <div class="">
+                                    <button id="_spmt_btnExcelExport" class="btn btn-success mt-4"><i class="fa fa-file-excel"></i>Export</button>
+                               </div>
+                               <div class="">
+                                    <button id="_spmt_btnPrint" class="btn btn-info mt-4"><i class="fa fa-print"></i>Print</button>
                                </div>
                             </div>
                     </div>
@@ -188,10 +191,17 @@
                                         <span>ACLEDA 120 USD</span>
                                 </div> 
                           </div>
-                          <div class="d-flex gap-2 mt-1">
-                               <span class="fw-semibold fs-5">Transaction Count: </span>
-                               <span id="_spmt_pmt_count" class="fw-semibold fs-5">0</span>
+                          
+                          <div class="d-flex flex-column mt-1">
+                                <div class="d-flex gap-2 mt-1">
+                                    <span class="fw-semibold fs-5">Transaction Count: </span>
+                                    <span id="_spmt_pmt_count" class="fw-semibold fs-5">0</span>
+                                </div>
+                                <div id="_spmt_pmt_totals" class="mt-1 d-flex flex-row border-top border-lg border-primary p-2 gap-3">
+                                        <span>COD: <span class="o-total" data-field="total_cod">0 USD</span></span>   <span class="o-total" data-field="total_fees">Fees: <span>0 USD</span></span>    <span>Taxi: <span class="o-total" data-field="total_taxi_fees">0 USD</span></span>
+                                </div>
                           </div>
+                         
                           <div>
                           <button id="_spmt_btnApproveAll" class="btn btn-primary"><i class="fa fa-check"></i> <span class="trans-text" data-langprop="buttons.Approve All"></span></button>
                           </div>  
