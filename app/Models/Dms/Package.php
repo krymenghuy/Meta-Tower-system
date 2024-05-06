@@ -6,11 +6,13 @@ namespace App\Models\Dms;
 use Carbon\Carbon;
 use App\Models\DV;
 use App\Models\UM;
+use App\Models\Dms\Tracker;
+use App\Models\Notifier;
 //use Session;
 use DB;
 use Sanitizer;
 use App\Models\ErrorManager;
-use App\Models\Dms\Tracker;
+
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
@@ -316,7 +318,8 @@ class Package //extends Model
       if (!$sender) return DV::error('New merchant identity is not valid');
       $new_sender_name = $sender->name;
 
-      $package = $this->getPackageProps($branch_id,$package_id,"p.id,p.qr_code AS barcode,p.sender_id,p.sender_name,p.receiver_phone,p.price, IFNULL(p.forwarding_cost,0) AS forwarding_cost,p.cod,p.df_payer,(p.delivery_fee + p.base_fee) AS fees,p.cod_fee,p.delivery_type,p.zone_code,p.billed_kg,p.sender_pmt_status_id","id");
+      $cols = 'p.id,p.qr_code AS barcode,p.sender_id,p.sender_name,p.receiver_phone,p.price, IFNULL(p.forwarding_cost,0) AS forwarding_cost,p.cod,p.df_payer,(p.delivery_fee + p.base_fee) AS fees,p.cod_fee,p.delivery_type,p.zone_code,p.billed_kg,p.sender_pmt_status_id';
+      $package = DB::table('package as p')->join('sender as s','s.id','=','p.sender_id')->where('p.id',$package_id)->selectRaw($cols)->first();
       if (!$package) return DV::error('Failed to retrieve package information');
       if ($package->sender_pmt_status_id===1) return DV::error('Cannot change the merchant because there is already a payment transaction with the existing merchant');
       $old_sender_name = $package->sender_name;
@@ -423,15 +426,15 @@ class Package //extends Model
             return DV::error("The package already returned");
          }else return DV::error("Only failed package can be returned"); 
       }
-
+     
      $nowTime = getNowTime();
-     $remarks = 'Returned by '.$ss->full_name.' at '.date('d M Y h:m',strtotime($nowTime));
+     //Use || to separate system remarks and user's remarks. system remarks || user remarks
+     $overall_remarks = 'Returned by '.$ss->full_name.' at '.date('d M Y h:m',strtotime($nowTime)).'||'.$remarks;
      $inputs = [
       'branch_id'=>$branch_id,
       'sender_id'=>$sender_id,
       'package_id'=>$package_id,
-      'remarks'=>$remarks,
-      'remarks'=>$remarks,
+      'remarks'=>$overall_remarks,
       'create_user'=>$ss->login_name,
       'create_date'=>$nowTime,
       'return_date'=>$nowTime
@@ -445,11 +448,11 @@ class Package //extends Model
           DB::table('package')->where('branch_id',$branch_id)->where('id',$package_id)->update([
             'status_id'=>11,
             'outstanding'=>0,
-            'return_notes'=>$remarks,
+            'return_notes'=>$overall_remarks,
             'delivery_time'=>$nowTime  /* delivery_time can be "failed_date", "success_date" or "returned_date" depending on p.status_id */
           ]);
      }
-     return DV::depends($return_id,null,'Failed to save Return transaction');
+     return DV::depends($return_id,['remarks'=>$overall_remarks],'Failed to save Return transaction');
     }
 
     function getPackageInfo($id=null){  

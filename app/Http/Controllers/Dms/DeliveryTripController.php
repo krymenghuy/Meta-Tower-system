@@ -207,36 +207,42 @@ class DeliveryTripController extends Controller
         return JDV::result($data);
     }
 
-  function getForm_options_trip_list(Request $request){
-      $r = $this->tripModel->getForm_options_trip_list($request);
-      if($r =='#350') 
-        return makeJsonResponse($r,350); // user not authenticated
-      else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-      return makeJsonResponse($r);
+  function getForm_options_trip_list(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !==200) return JDV::raw($ss);
+    $data= $this->tripModel->getForm_options_trip_list($ss);
+    return JDV::result($data);  
   }
    
-  function getPackageInfoByBarcode(Request $request){
-    $r = $this->tripModel->getPackageInfoByBarcode($request);
-    if($r =='#350') 
-      return makeJsonResponse($r,350); // user not authenticated
-    else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-    return makeJsonResponse($r);
-  }
+  // function getPackageInfoByBarcode(Request $request){
+  //   $r = $this->tripModel->getPackageInfoByBarcode($request);
+  //   if($r =='#350') 
+  //     return makeJsonResponse($r,350); // user not authenticated
+  //   else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
+  //   return makeJsonResponse($r);
+  // }
    
-  function cleanEmptyTrip(Request $request){
-    $r = $this->tripModel->cleanEmptyTrip($request);
-    if($r =='#350') 
-      return makeJsonResponse($r,350); // user not authenticated
-    else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-    return makeJsonResponse($r);
+  function cleanEmptyTrip(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !==200) return JDV::raw($ss);
+    $id = $req->id ?? $req->delivery_id;
+    $res = $this->tripModel->cleanEmptyTrip($id,$ss);
+    return JDV::raw($res);
   }
 
-  function getDeliveryTrips_print(Request $request){
-    $r = $this->tripModel->getDeliveryTrips_print($request);
-    if($r =='#350') 
-      return makeJsonResponse($r,350); // user not authenticated
-    else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
-    return makeJsonResponse($r);
+  function getPackageCountInfo(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !==200) return JDV::raw($ss);
+    $id = $req->id ?? $req->delivery_id;
+    $data = $this->tripModel->getPackageCountInfo($id,$ss);
+    return JDV::result($data);
+  }
+
+  function getDeliveryTrips_print(Request $req){
+    $ss = UM::getUserInfoByToken($req,-1);
+    if($ss->status_code !==200) return JDV::raw($ss);
+    $data = $this->tripModel->getDeliveryTrips_print($req,$ss);
+    return JDV::result($data); 
   }
 
   //Pre-assign Driver delivery model (BDelivery Model)

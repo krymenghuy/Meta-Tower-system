@@ -1,5 +1,6 @@
-let PusherClient = new function(){
-    let mThis = this;
+"use strict";
+const PusherClient = new function(){
+    const mThis = this;
  
     this.branch_id = $('meta[name="sess_branch_id"]').attr('content');
     this.user_id = $('meta[name="sess_user_id"]').attr('content');

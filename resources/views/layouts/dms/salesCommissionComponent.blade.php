@@ -1,10 +1,15 @@
-<div id="_main_remarksComponent" class="m-3" style="display:none;">
+<div id="_main_salesCommissionComponent" style="display:none; padding:35px">
     <div class="d-flex flex-column">
-        <div class="d-flex align-items-center border shadow rounded-3 p-2 bg-white">
+        <div class="d-flex align-items-center border shadow rounded-3 p-2 bg-white gap-2">
+           <div>
             <button class="btn btn-primary height" id="_rmk_btnNew">
-                <i class="fa-solid fa-plus"></i>
-                <span class="trans-text" data-langprop="buttons.Add Remarks"></span>
-            </button>
+                    <i class="fa-solid fa-plus"></i>
+                    <span class="trans-text" data-langprop="buttons.Add Policy"></span>
+                </button>
+           </div>
+           <div>
+              <select class="modal-select2"></select>
+           </div>
         </div>
         <div id="div_remark_list" class="mt-3 border rounded-3 p-3 shaow-lg bg-white mt-2">    
         </div>
@@ -36,10 +41,10 @@
                 <div id="_rmk_dlgRemarks_error"></div>
             </div>
             <div class="modal-footer">
-                <button class="btn btn-secondary btn-default height" type="button" data-dismiss="modal">
+                <button class="btn btn-secondary btn-default" type="button" data-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel">Cancel</span>
                 </button>
-                <button class="btn btn-primary height" type="button" id="_rmk_dlgRemarks_btnSave">
+                <button class="btn btn-info" type="button" id="_scp_dlgPolicyItem_dfdsfbtnSave">
                     <span class="trans-text" data-langprop="buttons.Save">Save</span>
                 </button>
             </div>

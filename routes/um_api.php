@@ -3,7 +3,13 @@
 use App\Http\Controllers\UMController;
 use App\Http\Controllers\PusherController;
 use App\Http\Middleware\CustomRateLimiter;
+use App\Http\Controllers\Dms\ReportCenterController;
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('report-center')->group(function(){
+    Route::post('/report-list', [ReportCenterController::class, 'getReportList']);
+    Route::post('/reports-by-category', [ReportCenterController::class, 'getReportListByCategory']);
+    Route::post('/filter-options', [ReportCenterController::class, 'getReportFilterOptions']);
+});
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('user')->group(function () {
 

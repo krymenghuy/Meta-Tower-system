@@ -1,7 +1,8 @@
 <?php
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
-// use App\Http\Controllers\Login\LoginController;
+use App\Http\Controllers\Login\LoginController;
+use App\Http\Controllers\Dms\ExcelReportController;
 use App\Http\Controllers\Dms\PickupRequestController;
 use App\Http\Controllers\Dms\OrderImageController;
 use App\Http\Controllers\Dms\PackageController;
@@ -32,74 +33,70 @@ use App\Http\Controllers\Dms\CurrencyController;
 use App\Http\Controllers\Dms\CategoryController;
 use App\Http\Controllers\Dms\RemarksController;
 use App\Http\Controllers\Dms\WebReportController;
+use App\Http\Controllers\Dms\SalesCommissionPolicyController;
+
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UMController;
-use App\Http\Controllers\Dms\SalesCommissionPolicyController;
- 
 
  //begin:: api without Authentication
     Route::middleware([CustomRateLimiter::class])->group(function(){
         // Route::post('logout', [ApiController::class,'logout_mobile']);
         // Route::post('auth/login', [ApiController::class, 'externalLogin']);
         Route::post('admin/login', [LoginController::class, 'apiLogin']);
-        Route::post('vs-encrypt038111', [UMController::class, 'encryptData']);
+        Route::post('vs-encrypt038111', [UMController::class, 'encryptData']); 
         //Route::post('contact-info', [MobileAppSettingsController::class, 'getContactInfo']);
     });
-    Route::post('admin/login', [LoginController::class, 'apiLogin']);
-
 //end:: api without Authentication
 
 //begin:: Admin notifications
     Route::middleware('auth.api', CustomRateLimiter::class)->group(function(){
-        Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
-        Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
-        //Route::post('notifications',[ApiController::class,'getNotificationList_admin']);
-        Route::post('unread-count',[ApiController::class,'getUnreadCount']);
-        Route::post('mark-read-all',[ApiController::class,'markReadAll']);
+            Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
+            Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
+            Route::post('unread-count',[NotificationController::class,'getUnreadCount']);
+            Route::post('mark-read-all',[NotificationController::class,'markReadAll']); 
     });
  //end:: Admin Notification
-  
+ 
    Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
-    Route::post('person/find', [PackageController::class, 'findPersons']);
-    Route::post('report-center/report-list', [WebReportController::class, 'getReportList']);
-    Route::post('report-center/reports-by-category', [WebReportController::class, 'getReportListByCategory']);
-    Route::post('report-center/filter-options', [WebReportController::class, 'getReportFilterOptions']);
+        Route::post('person/find', [PackageController::class, 'findPersons']);
+        Route::post('report-center/report-list', [WebReportController::class, 'getReportList']);
+        Route::post('report-center/reports-by-category', [WebReportController::class, 'getReportListByCategory']);
+        Route::post('report-center/filter-options', [WebReportController::class, 'getReportFilterOptions']);
 
     //*** begin::legacy APIs from previous version
     Route::post('export/packages', [ReportController::class, 'getPackageList_export']);
-    Route::post('dashboard/data', [DashboardController::class, 'getDashboardData']);
     Route::post('getPriceInfoByPackage', [PackageController::class, 'getPriceInfoByPackage']);
     Route::post('getZoneName', [DeliveryZoneController::class, 'getZoneName']);
     Route::post('getZoneInfo', [DeliveryZoneController::class, 'getZoneInfo']);
 
-   Route::post('getMerchantsByPriceList', [PriceController::class, 'getMerchantsByPriceList']);
-   Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceListIdBySearchValue']);
+    Route::post('getMerchantsByPriceList', [PriceController::class, 'getMerchantsByPriceList']);
+    Route::post('getPriceListIdBySearchValue', [PriceController::class, 'getPriceListIdBySearchValue']);
 
-   Route::post('getMerchantBankInfo', [SenderController::class,'getMerchantBankInfo']);
-   Route::post('savePickupRequest', [PickupRequestController::class, 'savePickupRequest']);
-   //Route::post('getPickupList', [PickupRequestController::class, 'getPickupList']);
-   Route::post('updateOrderStatus', [PickupRequestController::class, 'updateOrderStatus']);
-   //Route::post('deletePickup', [PickupRequestController::class, 'deletePickup']);
-   Route::post('getPickupInfo', [PickupRequestController::class, 'getPickupInfo']);
-   Route::post('getComboItems_vehicleType', [PickupRequestController::class, 'getComboItems_vehicleType']);
-   Route::post('getComboItems_sender', [PickupRequestController::class, 'getComboItems_sender']);
-   Route::post('getForm_options_pickuplist', [PickupRequestController::class, 'getForm_options_pickuplist']);
-   //Route::post('assignPickupDriver', [PickupRequestController::class, 'assignPickupDriver']);
-   //Route::post('changePickupDriver', [PickupRequestController::class, 'changePickupDriver']);
-   Route::post('updatePickup', [PickupRequestController::class, 'updatePickup']);
-   Route::post('getFormData_pickup_request', [PickupRequestController::class, 'getFormData_pickup_request']);
-   Route::post('getSenderPriceInfo', [PickupRequestController::class, 'getSenderPriceInfo']);
-   Route::post('returnPackage', [PackageController::class, 'returnPackage']);
+    Route::post('getMerchantBankInfo', [SenderController::class,'getMerchantBankInfo']);
+    Route::post('savePickupRequest', [PickupRequestController::class, 'savePickupRequest']);
+    //Route::post('getPickupList', [PickupRequestController::class, 'getPickupList']);
+    Route::post('updateOrderStatus', [PickupRequestController::class, 'updateOrderStatus']);
+    //Route::post('deletePickup', [PickupRequestController::class, 'deletePickup']);
+    Route::post('getPickupInfo', [PickupRequestController::class, 'getPickupInfo']);
+    Route::post('getComboItems_vehicleType', [PickupRequestController::class, 'getComboItems_vehicleType']);
+    Route::post('getComboItems_sender', [PickupRequestController::class, 'getComboItems_sender']);
+    Route::post('getForm_options_pickuplist', [PickupRequestController::class, 'getForm_options_pickuplist']);
+    //Route::post('assignPickupDriver', [PickupRequestController::class, 'assignPickupDriver']);
+    //Route::post('changePickupDriver', [PickupRequestController::class, 'changePickupDriver']);
+    Route::post('updatePickup', [PickupRequestController::class, 'updatePickup']);
+    Route::post('getFormData_pickup_request', [PickupRequestController::class, 'getFormData_pickup_request']);
+    Route::post('getSenderPriceInfo', [PickupRequestController::class, 'getSenderPriceInfo']);
+    Route::post('returnPackage', [PackageController::class, 'returnPackage']);
 
-   //Route::post('getBillingTransactions', [PackageController::class, 'getBillingTransactions']); //deliveries list by driver
-   Route::post('getDeliveryPriceInfo', [PackageController::class, 'getDeliveryPriceInfo_api']);
-   
-   Route::post('getPackageDetailsByBarcode', [PackageController::class, 'getPackageDetailsByBarcode']);
-   Route::post('getPackageInfo', [PackageController::class, 'getPackageInfo']);
+    //Route::post('getBillingTransactions', [PackageController::class, 'getBillingTransactions']); //deliveries list by driver
+    Route::post('getDeliveryPriceInfo', [PackageController::class, 'getDeliveryPriceInfo_api']);
+    
+    Route::post('getPackageDetailsByBarcode', [PackageController::class, 'getPackageDetailsByBarcode']);
+    Route::post('getPackageInfo', [PackageController::class, 'getPackageInfo']);
 
-   Route::post('approveDriverChange', [DeliveryTripController::class, 'approveDriverChange']);
-   Route::post('getPendingRequests', [DeliveryTripController::class, 'getPendingRequests']);
-   Route::post('rejectDriverChange', [DeliveryTripController::class, 'rejectDriverChange']);
+    Route::post('approveDriverChange', [DeliveryTripController::class, 'approveDriverChange']);
+    Route::post('getPendingRequests', [DeliveryTripController::class, 'getPendingRequests']);
+    Route::post('rejectDriverChange', [DeliveryTripController::class, 'rejectDriverChange']);
 
    Route::post('getPackageInfoByBarcode', [DeliveryTripController::class, 'getPackageInfoByBarcode']); //For scanning barcode to start Delivery trip
    Route::post('updatePackageExpandedDetails', [PackageController::class, 'updatePackageExpandedDetails']);
@@ -113,7 +110,7 @@ use App\Http\Controllers\Dms\SalesCommissionPolicyController;
    Route::post('assignDeliveryDriver', [PackageController::class, 'assignDeliveryDriver']); // Assigning Driver also Change package's status automatically to "Delivery Started"
 
    Route::post('b_assignDeliveryDriver', [DeliveryTripController::class, 'b_assignDeliveryDriver']);
-   Route::post('changeDeliveryDriver', [DeliveryTripController::class, 'changeDeliveryDriver']); //Change driver is for Admin user to change driver for a Fleet or deliver trip. This is for simple update of driver only
+  
    Route::post('getReceiverInfo', [PackageController::class, 'getReceiverInfo']);
 
    Route::post('renamePriceList', [PriceController::class, 'renamePriceList']);
@@ -128,40 +125,52 @@ use App\Http\Controllers\Dms\SalesCommissionPolicyController;
    Route::post('getComboItems_driver', [PackageController::class, 'getComboItems_driver']);
  
    Route::post('person/find', [PackageController::class, 'findPersons']);
-   Route::post('updatePackageStatus', [PackageController::class, 'updatePackageStatus']);
+  
    Route::post('updatePackageStatus_driver', [DeliveryTripController::class, 'updatePackageStatus_driver']);
 
    Route::post('getComboItems_package_status', [PackageController::class, 'getComboItems_package_status']);
-   Route::post('getTripInfo', [DeliveryTripController::class, 'getTripInfo']);
+ 
    //Route::post('getComboItems_delivery_status', [GeneralSettingsController::class, 'getComboItems_delivery_status']);
    Route::post('getOrderDetails', [PackageController::class, 'getOrderDetails']);
    Route::post('performPickup', [PackageController::class, 'performPickup']);
    Route::post('getSenderPromotionInfo', [PackageController::class, 'getSenderPromotionInfo']);
    Route::post('getSenderPriceByZone', [PackageController::class, 'getSenderPriceByZone']);
-
-   //begin::DeliveryTripController
-        Route::post('getDeliveryTrips_print', [DeliveryTripController::class,'getDeliveryTrips_print']);
-        Route::post('removePackageFromTrip', [DeliveryTripController::class,'removePackageFromTrip']);
-        Route::post('addPackageToTrip', [DeliveryTripController::class,'addPackageToTrip']);
-        Route::post('getPackageListByTripId', [DeliveryTripController::class,'getPackageListByTripId']);
-        Route::post('getPackageListByTripId_print', [DeliveryTripController::class,'getPackageListByTripId_print']);
-        Route::post('getDeliveryTrips', [DeliveryTripController::class,'getDeliveryTrips']);
-        Route::post('getPackagesByTrip', [DeliveryTripController::class, 'getPackagesByTrip']);
-        Route::post('deleteDeliveryTrip', [DeliveryTripController::class, 'deleteDeliveryTrip']);
-        Route::post('deleteNewTrip', [DeliveryTripController::class, 'deleteNewTrip']);
-        Route::post('scanPackageOut', [DeliveryTripController::class, 'scanPackageOut']);
-        Route::post('startDeliveryTrip', [DeliveryTripController::class, 'startDeliveryTrip']);
-        Route::post('finishDeliveryTrip', [DeliveryTripController::class, 'finishDeliveryTrip']);
-        Route::post('createDeliveryTrip', [DeliveryTripController::class, 'createDeliveryTrip']);
-        Route::post('getForm_options_delivery_trip', [DeliveryTripController::class, 'getForm_options_delivery_trip']);
-        Route::post('removeScannedPackage', [DeliveryTripController::class, 'removeScannedPackage']);
-        Route::post('cleanEmptyTrip', [DeliveryTripController::class, 'cleanEmptyTrip']);
-  //end::DeliverytripController
-
+ 
   //*** end::legacy APIs from previous version
 });
 /** end:: CustomRateLimiter WITHOUT any prefix */
   
+
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('trip/local')->group(function(){
+    Route::post('/info', [DeliveryTripController::class, 'getTripInfo']);
+    Route::post('/list-print', [DeliveryTripController::class,'getDeliveryTrips_print']);
+    Route::post('remove-package', [DeliveryTripController::class,'removePackageFromTrip']);
+    Route::post('add-package', [DeliveryTripController::class,'addPackageToTrip']);
+    Route::post('/packages', [DeliveryTripController::class,'getPackageListByTripId']);
+    Route::post('packages-print', [DeliveryTripController::class,'getPackageListByTripId_print']);
+    Route::post('/list', [DeliveryTripController::class,'getDeliveryTrips']);
+    //Route::post('getPackagesByTrip', [DeliveryTripController::class, 'getPackagesByTrip']);
+    Route::post('/delete', [DeliveryTripController::class, 'deleteDeliveryTrip']);
+    Route::post('delete-new-trip', [DeliveryTripController::class, 'deleteNewTrip']);
+    Route::post('/scan-out', [DeliveryTripController::class, 'scanPackageOut']);
+    Route::post('/start', [DeliveryTripController::class, 'startDeliveryTrip']);
+    Route::post('/finish', [DeliveryTripController::class, 'finishDeliveryTrip']);
+    Route::post('/create', [DeliveryTripController::class, 'createDeliveryTrip']);
+    Route::post('/form-options', [DeliveryTripController::class, 'getForm_options_delivery_trip']);
+    Route::post('/remove-scanned-package', [DeliveryTripController::class, 'removeScannedPackage']);
+    Route::post('/clean-empty-trip', [DeliveryTripController::class, 'cleanEmptyTrip']);
+    Route::post('/package-count-info', [DeliveryTripController::class, 'getPackageCountInfo']);
+    /** Admin user change package status in Flee management screen */
+    Route::post('/update-package-status', [PackageController::class, 'updatePackageStatus']);
+    Route::post('/change-driver', [DeliveryTripController::class, 'changeDeliveryDriver']); //Change driver is for Admin user to change driver for a Fleet or deliver trip. This is for simple update of driver only
+    // Route::post('/update-package-status', [PackageController::class, 'updatePackageStatus']);
+});
+
+Route::middleware([CustomRateLimiter::class])->prefix('dashboard')->group(function(){
+    Route::post('/data', [DashboardController::class, 'getDashboardData']);
+    Route::post('/package-statistics', [DashboardController::class, 'getPackageStatistics']);
+    Route::post('/package-performance', [DashboardController::class, 'getPerformanceStats']);
+});
 
  Route::middleware([CustomRateLimiter::class])->prefix('order')->group(function(){
             Route::post('/list', [PickupRequestController::class, 'getPickupList']);
@@ -433,9 +442,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('mobile-settin
    
 //end::ReportController
  
-    // Route::group(['middleware' => 'cors'], function(){
-    //     Route::post('package-photos-all', [ApiController::class, 'getPackagePhotos']);
-    // });
+    Route::group(['middleware' => 'cors'], function(){
+        Route::post('package-photos-all', [ApiController::class, 'getPackagePhotos']);
+    });
  
 
 //begin::Currency APIs
@@ -485,7 +494,7 @@ Route::prefix('img-order')->group(function(){
 
     Route::post('list-images', [OrderImageController::class,'getImages']);
     Route::post('delete-image', [OrderImageController::class,'deleteOrderImage']);
-    Route::post('delete-order', [ApiController::class,'deleteImageOrder']);
+    Route::post('delete-order', [OrderImageController::class,'deleteImageOrder']);
 
 });
    
@@ -542,8 +551,15 @@ Route::middleware('auth.api',CustomRateLimiter::class)->prefix('sales-module/age
     Route::post('/commission-summaries', [SalesAgentController::class, 'getCommissionSummaries']);
     Route::post('/closed-commissions', [SalesAgentController::class, 'getClosedCommissionSummaries']);
     Route::post('/live-commissions', [SalesAgentController::class, 'getLiveCommissionSummary']);
-    
+
+    Route::post('/summary-pipeline', [SalesAgentController::class, 'getAgentSummary_pipeline']);
+    Route::post('/summary-merchants', [SalesAgentController::class, 'getAgentSummary_merchants']);
+    Route::post('/summary-commissions', [SalesAgentController::class, 'getAgentSummary_commissions']);
+    Route::post('/summary-issues', [SalesAgentController::class, 'getAgentSummary_issues']);
+    Route::post('/delete-profile-picture', [SalesAgentController::class, 'deleteProfilePhoto']);
+    Route::post('/save-profile-picture', [SalesAgentController::class, 'saveProfilePhoto']);
 });
+
 Route::middleware('auth.api',CustomRateLimiter::class)->prefix('sales-module/commission')->group(function(){
     Route::post('/pay', [SalesAgentController::class, 'makeCommissionPayment']);
     Route::post('/delete-payment', [SalesAgentController::class, 'deleteCommissionPayment']);

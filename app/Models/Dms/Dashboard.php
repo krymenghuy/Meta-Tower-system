@@ -7,10 +7,9 @@ namespace App\Models\Dms;
 use Carbon\Carbon;
 use DB;
 use Sanitizer;
-//use Illuminate\Pagination\LengthAwarePaginator;
-class Dashboard //extends Model
+//use Illuminate\Pagination\LengthAwarePaginator; //dfdsfdsf
+class Dashboard
 {
-    //use HasFactory;
     protected $id = null, $userInfo = null;
     public function __construct($id=null,$userInfo=null){
         $this->id = $id;
@@ -79,7 +78,7 @@ class Dashboard //extends Model
 
         $from_date = convertDate(Carbon::now()->addDays($back_days));
         $moreWahres ='DATE(p.arrival_time) >= \''.$from_date.'\''; 
-        $rows = DB::table('package AS p')->where('branch_id',$branch_id)->whereRaw($moreWahres)->selectRaw("p.sender_id,p.driver_id,p.sender_pmt_status_id,p.status_id,p.driver_pmt_status_id,p.base_fee,p.delivery_fee,p.cod_fee,p.arrival_time")->orderByRaw("p.arrival_time ASC")->get();
+        $rows = DB::table('package AS p')->where('branch_id',$branch_id)->whereRaw($moreWahres)->selectRaw('p.sender_id,p.driver_id,p.sender_pmt_status_id,p.status_id,p.driver_pmt_status_id,p.base_fee,p.delivery_fee,p.cod_fee,p.arrival_time')->orderByRaw("p.arrival_time ASC")->get();
         $total_earning =0;
         $package_cnt =0;
         $failed_cnt =0;
@@ -676,8 +675,177 @@ class Dashboard //extends Model
             'period_name'=>'Since '.date('M d Y',strtotime($start_date))
         ];
      }
+   
+
+    //  function getPerformanceStats($start_date, $end_date, $ss) {
+    //     // Prevent SQL injection
+    //     $branch_id = intval($ss->branch_id);
+    //     $statuses = ['5'=>'at_warehouse', '6'=>'on_delivery', '8'=>'delivered', '9'=>'failed', '11'=>'returned'];
+        
+    //     // Construct SQL queries using prepared statements or parameterized queries
+        
+    //     // Fetch statistics for new packages
+    //     $new_packages = $this->calculatePackages($start_date, $end_date, $branch_id, $statuses, true);
+        
+    //     // Fetch statistics for old packages
+    //     $old_packages = $this->calculatePackages($start_date, $end_date, $branch_id, $statuses, false);
+        
+    //     // Calculate vertical totals
+    //     $vertical_totals = $this->calculateVerticalTotals($statuses, $new_packages, $old_packages);
+        
+    //     return [
+    //         (object)$new_packages,
+    //         (object)$old_packages,
+    //         (object)$vertical_totals
+    //     ];
+    // }
     
-     //     function getPayableVendors_internal_paginate($branch_id){
+    // function calculatePackages($start_date, $end_date, $branch_id, $statuses, $isNew) {
+    //     $packages = [];
+    //     $total = 0;
+        
+    //     // Define SQL clauses with placeholders for parameters
+    //     $str_arrival_date = 'DATE(p.arrival_time) BETWEEN ? AND ?';
+    //     $str_finish_date = '(DATE(p.arrival_time) < ? AND ((DATE(p.last_checkout_time) BETWEEN ? AND ?) OR p.outstanding = 1))';
+    //     $str_branch_id = $branch_id > 0 ? 'p.branch_id = ?' : '1=1';
+        
+    //     // Execute SQL query with parameter binding
+    //     $query = DB::table('package as p')
+    //                 ->join('package_statuses as ps', 'ps.id', '=', 'p.status_id')
+    //                 ->whereRaw($isNew ? $str_arrival_date : $str_finish_date, [$start_date, $end_date, $start_date, $start_date, $end_date])
+    //                 ->whereRaw($str_branch_id, [$branch_id])
+    //                 ->selectRaw('COUNT(p.id) AS package_count, p.status_id, ps.`name` AS `status`')
+    //                 ->groupByRaw('p.status_id, ps.name')
+    //                 ->get();
+        
+    //     // Process query results
+    //     foreach ($statuses as $st_id => $name) {
+    //         $filtered = $query->filter(function($x) use ($st_id) {
+    //             return $x->status_id == $st_id;
+    //         });
+            
+    //         $row = $filtered->first();
+    //         $cnt = $row ? $row->package_count : 0;
+            
+    //         $packages[$name] = $cnt;
+    //         $total += $cnt;
+    //     }
+        
+    //     // Add category and total information
+    //     $packages['category'] = $isNew ? 'New' : 'Old';
+    //     $packages['total'] = $total;
+        
+    //     return $packages;
+    // }
+     
+    // function calculateVerticalTotals($statuses, $new_packages, $old_packages) {
+    //     $vertical_totals = [];
+        
+    //     foreach ($statuses as $name) {
+    //         $vertical_totals[$name] = ($new_packages[$name] ?? 0) + ($old_packages[$name] ?? 0);
+    //     }
+        
+    //     $vertical_totals['category'] = 'Total';
+    //     $vertical_totals['total'] = array_sum($vertical_totals);
+        
+    //     return $vertical_totals;
+    // }
+    
+    
+  static function getPerformanceStats($start_date, $end_date,$ss){
+    $branch_id = $ss->branch_id;
+    $statuses = ['5'=>'at_warehouse','6'=>'on_delivery','8'=>'delivered','9'=>'failed','11'=>'returned'];
+    $str_branch_id = $branch_id > 0? 'p.branch_id ='.$branch_id : '7=7';
+    $str_arrival_date = 'DATE(p.arrival_time) BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'';
+    $rows = DB::table('package as p')->join('package_statuses as ps','ps.id','=','p.status_id')->whereRaw($str_arrival_date)->whereRaw($str_branch_id)->selectRaw('COUNT(p.id) AS package_count,p.status_id, ps.`name` AS `status`')->groupByRaw('p.status_id,ps.name')->get();
+    $new_packages = [];
+    $vertical_totals = [];
+    $total_new = 0;
+    foreach($statuses as $st_id => $name){
+        $xs = $rows->filter(function($x) use($st_id){
+               return $x->status_id == $st_id;   
+        });
+        $row = $xs->first();
+        $cnt =  $row? $row->package_count: 0;
+        $new_packages[$name] = $cnt;
+        if (!isset($vertical_totals[$name])) $vertical_totals[$name] =0;
+        $vertical_totals[$name] += $cnt;
+        $total_new += $cnt;
+    }
+
+    $str_finish_date = '( DATE(p.arrival_time) < \''.$start_date.'\' AND ( (DATE(p.delivery_time) BETWEEN \''.$start_date.'\' AND \''.$end_date.'\') AND p.status_id IN (8,11) )  )';
+    $str_outstanding_date = '( DATE(p.arrival_time) < \''.$start_date.'\' AND ( (DATE(p.last_checkout_time) BETWEEN \''.$start_date.'\' AND \''.$end_date.'\') AND p.status_id IN (5,6,9) )  )';
+    $finish_rows = DB::table('package as p')->join('package_statuses as ps','ps.id','=','p.status_id')->whereRaw($str_finish_date)->whereRaw($str_branch_id)->selectRaw('COUNT(p.id) AS package_count,p.status_id, ps.`name` AS `status`')->groupByRaw('p.status_id,ps.name')->get();
+    $outstanding_rows = DB::table('package as p')->join('package_statuses as ps','ps.id','=','p.status_id')->whereRaw($str_outstanding_date)->whereRaw($str_branch_id)->selectRaw('COUNT(p.id) AS package_count,p.status_id, ps.`name` AS `status`')->groupByRaw('p.status_id,ps.name')->get();
+    $rows = $finish_rows->merge($outstanding_rows);
+    $old_packages = [];
+    $total_old = 0;
+    foreach($statuses as $st_id => $name){
+        $xs = $rows->filter(function($x) use($st_id){
+               return $x->status_id ==  $st_id;   
+        });
+        $row = $xs->first();
+     
+        $cnt =  $row? $row->package_count: 0;
+        $old_packages[$name] = $cnt;
+        if (!isset($vertical_totals[$name])) $vertical_totals[$name] =0;
+        $vertical_totals[$name] += $cnt;
+        $total_old += $cnt;
+    }
+    $new_packages['category']='New';
+    $old_packages['category']='Old';
+    $vertical_totals['category']='Total';
+    $new_packages['total']=$total_new;
+    $old_packages['total']=$total_old;
+
+    $g_total =0;
+    foreach($vertical_totals as $x) $g_total += floatval($x)? $x:0;
+    $vertical_totals['total'] = $g_total;
+    return [
+        (object)$new_packages,
+        (object)$old_packages,
+        (object)$vertical_totals 
+     ];
+ }
+
+   static function getPackageStatistics($start_date, $end_date,$ss){
+       $branch_id = $ss->branch_id;
+       $str_branch_id = $branch_id > 0? 'p.branch_id ='.$branch_id : '7=7';
+       $str_arrival_date = 'DATE(p.arrival_time) BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'';
+       $rows = DB::table('package as p')->join('package_statuses as ps','ps.id','=','p.status_id')->whereRaw($str_arrival_date)->whereRaw($str_branch_id)->selectRaw('COUNT(p.id) as package_count,COUNT(distinct p.sender_id) AS merchant_count')->get();
+       $packages = ['new'=>(object)['package_count'=>0,'merchant_count'=>0], 'old'=>(object)['package_count'=>0,'merchant_count'=>0]];
+       $total_pcs = 0;
+       $total_merchant = 0;
+       foreach($rows as $row){
+          $packages['new']->package_count = $row->package_count;
+          $packages['new']->merchant_count = $row->merchant_count;
+          $total_pcs += $row->package_count;
+          $total_merchant +=$row->merchant_count;
+       }
+
+       $str_finish_date = '( DATE(p.arrival_time) < \''.$start_date.'\' AND ( (DATE(p.delivery_time) BETWEEN \''.$start_date.'\' AND \''.$end_date.'\') AND p.status_id IN (8,11))  )';
+       $str_outstanding_date = '( DATE(p.arrival_time) < \''.$start_date.'\' AND ( (DATE(p.last_checkout_time) BETWEEN \''.$start_date.'\' AND \''.$end_date.'\') AND p.status_id IN (5,6,9) )  )';
+       $finish_rows = DB::table('package as p')->join('package_statuses as ps','ps.id','=','p.status_id')->whereRaw($str_finish_date)->whereRaw($str_branch_id)->selectRaw('COUNT(p.id) as package_count,COUNT(distinct p.sender_id) AS merchant_count')->get();
+       $outstanding_rows = DB::table('package as p')->join('package_statuses as ps','ps.id','=','p.status_id')->whereRaw($str_outstanding_date)->whereRaw($str_branch_id)->selectRaw('COUNT(p.id) as package_count,COUNT(distinct p.sender_id) AS merchant_count')->get();
+       //$rows = $finish_rows->merge($outstanding_rows);
+       foreach($finish_rows as $row){
+         $packages['old']->package_count += $row->package_count;
+         $packages['old']->merchant_count += $row->merchant_count;
+         $total_pcs += $row->package_count;
+         $total_merchant += $row->merchant_count;
+       }
+       foreach($outstanding_rows as $row){
+        $packages['old']->package_count += $row->package_count;
+        $packages['old']->merchant_count += $row->merchant_count;
+        $total_pcs += $row->package_count;
+        $total_merchant += $row->merchant_count;
+      }
+     $packages['total_package'] = $total_pcs;
+     $packages['total_merchant'] = $total_merchant;
+     return $packages;
+   }
+
+    //     function getPayableVendors_internal_paginate($branch_id){
     //         $branch_id = Sanitizer::sanitize($branch_id);
     //         $days_ago =-31;
     //         $start_date = Carbon::now()->addDay($days_ago);

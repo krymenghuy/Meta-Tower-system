@@ -141,8 +141,8 @@
                             </button>
                         </div>
                     </div>
-                    <div class="row mt-3">
-                        <div class="table-responsive p-3 bg-white rounded-3 border mt-3 table-responsive-hover">
+                    <div class="m-1">
+                        <div class="table-responsive p-3 bg-white rounded-3 border table-responsive-hover">
                             <table id="_dpmt_tblItems" class="table"></table>
                         </div>
                     </div>

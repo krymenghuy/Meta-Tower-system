@@ -709,7 +709,7 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="form-group col-lg-12">
+                    <div class="form-group col-lg-6">
                         <span class="simple-label">Warehouse</span>
                         <select id="_plq_warehouse" class="modal-select2 data-input" data-field="warehouse_id"></select>
                     </div>
@@ -733,7 +733,11 @@
                     </div>
                     <div class="form-group col-md-6">
                         <span class="simple-label">Number of packages</span>
-                        <input type="number" class="form-control data-input" data-field="qty" />
+                        <input id ="_plq_qty" type="number" class="form-control data-input" data-field="qty" />
+                    </div>
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">Pikcup Driver</span>
+                        <select id ="_plq_pickup_driver" class="modal-select2 data-input" data-field="driver_id"></select>
                     </div>
                     <div class="form-group col-md-12">
                         <span class="simple-label">Pickup Address</span>

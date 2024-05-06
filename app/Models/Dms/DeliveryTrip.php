@@ -4,16 +4,20 @@ namespace App\Models\Dms;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use App\Models\Notifier;
+
 use App\Models\Dms\Driver;
 use App\Models\DV;
 use App\Models\UM;
-use Sanitizer;
-use DB;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Cache;
+use App\Models\Notifier;
 use App\Models\Dms\GeneralTrack;
 use App\Models\Dms\Tracker;
+
+use Sanitizer;
+use DB;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
+
 
 class DeliveryTrip
 {
@@ -168,69 +172,130 @@ class DeliveryTrip
         return self::list($arr,$ss);
     } 
 
-    //getDeliveryTrips()
-    static function list($arr=[],$ss=null){
-        //$ss =$ss?$ss:$this->getUserInfo();
-        $branch_id = $ss->branch_id;
-        $d = (object)$arr; 
-        $warehouse_id = isset($d->warehouse_id)?Sanitizer::sanitize($d->warehouse_id):0; 
-        $driver_id = isset($d->driver_id)?Sanitizer::sanitize($d->driver_id):null;
-        $start_date = isset($d->start_date)?$d->start_date:null;
-        $end_date = isset($d->end_date)?$d->end_date:null;
-
-        //$zone_code =isset($d->zone_code)? Sanitizer::sanitize($d->zone_code):null;
-        $search_value =isset($d->search_value)? Sanitizer::sanitize($d->search_value):null;
-        $status_id =isset($d->status_id)? Sanitizer::sanitize($d->status_id):null; //must be NULL if value not given
-        if ($status_id ===null) $status_id =-1; //because $status_id = 0 it means 'Canceled'
-        //$delivery_type = isset($d->delivery_type)?Sanitizer::sanitize($d->delivery_type):null;
- 
-        $str_warehouse = ' h.id ='.($warehouse_id?$warehouse_id:0);
-        $str_status ='';
-        $str_date = null;
-        $str_driver = null;
-          
-        $cache_key = 'triplist_';
-        foreach($d as $key => $val) $cache_key .= $val;
-        $cache_key = str_replace(['/','-','?','@','|'],'',$cache_key);
-        $cache_data = Cache::get($cache_key); 
-        if ($cache_data) {
-          //Log::info('Cached triplist. key = '.$cache_key); 
-          return $cache_data;
+    
+    static function list($arr = [], $ss)
+    {
+        $branchId = Sanitizer::sanitize($ss->branch_id);
+        $d = (object)$arr;
+    
+        $useCache = $d->use_cache ?? 0;
+        $currentPage = $d->current_page ?? 1;
+        $perPage = $d->per_page ?? 10;
+    
+        if (!is_numeric($currentPage)) {
+            $currentPage = 1;
+        }
+        $skipRows = ($currentPage - 1) * $perPage;
+    
+        $warehouseId = isset($d->warehouse_id) ? Sanitizer::sanitize($d->warehouse_id) : 0;
+        $driverId = isset($d->driver_id) ? Sanitizer::sanitize($d->driver_id) : null;
+        $startDate = isset($d->start_date) ? $d->start_date : null;
+        $endDate = isset($d->end_date) ? $d->end_date : null;
+    
+        $searchValue = isset($d->search_value) ? Sanitizer::sanitize($d->search_value) : null;
+        $statusId = isset($d->status_id) ? Sanitizer::sanitize($d->status_id) : null;
+        if ($statusId === null) {
+            $statusId = -1;
+        }
+    
+        $strWarehouse = 'h.id =' . ($warehouseId ? $warehouseId : 0);
+        $strStatus = '';
+        $strDate = null;
+        $strDriver = null;
+    
+        $cacheKey = 'triplist_';
+        if (!$searchValue && $useCache) {
+            foreach ($d as $key => $val) {
+                $cacheKey .= $val;
+            }
+            $cacheKey = str_replace(['/','-','?','@','|'], '', $cacheKey);
+            $cacheData = Cache::get($cacheKey);
+            if ($cacheData) {
+                return $cacheData;
+            }
         }
 
-        if (!$search_value) {
-            $str_date =null;
-            if (!$start_date && !$end_date){
-                $str_date =null;
-            }else{
-                 if((bool)strtotime($start_date)) $end_date = $start_date;
-                 else if((bool)strtotime($end_date)) $start_date = $end_date;
-                 $str_date = ' AND (DATE(d.depart_time) >=\''.convertDate($start_date).'\' AND DATE(d.depart_time) <=\''.convertDate($end_date).'\')';
-            } 
-            //$str_warehouse =' h.id ='.($warehouse_id?$warehouse_id:0);
-            if ($driver_id > 0) $str_driver = ' AND d.driver_id ='.$driver_id;
-            //if (!empty($zone_code)) $str_zone =" AND d.zone_code ='".$zone_code."' ";
-            //On Trip List page, if user does not select any status => show ONLY "On Delivery" trips
-            if ($status_id == -1 || !$status_id) $str_status ='';     
-            else if($status_id > 0) $str_status =' AND d.status_id ='.$status_id;
-            
-            if (!$str_date) $str_status =' AND d.status_id =2';
-            $more_wheres = $str_warehouse.$str_date.$str_status.$str_driver;
-        }else{
-            $search_value = escape_like_str($search_value);
-            $more_wheres ="(d.fleet_tracking_number ='$search_value' OR d.driver_id IN (select id FROM driver WHERE branch_id =$branch_id AND name LIKE '%$search_value%') OR d.id IN (SELECT l.delivery_id FROM package AS l WHERE l.branch_id =$branch_id AND l.qr_code ='$search_value' or l.receiver_phone ='$search_value' OR l.sender_phone='$search_value' OR l.sender_name LIKE '%$search_value%'))";
+        if ($searchValue) {
+            $searchValue = escape_like_str($searchValue);
+            $moreWheres = "(d.fleet_tracking_number ='$searchValue' OR d.driver_id IN (select id FROM driver WHERE name LIKE '%$searchValue%') OR d.id IN (SELECT l.delivery_id FROM package AS l WHERE l.qr_code ='$searchValue' or l.receiver_phone ='$searchValue' OR l.sender_phone='$searchValue' OR l.sender_name LIKE '%$searchValue%'))";
+        } else {
+            $strDate = null;
+            if ($startDate && $endDate) {
+                if ((bool)strtotime($startDate)) {
+                    $endDate = $startDate;
+                } else if ((bool)strtotime($endDate)) {
+                    $startDate = $endDate;
+                }
+                $strDate = ' AND (DATE(d.depart_time)  BETWEEN \''.convertDate($startDate).'\' AND \''.convertDate($endDate).'\')';
+            }
+    
+            if ($driverId > 0) {
+                $strDriver = ' AND d.driver_id =' . $driverId;
+            }
+    
+            if ($statusId == -1 || !$statusId) {
+                $strStatus = '';
+            } else if ($statusId > 0) {
+                $strStatus = ' AND d.status_id =' . $statusId;
+            }
+    
+            // if (!$strDate && !$searchValue && $strStatus == -1) {
+            //     $strStatus = ' AND d.status_id =2';
+            // }
+    
+            // Use subquery to filter delivery trips with at least one package
+            $subQuery = DB::table('package AS p')->selectRaw('p.id')->take(1)->whereRaw('p.delivery_id = d.id');
+            $moreWheres = $strWarehouse . $strDate . $strStatus . $strDriver . ' AND EXISTS (' . $subQuery->toSql() . ')'  ;
         }
-        $selectCols ='d.id, d.driver_id, d.fleet_tracking_number, formatDate(d.depart_time) AS depart_date, DATE_FORMAT(d.depart_time,\'%r\')  AS depart_time, d.package_count, d.delivered_count,d.failed_count,d.status_id, ds.name AS status, dr.`name` AS driver_name,dr.phone_number AS driver_phone_number,(SELECT SUM(IFNULL(p.driver_total,0)) FROM package AS p WHERE p.branch_id = d.branch_id AND p.delivery_id = d.id) AS driver_total';
-        $rows = DB::table('delivery AS d')->join('driver as dr','dr.id','d.driver_id')->join('delivery_statuses AS ds','ds.id','=','d.status_id')->join('warehouses AS h','h.id','=','d.warehouse_id')->where('d.branch_id',$branch_id)->whereRaw($more_wheres)->selectRaw($selectCols)->orderByRaw('d.status_id,d.create_date DESC')->get(); 
-        Cache::put($cache_key,$rows,5);
-        //Log::info('No cache triplist. key = '.$cache_key); 
-        return $rows;
+
+        $selectCols = 'd.id, d.driver_id, formatTime(d.create_date) AS create_date , d.create_user, d.fleet_tracking_number, d.finalized, formatDate(d.depart_time) AS depart_date, DATE_FORMAT(d.depart_time,\'%r\')  AS depart_time, d.package_count, d.delivered_count,d.failed_count,d.status_id, ds.name AS status, dr.`name` AS driver_name,dr.phone_number AS driver_phone_number,(SELECT SUM(IFNULL(p.driver_total,0)) FROM package AS p WHERE p.branch_id = d.branch_id AND p.delivery_id = d.id) AS driver_total';
+        $query = DB::table('delivery AS d')
+            ->join('driver as dr', 'dr.id', '=', 'd.driver_id')
+            ->join('delivery_statuses AS ds', 'ds.id', '=', 'd.status_id')
+            ->join('warehouses AS h', 'h.id', '=', 'd.warehouse_id')
+            ->where('d.branch_id', $branchId)
+            ->whereRaw($moreWheres)
+            ->selectRaw($selectCols)
+            ->orderByRaw('d.status_id, d.create_date DESC');
+
+        $countQuery = clone $query;
+        $count = $countQuery->count('d.id');
+        $rows = $query->skip($skipRows)->take($perPage)->get();
+        foreach($rows as $row){
+             $countInfo = self::countPackageByStatus($branchId,$row->id,null);
+             $row->failed_count = $countInfo->failed;
+             $row->on_delivery_count = $countInfo->on_delivery;
+             $row->delivered_count = $countInfo->delivered;
+             $row->driver_effective_total = $countInfo->delivered_total;
+             $row->currency_code = 'USD';
+        }
+        $summary = (object)[];
+        $data = [
+            'summary' => $summary,
+            'list' => new LengthAwarePaginator($rows, $count, $perPage, $currentPage)
+        ];
+        if(!$searchValue) Cache::put($cacheKey, $data, 3);
+        return $data;
+    }
+     
+    /** Clean up empty trip that is older than 1 day. Execute this task when user first open Fleet Mananagement, or when user first log in */
+    static function deleteEmptyTrips(){
+        $trip_ids = [];
+        /** Make trip_ids array for the querying all related packages */
+        foreach($rows as $row) $trip_ids[] =$row->id;
+        $p_rows = DB::table('package as p')->whereIn('p.delivery_id',$trip_ids)->selectRaw('p.delivery_id,p.id')->get();
+        $to_delete_ids = [];
+        foreach($rows as $row){
+            $cnt = self::countItems($row->id,$p_rows);
+            if($cnt == 0){
+                if(dateDiff_days($row->create_date, date('Y-m-d')) >= 1) $to_delete_ids[] = $row->id;
+            }
+        }
+        if(isset($to_delete_ids[0])) DB::table('delivery')->whereIn('id',$to_delete_ids)->delete();
     }
 
-    function getDeliveryTrips_print($d){
-        $ss = UM::getUserInfoByToken($d);
-        if ($ss->status_code !==200) return $ss; //user not authenticated
-         //need permission to do this task
+    function getDeliveryTrips_print($arr,$ss){
+        $d = (object)$arr;  
         $branch_id = $ss->branch_id;
  
         $warehouse_id = isset($d->warehouse_id)?Sanitizer::sanitize($d->warehouse_id):null; 
@@ -297,15 +362,22 @@ class DeliveryTrip
         return null; 
     }
 
+    function getPackageCountInfo($id,$ss){
+       $cacheKey = 'pkg_count11_'.$id;
+       $data = Cache::get($cacheKey);
+       if($data !==null) return $data;
+       $data = self::countPackageByStatus($ss->branch_id,$id);
+       Cache::put($cacheKey, $data,5);
+       return $data;
+    }
+
    //This function not yet used
-    function cleanEmptyTrip($d){
-        $ss = UM::getUserInfoByToken($d);
-        if ($ss->status_code !==200) return $ss; //user not authenticated
+    function cleanEmptyTrip($id,$ss = null){
          //need permission to do this task
-        $branch_id = Sanitizer::sanitize($ss->branch_id);
-        $delivery_id = isset($d->delivery_id)?Sanitizer::sanitize($d->delivery_id):null;
-        $rows = DB::table('delivery AS d')->join('package AS p','p.delivery_id','d.id')->where('d.branch_id',$branch_id)->where('d.id',$delivery_id)->select('d.id')->take(1)->get();
-        if (count($rows)<=0) DB::table('delivery')->where('branch_id',$branch_id)->where('id',$delivery_id)->delete();
+        $branch_id = $ss? $ss->branch_id :null;
+        $str_branch = $branch_id > 0 ? 'd.branch_id ='.$branch_id: '1=1';
+        $rows = DB::table('delivery AS d')->join('package AS p','p.delivery_id','d.id')->whereRaw($str_branch)->where('d.id',$id)->select('d.id')->take(1)->get();
+        if (count($rows)<=0) DB::table('delivery')->whereRaw($str_branch)->where('id',$id)->delete();
         return null;
     }
 
@@ -353,7 +425,7 @@ class DeliveryTrip
         $d->is_from_mobile =1;
         //$ss->official_id is the driver_id, Assuming driver loged in
         //$d->driver_id = $ss->official_id;
-        if(!$barcode) return DV::error("Barcode is not valid");
+        if(!$barcode) return DV::error('Barcode is not valid');
         $new_driver = $this->getDriverInfo($d->driver_id);
         if(!$new_driver) return DV::error('Driver identity is not valid');
 
@@ -367,18 +439,20 @@ class DeliveryTrip
             return DV::error('កញ្ចប់ទំនិញនេះបានបញ្ជូនត្រឡប់រួចហើយ!');
          }  
          else if($package->status_id == 8){
-            return DV::error('កញ្ចប់ទំនិញនេះបានដឹករួចហើយ!');
+            return DV::error('កញ្ចប់ទំនិញនេះបានដឹកជោគជ័យរួចហើយ!');
          }  
          else if($package->status_id ==6) {
              //In case the same Driver => delvier item
              if($package->driver_id == $d->driver_id){
-                $d->status_id =8;
-                $d->delivery_id = $package->delivery_id;
-                /** params for updatePackageStatus_driver() => {delivery_id,barcode,status_id} where @delivery_id is optional param **/
-                $res = $this->updatePackageStatus_driver(['driver_id'=>$d->driver_id,'barcode'=>$d->barcode,'status_id'=>8,'notes'=>$notes],$ss);
-                if($res->status ==='Error') return DV::error($res->error_message);
-                else return DV::success(['on_delivery_count'=>$res->on_delivery_count,'action'=>'deliver','package'=>$this->getPackageDetails($branch_id,$d)]); 
-             }else{
+                return DV::error('អ្នកបានយកទំនិញនេះចេញរួចហើយ!');
+                /** IMPORTANT: the following commented code are used in case you want that when the driver scans out (api/driver/v2/scan-out) the item for second time, then mark the package as "Delivered" */
+                // $d->status_id =8;
+                // $d->delivery_id = $package->delivery_id;
+                // /** params for updatePackageStatus_driver() => {delivery_id,barcode,status_id} where @delivery_id is optional param **/
+                // $res = $this->updatePackageStatus_driver(['driver_id'=>$d->driver_id,'barcode'=>$d->barcode,'status_id'=>8,'notes'=>$notes],$ss);
+                // if($res->status ==='Error') return DV::error($res->error_message);
+                // else return DV::success(['on_delivery_count'=>$res->on_delivery_count,'action'=>'deliver','package'=>$this->getPackageDetails($branch_id,$d)]); 
+            }else{
                 //In case of different Driver scan the same item's barcode => Drivers exchange items on the middle of delivery
                 //$new_driver = (object)['name'=>$new_driver_name,'id'=>$d->driver_id];
                 $old_driver = (object)['name'=>null,'id'=>$package->driver_id];
@@ -389,7 +463,7 @@ class DeliveryTrip
              }
             
          }else{
-            $m = new \App\Models\Dms\BDelivery(null,$ss);
+            $m = new \App\Models\BDelivery(null,$ss);
             //make sure the $ss->user_class is a driver to avoid permission check
             $res = $m->b_assignDeliveryDriver($d,$ss);
             if($res->status ==='Error') return DV::error($res->error_message);
@@ -509,7 +583,7 @@ class DeliveryTrip
           
          //begin:: update previous trip info. Delete the trip if there are no more package
             $prev_trip_deleted = 0;
-            $oldTrip = $this->countPackageByStatus($branch_id,$package->delivery_id);
+            $oldTrip = self::countPackageByStatus($branch_id,$package->delivery_id);
             if ($oldTrip->package_count ==0){
                 $prev_trip_deleted =1;
                 DB::table('delivery')->where('branch_id',$branch_id)->where('id',$package->delivery_id)->delete();
@@ -525,7 +599,17 @@ class DeliveryTrip
 
         if (empty($package->barcode)) return DV::error('Failed to switch driver because the provided barcode is unexpectedly empty!');
        //Notify Admin about driver exchanging items on the road
-            $event_data = (object)['branch_id'=>$branch_id,'delivery_id'=>$m->trip->delivery_id,'barcode'=>$package->barcode,'status_id'=>$package->status_id,'package_id'=>$package->id,'driver_id'=>$new_driver->id,'driver_name'=>$new_driver->name];
+            $event_data = (object)[
+                'branch_id'=>$branch_id,
+                'delivery_id'=>$m->trip->delivery_id,
+                'barcode'=>$package->barcode,
+                'status_id'=>$package->status_id,
+                'package_id'=>$package->id,
+                'driver_id'=>$new_driver->id,
+                'driver_name'=>$new_driver->name, 
+                'package_count_info'=>self::countPackageByStatus($m->trip->delivery_id,null)
+             ];
+
             $event_data->title ="Driver Changed";
             $event_data->message ='ទំនិញ '.$package->receiver_phone.' បានប្រគល់អោយអ្នកដឹកថ្មី '.$new_driver->name;
 
@@ -1287,9 +1371,9 @@ class DeliveryTrip
     //if parameter @rows is given => then do not query for rows again
     //$row is pacakge = {delivery_id,status_id,delivery_type,driver_total,failed_num}
     //returns {count for on_delivery, failed,ctd,returned,total (driver_total), delivered_total }
-    function countPackageByStatus($branch_id,$delivery_id,$rows =null){
+    static function countPackageByStatus($branch_id,$delivery_id,$rows =null){
         if (!$rows) $rows = DB::table("package AS p")->where('branch_id',$branch_id)->where('delivery_id',$delivery_id)->selectRaw("p.status_id,delivery_id,p.delivery_type,p.failed_num,IFNULL(p.driver_total,0) AS driver_total")->get();
-        $data =(object)['package_count'=>0,'delivered'=>0,'failed'=>0,'returned'=>0,'on_delivery'=>0];
+        $data =(object)['package_count'=>0,'delivered'=>0,'failed'=>0,'returned'=>0,'on_delivery'=>0,'total'=>0,'delivered_total'=>0];
         $cnt_on_delivery =0;
         $cnt_delivered=0;
         $cnt_failed=0;
@@ -1298,7 +1382,6 @@ class DeliveryTrip
         $total_driver_total =0;
         $delivered_driver_total = 0;
         $cnt=0;
- 
         $i=0;
         $c=null;
         do{
@@ -1328,7 +1411,7 @@ class DeliveryTrip
         $data->ctd =$cnt_ctd;
         $data->package_count = $cnt;
         $data->total = number_format($total_driver_total,2,'.','');
-        $data->delivered_total = $delivered_driver_total;
+        $data->delivered_total = number_format($delivered_driver_total,2,'.','');
         return $data;
     }
 
@@ -1638,25 +1721,32 @@ class DeliveryTrip
         $ss = $ss?$ss:$this->userInfo;
         $branch_id = $ss->branch_id;
         $delivery_id =$delivery_id ?? -1;
+        $cacheKey = 'trl_pglist_125677_'.$id.$branch_id;
+        $data = Cache::get($cacheKey);
+        if($data !== null) return $data;
+
         $selectCols ='formatDate(p.create_date) AS booking_date, formatDate(p.arrival_time) AS arrival_date, p.delivery_id,p.id AS package_id,p.qr_code AS barcode, p.delivery_type, s.`name` AS sender_name,s.phone_number AS sender_phone,p.package_name, p.product_type,p.dim_x, p.dim_y, p.dim_h, p.billed_kg, p.price, (CASE p.cod WHEN 1 THEN p.price ELSE 0 END) AS cod_amount, p.cod, p.cod_fee, p.base_fee,p.delivery_fee, p.df_payer,p.receiver_name, p.receiver_phone, p.zone_code,p.zone_name, IFNULL(p.forwarding_cost,0) AS forwarding_cost,p.delivery_notes,p.failure_notes, IFNULL(p.driver_total,0) AS driver_total,IFNULL(p.sender_total,0) AS sender_total, p.exchange_rate AS exchange_rate, (SELECT ps.name FROM package_statuses AS ps WHERE ps.id =p.status_id LIMIT 1) AS status, formatTime(p.arrival_time) AS arrival_time,p.driver_total,p.failure_notes,p.delivery_notes,p.failed_num,p.status_id';
         $rows= DB::table('package AS p')->join('sender AS s','s.id','=','p.sender_id')->join('delivery as d','d.id','=','p.delivery_id')->where('p.branch_id',$branch_id)->where('d.id',$delivery_id)->selectRaw($selectCols)->orderByRaw('p.sender_id')->get();          
 
         //"trip_total" is the grand total of the driver_total for all packages in the trip
-        $res = $this->countPackageByStatus($branch_id,$delivery_id,$rows);
+        $countInfo = static::countPackageByStatus($branch_id,$delivery_id,$rows);
         $trip_status_id = 3;
         $trip_status = 'Done';
-        if ($res->on_delivery > 0){
+        if ($countInfo->on_delivery > 0){
             $trip_status_id = 2;
             $trip_status='On Delivery';
-        } 
-
-        return (object)[
+        }
+        $data = (object)[
             'packages'=>$rows,
-            'trip_total'=>$res->total,
+            'trip_total'=>$countInfo->total,
+            'trip_effective_total'=>$countInfo->delivered_total,
             'status_id'=>$trip_status_id,
             'trip_status'=>$trip_status,
-            'package_count'=>$res->package_count
+            'package_count'=>$countInfo->package_count,
+            'package_count_info' =>$countInfo
         ];
+        Cache::put($cacheKey,$data,3); 
+        return $data;
      }
      
      //returns list of packages belong to a trip. This is used on backend system only for Printing PDF
@@ -1804,11 +1894,7 @@ class DeliveryTrip
         return is_numeric($cnt)?$cnt:0;
     }
 
-    function getForm_options_trip_list($data) {
-        $ss = UM::getUserInfoByToken($data);
-        if ($ss->status_code !==200) return $ss; //user not authenticated
-         //need permission to do this task      
-
+    function getForm_options_trip_list($ss) {
          $branch_id = $ss->branch_id;
           $data = (object)[];
 
