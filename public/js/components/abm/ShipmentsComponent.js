@@ -1011,7 +1011,6 @@ var ShipmentsComponent = new function () {
                 val = StringSanitizer.sanitizeOut(d[c]);
             else 
                 val = DUtil.sanitizePackageSize(d[c]);
-
             let iType = 'text';
             if (['item_type'].indexOf(c) >= 0) iType = 'select';
             // else if (c === 'zone_code') iType = 'select2';
@@ -1057,7 +1056,7 @@ var ShipmentsComponent = new function () {
             `<a href="javascript:void(0)" class="pkl_btn_print_barcode" data-barcode="${d.barcode}" data-toggle="tooltip" data-placement="right" data-title="Print barcode"><i class="fa fa-barcode text-success fs-5"></i></a>`,
             , '</div></td>'].join('');
         tr_id = tr_id || DUtil.createGUID();
-        return ['<tr id="', tr_id, '" data-barcode="', d.barcode, '" data-shipmentid="', d.shipment_id, '" data-senderid="', d.sender_id, '" data-id="', d.id, '" data-statusid="', d.status_id, '" class="pkl-package-row pkl_', (d.id?d.id:0), '">', td_action, html_row, '</tr>'].join('');
+        return ['<tr id="', tr_id, '" data-barcode="', d.barcode, '"  data-shipmentid="', d.shipment_id, '" data-country_zone="', d.country_zone,'" data-senderid="', d.sender_id, '" data-id="', d.id, '" data-statusid="', d.status_id, '" class="pkl-package-row pkl_', (d.id?d.id:0), '">', td_action, html_row, '</tr>'].join('');
     }
 
     this.createPackageTable_thead_html = (shipment_id,sender_id)=>{``

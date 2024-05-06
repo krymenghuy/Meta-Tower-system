@@ -568,7 +568,7 @@ class Price //extends Model
         $str_zones = null;
         //todo: later, we can set str_zones to be " AND WHERE Match(l.zone_codes) AGAINST('$zone_codes')"
         // if (!empty($zone_codes)) $str_zones =" l.zone_code LIKE '%|".$zone_codes."|%')";
-        $str_zones = $str_zones? 'l.zone_code =\''.$status_code.'\'' : '1=1';
+        $str_zones = $zone_codes? 'l.zone_code =\''.$zone_codes.'\'' : '1=1';
         $rows =[];
         $kg_marker =0;
         $rows = DB::table('price_list_names')->where('branch_id',$branch_id)->where('id',$price_list_id)->selectRaw("id,kg_marker")->get();
@@ -576,14 +576,14 @@ class Price //extends Model
 
         $str_kg_marker = null;
         // if ($kg_marker > 0) $str_kg_marker = "AND (l.start_kg =$kg_marker OR l.end_kg = $kg_marker)";
-        $more_wheres ="1=1 ".$str_zones;
+        // $more_wheres ="1=1 ".$str_zones;
     
         /** $rows query conditions are, for example => assuming x = price_list('A').kg_marker, then (start_kg =x OR end_kg =x) **/
           $rows = DB::table('price_list_details AS l')
           ->join('loc_countries AS c','c.id','=','l.country_id')
           ->where('l.branch_id',$branch_id)
           ->where('l.price_list_id',$price_list_id)
-          ->whereRaw($more_wheres)
+          ->whereRaw($str_zones)
           ->selectRaw("l.id,l.zone_code,l.country_id,c.name as country_name,l.price_list_id,l.item_type ,IFNULL(l.price_per_kg,0) AS price_per_kg")
           ->orderBy('l.id','DESC')->get();
         // return JDV::result($rows);
