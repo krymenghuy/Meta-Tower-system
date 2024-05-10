@@ -32,7 +32,7 @@ class Supplier //extends Model
             'code'=>'0|string|0-25',         //Add new code column to table supplier
             'price_list_id'=>'0|number',
             'status_code'=>'0|string|default =Active',
-            'photo'=>'0|image'        //Add new photo_file_name to table supplier
+            'photo'=>'0|image'        //Add new photo_file_n33ame to table supplier
     ];
         $eml_char = ['$','#','@','!','.','-','_','=','?'];
         $img_char = ['+',':',',',';','/','\\','=','?'];
@@ -50,7 +50,9 @@ class Supplier //extends Model
         // if($check) return DV::error('Phone number is already save...');
         unset($inputs['photo']);
         $supplier_created = !$id;
-        $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
+        // return JDV::result($inputs);
+
+        $delete_prev_image =($id > 0 && (!$photo || isImage($photo)));
         $id = saveData($ss,'suppliers',['id'=>$id],$inputs,[],1,0);   
         if($id > 0){
             $new_code = null;
@@ -103,7 +105,7 @@ class Supplier //extends Model
         // return JDV::result($filter->page);
 
         $current_page = isset($d->current_page)?$d->current_page:1;
-        $per_page = isset($d->per_page)?$d->per_page:15;
+        $per_page = isset($d->per_page)?$d->per_page:10;
         $search_value = isset($d->search_value)?$d->search_value:null;
         $status_code = isset($d->status_code)?$d->status_code:null;
         $price_list_id = isset($d->price_list_id)?$d->price_list_id:null;
@@ -126,7 +128,7 @@ class Supplier //extends Model
                 ->join('os_sales_agents as sa','sa.id','s.sales_agent_id')
                 ->whereRaw($str_srch)
                 ->whereRaw($str_where)
-                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.status_code,s.sales_agent_id,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
+                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.sales_agent_id,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
        
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
@@ -168,11 +170,11 @@ class Supplier //extends Model
     //     return $row;
     // }
     
-    function delete($id,$ss){
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
+    function delete($id){
 
-        $delete = DB::table('requirements as r')->where('r.id',$id)->delete();
+        $id = $id ?? $this->id;
+
+        $delete = DB::table('suppliers')->where('id',$id)->delete();
         return DV::depends($delete,['action','deleted']);
     }
 

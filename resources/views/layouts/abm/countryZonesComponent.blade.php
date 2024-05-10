@@ -7,11 +7,11 @@
       </button>
     </div>
     <div class="d-flex gap-2">
-      <button id="_sttn_zon_lnkNewZone" class="btn btn-primary">
+      <button id="_sttn_zon_lnkNewZone" class="trans-text pr-2 pl-2 p-1 mr-3 bg-primary text-white border border-primary rounded-4">
         <i class="fas fa-plus fs-5"></i>
-        <span class="trans-text" data-langprop="buttons.New Zone"></span>
+        <span class="trans-text " data-langprop="buttons.New Zone"></span>
       </button>
-      <button id="_zone_btnPrint" type="button" class="btn btn-outline-success">
+      <button id="_zone_btnPrint" type="button" class="trans-text pr-2 pl-2 p-1 mr-3 bg-success text-white border border-success rounded-4">
         <i class="fas fa-print fs-5"></i>
         <span class="trans-text" data-langprop="buttons.Print"></span>
       </button>
@@ -35,28 +35,35 @@
         <div class="row">
           <div class="col-lg-6">
             <div class="form-group">
-              <label for="country_code" class="col-form-label">Country Name</label>
-              <input type="text" class="form-control data-input" data-field="name" placeholder="country name">
+              <label for="country_name" class="col-form-label">Country Name(EN) :</label>
+              <p class="text-danger">*(ឈ្មោះប្រទេស)</p>
+              <input type="text" class="form-control text-primary data-input" data-field="name" placeholder="Cambodia">
             </div>
           </div>
           <div class="col-lg-6">
             <div class="form-group">
-              <label for="country_name" class="col-form-label">Country Code</label>
-              <input type="text" class="form-control data-input" data-field="code" placeholder="code country">
+              <label for="country_name" class="col-form-label">Country Name(KH) :</label>
+              <p class="text-danger">*(ឈ្មោះប្រទេស)</p>
+              <input type="text" class="form-control text-primary data-input" data-field="name" placeholder="(ប្រទេសកម្ពុជា)">
             </div>
           </div>
-          
-        </div>
-        <div class="row">
-        <div class="col-lg-6">
+          <div class="col-lg-6">
             <div class="form-group">
-              <label for="standard_zone" class="col-form-label">Standard Zone</label>
-              <input type="text" class="form-control data-input" data-field="standard_zone" placeholder="standard zone">
+              <label for="country_code" class="col-form-label">Code Country :</label>
+              <p class="text-danger">(*ឈ្មោះប្រទេសជាអក្សរកាត់)</p>
+              <input type="text" class="form-control text-primary data-input" data-field="code" placeholder="CAM">
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label for="standard_zone" class="col-form-label">Zone Code :</label>
+              <p class="text-danger">*លេខកូដប្រទេស</p>
+              <input type="text" class="form-control text-primary data-input" data-field="standard_zone" placeholder="number">
             </div>
           </div>
           
-         
         </div>
+        
        
       </div>
       <div class="modal-footer">

@@ -55,6 +55,7 @@ use App\Http\controllers\abm\OsSalesAgentController;
         Route::post('/update-status', [SupplierController::class, 'updateSupplierStatus']);
         Route::post('/list-paginate', [SupplierController::class, 'getSuplierListPaginate']);
         Route::post('/delete', [SupplierController::class, 'deleteOrderitem']);
+        Route::post('/delete',[SupplierController::class,'delete']);
     });
     Route::middleware([CustomRateLimiter::class])->prefix('os-sales-agents')->group(function(){
         Route::post('/save', [OsSalesAgentController::class, 'saveSalesAgent']);

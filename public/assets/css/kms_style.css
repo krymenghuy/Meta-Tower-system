@@ -523,7 +523,7 @@ a.menu-selected .kt-menu__link-text {
     font-size: 1rem;
     font-family: Poppins;
     height: 100% !important;
-    line-height: 28px;
+    line-height: 18px;
     vertical-align: middle;
     text-transform: capitalize;
 }

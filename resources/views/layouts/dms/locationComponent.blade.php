@@ -112,31 +112,38 @@
       </div>
       <div class="modal-body">
         
-        <div class="row">
+      <div class="row">
           <div class="col-lg-6">
             <div class="form-group">
-              <label for="country_code" class="col-form-label">Country Name</label>
-              <input type="text" class="form-control data-input" data-field="name" placeholder="country name">
+              <label for="country_name" class="col-form-label">Country Name(EN) :</label>
+              <p class="text-danger">*(ឈ្មោះប្រទេស)</p>
+              <input type="text" class="form-control text-primary data-input" data-field="name" placeholder="Cambodia">
             </div>
           </div>
           <div class="col-lg-6">
             <div class="form-group">
-              <label for="country_name" class="col-form-label">Country Code</label>
-              <input type="text" class="form-control data-input" data-field="code" placeholder="code country">
+              <label for="country_name" class="col-form-label">Country Name(KH) :</label>
+              <p class="text-danger">*(ឈ្មោះប្រទេស)</p>
+              <input type="text" class="form-control text-primary data-input" data-field="name" placeholder="(ប្រទេសកម្ពុជា)">
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label for="country_code" class="col-form-label">Code Country :</label>
+              <p class="text-danger">(*ឈ្មោះប្រទេសជាអក្សរកាត់)</p>
+              <input type="text" class="form-control text-primary data-input" data-field="code" placeholder="CAM">
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label for="standard_zone" class="col-form-label">Zone Code :</label>
+              <p class="text-danger">*លេខកូដប្រទេស</p>
+              <input type="text" class="form-control text-primary data-input" data-field="standard_zone" placeholder="number">
             </div>
           </div>
           
         </div>
-        <div class="row">
-        <div class="col-lg-6">
-            <div class="form-group">
-              <label for="standard_zone" class="col-form-label">Standard Zone</label>
-              <input type="text" class="form-control data-input" data-field="standard_zone" placeholder="standard zone">
-            </div>
-          </div>
-          
-         
-        </div>
+     
        
       </div>
       <div class="modal-footer">

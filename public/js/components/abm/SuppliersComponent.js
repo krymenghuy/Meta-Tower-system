@@ -53,40 +53,11 @@ var SuppliersComponent = new function(){
                         else
                             cv_interact.error(res.error_message); 
                     });
-                    // vsapi.call(`${mThis.base_url}/abm/os_suppliers/set-price-list`,p,null).then(res => {
-                    //     if(res.status_code === 200){
-                    //         let d = StringSanitizer.sanitizeObject(res.data);
-                    //         span.textContent =d.list_name; 
-                    //         cv_interact.success('Price list ' + d.list_name + ' has been assigned to the merchant successfully');
-                    //     }
-                    //     else
-                    //         cv_interact.error(res.error_message); 
-                    // });
+                   
                 }
-                // mThis.self.siblings().hide();
-                // mThis.self.hide().fadeIn(250);	
+               
             });
         });
-    }
-
-    this.createAppAccount = (sender_id)=>{
-        const sender = mThis.store_suppliers[sender_id] || {}; 
-        const op = {
-            user_id: null,
-            open: 'add-user',
-            default: {
-                official_code: sender.code,
-                user_class: "merchant",
-                phone_number: sender.phone_number,
-                full_name: sender.name
-            },
-            onClose: () => {
-                mThis.elSearch.val(sender.phone_number);
-                mThis.listView.showPage(mThis.getFilterData());
-            }
-        };
-        if(!AuthManager.allowed(100)) return;
-        AddUserDialog.show(op);
     }
 
     this.cols = [
@@ -108,18 +79,9 @@ var SuppliersComponent = new function(){
         },
         
         {
-            className: "code align-middle",
-            data: (data,index,tr)=>{
-                const sender_info = ['<span class="sender-name d-block text-danger">#',data.code||'គ្មាន','</span>'].join('');
-                return sender_info;
-            },
-            // title: mThis.trans('Sender ID')
-            title: 'code '
-        },
-        {
             className: "name align-middle",
             data: (data,index,tr)=>{
-                const sender_info = ['<span class="sender-name d-block">',data.name,'</span>'].join('');
+                const sender_info = ['<div class="d-flex p-1" ><span class="d-block p-1">',(data.name || 'គ្មាន'),'</span></div>'].join('');
                 return sender_info;
             },
             // title: mThis.trans('Sender ID')
@@ -132,21 +94,13 @@ var SuppliersComponent = new function(){
                 return ['<div class="d-flex p-1" ><i class="fas mt-2 text-success fa-envelope"></i><span class="d-block p-1">',(data.email || 'គ្មាន'),'</span></div>','<div class="d-flex p-1"><i class="fas text-warning fa-phone mt-2"></i><span class="d-block p-1 text-primary">',data.phone_number,'</span></div>'].join('');
             }
         },
-        {
-            className: "address align-middle",
-            data: (data,index,tr)=>{
-                const sender_info = ['<span class="sender-name d-block">',data.address||'NA','</span>'].join('');
-                return sender_info;
-            },
-            // title: mThis.trans('Sender ID')
-            title: 'address '
-        },
+      
         {
             className: "price_list_name align-middle",
             data: (data,index,tr)=>{
                 let price_list_html = data.price_list_name ? `<span class="supplier-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-suppliername="${data.name}" class="set-price-list">
                 <i class="fa fa-edit fs-5"></i></a>`;
-                const sender_info = ['<span class="sender-name d-block">',price_list_html,'</span>'].join('');
+                const sender_info = ['<span class="sender-name text-primary d-block">',price_list_html,'</span>'].join('');
                 return sender_info;
             },
             // title: mThis.trans('Sender ID')
@@ -165,18 +119,19 @@ var SuppliersComponent = new function(){
         {
             className: "created_by align-middle",
             data: function (data, index, tr) {
-                return ['<span class="pl-request_date d-block">',data.create_user||"NA", '</span>'].join('');
+                return ['<span class="pl-request_date d-block">',data.create_user||"NA", '</span>','<span class="text-muted">',data.created_at,'</span>'].join('');
             },
             title: 'create by'
             // title: mThis.trans('Created Date')
         },
         {
-            className: "status align-middle",
+            className: 'status align-middle',
             data: function (data, index, tr) {
-                return ['<div class="d-block">',data.status_code == 'Active'? '<span class="pl-request_date btn-act rounded-2">Ative</span>' : '<span class="pl-request_date btn-act-inactive rounded-2">Inactive</span>','</div>'].join('');
+                const cls_class = (data.status_code || '').toLowerCase() === 'active' ? 'border-success text-success text-center' : 'border-danger text-danger text-center';
+                const status_code = data.status_code ? VSUtil.properCase(data.status_code) : 'Inactive';
+                return ['<a class="d-block" data-status="', status_code, '" data-id="', data.id, `" href="javascript:void(0)"><span style="display:block;width:80px;"  class="border rounded-5 p-2  ${cls_class} ">`, status_code, '</span></a>'].join('');
             },
-            title: 'status'
-            // title: mThis.trans('Created Date')
+            title: 'Status'
         },
         {
             className: 'col_action align-middle',
@@ -191,189 +146,6 @@ var SuppliersComponent = new function(){
             // title: 'action'
         },
     ];
-
-    this.renderMerchant = (container, data) => {
-        let html = '';
-        let cnt = 0;
-        container.style.display = 'none';
-        mThis.store_suppliers = {};
-        (data || []).map(item => {
-            mThis.store_suppliers[item.id] = {
-                code: item.code,
-                name: item.name,
-                phone_number: item.phone_number
-            };
-            let sales_agent_id = `<span class=" ">${item.sales_agent_id}</span>`;
-            let email = `<span class=" ">${item.email}</span>`;
-            let created_by = `<span class="d-block fw-sembold">${item.create_user}</span>
-            <pan class="d-block">
-                <small>${item.created_at}</small>
-            </span>`;
-
-            (item.bank_accounts || []).map(ac => {
-                if(ac.is_primary == 1 || !item.bank_accounts[1])
-                    bank_account_html = `<span class="fw-semibold">${ac.bank_name}/${ac.account_number}</span>
-                    <span> /${ac.account_name}</span`;
-            });
-
-            let status_class = (item.status_code +'').toLowerCase() === 'active' ? 'text-capitalize p-2 text-center border border-success rounded-5 text-success' : 'text-capitalize p-2 text-center border border-danger rounded-5 text-danger';
-            let mobile_login = '';
-            if(item.mobile_login){
-                if(item.mobile_login.status.toLowerCase() == 'active'){
-                    mobile_login = `<span class="text-success">${item.mobile_login.login_name}  (${item.mobile_login.status})</span>`;
-                }
-                else{
-                    mobile_login = `<span class="text-dark p-1">${item.mobile_login.login_name}</span>
-                    <span class="text-capitalize p-2 bg-danger rounded-5 text-white">${item.mobile_login.status}</span>`;
-                }
-            }
-            else{
-                mobile_login = `<span class="p-2 text-danger">គ្មាន</span>
-                <span>
-                    <a href="javascript:void(0)" data-id="${item.id}" class="btn-app-login btn btn-sm btn-outline-primary">
-                        <i class="la la-mobile fs-4"></i> 
-                        <span>Create</span>
-                    </a>
-                </span>`;
-            }
-
-            let price_list_html = item.price_list_name ? `<span class="merchant-price-list">${item.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${item.code}" data-merchantname="${item.name}" class="set-price-list">
-                <i class="fa fa-edit fs-5"></i>
-            </a>`;
-
-            html += `<div class="d-flex p-3 bg-white h-info-student mb-2">
-                <div class="div-img" data-id="${item.id}" data-imageurl="${item.image_url}"></div>
-                <div class="d-block ms-3 w-100">
-                    <div class="row row-cols-3 mb-0">
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Supplier ID"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize data-get" data-field="official_id">${item.code}</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Name"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize data-get" data-field="full_name">${item.name}</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Phone Number"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize data-get" data-field="phone_number">${item.phone_number}</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Sales Agent"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.sales_agent_id? item.sales_agent_id:"គ្មាន"}</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Price List"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${price_list_html}</p>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Email"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${email}</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex align-items-center">
-                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.App Account"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${mobile_login}</p>
-                            </div>
-                        </div>
-                        <div class="col position-relative">
-                            <div class="d-flex align-items-start justify-content-end gap-2">
-                                <button class="btn btn-sm btn-danger rounded-3 btn-options position-relative text-nowrap" type="button">
-                                    <span class="text-nowrap trans-text" data-langprop="buttons.Options"></span>
-                                    <i class="fa-solid fa-caret-down ps-2"></i>
-                                    <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
-                                        <a href="javascript:void(0)" class="btn-merchant-edit border-bottom pb-2" data-id="${item.id}">
-                                            <i class="fa-regular fa-pen-to-square fs-5"></i>
-                                            <span class="ps-2 trans-text" data-langprop="titles.Modify Merchant"></span>
-                                        </a>
-                                        <a href="javascript:void(0)" class="btn-set-price-list border-bottom pb-2" data-id="${item.id}" data-pricelistid="${item.price_list_id}" data-merchantname="${item.name}" data-status="${item.status_code}">
-                                            <i class="fa-regular fa-list-alt fs-5"></i>
-                                            <span class="ps-2 trans-text" data-langprop="titles.Set Price List"></span>
-                                        </a>
-                                        <a href="javascript:void(0)" class="btn-merchant-delete border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
-                                            <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
-                                            <span class="ps-2 trans-text" data-langprop="titles.Delete Merchant"></span>
-                                        </a>
-                                        <a href="javascript:void(0)" class="btn-merchant-delete-special border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
-                                          <i class="fa-regular fa-trash-can fs-5 text-warning"></i>
-                                          <span class="ps-2 trans-text" data-langprop="titles.Delete Special"></span>
-                                       </a>
-                                        <a href="javascript:void(0)" class="btn-merchant-status border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
-                                            <i class="fa-regular fa-circle-stop fs-5"></i>
-                                            <span class="ps-2 trans-text" data-langprop="titles.Change Status"></span>
-                                        </a>
-                                        <a href="javascript:void(0)" class="btn-create-app-account border-bottom pb-2" data-id="${item.id}">
-                                            <i class="fa-solid fa-mobile fs-5"></i>
-                                            <span class="ps-2 trans-text" data-langprop="titles.Create App Account"></span>
-                                        </a>
-                                    </div>
-                                </button>
-                            </div>
-                            <div class="d-flex justify-content-end align-items-center h-100">
-                                <div class="d-block position-relative">
-                                    <span class="${status_class}" data-id="${item.code}" data-status="${item.status_code}">${item.status_code}</span>  
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <hr class="bg-dark m-1 p-0"/>
-                    <div class="row row-cols-5 mt-2">
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Address"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.address ? item.address : 'គ្មាន'}</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Created By"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${created_by}</p>
-                            </div>
-                       </div>
-                    </div>
-                </div>
-            </div>`;
-            cnt++;
-        });
-
-        if(cnt == 0){
-            html = `<div class="d-flex bg-white p-3 rounded-3 align-items-center">
-                <h5>${LocaleManager.trans('No data to display!')}</h5>
-            </div>`;
-        }
-
-        container.innerHTML = html;
-        
-        /** Display profile photos for all displayed merchants */
-        container.querySelectorAll('.div-img').forEach(div =>{
-            mThis.setImage(div,div.dataset.imageurl);
-        });
-        
-        mThis.setEvents($(container));
-        LocaleManager.translateZone(container);
-        setTimeout(() => {
-            container.style.display = 'block';
-        }, 200);
-
-        const parent = container.parentElement;
-        parent.style.height = (window.innerHeight - 210)+'px';
-        parent.classList.add('overflow-y-auto');
-        window.onresize = () => {
-            parent.style.height = (window.innerHeight - 210)+'px';
-        }
-    };
 
     this.chooseImage = (div) => {
         div.onclick = function(e){
@@ -505,9 +277,10 @@ var SuppliersComponent = new function(){
 
                 let lnk = VSUtil.getElementByClass(e.target,'btn-supplier-edit');
                 if(lnk){
-                    console.log(lnk);
+                
                     let op = {
                         id: lnk.dataset.id,
+                        
                         onClose:()=>{
                             mThis.listView.showPage(mThis.getFilterData());
                         }
@@ -534,12 +307,12 @@ var SuppliersComponent = new function(){
                         id: id,
                         status_code: status_code
                     };
-                    cv_interact.confirm('Delete this merchant?',{
-                        title: 'Delete Merchant',
+                    cv_interact.confirm('Delete this Supplier?',{
+                        title: 'Delete Supplier',
                         context: 'delete'
                     },function(e){
                         if(e){
-                            vsapi.call(`${mThis.base_url}/abm/merchant/delete`,{
+                            vsapi.call(`${mThis.base_url}/abm/os_suppliers/delete`,{
                                 id: id
                             },null).then(res => {
                                 if(res.status_code === 200){
@@ -553,52 +326,7 @@ var SuppliersComponent = new function(){
                     return;
                 }
  
-                //Click on Delete Merchant Special (Force delete everything about the merchant)
-                lnk = VSUtil.getElementByClass(e.target, 'btn-merchant-delete-special');
-
-                if (lnk) {
-                    const id = lnk.dataset.id;
-                    let status_code = lnk.dataset.status;
-                    let p = {
-                        id: id,
-                        status_code: status_code
-                    };
-                    let confirm_count = 0;
                 
-                    const confirmDelete = () => {
-                        cv_interact.confirm([
-                            'Are you sure to delete this merchant <span class="text-danger fw-semibold">permanently?</span>',
-                            '<span class="d-block text-black mt-2">You will need to confirm 7 times before deleting. <span class="d-block fs-4 fw-semibold text-danger">',
-                            (confirm_count + 1 ==7? 'This you LAST confirmation!': ['Confirm Count: ',(confirm_count +1)].join('')),
-                            '</span></span>'
-                        ].join(''), {
-                            title: 'Delete Merchant Special',
-                            context: 'delete'
-                        }, e => {
-                            if (e) {
-                                confirm_count++;
-                
-                                if (confirm_count === 7) {
-                                    vsapi.call(`${mThis.base_url}/abm/merchant/delete-special`, {
-                                        id: id
-                                    }, null).then(res => {
-                                        if (res.status_code === 200) {
-                                            mThis.listView.showPage(mThis.getFilterData());
-                                        } else {
-                                            cv_interact.error(res.error_message);
-                                        }
-                                    });
-                                } else {
-                                    confirmDelete();
-                                }
-                            } else {
-                                confirm_count = 0;
-                            }
-                        });
-                    };
-                
-                    confirmDelete();
-                }
  
                 //Click on Set Price List
                 lnk = VSUtil.getElementByClass(e.target,'btn-set-price-list');
@@ -654,37 +382,7 @@ var SuppliersComponent = new function(){
                     return;
                 }
 
-                //Click on create mobile app account
-                lnk = VSUtil.getElementByClass(e.target,'btn-create-app-account');
-                if(lnk){
-                    mThis.createAppAccount(lnk.dataset.id);
-                    return;
-                }
-
-                //Click on "Delete Special" => Force delete merchant information and related data
-                lnk = VSUtil.getElementByClass(e.target,'btn-merchant-delete-sepcial');
-                if(lnk){
-                    let op = {
-                        id: lnk.dataset.studentid
-                    };
-
-                    cv_interact.confirm('You are about to delete this student permanently. All information including Enrollment and Attendance will be deleted. Are you sure to proceed?',{
-                        title: 'Delete Student Permanently',
-                        context: 'delete'
-                    },(e) => {
-                        if(e){
-                            vsapi.call(`${main_view.base_url}/abm/student/delete-special`,op,null).then(res => {
-                                if(res.status_code === 200){
-                                    cv_interact.success('The student has been deleted permanently');
-                                    mThis.ListView.showPage(mThis.getFilterData());
-                                }
-                                else
-                                    cv_interact.error(res.error_message);
-                            });
-                        }
-                    });
-                    return;
-                }
+              
             });
         }
     }
@@ -783,6 +481,7 @@ var SuppliersComponent = new function(){
                 let pricelist_id = btn.dataset.pricelistid;
                 let supplier_name = btn.dataset.suppliername;
                 let status_code = btn.dataset.status;
+                console.log(supplier_id,pricelist_id,supplier_name,status_code);
         
                 let dropdownMenu = p.querySelector('.dropdown-menu');
                 if (!dropdownMenu || dropdownMenu.length === 0) {
@@ -802,171 +501,7 @@ var SuppliersComponent = new function(){
                 return;
             }
 
-            //Click on "Arrive" button, the shortcut button in shipment_tr
-            btn = VSUtil.closestLimited(e.target,'.pkl_btn_receive');
-            if(btn){
-                        if(!AuthManager.allowed(222)) return;
-                        const shipment_tr = btn.closest('tr');
-                        cv_interact.confirm('ទទួលទំនិញទាំងអស់ក្នុងបញ្ជាមួយនេះ?',{'context':"update"},e =>{
-                            if(e){
-                               if (mThis.shm_prev_editing_row) {
-                                   mThis.saveItem(mThis.shm_prev_editing_row, btn, success => {
-                                       if (success){
-                                          mThis.receiveItems_all(shipment_tr, null);
-                                       }
-                                   });
-                               }
-                               else mThis.receiveItems_all(shipment_tr, null);
-                            }
-                  });
-                return;
-            }
-
-            //Click on Pick button | Pick Order
-            btn = VSUtil.closestLimited(e.target,'.pkl_btn_pick');
-            if(btn){
-                //if(!AuthManager.allowed() ) return; 
-                const shipment_tr = btn.closest('tr');
-                if (mThis.shm_prev_editing_row) {
-                    mThis.saveItem(mThis.shm_prev_editing_row, (item_saved) => {
-                        if (item_saved) {
-                            mThis.pickItems(shipment_tr, btn, (sucess,d) => {
-                                if (sucess){
-                                    shipment_tr.dataset.statusid = d.status_id;
-                                    btn.style.display ='none';
-                                }
-                            });
-                        }
-                    });
-                }
-                else {
-                    mThis.pickItems(shipment_tr,(success,d) => {
-                        if (success){
-                            shipment_tr.dataset.statusid = d.status_id;
-                            btn.style.display ='none';
-                        }
-                    });
-                }
-                return;
-            }
-
-            //Click on Change Status
-            btn = VSUtil.closestLimited(e.target,'.change-order-status');
-            if(btn){
-                let tr = btn.closest('tr');
-                mThis.changeOrderStatus(tr);
-                return;
-            }
-
-            //Click on Dropdown menu item : "Change Status"
-            btn = VSUtil.closestLimited(e.target,'._pl_pa_change_status');
-            if(btn){
-                let tr = btn.closest('tr');
-                mThis.changeOrderStatus(tr);
-                return;
-            }
-
-            //Click on Dropdown menu item : "Assign Driver"
-            btn = VSUtil.closestLimited(e.target,'._pl_pa_assign_driver');
-            if(btn){
-                let tr = btn.closest('tr');
-                mThis.assignDriver(tr,null);
-                return;
-            }
-
-              //Click Driver lnk to quickly assign driver  "Quick Assign Driver" by clicking on Pencil icon
-              btn = VSUtil.closestLimited(e.target,'.lnk-assign-driver');
-              if(btn){
-                  if(!AuthManager.allowed(221)) return;
-                  let tr = btn.closest('tr');
-                  console.log(tr);
-                  mThis.assignDriver(tr,btn);
-                  return;
-              }
-                
-            //Click on Delete Order: Dropdown menu item
-            btn = VSUtil.getElementByClass(e.target,'_pl_pa_delete');
-            if(btn){
-                if (!AuthManager.allowed(229)) return;
-                let tr = btn.closest('tr');
-                mThis.deleteOrder(tr); 
-                return;
-            }
-
-            //Click on Arrive button
-            btn = VSUtil.getElementByClass(e.target,'_pl_pa_receive');
-            if(btn){
-                let shipment_tr = btn.closest('tr');
-                cv_interact.confirm('ទទួលទំនិញទាំងអស់ក្នុងបញ្ជាមួយនេះ?',{'context':"update"},e =>{
-                     if(e){
-                        if (mThis.shm_prev_editing_row) {
-                            mThis.saveItem(mThis.shm_prev_editing_row, null, (success) => {
-                                if (success){
-                                    mThis.receiveItems_all(shipment_tr, null);
-                                }
-                            });
-                        }
-                        else mThis.receiveItems_all(shipment_tr, null);
-                     }
-                });
-                return;
-            }
-
-            //Click on Save item
-            btn = VSUtil.getElementByClass(e.target,'pkl_btn_save');
-            if(btn){
-                let tr = btn.closest('tr');
-                mThis.saveItem(tr, btn,(e) =>{
-                    if(e){
-                        btn.closest('div.edit-actions').remove();
-                    }
-                });
-                return;
-            }
-
-             //Click on Delete item
-             btn = VSUtil.getElementByClass(e.target,'pkl_btn_delete');
-             if(btn){
-                 let tr = btn.closest('tr');
-                 mThis.deleteItem(tr);
-                 return;
-             }
-
-             //Click on Delete item
-             btn = VSUtil.getElementByClass(e.target,'pkl_btn_cancel_edit');
-             if(btn){
-                 let tr = btn.closest('tr');
-                 mThis.setItemReadOnly(tr, true, null);
-                 return;
-             }
-
-             //Click on map_link
-             btn = VSUtil.getElementByClass(e.target,'lnk_map_link');
-             if (btn){
-                 const href = btn.getAttribute('href');
-                 window.open(href,'_blank');
-                 return;
-             }
-
-             btn = VSUtil.getElementByClass(e.target,'pkl_btn_edit');
-             if (btn){
-                 const tr = btn.closest('tr');
-                 mThis.beginEditItem(tr,null,btn);
-                 return;
-             }
-             
-             btn = VSUtil.getElementByClass(e.target,'pkl_btn_print_barcode');
-             if (btn){
-                 const tr = btn.closest('tr');
-                 let barcode = tr.dataset.barcode;
-                 window.open([main_view.base_url, '/package_barcode/', barcode ? barcode : 'unknown'].join(''), '_blank');
-                 return;
-             }
- 
-            //  const clickOnElement = e.target.tagName;
-            //  if (['TR','TD'].indexOf(clickOnElement) >= 0){
-            //     mThis.showQuickButtons(VSUtil.closestLimited(e.target,'tr.order'));
-            //  }
+          
         });
 
         mThis.tblSenders.addEventListener('click', e => {
@@ -1084,32 +619,7 @@ const SupplierDialog = new function(){
     this.body =  this.self.find('.modal-body')[0];
     this.div_sender_info =  this.body.querySelector('#div_merchant_info');
     // this.div_bank_account = this.body.querySelector('#div_bank_account');
-    mThis.imgBox = new ImageBox(mThis.divPhoto,{
-        "dataField":"photo",
-        "cssClass":"data-input ",
-        containerClass:null,
-        // onDeleteImage:()=>{
-        //   alert('Deleting image');
-        //   return false;
-        // },
-        "onLoadImage":(photo) =>{
-            let p = {"id":mThis.options.id,"supplier_id":mThis.options.id,"photo":photo};
-            // console.log(p);
-            if(!p.id) return; 
-            vsapi.call(`${main_view.base_url}/abm/os_suppliers/save-profile-picture`,p,null,null,false).then(res =>{
-                if(res.status_code ===200){
-                    mThis.imgBox.setImage(photo);
-                    cv_interact.success('Photo has been saved');
-                }else cv_interact.error(res.error_message);
-            });
-        },
-        "deleteAPI":{
-            "endPoint":`${main_view.base_url}/dms/sales-app/agent/delete-profile-picture`,
-            "params":()=>{
-                return {"id": mThis.options.id,"sales_agent_id":mThis.options.id}
-            }
-        }
-    });
+    
 
     this.prepareData = (id,def, onFinish) => {
         // console.log(id);
@@ -1166,8 +676,6 @@ const SupplierDialog = new function(){
         });
         if(!d) return;
 
-        // let bank_accounts = d.bank_accounts;
-        // d.bank_accounts = null;
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el =>{ 
             const data_member = el.dataset.field;
             if(el.tagName.toLowerCase() === 'select'){
@@ -1183,20 +691,6 @@ const SupplierDialog = new function(){
             }
         });
 
-        // let i = 0, c = null;
-        // do{
-        //     c = bank_accounts[i];
-        //     if(!c) break;
-        //     let css_class = 'primary_bank_panel';
-        //     if(c.is_primary == 0) css_class = 'secondary_bank_panel';
-        //     let div = mThis.body.querySelector('div.'+css_class);
-        //     div.dataset.id = c.id;
-        //     div.querySelectorAll('.data-input').forEach(el => {
-        //         let dataMember = el.dataset.field;
-        //         el.value = c[dataMember];
-        //     });
-        //     i++;
-        // }while(c);
     }
 
     this.getData = () => {
@@ -1204,7 +698,7 @@ const SupplierDialog = new function(){
         p.id = mThis.options.id;
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
             let data_member = el.dataset.field;
-            if(el.tagName ==='IMG') 
+           if(el.tagName ==='IMG') 
                 p[data_member] = el.getAttribute('src');
             else 
                 p[data_member] = el.value;

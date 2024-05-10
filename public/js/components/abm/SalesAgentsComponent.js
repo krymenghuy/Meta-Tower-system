@@ -22,17 +22,18 @@ var SalesAgentsComponent = new function () {
         console.log(data);
         let html = `
                     <table class="table table-light m-0">
-                        <thead class="w-100 bg-info">
+                        <thead class="w-100 bg-info text-center">
                             <tr>
-                                <th scope="col" style=" width: 13.28%;">PHOTO</th>
-                                <th scope="col" style=" width: 12.28%">ID</th>
-                                <th scope="col" style=" width: 12.28%;">NAME</th>
-                                <th scope="col" style=" width: 14.28%;">EMAIL</th> 
-                                <th scope="col" style=" width: 13.28%;">TYPE</th>
-                                <th scope="col" style=" width: 14.28%;">START DATE</th>
-                                <th scope="col" style=" width: 12.28%;">TAGET COUNT</th>
-                                <th scope="col" style=" width: 12.28%;">STATUS</th>
-                                <th scope="col" style=" width: 12.28%;">ACTION</th>
+                            <th scope="col" style=" width: 11.11%;">PHOTO</th>
+                            <th scope="col" style=" width: 11.11%">CODE</th>
+                            <th scope="col" style=" width: 11.11%;">NAME</th>
+                            <th scope="col" style=" width: 11.11%;">CONTACT</th> 
+                            <th scope="col" style=" width: 11.11%;">TYPE</th>
+                            <th scope="col" style=" width: 11.11%;">START DATE</th>
+                            <th scope="col" style=" width: 11.11%;">TARGET COUNT</th>
+                            <th scope="col" style=" width: 11.11%;">STATUS</th>
+                            <th scope="col" style=" width: 11.11%;">PHOTO</th>
+
                             </tr>
                         </thead>
                         
@@ -50,7 +51,7 @@ var SalesAgentsComponent = new function () {
                                 <table class="table table-white text-dark w-100 m-0" >
                                     <tbody>
                                         <tr >
-                                            <td class="border-0 align-middle" style=" width: 12.28%;">
+                                            <td class="border-0 align-middle" style=" width: 11.11%;">
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar-group d-flex align-items-center">
                                                         <a href="javascript:void(0)" class="avatar avatar-sm" data-toggle="tooltip"
@@ -60,16 +61,16 @@ var SalesAgentsComponent = new function () {
                                                     </div>
                                                 </div> 
                                             </td>
-                                            <td class="border-0 align-middle" style=" width: 12.28%;">
-                                                <div class="text-left d-flex align-items-center">
-                                                    <div style="line-height: 10px;">
+                                            <td class="border-0 align-middle" style=" width: 11.11%;">
+                                                <div class=" d-flex align-items-center">
+                                                    <div class="p-5" style="line-height: 10px;">
                                                         ${d.code}
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="border-0 align-middle" style=" width: 12.28%;">
-                                                <div class="text-left d-flex align-items-center">
-                                                <div style="line-height: 18px;">
+                                            <td class="border-0 align-middle" style=" width: 11.11%;">
+                                                <div class=" d-flex align-items-center">
+                                                <div class="p-5" style="line-height: 18px;">
                                                     ${d.name}
                                                     <div class="text-left ${d.status_id == 3?"text-light":"text-muted" }">
                                                         ${d.status_id == 1?"To Do":""}
@@ -79,10 +80,10 @@ var SalesAgentsComponent = new function () {
                                                 </div>
                                                 </div>
                                             </td>
-                                            <td class="border-0 align-middle" style=" width:14.28%;">
+                                            <td class="border-0 align-middle" style=" width:11.11%;">
                                                 <div class="d-flex align-items-center">
                                                     <div style="line-height: 18px;">
-                                                        ${d.email}
+                                                        ${d.email ? d.email : 'គ្មាន'}
                                                         <div class="text-left ${d.status_id == 3?"text-light":"text-muted" }">
                                                             ${d.phone_number}
                                                         </div>
@@ -90,12 +91,12 @@ var SalesAgentsComponent = new function () {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="border-0 align-middle" style=" width: 12.28%">
+                                            <td class="border-0 align-middle" style=" width: 11.11%">
                                                 <div class="text-left  d-flex align-items-center">
                                                     ${d.agent_type}    
                                                 </div>
                                             </td>
-                                            <td class="border-0 align-middle" style=" width: 14.28%">
+                                            <td class="border-0 align-middle" style=" width: 11.11%">
                                                 <div class="text-left d-flex align-items-center">
                                                     <div class="text-left d-flex align-items-center" style="line-height: 15px;"><i class="far fa-clock me-2 fs-5 text-warning"></i></div>
                                                     <div class="w-75" style="line-height: 15px;">
@@ -103,7 +104,7 @@ var SalesAgentsComponent = new function () {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="border-0 align-middle" style=" width: 12.28%">
+                                            <td class="border-0 align-middle" style=" width: 11.11%">
                                                 <div class="text-left d-flex align-items-center">
                                                     <div class="text-left d-flex align-items-center" style="line-height: 15px;"><i class="far fa-clock me-2 fs-5 text-warning"></i></div>
                                                     <div class="w-75" style="line-height: 15px;">
@@ -111,7 +112,7 @@ var SalesAgentsComponent = new function () {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="border-0 align-middle" style=" width: 12.28%">
+                                            <td class="border-0 align-middle" style=" width: 11.11%">
                                                 <div class="text-left d-flex align-items-center">
                                                     <div class="text-left d-flex align-items-center" style="line-height: 15px;"><i class="far fa-clock me-2 fs-5 text-warning"></i></div>
                                                     <div class="w-75" style="line-height: 15px;">
@@ -119,7 +120,7 @@ var SalesAgentsComponent = new function () {
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td class="border-0 align-middle" style=" width: 14.28%">
+                                            <td class="border-0 align-middle" style=" width: 11.11%">
                                                 <div class="text-left d-flex align-items-center">
                                                     <div class="dropdown d-block ">
                                                         <a href="javascript:void(0)" data-pricelistid="${d.price_list_id}" data-id="${d.id}" data-suppliername="${d.name}" data-status="${data.status_code='active'? 1 : 2}" class="btn_action " aria-haspopup="true" aria-expanded="false">
@@ -145,98 +146,99 @@ var SalesAgentsComponent = new function () {
     }
 
      
-    this.cols = [
-        {
-            className: "",
-            data: (data,index,tr)=>{
-                return "";
-            },
-            // title: mThis.trans('Sender ID')
-            title: ' '
-        },
-        {
-            title: "Photo",
-            className: ' align-middle',
-            data: (data, a, b) => {
-                let image = data.image_url ? data.image_url : '';
-                return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
-            }
-        },
+    // this.cols = [
+    //     // {
+    //     //     className: "",
+    //     //     data: (data,index,tr)=>{
+    //     //         return "";
+    //     //     },
+    //     //     // title: mThis.trans('Sender ID')
+    //     //     title: ' '
+    //     // },
+    //     {
+    //         // title: "Action",
+    //         className: 'align-middle text-capitalize',
+    //         data: (data, index, tr) => {
+    //         //   return ['<div class="d-flex gap-2">',
+    //         //   //'<a href="javascript:void(0)" class="btn-agent-status" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-dollar text-success fs-5"></i></a>',
+    //         //   '<a href="javascript:void(0)" class="btn-agent-edit" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-edit text-primary fs-5"></i></a>',
+    //         //   '<a href="javascript:void(0)" class="btn-agent-login" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-user text-primary fs-5"></i></a>',
+    //         //   '<a href="javascript:void(0)" class="btn-agent-delete" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-trash-can text-danger fs-5"></i></a>',
+    //         //   '</div>'].join(''); 
+    //         let html = ['<div class="dropdown d-block ">',
+    //                     '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-suppliername="', data.name, '" data-status="', data.status_code='active'? 1 : 2, '" class="btn_action " aria-haspopup="true" aria-expanded="false">',
+    //                     '<i class="fa fa-chevron-down" style="color:#8DC63F;font-size:1.5em"></i>',
+    //                     '</a>',
+    //                     '</div>'].join('');
+    //                 return html;
+    //         }
+    //     },
+    //     {
+    //         title: "Photo",
+    //         className: ' align-middle',
+    //         data: (data, a, b) => {
+    //             let image = data.image_url ? data.image_url : '';
+    //             return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
+    //         }
+    //     },
     
-        {
-            title: "ID",
-            className: "align-middle text-capitalize text-nowrap",
-            data:(data,index,tr)=>{
-                return `<span class="code text-danger">#${data.code ? data.code:'N/A'}</span>`;
-            }
-        },
-        {
-            title: "Name",
-            className: "align-middle text-capitalize text-nowrap",
-            data: (data,index,tr)=>{
-                let sex = data.sex === 'M' ? 'Male' : 'Female';
-                return [`<span class="d-block p-1 fw-semibold">`,data.name,`</span><span class="d-block p-1 text-muted text-left">`,sex,`</span>`].join('');
-            }
-        },
-        {
-            title: "Email",
-            className: "align-middle text-capitalize",
-            data: (data,index,tr)=>{
-                return ['<div class="d-flex p-1" ><i class="fas mt-2 text-success fa-envelope"></i><span class="d-block p-1">',(data.email || 'គ្មាន'),'</span></div>','<div class="d-flex p-1"><i class="fas text-warning fa-phone mt-2"></i><span class="d-block p-1 text-primary">',data.phone_number,'</span></div>'].join('');
-            }
-        },
+    //     {
+    //         title: "ID",
+    //         className: "align-middle text-capitalize text-nowrap",
+    //         data:(data,index,tr)=>{
+    //             return `<span class="code text-danger">#${data.code ? data.code:'N/A'}</span>`;
+    //         }
+    //     },
+    //     {
+    //         title: "Name",
+    //         className: "align-middle text-capitalize text-nowrap",
+    //         data: (data,index,tr)=>{
+    //             let sex = data.sex === 'M' ? 'Male' : 'Female';
+    //             return [`<span class="d-block p-1 fw-semibold">`,data.name,`</span><span class="d-block p-1 text-muted text-left">`,sex,`</span>`].join('');
+    //         }
+    //     },
+    //     {
+    //         title: "Email",
+    //         className: "align-middle text-capitalize",
+    //         data: (data,index,tr)=>{
+    //             return ['<div class="d-flex p-1" ><i class="fas mt-2 text-success fa-envelope"></i><span class="d-block p-1">',(data.email || 'គ្មាន'),'</span></div>','<div class="d-flex p-1"><i class="fas text-warning fa-phone mt-2"></i><span class="d-block p-1 text-primary">',data.phone_number,'</span></div>'].join('');
+    //         }
+    //     },
     
-        {
-            title: "Type",
-            className: 'align-middle text-capitalize',
-            data: (data, index,tr) => {
-                return data.agent_type;
-            }
-        },
-        {
-            title: "Start Date",
-            className: 'align-middle text-capitalize',
-            data: (data, index,tr) =>{
-                return ['<span class="d-block text-nowrap">',data.create_date,'</span>'].join('');
-            }
-        },
+    //     {
+    //         title: "Type",
+    //         className: 'align-middle text-capitalize',
+    //         data: (data, index,tr) => {
+    //             return data.agent_type;
+    //         }
+    //     },
+    //     {
+    //         title: "Start Date",
+    //         className: 'align-middle text-capitalize',
+    //         data: (data, index,tr) =>{
+    //             return ['<span class="d-block text-nowrap">',data.create_date,'</span>'].join('');
+    //         }
+    //     },
     
-        {
-            title: "Target Count",
-            className: 'align-middle text-capitalize',
-            data: (data, index,tr) =>{
-            let cls_status = data.summary_type ==='closed'? 'text-danger':'text-info'; 
-            let str_summary_status = [`<span class="${cls_status}">(`,data.summary_type,`)</span>`].join('');
-            return [`<div class="d-flex flex-column"><span class="p-1 text-success">Achieved in `,data.current_month,` ,`,data.current_year,`</span>`,`<span class="p-1 text-nowrap">`,data.target_count,` `,data.count_type, str_summary_status,`</span>`,`</div>`].join('');
-            }  
-        },
-        {
-            title: "Status",
-            className: 'align-middle text-capitalize',
-            data: (data, index, tr) => {
-            const status_class = (data.status_code || '').toLowerCase()==='active'? 'border-success text-success text-center': 'border-danger text-danger text-center';  
-            return ['<a href="javascript:void(0)" class="d-block lnk-agent-status" data-id ="',data.id,'" data-status="',data.status_code,'"><span style="display:block;width:80px;" class="border rounded-5 p-2 ',status_class,'">',data.status_code,'</span></a>'].join(''); 
-            }
-        },
-        {
-            // title: "Action",
-            className: 'align-middle text-capitalize',
-            data: (data, index, tr) => {
-            //   return ['<div class="d-flex gap-2">',
-            //   //'<a href="javascript:void(0)" class="btn-agent-status" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-dollar text-success fs-5"></i></a>',
-            //   '<a href="javascript:void(0)" class="btn-agent-edit" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-edit text-primary fs-5"></i></a>',
-            //   '<a href="javascript:void(0)" class="btn-agent-login" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-user text-primary fs-5"></i></a>',
-            //   '<a href="javascript:void(0)" class="btn-agent-delete" data-id="',data.id,'" data-status="',data.status_code,'"><i class="fa fa-trash-can text-danger fs-5"></i></a>',
-            //   '</div>'].join(''); 
-            let html = ['<div class="dropdown d-block ">',
-                        '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-suppliername="', data.name, '" data-status="', data.status_code='active'? 1 : 2, '" class="btn_action " aria-haspopup="true" aria-expanded="false">',
-                        '<i class="fa fa-chevron-down" style="color:#8DC63F;font-size:1.5em"></i>',
-                        '</a>',
-                        '</div>'].join('');
-                    return html;
-            }
-        }
-    ];
+    //     {
+    //         title: "Target Count",
+    //         className: 'align-middle text-capitalize',
+    //         data: (data, index,tr) =>{
+    //         let cls_status = data.summary_type ==='closed'? 'text-danger':'text-info'; 
+    //         let str_summary_status = [`<span class="${cls_status}">(`,data.summary_type,`)</span>`].join('');
+    //         return [`<div class="d-flex flex-column"><span class="p-1 text-success">Achieved in `,data.current_month,` ,`,data.current_year,`</span>`,`<span class="p-1 text-nowrap">`,data.target_count,` `,data.count_type, str_summary_status,`</span>`,`</div>`].join('');
+    //         }  
+    //     },
+    //     {
+    //         title: "Status",
+    //         className: 'align-middle text-capitalize',
+    //         data: (data, index, tr) => {
+    //         const status_class = (data.status_code || '').toLowerCase()==='active'? 'border-success text-success text-center': 'border-danger text-danger text-center';  
+    //         return ['<a href="javascript:void(0)" class="d-block lnk-agent-status" data-id ="',data.id,'" data-status="',data.status_code,'"><span style="display:block;width:80px;" class="border rounded-5 p-2 ',status_class,'">',data.status_code,'</span></a>'].join(''); 
+    //         }
+    //     },
+     
+    // ];
 
     this.loadFilterData = (onFinish) => {
         mThis.def_filter = mThis.def_filter || {};
@@ -820,6 +822,7 @@ const SalesAgentDialog = new function(){
     // this.elAgentType =  this.self.find('#_sal_agent_type');
     this.onClose = null;
     this.body =  this.self.find('.modal-body')[0];
+
 
     this.prepareData = (id,def, onFinish) => {
         // console.log(id);
