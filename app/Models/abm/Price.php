@@ -564,11 +564,15 @@ class Price //extends Model
         $branch_id = $ss->branch_id;
         $price_list_id = isset($d->price_list_id)?$d->price_list_id:null;
         $zone_codes = isset($d->zone_codes)?$d->zone_codes:null;
+        $country_id = isset($d->country_id)?$d->country_id:null;
        
         $str_zones = null;
+        $str_country = null;
         //todo: later, we can set str_zones to be " AND WHERE Match(l.zone_codes) AGAINST('$zone_codes')"
         // if (!empty($zone_codes)) $str_zones =" l.zone_code LIKE '%|".$zone_codes."|%')";
         $str_zones = $zone_codes? 'l.zone_code =\''.$zone_codes.'\'' : '1=1';
+        $str_country = $country_id? 'l.country_id =\''.$country_id.'\'' : '1=1';
+        // return JDV::result($country_id);
         $rows =[];
         $kg_marker =0;
         $rows = DB::table('price_list_names')->where('branch_id',$branch_id)->where('id',$price_list_id)->selectRaw("id,kg_marker")->get();
@@ -584,6 +588,7 @@ class Price //extends Model
           ->where('l.branch_id',$branch_id)
           ->where('l.price_list_id',$price_list_id)
           ->whereRaw($str_zones)
+          ->whereRaw($str_country)
           ->selectRaw("l.id,l.zone_code,l.country_id,c.name as country_name,l.price_list_id,l.item_type ,IFNULL(l.price_per_kg,0) AS price_per_kg")
           ->orderBy('l.id','DESC')->get();
         // return JDV::result($rows);
@@ -603,7 +608,7 @@ class Price //extends Model
             $m = $this->getPriceListItems($country_id,$rows);
             $ret_rows[] = $m;  
         }   
-        return $ret_rows;
+        return $m;
     }
  
     function getPriceListItems($country_id,$rows){

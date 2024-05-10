@@ -1,10 +1,4 @@
-<style>    
-.set-parent-active .active span {
-    border:1px solid #ffb822 !important;
-    background-color: #dfdfdf87 !important;
-    color: #1167c9 !important;    
-  }
-</style>
+
 <div id="_sttn_locationsComponent"   style="display:none;padding:15px; overflow: auto;height: 95.5%;">
   <div class="bg-white p-3 rounded-3">
     <div class="row">

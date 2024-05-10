@@ -678,6 +678,7 @@ var SalesAgentsComponent = new function () {
                 if(lnk){
                     let supplier_id = lnk.dataset.id;
                     let status_code = Validator.properCase(lnk.dataset.status);
+                    console.log(lnk.dataset.status); 
                     let option = {
                         title: 'Set Sale Agent Status',
                         dataLabel: "Agent status",
@@ -702,17 +703,17 @@ var SalesAgentsComponent = new function () {
                                 status_code: d.value
                             };
 
-                            vsapi.call(`${mThis.base_url}/abm/os-sales-agents/update-status`,p).then(res => {
-                                if(res.status_code === 200){
+                            // vsapi.call(`${mThis.base_url}/abm/os-sales-agents/update-status`,p).then(res => {
+                            //     if(res.status_code === 200){
                                     console.log(mThis.elFilter_sale_agent_status);
                                     // mThis.elFilter_sale_agent_status.val(d.value).trigger('change');
                                     mThis.elFilter_sale_agent_status.val(d.value).trigger('change');
                                     cv_interact.success('The status has been updated');
                                     mThis.salesAgentsListView.showPage(mThis.getFilterData());
-                                }
-                                else
-                                    cv_interact.error(res.error_message); 
-                            });
+                                // }
+                                // else
+                                //     cv_interact.error(res.error_message); 
+                            // });
                         }
                     });
                     return;

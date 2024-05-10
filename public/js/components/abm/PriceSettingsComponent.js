@@ -319,28 +319,28 @@ var PriceSettingsComponent = new function () {
     //zones = zones.slice(0,50)
     let i = 0, c;
     let ex_html = null;
-    let m_zones = null;
-    let arrs = [];
-    zones = zones.trim();
-    if (zones.slice(0, 1) == '|' || zones.slice(0, 1) == ',')
-      zones = zones.trim().slice(1);
-    if (zones.indexOf('|') > 0)
-      arrs = zones.split('|', 10);
-    else
-      arrs = zones.split(',', 10);
+    // let m_zones = null;
+    // let arrs = [];
+    // zones = zones.trim();
+    // if (zones.slice(0, 1) == '|' || zones.slice(0, 1) == ',')
+    //   zones = zones.trim().slice(1);
+    // if (zones.indexOf('|') > 0)
+    //   arrs = zones.split('|', 10);
+    // else
+    //   arrs = zones.split(',', 10);
 
-    do{
-      c = arrs[i];
-      if(!c) break;
-      ex_html = '<a data-id="" href="javascript:void(0)" class="btn_view_zones"><i class="fa fa-list fs-5"></i></a>';
-      if(i == 6){
-        if(arrs[7])
-          ex_html = ['...', ex_html].join(' ');
-        break;
-      }
-      m_zones = [m_zones, (m_zones ? ', ' : ''), c].join('');
-      i++;
-    }while(c);
+    // do{
+    //   c = arrs[i];
+    //   if(!c) break;
+    //   ex_html = '<a data-id="" href="javascript:void(0)" class="btn_view_zones"><i class="fa fa-list fs-5"></i></a>';
+    //   if(i == 6){
+    //     if(arrs[7])
+    //       ex_html = ['...', ex_html].join(' ');
+    //     break;
+    //   }
+    //   m_zones = [m_zones, (m_zones ? ', ' : ''), c].join('');
+    //   i++;
+    // }while(c);
 
     //set default
     if (!non.price_list_id) non.price_list_id = 0;
@@ -418,7 +418,7 @@ var PriceSettingsComponent = new function () {
         <tbody>
           <tr>
             <th style=" width: 20%;" scope="row">
-              <div class="ps-zones-text ps-zones">${m_zones}</div>
+              <div class="ps-zones-text ps-zones">${zones}</div>
             </th>
             <td style=" width: 20%;">
               <div class="dd-value fs-5-08 ps-zones">${doc.country_name}</div>

@@ -71,12 +71,23 @@ use App\Http\controllers\abm\GeneralSettingsController;
         Route::post('/save', [OverseaShipmentController::class, 'save']);
         Route::post('/Shipment-list', [OverseaShipmentController::class, 'getOverseaShipmentList']);
         Route::post('/Shipment-list-paginate', [OverseaShipmentController::class, 'ListPaginate']);
+        Route::post('/form-options', [OverseaShipmentController::class, 'getFormOptions']);
     
         Route::post('/create-item', [OverseaShipmentController::class, 'createOverseaItem']);
         Route::post('/item-list', [OverseaShipmentController::class, 'getOverseaItemList']);
         Route::post('/delete-item', [OverseaShipmentController::class, 'deleteOrderitem']);
     });
-
+    //begin:: PackageController
+    Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('package')->group(function(){
+        // Route::post('/receiver-info', [PackageController::class, 'getReceiverInfo']);
+        // Route::post('/details', [PackageController::class, 'getPackageDetails']);
+        // Route::post('/details-with-options', [PackageController::class, 'getPackageDetailsWithOptions']);
+        // Route::post('/details-by-barcode', [PackageController::class, 'getPackageDetailsByBarcode']);
+        // Route::post('/info', [PackageController::class, 'getPackageInfo']);
+        // Route::post('/update', [PackageController::class, 'updatePackageExpandedDetails']);
+        Route::post('/price-info', [PackageController::class, 'getDeliveryPriceInfo_api']);
+    });
+    //end:: packageController
     Route::prefix('customers')->group(function(){
         Route::post('/save',[CustomerController::class,'save']);
         Route::post('/save-sc',[CustomerController::class,'save_sc']);
