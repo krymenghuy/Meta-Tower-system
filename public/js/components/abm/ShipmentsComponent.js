@@ -1603,6 +1603,10 @@ var ShipmentsComponent = new function () {
                         val = data.price;
                         disp_value = [data.price,' USD'].join('');
                     }
+                    else if (col_name == 'price_per_kg') {
+                        val = data.price_per_kg;
+                        disp_value = [data.price_per_kg,' USD'].join('');
+                    }
                     else if (col_name == 'item_total') {
                         val = data.item_total;
                         disp_value = [data.item_total,' USD'].join('');
@@ -1779,7 +1783,7 @@ var ShipmentsComponent = new function () {
                
             } else mThis.makeRowEditable(tr,data);
         } else mThis.makeRowEditable(tr,data);
-        mThis.setEditor_events(tr);
+        // mThis.setEditor_events(tr);
 
    }
 
@@ -1901,9 +1905,9 @@ var ShipmentsComponent = new function () {
                         if (!def) def = 1;
                     }
                     else if (field_name === 'item_type') {
-                        items = [{ 'id': 'doc', 'text': 'doc' }, { 'id': 'non_doc', 'text': 'non-doc' }];
+                        items = [{ 'id': '0', 'text': 'Select item type' },{ 'id': 'doc', 'text': 'doc' }, { 'id': 'non_doc', 'text': 'non-doc' }];
                         def = data.item_type ? (data.item_type + '').toLowerCase() : null;
-                        if (!def) def = 'doc';
+                        if (!def) def = '0';
                     }
                     
                     if (items) VSUtil.setComboItems(el, items, 'id', 'text', false, null, def);
@@ -1931,7 +1935,7 @@ var ShipmentsComponent = new function () {
         });
   
         //Set onChange, onClick, onBlur event handler for SELECT, INPUT elements on this row "tr" for editing item
-        mThis.setEditor_events(tr);
+        // mThis.setEditor_events(tr);
 
         tr.dataset.editing = 1;
         mThis.shm_prev_editing_row = tr;
@@ -1989,19 +1993,20 @@ var ShipmentsComponent = new function () {
                     // let price_per_kg = 1.5;
                     let billed_kg = EditableTable.getCellValue(tr,'billed_weight',true); 
                     let item_type = EditableTable.getCellValue(tr,'item_type',false); 
-                    item_type =='doc' ? item_type='doc_items' : item_type='non_doc_items';
+                    // item_type =='doc' ? item_type='doc_items' : item_type='non_doc_items';
                     console.log(item_type);
-                    mThis.getPrice_per_kg(tr,item_type);
-                    let price_per_kg = EditableTable.getCellValue(tr,'getPrice_per_kg',true); 
+                    mThis.showPrice_per_kg(tr,item_type);
+                    let price_per_kg = EditableTable.getCellValue(tr,'price_per_kg',true); 
                     console.log(price_per_kg);
                     let price = price_per_kg * billed_kg;
                     EditableTable.setCellValue(tr,'item_total',Number(price).toFixed(2));
                 }
                 else if (['size','actual_weight'].indexOf(col_name) >=0){
-                    mThis.setBilledKg(tr);
+                    mThis.setBilledKg(tr); 
                 }
-                else if (['item_type','billed_weight','actual_weight'].indexOf(col_name) >= 0){
-                    mThis.setDeliveryPrices_item(tr);
+                else if (col_name == 'allocated_kg'){
+                    mThis.setBilledKg(tr); 
+                    // mThis.setDeliveryPrices_item(tr);
                 }
            }; 
 
@@ -2024,7 +2029,7 @@ var ShipmentsComponent = new function () {
 
     }
 
-    this.getPrice_per_kg = (tr,item_type = null) =>{
+    this.showPrice_per_kg = (tr,item_type = null) =>{
         let p = {"price_list_id":"7",
                     "country_id": 23 ,
                     "zone_codes": 9};
@@ -2034,8 +2039,12 @@ var ShipmentsComponent = new function () {
             if (res.status_code === 200) {
                 if(item_type=='doc'){
                     price_per_kg = res.data.data.doc_items.price_per_kg;
-                }else{
+                }
+                else if(item_type=='non_doc'){
                     price_per_kg = res.data.data.non_doc_items.price_per_kg;
+                }
+                else{
+                    price_per_kg = 0 ;
                 }
             }
             EditableTable.setCellValue(tr,'price_per_kg',price_per_kg);
