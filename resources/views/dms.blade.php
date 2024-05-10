@@ -216,7 +216,7 @@
                               
                                 @include('layouts.um.userManagementComponent')
                                 @include('layouts.um.roleManagementComponent')
-                                @include('layouts.geo.locationComponent')
+                                <!-- @include('layouts.geo.locationComponent') -->
                                 @include('layouts.dms.mobileBrandImagesComponent')
                                 @include('layouts.dms.socialMediaComponent')
                                 @include('layouts.dms.promotionComponent')

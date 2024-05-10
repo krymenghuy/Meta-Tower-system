@@ -520,10 +520,10 @@
             </div>
             <div class="modal-body">
                 <div class="row">
-                    <div class="form-group col-lg-6">
+                    <!-- <div class="form-group col-lg-6">
                         <span class="simple-label">zone_code</span>
                         <select id="_plq_warehouse" class="modal-select2 data-input" data-field="zone_code"></select>
-                    </div>
+                    </div> -->
                     <div class="form-group col-md-6">
                         <span class="simple-label">Customer</span>
                         <div>
@@ -533,13 +533,13 @@
                     <div class="form-group col-md-6">
                         <span class="simple-label">from country</span>
                         <div>
-                            <select id="_plq_from_country_id" class="modal-select2 data-input" data-field="from_country_id"></select>
+                            <select id="_plq_from_country" class="modal-select2 data-input" data-field="from_country_id"></select>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
                         <span class="simple-label">to country</span>
                         <div>
-                            <select id ="_plq_to_country_id" class="modal-select2 data-input" data-field="to_country_id"></select>
+                            <select id ="_plq_to_country" class="modal-select2 data-input" data-field="to_country_id"></select>
                         </div>
                         <!-- <input type="number" class="form-control data-input" data-field="to_country_id" />   -->
 
@@ -547,13 +547,13 @@
                     <div class="form-group col-md-6">
                         <span class="simple-label">primary cp</span>
                         <div>
-                            <select id ="_plq_primary_cp_id" class="modal-select2 data-input" data-field="primary_cp_id"></select>
+                            <select id ="_plq_primary_cp" class="modal-select2 data-input" data-field="primary_cp_id"></select>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
                         <span class="simple-label">secondary cp</span>
                         <div>
-                            <select id ="_plq_secondary_cp_id" class="modal-select2 data-input" data-field="secondary_cp_id"></select>
+                            <select id ="_plq_secondary_cp" class="modal-select2 data-input" data-field="secondary_cp_id"></select>
                         </div>
                     </div>
                     <!-- <div class="form-group col-md-6">
