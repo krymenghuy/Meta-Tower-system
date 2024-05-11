@@ -6,7 +6,7 @@
     }
 </style>
 
-<div id="_main_companyComponent" style="display:none;padding:35px">
+<div id="_main_companyComponent" class="m-3" style="display:none;">
     <div class="d-flex flex-column p-3 bg-white border rounded-3 shadow">
         <div class="row">
             <div class="col-lg-3">

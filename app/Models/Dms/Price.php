@@ -572,14 +572,14 @@ class Price //extends Model
         /** $rows query conditions are, for example => assuming x = price_list('A').kg_marker, then (start_kg =x OR end_kg =x) **/
           $rows = DB::table('price_list AS l')->where('l.branch_id',$branch_id)->where('price_list_id',$price_list_id)->whereRaw($more_wheres)->selectRaw("l.id,l.zone_codes,l.delivery_type AS delivery_type,l.start_kg, l.end_kg,l.base_price AS base_fee,IFNULL(l.price_per_kg,0) AS price_per_kg,IFNULL(l.price,0) AS price,LOWER(l.price_option) AS price_option, DATE_FORMAT(l.start_date,'%d %b %Y') AS start_date,DATE_FORMAT(l.end_date,'%d %b %Y') AS end_date, l.never_expires")->orderBy('l.id','DESC')->get();
           $unique_zones = $this->getUnique_zones($rows);
-        //$m = $this->getPriceListItems($zone_codes,$rows,$kg_marker =0);
-            //$m->below->data->zone_codes;
-            //$m->below->data->fast_items;
-            //$m->below->data->normal_items;
+        $m = $this->getPriceListItems($zone_codes,$rows,$kg_marker =0);
+            $m->below->data->zone_codes;
+            $m->below->data->fast_items;
+            $m->below->data->normal_items;
  
-            //$m->above->data->zone_codes;
-            //$m->above->data->fast_items;
-            //$m->above->data->normal_items;
+            $m->above->data->zone_codes;
+            $m->above->data->fast_items;
+            $m->above->data->normal_items;
 
         $ret_rows = [];
         foreach($unique_zones as $zone_codes){

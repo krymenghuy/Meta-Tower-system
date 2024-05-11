@@ -1,49 +1,45 @@
-<?php 
-    if(!Session::get('login_name')) return view('login.index'); 
-    // $role= \App\Models\UM::firstRole(Session::get('user_id'));
-    // $role_id = $role?$role->id:null;
-
-    // if ($role_id != 1 && $role_id != 2){
-    //     echo "It seems you do not have correct role in this system. Contact administrator to resolve this issue";
-    //     return;
-    //}
-?>
-
 <!DOCTYPE html>
-<html lang="<?php echo Session::get('lang','en'); ?>">
+<html lang="<?php echo Session::get('lang', 'en'); ?>">
     <head>
         <base href="../">
         <meta charset="utf-8" />
-        <title>JTO</title>
-        <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.png') }}"/>
+        <title>Delivery Management System</title>
+        <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.jpg') }}" />
         <meta name="description" content="Updates and statistics">
-        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
         <meta name="csrf-token" content="{{ csrf_token() }}" />
         <meta name="sess_branch_id" content="{{ sess_company_id() }}" />
         <meta name="sess_user_id" content="{{ sess_user_id() }}" />
         <meta name="base_url" content="{{ url('/') }}" />
         <meta name="main_route" content="dms" />
         <meta name="default_component" content="<?php echo $defaultComponent; ?>" />
-        <meta name="asset_url" content="{{ asset('assets/') }}" />
+        <meta name="asset_url" content="{{ asset('assets') }}" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+        <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet"/>
+        <link rel="preconnect" href="https://fonts.googleapis.com"/>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <?php StyleManager::render('vsksm-style',1); ?> 
+        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300&display=swap" rel="stylesheet">
+        <?php
+            StyleManager::render('dms-style', 1);
+        ?>
         <?php
             ScriptManager::render('priority-one',1);
-            ScriptManager::render('primary',1);
-            ScriptManager::render('primary-async',1);
+            ScriptManager::render('primary', 1);
             ScriptManager::render('primary-defer',1);
-            ScriptManager::render('dms-components',1);
+            ScriptManager::render('dms-components', 1);
+            ScriptManager::render('pdfmake', 1);
         ?>
     </head>
-    <body style="display:none" class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed kt-page--loading">
+    <body style="display:none" class="kt-quick-panel--right kt-demo-panel--right kt-offcanvas-panel--right kt-header--fixed kt-header-mobile--fixed kt-subheader--enabled kt-subheader--fixed kt-subheader--solid kt-aside--enabled kt-aside--fixed">
         <div id="vs_loading"></div>
-        <?php ScriptManager::render('primary-loader',1);?> 
+        <?php
+            ScriptManager::render('primary-loader', 1);
+        ?>
         <div id="_main_hidden_fields">
-            <input type="hidden" id="__base_url" value="{{ url('/') }}">
+            <input type="hidden" id="__base_url" value="{{ url('/') }}"/>
             <input type="hidden" id="__xsp_name" value="_csrf_115578" />
             <input type="hidden" id="__xsp_value" value="<?php echo Str::random(30); ?>" />
         </div>
@@ -53,15 +49,15 @@
                     <img alt="Logo" src="{{ asset('assets/images/logo/logo.png') }}" />
                 </a>
             </div>
-            <div class="kt-header-mobile__toolbar">
-               <button class="kt-header-mobile__toggler kt-header-mobile__toggler--left" id="kt_aside_mobile_toggler">
+            <div class="kt-header-mobile__toolbar" style="margin-bottom:10px">
+                <button class="kt-header-mobile__toggler kt-header-mobile__toggler--left" id="kt_aside_mobile_toggler">
                     <span class="text-primary"></span>
                 </button>
                 <button class="kt-header-mobile__topbar-toggler" id="kt_header_mobile_topbar_toggler">
                     <i class="flaticon-more"></i>
                 </button>
-                <div class="d-flex flex-row flex-wrap justify-content-center align-items-center shadow rounded-5 m-1">
-                    <h4 id="mobile_screen_title" class="trans-text text-center mobile-screen-title p-1 mt-2"></h4>
+                <div class="d-flex flex-row justify-content-center w-100 shadow rounded-5 mb-2 mt-1">
+                    <h4 id="mobile_screen_title" class="trans-text mobile-screen-title p-1"></h4>
                 </div>
             </div>
         </div>
@@ -72,10 +68,10 @@
                 </div>
                 <div class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor kt-wrapper" id="kt_wrapper">
                     <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
+                        <div class="animation-line line--loader" style="display:none" id="vs_loader"></div>
                         <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
-                            <div class="d-flex">
-                               
-                            <div class="mainview-top-right ml-2 pl-1">
+                            <div class="d-flex flex-row flex-wrap justify-content-between">
+                                <div class="mainview-top-right">
                                     <div class="show--title flex-grow-1">
                                         <div class="screen-info">
                                             <h5 class="screen-title mb-0 trans-text" data-langprop="titles.dashboard" style="text-transform:uppercase" id="screen_title">Dashboard</h5>
@@ -140,16 +136,16 @@
                                                     </span>
                                                     <div class="dropdown-divider"></div>
                                                     <span class="app-menu-item">
-                                                        <a id="" class="dropdown-item" href="{{ url('/abm')}}">
+                                                        <a id="" class="dropdown-item" href="{{ url('/acc')}}">
                                                             <i class="fa fa-cube"></i>
-                                                            Airway Bill Management
+                                                            Accounting Management
                                                         </a>
                                                     </span>
                                                     <div class="dropdown-divider"></div>
                                                     <span class="app-menu-item">
-                                                        <a id="" class="dropdown-item" href="{{ url('/usm')}}">
+                                                        <a id="" class="dropdown-item" href="{{ url('/gmt')}}">
                                                             <i class="fas fa-cog"></i>
-                                                            User Management
+                                                            GM Tools
                                                         </a>
                                                     </span>
                                                 </div>
@@ -189,18 +185,11 @@
                                     </div>
                                 </div>
                             </div>
-                            <!-- <div class="show--title">
-                                <div class="screen-info">
-                                    <h5 class="screen-title mb-0 trans-text" data-langprop="titles.dashboard" style="text-transform:uppercase" id="screen_title">Dashboard</h5>
-                                </div>
-                            </div> -->
                         </div>
-                        <div class="animation-line line--loader d-none" id="vs_loader"></div>
-                    </div>
-                    <!--Removed class "kt-content" from this DIV -->
-                    <div id="_p2" class="kt-grid__item kt-grid__item--fluid kt-grid kt-grid--hor" id="kt_content">
-                        <div id="_p1" class="row">
-                            <div class="col-lg-12 shadow-box ps-4" id="_app_content">
+                    </div> 
+                    <div id="_p2" class="h-100 mt-1" id="kt_content">  <!-- <div id="_p2" class="row" id="kt_content">   -->
+                        <div id="" class="h-100">
+                            <div class="pb-2" id="_app_content"> <!-- <div class="col-sm-12 col-lg-12" id="_app_content" style="margin-top:-15px"> -->
                                 @include('layouts.dms.dashboardComponent')
                                 @include('layouts.dms.orderImagesComponent')
                                 @include('layouts.dms.pickupListComponent')
@@ -212,32 +201,37 @@
                                 @include('layouts.dms.driverPaymentComponent')
                                 @include('layouts.dms.senderPaymentComponent')
                                 @include('layouts.dms.merchantBalancesComponent')
+                                @include('layouts.dms.leadListComponent')
+                                @include('layouts.dms.salesCommissionPolicyComponent')
+                                @include('layouts.dms.salesCommissionPaymentsComponent')
                                 @include('layouts.dms.driverBalancesComponent')
                                 @include('layouts.dms.driverListComponent')
                                 @include('layouts.dms.salesAgentsComponent')
+                                @include('layouts.dms.commentsComponent')
+                                <!-- @include('layouts.dms.priceListComponent') -->
+                                @include('layouts.dms.postersComponent')
                                 @include('layouts.dms.senderListComponent')
-                                @include('layouts.um.userManagementComponent')
-                                @include('layouts.um.roleManagementComponent')
-                                @include('layouts.dms.locationComponent')
-                                @include('layouts.dms.mobileBrandImagesComponent')
                                 @include('layouts.dms.mobilePrivacyComponent')
                                 @include('layouts.dms.mobileTCComponent')
+                              
+                                @include('layouts.um.userManagementComponent')
+                                @include('layouts.um.roleManagementComponent')
+                                @include('layouts.geo.locationComponent')
+                                @include('layouts.dms.mobileBrandImagesComponent')
+                                @include('layouts.dms.socialMediaComponent')
                                 @include('layouts.dms.promotionComponent')
                                 @include('layouts.dms.deliveryZoneComponent')
                                 @include('layouts.dms.priceSettingsComponent')
-                                @include('layouts.dms.socialMediaComponent')
                                 @include('layouts.dms.exchangeRatesComponent')
                                 @include('layouts.dms.productCategoriesComponent')
                                 @include('layouts.dms.remarksComponent')
                                 @include('layouts.dms.reportCenterComponent')
+                              
                             </div>
                         </div>
-                    </div> 
+                    </div>
                 </div>
             </div>
-        </div>
-        <div id="kt_scrolltop" class="kt-scrolltop">
-            <i class="fa fa-arrow-up"></i>
         </div>
     </body>
 </html>

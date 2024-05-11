@@ -95,17 +95,17 @@
                                 <input type="hidden" class="form-control data-input" data-field="code" placeholder="AUTO" readonly/>
                             </div>
                             <div class="form-group col-lg-6">
-                                <label for="name" class="form-label trans-text" data-langprop="titles.Merchant Name"></label>
+                                <label for="name" class="form-label trans-text" data-langprop="titles.Supplier Name"></label>
                                 <input type="text" class="form-control data-input" data-field="name"/>
                             </div>
                             
                             <div class="form-group col-lg-6">
                                 <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
-                                <input class="form-control data-input" type="text" data-field="phone_number"/>
+                                <input class="form-control data-input" type="number" placeholder=" accept only number" data-field="phone_number"/>
                             </div>
                             <div class="form-group col-lg-6">
                                 <label for="email" class="form-label trans-text" data-langprop="titles.Email"></label>
-                                <input type="email" class="form-control data-input" data-field="email"/>
+                                <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email"/>
                             </div>
                         </div>
                      </div>

@@ -247,8 +247,19 @@
       ?>
     </div>
     <script>
+       let printCount = 0;
+      // // Add event listener for beforeprint event
+      // window.onbeforeprint = function() {
+      //     // Increment the print counter
+      //     printCount++;
+      //     console.log("Print count: " + printCount);
+      //     alert('Print count is going to be ' + printCount);
+      // };    
       window.addEventListener('DOMContentLoaded', function(event){
-        window.print();
+         printCount++;
+         console.log("Print count: " + printCount);
+         alert('Print count is going to be ' + printCount);
+         window.print();
       });
     </script>
   </body>

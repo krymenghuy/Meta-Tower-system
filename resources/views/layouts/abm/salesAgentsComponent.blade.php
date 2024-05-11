@@ -10,7 +10,7 @@
             <div class="d-flex flex-row gap-2 ml-3">
             <input type="text" class="form-control" id="_sale_agent_search" placeholder="Search sales agent">
                 <button id="_sale_agent_btnSearch" class="btn btn-warning ml-3" type="button">
-                    <i class="fa fa-search"></i>
+                    <i class="fa fa-search text-white"></i>
                 </button>
             </div>
         </div>
@@ -38,7 +38,7 @@
 
     </div>
 
-    <div class=" shadow rounded-3 bg-light mt-2">
+    <div class=" shadow rounded-3 bg-white mt-2">
             <div id="_sale_agent_list"></div>
         </div>
 </div>
@@ -102,13 +102,15 @@
 
                 </div>
                 <div class="row">
-                        <div class="col-lg-12">
-                            <label class="form-label trans-text">Address</label>
-                            <textarea class="form-control data-input" data-field="address"></textarea>
-                        </div>
+                    <div class="col-lg-12">
+                        <label class="form-label trans-text">Address</label>
+                        <textarea class="form-control data-input" data-field="address"></textarea>
                     </div>
-                 
-                
+                </div>
+                <div class="col-xs-12 col-md-12 col-lg-3">
+                    <div class="d-flex align-items-center"> <div id="_saleAgent_profile_photo" style="height:165px" class="mt-2"></div></div>
+                </div>
+            
             </div>
             <div class="modal-footer">
                 <span id="_sal_agent_error" class="error_text"></span>

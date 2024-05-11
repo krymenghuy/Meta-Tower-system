@@ -155,37 +155,7 @@ var CustomerListComponent = new function(){
                                 <p class="px-2">:</p>
                                 <p  class="text-nowrap text-capitalize ">${created_by}</p>
                             </div>
-                            <div class="d-flex align-items-start  justify-content-end gap-2">
-                                <button class="btn btn-sm bg-primary  rounded-3 btn-options position-relative text-nowrap" type="button">
-                                    <span class="text-nowrap text-white  trans-text" data-langprop="buttons.Options"></span>
-
-                                        <i class="fa-solid text-success fa-caret-down ps-2"></i>
-                                    <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
-
-                                        <a href="javascript:void(0)" class="btn-customer-edit border-bottom pb-2" data-id="${item.id}" >
-                                            <i class="fa-regular fa-pen-to-square fs-5 text-success"></i>
-                                            <span class="ps-2 trans-text" data-langprop="titles.Modify Customer"></span>
-                                        </a>
-
-                                        <a href="javascript:void(0)" class="btn-set-price-list border-bottom pb-2" data-id="${item.id}" data-pricelistid="${item.price_list_id}" data-merchantname="${item.name}" data-status="${item.status_code}">
-                                            <i class="fa-regular fa-list-alt fs-5 text-warning"></i>
-                                            <span class="ps-2 trans-text" data-langprop="titles.Set Price List"></span>
-                                        </a>
-
-                                        <a href="javascript:void(0)" class="btn-customer-delete border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
-                                            <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
-                                            <span class="ps-2 trans-text" data-langprop="titles.Delete Customer"></span>
-                                        </a>
-                                    
-                                        <a href="javascript:void(0)" class="btn-customer-status border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
-                                            <i class="fa-regular fa-circle-stop fs-5 text-primary"></i>
-                                            <span class="ps-2 trans-text" data-langprop="titles.Change Status"></span>
-                                        </a>
-                                        
-                                    </div>
-                                    
-                                </button>
-                            </div>
+                            
                        
 
                                 
@@ -206,8 +176,39 @@ var CustomerListComponent = new function(){
                         </div>
 
                         <div class="col">
+                            <div class="d-flex align-items-start  justify-content-end gap-2">
+                                    <button class="btn btn-sm bg-primary  rounded-3 btn-options position-relative text-nowrap" type="button">
+                                        <span class="text-nowrap text-white  trans-text" data-langprop="buttons.Options"></span>
+
+                                            <i class="fa-solid text-success fa-caret-down ps-2"></i>
+                                        <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
+
+                                            <a href="javascript:void(0)" class="btn-customer-edit border-bottom pb-2" data-id="${item.id}" >
+                                                <i class="fa-regular fa-pen-to-square fs-5 text-success"></i>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Modify Customer"></span>
+                                            </a>
+
+                                            <a href="javascript:void(0)" class="btn-set-price-list border-bottom pb-2" data-id="${item.id}" data-pricelistid="${item.price_list_id}" data-merchantname="${item.name}" data-status="${item.status_code}">
+                                                <i class="fa-regular fa-list-alt fs-5 text-warning"></i>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Set Price List"></span>
+                                            </a>
+
+                                            <a href="javascript:void(0)" class="btn-customer-delete border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
+                                                <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Delete Customer"></span>
+                                            </a>
+                                        
+                                            <a href="javascript:void(0)" class="btn-customer-status border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
+                                                <i class="fa-regular fa-circle-stop fs-5 text-primary"></i>
+                                                <span class="ps-2 trans-text" data-langprop="titles.Change Status"></span>
+                                            </a>
+                                            
+                                        </div>
+                                        
+                                    </button>
+                                </div>
                            
-                       </div>
+                        </div>
 
                     </div>
                  
@@ -242,6 +243,7 @@ var CustomerListComponent = new function(){
                 parent.style.height = (window.innerHeight - 210)+'px';
             }
     };
+    
 
     this.chooseImage = (div) => {
         div.onclick = function(e){
@@ -468,7 +470,7 @@ var CustomerListComponent = new function(){
         }
     }
 
-
+  
  
  
  

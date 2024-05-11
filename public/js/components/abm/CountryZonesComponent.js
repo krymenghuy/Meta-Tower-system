@@ -43,8 +43,8 @@ var CountryZonesComponent  = new function () {
     {
       title:"Create By",
       data:(data,index,tr)=>{
-        return ['<div class="d-flex align-item-center " ><i class="fas mt-2 text-success fa-user"></i><span class="d-block p-1">',(data.create_user ?? 'គ្មាន'),
-        '</span></div>','<div class="d-flex"><i class="bi bi-balloon-fill"></i><span class="d-block p-1 text-warning">',data.create_date,'</span></div>'].join('');
+        return ['<div class="d-flex align-item-center " ><span class="d-block p-1">',(data.create_user ?? 'គ្មាន'),
+        '</span></div>','<div class="d-flex"><i class="bi bi-balloon-fill"></i><span class="d-block p-1 text-muted">',data.create_date,'</span></div>'].join('');
         
       }
     },
@@ -173,7 +173,7 @@ var CountryZonesComponent  = new function () {
 //begin::ZoneDialog1
 const ZoneDialog1 = new function () {
   let mThis = this;
-  this.self = main_view.appContent.children('#_sttn_dlgZon');
+  this.self = main_view.appContent.children('#_sttn_dlgZon1');
   this.base_url = main_view.base_url;
   this.elTitle = this.self.find('#_sttn_dlgZoneTitle');
  

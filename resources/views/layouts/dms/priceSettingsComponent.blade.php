@@ -94,7 +94,7 @@
   }
 </style>
 
-<div id="_sttn_priceSettingsComponent" style="display:none;padding:15px">
+<div id="_sttn_priceSettingsComponent" style="display:none;padding-right:15px">
   <div class="d-flex flex-column shadow rounded-3 justify-content-between bg-white p-3">
     <div class="d-flex gap-2">
       <div class="d-flex gap-2">
@@ -114,7 +114,7 @@
       <div class="d-flex gap-2">
         <div class="d-flex gap-2">
           <div class="min-width-select">
-            <select id="ps_filter_price_list" class="modal-select2"></select>
+            <select id="ps-filter_price_list" class="modal-select2"></select>
           </div>
           <div class="d-flex align-items-start">
             <button style="display:none" id="ps-lnk_merchant_list" type="button" class="btn btn-sm btn-primary">

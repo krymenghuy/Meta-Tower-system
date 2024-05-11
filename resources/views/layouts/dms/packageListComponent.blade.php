@@ -6,7 +6,19 @@
         border:1px solid green;
         transform-origin: 0;
     }
-    
+    .pg-crosstab{
+        padding: 4px;
+        border-radius: 3px;
+        border: 1px dotted green;
+    }
+    .pg-crosstab table td{
+        padding:3px 3px 3px 10px;
+        vertical-align: middle;
+        text-align: center;
+        margin: 4px 4px 4px 4px;
+        color: #fff;
+        border-bottom: 1px solid #EDF3F7;
+    }
 </style>
 <div id="_main_packageListComponent" style="display:none;padding:15px;margin-left:2px">
     <div class="d-flex justify-content-between w-100 bg-white rounded-3 p-3">
@@ -30,50 +42,39 @@
             </button>
         </div>
     </div>
-    <div class="pg-summary-container d-flex flex-fow gap-2 justify-content-start p-2 shadow border rounded-3">
-         
-        <div class="pg-alert-card card shadow p-2 border rounded-3 mr-3" data-statusid="5" data-name="overdue_aw">
-            <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-               <span class="data-input text-dark fs-5 fw-semibold" data-field="title">Overdue</span>
-               <a href="javascript:void(0)" class="lnk-alert-list" data-statusid="5"><span class="data-input fs-5 fw-semibold" data-field="value">3 pcs</h5></a>
-            </div>
-            <span class="pg-alert-card-line" style="width:100%"></span>
-            <span class="data-input text-muted p-1" style="font-size:0.8em" data-field="time_ago">Last 10 days</span>
-         </div>
+    <div class="pg-summary-container d-flex flex-fow justify-content-between p-2 shadow border rounded-3">
+        <div class="d-flex flex-row gap-2">
+                <div class="pg-alert-card card shadow p-2 border rounded-3 mr-3" data-statusid="5" data-name="overdue_aw">
+                    <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
+                    <span class="data-input text-dark fs-5 fw-semibold" data-field="title">Overdue</span>
+                    <a href="javascript:void(0)" class="lnk-alert-list" data-statusid="5"><span class="data-input fs-5 fw-semibold" data-field="value">3 pcs</h5></a>
+                    </div>
+                    <span class="pg-alert-card-line" style="width:100%"></span>
+                    <span class="data-input text-muted p-1" style="font-size:0.8em" data-field="time_ago">Last 10 days</span>
+                </div>
 
-         <div class="pg-alert-card card shadow p-2 border rounded-3 mr-3" data-statusid="6" data-name="overdue_od">
-            <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-               <span class="data-input text-dark fs-5 fw-semibold" data-field="title">Overdue</span>
-               <a href="javascript:void(0)" class="lnk-alert-list" data-statusid="6"><span class="data-input fs-5 fw-semibold" data-field="value">3 pcs</h5></a>
-            </div>
-            <span class="pg-alert-card-line" style="width:100%"></span>
-           <span class="data-input text-muted p-1" style="font-size:0.8em" data-field="time_ago">Last 10 days</span>
-         </div>
+                <div class="pg-alert-card card shadow p-2 border rounded-3 mr-3" data-statusid="6" data-name="overdue_od">
+                    <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
+                    <span class="data-input text-dark fs-5 fw-semibold" data-field="title">Overdue</span>
+                    <a href="javascript:void(0)" class="lnk-alert-list" data-statusid="6"><span class="data-input fs-5 fw-semibold" data-field="value">3 pcs</h5></a>
+                    </div>
+                    <span class="pg-alert-card-line" style="width:100%"></span>
+                    <span class="data-input text-muted p-1" style="font-size:0.8em" data-field="time_ago">Last 10 days</span>
+                </div>
 
-         <div class="pg-alert-card card shadow p-2 border rounded-3 mr-3" data-statusid="9" data-name="overdue_failed">
-            <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-               <span class="data-input text-dark fs-5 fw-semibold" data-field="title">Chhorng</span>
-               <a href="javascript:void(0)" class="lnk-alert-list" data-statusid="9"><span class="data-input fs-5 fw-semibold" data-field="value">0 pcs</h5></a>
-            </div>
-            <span class="pg-alert-card-line" style="width:100%"></span>
-           <span class="data-input text-muted p-1" style="font-size:0.8em" data-field="time_ago">Last 10 days</span>
-         </div>
-         <div class="pg-alert-card card shadow p-2 border rounded-3 mr-3" data-statusid="9" data-name="overdue_failed">
-            <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-               <span class="data-input text-dark fs-5 fw-semibold" data-field="title">Chhorng</span>
-               <a href="javascript:void(0)" class="lnk-alert-list" data-statusid="9"><span class="data-input fs-5 fw-semibold" data-field="value">0 pcs</h5></a>
-            </div>
-            <span class="pg-alert-card-line" style="width:100%"></span>
-           <span class="data-input text-muted p-1" style="font-size:0.8em" data-field="time_ago">Last 10 days</span>
-         </div>
-         <div class="pg-alert-card card shadow p-2 border rounded-3 mr-3" data-statusid="6" data-name="overdue_od">
-            <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
-               <span class="data-input text-dark fs-5 fw-semibold" data-field="title">Overdue</span>
-               <a href="javascript:void(0)" class="lnk-alert-list" data-statusid="6"><span class="data-input fs-5 fw-semibold" data-field="value">3 pcs</h5></a>
-            </div>
-            <span class="pg-alert-card-line" style="width:100%"></span>
-           <span class="data-input text-muted p-1" style="font-size:0.8em" data-field="time_ago">Last 10 days</span>
-         </div>
+                <div class="pg-alert-card card shadow p-2 border rounded-3 mr-3" data-statusid="9" data-name="overdue_failed">
+                    <div class="d-flex flex-column justify-content-center flex-wrap align-items-center p-2">
+                    <span class="data-input text-dark fs-5 fw-semibold" data-field="title"></span>
+                    <a href="javascript:void(0)" class="lnk-alert-list" data-statusid="9"><span class="data-input fs-5 fw-semibold" data-field="value">0 pcs</h5></a>
+                    </div>
+                    <span class="pg-alert-card-line" style="width:100%"></span>
+                    <span class="data-input text-muted p-1" style="font-size:0.8em" data-field="time_ago">Last 10 days</span>
+                </div>
+          </div>
+
+           <div id="pg_crosstab_container" class="d-flex flex-row justify-content-end gap-2">
+                 <div class="card-one"></div>  <div class="card-two"></div>
+           </div>
     </div>
 
     <div style="padding:10px 5px 10px 10px;margin-top:5px" class="table-responsive bg-white rounded-3 p-3 mt-3 w-100 border-style1 table-responsive-hover">

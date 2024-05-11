@@ -8,20 +8,7 @@
         width: 10px;
         font-size: 1em !important;
     }
-
-    table#_trl_tblTrips > thead th {
-        text-transform: uppercase;
-        color: #073c93 !important;
-        font-weight:bold;
-        font-size: 1em;
-        font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
-    }
-
-    table#_trl_tblTrips > tbody td {
-        font-size: 0.9em;
-        padding-top: 5px;
-    }
-
+ 
     tr.dpl-selected {
         background: #52BE80;
     }
@@ -103,15 +90,26 @@
         font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
         color: #120272;
     }
+    /* div.pg-list-containe:hover{
+        overflow: auto !important;
+    } */
+
+    div.pg-list-container{
+        max-height: 70vh;
+        width:100%;
+        padding:10px;
+        border-radius: 3px;
+        border: 1.2px dotted darkblue !important;
+        overflow: auto !important;
+
+    }
+    
 
     div.package_list_wrapper {
-        padding:20px;
-        border-radius: 3px;
-        border: 1px solid grey;
-        background: #F8F9F8;
-        border-radius: 5px;
-        width: 100%;
-        margin-top: 10px;
+       border:none !important;
+       max-height:fit-content !important; 
+       margin: 10px 10px 10px 10px;
+       border:none;
     }
 
     table#_trl_trip_tblPackages > tbody span.zone_code,
@@ -135,7 +133,12 @@
         font-size: 0.9em;
         font-family: 'Khmer OS Content', 'DaunPenh', 'Francois One', 'Bayon', 'Verdana', 'Arial Black (sans-serif)', 'Arial (sans-serif)', 'Tahoma (sans-serif)';
     }
- 
+    .dpl_da_delete:hover{
+        border: 1.2px dotted red;
+    }
+    .dpl_da_print_barcode:hover{
+        border: 1.2px dotted green;
+    }
     #map {
         height: 90vh;
     }
@@ -145,21 +148,18 @@
     <div id="_trl_trip_list_panel">
         <div class="d-flex justify-content-between shadow rounded-3 bg-white p-2">
             <div class="d-flex gap-2 flex-nowrap">
-                <button id="_trl_btnNewTrip" class="btn btn-primary height">
-                    <span class="text-center text-nowrap">New Trip</span>
-                </button>
                 <input type="text" id="_trl_search" class="form-control min-width-search height" placeholder="Search package" autocomplete="false">
                 <button type="button" id="_trl_btnSearch" class="btn btn-outline-primary height">
                     <i class="fas fa-sync-alt"></i>
                 </button>
                 <button role="button" id="_trl_btnToggleFilter" class="btn btn-outline-primary height">
-                <i class="fas fa-filter"></i>
-
+                    <i class="fas fa-filter"></i>
                 </button>
-                
             </div>
-
             <div class="d-flex gap-2 justify-content-end">
+               <button id="_trl_btnNewTrip" class="btn btn-primary height">
+                    <span class="text-center text-nowrap">New Trip</span>
+                </button>
                 <button id="_trl_btnPrint" role="button" class="btn btn-success height">
                     <i class="fas fa-print"></i>
                     <span>Print</span>
@@ -170,8 +170,14 @@
                 </button>
             </div>
         </div>
-        <div id="_trl_triplist_container" class="table-responsive shadow p-3 rounded-3 bg-white mt-3 table-responsive-hover">
-            <table id="_trl_tblTrips" class="table"></table>
+
+        <div class="d-flex flex-wrap justify-content-between p-2 mt-2  shadow bg-white rounded-3">
+             <div id="_trl_alert_container" class="d-flex gap-2"></div>
+        </div>
+        <div id="_trl_triplist_container" class="mt-2 shadow rounded-3 bg-white mt-3">
+             <div class="p-2 w-100" id="_trl_trip_list"></div>
+            <!-- table-responsive-hover -->
+            <!-- <table id="_trl_tblTrips" class="table"></table> -->
         </div>
     </div>
     <div id="_trl_tracking_map_panel" style="display:none">
@@ -337,7 +343,7 @@
 </div>
 
 <div class="modal fade" id="_trl_dlgPackageStatus" tabindex="-1" role="dialog" aria-labelledby="_trl_dlgPackageStatusTitle" aria-hidden="true">
-    <div class="modal-dialog" role="dialog">
+    <div class="modal-dialog vs-modal-dialog" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="_trl_dlgPackageStatusTitle">Change Package Status</h5>
@@ -346,29 +352,33 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div>
+                <div class="form-group">
                     <span class="simple-label">Select status</span>
                     <select id="_trl_ps_status" class="modal-select2"></select>
                 </div>
-                <div class="row">
+                <div class="form-group">
                     <div class="col-lg-12" style="display:none">
                         <span class="simple-label">Notes</span>
                         <input id="_trl_ps_notes" class="form-control" autocomplete="off">
                     </div>
                 </div>
-                <div class="row">
-                    <span style="margin:15px;" class="error_text d-block" id="_trl_ps_error"></span>
+                <div class="form-group">
+                    <span style="margin:15px;" class="text-danger p-2" id="_trl_ps_error"></span>
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                    <i class="fa fa-times text-danger"></i>
-                    <span>Cancel</span>
-                </button>
-                <button type="button" class="btn btn-primary" id="_trl_dlgPackageStatus_btnSave">
-                    <i class="fas fa-check text-white"></i>
-                    <span>Change Now</span>
-                </button>
+                
+               <div class="d-flex flex-row gap-2">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                            <i class="fa fa-times text-danger"></i>
+                            <span>Cancel</span>
+                        </button>
+
+                        <a href="javascript:void(0)" class="btn btn-primary" id="_trl_dlgPackageStatus_btnSave">
+                             <span class="trans-text" data-langprop="buttons.Change Now"></span>
+                        </a>
+               </div>
+
             </div>
         </div>
     </div>

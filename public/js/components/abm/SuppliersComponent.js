@@ -62,33 +62,37 @@ var SuppliersComponent = new function(){
 
     this.cols = [
         {
-            className: "",
-            data: (data,index,tr)=>{
-                return "";
-            },
-            // title: mThis.trans('Sender ID')
-            title: ' '
-        },
-        {
-            title: "Photo",
-            className: ' align-middle',
-            data: (data, a, b) => {
-                let image = data.image_url ? data.image_url : '';
-                return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
+            className: 'col_action align-middle',
+            data: function (data, row, display) {
+                let html = ['<div class="dropdown">',
+                    '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-name="', data.name, '" class="btn_pickup_action " aria-haspopup="true" aria-expanded="false">',
+                    '<i class="fa fa-chevron-down " style="color:grey;font-size:1.4em"></i>',
+                    '</a>',
+                    '</div>'].join('');
+                return html;
             }
         },
+        {
+            title:'Supplier ID',
+            className:"code align-middle",
+            data:(data,index,tr)=>{
+                return `<span class="code">${data.code ? data.code: 'N/A'}</span>`;
+            }
+           
+        },
+    
         
         {
             className: "name align-middle",
             data: (data,index,tr)=>{
-                const sender_info = ['<div class="d-flex p-1" ><span class="d-block p-1">',(data.name || 'គ្មាន'),'</span></div>'].join('');
+                const sender_info = ['<div class="d-flex p-1 text-capitalize" ><span class="d-block p-1">',(data.name || 'គ្មាន'),'</span></div>'].join('');
                 return sender_info;
             },
             // title: mThis.trans('Sender ID')
-            title: 'Name '
+            title: 'Supplier Name '
         },
         {
-            title: "Email",
+            title: "Contact Info",
             className: "align-middle text-capitalize",
             data: (data,index,tr)=>{
                 return ['<div class="d-flex p-1" ><i class="fas mt-2 text-success fa-envelope"></i><span class="d-block p-1">',(data.email || 'គ្មាន'),'</span></div>','<div class="d-flex p-1"><i class="fas text-warning fa-phone mt-2"></i><span class="d-block p-1 text-primary">',data.phone_number,'</span></div>'].join('');
@@ -96,21 +100,21 @@ var SuppliersComponent = new function(){
         },
       
         {
-            className: "price_list_name align-middle",
+            className: "price_list_name align-middle ",
             data: (data,index,tr)=>{
-                let price_list_html = data.price_list_name ? `<span class="supplier-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-suppliername="${data.name}" class="set-price-list">
-                <i class="fa fa-edit fs-5"></i></a>`;
+                let price_list_html = data.price_list_name ? `<span class="supplier-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="set-price-list">
+                <i class="fa-solid fa-pencil text-danger"></i></a>`;
                 const sender_info = ['<span class="sender-name text-primary d-block">',price_list_html,'</span>'].join('');
                 return sender_info;
             },
             // title: mThis.trans('Sender ID')
-            title: 'price list '
+            title: 'Price List '
         },
 
         {
             className: "sales_agent_id align-middle",
             data: function (data, index, tr) {
-                return ['<span class="pl-request_date d-block">',data.sales_agent||"NA", '</span>'].join('');
+                return ['<span class="pl-request_date text-capitalize d-block">',data.sales_agent||"NA", '</span>','<span class="text-muted">',data.agent_type,'</span>'].join('');
             },
             title: 'Sales Agent'
             // title: mThis.trans('Created Date')
@@ -119,45 +123,226 @@ var SuppliersComponent = new function(){
         {
             className: "created_by align-middle",
             data: function (data, index, tr) {
-                return ['<span class="pl-request_date d-block">',data.create_user||"NA", '</span>','<span class="text-muted">',data.created_at,'</span>'].join('');
+                return ['<span class="pl-request_date d-block">',data.create_user||"NA", '</span>','<span class="text-success">',data.created_at,'</span>'].join('');
             },
-            title: 'create by'
+            title: 'Create By'
             // title: mThis.trans('Created Date')
         },
         {
             className: 'status align-middle',
             data: function (data, index, tr) {
-                const cls_class = (data.status_code || '').toLowerCase() === 'active' ? 'border-success text-success text-center' : 'border-danger text-danger text-center';
+                const cls_class = (data.status_code || '').toLowerCase() === 'active' ? ' text-success text-center' : ' text-danger text-center';
                 const status_code = data.status_code ? VSUtil.properCase(data.status_code) : 'Inactive';
-                return ['<a class="d-block" data-status="', status_code, '" data-id="', data.id, `" href="javascript:void(0)"><span style="display:block;width:80px;"  class="border rounded-5 p-2  ${cls_class} ">`, status_code, '</span></a>'].join('');
+                return ['<a class="d-block" data-status="', status_code, '" data-id="', data.id, `" href="javascript:void(0)"><span style="display:block;width:80px;"  class=" p-2  ${cls_class} ">`, status_code, '</span></a>'].join('');
             },
             title: 'Status'
         },
+        
         {
-            className: 'col_action align-middle',
-            data: function (data, row, display) {
-                let html = ['<div class="dropdown d-block ">',
-                    '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-suppliername="', data.name, '" data-status="', data.status_code='active'? 1 : 2, '"  class="btn_pickup_action " aria-haspopup="true" aria-expanded="false">',
-                    '<i class="fa fa-chevron-down" style="color:#8DC63F;font-size:1.5em"></i>',
-                    '</a>',
-                    '</div>'].join('');
-                return html;
-            },
-            // title: 'action'
-        },
+            title: "Photo",
+            className: ' align-middle',
+            data: (data, a, b) => {
+                let image = data.image_url ? data.image_url : '';
+                return [`<img class="image-supplier-tbl" src="${image}" alt=""/>`].join('');
+            }
+        }
+        
     ];
+
+    // this.renderMerchant = (container, data) => {
+    //     let html = '';
+    //     let cnt = 0;
+    //     container.style.display = 'none';
+    //     mThis.store_suppliers = {};
+    //     (data || []).map(item => {
+    //         mThis.store_suppliers[item.id] = {
+    //             code: item.code,
+    //             name: item.name,
+    //             phone_number: item.phone_number
+    //         };
+    //         let sales_agent_id = `<span class=" ">${item.sales_agent_id}</span>`;
+    //         let email = `<span class=" ">${item.email}</span>`;
+    //         let created_by = `<span class="d-block fw-sembold">${item.create_user}</span>
+    //         <pan class="d-block">
+    //             <small>${item.created_at}</small>
+    //         </span>`;
+
+    //         (item.bank_accounts || []).map(ac => {
+    //             if(ac.is_primary == 1 || !item.bank_accounts[1])
+    //                 bank_account_html = `<span class="fw-semibold">${ac.bank_name}/${ac.account_number}</span>
+    //                 <span> /${ac.account_name}</span`;
+    //         });
+
+    //         let status_class = (item.status_code +'').toLowerCase() === 'active' ? 'text-capitalize p-2 text-center border border-success rounded-5 text-success' : 'text-capitalize p-2 text-center border border-danger rounded-5 text-danger';
+    //         let mobile_login = '';
+    //         if(item.mobile_login){
+    //             if(item.mobile_login.status.toLowerCase() == 'active'){
+    //                 mobile_login = `<span class="text-success">${item.mobile_login.login_name}  (${item.mobile_login.status})</span>`;
+    //             }
+    //             else{
+    //                 mobile_login = `<span class="text-dark p-1">${item.mobile_login.login_name}</span>
+    //                 <span class="text-capitalize p-2 bg-danger rounded-5 text-white">${item.mobile_login.status}</span>`;
+    //             }
+    //         }
+    //         else{
+    //             mobile_login = `<span class="p-2 text-danger">គ្មាន</span>
+    //             <span>
+    //                 <a href="javascript:void(0)" data-id="${item.id}" class="btn-app-login btn btn-sm btn-outline-primary">
+    //                     <i class="la la-mobile fs-4"></i> 
+    //                     <span>Create</span>
+    //                 </a>
+    //             </span>`;
+    //         }
+
+    //         let price_list_html = item.price_list_name ? `<span class="merchant-price-list">${item.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${item.code}" data-merchantname="${item.name}" class="set-price-list">
+    //             <i class="fa fa-edit fs-5"></i>
+    //         </a>`;
+
+    //         html += `<div class="d-flex p-3 bg-white h-info-student mb-2">
+    //             <div class="div-img" data-id="${item.id}" data-imageurl="${item.image_url}"></div>
+    //             <div class="d-block ms-3 w-100">
+    //                 <div class="row row-cols-3 mb-0">
+    //                     <div class="col">
+    //                         <div class="d-flex">
+    //                             <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Supplier ID"></p>
+    //                             <p class="px-2">:</p>
+    //                             <p class="text-nowrap text-capitalize data-get" data-field="official_id">${item.code}</p>
+    //                         </div>
+    //                         <div class="d-flex">
+    //                             <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Name"></p>
+    //                             <p class="px-2">:</p>
+    //                             <p class="text-nowrap text-capitalize data-get" data-field="full_name">${item.name}</p>
+    //                         </div>
+    //                         <div class="d-flex">
+    //                             <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Phone Number"></p>
+    //                             <p class="px-2">:</p>
+    //                             <p class="text-nowrap text-capitalize data-get" data-field="phone_number">${item.phone_number}</p>
+    //                         </div>
+    //                     </div>
+    //                     <div class="col">
+    //                         <div class="d-flex">
+    //                             <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Sales Agent"></p>
+    //                             <p class="px-2">:</p>
+    //                             <p class="text-nowrap text-capitalize">${item.sales_agent_id? item.sales_agent_id:"គ្មាន"}</p>
+    //                         </div>
+    //                         <div class="d-flex">
+    //                             <p class="text-nowrap text-muted trans-text width-p" data-langprop="titles.Price List"></p>
+    //                             <p class="px-2">:</p>
+    //                             <p class="text-nowrap text-capitalize">${price_list_html}</p>
+    //                         </div>
+    //                         <div class="d-flex align-items-center">
+    //                             <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Email"></p>
+    //                             <p class="px-2">:</p>
+    //                             <p class="text-nowrap text-capitalize">${email}</p>
+    //                         </div>
+    //                     </div>
+    //                     <div class="col">
+    //                         <div class="d-flex align-items-center">
+    //                             <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.App Account"></p>
+    //                             <p class="px-2">:</p>
+    //                             <p class="text-nowrap text-capitalize">${mobile_login}</p>
+    //                         </div>
+    //                     </div>
+    //                     <div class="col position-relative">
+    //                         <div class="d-flex align-items-start justify-content-end gap-2">
+    //                             <button class="btn btn-sm btn-danger rounded-3 btn-options position-relative text-nowrap" type="button">
+    //                                 <span class="text-nowrap trans-text" data-langprop="buttons.Options"></span>
+    //                                 <i class="fa-solid fa-caret-down ps-2"></i>
+    //                                 <div class="w-options gap-2 shadow p-3 rounded-3" style="display:none">
+    //                                     <a href="javascript:void(0)" class="btn-merchant-edit border-bottom pb-2" data-id="${item.id}">
+    //                                         <i class="fa-regular fa-pen-to-square fs-5"></i>
+    //                                         <span class="ps-2 trans-text" data-langprop="titles.Modify Merchant"></span>
+    //                                     </a>
+    //                                     <a href="javascript:void(0)" class="btn-set-price-list border-bottom pb-2" data-id="${item.id}" data-pricelistid="${item.price_list_id}" data-merchantname="${item.name}" data-status="${item.status_code}">
+    //                                         <i class="fa-regular fa-list-alt fs-5"></i>
+    //                                         <span class="ps-2 trans-text" data-langprop="titles.Set Price List"></span>
+    //                                     </a>
+    //                                     <a href="javascript:void(0)" class="btn-merchant-delete border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
+    //                                         <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
+    //                                         <span class="ps-2 trans-text" data-langprop="titles.Delete Merchant"></span>
+    //                                     </a>
+    //                                     <a href="javascript:void(0)" class="btn-merchant-delete-special border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
+    //                                       <i class="fa-regular fa-trash-can fs-5 text-warning"></i>
+    //                                       <span class="ps-2 trans-text" data-langprop="titles.Delete Special"></span>
+    //                                    </a>
+    //                                     <a href="javascript:void(0)" class="btn-merchant-status border-bottom pb-2" data-id="${item.id}" data-status="${item.status_code}">
+    //                                         <i class="fa-regular fa-circle-stop fs-5"></i>
+    //                                         <span class="ps-2 trans-text" data-langprop="titles.Change Status"></span>
+    //                                     </a>
+    //                                     <a href="javascript:void(0)" class="btn-create-app-account border-bottom pb-2" data-id="${item.id}">
+    //                                         <i class="fa-solid fa-mobile fs-5"></i>
+    //                                         <span class="ps-2 trans-text" data-langprop="titles.Create App Account"></span>
+    //                                     </a>
+    //                                 </div>
+    //                             </button>
+    //                         </div>
+    //                         <div class="d-flex justify-content-end align-items-center h-100">
+    //                             <div class="d-block position-relative">
+    //                                 <span class="${status_class}" data-id="${item.code}" data-status="${item.status_code}">${item.status_code}</span>  
+    //                             </div>
+    //                         </div>
+    //                     </div>
+    //                 </div>
+    //                 <hr class="bg-dark m-1 p-0"/>
+    //                 <div class="row row-cols-5 mt-2">
+    //                     <div class="col">
+    //                         <div class="d-flex">
+    //                             <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Address"></p>
+    //                             <p class="px-2">:</p>
+    //                             <p class="text-nowrap text-capitalize">${item.address ? item.address : 'គ្មាន'}</p>
+    //                         </div>
+    //                     </div>
+    //                     <div class="col">
+    //                         <div class="d-flex">
+    //                             <p class="text-nowrap text-muted trans-text width-bp" data-langprop="titles.Created By"></p>
+    //                             <p class="px-2">:</p>
+    //                             <p class="text-nowrap text-capitalize">${created_by}</p>
+    //                         </div>
+    //                    </div>
+    //                 </div>
+    //             </div>
+    //         </div>`;
+    //         cnt++;
+    //     });
+
+    //     if(cnt == 0){
+    //         html = `<div class="d-flex bg-white p-3 rounded-3 align-items-center">
+    //             <h5>${LocaleManager.trans('No data to display!')}</h5>
+    //         </div>`;
+    //     }
+
+    //     container.innerHTML = html;
+        
+    //     /** Display profile photos for all displayed merchants */
+    //     container.querySelectorAll('.div-img').forEach(div =>{
+    //         mThis.setImage(div,div.dataset.imageurl);
+    //     });
+        
+    //     mThis.setEvents($(container));
+    //     LocaleManager.translateZone(container);
+    //     setTimeout(() => {
+    //         container.style.display = 'block';
+    //     }, 200);
+
+    //     const parent = container.parentElement;
+    //     parent.style.height = (window.innerHeight - 210)+'px';
+    //     parent.classList.add('overflow-y-auto');
+    //     window.onresize = () => {
+    //         parent.style.height = (window.innerHeight - 210)+'px';
+    //     }
+    // };
 
     this.chooseImage = (div) => {
         div.onclick = function(e){
             e.preventDefault();
             e.stopPropagation();
-            const img = VSUtil.getElementByClass(e.target,'img-sdl-show');
+            const img = VSUtil.getElementByClass(e.target,'img-sup-show');
             if(img){
                 FileChooser.chooseFile(null,(d) => {
                     if(d){
                         const imgContainer = img.parentElement;
                         mThis.setImage(imgContainer,d.dataUrl);
-                        vsapi.call(`${main_view.base_url}/abm/merchant/save-profile-picture`,{
+                        vsapi.call(`${main_view.base_url}/abm/os_suppliers/save-profile-picture`,{
                             id: imgContainer.dataset.id,
                             photo: d.dataUrl
                         },false).then(res => {
@@ -179,7 +364,7 @@ var SuppliersComponent = new function(){
         if(image){
             const html = `<img class="data-get" src="${image}" alt="" data-field="photo"/>
             <div class="d-flex-hover position-absolute top-0 end-0 p-2 rounded-3 bg-dark">
-                <a href="javascript:void(0)" class="img-sdl-delete">
+                <a href="javascript:void(0)" class="img-sup-delete">
                     <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
                 </a>
             </div>`;
@@ -187,7 +372,7 @@ var SuppliersComponent = new function(){
             mThis.setImageDeleteEvent(div);
         }
         else{
-            const html = `<div class="img-sdl-show border rounded-3 h-100 w-100 d-flex align-items-center justify-content-center" role="button">
+            const html = `<div class="img-sup-show border rounded-3 h-100 w-100 d-flex align-items-center justify-content-center" role="button">
                 <i class="fa-regular fa-image fs-3 text-muted"></i>
             </div>`;
             div.innerHTML = html;
@@ -196,7 +381,7 @@ var SuppliersComponent = new function(){
     }
 
     this.setImageDeleteEvent = (div) => {
-        let lnk = div.querySelector('.img-sdl-delete');
+        let lnk = div.querySelector('.img-sup-delete');
         if(lnk){
             lnk.onclick = (e) => {
                 e.preventDefault();
@@ -206,11 +391,11 @@ var SuppliersComponent = new function(){
                 },(e) => {
                     if(e){
                         const imgContainer = lnk.closest('.div-img');
-                        vsapi.call(`${main_view.base_url}/abm/merchant/delete-profile-picture`,{
+                        vsapi.call(`${main_view.base_url}/abm/os_suppliers/delete-profile-picture`,{
                             id: imgContainer.dataset.id
                         },false).then(res => {
                             if(res.status_code === 200){
-                                const html = `<div class="img-sdl-show border rounded-3 h-100 w-100 d-flex align-items-center justify-content-center" role="button">
+                                const html = `<div class="img-sup-show border rounded-3 h-100 w-100 d-flex align-items-center justify-content-center" role="button">
                                     <i class="fa-regular fa-image fs-3 text-muted"></i>
                                 </div>`;
                                 imgContainer.innerHTML = html;
@@ -239,17 +424,13 @@ var SuppliersComponent = new function(){
         container.off('click').on('click',e => {
             e.preventDefault();
              
-            let lnk = VSUtil.getElementByClass(e.target,'btn-app-login');
-            if(lnk){
-                mThis.createAppAccount(lnk.dataset.id);
-                return;
-            }
+           
  
             //click on Set Price List
-            lnk = VSUtil.getElementByClass(e.target,'set-price-list');
+            let lnk = VSUtil.getElementByClass(e.target,'set-price-list');
             if(lnk){
                 // console.log(lnk);
-                mThis.setSupplierPriceList(lnk.dataset.id,lnk.dataset.suppliername,lnk.parentElement,null);
+                mThis.setSupplierPriceList(lnk.dataset.id,lnk.dataset.name,lnk.parentElement,null);
                 return;
             }
          });
@@ -293,7 +474,7 @@ var SuppliersComponent = new function(){
                 if(lnk){
                     const id = lnk.dataset.id;
                     let pl_id = lnk.dataset.pricelistid;
-                    let name = lnk.dataset.suppliername;
+                    let name = lnk.dataset.name;
                     let span = container.find('.supplier-price-list')[0];
                     mThis.setSupplierPriceList(id,name, span ? span.parentElement : null ,pl_id); 
                     return;
@@ -333,7 +514,7 @@ var SuppliersComponent = new function(){
                 if(lnk){
                     const id = lnk.dataset.id;
                     let pl_id = lnk.dataset.pricelistid;
-                    let name = lnk.dataset.merchantname;
+                    let name = lnk.dataset.name;
                     let span = container.find('.supplier-price-list')[0];
                     mThis.setSupplierPriceList(id,name, span ? span.parentElement : null ,pl_id); 
                     return;
@@ -479,7 +660,7 @@ var SuppliersComponent = new function(){
                 let p = btn.parentElement;
                 let supplier_id = btn.dataset.id;
                 let pricelist_id = btn.dataset.pricelistid;
-                let supplier_name = btn.dataset.suppliername;
+                let supplier_name = btn.dataset.name;
                 let status_code = btn.dataset.status;
                 console.log(supplier_id,pricelist_id,supplier_name,status_code);
         
@@ -487,7 +668,7 @@ var SuppliersComponent = new function(){
                 if (!dropdownMenu || dropdownMenu.length === 0) {
                     p.insertAdjacentHTML('afterbegin', mThis.createDropdownMenuHtml_pickup(supplier_id, pricelist_id, supplier_name ,status_code));
                     dropdownMenu = p.querySelector('.dropdown-menu');
-                    dropdownMenu.setAttribute('style',` left: -130px;`);
+                    dropdownMenu.setAttribute('style',` right: -130px;`);
                 }
         
                 if (mThis.prev_dropdownMenu && mThis.prev_dropdownMenu !== dropdownMenu) {
@@ -568,11 +749,11 @@ var SuppliersComponent = new function(){
     this.changeSenderStatus = () => {
         return;
     }
-    this.createDropdownMenuHtml_pickup = function (supplier_id, pricelist_id, supplier_name ,status) {
+    this.createDropdownMenuHtml_pickup = function (supplier_id, pricelist_id, name ,status) {
         let html = [
-            '<div class="dropdown-menu bg-white shadow" data-id="', supplier_id, '" data-pricelistid="', pricelist_id, '" data-suppliername="', supplier_name, '">',
+            '<div class="dropdown-menu bg-white shadow" data-id="', supplier_id, '" data-pricelistid="', pricelist_id, '" data-name="', name, '">',
             // '<a class="dropdown-item _pl_pa_assign_driver" href="javascript:void(0)"><i class="fa fa-biking" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '"></i> Assign Driver (Pickup)</a>',
-            `<a href="javascript:void(0)" class="dropdown-item btn-set-price-list border-bottom pb-2" data-id="${supplier_id}" data-pricelistid="${pricelist_id}" data-suppliername="${supplier_name}" data-status="${status}">
+            `<a href="javascript:void(0)" class="dropdown-item btn-set-price-list border-bottom pb-2" data-id="${supplier_id}" data-pricelistid="${pricelist_id}" data-name="${name}" data-status="${status}">
                 <i class="fa-regular fa-list-alt fs-5"></i>
                 <span class="ps-2 trans-text" data-langprop="titles.Set Price List">Set Price List</span>
             </a>`,
@@ -612,13 +793,38 @@ const SupplierDialog = new function(){
     // this.elCOD =  this.self.find('#_sdl_cod');
     // this.elCODFee =  this.self.find('#_sdl_cod_fee');
     this.divPhoto = this.self[0].querySelector('#_supplier_profile_photo');
-
+    // console.log(mThis.divPhoto);
     this.onClose = null;
     this.elError =  this.self.find('#_sdl_sender_error');
 
     this.body =  this.self.find('.modal-body')[0];
     this.div_sender_info =  this.body.querySelector('#div_merchant_info');
     // this.div_bank_account = this.body.querySelector('#div_bank_account');
+    mThis.imgBox = new ImageBox(mThis.divPhoto,{
+        "dataField":"photo",
+        "cssClass":"data-input border",
+        containerClass:null,
+        // onDeleteImage:()=>{
+        //   alert('Deleting image');
+        //   return false;
+        // },
+        "onLoadImage":(photo) =>{
+            let p = {"id":mThis.options.id,"supplier_id":mThis.options.id,"photo":photo};
+            if(!p.id) return; 
+            vsapi.call(`${main_view.base_url}/abm/os_suppliers/save-profile-picture`,p,null,null,false).then(res =>{
+                if(res.status_code ===200){
+                    mThis.imgBox.setImage(photo);
+                   // cv_interact.success('Photo has been saved');
+                }else cv_interact.error(res.error_message);
+            });
+        },
+        "deleteAPI":{
+            "endPoint":`${main_view.base_url}/abm/os_suppliers/delete-profile-picture`,
+            "params":()=>{
+                return {"id": mThis.options.id,"supplier_id":mThis.options.id}
+            }
+        }
+    });
     
 
     this.prepareData = (id,def, onFinish) => {
@@ -651,53 +857,86 @@ const SupplierDialog = new function(){
         });
     });
 
-    this.show = (options) => {
-        // console.log(options);
-        if (!options) options = {};
-        mThis.options = options;
+    // this.show = (options) => {
+    //     // console.log(options);
+    //     if (!options) options = {};
+    //     mThis.options = options;
          
-        mThis.prepareData(mThis.options.id,{},data => { 
-            if(data.supplier){
-                mThis.elTitle.text("Modify Supplier Information");
-            }
-            else{
-                mThis.elTitle.text("Create Supplier");
-            }
-            mThis.setData(data.supplier);
-            mThis.self.modal({
-                backdrop: 'static'
+    //     mThis.prepareData(mThis.options.id,{},data => { 
+    //         if(data.supplier){
+    //             mThis.elTitle.text("Modify Supplier Information");
+    //         }
+    //         else{
+    //             mThis.elTitle.text("Create Supplier");
+    //         }
+    //         mThis.setData(data.supplier);
+    //         mThis.self.modal({
+    //             backdrop: 'static'
+    //         });
+    //     });
+    // }
+    this.show = (options)=>{
+        mThis.options = options || {};
+        mThis.elTitle.innerHTML = options.title;
+        console.log(mThis.options.id);
+        if (mThis.options.id > 0) {
+            mThis.elTitle.innerHTML = "Suppliers Details";
+            let p = {'id':mThis.options.id};
+            vsapi.call([main_view.base_url,'/abm/os_suppliers/form-options'].join(''),p,null).then(res=>{
+                
+                if(res.status_code === 200){
+                    let d = res.data.supplier;
+                console.log(d);
+
+                    d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
+                    mThis.prepareData(d, {}, data => {
+                        mThis.setData(d);
+                        mThis.self.modal({
+                            backdrop:'static'
+                        });
+                    });
+                }
             });
-        });
+        }
+        else{
+            mThis.elTitle.innerHTML =  "New Customers";
+            mThis.prepareData({'id':1},{},data =>{
+                mThis.setData(null);
+                mThis.self.modal({
+                    backdrop:'static'
+                });       
+            });
+        }
     }
 
     this.setData = (d) => {
-        mThis.body.querySelectorAll('.data-input').forEach(el =>{
-            el.value = null;
-        });
-        if(!d) return;
-
-        mThis.div_sender_info.querySelectorAll('.data-input').forEach(el =>{ 
+        // mThis.body.querySelectorAll('.data-input').forEach(el => {
+        //     el.value = null;
+        // });
+        // if (!d) return;
+        d = d || {};
+        mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
-            if(el.tagName.toLowerCase() === 'select'){
-                el.value = d[data_member];
-                let event = new Event('change',{
-                    bubbles: true,
-                    cancelable: true
-                });
-                el.dispatchEvent(event);
+            el.value = d[data_member] ?? '';
+            console.log(d[data_member]);
+
+            if (el.tagName.toLowerCase() === 'select') {
+                el.dispatchEvent(new Event('change'));
+            }else if(el.tagName ==='IMG'){
+                el.setAttribute('src',d[data_member] || '');
             }
-            else{
-                el.value = d[data_member];
-            }
+                
+           
         });
+    mThis.imgBox.setImage(d.photo || d.image_url);
 
     }
-
     this.getData = () => {
         let p = {};
         p.id = mThis.options.id;
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
             let data_member = el.dataset.field;
+            
            if(el.tagName ==='IMG') 
                 p[data_member] = el.getAttribute('src');
             else 

@@ -1,4 +1,4 @@
-<div id="_main_remarksComponent" style="display:none; padding:35px">
+<div id="_main_remarksComponent" class="m-3" style="display:none;">
     <div class="d-flex flex-column">
         <div class="d-flex align-items-center border shadow rounded-3 p-2 bg-white">
             <button class="btn btn-primary height" id="_rmk_btnNew">

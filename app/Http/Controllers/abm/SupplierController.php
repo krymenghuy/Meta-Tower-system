@@ -101,4 +101,14 @@ class SupplierController extends Controller
         $res = $supplier->saveProfilePicture($photo,$req->file_type);
         return JDV::raw($res);
      }
+     function deleteProfilePicture(Request $req)
+     {
+         $ss = UM::getUserInfoByToken($req, -1);
+         if ($ss->status_code !== 200)
+             return JDV::raw($ss); //user not authenticated
+         $id = $req->id ? $req->id : $req->supplier_id;
+         $cus = new Supplier($id, $ss);
+         $res = $cus->deleteProfilePicture();
+         return JDV::raw($res);
+     }
 }

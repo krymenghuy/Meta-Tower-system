@@ -239,7 +239,7 @@
                     </ul>
                 </div>
             </li> -->
-            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" <?php v_display(null,[220,210,102,221,216,212]);?>>
+             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover" <?php v_display(null,[220,210,102,221,216,212]);?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/general_settings.svg') }}" />
@@ -281,8 +281,8 @@
                                 </span>
                                 <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Remarks"></span>
                             </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(102); ?>>
+                        </li> -->
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(104); ?>>
                             <a href="LocationComponent" modid="102" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/countries_and_cities.svg') }}" />
@@ -305,7 +305,7 @@
                                 </span>
                                 <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Zone Prices"></span>
                             </a>
-                        </li> -->
+                        </li>
                     </ul>
                 </div>
             </li> 

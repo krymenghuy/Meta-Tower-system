@@ -394,7 +394,7 @@ const RoleTabView = new function(){
               //Click on Remove User
                let lnk = VSUtil.closestLimited(e.target,'.lnk-remove-user');
                if (lnk){
-                 cv_interact.confirm(['Are you sure to remove the selected user from ',mThis.selected_role_name || 'the role', '?'].join(''),{"title":"Remove User","context":'delete', "confirmButtonText":"Remove"},e =>{
+                 cv_interact.confirm(['Are you sure to remove the selected user from ',mThis.selected_role.name || 'the role', '?'].join(''),{"title":"Remove User","context":'delete', "confirmButtonText":"Remove"},e =>{
                      if(e){
                          let user_id = lnk.dataset.id || lnk.dataset.userid;
                          let p = {"role_id":mThis.selected_role.role_id, "user_id":user_id};
