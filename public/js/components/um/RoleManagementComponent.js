@@ -125,7 +125,6 @@ var RoleManagementComponent = new function(){
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(()=>{
                 let p = mThis.getFilterData();
-                console.log(p);
                 mThis.loadRoles(p, roles =>{
                     mThis.renderRoleCards(roles);
                 });
@@ -345,8 +344,7 @@ const RoleTabView = new function(){
     };  
  }
 /** end: Userpanel defintion */
- 
-
+  
     //begin::init RoleTabView
         this.initOnce = ()=>{
             if (mThis.initAlready) return;
@@ -360,10 +358,10 @@ const RoleTabView = new function(){
                 e.preventDefault();
                 const lnk = VSUtil.closestLimited(e.target,'a.tab-button');
                 if(lnk){
-                    let page_id = lnk.dataset.target;
-                    let view_name = lnk.dataset.view;
+                    let view_name = lnk.dataset.target || lnk.dataset.view;
+                    //let view_name = lnk.dataset.view || lnk.dataset.viewname;
                     mThis.displayContent(mThis.selected_role,view_name);
-                    mThis.setActivePage(page_id, lnk); 
+                    mThis.setActivePage(view_name, lnk); 
                     return;
                 }
                 
@@ -398,7 +396,7 @@ const RoleTabView = new function(){
                      if(e){
                          let user_id = lnk.dataset.id || lnk.dataset.userid;
                          let p = {"role_id":mThis.selected_role.role_id, "user_id":user_id};
-                         console.log(p);
+        
                          vsapi.call([main_view.base_url, '/api/role/remove-member'].join(''),p,null,false).then(res =>{
                              if(res.status_code===200){
                                  mThis.userListView.showPage(RoleTabView.UserPanel.getFilterData());
@@ -546,8 +544,7 @@ const RoleTabView = new function(){
             return;
         }
         view_name = view_name || mThis.last_view_name;
-        const role_id = role.role_id;
- 
+        const role_id = role.role_id;  
         switch(view_name){
             case 'view_users':
                 mThis.userListView.showPage({"role_id":role_id,"search_value":op.user_search_value});
@@ -563,10 +560,10 @@ const RoleTabView = new function(){
                 //mThis.moduleListView.showPage({"role_id":role_id});
                break;   
             case 'view_permissions':
-                //mThis.permissionListView.showPage({"role_id":role_id});
+                mThis.displayPermissionList();
                break;
             case 'view_reports':
-                //mThis.reportListView.showPage({"role_id":role_id});
+               mThis.displayReportList();  
               break;
             default:
                 RoleTabView.self.classList.remove('d-flex');
@@ -588,6 +585,128 @@ const RoleTabView = new function(){
         // });
     }
  
+
+    this.displayReportList = ()=>{
+        let data = {
+            "Company Reports":{
+                id:1,
+                name:"Company Reports",
+                items:[
+                    {
+                        id:1,
+                        name:"Daily Operation Summary",
+                        status_id:1
+                    },
+                    {
+                        id:2,
+                        name:"Daily Incomes",
+                        status_id:1
+                    }
+                ]
+            },
+         "Operations":{
+            id:2,
+            name:"Operations",
+            items:[
+                {
+                    id:3,
+                    name:"Daily package counts",
+                    status_id:0
+                },
+                {
+                    id:4,
+                    name:"Active Merchants",
+                    status_id:0
+                },
+            ]
+         }
+        };
+
+        mThis.div_reports = mThis.div_reports || mThis.self.querySelector('#_um_role_report_list');
+        mThis.reportList = mThis.reportList || new  UMExpandItemView( mThis.div_reports,{
+            statuses:{
+                1: {name:'Allowed',  
+                  signClass:'fa fa-check text-success fs-5', 
+                  //cssClass:'text-success', 
+                  textColorClass:'text-success',
+                  backgroundClass:'' 
+                }, 
+               0:{
+                name:'Denied',
+                signClass:'fa fa-times text-danger fs-5',
+                //cssClass:'text-danger',
+                textColorClass:'text-danger',
+                backgroundColorClass:''
+              }
+            },
+            onStatusChange:(status,item_id,parent_id)=>{
+                console.log('todo: save via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
+            }
+        });
+        mThis.reportList.setData(data);
+    }
+
+
+    this.displayPermissionList = ()=>{
+        let data = {
+            "Sales Team":{
+                id:1,
+                name:"Sales Team",
+                items:[
+                    {
+                        id:1,
+                        name:"Create team member",
+                        status_id:1
+                    },
+                    {
+                        id:2,
+                        name:"Delete Tema member",
+                        status_id:1
+                    }
+                ]
+            },
+         "Driver Balances":{
+            id:2,
+            name:"Driver Balances",
+            items:[
+                {
+                    id:3,
+                    name:"Receive driver payments",
+                    status_id:0
+                },
+                {
+                    id:4,
+                    name:"Delete driver payment",
+                    status_id:0
+                },
+            ]
+         }
+        };
+
+        mThis.div_permissions = mThis.div_permissions || mThis.self.querySelector('#_um_role_prn_list');
+        mThis.permissionList = mThis.permissionList || new  UMExpandItemView( mThis.div_permissions,{
+            statuses:{
+                1: {name:'Allowed',  
+                  signClass:'fa fa-check text-success fs-5', 
+                  //cssClass:'text-success', 
+                  textColorClass:'text-success',
+                  backgroundClass:'' 
+                }, 
+               0:{
+                name:'Denied',
+                signClass:'fa fa-times text-danger fs-5',
+                //cssClass:'text-danger',
+                textColorClass:'text-danger',
+                backgroundColorClass:''
+              }
+            },
+            onStatusChange:(status,item_id,parent_id)=>{
+                console.log('todo: save permission via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
+            }
+        });
+        mThis.permissionList.setData(data);
+    }
+
 }
 /**end:: vs-tab-view for role details */
 
@@ -699,18 +818,7 @@ const FindUserDialog = new function () {
         }); 
         return ps;
     }
-
-    // this.findUsers = () => {
-    //     let val = mThis.elSearch.value;
-    //     let p = { 'user_class': mThis.options.user_class, 'search_value': val };
-    //     vsapi.call(`${main_view.base_url}/api/user/list`, p, null, false).then(res => {
-    //         if (res.status_code === 200) {
-    //             let d = StringSanitizer.sanitizeObject(res.data, null, ['image_url', 'login_name']);
-    //             mThis.renderUsers(d);
-    //         }
-    //     })
-    // }
-
+ 
     this.renderUsers = (users = []) => {
         const tbody = mThis.tblUsers.querySelector('tbody');
         tbody.innerHTML = '';
@@ -744,96 +852,96 @@ const FindUserDialog = new function () {
 }
 //end:: FindUserDialog
  
-const RoleDialog = new function(){
-        const mThis = this;
-        this.self = main_view.appContent.find('#roleDialog');
-        this.base_url = main_view.base_url;
-        this.options = {};
+// const RoleDialog = new function(){
+//         const mThis = this;
+//         this.self = main_view.appContent.find('#roleDialog');
+//         this.base_url = main_view.base_url;
+//         this.options = {};
         
-        this.elTitle = this.self.find('#_role_dlgTitle');
-        this.btnSave =  this.self.find('#_role_dlg_btnOK');
+//         this.elTitle = this.self.find('#_role_dlgTitle');
+//         this.btnSave =  this.self.find('#_role_dlg_btnOK');
        
-        this.elUserClass = this.self.find('#user_class') ;
-        this.onClose = null;
-        this.body =  this.self.find('.modal-body')[0];
-        this.div_role_info =  this.body.querySelector('#_role_dlg_body');
+//         this.elUserClass = this.self.find('#user_class') ;
+//         this.onClose = null;
+//         this.body =  this.self.find('.modal-body')[0];
+//       //  this.div_role_info =  this.body.querySelector('#_role_dlg_body');
       
         
-        // this.body = this.self.find('.modal-body')[0];
+//         // this.body = this.self.find('.modal-body')[0];
       
-        this.prepareData = (def, onFinish) => {
-            if(!def) def = {};
-            if(mThis.user_classes){
-                VSUtil.setComboItems(mThis.elUserClass, mThis.user_classes, 'user_class', 'user_class_name', true, '(Select User Class)', def.user_class);
-                if(typeof onFinish == 'function') onFinish();
-                return;
-            }
+//         this.prepareData = (def, onFinish) => {
+//             if(!def) def = {};
+//             if(mThis.user_classes){
+//                 VSUtil.setComboItems(mThis.elUserClass, mThis.user_classes, 'user_class', 'user_class_name', true, '(Select User Class)', def.user_class);
+//                 if(typeof onFinish == 'function') onFinish();
+//                 return;
+//             }
     
-            vsapi.call(`${main_view.base_url}/api/user/options-user-class`, null).then(res => {
-                if(res.status_code === 200){
-                    let rows = StringSanitizer.sanitizeObject(res.data);
-                    VSUtil.setComboItems(mThis.elUserClass, rows, 'user_class', 'user_class_name', true, '(Select User Class)', def.user_class);
-                    mThis.user_classes = rows;
-                    if(typeof onFinish == 'function') onFinish();
-                }
-            });
-        }
-        this.btnSave.on('click',function(e){
-            e.preventDefault();
-            let p = mThis.getData();
-            vsapi.call(`${mThis.base_url}/api/role/save`,p).then(res =>{
-                if(res.status_code === 200){
-                    mThis.self.modal('hide');
-                    if(typeof mThis.options.onclose === ' function') mThis.options.onclose(p);
-                }else
-                    cv_interact.error(res.error_message);
+//             vsapi.call(`${main_view.base_url}/api/user/options-user-class`, null).then(res => {
+//                 if(res.status_code === 200){
+//                     let rows = StringSanitizer.sanitizeObject(res.data);
+//                     VSUtil.setComboItems(mThis.elUserClass, rows, 'user_class', 'user_class_name', true, '(Select User Class)', def.user_class);
+//                     mThis.user_classes = rows;
+//                     if(typeof onFinish == 'function') onFinish();
+//                 }
+//             });
+//         }
+//         this.btnSave.on('click',function(e){
+//             e.preventDefault();
+//             let p = mThis.getData();
+//             vsapi.call(`${mThis.base_url}/api/role/save`,p).then(res =>{
+//                 if(res.status_code === 200){
+//                     mThis.self.modal('hide');
+//                     if(typeof mThis.options.onclose === ' function') mThis.options.onclose(p);
+//                 }else
+//                     cv_interact.error(res.error_message);
                 
-            });
-        });
+//             });
+//         });
 
-    this.setData = (d) =>{
-        d = d || {};
-        //console.log(d);
-        mThis.div_role_info.querySelectorAll(' .data-input').forEach(el =>{
-            const data_member = el.dataset.field;
-            //console.log(data_member);
-            if(el.tagName.toLowerCase() === 'select'){
+//     this.setData = (d) =>{
+//         d = d || {};
+//         //console.log(d);
+//         mThis.div_role_info.querySelectorAll(' .data-input').forEach(el =>{
+//             const data_member = el.dataset.field;
+//             //console.log(data_member);
+//             if(el.tagName.toLowerCase() === 'select'){
 
-                el.value = d[data_member];
-                let event = new Event('change',{
-                    bubbles: true,
-                    cancelable: true
-                });
-                el.dispatchEvent(event);
-            }
-            else{
-                el.value = d[data_member]?? '';
-            }
-        });
-    }
+//                 el.value = d[data_member];
+//                 let event = new Event('change',{
+//                     bubbles: true,
+//                     cancelable: true
+//                 });
+//                 el.dispatchEvent(event);
+//             }
+//             else{
+//                 el.value = d[data_member]?? '';
+//             }
+//         });
+//     }
     
-    this.getData = () => {
-        let p = {};
-        p.id = mThis.options;
-        mThis.self[0].querySelectorAll('.data-input').forEach(el=>{
-            let f = el.dataset.field;
+//     this.getData = () => {
+//         let p = {};
+//         p.id = mThis.options;
+//         mThis.self[0].querySelectorAll('.data-input').forEach(el=>{
+//             let f = el.dataset.field;
             
-            p [f] = el.value;
-        });
+//             p [f] = el.value;
+//         });
         
         
-        return p;
-    }
+//         return p;
+//     }
 
-    this.show = (options)=>{
-        if (!options) options = {};
-        mThis.options = options;
-        mThis.prepareData(mThis.options,()=>{
-            mThis.setData();
-            mThis.self.modal({
-                backdrop: 'static'
-        });
-      });
+//     this.show = (options)=>{
+//         if (!options) options = {};
+//         mThis.options = options;
+//         mThis.prepareData(mThis.options,()=>{
+//             mThis.setData();
+//             mThis.self.modal({
+//                 backdrop: 'static'
+//         });
+//       });
       
-    }
-}    
+//     }
+// }  
