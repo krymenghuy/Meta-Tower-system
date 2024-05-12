@@ -137,12 +137,87 @@ div.role-card.selected > div.card-content {
            </div>
            <div id="view_apps" data-view="view_apps" class="tab-page w-100" style="display:none">
                <div class="h-100">
-                  <div class="" id="_um_role_app_list"></div>
+                  <div class="" id="_um_role_app_list">
+                     <div class="p-1 d-flex flex-column gap-3 justify-contents-start">
+                         <div class="app-box d-flex justify-content-between">
+                              <div class="d-flex gap-2 rounded-4 shadow-lg p-2 justify-contents-center align-items-center" style="width:410px">
+                                    <img class="border border-secondary rounded-5" style="width:40px;height:40px" src="" alt=""> 
+                                    <h5>Delivery Management System</h5>
+                              </div>
+                              <div class="d-flex gap-4 align-items-center justify-content-center">
+                                   <i class="fa fa-check text-success fs-3 fw-bold"></i> 
+                                   <div> <button class="btn btn-sm btn-primary rounded-4">Allow</button> </div>
+                              </div>
+                         </div> 
+                      
+                         <div class="app-box d-flex justify-content-between">
+                              <div class="d-flex gap-2 rounded-4 shadow-lg p-2 justify-contents-center align-items-center" style="width:410px">
+                                    <img class="border border-secondary rounded-5" style="width:40px;height:40px" src="" alt=""> 
+                                    <h5>Airway Bill Management System</h5>
+                              </div>
+                              <div class="d-flex gap-4 align-items-center justify-content-center">
+                                   <i class="fa fa-check text-success fs-3 fw-bold"></i> 
+                                   <div> <button class="btn btn-sm btn-primary rounded-4">Allow</button> </div>
+                              </div>
+                         </div>
+
+                     </div>
+                  </div>
                </div>
            </div>
            <div id="view_modules" data-view="view_modules" class="tab-page w-100" style="display:none">
                <div class="h-100">
-                  <div class="" id="_um_role_mod_list"></div>
+                  <div class="p-2" id="_um_role_list_container">
+                      <div id="_um_role_mod_list" class="w-50 p-2">
+                         <div class="expand-item d-flex flex-column gap-2">
+                                <a class="expand-header" href="javascript:void(0)"> <h5>Delivery Management System</h5> </a>
+                                <div class="items-container d-flex flex-column gap-2">
+                                    <div class="d-flex flex-row gap-2 justify-content-start align-items-center flex-nowrap">
+                                        <i class="fa fa-check fs-5 text-success"></i>
+                                        <div class="d-flex flex-row justify-content-between align-items-center w-100">
+                                            <span class="">Price Lists</span> 
+                                            <span class="text-success border-success rouded-4">Allowed</span>
+                                        </div> 
+                                    </div>
+
+                                    <div class="d-flex flex-row gap-2 justify-content-start align-items-center flex-nowrap">
+                                        <i class="fa fa-check fs-5 text-success"></i>
+                                        <span class="">Merchants</span> 
+                                    </div> 
+
+                                    <div class="d-flex flex-row gap-2 justify-content-start align-items-center flex-nowrap">
+                                        <i class="fa fa-check fs-5 text-success"></i>
+                                        <span class="">Merchant Balances</span> 
+                                    </div> 
+                                </div>
+                         </div>
+
+
+                         <div class="expand-item">
+                                <a href="javascript:void(0)"> <h5>Delivery Management System</h5> </a>
+                                <div class="d-flex flex-column gap-2">
+                                    <div class="d-flex flex-row gap-2 justify-content-start align-items-center flex-nowrap border-bottom border-secondary">
+                                        <i class="fa fa-check fs-5 text-success"></i>
+                                        <div class="d-flex flex-row justify-content-between align-items-center w-100">
+                                            <span class="">Price Lists</span> 
+                                            <span class="text-success border-success rouded-4">Allowed</span>
+                                        </div> 
+                                    </div>
+
+                                    <div class="d-flex flex-row gap-2 justify-content-start align-items-center flex-nowrap">
+                                        <i class="fa fa-check fs-5 text-success"></i>
+                                        <span class="">Merchants</span> 
+                                    </div> 
+
+                                    <div class="d-flex flex-row gap-2 justify-content-start align-items-center flex-nowrap">
+                                        <i class="fa fa-check fs-5 text-success"></i>
+                                        <span class="">Merchant Balances</span> 
+                                    </div> 
+                                </div>
+                         </div>
+
+                      </div>
+                  </div>
                </div>
            </div>
            <div id="view_permissions" data-view="view_permissions" class="tab-page w-100" style="display:none">
@@ -152,7 +227,7 @@ div.role-card.selected > div.card-content {
            </div>
            <div id="view_reports" data-view="view_reports" class="tab-page w-100" style="display:none">
                <div class="h-100">
-                  <div class="" id="_um_role_report_list"></div>
+                  <div id="_um_role_report_list" class="w-50"></div>
                </div>
            </div>
         </div>
