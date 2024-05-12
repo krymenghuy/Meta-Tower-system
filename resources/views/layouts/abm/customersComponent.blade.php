@@ -87,10 +87,13 @@
                         <select id="_cul_price_list" class="modal-select2 data-input" data-field="price_list"></select>
                     </div>
 
-
                     <div class="form-group col-lg-12">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Address"></label>
                         <textarea class="form-control data-input" data-field="address"></textarea>
+                    </div>
+
+                    <div class="col-xs-12 col-md-12 col-lg-3">
+                        <div class="d-flex align-items-center"> <div id="_customer_profile_photo" style="height:165px" class="mt-2"></div></div>
                     </div>
 
                 </div>

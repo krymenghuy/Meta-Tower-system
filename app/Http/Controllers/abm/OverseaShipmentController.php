@@ -33,6 +33,14 @@ class OverseaShipmentController extends Controller
         return JDV::result($data);
     }
 
+    function ListPaginate(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $data = $this->shipment->ListPaginate($req->all(),$ss);
+        
+        return JDV::result($data);
+    }
+
     function createOverseaItem(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code != 200) return JDV::raw($ss);
@@ -55,5 +63,12 @@ class OverseaShipmentController extends Controller
         if($ss->status_code !==200) return JDV::raw($ss);
         $res = $this->item->deleteOrderitem($req->all(),$ss);
         return JDV::raw($res);  
-      }
+    }
+
+    function getFormOptions(Request $req) {
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !== 200) return JDV::raw($ss);
+        $id = $req->id;
+        return JDV::result($this->shipment->getFormOptions($id,$ss));
+    }
 }

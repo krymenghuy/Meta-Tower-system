@@ -1486,7 +1486,7 @@ var PickupListComponent = new function () {
             if (res.status_code === 200) {
                 let data = res.data;
                 let packageInfo = StringSanitizer.sanitizeObject(data.package,null,['size','receiver_address']);
-// console.log('packageInfo',packageInfo);
+                // console.log('packageInfo',packageInfo);
                 if (!data.delivery_type) console.error('Problem in api/order/save-package  because this method returns delivery_type (result.data.delivery_type) as NULL or empty');
                 data.delivery_type = (packageInfo.delivery_type || '').toLowerCase();
 

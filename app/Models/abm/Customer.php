@@ -157,7 +157,6 @@ class Customer //extends Model
     }
     $id = saveData($ss, 'sender', ['id' => $id], $inputs, [], 1, false);
 
-
     if ($id > 0) {
       $new_code = null;
 
@@ -166,7 +165,7 @@ class Customer //extends Model
         if($file_name) PublicStorage::delete($branch_id,self::$img_dir,'image',$file_name);
         DB::table('sender as s')->where('s.id',$id)->update(['photo_file_name'=>null]);
       }
-      PublicStorage::saveImage($branch_id,self::$img_dir,null,$photo,null,['id'=>$id,'store'=>'sendser.photo_file_name']);  
+      PublicStorage::saveImage($branch_id,self::$img_dir,null,$photo,null,['id'=>$id,'store'=>'sender.photo_file_name']);  
       
       if ($sender_created === 1) {
         $new_code = $this->getNextSenderCode($ss); // formatNumber($sender_id,5); 

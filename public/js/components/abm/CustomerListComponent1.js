@@ -643,9 +643,36 @@ const CustomerDialog = new function(){
     this.onClose = null;
     this.body =  this.self.find('.modal-body')[0];
     this.div_sender_info =  this.body.querySelector('#div_merchant_info');
+    this.divPhoto = this.self[0].querySelector('#_customer_profile_photo');
   
     
-    // this.body = this.self.find('.modal-body')[0];
+    this.body = this.self.find('.modal-body')[0];
+    mThis.imgBox = new ImageBox(mThis.divPhoto,{
+        "dataField":"photo",
+        "cssClass":"data-input ",
+        containerClass:null,
+        // onDeleteImage:()=>{
+        //   alert('Deleting image');
+        //   return false;
+        // },
+        "onLoadImage":(photo) =>{
+            let p = {"id":mThis.options.id,"supplier_id":mThis.options.id,"photo":photo};
+            // console.log(p);
+            if(!p.id) return; 
+            vsapi.call(`${main_view.base_url}/abm/os_suppliers/save-profile-picture`,p,null,null,false).then(res =>{
+                if(res.status_code ===200){
+                    mThis.imgBox.setImage(photo);
+                    cv_interact.success('Photo has been saved');
+                }else cv_interact.error(res.error_message);
+            });
+        },
+        "deleteAPI":{
+            "endPoint":`${main_view.base_url}/dms/sales-app/agent/delete-profile-picture`,
+            "params":()=>{
+                return {"id": mThis.options.id,"sales_agent_id":mThis.options.id}
+            }
+        }
+    });
   
     this.prepareData = (id,def, onFinish) => {
         if(!def) def = {};

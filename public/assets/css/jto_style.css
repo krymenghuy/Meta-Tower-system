@@ -523,7 +523,11 @@ a.menu-selected .kt-menu__link-text {
     font-size: 1rem;
     font-family: Poppins;
     height: 100% !important;
+<<<<<<< HEAD
     line-height: 18px;
+=======
+    line-height: 28px;
+>>>>>>> 34f6c5af4cf7ff3b54bd2e268c1444964f3a8439
     vertical-align: middle;
     text-transform: capitalize;
 }
@@ -716,8 +720,13 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .image-student-tbl {
+<<<<<<< HEAD
+    width: 60px;
+    height: 60px;
+=======
     width: 70px;
     height: 70px;
+>>>>>>> 34f6c5af4cf7ff3b54bd2e268c1444964f3a8439
     border-radius: 50%;
 }
 

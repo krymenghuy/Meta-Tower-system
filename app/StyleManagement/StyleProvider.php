@@ -57,7 +57,7 @@ class StyleProvider
                     'assets/vendors/custom/vendors/line-awesome/css/line-awesome.css',
                     'assets/css/font-awesome/6.2.0/css/all.min.css',
                     'assets/css/demo1/style.bundle.css',
-                    'assets/dist/css/adminlte.min.css',
+                    // 'assets/dist/css/adminlte.min.css',
                     'assets/css/jto_style.css', /** Must be placed below all.min.css **/
                     'assets/css/loader.css',
                     'assets/css/jquery.datepicker2.css',
