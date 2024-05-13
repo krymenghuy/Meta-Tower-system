@@ -689,43 +689,9 @@ const RoleTabView = new function(){
 
 
     this.displayPermissionList = ()=>{
-        let data = {
-            "Sales Team":{
-                id:1,
-                name:"Sales Team",
-                items:[
-                    {
-                        id:1,
-                        name:"Create team member",
-                        status_id:1
-                    },
-                    {
-                        id:2,
-                        name:"Delete Tema member",
-                        status_id:1
-                    }
-                ]
-            },
-         "Driver Balances":{
-            id:2,
-            name:"Driver Balances",
-            items:[
-                {
-                    id:3,
-                    name:"Receive driver payments",
-                    status_id:0
-                },
-                {
-                    id:4,
-                    name:"Delete driver payment",
-                    status_id:0
-                },
-            ]
-         }
-        };
-
         mThis.div_permissions = mThis.div_permissions || mThis.self.querySelector('#_um_role_prn_list');
         mThis.permissionList = mThis.permissionList || new  UMExpandItemView( mThis.div_permissions,{
+ 
             statuses:{
                 1: {name:'Allowed',  
                   signClass:'fa fa-check text-success fs-5', 
@@ -745,7 +711,14 @@ const RoleTabView = new function(){
                 console.log('todo: save permission via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
             }
         });
-        mThis.permissionList.setData(data);
+
+        let p = {role_id: mThis.selected_role.role_id, app_id:null, search_value:null};
+        vsapi.call([main_view.base_url, '/api/role/reports'].join(''), p,false,false).then(res =>{
+             const d = res.status_code ==200? res.data: {};
+             mThis.reportList.setData(d);
+        });
+
+
     }
 
     this.displayModules = ()=>{

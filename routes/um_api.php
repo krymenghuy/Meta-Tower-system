@@ -64,9 +64,7 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('role')->group(
     Route::post('/list', [UMController::class, "getRoleList"]);
     Route::post('/create', [UMController::class, 'createApplication']);
     Route::post('/list-application',[UMController::class,'listApplication']);
-
-
-
+ 
     Route::post('/permission/list-paginate', [UMController::class, "getRolePermissions_paginate"]);
     Route::post('/permission/add', [UMController::class, "addPermissionToRole"]);
     Route::post('/permission/delete', [UMController::class, "removeRolePermission"]);
@@ -74,7 +72,6 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('role')->group(
     Route::post('/report/add', [UMController::class, "addPermissionToRole"]);
     Route::post('/report/remove', [UMController::class, "removePermissionFromRole"]);
     Route::post('/reports', [UMController::class, 'getRoleReports']);
-
     Route::post('/exists', [UMController::class, 'role_exists']);
     Route::post('/members/add', [UMController::class, 'addRoleMember']);
     Route::post('/members/remove', [UMController::class, 'removeRoleMember']);
@@ -95,7 +92,7 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('role')->group(
     Route::post('/permission/remove', [UMController::class, 'removePermissionFromRole']);
     Route::post('/add-permission', [UMController::class, 'addPermissionToRole']);
     Route::post('/remove-permission', [UMController::class, 'removePermissionFromRole']);
-
+ 
     //Route::post('/permissions', [UMController::class, 'getPermissionsByLoginName']);
 });
 

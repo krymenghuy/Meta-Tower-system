@@ -157,6 +157,15 @@ class UMController extends Controller
     $roles = $this->UMModel->getRoleList($req->all(),$ss);
     return JDV::result($roles);
   }
+ 
+  function getRoleReports(Request $req)
+  {
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code != 200) return $ss;
+    /** $arr = ['role_id','app_id','search_value'] */
+    $data = $this->UMModel->getRoleReports($req->all(),$ss);
+    return JDV::result($data);
+  }
 
   function getRoleList_paginate(Request $req)
   {

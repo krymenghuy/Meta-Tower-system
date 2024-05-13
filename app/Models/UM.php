@@ -2164,7 +2164,48 @@ class UM //extends Model
     $x = DB::table('um_user_permissions')->where('user_id', $user_id)->where('permission_id', $prn_id)->delete();
     return DV::depends($x, null, 'Failed to remove user permission');
   }
+ 
+  /** returns list of reports with status "allowed" or "denied" for a given role 
+    * $arr = ['role_id', 'app_id','serch_value']
+  */
+  function getRoleReports($arr, $ss){
+     $d = (object)$arr;
+     $app_id = isset($d->app_id)? $d->app_id:null;
+     $role_id = isset($d->role_id)? $d->role_id:null;
+     $role_id  =  $role_id  ?? 0;
+     $search_value =isset($d->search_value) ? $d->search_value : null;
+     $str_app = '1=1';
+     $str_search = '2=2';
+     if($search_value){
+        $search_value = escape_like_str($search_value);
+        if ($search_value > 0) $str_search = 'prn.id = '.$search_value;
+        else $str_search = '(rpt.name LIKE \'%'.$search_value.'%\' OR prn.name LIKE \'%'.$search_value.'%\')';
+     }else{
+       if($app_id) $str_app = 'rc.app_id =\''.$app_id.'\'';
+     }
+     $cols = 'prn.id, prn.name AS permission_name,rpt.id as report_id, rpt.category_id,rc.name AS category, rpt.code as report_code, has_prn('.$role_id.',prn.id) AS status_id';
+     $rows = DB::table('um_permissions as prn')->join('reports as rpt','rpt.permission_id','=','prn.id')->join('report_categories as rc','rc.id','=','rpt.category_id')->whereRaw($str_app)->whereRaw($str_search)->selectRaw($cols)->get();
+     $data = [];
+     foreach($rows as $row){
+       if (!isset($data[$row->category])){
+        $data[$row->category] = (object)[
+          'id'=>$row->category_id,
+          'name'=>$row->category,
+          'items'=>[]
+        ];
+       }
+       
+       $data[$row->category]->items[] =(object)[
+        'id'=>$row->id,
+        'name'=>$row->permission_name,
+        'report_code'=>$row->report_code,
+        //'report_id'=>$row->report_id,
+        'status_id'=>$row->status_id
+       ];
+       return $data;
+     }
 
+  }
 
   function getUserViewReportPermission_paginate($arr,$user_id,$ss=null){
     $d = (object)$arr;
