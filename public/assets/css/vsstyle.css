@@ -339,6 +339,18 @@ table.header-uppercase > thead > tr > th{
   }
 }
 
+/* Define CSS classes for fade-in and fade-out animation */
+.fade-in {
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.fade-out {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  pointer-events: none; /* Ensure the element is not clickable when faded out */
+}
+
 .btn-working {
   pointer-events: none;
   position: relative;

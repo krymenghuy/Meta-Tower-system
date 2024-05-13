@@ -55,6 +55,7 @@ namespace App\ScriptManagement;
                     '/assets/js/sweetalert2.toast.js',
                     '/assets/js/ExchangeManager.js',
                     '/assets/js/expandableTableRow.js',
+                    '/assets/js/UMExpandItemView.js',
                     '/assets/vendors/general/popper.js/dist/umd/popper.js',
                     '/assets/material-js/bootstrap.min.js',
                     '/assets/js/validator.js',

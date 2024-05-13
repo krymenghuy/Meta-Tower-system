@@ -1,4 +1,3 @@
-
 <div id="_sttn_locationsComponent"   style="display:none;padding:15px; overflow: auto;height: 95.5%;">
   <div class="bg-white p-3 rounded-3">
     <div class="row">
