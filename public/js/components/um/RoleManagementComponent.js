@@ -370,7 +370,7 @@ const RoleTabView = new function(){
             mThis.userListView = new ListView('_um_role_user_list',{     
               tableClass:'table user-table',
               columns: user_cols,
-              perPage:6,        
+              perPage:10,        
                fetchApi:[main_view.base_url,'/api/role/members'].join(''),
                processResponse:(res)=>{
                    return res.data;
@@ -386,6 +386,15 @@ const RoleTabView = new function(){
             }); 
  
             mThis.tblUsers = mThis.userListView.getTable();
+            this.role_container = mThis.userListView.getListContainer();
+
+            const role_parent = mThis.role_container.parentElement;
+            role_parent.style.height = (window.innerHeight - 500) + 'px';
+            role_parent.classList.add('overflow-y-auto');
+            window.onresize = () => {
+                role_parent.style.height = (window.innerHeight - 500) + 'px';
+            }
+
             mThis.tblUsers.onclick = e=>{
                e.preventDefault();
 
@@ -555,9 +564,11 @@ const RoleTabView = new function(){
                break;
             case 'view_apps':
                 //mThis.moduleListView.showPage({"role_id":role_id});
+               // mThis.displayApp();
                break;   
             case 'view_modules':
                 //mThis.moduleListView.showPage({"role_id":role_id});
+                mThis.displayModules();
                break;   
             case 'view_permissions':
                 mThis.displayPermissionList();
@@ -584,6 +595,7 @@ const RoleTabView = new function(){
         //    }else cv_interact.error(res.error_message); 
         // });
     }
+   
  
 
     this.displayReportList = ()=>{
@@ -705,6 +717,66 @@ const RoleTabView = new function(){
             }
         });
         mThis.permissionList.setData(data);
+    }
+
+    this.displayModules = ()=>{
+        let data = {
+            "Merchants":{
+                id:1,
+                name:"Merchants",
+                items:[
+                    {
+                        id:1,
+                        name:"Create Merchants",
+                        status_id:1
+                    },
+                    {
+                        id:2,
+                        name:"Delete Merchants",
+                        status_id:1
+                    }
+                ]
+            },
+         "Driver Balances":{
+            id:2,
+            name:"Driver Balances",
+            items:[
+                {
+                    id:3,
+                    name:"Receive driver payments",
+                    status_id:0
+                },
+                {
+                    id:4,
+                    name:"Delete driver payment",
+                    status_id:0
+                },
+            ]
+         }
+        };
+
+        mThis.div_modules = mThis.div_modules || mThis.self.querySelector('#_um_role_mod_list');
+        mThis.modulesList = mThis.modulesList || new  UMExpandItemView( mThis.div_modules,{
+            statuses:{
+                1: {name:'Allowed',  
+                  signClass:'fa fa-check text-success fs-5', 
+                  //cssClass:'text-success', 
+                  textColorClass:'text-success',
+                  backgroundClass:'' 
+                }, 
+               0:{
+                name:'Denied',
+                signClass:'fa fa-times text-danger fs-5',
+                //cssClass:'text-danger',
+                textColorClass:'text-danger',
+                backgroundColorClass:''
+              }
+            },
+            onStatusChange:(status,item_id,parent_id)=>{
+                console.log('todo: save permission via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
+            }
+        });
+        mThis.modulesList.setData(data);
     }
 
 }

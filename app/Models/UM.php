@@ -650,7 +650,10 @@ class UM //extends Model
           ->join('um_users AS u','u.id','=','ur.user_id')
           ->selectRaw('\''.$role_name.'\' as role_name,\''.$search_value.'\' AS search_value,u.id,u.login_name,u.full_name,u.official_code,u.phone_number,formatTime(u.create_date) as create_date, formatTime(u.last_login_date) AS last_login_date, u.is_locked,u.status, u.create_user, u.email,u.lang,u.otp_code,u.user_class')
           // ->where('u.branch_id',$branch_id)
-          ->where('ur.role_id',$role_id)->whereRaw($str_search);
+          //->where('ur.role_id',$role_id)
+          ->whereRaw($str_search)->orderBy('u.id','DESC')
+          ;
+          ;
           $count_query = clone $query;
           $count = $count_query->count('u.id');
           $rows = $query->skip($skip_rows)->take($per_page)->get();
