@@ -53,110 +53,68 @@ var SuppliersComponent = new function(){
                         else
                             cv_interact.error(res.error_message); 
                     });
-                    // vsapi.call(`${mThis.base_url}/abm/os_suppliers/set-price-list`,p,null).then(res => {
-                    //     if(res.status_code === 200){
-                    //         let d = StringSanitizer.sanitizeObject(res.data);
-                    //         span.textContent =d.list_name; 
-                    //         cv_interact.success('Price list ' + d.list_name + ' has been assigned to the merchant successfully');
-                    //     }
-                    //     else
-                    //         cv_interact.error(res.error_message); 
-                    // });
+                   
                 }
-                // mThis.self.siblings().hide();
-                // mThis.self.hide().fadeIn(250);	
+               
             });
         });
     }
 
-    this.createAppAccount = (sender_id)=>{
-        const sender = mThis.store_suppliers[sender_id] || {}; 
-        const op = {
-            user_id: null,
-            open: 'add-user',
-            default: {
-                official_code: sender.code,
-                user_class: "merchant",
-                phone_number: sender.phone_number,
-                full_name: sender.name
-            },
-            onClose: () => {
-                mThis.elSearch.val(sender.phone_number);
-                mThis.listView.showPage(mThis.getFilterData());
-            }
-        };
-        if(!AuthManager.allowed(100)) return;
-        AddUserDialog.show(op);
-    }
-
     this.cols = [
         {
-            className: "",
-            data: (data,index,tr)=>{
-                return "";
-            },
-            // title: mThis.trans('Sender ID')
-            title: ' '
-        },
-        {
-            title: "Photo",
-            className: ' align-middle',
-            data: (data, a, b) => {
-                let image = data.image_url ? data.image_url : '';
-                return [`<img class="image-student-tbl" src="${image}" alt=""/>`].join('');
+            className: 'col_action align-middle',
+            data: function (data, row, display) {
+                let html = ['<div class="dropdown">',
+                    '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-name="', data.name, '" class="btn_pickup_action " aria-haspopup="true" aria-expanded="false">',
+                    '<i class="fa fa-chevron-down " style="color:grey;font-size:1.4em"></i>',
+                    '</a>',
+                    '</div>'].join('');
+                return html;
             }
         },
-        
         {
-            className: "code align-middle",
-            data: (data,index,tr)=>{
-                const sender_info = ['<span class="sender-name d-block text-danger">#',data.code||'គ្មាន','</span>'].join('');
-                return sender_info;
-            },
-            // title: mThis.trans('Sender ID')
-            title: 'code '
+            title:'Supplier ID',
+            className:"code align-middle",
+            data:(data,index,tr)=>{
+                return `<span class="code">${data.code ? data.code: 'N/A'}</span>`;
+            }
+           
         },
+    
+        
         {
             className: "name align-middle",
             data: (data,index,tr)=>{
-                const sender_info = ['<span class="sender-name d-block">',data.name,'</span>'].join('');
+                const sender_info = ['<div class="d-flex p-1 text-capitalize" ><span class="d-block p-1">',(data.name || 'គ្មាន'),'</span></div>'].join('');
                 return sender_info;
             },
             // title: mThis.trans('Sender ID')
-            title: 'Name '
+            title: 'Supplier Name '
         },
         {
-            title: "Email",
+            title: "Contact Info",
             className: "align-middle text-capitalize",
             data: (data,index,tr)=>{
                 return ['<div class="d-flex p-1" ><i class="fas mt-2 text-success fa-envelope"></i><span class="d-block p-1">',(data.email || 'គ្មាន'),'</span></div>','<div class="d-flex p-1"><i class="fas text-warning fa-phone mt-2"></i><span class="d-block p-1 text-primary">',data.phone_number,'</span></div>'].join('');
             }
         },
+      
         {
-            className: "address align-middle",
+            className: "price_list_name align-middle ",
             data: (data,index,tr)=>{
-                const sender_info = ['<span class="sender-name d-block">',data.address||'NA','</span>'].join('');
+                let price_list_html = data.price_list_name ? `<span class="supplier-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="set-price-list">
+                <i class="fa-solid fa-pencil text-danger"></i></a>`;
+                const sender_info = ['<span class="sender-name text-primary d-block">',price_list_html,'</span>'].join('');
                 return sender_info;
             },
             // title: mThis.trans('Sender ID')
-            title: 'address '
-        },
-        {
-            className: "price_list_name align-middle",
-            data: (data,index,tr)=>{
-                let price_list_html = data.price_list_name ? `<span class="supplier-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-suppliername="${data.name}" class="set-price-list">
-                <i class="fa fa-edit fs-5"></i></a>`;
-                const sender_info = ['<span class="sender-name d-block">',price_list_html,'</span>'].join('');
-                return sender_info;
-            },
-            // title: mThis.trans('Sender ID')
-            title: 'price list '
+            title: 'Price List '
         },
 
         {
             className: "sales_agent_id align-middle",
             data: function (data, index, tr) {
-                return ['<span class="pl-request_date d-block">',data.sales_agent||"NA", '</span>'].join('');
+                return ['<span class="pl-request_date text-capitalize d-block">',data.sales_agent||"NA", '</span>','<span class="text-muted">',data.agent_type,'</span>'].join('');
             },
             title: 'Sales Agent'
             // title: mThis.trans('Created Date')
@@ -165,31 +123,30 @@ var SuppliersComponent = new function(){
         {
             className: "created_by align-middle",
             data: function (data, index, tr) {
-                return ['<span class="pl-request_date d-block">',data.create_user||"NA", '</span>'].join('');
+                return ['<span class="pl-request_date d-block">',data.create_user||"NA", '</span>','<span class="text-success">',data.created_at,'</span>'].join('');
             },
-            title: 'create by'
+            title: 'Create By'
             // title: mThis.trans('Created Date')
         },
         {
-            className: "status align-middle",
+            className: 'status align-middle',
             data: function (data, index, tr) {
-                return ['<div class="d-block">',data.status_code == 'Active'? '<span class="pl-request_date btn-act rounded-2">Ative</span>' : '<span class="pl-request_date btn-act-inactive rounded-2">Inactive</span>','</div>'].join('');
+                const cls_class = (data.status_code || '').toLowerCase() === 'active' ? ' text-success text-center' : ' text-danger text-center';
+                const status_code = data.status_code ? VSUtil.properCase(data.status_code) : 'Inactive';
+                return ['<a class="d-block" data-status="', status_code, '" data-id="', data.id, `" href="javascript:void(0)"><span style="display:block;width:80px;"  class=" p-2  ${cls_class} ">`, status_code, '</span></a>'].join('');
             },
-            title: 'status'
-            // title: mThis.trans('Created Date')
+            title: 'Status'
         },
+        
         {
-            className: 'col_action align-middle',
-            data: function (data, row, display) {
-                let html = ['<div class="dropdown d-block ">',
-                    '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-suppliername="', data.name, '" data-status="', data.status_code='active'? 1 : 2, '"  class="btn_pickup_action " aria-haspopup="true" aria-expanded="false">',
-                    '<i class="fa fa-chevron-down" style="color:#8DC63F;font-size:1.5em"></i>',
-                    '</a>',
-                    '</div>'].join('');
-                return html;
-            },
-            // title: 'action'
-        },
+            title: "Photo",
+            className: ' align-middle',
+            data: (data, a, b) => {
+                let image = data.image_url ? data.image_url : '';
+                return [`<img class="image-supplier-tbl" src="${image}" alt=""/>`].join('');
+            }
+        }
+        
     ];
 
     // this.renderMerchant = (container, data) => {
@@ -379,13 +336,13 @@ var SuppliersComponent = new function(){
         div.onclick = function(e){
             e.preventDefault();
             e.stopPropagation();
-            const img = VSUtil.getElementByClass(e.target,'img-sdl-show');
+            const img = VSUtil.getElementByClass(e.target,'img-sup-show');
             if(img){
                 FileChooser.chooseFile(null,(d) => {
                     if(d){
                         const imgContainer = img.parentElement;
                         mThis.setImage(imgContainer,d.dataUrl);
-                        vsapi.call(`${main_view.base_url}/abm/merchant/save-profile-picture`,{
+                        vsapi.call(`${main_view.base_url}/abm/os_suppliers/save-profile-picture`,{
                             id: imgContainer.dataset.id,
                             photo: d.dataUrl
                         },false).then(res => {
@@ -407,7 +364,7 @@ var SuppliersComponent = new function(){
         if(image){
             const html = `<img class="data-get" src="${image}" alt="" data-field="photo"/>
             <div class="d-flex-hover position-absolute top-0 end-0 p-2 rounded-3 bg-dark">
-                <a href="javascript:void(0)" class="img-sdl-delete">
+                <a href="javascript:void(0)" class="img-sup-delete">
                     <i class="fa-regular fa-trash-can fs-5 text-danger"></i>
                 </a>
             </div>`;
@@ -415,7 +372,7 @@ var SuppliersComponent = new function(){
             mThis.setImageDeleteEvent(div);
         }
         else{
-            const html = `<div class="img-sdl-show border rounded-3 h-100 w-100 d-flex align-items-center justify-content-center" role="button">
+            const html = `<div class="img-sup-show border rounded-3 h-100 w-100 d-flex align-items-center justify-content-center" role="button">
                 <i class="fa-regular fa-image fs-3 text-muted"></i>
             </div>`;
             div.innerHTML = html;
@@ -424,7 +381,7 @@ var SuppliersComponent = new function(){
     }
 
     this.setImageDeleteEvent = (div) => {
-        let lnk = div.querySelector('.img-sdl-delete');
+        let lnk = div.querySelector('.img-sup-delete');
         if(lnk){
             lnk.onclick = (e) => {
                 e.preventDefault();
@@ -434,11 +391,11 @@ var SuppliersComponent = new function(){
                 },(e) => {
                     if(e){
                         const imgContainer = lnk.closest('.div-img');
-                        vsapi.call(`${main_view.base_url}/abm/merchant/delete-profile-picture`,{
+                        vsapi.call(`${main_view.base_url}/abm/os_suppliers/delete-profile-picture`,{
                             id: imgContainer.dataset.id
                         },false).then(res => {
                             if(res.status_code === 200){
-                                const html = `<div class="img-sdl-show border rounded-3 h-100 w-100 d-flex align-items-center justify-content-center" role="button">
+                                const html = `<div class="img-sup-show border rounded-3 h-100 w-100 d-flex align-items-center justify-content-center" role="button">
                                     <i class="fa-regular fa-image fs-3 text-muted"></i>
                                 </div>`;
                                 imgContainer.innerHTML = html;
@@ -467,17 +424,13 @@ var SuppliersComponent = new function(){
         container.off('click').on('click',e => {
             e.preventDefault();
              
-            let lnk = VSUtil.getElementByClass(e.target,'btn-app-login');
-            if(lnk){
-                mThis.createAppAccount(lnk.dataset.id);
-                return;
-            }
+           
  
             //click on Set Price List
-            lnk = VSUtil.getElementByClass(e.target,'set-price-list');
+            let lnk = VSUtil.getElementByClass(e.target,'set-price-list');
             if(lnk){
                 // console.log(lnk);
-                mThis.setSupplierPriceList(lnk.dataset.id,lnk.dataset.suppliername,lnk.parentElement,null);
+                mThis.setSupplierPriceList(lnk.dataset.id,lnk.dataset.name,lnk.parentElement,null);
                 return;
             }
          });
@@ -505,9 +458,10 @@ var SuppliersComponent = new function(){
 
                 let lnk = VSUtil.getElementByClass(e.target,'btn-supplier-edit');
                 if(lnk){
-                    console.log(lnk);
+                
                     let op = {
                         id: lnk.dataset.id,
+                        
                         onClose:()=>{
                             mThis.listView.showPage(mThis.getFilterData());
                         }
@@ -520,7 +474,7 @@ var SuppliersComponent = new function(){
                 if(lnk){
                     const id = lnk.dataset.id;
                     let pl_id = lnk.dataset.pricelistid;
-                    let name = lnk.dataset.suppliername;
+                    let name = lnk.dataset.name;
                     let span = container.find('.supplier-price-list')[0];
                     mThis.setSupplierPriceList(id,name, span ? span.parentElement : null ,pl_id); 
                     return;
@@ -534,12 +488,12 @@ var SuppliersComponent = new function(){
                         id: id,
                         status_code: status_code
                     };
-                    cv_interact.confirm('Delete this merchant?',{
-                        title: 'Delete Merchant',
+                    cv_interact.confirm('Delete this Supplier?',{
+                        title: 'Delete Supplier',
                         context: 'delete'
                     },function(e){
                         if(e){
-                            vsapi.call(`${mThis.base_url}/abm/merchant/delete`,{
+                            vsapi.call(`${mThis.base_url}/abm/os_suppliers/delete`,{
                                 id: id
                             },null).then(res => {
                                 if(res.status_code === 200){
@@ -553,59 +507,14 @@ var SuppliersComponent = new function(){
                     return;
                 }
  
-                //Click on Delete Merchant Special (Force delete everything about the merchant)
-                lnk = VSUtil.getElementByClass(e.target, 'btn-merchant-delete-special');
-
-                if (lnk) {
-                    const id = lnk.dataset.id;
-                    let status_code = lnk.dataset.status;
-                    let p = {
-                        id: id,
-                        status_code: status_code
-                    };
-                    let confirm_count = 0;
                 
-                    const confirmDelete = () => {
-                        cv_interact.confirm([
-                            'Are you sure to delete this merchant <span class="text-danger fw-semibold">permanently?</span>',
-                            '<span class="d-block text-black mt-2">You will need to confirm 7 times before deleting. <span class="d-block fs-4 fw-semibold text-danger">',
-                            (confirm_count + 1 ==7? 'This you LAST confirmation!': ['Confirm Count: ',(confirm_count +1)].join('')),
-                            '</span></span>'
-                        ].join(''), {
-                            title: 'Delete Merchant Special',
-                            context: 'delete'
-                        }, e => {
-                            if (e) {
-                                confirm_count++;
-                
-                                if (confirm_count === 7) {
-                                    vsapi.call(`${mThis.base_url}/abm/merchant/delete-special`, {
-                                        id: id
-                                    }, null).then(res => {
-                                        if (res.status_code === 200) {
-                                            mThis.listView.showPage(mThis.getFilterData());
-                                        } else {
-                                            cv_interact.error(res.error_message);
-                                        }
-                                    });
-                                } else {
-                                    confirmDelete();
-                                }
-                            } else {
-                                confirm_count = 0;
-                            }
-                        });
-                    };
-                
-                    confirmDelete();
-                }
  
                 //Click on Set Price List
                 lnk = VSUtil.getElementByClass(e.target,'btn-set-price-list');
                 if(lnk){
                     const id = lnk.dataset.id;
                     let pl_id = lnk.dataset.pricelistid;
-                    let name = lnk.dataset.merchantname;
+                    let name = lnk.dataset.name;
                     let span = container.find('.supplier-price-list')[0];
                     mThis.setSupplierPriceList(id,name, span ? span.parentElement : null ,pl_id); 
                     return;
@@ -654,37 +563,7 @@ var SuppliersComponent = new function(){
                     return;
                 }
 
-                //Click on create mobile app account
-                lnk = VSUtil.getElementByClass(e.target,'btn-create-app-account');
-                if(lnk){
-                    mThis.createAppAccount(lnk.dataset.id);
-                    return;
-                }
-
-                //Click on "Delete Special" => Force delete merchant information and related data
-                lnk = VSUtil.getElementByClass(e.target,'btn-merchant-delete-sepcial');
-                if(lnk){
-                    let op = {
-                        id: lnk.dataset.studentid
-                    };
-
-                    cv_interact.confirm('You are about to delete this student permanently. All information including Enrollment and Attendance will be deleted. Are you sure to proceed?',{
-                        title: 'Delete Student Permanently',
-                        context: 'delete'
-                    },(e) => {
-                        if(e){
-                            vsapi.call(`${main_view.base_url}/abm/student/delete-special`,op,null).then(res => {
-                                if(res.status_code === 200){
-                                    cv_interact.success('The student has been deleted permanently');
-                                    mThis.ListView.showPage(mThis.getFilterData());
-                                }
-                                else
-                                    cv_interact.error(res.error_message);
-                            });
-                        }
-                    });
-                    return;
-                }
+              
             });
         }
     }
@@ -781,14 +660,15 @@ var SuppliersComponent = new function(){
                 let p = btn.parentElement;
                 let supplier_id = btn.dataset.id;
                 let pricelist_id = btn.dataset.pricelistid;
-                let supplier_name = btn.dataset.suppliername;
+                let supplier_name = btn.dataset.name;
                 let status_code = btn.dataset.status;
+                console.log(supplier_id,pricelist_id,supplier_name,status_code);
         
                 let dropdownMenu = p.querySelector('.dropdown-menu');
                 if (!dropdownMenu || dropdownMenu.length === 0) {
                     p.insertAdjacentHTML('afterbegin', mThis.createDropdownMenuHtml_pickup(supplier_id, pricelist_id, supplier_name ,status_code));
                     dropdownMenu = p.querySelector('.dropdown-menu');
-                    dropdownMenu.setAttribute('style',` left: -130px;`);
+                    dropdownMenu.setAttribute('style',` right: -130px;`);
                 }
         
                 if (mThis.prev_dropdownMenu && mThis.prev_dropdownMenu !== dropdownMenu) {
@@ -802,171 +682,7 @@ var SuppliersComponent = new function(){
                 return;
             }
 
-            //Click on "Arrive" button, the shortcut button in shipment_tr
-            btn = VSUtil.closestLimited(e.target,'.pkl_btn_receive');
-            if(btn){
-                        if(!AuthManager.allowed(222)) return;
-                        const shipment_tr = btn.closest('tr');
-                        cv_interact.confirm('ទទួលទំនិញទាំងអស់ក្នុងបញ្ជាមួយនេះ?',{'context':"update"},e =>{
-                            if(e){
-                               if (mThis.shm_prev_editing_row) {
-                                   mThis.saveItem(mThis.shm_prev_editing_row, btn, success => {
-                                       if (success){
-                                          mThis.receiveItems_all(shipment_tr, null);
-                                       }
-                                   });
-                               }
-                               else mThis.receiveItems_all(shipment_tr, null);
-                            }
-                  });
-                return;
-            }
-
-            //Click on Pick button | Pick Order
-            btn = VSUtil.closestLimited(e.target,'.pkl_btn_pick');
-            if(btn){
-                //if(!AuthManager.allowed() ) return; 
-                const shipment_tr = btn.closest('tr');
-                if (mThis.shm_prev_editing_row) {
-                    mThis.saveItem(mThis.shm_prev_editing_row, (item_saved) => {
-                        if (item_saved) {
-                            mThis.pickItems(shipment_tr, btn, (sucess,d) => {
-                                if (sucess){
-                                    shipment_tr.dataset.statusid = d.status_id;
-                                    btn.style.display ='none';
-                                }
-                            });
-                        }
-                    });
-                }
-                else {
-                    mThis.pickItems(shipment_tr,(success,d) => {
-                        if (success){
-                            shipment_tr.dataset.statusid = d.status_id;
-                            btn.style.display ='none';
-                        }
-                    });
-                }
-                return;
-            }
-
-            //Click on Change Status
-            btn = VSUtil.closestLimited(e.target,'.change-order-status');
-            if(btn){
-                let tr = btn.closest('tr');
-                mThis.changeOrderStatus(tr);
-                return;
-            }
-
-            //Click on Dropdown menu item : "Change Status"
-            btn = VSUtil.closestLimited(e.target,'._pl_pa_change_status');
-            if(btn){
-                let tr = btn.closest('tr');
-                mThis.changeOrderStatus(tr);
-                return;
-            }
-
-            //Click on Dropdown menu item : "Assign Driver"
-            btn = VSUtil.closestLimited(e.target,'._pl_pa_assign_driver');
-            if(btn){
-                let tr = btn.closest('tr');
-                mThis.assignDriver(tr,null);
-                return;
-            }
-
-              //Click Driver lnk to quickly assign driver  "Quick Assign Driver" by clicking on Pencil icon
-              btn = VSUtil.closestLimited(e.target,'.lnk-assign-driver');
-              if(btn){
-                  if(!AuthManager.allowed(221)) return;
-                  let tr = btn.closest('tr');
-                  console.log(tr);
-                  mThis.assignDriver(tr,btn);
-                  return;
-              }
-                
-            //Click on Delete Order: Dropdown menu item
-            btn = VSUtil.getElementByClass(e.target,'_pl_pa_delete');
-            if(btn){
-                if (!AuthManager.allowed(229)) return;
-                let tr = btn.closest('tr');
-                mThis.deleteOrder(tr); 
-                return;
-            }
-
-            //Click on Arrive button
-            btn = VSUtil.getElementByClass(e.target,'_pl_pa_receive');
-            if(btn){
-                let shipment_tr = btn.closest('tr');
-                cv_interact.confirm('ទទួលទំនិញទាំងអស់ក្នុងបញ្ជាមួយនេះ?',{'context':"update"},e =>{
-                     if(e){
-                        if (mThis.shm_prev_editing_row) {
-                            mThis.saveItem(mThis.shm_prev_editing_row, null, (success) => {
-                                if (success){
-                                    mThis.receiveItems_all(shipment_tr, null);
-                                }
-                            });
-                        }
-                        else mThis.receiveItems_all(shipment_tr, null);
-                     }
-                });
-                return;
-            }
-
-            //Click on Save item
-            btn = VSUtil.getElementByClass(e.target,'pkl_btn_save');
-            if(btn){
-                let tr = btn.closest('tr');
-                mThis.saveItem(tr, btn,(e) =>{
-                    if(e){
-                        btn.closest('div.edit-actions').remove();
-                    }
-                });
-                return;
-            }
-
-             //Click on Delete item
-             btn = VSUtil.getElementByClass(e.target,'pkl_btn_delete');
-             if(btn){
-                 let tr = btn.closest('tr');
-                 mThis.deleteItem(tr);
-                 return;
-             }
-
-             //Click on Delete item
-             btn = VSUtil.getElementByClass(e.target,'pkl_btn_cancel_edit');
-             if(btn){
-                 let tr = btn.closest('tr');
-                 mThis.setItemReadOnly(tr, true, null);
-                 return;
-             }
-
-             //Click on map_link
-             btn = VSUtil.getElementByClass(e.target,'lnk_map_link');
-             if (btn){
-                 const href = btn.getAttribute('href');
-                 window.open(href,'_blank');
-                 return;
-             }
-
-             btn = VSUtil.getElementByClass(e.target,'pkl_btn_edit');
-             if (btn){
-                 const tr = btn.closest('tr');
-                 mThis.beginEditItem(tr,null,btn);
-                 return;
-             }
-             
-             btn = VSUtil.getElementByClass(e.target,'pkl_btn_print_barcode');
-             if (btn){
-                 const tr = btn.closest('tr');
-                 let barcode = tr.dataset.barcode;
-                 window.open([main_view.base_url, '/package_barcode/', barcode ? barcode : 'unknown'].join(''), '_blank');
-                 return;
-             }
- 
-            //  const clickOnElement = e.target.tagName;
-            //  if (['TR','TD'].indexOf(clickOnElement) >= 0){
-            //     mThis.showQuickButtons(VSUtil.closestLimited(e.target,'tr.order'));
-            //  }
+          
         });
 
         mThis.tblSenders.addEventListener('click', e => {
@@ -1033,11 +749,11 @@ var SuppliersComponent = new function(){
     this.changeSenderStatus = () => {
         return;
     }
-    this.createDropdownMenuHtml_pickup = function (supplier_id, pricelist_id, supplier_name ,status) {
+    this.createDropdownMenuHtml_pickup = function (supplier_id, pricelist_id, name ,status) {
         let html = [
-            '<div class="dropdown-menu bg-white shadow" data-id="', supplier_id, '" data-pricelistid="', pricelist_id, '" data-suppliername="', supplier_name, '">',
+            '<div class="dropdown-menu bg-white shadow" data-id="', supplier_id, '" data-pricelistid="', pricelist_id, '" data-name="', name, '">',
             // '<a class="dropdown-item _pl_pa_assign_driver" href="javascript:void(0)"><i class="fa fa-biking" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '"></i> Assign Driver (Pickup)</a>',
-            `<a href="javascript:void(0)" class="dropdown-item btn-set-price-list border-bottom pb-2" data-id="${supplier_id}" data-pricelistid="${pricelist_id}" data-suppliername="${supplier_name}" data-status="${status}">
+            `<a href="javascript:void(0)" class="dropdown-item btn-set-price-list border-bottom pb-2" data-id="${supplier_id}" data-pricelistid="${pricelist_id}" data-name="${name}" data-status="${status}">
                 <i class="fa-regular fa-list-alt fs-5"></i>
                 <span class="ps-2 trans-text" data-langprop="titles.Set Price List">Set Price List</span>
             </a>`,
@@ -1086,7 +802,7 @@ const SupplierDialog = new function(){
     // this.div_bank_account = this.body.querySelector('#div_bank_account');
     mThis.imgBox = new ImageBox(mThis.divPhoto,{
         "dataField":"photo",
-        "cssClass":"data-input ",
+        "cssClass":"data-input border",
         containerClass:null,
         // onDeleteImage:()=>{
         //   alert('Deleting image');
@@ -1094,22 +810,22 @@ const SupplierDialog = new function(){
         // },
         "onLoadImage":(photo) =>{
             let p = {"id":mThis.options.id,"supplier_id":mThis.options.id,"photo":photo};
-            // console.log(p);
             if(!p.id) return; 
             vsapi.call(`${main_view.base_url}/abm/os_suppliers/save-profile-picture`,p,null,null,false).then(res =>{
                 if(res.status_code ===200){
                     mThis.imgBox.setImage(photo);
-                    cv_interact.success('Photo has been saved');
+                   // cv_interact.success('Photo has been saved');
                 }else cv_interact.error(res.error_message);
             });
         },
         "deleteAPI":{
-            "endPoint":`${main_view.base_url}/dms/sales-app/agent/delete-profile-picture`,
+            "endPoint":`${main_view.base_url}/abm/os_suppliers/delete-profile-picture`,
             "params":()=>{
-                return {"id": mThis.options.id,"sales_agent_id":mThis.options.id}
+                return {"id": mThis.options.id,"supplier_id":mThis.options.id}
             }
         }
     });
+    
 
     this.prepareData = (id,def, onFinish) => {
         // console.log(id);
@@ -1141,70 +857,87 @@ const SupplierDialog = new function(){
         });
     });
 
-    this.show = (options) => {
-        // console.log(options);
-        if (!options) options = {};
-        mThis.options = options;
+    // this.show = (options) => {
+    //     // console.log(options);
+    //     if (!options) options = {};
+    //     mThis.options = options;
          
-        mThis.prepareData(mThis.options.id,{},data => { 
-            if(data.supplier){
-                mThis.elTitle.text("Modify Supplier Information");
-            }
-            else{
-                mThis.elTitle.text("Create Supplier");
-            }
-            mThis.setData(data.supplier);
-            mThis.self.modal({
-                backdrop: 'static'
+    //     mThis.prepareData(mThis.options.id,{},data => { 
+    //         if(data.supplier){
+    //             mThis.elTitle.text("Modify Supplier Information");
+    //         }
+    //         else{
+    //             mThis.elTitle.text("Create Supplier");
+    //         }
+    //         mThis.setData(data.supplier);
+    //         mThis.self.modal({
+    //             backdrop: 'static'
+    //         });
+    //     });
+    // }
+    this.show = (options)=>{
+        mThis.options = options || {};
+        mThis.elTitle.innerHTML = options.title;
+        console.log(mThis.options.id);
+        if (mThis.options.id > 0) {
+            mThis.elTitle.innerHTML = "Suppliers Details";
+            let p = {'id':mThis.options.id};
+            vsapi.call([main_view.base_url,'/abm/os_suppliers/form-options'].join(''),p,null).then(res=>{
+                
+                if(res.status_code === 200){
+                    let d = res.data.supplier;
+                console.log(d);
+
+                    d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
+                    mThis.prepareData(d, {}, data => {
+                        mThis.setData(d);
+                        mThis.self.modal({
+                            backdrop:'static'
+                        });
+                    });
+                }
             });
-        });
+        }
+        else{
+            mThis.elTitle.innerHTML =  "New Customers";
+            mThis.prepareData({'id':1},{},data =>{
+                mThis.setData(null);
+                mThis.self.modal({
+                    backdrop:'static'
+                });       
+            });
+        }
     }
 
     this.setData = (d) => {
-        mThis.body.querySelectorAll('.data-input').forEach(el =>{
-            el.value = null;
-        });
-        if(!d) return;
-
-        // let bank_accounts = d.bank_accounts;
-        // d.bank_accounts = null;
-        mThis.div_sender_info.querySelectorAll('.data-input').forEach(el =>{ 
+        // mThis.body.querySelectorAll('.data-input').forEach(el => {
+        //     el.value = null;
+        // });
+        // if (!d) return;
+        d = d || {};
+        mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
-            if(el.tagName.toLowerCase() === 'select'){
-                el.value = d[data_member];
-                let event = new Event('change',{
-                    bubbles: true,
-                    cancelable: true
-                });
-                el.dispatchEvent(event);
+            el.value = d[data_member] ?? '';
+            console.log(d[data_member]);
+
+            if (el.tagName.toLowerCase() === 'select') {
+                el.dispatchEvent(new Event('change'));
+            }else if(el.tagName ==='IMG'){
+                el.setAttribute('src',d[data_member] || '');
             }
-            else{
-                el.value = d[data_member];
-            }
+                
+           
         });
+    mThis.imgBox.setImage(d.photo || d.image_url);
 
-        // let i = 0, c = null;
-        // do{
-        //     c = bank_accounts[i];
-        //     if(!c) break;
-        //     let css_class = 'primary_bank_panel';
-        //     if(c.is_primary == 0) css_class = 'secondary_bank_panel';
-        //     let div = mThis.body.querySelector('div.'+css_class);
-        //     div.dataset.id = c.id;
-        //     div.querySelectorAll('.data-input').forEach(el => {
-        //         let dataMember = el.dataset.field;
-        //         el.value = c[dataMember];
-        //     });
-        //     i++;
-        // }while(c);
     }
-
     this.getData = () => {
         let p = {};
         p.id = mThis.options.id;
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
             let data_member = el.dataset.field;
-            if(el.tagName ==='IMG') 
+            
+           if(el.tagName ==='IMG') 
                 p[data_member] = el.getAttribute('src');
             else 
                 p[data_member] = el.value;

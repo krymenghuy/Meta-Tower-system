@@ -79,7 +79,7 @@ class Country //extends Model
             ->whereRaw($str_search)
             ->selectRaw('c.id,c.name,c.name_kh,c.code,c.standard_zone,c.nationality,c.nationality_kh,c.create_user,formatDate(c.create_date) as create_date')
             
-            ->orderBy('c.name','ASC')->get();
+            ->orderBy('c.standard_zone','ASC')->get();
 
          //});
         
@@ -112,16 +112,17 @@ class Country //extends Model
         if($res->error) return DV::error($res->error);
         $id = $res->id;
         $inputs = $res->values;
-
+        $name = $inputs['name'];
         $name_kh = $inputs['name_kh'];
         $code = $inputs['code'];
         $zone = $inputs['standard_zone'];
 
-        $name_kh = $name_kh?$name_kh:$inputs['name'];
-        $name_kh = $name_kh?$name_kh:$inputs['code'];
-        $name_kh = $name_kh?$name_kh:$inputs['standard_zone'];
+        // $name_kh = $name_kh?$name_kh:$inputs['name'];
+        // $name_kh = $name_kh?$name_kh:$inputs['name_kh'];
+        // $name_kh = $name_kh?$name_kh:$inputs['code'];
+        // $name_kh = $name_kh?$name_kh:$inputs['standard_zone'];
 
-
+        $inputs['name']= $name;
         $inputs['name_kh'] = $name_kh;
         $inputs['code'] = $code;
         $inputs['standard_zone']=$zone;

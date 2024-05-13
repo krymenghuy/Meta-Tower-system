@@ -10,7 +10,7 @@
             <div class="d-flex flex-row gap-2 ml-3">
             <input type="text" class="form-control" id="_sale_agent_search" placeholder="Search sales agent">
                 <button id="_sale_agent_btnSearch" class="btn btn-warning ml-3" type="button">
-                    <i class="fa fa-search"></i>
+                    <i class="fa fa-search text-white"></i>
                 </button>
             </div>
         </div>
@@ -38,7 +38,7 @@
 
     </div>
 
-    <div class=" shadow rounded-3 bg-light mt-2">
+    <div class=" shadow rounded-3 bg-white mt-2">
             <div id="_sale_agent_list"></div>
         </div>
 </div>

@@ -384,7 +384,7 @@ class SalesAgent //extends Model
     }
 
     static function defaultImage($branch_id){
-        return PublicStorage::getUrl($branch_id,'default','image').'default_agent.png';
+        return PublicStorage::getUrl($branch_id,'default','image').'mr3.jpg';
     }
 
   static function setCommissionPolicy($policy_id,$id){
@@ -496,7 +496,7 @@ static function list($arr,$ss=null){
         ->whereRaw($str_search)
         ->whereRaw($str_status)
         ->whereRaw($str_agent_type)
-        ->selectRaw('d.id,d.code,d.name,d.status_code,d.email,d.phone_number,d.address,d.photo_file_name,d.agent_type,d.branch_id,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date')->orderBy('d.code', 'DESC'); ; 
+        ->selectRaw('d.id,d.code,d.name,d.sex,d.status_code,d.email,d.phone_number,d.address,d.position_title,d.create_user,d.photo_file_name,d.agent_type,d.branch_id,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date')->orderBy('d.code', 'DESC'); ; 
         $count_query = clone $query;
         $count = $count_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();

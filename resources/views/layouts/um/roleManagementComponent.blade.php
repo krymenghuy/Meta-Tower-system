@@ -137,26 +137,36 @@ div.role-card.selected > div.card-content {
            </div>
            <div id="view_apps" data-view="view_apps" class="tab-page w-100" style="display:none">
                <div class="h-100">
-                  <div class="" id="_um_role_app_list">
+                  <div class="w-50" id="_um_role_app_list">
                      <div class="p-1 d-flex flex-column gap-3 justify-contents-start">
                          <div class="app-box d-flex justify-content-between">
-                              <div class="d-flex gap-2 rounded-4 shadow-lg p-2 justify-contents-center align-items-center" style="width:410px">
-                                    <img class="border border-secondary rounded-5" style="width:40px;height:40px" src="" alt=""> 
-                                    <h5>Delivery Management System</h5>
+                              <div class="d-flex gap-2 rounded-4 shadow-lg p-2 justify-contents-center align-items-center" style="width:370px">
+                                    <img class="border border-secondary rounded-5" style="width:40px;height:40px" src="/uploads/public/1_data/default/images/mr1.jpg" alt=""> 
+                                    <h5 class="" >Delivery Management System</h5>
+
+
+
+
                               </div>
+
                               <div class="d-flex gap-4 align-items-center justify-content-center">
-                                   <i class="fa fa-check text-success fs-3 fw-bold"></i> 
+                                  <span class=" border border-secondary " style="width:30px;height:30px"><i class="fa fa-check text-success fs-3 fw-bold "></i></span>
+
                                    <div> <button class="btn btn-sm btn-primary rounded-4">Allow</button> </div>
                               </div>
                          </div> 
                       
                          <div class="app-box d-flex justify-content-between">
-                              <div class="d-flex gap-2 rounded-4 shadow-lg p-2 justify-contents-center align-items-center" style="width:410px">
-                                    <img class="border border-secondary rounded-5" style="width:40px;height:40px" src="" alt=""> 
-                                    <h5>Airway Bill Management System</h5>
+                              <div class="d-flex gap-2 rounded-4 shadow-lg p-2 justify-contents-center align-items-center" style="width:370px">
+                                    <img class="border border-secondary rounded-5" style="width:40px;height:40px" src="/uploads/public/1_data/default/images/mr1.jpg" alt=""> 
+                                    <h5 class="" >Airway Bill Management System</h5>
+
+                                   
+                                    
                               </div>
                               <div class="d-flex gap-4 align-items-center justify-content-center">
-                                   <i class="fa fa-check text-success fs-3 fw-bold"></i> 
+                                  <span class=" border border-secondary " style="width:30px;height:30px"><i class="fa fa-times text-danger fs-3 fw-bold "></i></span>
+
                                    <div> <button class="btn btn-sm btn-primary rounded-4">Allow</button> </div>
                               </div>
                          </div>
@@ -169,7 +179,7 @@ div.role-card.selected > div.card-content {
                <div class="h-100">
                   <div class="p-2" id="_um_role_list_container">
                       <div id="_um_role_mod_list" class="w-50 p-2">
-                         <div class="expand-item d-flex flex-column gap-2">
+                         <!-- <div class="expand-item d-flex flex-column gap-2">
                                 <a class="expand-header" href="javascript:void(0)"> <h5>Delivery Management System</h5> </a>
                                 <div class="items-container d-flex flex-column gap-2">
                                     <div class="d-flex flex-row gap-2 justify-content-start align-items-center flex-nowrap">
@@ -214,15 +224,15 @@ div.role-card.selected > div.card-content {
                                         <span class="">Merchant Balances</span> 
                                     </div> 
                                 </div>
-                         </div>
+                         </div> -->
 
-                      </div>
+                      </div> 
                   </div>
                </div>
            </div>
            <div id="view_permissions" data-view="view_permissions" class="tab-page w-100" style="display:none">
                <div class="h-100">
-                  <div class="" id="_um_role_prn_list"></div>
+                  <div class="w-50" id="_um_role_prn_list"></div>
                </div>
            </div>
            <div id="view_reports" data-view="view_reports" class="tab-page w-100" style="display:none">

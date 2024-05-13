@@ -2,7 +2,7 @@
 var CountryZonesComponent  = new function () {
   this.lang = 'en';
   let mThis = this;
-  this.title_prop = "Delivery Zones";
+  this.title_prop = "Country Zones";
   this.base_url = main_view.base_url;
   this.self = main_view.appContent.children('#_sttn_deliveryZoneComponent');
   this.tblZones = this.self.find('#_sttn_zon_tblZones');
@@ -17,7 +17,7 @@ var CountryZonesComponent  = new function () {
   this.cols = [
 
     {
-      title: "Standard Zone",
+      title: "Zone Code",
       className: "align-middle  text-capitalize text-nowrap",
       data: (data, index, tr) => {
         return ['<div class="ms-5">',data.standard_zone,'</div>'].join('');
@@ -28,7 +28,7 @@ var CountryZonesComponent  = new function () {
       className: "align-middle text-success text-nowrap",
 
       data: (data, index, tr) => {
-        return ['<div class="text-uppercase"><i class="fa-sharp text-danger fa-solid fa-flag"></i><span class="d-block p-1">',data.name,'</span></div>'].join('');
+        return ['<div class="text-uppercase"><span class="d-block p-1">',data.name,'</span></div>','<div class="d-flex"><span class="d-block p-1 text-warning">',(data.name_kh ?? 'គ្មាន'),'</span></div>'].join('');
 
       }
     },
@@ -36,15 +36,15 @@ var CountryZonesComponent  = new function () {
       title: "Country Code",
       className: "align-middle ",
       data: (data, index, tr) => {
-        return ['<div class="ms-5 text-capitalize">',data.code,'</div>'].join('');
+        return ['<div class="ms-5 text-uppercase">',data.code,'</div>'].join('');
       }
     },
    
     {
       title:"Create By",
       data:(data,index,tr)=>{
-        return ['<div class="d-flex align-item-center text-warning" ><i class="fas mt-2 text-success fa-user"></i><span class="d-block p-1">',(data.create_user ?? 'គ្មាន'),
-        '</span></div>','<div class="d-flex"><i class="bi bi-balloon-fill"></i><span class="d-block p-1 text-primary">',data.create_date,'</span></div>'].join('');
+        return ['<div class="d-flex align-item-center " ><span class="d-block p-1">',(data.create_user ?? 'គ្មាន'),
+        '</span></div>','<div class="d-flex"><i class="bi bi-balloon-fill"></i><span class="d-block p-1 text-muted">',data.create_date,'</span></div>'].join('');
         
       }
     },
@@ -173,7 +173,7 @@ var CountryZonesComponent  = new function () {
 //begin::ZoneDialog1
 const ZoneDialog1 = new function () {
   let mThis = this;
-  this.self = main_view.appContent.children('#_sttn_dlgZon');
+  this.self = main_view.appContent.children('#_sttn_dlgZon1');
   this.base_url = main_view.base_url;
   this.elTitle = this.self.find('#_sttn_dlgZoneTitle');
  

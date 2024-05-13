@@ -784,9 +784,9 @@ static function list($arr,$ss=null){
 
     static function details($id,$ss){ 
         $branch_id = $ss->branch_id;
-        $row = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('d.id',$id)->selectRaw('d.id,d.name,d.policy_id,d.agent_type_id,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,d.account_name,d.account_number, d.bank_name,d.commission,t.id AS agent_type_id,t.name AS agent_type,d.photo_file_name,formatDate(d.create_date) AS create_date')->take(1)->first(); 
+        $row = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('d.id',$id)->selectRaw('d.id,d.name,d.agent_type_id,d.code,d.email,d.phone_number,d.sex,d.address, t.id AS agent_type_id,t.name AS agent_type,d.photo_file_name,formatDate(d.create_date) AS create_date')->take(1)->first(); 
         if($row){
-           $pol = self::getPolicyInfo($row->policy_id,$ss);
+           $pol = self::getPolicyInfo($row,$ss);
            $row->policy_name = $pol? $pol->name: 'NA';
            $url = $row->photo_file_name? PublicStorage::getUrl($branch_id,self::$photo_dir,'image').$row->photo_file_name: null;
            $url = validateUrl($url,self::defaultImage($branch_id));
