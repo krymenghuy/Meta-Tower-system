@@ -410,6 +410,25 @@ class OverseaItem //extends Model
         $row = DB::table('requirements as r')->where('r.id',$id)->where('r.branch_id',$branch_id)->selectRaw('r.id,r.project_id,r.description,r.status_id')->first();
         return $row;
     }
+
+    function getItemDetails($arr =[], $id = null,$ss = null){
+        $ss = $ss ?? $this->userInfo;
+        $item_id  = $id ?? $this->id;
+        $branch_id = $ss->branch_id;
+
+        $d = (object)$arr;
+
+        $shipment_id = isset($d->shipment_id)?Sanitizer::sanitize($d->shipment_id):null;
+        // return JDV::result($d);
+
+        $table = 'os_items';
+        $data =  DB::table($table.' AS r')
+        ->where('r.branch_id',$branch_id)
+        ->where('r.shipment_id',$shipment_id)
+        ->where('r.id',$d->item_id)
+        ->selectRaw('r.id AS package_id,r.status_id , r.item_type,CONCAT(dim_x,\' \', dim_y,\' \', dim_h) AS size, r.actual_weight, r.billed_weight , r.allocated_kg ,r.price r,price_per_kg,r.item_total')->take(1)->first(); 
+        return $data;
+    }
     
     function delete($id,$ss){
         $id = $id ?? $this->id;

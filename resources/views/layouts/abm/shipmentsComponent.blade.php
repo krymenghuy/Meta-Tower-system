@@ -78,6 +78,15 @@
         font-size: 0.6em;
         color: grey;
     }
+    th div.d-n{
+        display: none;
+    }
+    th:hover div.d-n{
+        display: block !important;
+    }
+    th:hover div.d-b{
+        display: none !important;
+    }
 </style>
 
 <div id="_main_shipmentsComponent_" style="display:none;padding:15px">

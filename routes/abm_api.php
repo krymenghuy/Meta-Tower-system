@@ -17,6 +17,7 @@ use App\Http\Controllers\abm\CountryZoneController;
 use App\Http\controllers\abm\OsSalesAgentController;
 use App\Http\controllers\abm\PriceController;
 use App\Http\controllers\abm\GeneralSettingsController;
+use App\Http\controllers\abm\SpecialChargeController;
  
  //begin:: api without Authentication
     Route::middleware([CustomRateLimiter::class])->group(function(){
@@ -72,10 +73,17 @@ use App\Http\controllers\abm\GeneralSettingsController;
         Route::post('/Shipment-list', [OverseaShipmentController::class, 'getOverseaShipmentList']);
         Route::post('/Shipment-list-paginate', [OverseaShipmentController::class, 'ListPaginate']);
         Route::post('/form-options', [OverseaShipmentController::class, 'getFormOptions']);
+        Route::post('/item-details', [OverseaShipmentController::class, 'getItemDetails']);
     
         Route::post('/create-item', [OverseaShipmentController::class, 'createOverseaItem']);
         Route::post('/item-list', [OverseaShipmentController::class, 'getOverseaItemList']);
         Route::post('/delete-item', [OverseaShipmentController::class, 'deleteOrderitem']);
+
+    });
+    Route::middleware([CustomRateLimiter::class])->prefix('special_charge')->group(function(){
+        Route::post('/save', [SpecialChargeController::class, 'save']);
+        Route::post('/list-paginate', [SpecialChargeController::class, 'ListPaginate']);
+        Route::post('/delete-item', [SpecialChargeController::class, 'deleteSpecileCharge']);
     });
     //begin:: PackageController
     Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('package')->group(function(){

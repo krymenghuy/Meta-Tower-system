@@ -603,12 +603,27 @@ class Price //extends Model
             //$m->above->data->fast_items;
             //$m->above->data->normal_items;
 
+        $m=null;
         $ret_rows = [];
-        foreach($unique_country as $country_id){
-            $m = $this->getPriceListItems($country_id,$rows);
-            $ret_rows[] = $m;  
-        }   
-        return $m;
+        if($country_id==null) {
+            foreach($unique_country as $country_id){
+                $m = $this->getPriceListItems($country_id,$rows);
+                $ret_rows[] = $m;  
+            }   
+            if($m==null) return DV::error('Price list don\'t have yet.');
+            // return JDV::result($country_id); 
+            // $country_id
+            return $ret_rows;
+        }else{
+            foreach($unique_country as $country_id){
+                $m = $this->getPriceListItems($country_id,$rows);
+            }   
+            if($m==null) return DV::error('Price list don\'t have yet.');
+            // return JDV::result($country_id); 
+            // $country_id
+            return $m;
+        }
+        
     }
  
     function getPriceListItems($country_id,$rows){
