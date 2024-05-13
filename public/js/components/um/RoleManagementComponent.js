@@ -621,7 +621,7 @@ const RoleTabView = new function(){
             ]
          }
         };
-
+ 
         mThis.div_reports = mThis.div_reports || mThis.self.querySelector('#_um_role_report_list');
         mThis.reportList = mThis.reportList || new  UMExpandItemView( mThis.div_reports,{
             statuses:{
@@ -643,7 +643,14 @@ const RoleTabView = new function(){
                 console.log('todo: save via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
             }
         });
-        mThis.reportList.setData(data);
+
+        let p = {role_id: mThis.selected_role.id, app_id:null, search_value:null};
+        vsapi.call([main_view.base_url, '/api/role/reports'].join(''), p,false,false).then(res =>{
+             const d = res.status_code ==200? res.data: {};
+             mThis.reportList.setData(d);
+        });
+
+       
     }
 
 
