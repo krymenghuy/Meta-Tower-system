@@ -160,38 +160,7 @@ class Customer //extends Model
     $sender_created = !$id;
 
     $id = saveData($ss, 'sender', ['id' => $id], $inputs, [], 1, false);
-      // return JDV::result($id);
 
-    if($sender_created){
-
-      $prefix = 'HM';
-      
-      $str_prefix = $prefix ? 'prefix =\'' . $prefix . '\'' : '2=2';
-      $row = DB::table('sender_code_control AS c')->where('branch_id', $branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
-      
-      if ($row) {
-        $num = $row->last_id+1;
-      }
-      $s=null;
-      $data =(object)$s;
-
-      $data->sender_id= $num;
-      
-      $v_rule = [
-        'id'=>'0|identify=1',
-        'sender_id'=>'1|number|exists=sender.id',
-        'sender_class'=>'0|string|default=oversea'
-      ];
-
-
-      $res_c = validateObject(['sender_id'=>$num],$v_rule,true,[],$ss->lang,false);
-
-      if($res_c->error) return DV::error($res_c->error);
-      
-      $inp= $res_c->values;
-      $da = saveData($ss,'sender_classes',[],$inp,[],1,false);
-
-    }
 
     if ($id > 0) {
       $new_code = null;
@@ -201,8 +170,7 @@ class Customer //extends Model
         if($file_name) PublicStorage::delete($branch_id,self::$img_dir,'image',$file_name);
         DB::table('sender as s')->where('s.id',$id)->update(['photo_file_name'=>null]);
       }
-      PublicStorage::saveImage($branch_id,self::$img_dir,null,$photo,null,['id'=>$id,'store'=>'sender.photo_file_name']);  
-
+      PublicStorage::saveImage($branch_id,self::$img_dir,null,$photo,null,['id'=>$id,'store'=>'sendser.photo_file_name']);  
       
       if ($sender_created) {
         $new_code = $this->getNextSenderCode($ss); // formatNumber($sender_id,5); 

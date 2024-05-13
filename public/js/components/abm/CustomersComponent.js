@@ -520,163 +520,112 @@
         this.base_url = main_view.base_url;
         this.options = {};
     
-        this.elTitle = this.self.find('#_cul_dlgCustomerTitle');
-        this.btnSave = this.self.find('#_cul_dlgCustomer_btnSave');
+    this.elTitle = this.self.find('#_cul_dlgCustomerTitle');
+    this.btnSave =  this.self.find('#_cul_dlgCustomer_btnSave');
+    this.elBusinessType =  this.self.find('#_cul_business_type');
+    this.elSalesAgent =  this.self.find('#_cul_sales_agent');
+    this.elPriceList =  this.self.find('#_cul_price_list');
+    this.elCustomerType = this.self.find('#_cul_sender_type') ;
+    this.onClose = null;
+    this.body =  this.self.find('.modal-body')[0];
+    this.div_sender_info =  this.body.querySelector('#_cul_dlgCustomer_body');
+  
     
-        this.elBusinessType = this.self.find('#_cul_business_type');
-        //this.elSalesAgent = this.self.find('#_cul_sales_agent');
-        this.elPriceList = this.self.find('#_cul_price_list');
-        this.elCustomerType = this.self.find('#_cul_sender_type');
-    
-        this.onClose = null;
-        this.body = this.self.find('.modal-body')[0];
-        this.divPhoto = this.self[0].querySelector('#_customer_profile_photo');
-    
-        this.div_sender_info = this.body.querySelector('#_cul_dlgCustomer_body');
-    
-        mThis.imgBox = new ImageBox(mThis.divPhoto,{
-            "dataField":"photo",
-            "cssClass":"data-input border border-success ",
-            containerClass:null,
-            // onDeleteImage:()=>{
-            //   alert('Deleting image');
-            //   return false;
-            // },
-            "onLoadImage":(photo) =>{
-                let p = {"id":mThis.options.id,"id":mThis.options.id,"photo":photo};
-                console.log(photo);
-                if(!p.id) return; 
-                vsapi.call(`${main_view.base_url}/abm/customers/save-profile-picture`,p,null,null,false).then(res =>{
-                    if(res.status_code ===200){
-                        mThis.imgBox.setImage(photo);
-                        //cv_interact.success('Photo has been saved');
-                    }else cv_interact.error(res.error_message);
-                });
-            },
-            "deleteAPI":{
-                "endPoint":`${main_view.base_url}/abm/customers/delete-profile-picture`,
-                "params":()=>{
-                    return {"id": mThis.options.id,"id":mThis.options.id}
-                }
-            }
+    // this.body = this.self.find('.modal-body')[0];
+  
+    this.prepareData = (id,def, onFinish) => {
+        if(!def) def = {};
+        vsapi.call(`${mThis.base_url}/abm/customers/form-options`,{id: id },null).then(res => {
+            let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
+            // VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No Sales Agent)', def.sales_agent_id);
+            VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
+            VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'price_list', true, '(Price List)', def.price_list_id);
+            VSUtil.setComboItems(mThis.elCustomerType,d.sender_types,'id','sender_type',true,'(Customer Type)',def.sender_type_id);
+            console.log(d);
+
+            mThis.form_data = d;
+            onFinish(d);
         });
-        
-        this.prepareData = (id, def, onFinish) => {
-            if (!def) def = {};
-            vsapi.call(`${mThis.base_url}/abm/customers/form-options`, { id: id }, null).then(res => {
-                console.log(res);
-                let d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
-                //VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No Sales Agent)', def.sales_agent_id);
-                VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
-                VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'price_list', true, '(Price List)', def.price_list_id);
-                VSUtil.setComboItems(mThis.elCustomerType, d.sender_types, 'id', 'sender_type', true, '(Customer Type)', def.sender_type_id);
-                mThis.form_data = d;
-                onFinish(d);
-            });
-        }
-        this.btnSave.on('click', function (e) {
-            e.preventDefault();
-            let p = mThis.getData();
-            console.log(p);
-            vsapi.call(`${mThis.base_url}/abm/customers/save`, p).then(res => {
-                if (res.status_code === 200) {
-                    mThis.self.modal('hide');
-                    if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
-                }
-                else
-                    cv_interact.error(res.error_message);
-            });
-        });
-      
-       
-        // this.show = (options) => {
-        //     if (!options) options = {};
-        //     mThis.options = options;
-        //     mThis.prepareData(mThis.options.id, {}, data => {
-        //         if (data.sender) {
-    
-        //             mThis.elTitle.text("Modify Customer");
-        //         }
-        //         else {
-        //             mThis.elTitle.text("Create Customer");
-        //         }
-        //         mThis.setData(data.sender);
-        //         mThis.self.modal({
-        //             backdrop: 'static'
-        //         });
-        //     });
-        // }
-        this.show = (options)=>{
-            mThis.options = options || {};
-            mThis.elTitle.innerHTML = options.title;
-            console.log(mThis.options.id);
-            if (mThis.options.id > 0) {
-                mThis.elTitle.innerHTML = "Customers Details";
-                let p = {'id':mThis.options.id};
-                vsapi.call([main_view.base_url,'/abm/customers/form-options'].join(''),p,null).then(res=>{
-                    
-                    if(res.status_code === 200){
-                        let d = res.data.sender;
-                    console.log(d);
-
-                        d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
-                        mThis.prepareData(d, {}, data => {
-                            mThis.setData(d);
-                            mThis.self.modal({
-                                backdrop:'static'
-                            });
-                        });
-                    }
-                });
-            }
-            else{
-                mThis.elTitle.innerHTML =  "New Customers";
-                mThis.prepareData({'id':1},{},data =>{
-                    mThis.setData(null);
-                    mThis.self.modal({
-                        backdrop:'static'
-                    });       
-                });
-            }
-        }
-    
-
-        this.setData = (d) => {
-            // mThis.body.querySelectorAll('.data-input').forEach(el => {
-            //     el.value = null;
-            // });
-            // if (!d) return;
-            d = d || {};
-            mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
-                const data_member = el.dataset.field;
-                el.value = d[data_member] ?? '';
-                console.log(d[data_member]);
-
-                if (el.tagName.toLowerCase() === 'select') {
-                    el.dispatchEvent(new Event('change'));
-                }else if(el.tagName ==='IMG'){
-                    el.setAttribute('src',d[data_member] || '');
-                }
-                    
-               
-            });
-        mThis.imgBox.setImage(d.photo || d.image_url);
-
-        }
-        this.getData = () => {
-            let p = {};
-            p.id = mThis.options.id;
-            mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
-                let data_member = el.dataset.field;
-                if (el.tagName === 'IMG')
-                    p[data_member] = el.getAttribute('src');
-                else
-                    p[data_member] = el.value;
-            });
-            return p;
-        }
-       
     }
 
+    this.btnSave.on('click', function(e){
+        e.preventDefault();
+        let p = mThis.getData();
+        console.log(p);
+        vsapi.call(`${mThis.base_url}/abm/customers/save`, p).then(res => {
+            if(res.status_code === 200){
+                mThis.self.modal('hide');
+                if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
+
+            }
+            else
+                cv_interact.error(res.error_message);
+        });
+        
+     });
+      this.setData = (d) => {
+        d = d || {};
+        console.log(d);
+        // mThis.body.querySelectorAll('.data-input').forEach(el =>{
+        //     el.value = null;
+        // });
+        mThis.div_sender_info.querySelectorAll('.data-input').forEach(el =>{ 
+            const data_member = el.dataset.field;
+            if(el.tagName.toLowerCase() === 'select'){
+
+                el.value = d[data_member];
+                let event = new Event('change',{
+                    bubbles: true,
+                    cancelable: true
+                });
+                el.dispatchEvent(event);
+            }
+            else{
+                el.value = d[data_member]?? '';
+            }
+        });
+  
+       
+    }
+    
+
+    this.getData = () => {
+        let p = {};
+        p.id = mThis.options.id;
+        mThis.self[0].querySelectorAll('.data-input').forEach(el=>{
+            let f = el.dataset.field;
+            
+            p [f] = el.value;
+        });
+        
+        
+        return p;
+    }
+
+    this.show = (options) => {
+        if (!options) options = {};
+        mThis.options = options;
+       // console.log('grth');
+         
+        mThis.prepareData(mThis.options.id,{},data => {
+            if(data.sender){
+                
+                mThis.elTitle.text("Modify Customer");
+            }
+            else{
+                mThis.elTitle.text("Create Customer");
+            }
+// console.log(data.customer);
+            mThis.setData(data.sender);
+
+            mThis.self.modal({
+                backdrop: 'static'
+            });
+        });
+    }
 
   
+
+  
+}
+ 

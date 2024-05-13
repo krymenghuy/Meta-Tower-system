@@ -648,8 +648,6 @@ const CustomerDialog1 = new function(){
   
     
     // this.body = this.self.find('.modal-body')[0];
-
-            
   
     this.prepareData = (id,def, onFinish) => {
         if(!def) def = {};

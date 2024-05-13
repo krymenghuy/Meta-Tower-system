@@ -588,6 +588,7 @@ var SalesAgentsComponent = new function () {
                 if(lnk){
                     let salesAgent_id = lnk.dataset.id;
                     let status_code = Validator.properCase(lnk.dataset.status);
+                    console.log(lnk.dataset.status); 
                     let option = {
                         confirmButtonText:'OK',
                         title: 'Set SalesAgent Status',
@@ -616,12 +617,11 @@ var SalesAgentsComponent = new function () {
 
                             vsapi.call(`${mThis.base_url}/abm/os-sales-agents/update-status`,p).then(res => {
                                 if(res.status_code === 200){
-                                    //console.log(elFilter_sale_agent_status);
-                                   mThis.elFilter_sale_agent_status.val(d.value).trigger('change');
-                                    const new_status = res.data? `to ${res.data.new_status}`: null;
-                                    cv_interact.info([`Customer status has been changed `,d.new_status].join(''));
+                                    console.log(mThis.elFilter_sale_agent_status);
+                                    // mThis.elFilter_sale_agent_status.val(d.value).trigger('change');
+                                    mThis.elFilter_sale_agent_status.val(d.value).trigger('change');
+                                    cv_interact.success('The status has been updated');
                                     mThis.salesAgentsListView.showPage(mThis.getFilterData());
-
                                 }
                                 else
                                     cv_interact.error(res.error_message); 
