@@ -71,6 +71,10 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('role')->group(
     Route::post('/permission/add', [UMController::class, "addPermissionToRole"]);
     Route::post('/permission/delete', [UMController::class, "removeRolePermission"]);
 
+    Route::post('/report/add', [UMController::class, "addPermissionToRole"]);
+    Route::post('/report/remove', [UMController::class, "removePermissionFromRole"]);
+    Route::post('/reports', [UMController::class, 'getRoleReports']);
+
     Route::post('/exists', [UMController::class, 'role_exists']);
     Route::post('/members/add', [UMController::class, 'addRoleMember']);
     Route::post('/members/remove', [UMController::class, 'removeRoleMember']);

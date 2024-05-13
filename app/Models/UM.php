@@ -358,6 +358,51 @@ class UM //extends Model
           }
           return DV::success(["otp_code"=>$new_otp_code]);
       }
+      function getRoleReports($arr, $ss){
+        $d = (object)$arr;
+        $app_id = isset($d->app_id)? $d->app_id:null;
+        $role_id = isset($d->role_id)? $d->role_id:null;
+        $role_id  =  $role_id  ?? 0;
+        $search_value =isset($d->search_value) ? $d->search_value : null;
+        $str_app = '1=1';
+        $str_search = '2=2';
+        if($search_value){
+           $search_value = escape_like_str($search_value);
+           if ($search_value > 0) $str_search = 'prn.id = '.$search_value;
+           else $str_search = '(rpt.name LIKE \'%'.$search_value.'%\' OR prn.name LIKE \'%'.$search_value.'%\')';
+        }else{
+          if($app_id) $str_app = 'rc.app_id =\''.$app_id.'\'';
+        }
+        $cols = 'prn.id, prn.name AS permission_name,rpt.id as report_id, rpt.category_id,rc.name AS category, rpt.code as report_code, has_prn('.$role_id.',prn.id) AS status_id';
+        $rows = DB::table('um_permissions as prn')
+        ->join('reports as rpt','rpt.permission_id','=','prn.id')
+        ->join('report_categories as rc','rc.id','=','rpt.category_id')
+        ->whereRaw($str_app)
+        ->whereRaw($str_search)
+        ->selectRaw($cols)->get();
+        $data = [];
+        foreach($rows as $row){
+          // $I=0;
+          if (!isset($data[$row->category])){
+           $data[$row->category] = (object)[
+             'id'=>$row->category_id,
+             'name'=>$row->category,
+             'items'=>[]
+           ];
+          }
+          
+          $data[$row->category]->items[] =(object)[
+           'id'=>$row->id,
+           'name'=>$row->permission_name,
+           'report_code'=>$row->report_code,
+           //'report_id'=>$row->report_id,
+           'status_id'=>$row->status_id
+          ];
+         
+        }
+        return $data;
+   
+     }
 
       static function resetPassword_forget($login_name,$user_class,$otp_code,$password){
         if(self::matchOTP($login_name,$otp_code,$user_class)){
@@ -653,7 +698,7 @@ class UM //extends Model
           //->where('ur.role_id',$role_id)
           ->whereRaw($str_search)->orderBy('u.id','DESC')
           ;
-          ;
+          
           $count_query = clone $query;
           $count = $count_query->count('u.id');
           $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -1564,7 +1609,13 @@ class UM //extends Model
 
             $module_id = null;
             $module_name = null;
-            $row = DB::table('um_permissions as p')->join('um_app_modules as m', 'm.id', '=', 'p.module_id')->where('p.id', $prn_id)->selectRaw('p.module_id,p.app_id,m.module_name')->take(1)->get()->first();
+            $row = DB::table('um_permissions as p')
+            ->join('um_app_modules as m', 'm.id', '=', 'p.module_id')
+            ->where('p.id', $prn_id)
+            ->selectRaw('p.module_id,p.app_id,m.module_name')
+            ->take(1)
+            ->get()
+            ->first();
             if ($row) {
             $module_id = $row->module_id;
             $module_name = $row->module_name;

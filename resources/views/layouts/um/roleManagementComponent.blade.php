@@ -140,7 +140,7 @@ div.role-card.selected > div.card-content {
                   <div class="w-50" id="_um_role_app_list">
                      <div class="p-1 d-flex flex-column gap-3 justify-contents-start">
                          <div class="app-box d-flex justify-content-between">
-                              <div class="d-flex gap-2 rounded-4 shadow-lg p-2 justify-contents-center align-items-center" style="width:390px">
+                              <div class="d-flex gap-2 rounded-4 shadow-lg p-2 justify-contents-center align-items-center" style="width:370px">
                                     <img class="border border-secondary rounded-5" style="width:40px;height:40px" src="/uploads/public/1_data/default/images/mr1.jpg" alt=""> 
                                     <h5 class="" >Delivery Management System</h5>
 
@@ -157,7 +157,7 @@ div.role-card.selected > div.card-content {
                          </div> 
                       
                          <div class="app-box d-flex justify-content-between">
-                              <div class="d-flex gap-2 rounded-4 shadow-lg p-2 justify-contents-center align-items-center" style="width:390px">
+                              <div class="d-flex gap-2 rounded-4 shadow-lg p-2 justify-contents-center align-items-center" style="width:370px">
                                     <img class="border border-secondary rounded-5" style="width:40px;height:40px" src="/uploads/public/1_data/default/images/mr1.jpg" alt=""> 
                                     <h5 class="" >Airway Bill Management System</h5>
 
@@ -165,7 +165,7 @@ div.role-card.selected > div.card-content {
                                     
                               </div>
                               <div class="d-flex gap-4 align-items-center justify-content-center">
-                                  <span class=" border border-secondary " style="width:30px;height:30px"><i class="fa fa-check text-success fs-3 fw-bold "></i></span>
+                                  <span class=" border border-secondary " style="width:30px;height:30px"><i class="fa fa-times text-danger fs-3 fw-bold "></i></span>
 
                                    <div> <button class="btn btn-sm btn-primary rounded-4">Allow</button> </div>
                               </div>

@@ -141,7 +141,7 @@ var RoleManagementComponent = new function(){
                     }); 
                 }
             }
-            //RoleDialog.show(op);
+           // AddUserDialog.show(op);
         });
 
         mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
@@ -598,43 +598,53 @@ const RoleTabView = new function(){
    
  
 
-    this.displayReportList = ()=>{
-        let data = {
-            "Company Reports":{
-                id:1,
-                name:"Company Reports",
-                items:[
-                    {
-                        id:1,
-                        name:"Daily Operation Summary",
-                        status_id:1
-                    },
-                    {
-                        id:2,
-                        name:"Daily Incomes",
-                        status_id:1
-                    }
-                ]
-            },
-         "Operations":{
-            id:2,
-            name:"Operations",
-            items:[
-                {
-                    id:3,
-                    name:"Daily package counts",
-                    status_id:0
-                },
-                {
-                    id:4,
-                    name:"Active Merchants",
-                    status_id:0
-                },
-            ]
-         }
-        };
+    // this.displayReportList = ()=>{
+       
 
+    //     mThis.div_reports = mThis.div_reports || mThis.self.querySelector('#_um_role_report_list');
+    //     mThis.reportList = mThis.reportList || new  UMExpandItemView( mThis.div_reports,{
+    //         statuses:{
+    //             1: {name:'Allowed',  
+    //               signClass:'fa fa-check text-success fs-5', 
+    //               //cssClass:'text-success', 
+    //               textColorClass:'text-success',
+    //               backgroundClass:'' 
+    //             }, 
+    //            0:{
+    //             name:'Denied',
+    //             signClass:'fa fa-times text-danger fs-5',
+    //             //cssClass:'text-danger',
+    //             textColorClass:'text-danger',
+    //             backgroundColorClass:''
+    //           }
+    //         },
+    //         onStatusChange:(status,item_id,parent_id)=>{
+    //             console.log('todo: save via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
+      //          let method = status.status_id ==1? 'add-permission': 'remove-permission';
+    //             let p = {role_id: mThis.selected_role.id, app_id:null, search_value:null};
+    //             vsapi.call([main_view.base_url,'/api/role/reports',method].join(''),p, null,false).then*(res =>{
+    //                 if (res.status_code==200){
+
+    //                 }
+    //             });
+    //         }
+    //     });  
+    //     let p = {role_id: mThis.selected_role.id, app_id:null, search_value:null};
+    //     vsapi.call([main_view.base_url,'/api/role/reports'].join(''),p, null,false).then*(res =>{
+    //         let d= res.status_code==200? res.data :{};
+    //         mThis.reportList.setData(d);
+    //     });
+
+
+       
+    // }
+    
+    this.displayReportList = ()=>{
+       
+ 
         mThis.div_reports = mThis.div_reports || mThis.self.querySelector('#_um_role_report_list');
+      
+
         mThis.reportList = mThis.reportList || new  UMExpandItemView( mThis.div_reports,{
             statuses:{
                 1: {name:'Allowed',  
@@ -651,11 +661,30 @@ const RoleTabView = new function(){
                 backgroundColorClass:''
               }
             },
+
             onStatusChange:(status,item_id,parent_id)=>{
-                console.log('todo: save via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
+                //console.log('todo: save via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
+                let method = status.status_id ==1? '/report/add': '/report/remove';
+                console.log(mThis.selected_role);
+                
+                let p = {role_id: mThis.selected_role.role_id,prn_id:item_id, app_id:null, search_value:null};
+                console.log(p);
+                vsapi.call([main_view.base_url,'/api/role',method].join(''),p, null,false).then*(res =>{
+                    if (res.status_code==200){
+
+                    }
+                });
             }
+
         });
-        mThis.reportList.setData(data);
+        let p = {role_id: mThis.selected_role.role_id, app_id:null, search_value:null};
+        vsapi.call([main_view.base_url, '/api/role/reports'].join(''), p,false,false).then(res =>{
+             const d = res.status_code ==200? res.data: {};
+             console.log(d);
+             mThis.reportList.setData(d);
+        });
+
+       
     }
 
 
