@@ -136,9 +136,9 @@
                                                     </span>
                                                     <div class="dropdown-divider"></div>
                                                     <span class="app-menu-item">
-                                                        <a id="" class="dropdown-item" href="{{ url('/acc')}}">
+                                                        <a id="" class="dropdown-item" href="{{ url('/abm')}}">
                                                             <i class="fa fa-cube"></i>
-                                                            Accounting Management
+                                                            Airway Bill Management
                                                         </a>
                                                     </span>
                                                     <div class="dropdown-divider"></div>
@@ -208,7 +208,6 @@
                                 @include('layouts.dms.driverListComponent')
                                 @include('layouts.dms.salesAgentsComponent')
                                 @include('layouts.dms.commentsComponent')
-                                <!-- @include('layouts.dms.priceListComponent') -->
                                 @include('layouts.dms.postersComponent')
                                 @include('layouts.dms.senderListComponent')
                                 @include('layouts.dms.mobilePrivacyComponent')
@@ -216,7 +215,7 @@
                               
                                 @include('layouts.um.userManagementComponent')
                                 @include('layouts.um.roleManagementComponent')
-                                <!-- @include('layouts.geo.locationComponent') -->
+                                @include('layouts.geo.locationComponent')
                                 @include('layouts.dms.mobileBrandImagesComponent')
                                 @include('layouts.dms.socialMediaComponent')
                                 @include('layouts.dms.promotionComponent')

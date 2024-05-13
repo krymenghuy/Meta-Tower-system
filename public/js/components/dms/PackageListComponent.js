@@ -580,22 +580,11 @@ var PackageListComponent = new function() {
                                 return;
                             }
                             let p = { 'package_id': tr.dataset.id };
-                            //let def_driver_id = tr.data('driverid');
-                           cv_interact.inputBox('ការបញ្ជូនត្រឡប់វិញ','ហេតុផលក្នុងការបញ្ជូនត្រឡប់វិញ','text',null,{
-                              context:"update",
-                              confirmButtonText:"Return Now",
-                              placeHolder:"remarks",
-                              maxlength:200,
-                              inputValidator:(value)=>{
-                                  if(!value){
-                                      cv_interact.warning('មិនអាចបញ្ជូនត្រឡប់វិញដោយគ្មានហេតុផលទេ!');
-                                      return false;
-                                  }
-
-                              }
-                             }).then(res =>{
-                                 if(res.isConfirmed){
-                                    p.remarks = res.value;
+                            let msg = 'Return to this package to the store?';
+                            if(LocaleManager) msg = LocaleManager.trans(msg,'titles');
+                            cv_interact.confirm(msg,{"context":"udpate","title":"Return",confirmButtonText:"Return Now"},e =>{
+                                if(e){
+                                    p.remarks = null;
                                     vsapi.call([mThis.base_url, '/dms/returnPackage'].join(''), p).then(res => {
                                         if (res.status_code === 200) {
                                             let d = res.data || {};
@@ -611,9 +600,8 @@ var PackageListComponent = new function() {
                                             mThis.initStatusPopover(btn);
                                         } else cv_interact.error(res.error_message);
                                     });
-                                 } 
-                              }); 
-                                
+                                }
+                            }); 
                             return;
                         }
   
