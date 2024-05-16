@@ -358,51 +358,7 @@ class UM //extends Model
           }
           return DV::success(["otp_code"=>$new_otp_code]);
       }
-      function getRoleReports($arr, $ss){
-        $d = (object)$arr;
-        $app_id = isset($d->app_id)? $d->app_id:null;
-        $role_id = isset($d->role_id)? $d->role_id:null;
-        $role_id  =  $role_id  ?? 0;
-        $search_value =isset($d->search_value) ? $d->search_value : null;
-        $str_app = '1=1';
-        $str_search = '2=2';
-        if($search_value){
-           $search_value = escape_like_str($search_value);
-           if ($search_value > 0) $str_search = 'prn.id = '.$search_value;
-           else $str_search = '(rpt.name LIKE \'%'.$search_value.'%\' OR prn.name LIKE \'%'.$search_value.'%\')';
-        }else{
-          if($app_id) $str_app = 'rc.app_id =\''.$app_id.'\'';
-        }
-        $cols = 'prn.id, prn.name AS permission_name,rpt.id as report_id, rpt.category_id,rc.name AS category, rpt.code as report_code, has_prn('.$role_id.',prn.id) AS status_id';
-        $rows = DB::table('um_permissions as prn')
-        ->join('reports as rpt','rpt.permission_id','=','prn.id')
-        ->join('report_categories as rc','rc.id','=','rpt.category_id')
-        ->whereRaw($str_app)
-        ->whereRaw($str_search)
-        ->selectRaw($cols)->get();
-        $data = [];
-        foreach($rows as $row){
-          // $I=0;
-          if (!isset($data[$row->category])){
-           $data[$row->category] = (object)[
-             'id'=>$row->category_id,
-             'name'=>$row->category,
-             'items'=>[]
-           ];
-          }
-          
-          $data[$row->category]->items[] =(object)[
-           'id'=>$row->id,
-           'name'=>$row->permission_name,
-           'report_code'=>$row->report_code,
-           //'report_id'=>$row->report_id,
-           'status_id'=>$row->status_id
-          ];
-         
-        }
-        return $data;
-   
-     }
+     
 
       static function resetPassword_forget($login_name,$user_class,$otp_code,$password){
         if(self::matchOTP($login_name,$otp_code,$user_class)){
@@ -628,14 +584,14 @@ class UM //extends Model
         }
         $rows = DB::table('um_roles AS r')
         ->selectRaw("r.id, r.`name`,r.create_date,r.create_user,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.branch_id = u.branch_id AND ur.role_id = r.id) AS user_count")
-        ->orderBy('r.id','DESC')
+        ->orderBy('r.id','ASC')
         ->whereRaw($str_search)
         ->get();
         if($search_value && !isset($rows[0])){
           $str_search = '(r.id IN (SELECT ur.role_id FROM um_user_roles AS ur INNER JOIN um_users as u ON ur.user_id = u.id WHERE u.login_name LIKE \'%'.$search_value.'%\' OR u.phone_number = \''.$search_value.'\' OR u.official_code = \''.$search_value.'\' OR u.full_name LIKE \'%'.$search_value.'%\') )';
           $rows = DB::table('um_roles AS r')
           ->selectRaw('\''.$search_value.'\' AS user_search_value,' ."r.id, r.`name`,r.create_date,r.create_user,r.user_class, (SELECT COUNT(ur.user_id) FROM um_user_roles AS ur INNER JOIN um_users as u ON u.id = ur.user_id WHERE ur.branch_id = u.branch_id AND ur.role_id = r.id) AS user_count")
-          ->orderBy('r.id','DESC')
+          ->orderBy('r.id','ASC')
           ->whereRaw($str_search)
           ->get();
         }
@@ -680,6 +636,8 @@ class UM //extends Model
 
           $current_page = isset($d->current_page) ? $d->current_page : 1;
           $search_value = isset($d->search_value) ? $d->search_value : null;
+          $role_id = isset($d->role_id) ? $d->role_id : null;
+          
           $per_page = isset($d->per_page) ? $d->per_page : 10;
           $skip_rows = ($current_page - 1) * $per_page;
           if (!is_numeric($current_page)) $current_page = 1;
@@ -688,15 +646,24 @@ class UM //extends Model
           $role_name = self::getRoleName($role_id);
           $search_value = escape_like_str(isset($d->search_value)?$d->search_value:null);
           $str_search = '7=7';
+          $str_role_id = '1=1';
           if($search_value){
               $str_search = '(u.login_name LIKE \'%'.$search_value.'%\' OR u.official_code LIKE \'%'.$search_value.'%\' OR u.phone_number = \''.$search_value.'\' OR u.full_name LIKE \'%'.$search_value.'%\')';
+          }
+          if($role_id){
+            $str_role_id = $role_id? 'ur.role_id =\''.$role_id.'\'' : '1=1';
+
+            
           }
           $query = DB::table('um_user_roles AS ur')
           ->join('um_users AS u','u.id','=','ur.user_id')
           ->selectRaw('\''.$role_name.'\' as role_name,\''.$search_value.'\' AS search_value,u.id,u.login_name,u.full_name,u.official_code,u.phone_number,formatTime(u.create_date) as create_date, formatTime(u.last_login_date) AS last_login_date, u.is_locked,u.status, u.create_user, u.email,u.lang,u.otp_code,u.user_class')
           // ->where('u.branch_id',$branch_id)
           //->where('ur.role_id',$role_id)
-          ->whereRaw($str_search)->orderBy('u.id','DESC')
+          ->whereRaw($str_role_id)
+
+          ->whereRaw($str_search)
+          ->orderBy('u.id','DESC')
           ;
           
           $count_query = clone $query;
@@ -1492,11 +1459,7 @@ class UM //extends Model
          return $rows;
     }
 
-  function getAccessibleModules($role_id,$ss){
-        $ss = $ss?$ss:$this->userInfo;
-        $role_id = Sanitizer::sanitize($role_id);
-        return DB::select(DB::raw("SELECT m.id, m.disabled, m.module_name AS `name`, m.module_name_native as name_native, m.icon_image, m.target_url FROM um_app_modules AS m INNER JOIN um_role_modules AS rm ON m.id = rm.module_id WHERE IFNULL(m.hidden,0) =0 AND m.app_id ='".self::$app_id."' AND rm.role_id ='$role_id' ORDER BY m.disabled, m.module_name ASC"));
-  }
+
   
   /*** $arr = ['email','full_name','phone_number','start_date'] */
   function createSubscription($arr,$ss){
@@ -1520,10 +1483,81 @@ class UM //extends Model
      DB::table('um_subscriptions')->insert($inputs);
      return DV::depends(1);
   }
+  function getAccessibleModules($role_id,$ss){
+    $ss = $ss?$ss:$this->userInfo;
+    $role_id = Sanitizer::sanitize($role_id);
+    return DB::select(DB::raw("SELECT m.id, m.disabled, m.module_name AS `name`, m.module_name_native as name_native, m.icon_image, m.target_url FROM um_app_modules AS m INNER JOIN um_role_modules AS rm ON m.id = rm.module_id WHERE IFNULL(m.hidden,0) =0 AND m.app_id ='".self::$app_id."' AND rm.role_id ='$role_id' ORDER BY m.disabled, m.module_name ASC"));
+}
 
-  function getRoleApps($role_id, $ss){
+  function getRoleApps($arr, $ss){
+    $d = (object) $arr;
+    $app_id = isset($d->app_id)? $d->app_id:null;
+    $role_id = isset($d->role_id)? $d->role_id:null;
+    $role_id = $role_id ?? 0;
+    $search_value = isset($d->search_value) ? $d->search_value : null;
+    $str_app = '2=2';
+    $str_search = '3=3';
+    if($search_value){
+      $search_value = escape_like_str($search_value);
+      $str_search = " (app.name LIKE '%$search_value%')";
+
+    }
+    $query = DB::table('um_applications as app')
+          ->join('um_roles as r','r.app_id','=','app.app_id')
+          ->where('r.id',$role_id)
+          ->whereRaw($str_app)
+          ->whereRaw($str_search)
+          ->selectRaw('app.app_id,app.name,app.icon_file_name')->get();
+  
+    return $query;
+    
      
   }
+//   function getRoleReports($arr, $ss){
+//     $d = (object)$arr;
+//     $app_id = isset($d->app_id)? $d->app_id:null;
+//     $role_id = isset($d->role_id)? $d->role_id:null;
+//     $role_id  =  $role_id  ?? 0;
+//     $search_value =isset($d->search_value) ? $d->search_value : null;
+//     $str_app = '1=1';
+//     $str_search = '2=2';
+//     if($search_value){
+//        $search_value = escape_like_str($search_value);
+//        if ($search_value > 0) $str_search = 'prn.id = '.$search_value;
+//        else $str_search = '(rpt.name LIKE \'%'.$search_value.'%\' OR prn.name LIKE \'%'.$search_value.'%\')';
+//     }else{
+//       if($app_id) $str_app = 'rc.app_id =\''.$app_id.'\'';
+//     }
+//     $cols = 'prn.id, prn.name AS permission_name,rpt.id as report_id, rpt.category_id,rc.name AS category, rpt.code as report_code, has_prn('.$role_id.',prn.id) AS status_id';
+//     $rows = DB::table('um_permissions as prn')
+//     ->join('reports as rpt','rpt.permission_id','=','prn.id')
+//     ->join('report_categories as rc','rc.id','=','rpt.category_id')
+//     ->whereRaw($str_app)
+//     ->whereRaw($str_search)
+//     ->selectRaw($cols)->get();
+//     $data = [];
+//     foreach($rows as $row){
+//       // $I=0;
+//       if (!isset($data[$row->category])){
+//        $data[$row->category] = (object)[
+//          'id'=>$row->category_id,
+//          'name'=>$row->category,
+//          'items'=>[]
+//        ];
+//       }
+      
+//       $data[$row->category]->items[] =(object)[
+//        'id'=>$row->id,
+//        'name'=>$row->permission_name,
+//        'report_code'=>$row->report_code,
+//        //'report_id'=>$row->report_id,
+//        'status_id'=>$row->status_id
+//       ];
+     
+//     }
+//     return $data;
+
+//  }
 
   function addAccessibleModule($module_id, $role_id, $ss = null)
   {
@@ -1576,6 +1610,52 @@ class UM //extends Model
 
          return $rows;
     }
+
+    function getRoleReports($arr, $ss){
+      $d = (object)$arr;
+      $app_id = isset($d->app_id)? $d->app_id:null;
+      $role_id = isset($d->role_id)? $d->role_id:null;
+      $role_id  =  $role_id  ?? 0;
+      $search_value =isset($d->search_value) ? $d->search_value : null;
+      $str_app = '1=1';
+      $str_search = '2=2';
+      if($search_value){
+         $search_value = escape_like_str($search_value);
+         if ($search_value > 0) $str_search = 'prn.id = '.$search_value;
+         else $str_search = '(rpt.name LIKE \'%'.$search_value.'%\' OR prn.name LIKE \'%'.$search_value.'%\')';
+      }else{
+        if($app_id) $str_app = 'rc.app_id =\''.$app_id.'\'';
+      }
+      $cols = 'prn.id, prn.name AS permission_name,rpt.id as report_id, rpt.category_id,rc.name AS category, rpt.code as report_code, has_prn('.$role_id.',prn.id) AS status_id';
+      $rows = DB::table('um_permissions as prn')
+      ->join('reports as rpt','rpt.permission_id','=','prn.id')
+      ->join('report_categories as rc','rc.id','=','rpt.category_id')
+      ->whereRaw($str_app)
+      ->whereRaw($str_search)
+      ->selectRaw($cols)->get();
+      $data = [];
+      foreach($rows as $row){
+        // $I=0;
+        if (!isset($data[$row->category])){
+         $data[$row->category] = (object)[
+           'id'=>$row->category_id,
+           'name'=>$row->category,
+           'items'=>[]
+         ];
+        }
+        
+        $data[$row->category]->items[] =(object)[
+         'id'=>$row->id,
+         'name'=>$row->permission_name,
+         'report_code'=>$row->report_code,
+         //'report_id'=>$row->report_id,
+         'status_id'=>$row->status_id
+        ];
+       
+      }
+      return $data;
+  
+   }
 
       function findPermissions($search_value){
         //$d = (object)$arr;
@@ -2168,44 +2248,44 @@ class UM //extends Model
   /** returns list of reports with status "allowed" or "denied" for a given role 
     * $arr = ['role_id', 'app_id','serch_value']
   */
-  function getRoleReports($arr, $ss){
-     $d = (object)$arr;
-     $app_id = isset($d->app_id)? $d->app_id:null;
-     $role_id = isset($d->role_id)? $d->role_id:null;
-     $role_id  =  $role_id  ?? 0;
-     $search_value =isset($d->search_value) ? $d->search_value : null;
-     $str_app = '1=1';
-     $str_search = '2=2';
-     if($search_value){
-        $search_value = escape_like_str($search_value);
-        if ($search_value > 0) $str_search = 'prn.id = '.$search_value;
-        else $str_search = '(rpt.name LIKE \'%'.$search_value.'%\' OR prn.name LIKE \'%'.$search_value.'%\')';
-     }else{
-       if($app_id) $str_app = 'rc.app_id =\''.$app_id.'\'';
-     }
-     $cols = 'prn.id, prn.name AS permission_name,rpt.id as report_id, rpt.category_id,rc.name AS category, rpt.code as report_code, has_prn('.$role_id.',prn.id) AS status_id';
-     $rows = DB::table('um_permissions as prn')->join('reports as rpt','rpt.permission_id','=','prn.id')->join('report_categories as rc','rc.id','=','rpt.category_id')->whereRaw($str_app)->whereRaw($str_search)->selectRaw($cols)->get();
-     $data = [];
-     foreach($rows as $row){
-       if (!isset($data[$row->category])){
-        $data[$row->category] = (object)[
-          'id'=>$row->category_id,
-          'name'=>$row->category,
-          'items'=>[]
-        ];
-       }
+  // function getRoleReports($arr, $ss){
+  //    $d = (object)$arr;
+  //    $app_id = isset($d->app_id)? $d->app_id:null;
+  //    $role_id = isset($d->role_id)? $d->role_id:null;
+  //    $role_id  =  $role_id  ?? 0;
+  //    $search_value =isset($d->search_value) ? $d->search_value : null;
+  //    $str_app = '1=1';
+  //    $str_search = '2=2';
+  //    if($search_value){
+  //       $search_value = escape_like_str($search_value);
+  //       if ($search_value > 0) $str_search = 'prn.id = '.$search_value;
+  //       else $str_search = '(rpt.name LIKE \'%'.$search_value.'%\' OR prn.name LIKE \'%'.$search_value.'%\')';
+  //    }else{
+  //      if($app_id) $str_app = 'rc.app_id =\''.$app_id.'\'';
+  //    }
+  //    $cols = 'prn.id, prn.name AS permission_name,rpt.id as report_id, rpt.category_id,rc.name AS category, rpt.code as report_code, has_prn('.$role_id.',prn.id) AS status_id';
+  //    $rows = DB::table('um_permissions as prn')->join('reports as rpt','rpt.permission_id','=','prn.id')->join('report_categories as rc','rc.id','=','rpt.category_id')->whereRaw($str_app)->whereRaw($str_search)->selectRaw($cols)->get();
+  //    $data = [];
+  //    foreach($rows as $row){
+  //      if (!isset($data[$row->category])){
+  //       $data[$row->category] = (object)[
+  //         'id'=>$row->category_id,
+  //         'name'=>$row->category,
+  //         'items'=>[]
+  //       ];
+  //      }
        
-       $data[$row->category]->items[] =(object)[
-        'id'=>$row->id,
-        'name'=>$row->permission_name,
-        'report_code'=>$row->report_code,
-        //'report_id'=>$row->report_id,
-        'status_id'=>$row->status_id
-       ];
-       return $data;
-     }
+  //      $data[$row->category]->items[] =(object)[
+  //       'id'=>$row->id,
+  //       'name'=>$row->permission_name,
+  //       'report_code'=>$row->report_code,
+  //       //'report_id'=>$row->report_id,
+  //       'status_id'=>$row->status_id
+  //      ];
+  //      return $data;
+  //    }
 
-  }
+  // }
 
   function getUserViewReportPermission_paginate($arr,$user_id,$ss=null){
     $d = (object)$arr;
