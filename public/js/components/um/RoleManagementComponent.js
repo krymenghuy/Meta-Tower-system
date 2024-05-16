@@ -31,7 +31,7 @@ var RoleManagementComponent = new function(){
                 <span class="data-input text-muted p-1" style="font-size:0.8em" >Total Member: ${item.user_count}</span>
 
                 <div class="border-top border-1">
-                 <span class="text-muted p-1">${item.user_class}</span>
+                 <span class="text-capitalize p-1">User Class: ${item.user_class}</span>
                 </div>
             </div>
            
@@ -371,7 +371,7 @@ const RoleTabView = new function(){
               tableClass:'table user-table',
               columns: user_cols,
               perPage:10,        
-               fetchApi:[main_view.base_url,'/api/role/members'].join(''),
+               fetchApi:[main_view.base_url,'/api/role/members/list'].join(''),
                processResponse:(res)=>{
                    return res.data;
                },
@@ -386,14 +386,14 @@ const RoleTabView = new function(){
             }); 
  
             mThis.tblUsers = mThis.userListView.getTable();
-            this.role_container = mThis.userListView.getListContainer();
+            // this.role_container = mThis.userListView.getListContainer();
 
-            const role_parent = mThis.role_container.parentElement;
-            role_parent.style.height = (window.innerHeight - 500) + 'px';
-            role_parent.classList.add('overflow-y-auto');
-            window.onresize = () => {
-                role_parent.style.height = (window.innerHeight - 500) + 'px';
-            }
+            // const role_parent = mThis.role_container.parentElement;
+            // role_parent.style.height = (window.innerHeight - 500) + 'px';
+            // role_parent.classList.add('overflow-y-auto');
+            // window.onresize = () => {
+            //     role_parent.style.height = (window.innerHeight - 500) + 'px';
+            // }
 
             mThis.tblUsers.onclick = e=>{
                e.preventDefault();
@@ -554,17 +554,16 @@ const RoleTabView = new function(){
         }
         view_name = view_name || mThis.last_view_name;
         const role_id = role.role_id;  
+        console.log("role_id",role_id,"search_value",op.user_search_value);
         switch(view_name){
             case 'view_users':
                 mThis.userListView.showPage({"role_id":role_id,"search_value":op.user_search_value});
                 
               break;
-            case 'view_applications':
-                //mThis.appListView.showPage({"role_id":role_id});
-               break;
+            
             case 'view_apps':
                 //mThis.moduleListView.showPage({"role_id":role_id});
-               // mThis.displayApp();
+               mThis.displayApp();
                break;   
             case 'view_modules':
                 //mThis.moduleListView.showPage({"role_id":role_id});
@@ -598,47 +597,43 @@ const RoleTabView = new function(){
    
  
 
-    // this.displayReportList = ()=>{
-       
-
-    //     mThis.div_reports = mThis.div_reports || mThis.self.querySelector('#_um_role_report_list');
-    //     mThis.reportList = mThis.reportList || new  UMExpandItemView( mThis.div_reports,{
-    //         statuses:{
-    //             1: {name:'Allowed',  
-    //               signClass:'fa fa-check text-success fs-5', 
-    //               //cssClass:'text-success', 
-    //               textColorClass:'text-success',
-    //               backgroundClass:'' 
-    //             }, 
-    //            0:{
-    //             name:'Denied',
-    //             signClass:'fa fa-times text-danger fs-5',
-    //             //cssClass:'text-danger',
-    //             textColorClass:'text-danger',
-    //             backgroundColorClass:''
-    //           }
-    //         },
-    //         onStatusChange:(status,item_id,parent_id)=>{
-    //             console.log('todo: save via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
-      //          let method = status.status_id ==1? 'add-permission': 'remove-permission';
-    //             let p = {role_id: mThis.selected_role.id, app_id:null, search_value:null};
-    //             vsapi.call([main_view.base_url,'/api/role/reports',method].join(''),p, null,false).then*(res =>{
-    //                 if (res.status_code==200){
-
-    //                 }
-    //             });
-    //         }
-    //     });  
-    //     let p = {role_id: mThis.selected_role.id, app_id:null, search_value:null};
-    //     vsapi.call([main_view.base_url,'/api/role/reports'].join(''),p, null,false).then*(res =>{
-    //         let d= res.status_code==200? res.data :{};
-    //         mThis.reportList.setData(d);
-    //     });
-
-
-       
-    // }
     
+       
+
+    this.displayApp = ()=>{
+      
+        mThis.div_apps = mThis.div_apps || mThis.self.querySelector('#_um_role_app_list');
+        mThis.appsList = mThis.appsList || new  UMExpandItemView( mThis.div_apps,{
+            statuses:{
+                1: {name:'Allowed',  
+                  signClass:'fa fa-check text-success fs-5 ', 
+                  //cssClass:'text-success', 
+                  textColorClass:'text-success',
+                  backgroundClass:'' 
+                }, 
+               0:{
+                name:'Denied',
+                signClass:'fa fa-times text-danger fs-5',
+                //cssClass:'text-danger',
+                textColorClass:'text-danger',
+                backgroundColorClass:''
+              }
+            },
+            onStatusChange:(status,item_id,parent_id)=>{
+                console.log('todo: save permission via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
+            }
+            
+            
+        });
+        
+     
+        let p = {role_id:mThis.selected_role.role_id,app_id:null,search_value:null};
+        vsapi.call([main_view.base_url,'/api/role/apps'].join(''),p,false,false).then(res=>{
+            const d = res.status_code == 200? res.data:{};
+            mThis.appsList.setData(d);
+
+        });
+    }
     this.displayReportList = ()=>{
        
  
@@ -682,12 +677,19 @@ const RoleTabView = new function(){
              const d = res.status_code ==200? res.data: {};
              console.log(d);
              mThis.reportList.setData(d);
+            //  this.reports_container = mThis.reportList.getListContainer();
+
+            //  const reports_parent = mThis.reports_container.parentElement;
+            //  reports_parent.style.height = (window.innerHeight - 50) + 'px';
+            //  reports_parent.classList.add('overflow-y-auto');
+            //  window.onresize = () => {
+            //      reports_parent.style.height = (window.innerHeight - 50) + 'px';
+            //  }
         });
+       
 
        
     }
-
-
     this.displayPermissionList = ()=>{
         mThis.div_permissions = mThis.div_permissions || mThis.self.querySelector('#_um_role_prn_list');
         mThis.permissionList = mThis.permissionList || new  UMExpandItemView( mThis.div_permissions,{
@@ -709,55 +711,33 @@ const RoleTabView = new function(){
             },
             onStatusChange:(status,item_id,parent_id)=>{
                 console.log('todo: save permission via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
+                let method = status.status_id ==1? '/add-permission': '/remove-permission';
+                console.log(mThis.selected_role);
+                
+                let p = {role_id: mThis.selected_role.role_id,prn_id:item_id, app_id:null, search_value:null};
+                console.log(p);
+                vsapi.call([main_view.base_url,'/api/role',method].join(''),p, null,false).then*(res =>{
+                    if (res.status_code==200){
+
+                    }
+                });
+
             }
         });
 
         let p = {role_id: mThis.selected_role.role_id, app_id:null, search_value:null};
-        vsapi.call([main_view.base_url, '/api/role/reports'].join(''), p,false,false).then(res =>{
+        vsapi.call([main_view.base_url, '/api/role/permissions'].join(''), p,false,false).then(res =>{
              const d = res.status_code ==200? res.data: {};
-             mThis.reportList.setData(d);
+             mThis.permissionList.setData(d);
         });
 
 
     }
-
-    this.displayModules = ()=>{
-        let data = {
-            "Merchants":{
-                id:1,
-                name:"Merchants",
-                items:[
-                    {
-                        id:1,
-                        name:"Create Merchants",
-                        status_id:1
-                    },
-                    {
-                        id:2,
-                        name:"Delete Merchants",
-                        status_id:1
-                    }
-                ]
-            },
-         "Driver Balances":{
-            id:2,
-            name:"Driver Balances",
-            items:[
-                {
-                    id:3,
-                    name:"Receive driver payments",
-                    status_id:0
-                },
-                {
-                    id:4,
-                    name:"Delete driver payment",
-                    status_id:0
-                },
-            ]
-         }
-        };
-
+    this.displayModules = (role_id)=>{
+        let p ={};
+      
         mThis.div_modules = mThis.div_modules || mThis.self.querySelector('#_um_role_mod_list');
+
         mThis.modulesList = mThis.modulesList || new  UMExpandItemView( mThis.div_modules,{
             statuses:{
                 1: {name:'Allowed',  
@@ -778,9 +758,13 @@ const RoleTabView = new function(){
                 console.log('todo: save permission via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
             }
         });
-        mThis.modulesList.setData(data);
-    }
+         p = {role_id:mThis.selected_role.role_id,app_id:null,search_value:null};
+        vsapi.call([main_view.base_url,'/api/role/access-module/list-all'].join(''),p,false,false).then(res=>{
+            const d = res.status_code == 200? res.data:{};
+            mThis.modulesList.setData(d);
 
+        });
+    }
 }
 /**end:: vs-tab-view for role details */
 

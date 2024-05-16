@@ -14,7 +14,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('report-center
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('user')->group(function () {
 
     //update api for user
-    Route::post('/save', [UMController::class, "saveUser"]);
+    //Route::post('/save', [UMController::class, "saveUser"]);
     Route::post('/delete', [UMController::class, "deleteUser"]);
     Route::post('/form-options', [UMController::class, "getUserFormOption"]);
     Route::post('/list', [UMController::class, "getUserList"]);
@@ -72,22 +72,26 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('role')->group(
     Route::post('/report/add', [UMController::class, "addPermissionToRole"]);
     Route::post('/report/remove', [UMController::class, "removePermissionFromRole"]);
     Route::post('/reports', [UMController::class, 'getRoleReports']);
+
     Route::post('/exists', [UMController::class, 'role_exists']);
+    
     Route::post('/members/add', [UMController::class, 'addRoleMember']);
     Route::post('/members/remove', [UMController::class, 'removeRoleMember']);
     Route::post('/add-member', [UMController::class, 'addRoleMember']);
     Route::post('/remove-member', [UMController::class, 'removeRoleMember']);
+
     Route::post('/members/list', [UMController::class, 'getRoleMembers']);
     Route::post('/members', [UMController::class, 'getRoleMembers']);
     
-
+    //use only one model
     Route::post('/access-modules', [UMController::class, 'getAccessibleModules']);
     Route::post('/access-module/list', [UMController::class, 'getAccessibleModules']);
     Route::post('/access-module/list-all', [UMController::class, 'getAccessibleModules_all']);
+
     Route::post('access-module/add', [UMController::class, 'addAccessibleModule']);
     Route::post('access-module/remove', [UMController::class, 'removeAccessibleModule']);
+    
     Route::post('/permissions', [UMController::class, 'getPermissionsByRole']);
-
     Route::post('/permission/add', [UMController::class, 'addPermissionToRole']);
     Route::post('/permission/remove', [UMController::class, 'removePermissionFromRole']);
     Route::post('/add-permission', [UMController::class, 'addPermissionToRole']);
@@ -143,32 +147,40 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('permission')->
 });
 
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('role')->group(function () {
+    //role api
     Route::post('/save', [UMController::class, 'saveRole']);
     Route::post('/delete', [UMController::class, "deleteRole"]);
     Route::post('/list-all',[UMController::class, "getRoleList"]);
     Route::post('/list-paginate',[UMController::class, "getRoleList_paginate"]);
     Route::post('/details', [UMController::class, "getRoleDetails"]);
   
+    //member api
     Route::post('/add-member',[UMController::class, "addRoleMember"]);
     Route::post('/add-members',[UMController::class, "addRoleMembers"]);
     Route::post('/remove-member',[UMController::class, "removeRoleMember"]);
 
+
+    //app api
     Route::post('/add-app',[UMController::class, "addRoleApp"]);
     Route::post('/remove-app',[UMController::class, "removeRoleApp"]);
 
+    //module api
     Route::post('/add-module',[UMController::class, "addRoleModule"]);
     Route::post('/remove-module',[UMController::class, "removeRoleModule"]);
 
+    //permission api
     Route::post('/add-permission',[UMController::class, "addRolePermission"]);
     Route::post('/remove-permission',[UMController::class, "removeRolePermission"]);
 
+    //reports api
     Route::post('/add-report',[UMController::class, "addRoleReport"]);
     Route::post('/remove-report',[UMController::class, "removeRoleReport"]);
 
+    //get all api
     Route::post('/users',[UMController::class, "getRoleMembers"]);
     Route::post('/members',[UMController::class, "getRoleMembers"]);
     Route::post('/apps',[UMController::class, "getRoleApps"]);
     Route::post('/modules',[UMController::class, "getRoleModules"]);
-    Route::post('/permissions',[UMController::class, "getRolePermissions"]);
+    Route::post('/permissions',[UMController::class, "getPermissionsByRole"]);
     Route::post('/reports',[UMController::class, "getRoleReports"]);
 });

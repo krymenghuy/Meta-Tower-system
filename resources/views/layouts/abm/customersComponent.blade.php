@@ -66,10 +66,7 @@
                         </div>
                      </div>
 
-                    <!-- <div class="form-group col-lg-6">
-                        <label for="os_agent_types" class="form-label trans-text" data-langprop="titles.Agent Type"></label>
-                        <select class="modal-select2 text-primary data-input" id="_cul_sales_agent" data-field="referrer_name"></select>
-                    </div> -->
+                
 
                     <div class="form-group col-lg-6 mt-3">
                         
@@ -98,9 +95,7 @@
                         <textarea class="form-control data-input text-primary" placeholder="input address" data-field="address"></textarea>
                     </div>
 
-                    <div class="col-xs-12 col-md-12 col-lg-3">
-                        <div class="d-flex align-items-center"> <div id="_customer_profile_photo" style="height:165px" class="mt-2"></div></div>
-                    </div>
+                    
 
                 </div>
 
