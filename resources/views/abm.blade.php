@@ -206,7 +206,7 @@
                                 @include('layouts.abm.customersComponent')
                                 @include('layouts.abm.shipmentsComponent')
                                 @include('layouts.abm.suppliersComponent')
-                                @include('layouts.abm.salesAgentsComponent')
+                                @include('layouts.abm.salesAffiliatesComponent')
 
                                 @include('layouts.abm.priceSettingsComponent')
                                 @include('layouts.abm.locationComponent')
