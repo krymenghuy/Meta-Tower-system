@@ -12,7 +12,7 @@ class OverseaShipment //extends Model
 {   
     protected $id = null;
     protected $userInfo = null;
-    function __construct($id=null,$userInfo=null){
+    function __construct($id=null,$u2serInfo=null){
         $this->id=$id;
         $this->userInfo =$userInfo;
     }
