@@ -210,7 +210,7 @@ class OverseaShipment //extends Model
             'from_country'=>GeneralSettings::options_country_zone($ss),
             'to_country'=>GeneralSettings::options_country_zone($ss),
             'senders'=>GeneralSettings::options_sender($ss),
-            'sale_agent'=>GeneralSettings::options_sales_agent($ss),
+            // 'sale_agent'=>GeneralSettings::options_sales_agent($ss),
             'shipment' => $shipment
         ];
     }
