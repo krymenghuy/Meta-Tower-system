@@ -263,6 +263,7 @@ var ShipmentsComponent = new function () {
     this.btnSearch = this.self.find('#_pl_btnSearch');
 
     this.btnToggleFilter = this.self.find('#_pl_btnToggleFilter');
+    this.div_filter_fields = mThis.self.find('#_sdl_filter_fields')[0];
 
     this.btnPrint = this.self.find('#_pl_btnPrint');
     this.btnPDF = this.self.find('#_pl_btnPDF');
@@ -401,7 +402,7 @@ var ShipmentsComponent = new function () {
                 data: function (data, row, display) {
                     let html = ['<div class="dropdown sender-name d-block ">',
                         '<a href="javascript:void(0)" data-orderid="', data.zone_code, '" data-senderid="', data.sender_id, '" data-id="', data.id, '" class="btn_special_charge d-flex gap-3" aria-haspopup="true" aria-expanded="false">',
-                        data.special_price||'0.00',' USD ',
+                        data.carrier_special_charge||'0.00',' USD ',
                         '<i class="fa fa-chevron-down " style="font-size:1.5em"></i>',
                         '</a>',
                         '</div>'].join('');
@@ -647,7 +648,7 @@ var ShipmentsComponent = new function () {
                 console.log('pt',pt);
                 let dropdownMenu = p.querySelector('.dropdown-menu');
                 
-                vsapi.call([mThis.base_url, '/abm/special_charge/list-paginate'].join(''), pt,null,null).then(res => {
+                vsapi.call([mThis.base_url, '/abm/special-charge/list-paginate'].join(''), pt,null,null).then(res => {
                     if (res.status_code === 200) {
                         let data = res.data.data;
                         console.log('data',data);
@@ -739,12 +740,65 @@ var ShipmentsComponent = new function () {
             }
 
             //Click on Dropdown menu item : "Assign Driver"
-            btn = VSUtil.closestLimited(e.target,'._pl_pa_assign_driver');
+            btn = VSUtil.closestLimited(e.target,'._pl_pa_add_special_charge');
             if(btn){
                 let tr = btn.closest('tr');
-                mThis.assignDriver(tr,null);
+                // console.log('tr.id',tr.dataset.id);
+                let op = { 'title': 'Add Special Charge' ,'shipment_id':tr.dataset.id };
+                SpecialChargeDialog.show(op, (new_id) => {
+                    if (new_id) {
+                        console.log('new_id',new_id);
+                        mThis.shipmentListView.showPage(mThis.getFilterData());
+                    // mThis.loadFilterData(new_id);
+                    }
+                });
                 return;
-            }
+            } 
+            btn = VSUtil.closestLimited(e.target,'._pl_pa_motify_special_charge');
+            if(btn){
+                let tr = btn.closest('tr');
+                console.log('btn.id',btn.dataset.sc_id);
+                let op = { 'title': 'Motify Special Charge' ,
+                            'shipment_id':tr.dataset.id ,
+                            'id':btn.dataset.sc_id,
+                            'category':btn.dataset.category,
+                            'charge':btn.dataset.charge,
+                            'remarks':btn.dataset.remarks,
+                        };
+                SpecialChargeDialog.show(op, (new_id) => {
+                    console.log('new_id',new_id);
+                    if (new_id) {
+                        console.log('new_id',new_id);
+                    // mThis.loadFilterData(new_id);
+                    mThis.shipmentListView.showPage();
+                    }
+                });
+                
+                return;
+            } 
+
+            btn = VSUtil.closestLimited(e.target,'._pl_pa_delete_special_charge');
+            if(btn){
+                let tr = btn.closest('tr');
+                console.log('btn.id',btn.dataset.sc_id);
+                let p = {
+                            'shipment_id':tr.dataset.id ,
+                            'id':btn.dataset.sc_id,
+                        };
+                console.log('p',p);
+                vsapi.call([mThis.base_url, '/abm/special-charge/delete-special-charge'].join(''), p).then(res => {
+                    if (res.status_code === 200) {
+                        console.log('me');
+                    // let d = res.data;
+                    // if (typeof mThis.onClose === 'function') {
+                        mThis.shipmentListView.showPage(mThis.getFilterData());
+                        // mThis.onClose(d.id);
+                    // }
+                    // mThis.self.modal('hide');
+                    } else mThis.elError.text(res.error_message);
+                });
+                return;
+            } 
 
               //Click Driver lnk to quickly assign driver  "Quick Assign Driver" by clicking on Pencil icon
               btn = VSUtil.closestLimited(e.target,'.lnk-assign-driver');
@@ -925,6 +979,41 @@ var ShipmentsComponent = new function () {
                 }
             });
     };
+
+    this.assignDriver = (tr,btn)=>{
+        let order_id = tr.dataset.id;
+        let status_id = tr.dataset.statusid;
+        const prev_driver_id = tr.dataset.driverid;
+        let p = { 'order_id': order_id, 'status_id': status_id };
+        if (status_id == 0) {
+            cv_interact.error('Cannot assign driver because this pickup request is canceled!');
+            return;
+        }
+        if (!order_id || order_id == 0) {
+            cv_interact.error('Invalid order identity');
+            return;
+        }
+        if(!mThis.form_data.drivers) console.error('Failed to fetch driver list for Assign Driver form (pickup)');
+        let option = {manualClosing:btn? false:true, title: 'Assign Driver (Pickup)', 'confirmButtonText':'Assign Now', 'dataLabel': 'Select a driver', 'valueMember': 'id', 'textMember': 'driver_name', 'data': mThis.form_data.drivers, 'blankErrorMessage': "Choose one driver for Pickup Assignment","defaultValue":prev_driver_id};
+        InputBox2.show(option, (data,btnAssign) => {
+            if (data) {
+                p.driver_id = data.value;
+                vsapi.call([mThis.base_url, '/dms/order/assign-driver'].join(''), p,(btn || btnAssign),null).then(res => {
+                    if (res.status_code === 200) {
+                        const d = StringSanitizer.sanitizeObject(res.data);
+                        let statusInfo =d.statusInfo;
+                        tr.dataset.driverid  = d.driver_id;
+                        tr.querySelector('td.driver_name .driver-name').textContent = d.driver_name;
+                        mThis.updatePickupStatus(tr, statusInfo);
+                        if(option.manualClosing) InputBox2.close();
+                        cv_interact.success(['The driver ',data.text,' got assigned successfully!'].join(''));
+                    }
+                    else cv_interact.error(res.error_message);
+                });
+            }
+        });
+
+    }
 
     this.assignDriver = (tr,btn)=>{
         let order_id = tr.dataset.id;
@@ -1279,6 +1368,7 @@ var ShipmentsComponent = new function () {
                 } else mThis.addItemRow(div,null,true);
                 return;
             }
+            
  
             mThis.tblShipments.on('click', 'a.pkl_btn_magic_entry', function (e) {
                 e.preventDefault();
@@ -2188,6 +2278,18 @@ var ShipmentsComponent = new function () {
      return {"search_value":mThis.elSearchPickup.val()};
     }
 
+    this.getFilterData = () => {
+        let p = {
+            // search_value: mThis.elSearch.val(),
+        };
+        mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
+            let f= el.dataset.field;
+            p[f] = el.value;
+        });
+
+        return p;
+    }
+
     this.show = (options = null) => {
         mThis.init(); //InitOnce one time only
         if(AuthManager.allowed(220,true)) mThis.btnNewShipment.show(); else mThis.btnNewShipment.hide();
@@ -2258,7 +2360,7 @@ var ShipmentsComponent = new function () {
 
     this.createDropdownMenuHtml_special_charge = function (shipment_id, sender_id, status_id,data = []) {
         let html = ['<div class="dropdown-menu bg-white shadow" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '">',
-            '<div class="dropdown-item _pl_pa_add_special_price" href="javascript:void(0)">Add special charge <i class="fa fa-plus-circle ms-2 text-success"></i></div>',
+            '<div class="dropdown-item _pl_pa_add_special_charge" href="javascript:void(0)">Add special charge <i class="fa fa-plus-circle ms-2 text-success"></i></div>',
             '<div class="dropdown-divider"></div>'].join('');
         let amount = 0.00;
         let i=0;
@@ -2267,17 +2369,17 @@ var ShipmentsComponent = new function () {
             html +=[
                     '<div class=" d-flex gap-3 ps-3 pe-3" >',
                         '<div class=" " href="javascript:void(0)" style="width: 215px;"> <span style="width:120px ;display: inline flow-root list-item;"> ',d.category||'NA',' </span> : <span style="width:80px ;display: inline flow-root list-item;"> ',d.charge||'0.00',' USD </span></div>',
-                        '<div class=" " href="javascript:void(0)"> <i class="fa fa-edit text-warning"></i> </div>',
-                        '<div class=" " href="javascript:void(0)"> <i class="fa fa-minus-circle text-danger"></i> </div>',
+                        '<div class="_pl_pa_motify_special_charge "  href="javascript:void(0)" data-sc_id="', d.id, '" data-charge="', d.charge, '" data-category="', d.category, '" data-remarks="', d.remarks, '"> <i class="fa fa-edit text-warning"></i> </div>',
+                        '<div class="_pl_pa_delete_special_charge" href="javascript:void(0)" data-sc_id="', d.id, '"> <i class="fa fa-minus-circle text-danger"></i> </div>',
                     '</div>',
                     '<div class="dropdown-divider"></div>',
                     ].join('');
                     amount += parseFloat(d.charge);
                     i++;
         });
-        console.log('amount',amount);
+        // console.log('amount',amount);
         html +=['<a class="dropdown-item " href="javascript:void(0)"><span style="width:120px"> Amount </span>: ',amount||'0.00',' USD </a></div>'].join('');
-        console.log('html',html);
+        // console.log('html',html);
         return html;
     };
 
@@ -4784,6 +4886,82 @@ const ItemEntryDialog = new function(){
             });  
         });
 
+    }
+}
+
+const SpecialChargeDialog = new function () {
+    let mThis = this;
+    this.base_url = main_view.base_url;
+    this.self = main_view.appContent.children('#ps_dlgSpecialCharge');
+    this.btnOK = this.self.find('#ps_dlgSpecialCharge_btnOK');
+    this.elError = this.self.find('#ps_dlgSpecialCharge_error');
+    this.elTitle = this.self.find('#ps_dlgSpecialChargeTitle');
+  
+    this.elCategory = this.self.find('#ps-newsc_category');
+    this.elCharge = this.self.find('#ps-newsc_charge');
+    this.elShipmentID = this.self.find('#ps-shipment_id');
+    this.elScID = this.self.find('#ps-sc_id');
+    this.elRemarks = this.self.find('#ps-remarks');
+  
+    this.btnOK.on('click', (e) => {
+      let p = mThis.getData();
+      if (!p.category) {
+        mThis.elError.html('Category cannot be empty');
+        return;
+      }
+  
+      if (!$.isNumeric(p.charge)) {
+        mThis.elError.html('Charge is not valid');
+        return;
+      }
+      console.log('p',p);
+      vsapi.call([mThis.base_url, '/abm/special-charge/save'].join(''), p).then(res => {
+        if (res.status_code === 200) {
+            console.log('me');
+          let d = res.data;
+          if (typeof mThis.onClose === 'function') {
+            mThis.onClose(d.id);
+        }
+        ShipmentsComponent.shipmentListView.showPage();
+        mThis.self.modal('hide');
+        } else mThis.elError.text(res.error_message);
+      });
+  
+    });
+  
+    this.getData = () => {
+      let p = {};
+      p.category = mThis.elCategory.val();
+      p.charge = mThis.elCharge.val();
+      p.shipment_id = mThis.elShipmentID.val();
+      p.id = mThis.elScID.val();
+      p.remarks = mThis.elRemarks.val();
+    
+      return p;
+    }
+  
+    this.show = (option, onClose) => {
+    // console.log('option.shipment_id',option.shipment_id);
+    mThis.elShipmentID.val(option.shipment_id);
+    mThis.elScID.val('');
+    mThis.elRemarks.val('');
+    mThis.elCategory.val('');
+    mThis.elCharge.val('');
+    console.log('this is me',option);
+    if(option.id){
+    mThis.elScID.val(option.id);
+    mThis.elRemarks.val(option.remarks);
+    mThis.elCategory.val(option.category);
+    mThis.elCharge.val(option.charge);
+    } 
+    //   console.log(mThis.elCharge.val());
+      mThis.elError.html(null);
+      mThis.elTitle.html(option.title)
+      mThis.onClose = onClose;
+  
+      mThis.self.modal({
+        backdrop: 'static'
+      });
     }
 }
 

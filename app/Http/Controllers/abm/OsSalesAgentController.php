@@ -98,8 +98,9 @@ class OsSalesAgentController extends Controller
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
       $id = $req->id ?? $req->agent_id;
+      $as = $req->as;
       $agent = new SalesAgent($id,$ss);
-      return JDV::raw($agent->delete($id,$ss));
+      return JDV::raw($agent->delete($id,$as,$ss));
    }
 
    /** Send OTP in case of Forget Password */
@@ -200,10 +201,16 @@ class OsSalesAgentController extends Controller
    }
 
    /** returns the paginated list */
-   function getList(Request $req) {
+   function getSalesAgentList(Request $req) {
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
-      return JDV::result(SalesAgent::list($req->all(),$ss));
+      return JDV::result(SalesAgent::getSalesAgentList($req->all(),$ss));
+   }
+
+   function getContactPersonList(Request $req) {
+      $ss = UM::getUserInfoByToken($req,-1);
+      if($ss->status_code !== 200) return JDV::raw($ss);
+      return JDV::result(SalesAgent::getContactPersonList($req->all(),$ss));
    }
    
      /** returns list of all Sales agent */

@@ -61,7 +61,8 @@ use App\Http\controllers\abm\SpecialChargeController;
     });
     Route::middleware([CustomRateLimiter::class])->prefix('os-sales-agents')->group(function(){
         Route::post('/save', [OsSalesAgentController::class, 'saveSalesAgent']);
-        Route::post('/list', [OsSalesAgentController::class, 'getList']);
+        Route::post('/sa-list', [OsSalesAgentController::class, 'getSalesAgentList']);
+        Route::post('/cp-list', [OsSalesAgentController::class, 'getContactPersonList']);
         Route::post('/form-options', [OsSalesAgentController::class, 'getFormOptions']);
         // Route::post('/save-profile-picture', [OsSalesAgentController::class, 'saveProfilePicture']);
         Route::post('/update-status', [OsSalesAgentController::class, 'updateStatus']);
@@ -80,10 +81,10 @@ use App\Http\controllers\abm\SpecialChargeController;
         Route::post('/delete-item', [OverseaShipmentController::class, 'deleteOrderitem']);
 
     });
-    Route::middleware([CustomRateLimiter::class])->prefix('special_charge')->group(function(){
+    Route::middleware([CustomRateLimiter::class])->prefix('special-charge')->group(function(){
         Route::post('/save', [SpecialChargeController::class, 'save']);
         Route::post('/list-paginate', [SpecialChargeController::class, 'ListPaginate']);
-        Route::post('/delete-item', [SpecialChargeController::class, 'deleteSpecileCharge']);
+        Route::post('/delete-special-charge', [SpecialChargeController::class, 'deleteSpecileCharge']);
     });
     //begin:: PackageController
     Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('package')->group(function(){

@@ -106,7 +106,7 @@ namespace App\ScriptManagement;
 
                         '/js/components/abm/CustomersComponent.js',
                         '/js/components/abm/CountryZonesComponent.js',
-                        '/js/components/abm/SalesAgentsComponent.js',
+                        '/js/components/abm/SalesAffiliatesComponent.js',
                         
                         '/js/components/abm/DashboardComponent.js',
                         '/js/components/abm/SuppliersComponent.js',

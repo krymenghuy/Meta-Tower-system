@@ -89,35 +89,11 @@
     }
 </style>
 
-<div id="_main_shipmentsComponent_" style="display:none;padding:15px">
-    <!-- <h5> ABM Shipments</h5> -->
-    <div class="kt-portlet__head-toolbar form-inline" id="_dl_filter_panel">
-        <div class="d-flex w-100 justify-content-between">
-            <div class="d-flex flex-row gap-2">
-                <div class="btn-group">
-                    <!-- <button id="_pl_btnNewPickup" data-toggle="modal" class="btn btn-primary height">New Order</button> -->
-                    <button id="btn_newQuickOrder" class="btn btn-primary height">
-                        <i class="fa-solid fa-circle-plus"></i>
-                        <span class="trans-text" data-langprop="buttons.Shipment">Shipment</span>
-                    </button>
-                </div>
-                <input type="text" id="_sh_search" class="form-control min-width-search height" placeholder="Search request"/>
-                <button type="button" id="_pl_btnSearch" class="btn btn-primary height">
-                    <i class="fa fa-sync-alt"></i>
-                </button>
-                
-            </div>
-        </div>
-    </div>
-    <div class="table-responsive border rounded-3 p-3 mt-3 bg-white table-responsive-hover">
-        <table class="table light-blue-header header-uppercase" id="_ido_shipment"></table>
-    </div>
-</div>
 <div id="_main_shipmentsComponent" style="display:none; margin-right:15px;">
     <div class="p-3 bg-white shadow rounded-3">
         <div class="kt-portlet__head-toolbar form-inline" id="_dl_filter_panel">
             <div class="d-flex w-100 justify-content-between">
-                <div class="d-flex flex-row gap-2">
+                <div class="d-flex flex-row gap-2 " id="_sdl_filter_fields">
                     <div class="btn-group">
                         <!-- <button id="_pl_btnNewPickup" data-toggle="modal" class="btn btn-primary height">New Order</button> -->
                         <button id="btn_newQuickOrder" class="btn btn-primary height">
@@ -125,7 +101,7 @@
                             <span class="trans-text" data-langprop="buttons.Shipment">Shipment</span>
                         </button>
                     </div>
-                    <input type="text" id="_pl_search" class="form-control min-width-search height" placeholder="Search request"/>
+                    <input type="text" id="_pl_search"  class="form-control min-width-search height" data-field="search" placeholder="Search request"/>
                     <button type="button" id="_pl_btnSearch" class="btn btn-primary height">
                         <i class="fa fa-sync-alt"></i>
                     </button>
@@ -799,4 +775,50 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="modal fade" id="ps_dlgSpecialCharge" tabindex="-1" role="dialog" aria-labelledby="ps_dlgSpecialChargeTitle" aria-hidden="true">
+  <div class="modal-dialog modal-ms" role="dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="ps_dlgSpecialChargeTitle">Add Special Charge</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+            <input type="hidden" class="form-control" id="ps-sc_id">
+            <div class="form-group col-lg-12">
+              <span class="simple-label">Shipment id</span>
+              <input type="number" class="form-control" id="ps-shipment_id" readonly>
+            </div>
+            <div class="form-group col-lg-12">
+                <span class="simple-label">Charge Category</span>
+                <input type="text" class="form-control" id="ps-newsc_category">
+            </div>
+            <div class="form-group col-lg-12">
+                <span class="simple-label">Charge</span>
+                <input type="number" class="form-control" id="ps-newsc_charge">
+            </div>
+            <div class="form-group col-lg-12">
+                <span class="simple-label">Remarks</span>
+                <input type="text" class="form-control" id="ps-remarks" >
+            </div>
+        </div>
+        <span id="ps_dlgSpecialCharge_error" class="error_text"></span>
+      </div>
+      <div class="modal-footer">
+        
+        <button type="button" class="btn btn-warning height" data-dismiss="modal">
+          <i class="fa fa-times fs-5 text-danger"></i>
+          <span>Cancel</span>
+        </button>
+        <button type="button" class="btn btn-success height" id="ps_dlgSpecialCharge_btnOK">
+          <i class="fa fa-check fs-5 text-success"></i>
+          <span>Add</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

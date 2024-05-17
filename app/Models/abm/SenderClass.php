@@ -30,7 +30,7 @@ class SenderClass //extends Model
     
     
         ];
-        $res = validateObject($arr,$v_rule,true,[],$ss->lang,false);
+        $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $id = $id ?? $res->id;
         $inputs= $res->values;

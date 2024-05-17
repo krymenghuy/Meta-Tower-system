@@ -35,7 +35,7 @@ class SpecialChargeController extends Controller
     function deleteSpecileCharge(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $res = $this->item->deleteOrderitem($req->all(),$ss);
+        $res = $this->special_charge->deleteSpecileCharge($req->all(),$ss);
         return JDV::raw($res);  
     }
 

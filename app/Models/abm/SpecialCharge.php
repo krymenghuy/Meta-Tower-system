@@ -24,32 +24,37 @@ class SpecialCharge //extends Model
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
+            'id'=>'0|identity=1',
             'shipment_id'=>'1|number|',
             'charge'=>'1|number|default =0.00',
             'remarks'=>'0|string|0-250', //add new column price_per_kg to table os_items
             'category'=>'1|string|1-50',
         ];
-        $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+        $res = validateObject($arr,$v_rule,true,[],$ss->lang,0,null);
+        // return JDV::result($res);
 
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $created = !$id;
-        $duplicateCategory = isExist('special_charges',$id,['category'=>$inputs['category'],'shipment_id'=>$inputs['shipment_id']]);
-        if($duplicateCategory) return DV::error('This '.$inputs['category'].' is already save.');
-        
+        if($created){
+            $duplicateCategory = isExist('special_charges',$id,['category'=>$inputs['category'],'shipment_id'=>$inputs['shipment_id']]);
+            if($duplicateCategory) return DV::error('This category '.$inputs['category'].' is already save.');
+        }
         $d = (object)$res->values;
-        // return JDV::result($inputs);
-        $shipmentInfo = DB::table('os_shipments as os')->where('os.id',$shipment_id)->selectRaw('os.carrier_special_charge')->take(1)->first();
-        $shipmentInfo->ccarrier_special_charge += $inputs->charge;
+        $shipment_id = $d->shipment_id;
+        $shipmentInfo = DB::table('os_shipments as os')->where('os.id',$shipment_id)->selectRaw('os.carrier_special_charge , os.total_carrier_cost ,os.total_price')->take(1)->first();
+        $shipmentInfo->carrier_special_charge += $d->charge;
+        $shipmentInfo->total_carrier_cost += $d->charge;
+        $shipmentInfo->total_price += $d->charge; 
 
-        $id = saveData($ss,'special_charges',['id',$id],$inputs,[],1,false);
-        if ($created){
-            DB::table('os_shipments')->where('id',$shipment_id)->update(['carrier_special_charge'=>$shipmentInfo->ccarrier_special_charge]);
+        $id = saveData($ss,'special_charges',['id'=>$id],$inputs,[],1,false);
+        if($created){
+            DB::table('os_shipments')->where('id',$shipment_id)->update(['carrier_special_charge'=>$shipmentInfo->carrier_special_charge,'total_carrier_cost'=>$shipmentInfo->total_carrier_cost,'total_price'=>$shipmentInfo->total_price]);
             // $pkg_count++;
         }
-        // return JDV::result($p_res);
+        // return JDV::result($shipmentInfo);
 
-        return DV::depends($id,['Special charge'=>'Created'],'Failed to save item information');
+        return DV::depends($id,['Special charge'=>'Created','shipmentInfo'=>(object)$shipmentInfo],'Failed to save item information');
 
     }
 
@@ -86,66 +91,30 @@ class SpecialCharge //extends Model
         return new LengthAwarePaginator($rows,$count,$per_page,$current_page);
     }
 
-    function deleteOrderitem($arr=[],$ss){
+    function deleteSpecileCharge($arr=[],$ss){
         $d = (object)$arr;
         $ss = $ss?$ss:$this->userInfo;
         $branch_id = $ss->branch_id;
         $shipment_id = isset($d->shipment_id)? Sanitizer::sanitize($d->shipment_id):null;
-        $item_id = isset($d->item_id)? Sanitizer::sanitize($d->item_id):null;
-        // return JDV::result('shipment_id:'.$shipment_id);
+        $id = isset($d->id)? Sanitizer::sanitize($d->id):null;
         
         $result = (object)array('status'=>'OK','error_message'=>null);
-        $rows = DB::table('os_items AS o')->where('branch_id',$branch_id)->where('o.id',$item_id)->selectRaw('status_id')->limit(1)->get();
-        foreach($rows as $row) $status_id = $row->status_id;
-
-        if(empty($status_id)) {
-        //   return JDV::result('status_id:'.$status_id);
-           $result->error_message = "Cannot delete item because item identity is not valid";
-           $result->status ='Error';
-           return $result;
-        }
-
-        if($status_id >5){
-
-          $result->error_message = "Cannot delete package with status higher than `Arrived Warehouse`";
-          $result->status ='Error';
-          return $result;
-        }
+        // return JDV::result($branch_id); 
         
         /*** deleting package will affect driver's commission, company's revenue, etc ***/
+        $sc_info = DB::table('special_charges')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$id)->selectRaw('charge')->take(1)->first();
 
-        $count = 0;
-        if($status_id >=5){
-            $item = DB::table('os_items')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$item_id)->selectRaw('billed_weight , actual_weight , allocated_kg  , item_total ')->take(1)->first();
-            return JDV::result($item);
-            
-            DB::table('os_items')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$item_id)->delete();
-            $count = DB::table('os_items as p')->where('p.shipment_id',$shipment_id)->count('p.id');
-            $shipmentInfo = DB::table('os_shipments as os')->where('os.id',$shipment_id)->selectRaw('os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.total_price ')->take(1)->first();
-            $shipmentInfo->effective_weight -= $item->billed_weight;
-            $shipmentInfo->actual_weight -= $item->actual_weight;
-            $shipmentInfo->markup_weight -= $item->allocated_kg;
-            $shipmentInfo->total_weight -= $item->billed_weight;
-            $shipmentInfo->total_price -= $item->item_total;
-            // $shipmentInfo->package_qty -= $p_res->success_count;
-            // return JDV::result($shipmentInfo);
+        // return JDV::result($sc_info);
+        DB::table('special_charges')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$id)->delete();
+        $shipmentInfo = DB::table('os_shipments as os')->where('os.id',$shipment_id)->selectRaw('os.carrier_special_charge , os.total_carrier_cost , os.total_price')->take(1)->first();
+        $shipmentInfo->carrier_special_charge -= $sc_info->charge;
+        $shipmentInfo->total_carrier_cost -= $sc_info->charge;
+        $shipmentInfo->total_price -= $sc_info->charge;
+        // $shipmentInfo->package_qty -= $p_res->success_count;
+        // return JDV::result($shipmentInfo);
 
-            DB::table('os_shipments')->where('id',$shipment_id)->update(['package_qty'=>$count,'effective_weight'=>$shipmentInfo->effective_weight<0??0,'actual_weight'=>$shipmentInfo->actual_weight<0??0,'markup_weight'=>$shipmentInfo->markup_weight<0??0,'total_weight'=>$shipmentInfo->total_weight<0??0,'total_price'=>$shipmentInfo->total_price<0??0]);
-        } else {
-            $item = DB::table('os_items')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$item_id)->selectRaw('billed_weight , actual_weight , allocated_kg  , item_total ')->take(1)->first();
-            DB::table('os_items')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$item_id)->delete();
-            $count = DB::table('os_items as r')->where('r.shipment_id',$shipment_id)->count('r.id'); 
-            $shipmentInfo = DB::table('os_shipments as os')->where('os.id',$shipment_id)->selectRaw('os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.total_price ')->take(1)->first();
-            $shipmentInfo->effective_weight -= $item->billed_weight;
-            $shipmentInfo->actual_weight -= $item->actual_weight;
-            $shipmentInfo->markup_weight -= $item->allocated_kg;
-            $shipmentInfo->total_weight -= $item->billed_weight;
-            $shipmentInfo->total_price -= $item->item_total;
-            // $shipmentInfo->package_qty -= $p_res->success_count;
-            // return JDV::result($shipmentInfo);
-            DB::table('os_shipments')->where('id',$shipment_id)->update(['package_qty'=>$count,'effective_weight'=>$shipmentInfo->effective_weight,'actual_weight'=>$shipmentInfo->actual_weight,'markup_weight'=>$shipmentInfo->markup_weight,'total_weight'=>$shipmentInfo->total_weight,'total_price'=>$shipmentInfo->total_price]);
-            // DB::table('os_shipments')->where('id',$shipment_id)->update(['package_qty'=>$count]);
-        }       
+        DB::table('os_shipments')->where('id',$shipment_id)->update(['carrier_special_charge'=>$shipmentInfo->carrier_special_charge,'total_carrier_cost'=>$shipmentInfo->total_carrier_cost,'total_price'=>$shipmentInfo->total_price]);
+         
         // DB::table('os_shipments')->where('id',$shipment_id)->update([
         //     'qty'=>$count,
         //     'actual_pkg_count'=>$count
@@ -158,7 +127,7 @@ class SpecialCharge //extends Model
         //    Log::error($e->getTraceAsString());
         // }
 
-        return DV::depends(1,['item_count'=>$count]);
+        return DV::depends(1,['special charge'=>'delete','shipmentInfo'=>(object)$shipmentInfo]);
      }
 
     function details($id,$ss){
