@@ -291,17 +291,7 @@ var ShipmentsComponent = new function () {
         if (mThis.initAlready) return;
 
         this.cols = [
-            {
-                className: 'col_action',
-                data: function (data, row, display) {
-                    let html = ['<div class="dropdown sender-name d-block">',
-                        '<a href="javascript:void(0)" data-orderid="', data.zone_code, '" data-senderid="', data.sender_id, '" class="btn_pickup_action" aria-haspopup="true" aria-expanded="false">',
-                        '<i class="fa fa-chevron-down" style="color:#8DC63F;font-size:1.5em"></i>',
-                        '</a>',
-                        '</div>'].join('');
-                    return html;
-                }
-            },
+            
             {
                 className: "Order Date",
                 data: function (data, index, tr) {
@@ -409,7 +399,7 @@ var ShipmentsComponent = new function () {
                     return html;
                 },
                 // title: mThis.trans('Sender ID')
-                title: `<div class='d-b'>carrier sp ch</div><div class='d-n'>carrier special charge</div>`
+                title: `<div class='d-b'>special charge</div><div class='d-n'>special charge</div>`
             },
             {
                 className: "",
@@ -506,7 +496,7 @@ var ShipmentsComponent = new function () {
         }
 
         mThis.cfg = new ExpandableRowConfig(mThis.tblShipments.attr('id'), {
-            dontExpandByClickingOn: ['pkl_btn_receive','pkl_btn_pick','btn-show','btn_pickup_action','btn_special_charge','lnk-assign-driver','lnk-set-address','dropdown-menu'],
+            dontExpandByClickingOn: ['pkl_btn_receive','pkl_btn_pick','btn-show','btn_special_charge','lnk-assign-driver','lnk-set-address','dropdown-menu'],
             onOpen: (container, detail_tr, parent_tr) => {
                 mThis.shm_prev_editing_row = null;
                 const view_name = parent_tr.dataset.view; 
@@ -614,29 +604,29 @@ var ShipmentsComponent = new function () {
         mThis.tblShipments[0].addEventListener('click', e => {
             e.preventDefault();
             // Click on Pickup Action button | drop down action
-            let btn = VSUtil.closestLimited(e.target, '.btn_pickup_action');
-            if (btn) {
-                let p = btn.parentElement;
-                let shipment_id = btn.dataset.id;
-                let sender_id = btn.dataset.senderid;
-                let status_id = btn.dataset.statusid;
+            // let btn = VSUtil.closestLimited(e.target, '.btn_pickup_action');
+            // if (btn) {
+            //     let p = btn.parentElement;
+            //     let shipment_id = btn.dataset.id;
+            //     let sender_id = btn.dataset.senderid;
+            //     let status_id = btn.dataset.statusid;
         
-                let dropdownMenu = p.querySelector('.dropdown-menu');
-                if (!dropdownMenu || dropdownMenu.length === 0) {
-                    p.insertAdjacentHTML('beforeend', mThis.createDropdownMenuHtml_pickup(shipment_id, sender_id, status_id));
-                    dropdownMenu = p.querySelector('.dropdown-menu');
-                }
+            //     let dropdownMenu = p.querySelector('.dropdown-menu');
+            //     if (!dropdownMenu || dropdownMenu.length === 0) {
+            //         p.insertAdjacentHTML('beforeend', mThis.createDropdownMenuHtml_pickup(shipment_id, sender_id, status_id));
+            //         dropdownMenu = p.querySelector('.dropdown-menu');
+            //     }
         
-                if (mThis.prev_dropdownMenu && mThis.prev_dropdownMenu !== dropdownMenu) {
-                    mThis.prev_dropdownMenu.classList.remove('show');
-                }
+            //     if (mThis.prev_dropdownMenu && mThis.prev_dropdownMenu !== dropdownMenu) {
+            //         mThis.prev_dropdownMenu.classList.remove('show');
+            //     }
         
-                dropdownMenu.classList.toggle('show');
-                if (dropdownMenu.classList.contains('show')) {
-                    mThis.prev_dropdownMenu = dropdownMenu;
-                }
-                return;
-            }
+            //     dropdownMenu.classList.toggle('show');
+            //     if (dropdownMenu.classList.contains('show')) {
+            //         mThis.prev_dropdownMenu = dropdownMenu;
+            //     }
+            //     return;
+            // }
 
             btn = VSUtil.closestLimited(e.target, '.btn_special_charge');
             if (btn) {
@@ -2346,17 +2336,17 @@ var ShipmentsComponent = new function () {
         // }
     }
 
-    this.createDropdownMenuHtml_pickup = function (shipment_id, sender_id, status_id) {
-        let html = ['<div class="dropdown-menu bg-white shadow" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '">',
-            '<a class="dropdown-item _pl_pa_assign_driver" href="javascript:void(0)"><i class="fa fa-biking" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '"></i> Assign Driver (Pickup)</a>',
-            '<a class="dropdown-item _pl_pa_receive" href="javascript:void(0)"><i class="fa fa-shipping-fast"></i> Arrive</a>',
-            '<div class="dropdown-divider"></div>',
-            '<a class="dropdown-item _pl_pa_delete" href="javascript:void(0)"><i class="fa fa-trash" style="color:red"></i> Delete Pickup</a>',
-            '<a class="dropdown-item _pl_pa_change_status" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue"></i> Change Order Status</a>',
-            // '<a class="dropdown-item _pl_pa_change_driver" href="javascript:void(0)"><i class="fa fa-user"></i> Change Driver (Pickup)</a>',
-            '</div>'].join('');
-        return html;
-    };
+    // this.createDropdownMenuHtml_pickup = function (shipment_id, sender_id, status_id) {
+    //     let html = ['<div class="dropdown-menu bg-white shadow" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '">',
+    //         '<a class="dropdown-item _pl_pa_assign_driver" href="javascript:void(0)"><i class="fa fa-biking" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '"></i> Assign Driver (Pickup)</a>',
+    //         '<a class="dropdown-item _pl_pa_receive" href="javascript:void(0)"><i class="fa fa-shipping-fast"></i> Arrive</a>',
+    //         '<div class="dropdown-divider"></div>',
+    //         '<a class="dropdown-item _pl_pa_delete" href="javascript:void(0)"><i class="fa fa-trash" style="color:red"></i> Delete Pickup</a>',
+    //         '<a class="dropdown-item _pl_pa_change_status" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue"></i> Change Order Status</a>',
+    //         // '<a class="dropdown-item _pl_pa_change_driver" href="javascript:void(0)"><i class="fa fa-user"></i> Change Driver (Pickup)</a>',
+    //         '</div>'].join('');
+    //     return html;
+    // };
 
     this.createDropdownMenuHtml_special_charge = function (shipment_id, sender_id, status_id,data = []) {
         let html = ['<div class="dropdown-menu bg-white shadow" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '">',
@@ -4645,13 +4635,13 @@ const ShipmentDialog = new function () {
         return has_error ? null : p;
     }
 
-    this.elSender.on('change', (e) => {
-        let m = { 'sender_id': mThis.elSender.val() };
-        vsapi.call([mThis.base_url, '/dms/merchant/address'].join(''), m).then(res => {
-            let address = (res.status_code === 200) ? res.data : '';
-            mThis.elPickupAddress.val(address);
-        });
-    });
+    // this.elSender.on('change', (e) => {
+    //     let m = { 'sender_id': mThis.elSender.val() };
+    //     vsapi.call([mThis.base_url, '/dms/merchant/address'].join(''), m).then(res => {
+    //         let address = (res.status_code === 200) ? res.data : '';
+    //         mThis.elPickupAddress.val(address);
+    //     });
+    // });
 
     this.btnCreate.on('click', (e) => {
         const p = mThis.getFormData(false);
