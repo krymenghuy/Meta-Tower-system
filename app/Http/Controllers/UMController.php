@@ -69,6 +69,7 @@ class UMController extends Controller
     $modules = $this->UMModel->getUserModuleListPaginate($req->all(),$req->user_id,$ss);
     return JDV::result($modules);
   }
+ 
 
   function saveRole(Request $req)
   {
@@ -149,6 +150,15 @@ class UMController extends Controller
     $roles = $this->UMModel->getRoleList($req->all(),$ss);
     return JDV::result($roles);
   }
+ 
+  // function getRoleReports(Request $req)
+  // {
+  //   $ss = UM::getUserInfoByToken($req, -1);
+  //   if ($ss->status_code != 200) return $ss;
+  //   /** $arr = ['role_id','app_id','search_value'] */
+  //   $data = $this->UMModel->getRoleReports($req->all(),$ss);
+  //   return JDV::result($data);
+  // }
 
   function getRoleList_paginate(Request $req)
   {
@@ -379,8 +389,16 @@ class UMController extends Controller
   {
     $ss = UM::getUserInfoByToken($req, -1);
     if ($ss->status_code !== 200) return JDV::raw($ss);
-    $apps = $this->UMModel->getRoleApps($req->role_id, $ss);
-    return JDV::json($apps);
+    $apps = $this->UMModel->getRoleApps($req->all(), $ss);
+    return JDV::result($apps);
+  }
+  function getRoleReports(Request $req)
+  {
+    $ss = UM::getUserInfoByToken($req, -1);
+    if ($ss->status_code != 200) return $ss;
+    /** $arr = ['role_id','app_id','search_value'] */
+    $data = $this->UMModel->getRoleReports($req->all(),$ss);
+    return JDV::result($data);
   }
 
   function getAccessibleModules(Request $req)

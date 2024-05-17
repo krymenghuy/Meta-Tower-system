@@ -467,6 +467,7 @@ const SalesAgentDialog = new function(){
         mThis.body.querySelectorAll('.data-input').forEach(el =>{
             const f = el.dataset.field;
             el.value = d[f] ?? '';
+            console.log(d[f]);
             if(el.tagName ==='SELECT'){
                  el.dispatchEvent(new Event('change'));
             }else if(el.tagName ==='IMG'){

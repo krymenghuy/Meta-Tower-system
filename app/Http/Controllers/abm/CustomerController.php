@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Abm;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Abm\Customer;
+use App\Models\Abm\SenderClass;
 use App\Models\JDV;
 use App\Models\UM;
 

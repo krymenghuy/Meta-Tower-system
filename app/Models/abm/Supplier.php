@@ -32,7 +32,7 @@ class Supplier //extends Model
             'code'=>'0|string|0-25',         //Add new code column to table supplier
             'price_list_id'=>'0|number',
             'status_code'=>'0|string|default =Active',
-            'photo'=>'0|image'        //Add new photo_file_name to table supplier
+            'photo'=>'0|image'        //Add new photo_file_n33ame to table supplier
     ];
         $eml_char = ['$','#','@','!','.','-','_','=','?'];
         $img_char = ['+',':',',',';','/','\\','=','?'];
@@ -50,7 +50,9 @@ class Supplier //extends Model
         // if($check) return DV::error('Phone number is already save...');
         unset($inputs['photo']);
         $supplier_created = !$id;
-        $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
+        // return JDV::result($inputs);
+
+        $delete_prev_image =($id > 0 && (!$photo || isImage($photo)));
         $id = saveData($ss,'suppliers',['id'=>$id],$inputs,[],1,0);   
         if($id > 0){
             $new_code = null;
@@ -103,7 +105,7 @@ class Supplier //extends Model
         // return JDV::result($filter->page);
 
         $current_page = isset($d->current_page)?$d->current_page:1;
-        $per_page = isset($d->per_page)?$d->per_page:15;
+        $per_page = isset($d->per_page)?$d->per_page:10;
         $search_value = isset($d->search_value)?$d->search_value:null;
         $status_code = isset($d->status_code)?$d->status_code:null;
         $price_list_id = isset($d->price_list_id)?$d->price_list_id:null;
@@ -126,7 +128,7 @@ class Supplier //extends Model
                 ->join('affiliates as sa','sa.id','s.sales_agent_id')
                 ->whereRaw($str_srch)
                 ->whereRaw($str_where)
-                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.status_code,s.sales_agent_id,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
+                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.sales_agent_id,sa.agent_type,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
        
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
@@ -144,7 +146,7 @@ class Supplier //extends Model
     }
 
     static function defaultImage($branch_id){
-        return PublicStorage::getUrl($branch_id,'default','image').'admin-100.png';
+        return PublicStorage::getUrl($branch_id,'default','image').'mr3.jpg';
     }
 
     function setPriceList($price_list_id,$id=null,$ss =null){
@@ -168,11 +170,11 @@ class Supplier //extends Model
     //     return $row;
     // }
     
-    function delete($id,$ss){
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
+    function delete($id){
 
-        $delete = DB::table('requirements as r')->where('r.id',$id)->delete();
+        $id = $id ?? $this->id;
+
+        $delete = DB::table('suppliers')->where('id',$id)->delete();
         return DV::depends($delete,['action','deleted']);
     }
 
@@ -231,13 +233,20 @@ class Supplier //extends Model
     }
     static function details($id,$ss,$includeProfilePicture=false,$includeBankAccount=true){
         $branch_id = $ss->branch_id;    
-        $row = DB::table('suppliers')->selectRaw('id,name,code, phone_number, email, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
+        $row = DB::table('suppliers')->selectRaw('id,name,code, phone_number, email,sales_agent_id,photo_file_name, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
         if (!$row) return null;
             //$accounts = self::bankAccounts($id,1);
             // if($row->loc_lat ==0) $row->loc_lat = null;
             // if($row->loc_lng ==0) $row->loc_lng = null;
             // if ($includeBankAccount) $row->bank_accounts = self::bankAccounts($id);
             // if($includeProfilePicture) $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
+            $url = $row->photo_file_name? PublicStorage::getUrl($branch_id,'general' ,'image').$row->photo_file_name: null;
+            $url = validateUrl($url,self::defaultImage($branch_id));
+            $row->photo = $url;
+            $row->image_url = $url;
+
+            if ($includeProfilePicture)
+            $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
         return $row;
      }
 
@@ -252,5 +261,27 @@ class Supplier //extends Model
           DB::table('suppliers')->where('id',$id)->update(['photo_file_name'=>null]);
         }
         return PublicStorage::saveImage($ss->branch_id,self::$img_dir, null,$photo_data,null,['id'=>$id,'store'=>'suppliers.photo_file_name']);  
+        
+      }
+      static function getProfilePicture($id)
+  {
+    $row = DB::table('suppliers ')->where('id', $id)->selectRaw('branch_id,photo_file_name')->first();
+    if (!$row) {
+      return self::defaultImage(1);
+    }
+    $url = PublicStorage::getUrl($row->branch_id, 'supplier', 'image') . $row->photo_file_name;
+    return validateUrl($url, '');
+  }
+
+      function deleteProfilePicture($id = null, $ss = null)
+      {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $supplier = DB::table('suppliers')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
+        if (!$supplier)
+          return DV::error('Supplier identity is not correct!');
+        PublicStorage::delete($ss->branch_id, 'supplier', 'image', $supplier->photo_file_name);
+        DB::table('suppliers')->where('id', $id)->update(['photo_file_name' => null]);
+        return DV::depends($id,['Supplier are','update']);
       }
 }

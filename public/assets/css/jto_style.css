@@ -347,6 +347,9 @@ a.menu-selected .kt-menu__link-text {
     border: none;
     border-radius: var(--bs-border-radius-xl);
     padding: 1rem;
+    width: 98%;
+    margin: 15px;
+    border-radius: 10px;
 }
 
 .h-info-student .div-img {
@@ -719,6 +722,11 @@ a.menu-selected .kt-menu__link-text {
     width: 70px;
     height: 70px;
     border-radius: 50%;
+}
+.image-supplier-tbl {
+    width: 70px;
+    height: 70px;
+    border: 1px solid wheat;
 }
 
 .min-width-box-enroll {

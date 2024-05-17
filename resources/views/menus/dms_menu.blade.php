@@ -352,7 +352,7 @@
                                 <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Exchange Rates"></span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(216); ?>>
+                        <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(216); ?>>
                             <a href="ProductCategoriesComponent" modid="216" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/product_categories.svg') }}" />
@@ -367,7 +367,7 @@
                                 </span>
                                 <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Remarks"></span>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(102); ?>>
                             <a href="LocationComponent" modid="102" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">

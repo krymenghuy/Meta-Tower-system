@@ -29,6 +29,16 @@ class SupplierController extends Controller
         
         return JDV::result($data);
     }
+    function delete(Request $req)
+    {
+        $ss = UM::getUserInfoByToken($req, -1);
+        if ($ss->status_code !== 200)
+            return JDV::raw($ss);
+        $id = $req->id;
+        $supplier = new Supplier();
+        $delete = $supplier->delete($id);
+        return JDV::raw($delete);
+    }
 
     function getSuplierListPaginate(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
@@ -90,5 +100,15 @@ class SupplierController extends Controller
         $supplier = new Supplier($id,$ss);
         $res = $supplier->saveProfilePicture($photo,$req->file_type);
         return JDV::raw($res);
+     }
+     function deleteProfilePicture(Request $req)
+     {
+         $ss = UM::getUserInfoByToken($req, -1);
+         if ($ss->status_code !== 200)
+             return JDV::raw($ss); //user not authenticated
+         $id = $req->id ? $req->id : $req->supplier_id;
+         $cus = new Supplier($id, $ss);
+         $res = $cus->deleteProfilePicture();
+         return JDV::raw($res);
      }
 }

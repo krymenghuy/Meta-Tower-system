@@ -442,7 +442,7 @@ class Sender //extends Model
         'lead_id'=>'0|number',
         'name'=>'1|string|0-100',
         'name_kh'=>'0|string|0-100',
-        'sender_type_id'=>'1|positive|exists=sender_type.id',
+        'sender_type_id'=>'0|positive|exists=sender_type.id',
         'business_type'=>'0|string|0-150',
         'email'=>'0|email',
         'address'=>'0|string|0-250',
@@ -458,7 +458,6 @@ class Sender //extends Model
         'address_link'=>'0|string|500',
         //'loc_lat'=>'0|number|default=0',
         //'loc_lng'=>'0|number|default=0',
-        'sales_agent_id'=>'0|number',
         'banks'=>'0|array',
         'bank_account_changed'=>'0|number|default=0',
         'photo'=>'0|image'

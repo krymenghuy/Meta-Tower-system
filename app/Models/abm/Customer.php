@@ -94,7 +94,7 @@ class Customer //extends Model
       'lead_id' => '0|number',
       'name' => '1|string|0-100',
       'name_kh' => '0|string|0-100',
-      'sender_type_id' => '0|positive|exists=sender_type.id',
+      'sender_type_id' => '0|number',
       'business_type' => '0|string|0-150',
       'email' => '0|email',
       'address' => '0|string|0-250',
@@ -128,6 +128,8 @@ class Customer //extends Model
       return DV::error($res->error);
     // $id = $id ?? $res->id;
     $inputs = $res->values;
+
+
     $d = (object) $inputs;
     $photo = $d->photo;
     unset($inputs['photo']);
@@ -138,24 +140,58 @@ class Customer //extends Model
     if (!$d->phone_number)
       return DV::error('Phone number is required for valid Customer account');
     $sender_created = $id > 0 ? 0 : 1;
-    if ($id > 0) {
-      $org_sender = DB::table('sender_classes as sc')->where('sc.id', $id)->selectRaw('sc.sender_id,sc.sender_class')->take(1)->first();
-      if (!$org_sender)
-        return DV::error('Failed to identify existing merchant for updating their information');
-      if ($d->phone_number != $org_sender->phone_number) {
-        //Change merchant's phone number in tables "um_users","package","order_receivers", and then notify merchant Mobile App
-        $change_phone_error = self::updateMerchantPhone($id, $d->phone_number);
-        if ($change_phone_error)
-          return DV::error($change_phone_error);
-      }
-      if ($org_sender->name != $d->name) {
-        //Change merchant's name in tables "um_users","package","order_receivers", and then notify Merchant mobile App
-        $change_name_error = self::updateMerchantName($id, $d->name);
-        if ($change_name_error)
-          return DV::error($change_name_error);
-      }
-    }
+    // if ($id > 0) {
+    //   $org_sender = DB::table('sender_classes as sc')->where('sc.id', $id)->selectRaw('sc.sender_id,sc.sender_class')->take(1)->first();
+    //   if (!$org_sender)
+    //     return DV::error('Failed to identify existing merchant for updating their information');
+    //   if ($d->phone_number != $org_sender->phone_number) {
+    //     //Change merchant's phone number in tables "um_users","package","order_receivers", and then notify merchant Mobile App
+    //     $change_phone_error = self::updateMerchantPhone($id, $d->phone_number);
+    //     if ($change_phone_error)
+    //       return DV::error($change_phone_error);
+    //   }
+    //   if ($org_sender->name != $d->name) {
+    //     //Change merchant's name in tables "um_users","package","order_receivers", and then notify Merchant mobile App
+    //     $change_name_error = self::updateMerchantName($id, $d->name);
+    //     if ($change_name_error)
+    //       return DV::error($change_name_error);
+    //   }
+    // }
+    $sender_created = !$id;
+
     $id = saveData($ss, 'sender', ['id' => $id], $inputs, [], 1, false);
+      // return JDV::result($id);
+
+    if($sender_created){
+
+      $prefix = 'HM';
+      
+      $str_prefix = $prefix ? 'prefix =\'' . $prefix . '\'' : '2=2';
+      $row = DB::table('sender_code_control AS c')->where('branch_id', $branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
+      
+      if ($row) {
+        $num = $row->last_id+1;
+      }
+      $s=null;
+      $data =(object)$s;
+
+      $data->sender_id= $num;
+      
+      $v_rule = [
+        'id'=>'0|identify=1',
+        'sender_id'=>'1|number|exists=sender.id',
+        'sender_class'=>'0|string|default=oversea'
+      ];
+
+
+      $res_c = validateObject(['sender_id'=>$num],$v_rule,true,[],$ss->lang,false);
+
+      if($res_c->error) return DV::error($res_c->error);
+      
+      $inp= $res_c->values;
+      $da = saveData($ss,'sender_classes',[],$inp,[],1,false);
+
+    }
 
     if ($id > 0) {
       $new_code = null;
@@ -166,8 +202,9 @@ class Customer //extends Model
         DB::table('sender as s')->where('s.id',$id)->update(['photo_file_name'=>null]);
       }
       PublicStorage::saveImage($branch_id,self::$img_dir,null,$photo,null,['id'=>$id,'store'=>'sender.photo_file_name']);  
+
       
-      if ($sender_created === 1) {
+      if ($sender_created) {
         $new_code = $this->getNextSenderCode($ss); // formatNumber($sender_id,5); 
         //$inputs['code'] = $new_code;
         DB::table('sender')->where('id', $id)->update(['code' => $new_code]);
@@ -197,7 +234,7 @@ class Customer //extends Model
   }
   static function defaultImage($branch_id)
   {
-    return PublicStorage::getUrl($branch_id,'default','image').'admin-100.png';
+    return PublicStorage::getUrl($branch_id,'default','image').'mr3.jpg';
     // return PublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
   }
   static function getProfilePicture($id)
@@ -243,7 +280,7 @@ class Customer //extends Model
     $branch_id = $ss->branch_id;
 
     $current_page = isset($d->current_page) ? $d->current_page : 1;
-    $per_page = isset($d->per_page) ? $d->per_page : 7;
+    $per_page = isset($d->per_page) ? $d->per_page : 4;
     if (!is_numeric($current_page))
       $current_page = 1;
     $skip_rows = ($current_page - 1) * $per_page;
@@ -292,7 +329,7 @@ class Customer //extends Model
     //  $query = DB::table('sender as s')->join('sender_classes as sc ','sc.id','s.id')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_types_id LIMIT 1) AS agent_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at, sc.sender_class')->where('s.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
     $query = DB::table('sender as s')
       ->join('sender_classes as sc', 'sc.sender_id', '=', 's.id')
-      ->selectRaw(' sc.sender_class , s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_types_id LIMIT 1) AS os_agent_type,s.sales_agent_id AS referrer_id ' . $select_referrer_name . ',s.create_user,formatTime(s.create_date) AS created_at')
+      ->selectRaw(' sc.sender_class,  s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_types_id LIMIT 1) AS os_agent_type,s.sales_agent_id AS referrer_id ' . $select_referrer_name . ',s.create_user,formatDate(s.create_date) AS created_at')
       ->where('s.branch_id', $branch_id)
       //->where('sender_class','oversea')
       ->whereRaw($str_agent)
@@ -342,7 +379,7 @@ class Customer //extends Model
     $query = DB::table('sender as s')
     ->join('sender_classes as sc', 'sc.sender_id', '=', 's.id')
   
-    ->selectRaw(' sc.sender_class ,s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.create_date,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.sales_agent_id AS referrer_id ' . $select_referrer_name . ',s.create_user,formatTime(s.create_date) AS created_at')
+    ->selectRaw(' sc.sender_class ,s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.create_date,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.sales_agent_id AS referrer_id ' . $select_referrer_name . ',s.create_user,formatDate(s.create_date) AS created_at')
     ->where('s.branch_id', $branch_id)
     ->whereRaw($str_search)
     ->whereRaw($str_status)->orderBy('s.id', 'DESC');
@@ -356,7 +393,8 @@ class Customer //extends Model
       unset($row->photo_file_name);
       if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
     }
-    return $rows;
+    return DV::depends($rows);
+    // return $rows;
 
 
   }
@@ -365,9 +403,15 @@ class Customer //extends Model
   {
     $branch_id = $ss->branch_id;
     //$cols = 's.id,s.code,s.name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id,s.phone_number,s.email,s.business_type,s.price_list_id,sales_agent_id,s.category_id,c.`name` AS category,s.status_id,ls.`name` AS status,s.reopen_count,s.closing_status_id';    
-    $row = DB::table('sender as s')->selectRaw('s.id,s.code,s.name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id,s.phone_number,s.email,s.business_type,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.price_list_id,sales_agent_id')->where('s.branch_id', $branch_id)->where('s.id', $id)->first();
+    $row = DB::table('sender as s')->selectRaw('s.id,s.photo_file_name,s.code,s.name,s.name_kh,s.address,s.cod,s.cod_fee,s.price_list_id,s.phone_number,s.email,s.business_type,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.price_list_id,sales_agent_id')->where('s.branch_id', $branch_id)->where('s.id', $id)->first();
     if (!$row)
       return null;
+
+    $url = $row->photo_file_name? PublicStorage::getUrl($branch_id,'general' ,'image').$row->photo_file_name: null;
+    $url = validateUrl($url,self::defaultImage($branch_id));
+    $row->photo = $url;
+    $row->image_url = $url;
+
     if ($includeProfilePicture)
       $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
     return $row;

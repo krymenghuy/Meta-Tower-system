@@ -84,7 +84,6 @@ namespace App\ScriptManagement;
                         '/js/layout/abm/main.js',
                         '/assets/js/formUtils.js',
                         '/js/components/abm/dms.utils.js',
-                        //'/js/components/abm/CustomersComponent.js',
                         //'/js/components/abm/DialogFilter.js',
  
                         '/js/components/abm/PDFReport.js',
@@ -104,9 +103,11 @@ namespace App\ScriptManagement;
                         // '/assets/js/InputBoxes.js',
                         //start Components abm
 
-                        '/js/components/abm/CustomersComponent.js',
+                        // '/js/components/abm/CustomersComponent.js',
                         '/js/components/abm/CountryZonesComponent.js',
                         '/js/components/abm/SalesAffiliatesComponent.js',
+                        // '/js/components/abm/SalesAgentsComponent.js',
+                        '/js/components/abm/CustomersComponent.js',
                         
                         '/js/components/abm/DashboardComponent.js',
                         '/js/components/abm/SuppliersComponent.js',

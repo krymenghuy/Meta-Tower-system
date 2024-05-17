@@ -21,17 +21,29 @@
     left: 0;
     z-index: 98;
   }
+
+
 </style>
 <div id="_main_suppliersComponent" style="display:none; margin-right:15px;">
     <div class="d-flex justify-content-between shadow rounded-3 p-3 bg-white">
         <div class="d-flex gap-2">
+            <div class="d-flex gap-2">
+            <button id="_sdl_btnNewSupplier" data-toggle="modal" class="btn btn-primary">
+                <i class="fa fa-users fs-5"></i>
+                <span class="kt-hidden-mobile trans-text" data-langprop="titles.New"></span>
+            </button>
+               
+            </div>
             <div class="d-flex gap-2">
                 <input type="text" class="form-control" id="_sdl_search_sender" placeholder="Search Supplier">
                 <button id="_sdl_btnSearch" role="button" class="btn btn-primary height">
                     <i class="la la-search"></i>
                 </button>
             </div>
-            <div class="d-flex gap-2" id="_sdl_filter_fields">
+            
+        </div>
+        <div class="d-flex flex-row gap-2">
+        <div class="d-flex gap-2" id="_sdl_filter_fields">
                 <div class="min-width-select d-none">
                     <select id="_sdl_filter_business_type" class="d-none modal-select2 filter-field" data-field="business_type"></select>
                 </div>
@@ -42,12 +54,7 @@
                     </select>
                 </div>
             </div>
-        </div>
-        <div class="d-flex flex-row gap-2">
-            <button id="_sdl_btnNewSupplier" data-toggle="modal" class="btn btn-primary">
-                <i class="la la-plus fs-5"></i>
-                <span class="kt-hidden-mobile trans-text" data-langprop="titles.New Supplier"></span>
-            </button>
+            
             <button id="_sdl_btnPrint" class="btn btn-success height">
                 <i class="fa fa-print fs-5"></i>
                 <span class="trans-text" data-langprop="buttons.Print"></span>
@@ -61,6 +68,9 @@
     <div class="rounded-3 mt-3 bg-white ">
         <div id="_sdl_supplier_list" ></div>
     </div>
+  
+  
+  
 </div>
 
 <div class="modal fade" id="_sdl_dlgSupplier" tabindex="-1" role="dialog" aria-labelledby="_sdl_dlgSupplierTitle" aria-hidden="true">
@@ -85,17 +95,17 @@
                                 <input type="hidden" class="form-control data-input" data-field="code" placeholder="AUTO" readonly/>
                             </div>
                             <div class="form-group col-lg-6">
-                                <label for="name" class="form-label trans-text" data-langprop="titles.Merchant Name"></label>
+                                <label for="name" class="form-label trans-text" data-langprop="titles.Supplier Name"></label>
                                 <input type="text" class="form-control data-input" data-field="name"/>
                             </div>
                             
                             <div class="form-group col-lg-6">
                                 <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
-                                <input class="form-control data-input" type="text" data-field="phone_number"/>
+                                <input class="form-control data-input" type="number" placeholder=" accept only number" data-field="phone_number"/>
                             </div>
                             <div class="form-group col-lg-6">
                                 <label for="email" class="form-label trans-text" data-langprop="titles.Email"></label>
-                                <input type="email" class="form-control data-input" data-field="email"/>
+                                <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email"/>
                             </div>
                         </div>
                      </div>
@@ -106,7 +116,7 @@
                         <select id="_sdl_price_list" class="modal-select2 data-input" data-field="price_list_id"></select>
                     </div>
                     <div class="col-lg-6">
-                        <label for="sales_agent_id" class="form-label trans-text" data-langprop="titles.Referrer"></label>
+                        <label for="sales_agent_id" class="form-label trans-text" data-langprop="titles.Sale Agent"></label>
                         <select id="_sdl_sales_agent" class="modal-select2 data-input" data-field="sales_agent_id"></select>
                     </div>
                     <div class="form-group col-lg-12">

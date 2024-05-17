@@ -17,7 +17,7 @@ body {
 }
 
 tr.row-selected td {
-  background-color: #2cd512;
+  background-color: grey;
   color: #fff;
 }
 tr.color-text th{

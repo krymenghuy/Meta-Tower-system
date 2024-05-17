@@ -429,7 +429,7 @@ class SalesAgent //extends Model
     }
 
     static function defaultImage($branch_id){
-        return PublicStorage::getUrl($branch_id,'default','image').'default_agent.png';
+        return PublicStorage::getUrl($branch_id,'default','image').'mr3.jpg';
     }
 
   static function setCommissionPolicy($policy_id,$id){
