@@ -12,7 +12,7 @@ class OverseaShipment //extends Model
 {   
     protected $id = null;
     protected $userInfo = null;
-    function __construct($id=null,$u2serInfo=null){
+    function __construct($id=null,$userInfo=null){
         $this->id=$id;
         $this->userInfo =$userInfo;
     }
@@ -28,7 +28,6 @@ class OverseaShipment //extends Model
             'from_country_id'=>'0|number',
             'primary_cp_id'=>'0|number',
             'secondary_cp_id'=>'0|number',
-            'from_country_id'=>'0|number',
             
             'effective_weight'=>'0|number|default =0.00',
             'actual_weight'=>'0|number|default =0.00',
@@ -40,7 +39,6 @@ class OverseaShipment //extends Model
             'carrier_special_charge'=>'0|number|default =0.00',
             'total_carrier_cost'=>'0|number|default =0.00',
             'total_special_charge'=>'0|number|default =0.00',
-            'total_price'=>'0|number|default =0.00',
 
             'receiver_name'=>'0|string|1,150',
             'receiver_address'=>'0|string|1,250',
@@ -141,7 +139,7 @@ class OverseaShipment //extends Model
 
     function getShipmentList($id,$rows){
         $i=0;
-        $c;
+        $c=0;
 
         $data = [];
         // return JDV::result($rows);

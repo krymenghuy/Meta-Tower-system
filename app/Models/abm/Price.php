@@ -158,7 +158,7 @@ class Price //extends Model
         $cod_fee = isset($d->cod_fee)?Sanitizer::sanitize($d->cod_fee):0;
         $charge_option = isset($d->charge_option)?strtolower(Sanitizer::sanitize($d->charge_option)):null;
         if (!(bool)strtotime($start_date)) $start_date = date('Y-m-d');
-        if ($never_expires !=1 && $never_exires != 0) $never_expires =1;
+        if ($never_expires !=1 && $never_expires != 0) $never_expires =1;
 
         if ($charge_option !='percentage' && $charge_option !='fixed') {
             return "Charge Option must be `percentage` or `fixed`";
@@ -194,7 +194,7 @@ class Price //extends Model
             $today = date('Y-m-d');
             $str_valid = " AND (IFNULL(c.never_expires,0) =1 OR (DATE(c.end_date) >='".$today."'))"; 
             $more_wheres = "1=1 ".$str_valid;
-            DB::table('sender_cod_charges AS c')->where('branch_id',$branch_id)->where('sender_id',$sender_id)->whereRaw($more_wheres)->selectRaw('c.cod_fee_percent')->limit(1)->get(); 
+            $rows =DB::table('sender_cod_charges AS c')->where('branch_id',$branch_id)->where('sender_id',$sender_id)->whereRaw($more_wheres)->selectRaw('c.cod_fee_percent')->limit(1)->get(); 
             foreach($rows as $row) $cod_fee_percent = $row->cod_fee_percent; 
             //$cod_fee_percent =0;
         } else {
@@ -306,12 +306,12 @@ class Price //extends Model
            DB::table($table)->where('branch_id',$branch_id)->where('id',$id)->update($input_array);
            $data =(object)$input_array;
            $data->branch_id = $branch_id;
-           $data->pricr_list_detail = $sender_id;
+           $data->price_list_detail = $id;
            $data->id =$id; 
         } else {
             $input_array = array(
                 'branch_id'=>$branch_id, //**//
-                'sender_id'=>$sender_id,
+                'sender_id'=>$id,
                 'item_type'=>$item_type, //**// 
                 // 'delivery_type'=>$delivery_type, //**// 
                 'zone_codes'=>$zone_codes,//**//
@@ -331,7 +331,7 @@ class Price //extends Model
             DB::table($table)->insert($input_array);
             $new_id = DB::getPdo()->LastInsertId(); 
             $data = (object)$input_array;
-            $data->sender_id = $sender_id;
+            $data->sender_id = $id;
             $data->id = $new_id;   
         }
         
@@ -475,7 +475,7 @@ class Price //extends Model
         if ($ss->status_code !==200) return $ss; //user not authenticated
         //need permission to do this task
         $branch_id = $ss->branch_id;
-        $id = isset($d->id)?Sanitizer::sanitize($id->id):null;
+        $id = isset($d->id)?Sanitizer::sanitize($d->id):null;
         $cod_fee_percent = isset($d->cod_fee_percent)?Sanitizer::sanitize($d->cod_fee_percent):0;
         $remarks = isset($d->remarks)?Sanitizer::sanitize($d->remarks):null;
         $delivery_type = isset($d->delivery_type)?Sanitizer::sanitize($d->delivery_type):null;
@@ -628,7 +628,7 @@ class Price //extends Model
  
     function getPriceListItems($country_id,$rows){
         $i=0;
-        $c;
+        $c=0;
 
         //  $below = (object)[];
         //  $above = (object)[];
@@ -825,7 +825,7 @@ class Price //extends Model
         // $new_codes = [];
         // foreach($zons as $c){
         //     if($c && !in_array($c, $new_codes)){
-                if (!$this->zone_code_exists($branch_id,$zone_codes)) return DV::error("Zone code \"$c\" does not exist!");
+                if (!$this->zone_code_exists($branch_id,$zone_codes)) return DV::error("Zone code \"$d\" does not exist!");
         //         $new_codes[] = $c;
         //     }
         // }
@@ -897,7 +897,7 @@ class Price //extends Model
         //   if(!empty($code)){
         //         if(!in_array($code,$new_codes))  
         //         {
-                    if (!$this->zone_code_exists($branch_id,$zone_codes)) return DV::error("zone code \"$code\" does not exist!");
+                    if (!$this->zone_code_exists($branch_id,$zone_codes)) return DV::error("zone code \"$d\" does not exist!");
                     //if ($this->zone_price_exists($branch_id,$delivery_type, $price_list_id,$code,$kg_marker,'below'))
         //             $new_codes[] = $code;  
         //             $zone_codes .= '|'.trim($code);
