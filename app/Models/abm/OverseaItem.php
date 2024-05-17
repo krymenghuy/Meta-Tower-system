@@ -334,7 +334,7 @@ class OverseaItem //extends Model
         $branch_id = $ss->branch_id;
         $shipment_id = isset($d->shipment_id)? Sanitizer::sanitize($d->shipment_id):null;
         $item_id = isset($d->item_id)? Sanitizer::sanitize($d->item_id):null;
-        // return JDV::result('shipment_id:'.$shipment_id);
+        // return JDV::result(['shipment_id:'=>$d]);
         
         $result = (object)array('status'=>'OK','error_message'=>null);
         $rows = DB::table('os_items AS o')->where('branch_id',$branch_id)->where('o.id',$item_id)->selectRaw('status_id')->limit(1)->get();
@@ -359,7 +359,7 @@ class OverseaItem //extends Model
         $count = 0;
         if($status_id >=5){
             $item = DB::table('os_items')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$item_id)->selectRaw('billed_weight , actual_weight , allocated_kg  , item_total ')->take(1)->first();
-            return JDV::result($item);
+            // return JDV::result($item);
             
             DB::table('os_items')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$item_id)->delete();
             $count = DB::table('os_items as p')->where('p.shipment_id',$shipment_id)->count('p.id');
@@ -375,6 +375,7 @@ class OverseaItem //extends Model
             DB::table('os_shipments')->where('id',$shipment_id)->update(['package_qty'=>$count,'effective_weight'=>$shipmentInfo->effective_weight<0??0,'actual_weight'=>$shipmentInfo->actual_weight<0??0,'markup_weight'=>$shipmentInfo->markup_weight<0??0,'total_weight'=>$shipmentInfo->total_weight<0??0,'total_price'=>$shipmentInfo->total_price<0??0]);
         } else {
             $item = DB::table('os_items')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$item_id)->selectRaw('billed_weight , actual_weight , allocated_kg  , item_total ')->take(1)->first();
+            return JDV::result($item);
             DB::table('os_items')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$item_id)->delete();
             $count = DB::table('os_items as r')->where('r.shipment_id',$shipment_id)->count('r.id'); 
             $shipmentInfo = DB::table('os_shipments as os')->where('os.id',$shipment_id)->selectRaw('os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.total_price ')->take(1)->first();
@@ -409,6 +410,25 @@ class OverseaItem //extends Model
 
         $row = DB::table('requirements as r')->where('r.id',$id)->where('r.branch_id',$branch_id)->selectRaw('r.id,r.project_id,r.description,r.status_id')->first();
         return $row;
+    }
+
+    function getItemDetails($arr =[], $id = null,$ss = null){
+        $ss = $ss ?? $this->userInfo;
+        $item_id  = $id ?? $this->id;
+        $branch_id = $ss->branch_id;
+
+        $d = (object)$arr;
+
+        $shipment_id = isset($d->shipment_id)?Sanitizer::sanitize($d->shipment_id):null;
+        // return JDV::result($d);
+
+        $table = 'os_items';
+        $data =  DB::table($table.' AS r')
+        ->where('r.branch_id',$branch_id)
+        ->where('r.shipment_id',$shipment_id)
+        ->where('r.id',$d->item_id)
+        ->selectRaw('r.id AS package_id,r.status_id , r.item_type,CONCAT(dim_x,\' \', dim_y,\' \', dim_h) AS size, r.actual_weight, r.billed_weight , r.allocated_kg ,r.price r,price_per_kg,r.item_total')->take(1)->first(); 
+        return $data;
     }
     
     function delete($id,$ss){

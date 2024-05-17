@@ -125,7 +125,7 @@ class Supplier //extends Model
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
        // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
         $query = DB::table('suppliers as s')
-                ->join('os_sales_agents as sa','sa.id','s.sales_agent_id')
+                ->join('affiliates as sa','sa.id','s.sales_agent_id')
                 ->whereRaw($str_srch)
                 ->whereRaw($str_where)
                 ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.sales_agent_id,sa.agent_type,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
@@ -227,7 +227,7 @@ class Supplier //extends Model
         // $data->sender_types = DB::table('sender_type')->where('branch_id',$branch_id)->selectRaw('id,name AS sender_type')->get();
         $data->business_types = DB::table('sender_business_types')->selectRaw('business_type AS code,business_type')->get();
         $data->sender_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name AS status_name')->get();
-        $data->sales_agents = DB::table('os_sales_agents AS sa')->where('branch_id',$branch_id)->selectRaw('sa.id,sa.name AS agent_name')->get();
+        $data->sales_agents = DB::table('affiliates AS sa')->where('branch_id',$branch_id)->selectRaw('sa.id,sa.name AS agent_name')->get();
         $data->price_list = DB::table('price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name')->get();
         return $data;
     }

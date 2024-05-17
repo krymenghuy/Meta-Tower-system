@@ -544,7 +544,7 @@ var PriceSettingsComponent = new function () {
         const parent = mThis.tblPrices[0].parentElement;
         parent.style.height = (window.innerHeight - 220)+'px';
         window.onresize = function(){
-          parent.style.height = (window.innerHeight - 220)+'px';
+        parent.style.height = (window.innerHeight - 220)+'px';
         }
       }
     });

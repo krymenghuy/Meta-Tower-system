@@ -58,6 +58,14 @@ class OverseaShipmentController extends Controller
         return JDV::result($data);
     }
 
+    function getItemDetails(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $id = $req->id;
+        $data = $this->item->getItemDetails($req->all(),$id,$ss);
+        return JDV::result($data); 
+    }
+
     function deleteOrderitem(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
