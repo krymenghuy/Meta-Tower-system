@@ -180,6 +180,33 @@ class GeneralSettings //extends Model
         }
         return $rows;
     }
+    static function options_primary_cp($ss,$include_all =false,$active_only=true){
+        $str_active = $active_only? 'a.status_code =\'active\'':'2=2';
+        $rows = DB::table("affiliates as a")
+        ->join('os_contact_persons as cp','cp.affiliate_id','=','a.id')
+        ->where('a.branch_id',$ss->branch_id)
+        ->where('cp.cp_type',1)
+        ->whereRaw($str_active)
+        ->selectRaw('a.id,CONCAT(a.name,\'(\',a.code,\')\') AS cp_name,a.code')->get();
+        if($include_all){
+           $rows->prepend((object)['id'=>null,'agent_name'=>'(All Agents)']);
+        }
+        return $rows;
+    }
+    static function options_secondary_cp($ss,$include_all =false,$active_only=true){
+        $str_active = $active_only? 'a.status_code =\'active\'':'2=2';
+        $rows = DB::table("affiliates as a")
+        ->join('os_contact_persons as cp','cp.affiliate_id','=','a.id')
+        ->where('a.branch_id',$ss->branch_id)
+        ->where('cp.cp_type',2)
+        ->whereRaw($str_active)
+        ->selectRaw('a.id,CONCAT(a.name,\'(\',a.code,\')\') AS cp_name,a.code')->get();
+        if($include_all){
+           $rows->prepend((object)['id'=>null,'agent_name'=>'(All Agents)']);
+        }
+        return $rows;
+    }
+
     static function options_calendar_month($ss=null)
     {
         $months = [

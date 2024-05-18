@@ -62,7 +62,7 @@ class SalesAgent //extends Model
       $v_rule = [
         'name'=>'1|string|1-150',
         'sex'=>'1|choice|M,F,O',
-        'agent_type'=>'1|choice|client_affiliate,freelancer,full_time|default=client_affiliate',
+        'type_from_affilliate_type'=>'1|choice|client_affiliate,freelancer,full_time,primary,secondary',
         'phone_number'=>'1|phone',
         'email'=>'0|email',
         'address'=>'0|address',
@@ -85,6 +85,11 @@ class SalesAgent //extends Model
       $created = !$id;
       $create_login = $created;
       $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
+
+      $as = (object)$arr;
+      $as_sales_agent = $as->as=='sa';
+      $as_sales_agent ? $inputs['affiliate_type'] = 1 : $inputs['affiliate_type']=2 ;
+      // return $inputs;
       $id = saveData($ss,'affiliates',['id'=>$id],$inputs,[],1,false);
       if($id>0){
         $new_code = null;
@@ -100,14 +105,14 @@ class SalesAgent //extends Model
             $new_code  = self::setAgentCode($ss,5);
             $n = (object)$new_code;
             DB::table('affiliates')->where('id',$n->last_id)->update(['code'=>$n->code]);
-            $as = (object)$arr;
+            
             
             // return JDV::result([$as->as]);
             $sa_agent_type='';
-            if($d->agent_type =='client_affiliate') $sa_agent_type = 1 ;
-            else if($d->agent_type =='freelanser' ) $sa_agent_type = 2 ;
-            else if($d->agent_type =='full_time' ) $sa_agent_type = 3 ;
-            if($as->as=='sa'){
+            if($d->type_from_affilliate_type =='client_affiliate') $sa_agent_type = 1 ;
+            else if($d->type_from_affilliate_type =='freelanser' ) $sa_agent_type = 2 ;
+            else if($d->type_from_affilliate_type =='full_time' ) $sa_agent_type = 3 ;
+            if($as_sales_agent){
               $sa_arr=['affiliate_id'=>$n->last_id,'agent_type'=>$sa_agent_type];
               $sa_v_rule = [
                 'affiliate_id'=>'1|number',
@@ -122,6 +127,7 @@ class SalesAgent //extends Model
             }
             else{
               $cp_type=1;
+              if($d->type_from_affilliate_type =='secondary') $cp_type = 2 ;
 
               $sa_arr=['affiliate_id'=>$n->last_id,'cp_type'=>$cp_type];
               $sa_v_rule = [
@@ -523,7 +529,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
         $skip_rows = ($current_page -1) * $per_page;
 
         $status_code = isset($d->status_code)? Sanitizer::sanitize($d->status_code):null;
-        $agent_type =isset($d->agent_type)? $d->agent_type : null; 
+        $type_from_affilliate_type =isset($d->type_from_affilliate_type)? $d->type_from_affilliate_type : null; 
         
         $str_agent_type = '3=3';
         $str_status = '1=1';
@@ -532,7 +538,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
           $search_value = escape_like_str($search_value);
           $str_search = ' (d.status_code =\''.$search_value.'\' OR d.name LIKE \'%'.$search_value.'%\' OR d.phone_number =\''.$search_value.'\')';
         }else{
-          $str_agent_type = $agent_type? 'd.agent_type =\''.$agent_type.'\'' : '3=3';
+          $str_agent_type = $type_from_affilliate_type? 'd.type_from_affilliate_type =\''.$type_from_affilliate_type.'\'' : '3=3';
           $str_status = $status_code? 'd.status_code =\''.$status_code.'\'' : '1=1';
         }
        
@@ -542,7 +548,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
         ->whereRaw($str_search)
         ->whereRaw($str_status)
         ->whereRaw($str_agent_type)
-        ->selectRaw('d.id,d.code,d.name,d.status_code,d.email,d.phone_number,d.address,d.photo_file_name,d.agent_type,d.branch_id,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date')
+        ->selectRaw('d.id,d.code,d.sex,d.name,d.status_code,d.email,d.phone_number,d.address,d.photo_file_name,d.type_from_affilliate_type,d.branch_id,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date')
         ->orderBy('d.id', 'DESC'); 
         $count_query = clone $query;
         $count = $count_query->count('d.id');
@@ -585,26 +591,27 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
       $skip_rows = ($current_page -1) * $per_page;
 
       $status_code = isset($d->status_code)? Sanitizer::sanitize($d->status_code):null;
-      $agent_type =isset($d->agent_type)? $d->agent_type : null; 
+      $type_from_affilliate_type =isset($d->type_from_affilliate_type)? $d->type_from_affilliate_type : null; 
       
-      $str_agent_type = '3=3';
-      $str_status = '1=1';
+      $str_cp_type = '3=3';
+      $str_status = '1=1'; 
       $str_search = '2=2';
       if($search_value){
         $search_value = escape_like_str($search_value);
         $str_search = ' (d.status_code =\''.$search_value.'\' OR d.name LIKE \'%'.$search_value.'%\' OR d.phone_number =\''.$search_value.'\')';
       }else{
-        $str_agent_type = $agent_type? 'd.agent_type =\''.$agent_type.'\'' : '3=3';
+        $str_cp_type = $type_from_affilliate_type? 'd.type_from_affilliate_type =\''.$type_from_affilliate_type.'\'' : '3=3';
         $str_status = $status_code? 'd.status_code =\''.$status_code.'\'' : '1=1';
       }
      
       $query = DB::table('os_contact_persons AS cp')
       ->join('affiliates as d','d.id','=','cp.affiliate_id')
       ->where('cp.branch_id',$branch_id)
-      ->whereRaw($str_search)
+      ->whereRaw($str_cp_type)
       ->whereRaw($str_status)
-      // ->whereRaw($str_agent_type)
-      ->selectRaw('d.id,d.code,d.name,d.status_code,d.email,d.phone_number,d.address,d.photo_file_name,d.agent_type,d.branch_id,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date')
+      ->whereRaw($str_search)
+        // ->whereRaw($str_agent_type)
+      ->selectRaw('d.id,d.code,d.name,d.status_code,d.email,d.phone_number,d.address,d.photo_file_name,d.type_from_affilliate_type,d.branch_id,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date')
       ->orderBy('d.id', 'DESC'); 
       $count_query = clone $query;
       $count = $count_query->count('d.id');
@@ -838,7 +845,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
         $str_status = $status_code? 'status_code =\''.$status_code.'\'' : '1=1';
         $str_agent_type = $agent_type_id > 0 ? 'agent_type_id ='.$agent_type_id : '2=2';
 
-        $rows = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.agent_type_id')->where('branch_id',$branch_id)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.policy_id,d.email,d.phone_number,d.address,d.status_code,t.name AS agent_type')->get(); 
+        $rows = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.type_from_affilliate_type_id')->where('branch_id',$branch_id)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.policy_id,d.email,d.phone_number,d.address,d.status_code,t.name AS agent_type')->get(); 
    
         foreach($rows as $row){
           $row->image_url = '';
@@ -857,7 +864,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
         $row = DB::table('affiliates AS d')
         // ->join('sales_agent_types AS t','t.id','=','d.agent_type_id')
         ->where('d.id',$id)
-        ->selectRaw('d.id,d.name,d.agent_type,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,formatDate(d.create_date) AS create_date')->take(1)->first(); 
+        ->selectRaw('d.id,d.name,d.type_from_affilliate_type,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,formatDate(d.create_date) AS create_date')->take(1)->first(); 
         // if($row){
         //    $pol = self::getPolicyInfo($row->policy_id,$ss);
         //    $row->policy_name = $pol? $pol->name: 'NA';

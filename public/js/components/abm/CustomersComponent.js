@@ -290,7 +290,7 @@
                         const id = lnk.dataset.id;
                         let pl_id = lnk.dataset.pricelistid;
                         let name = lnk.dataset.name;
-                        let span = container.find('.customer-price-list');
+                        let span = container.find('.customer-price-list')[0];
                         mThis.setCustomerPriceList(id, name, span ? span.parentElement : null, pl_id);
                         return;
                     }

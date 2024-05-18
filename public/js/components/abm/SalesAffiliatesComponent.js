@@ -43,7 +43,7 @@ var SalesAffiliatesComponent = new function () {
             'fetchApi': mThis.getEndPoint(view_name),
             'apiCluster': main_view.apiCluster,
             'columns': mThis.getColumns(view_name),
-            'tableClass':"table header-light-blue header-uppercase bg-white",
+            'tableClass':"table affiliate header-light-blue header-uppercase bg-white",
             listContainerClass: null,
             // 'processResponse':(res)=>{
             //     console.log(res.data);
@@ -619,7 +619,7 @@ var SalesAffiliatesComponent = new function () {
             let f= el.dataset.field;
             p[f] = el.value;
         });
-
+        console.log('p',p); 
         return p;
     }
 
@@ -693,7 +693,7 @@ var SalesAffiliatesComponent = new function () {
             title: "ID",
             className: "align-middle text-capitalize text-nowrap",
             data:(data,index,tr)=>{
-                return `<span class="code text-danger">#${data.code ? data.code:'N/A'}</span>`;
+                return `<span class="code text-success">#${data.code ? data.code:'N/A'}</span>`;
             }
         },
         {
@@ -716,7 +716,7 @@ var SalesAffiliatesComponent = new function () {
             title: "Type",
             className: 'align-middle text-capitalize',
             data: (data, index,tr) => {
-                return data.agent_type;
+                return data.type_from_affilliate_type||"NA";
             }
         },
         {
@@ -786,7 +786,7 @@ var SalesAffiliatesComponent = new function () {
             title: "ID",
             className: "align-middle text-capitalize text-nowrap",
             data:(data,index,tr)=>{
-                return `<span class="code text-danger">#${data.code ? data.code:'N/A'}</span>`;
+                return `<span class="code text-info">#${data.code ? data.code:'N/A'}</span>`;
             }
         },
         {
@@ -809,7 +809,7 @@ var SalesAffiliatesComponent = new function () {
             title: "Type",
             className: 'align-middle text-capitalize',
             data: (data, index,tr) => {
-                return data.cp_type||"NA";
+                return data.type_from_affilliate_type||"NA";
             }
         },
         {

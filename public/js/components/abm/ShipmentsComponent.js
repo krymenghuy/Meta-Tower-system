@@ -302,6 +302,15 @@ var ShipmentsComponent = new function () {
                 // title: mThis.trans('Created Date')
             },
             {
+                className: "",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.name||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'Customer Name'
+            },
+            {
                 className: "from country",
                 data: (data,index,tr)=>{
                     const sender_info = ['<span class="sender-name d-block">',data.from_country||'NA','</span>'].join('');
@@ -628,7 +637,7 @@ var ShipmentsComponent = new function () {
             //     return;
             // }
 
-            btn = VSUtil.closestLimited(e.target, '.btn_special_charge');
+            let btn = VSUtil.closestLimited(e.target, '.btn_special_charge');
             if (btn) {
                 let p = btn.parentElement;
                 let shipment_id = btn.dataset.id;
@@ -4613,8 +4622,8 @@ const ShipmentDialog = new function () {
             // mThis.elWarehouse.val(d.warehouses[0].id).trigger('change'); 
             VSUtil.setComboItems(mThis.elSender, d.senders, 'id', 'sender_name', null, null, null);
             VSUtil.setComboItems(mThis.el_to_country, d.to_country, 'id', 'country_name', null, null, null);
-            VSUtil.setComboItems(mThis.el_primary_cp, d.sale_agent, 'id', 'agent_name', null, null, null);
-            VSUtil.setComboItems(mThis.el_secondary_cp, d.sale_agent, 'id', 'agent_name', null, null, null);
+            VSUtil.setComboItems(mThis.el_primary_cp, d.primary_cp, 'id', 'cp_name', null, null, null);
+            VSUtil.setComboItems(mThis.el_secondary_cp, d.secondary_cp, 'id', 'cp_name', null, null, null);
             // VSUtil.setComboItems(mThis.elVehicleType, d.vehicle_types, 'code', 'vehicle_type', null, null,d.vehicle_types[0]?d.vehicle_types[0].code:'');
             onFinish(d);
         });
