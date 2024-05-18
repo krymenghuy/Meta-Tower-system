@@ -8,8 +8,8 @@ use App\Http\Controllers\Dms\WebReportController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UMController; 
 
-// use App\Http\Controllers\abm\CustomerController;
-use App\Http\Controllers\ShipmentController;
+use App\Http\Controllers\abm\PackageController;
+//use App\Http\Controllers\abm\ShipmentController;
 use App\Http\Controllers\abm\OverseaShipmentController;
 use App\Http\Controllers\abm\SupplierController;
 use App\Http\controllers\abm\CustomerController;
@@ -30,7 +30,7 @@ use App\Http\controllers\abm\SpecialChargeController;
 //end:: api without Authentication
 
 //begin:: Admin notifications
-    Route::middleware('auth.api', CustomRateLimiter::class)->group(function(){
+    Route::middleware(['auth.api', CustomRateLimiter::class])->group(function(){
             Route::post('pending-requests', [NotificationController::class, 'getPendingRequests']);
             Route::post('notifications', [NotificationController::class, 'getNotificationListByUser']);
             Route::get('unread-count',[NotificationController::class,'getUnreadCount']);

@@ -628,7 +628,7 @@ var ShipmentsComponent = new function () {
             //     return;
             // }
 
-            btn = VSUtil.closestLimited(e.target, '.btn_special_charge');
+           let btn = VSUtil.closestLimited(e.target, '.btn_special_charge');
             if (btn) {
                 let p = btn.parentElement;
                 let shipment_id = btn.dataset.id;

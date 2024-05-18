@@ -51,9 +51,11 @@ class OverseaShipment //extends Model
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $d = (object) $inputs;
+
         $to_cnt = $d->to_country_id; 
         $sender_id = $d->sender_id; 
         $d->zone_code= self::getZoneCode($to_cnt,$sender_id);
+
         $inputs['zone_code'] = $d->zone_code->zone_code;
         // return JDV::result($inputs); 
 
@@ -61,7 +63,6 @@ class OverseaShipment //extends Model
         // if($check) return DV::error('Requirement is already to save...');
         $save = saveData($ss,'os_shipments',['id'=>$id],$inputs,[],1,0);   
         return DV::depends($save,['action'=>'saved']);
-
     }
 
     public function getZoneCode($country_id,$sender_id){
@@ -107,6 +108,7 @@ class OverseaShipment //extends Model
         //     $str_where = 'r.project_id = '.$project_id;
         // }
         $skip_row = ($current_page - 1) * $per_page;
+        
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
        // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
         $query = DB::table('os_shipments as os')
@@ -127,10 +129,15 @@ class OverseaShipment //extends Model
         // return JDV::result($query->get());
         $rows = $query->skip($skip_row)->take($per_page)->get();
         $unique_id = $this->getUnique_id($rows);
+        
+       
         $ret_rows = [];
         foreach($unique_id as $id){
             $m = $this->getShipmentList($id,$rows);  
+            $from_country = DB::table('os_shipments as os') ->join('loc_countries as lc', 'os.from_country_id', '=', 'lc.id')->where('os.id',$m->id)->select('lc.name')->first();
+            $m->from_country = $from_country->name ?? '';
             $ret_rows[] = $m;  
+            
         }   
         // return JDV::result($ret_rows);
 
