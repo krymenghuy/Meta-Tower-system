@@ -116,11 +116,12 @@ class OverseaShipment //extends Model
                 ->join('loc_countries as lc', 'os.to_country_id', '=', 'lc.id')
                 ->join('price_list_details as p', 'p.country_id', '=', 'lc.id')
                 ->join('os_package_statuses as st', 'st.id', '=', 'os.status_id')
+                ->join('sender as sd', 'sd.id', '=', 'os.sender_id')
                 
                 // ->whereRaw($str_srch)
                 // ->whereRaw($str_where)
                 // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
-                ->selectRaw('os.id, os.sender_id, os.remarks , p.price_list_id, os.zone_code, os.status_id, os.to_country_id, os.from_country_id, lc.name as to_country, lc.name as from_country , os.primary_cp_id ,sa.name as primary_cp_name , sa.phone_number as primary_cp_phone , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , st.name as status , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time');
+                ->selectRaw('os.id, sd.name, os.remarks , p.price_list_id, os.zone_code, os.status_id, os.to_country_id, os.from_country_id, lc.name as to_country , os.primary_cp_id ,sa.name as primary_cp_name , sa.phone_number as primary_cp_phone , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , st.name as status , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time');
         
         $clone_query = clone $query;
 
@@ -132,9 +133,11 @@ class OverseaShipment //extends Model
         $ret_rows = [];
         foreach($unique_id as $id){
             $m = $this->getShipmentList($id,$rows);  
+            $from_contry = DB::table('os_shipments as os')->join('loc_countries as lc', 'os.from_country_id', '=', 'lc.id')->where('os.id',$m->id)->select('lc.name')->first();
+            $m->from_country = $from_contry->name ?? ''; 
             $ret_rows[] = $m;  
         }   
-        // return JDV::result($ret_rows);
+        // return $ret_rows;
 
         return new LengthAwarePaginator($ret_rows,$count,$per_page,$current_page);
     }
@@ -210,7 +213,9 @@ class OverseaShipment //extends Model
             'from_country'=>GeneralSettings::options_country_zone($ss),
             'to_country'=>GeneralSettings::options_country_zone($ss),
             'senders'=>GeneralSettings::options_sender($ss),
-            // 'sale_agent'=>GeneralSettings::options_sales_agent($ss),
+            // 'sale_a'=>GeneralSettings::options_sales_affiliate($ss),
+            'primary_cp'=>GeneralSettings::options_primary_cp($ss),
+            'secondary_cp'=>GeneralSettings::options_secondary_cp($ss),
             'shipment' => $shipment
         ];
     }

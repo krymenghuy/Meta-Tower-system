@@ -5,7 +5,7 @@
     .nav-tabs .nav-item .nav-link{
         color: #595d6e
     }
-    table {
+    table.affiliate {
         border-collapse:separate; 
         border-spacing: 0 1em;
     }
@@ -59,7 +59,7 @@
                             </div>
                             <div class="d-flex gap-2" id="_sdl_filter_fields_view_sales_agent">
                                 <div class="d-flex flex-row gap2 ml-3">
-                                    <select  id="_sale_agent_filter_type" class="modal-select2 filter-field" data-field="agent_type">
+                                    <select  id="_sale_agent_filter_type" class="modal-select2 filter-field" data-field="type_from_affilliate_type">
                                     </select>
                                 </div>
                                 <div class="d-flex flex-row gap-2 ml-3">
@@ -88,7 +88,7 @@
                             </div>
                             <div class="d-flex gap-2" id="_sdl_filter_fields_view_contact_person">
                                 <div class="d-flex flex-row gap2 ml-3">
-                                    <select  id="_contact_persen_filter_type" class="modal-select2 filter-field" data-field="agent_type">
+                                    <select  id="_contact_persen_filter_type" class="modal-select2 filter-field" data-field="type_from_affilliate_type">
                                     </select>
                                 </div>
                                 <div class="d-flex flex-row gap-2 ml-3">
@@ -208,7 +208,7 @@
                             <label class="form-label trans-text">Agent Type</label>
                             <!-- <select id="_sal_agent_type" class="modal-select2 data-input" data-field="agent_types_id"></select> -->
                             <!-- <select class="form-control data-input" id="_sal_agent_type" data-field="agent_types_id"></select> -->
-                            <select class="modal-select2 data-input" data-field="agent_type">
+                            <select class="modal-select2 data-input" data-field="type_from_affilliate_type">
                                 <option selected>(Select SalesAgent Type)</option>
                                 <option value="client_affiliate">client-affiliate</option>
                                 <option value="freelancer">freelancer</option>
@@ -219,7 +219,7 @@
                             <label class="form-label trans-text">Contact Person Type</label>
                             <!-- <select id="_sal_agent_type" class="modal-select2 data-input" data-field="agent_types_id"></select> -->
                             <!-- <select class="form-control data-input" id="_sal_agent_type" data-field="agent_types_id"></select> -->
-                            <select class="modal-select2 data-input" data-field="cp_type">
+                            <select class="modal-select2 data-input" data-field="type_from_affilliate_type">
                                 <option hidden value="default">(Select SalesAgent Type)</option>
                                 <option value="primary">primary</option>
                                 <option value="secondary">secondary</option>

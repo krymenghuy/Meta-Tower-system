@@ -610,7 +610,7 @@ class Price //extends Model
                 $m = $this->getPriceListItems($country_id,$rows);
                 $ret_rows[] = $m;  
             }   
-            if($m==null) return DV::error('Price list don\'t have yet.');
+            if($m==null) return DV::error('Customer price list don\'t have yet! Plese create price list befor add item.');
             // return JDV::result($country_id); 
             // $country_id
             return $ret_rows;
@@ -618,7 +618,7 @@ class Price //extends Model
             foreach($unique_country as $country_id){
                 $m = $this->getPriceListItems($country_id,$rows);
             }   
-            if($m==null) return DV::error('Price list don\'t have yet.');
+            if($m==null) return DV::error('Customer price list don\'t have yet! Plese create price list befor add item.');
             // return JDV::result($country_id); 
             // $country_id
             return $m;
