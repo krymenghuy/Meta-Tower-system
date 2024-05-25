@@ -286,20 +286,131 @@ var ShipmentsComponent = new function () {
             if (filter_status_id == 1 || filter_status_id == -1) mThis.live_addOrderRow(d.data);
         }
     }
+
+    this.savePrices = (that, div) => {
+        let btnEdit = div.find('a.ps-btn-edit-prices');
+        let has_error = false;
+        let p = {};
+        div.find('.dd-field').each(function () {
+            let field = $(this);
+            let span = field.find('.dd-value');
+            let input = field.find('.dd-input');
+            input.removeClass('has-error');
+
+            let f = field.data('field');
+            let val = (input.val() + '').toLowerCase().trim();
+
+            if (f == 'carrier_total_weight') {
+                if (!val || val < 0) {
+                    input.addClass('has-error');
+                    has_error = true;
+                    return false;
+                }
+            }
+            else if(f == 'carrier_cost') {
+                if (!val || val < 0) {
+                    input.addClass('has-error');
+                    has_error = true;
+                    return false;
+                }
+            }
+            p[f] = input.val();
+            log(p);
+            if (!has_error) {
+                div.find('.dd-value').show();
+                span.text(input.val());
+                input.remove();
+            }
+        });
+
+        if (!has_error) {
+            // let price_list_id = mThis.elFilter_price_list.val();
+            //let x =  div.closest('div.ps-zones');
+            let zone_codes = that.data('zones');
+            //need to modify html
+            //need to modify html
+            let item_type = that.data('dtype');
+
+            p.id = that.data('id');
+            p.zone_codes = zone_codes;
+            p.item_type = item_type;
+            console.log(p);
+            // vsapi.call(`${mThis.base_url}/abm/savePriceLineInfo`, p).then(res => {
+            // if (res.status_code === 200) {
+            //     that.data('id', res.id);
+            // } else cv_interact.error(res.error_message);
+            // });
+
+            //hide btnSave
+            that.hide();
+
+            //Show back btnEdit
+            btnEdit.show();
+        }
+    }
+
+    /** set each block of div.ps-fast or div.ps-normal to be in Edit mode **/
+    //div is div.ps-fast or div.ps-normal
+    this.setEditMode = (me, div) => {
+        let btnSave = div.find('a.ps-btn-save-prices');
+        //Hide btnEdit
+        me.hide();
+    
+        //remove existing inputs if the target div is already in Edit mode
+        div.find('.dd-input').remove();
+    
+        //Show btnSave
+        btnSave.show();
+        div.find('.dd-value').each(function () {
+            let el = $(this);
+            el.after($('<input class="dd-input" style="outline:none;margin-top:0px;width:80px"/>').val(el.text()));
+            el.hide();
+        });
+    }
+
+    this.show = function (option = null) {
+        mThis.loadFilterData();
+        mThis.self.siblings().hide();
+        main_view.setTitle(mThis.title_prop);
+        mThis.self.fadeIn(250);
+    }
+
+    this.hide = function () {
+        mThis.self.hide();
+    }
  
     this.init = function () {
         if (mThis.initAlready) return;
 
         this.cols = [
-            
+            {
+                className: 'col_action',
+                data: function (data, row, display) {
+                    let html = ['<div class="dropdown">',
+                        '<a href="javascript:void(0)" data-orderid="', data.order_id, '" data-senderid="', data.sender_id, '" data-statusid="', data.status_id, '" class="btn_pickup_action" aria-haspopup="true" aria-expanded="false">',
+                        '<i class="fa fa-chevron-down" style="color:#E9E7E7;font-size:1.5em"></i>',
+                        '</a>',
+                        '</div>'].join('');
+                    return html;
+                }
+            },
             {
                 className: "Order Date",
                 data: function (data, index, tr) {
                     return ['<span class="d-block p-1">', data.create_date||"NA", '</span>',
                         '<span class=" pl-request_time d-block p-1">', data.request_time||"NA", '</span>'].join('');
                 },
-                title: 'Created Date'
+                title: 'Booking Date'
                 // title: mThis.trans('Created Date')
+            },
+            {
+                className: "",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.code||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'shipment no'
             },
             {
                 className: "",
@@ -327,6 +438,15 @@ var ShipmentsComponent = new function () {
                 },
                 // title: mThis.trans('Sender ID')
                 title: 'to country '
+            },
+            {
+                className: "to_country",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<span class="sender-name d-block">',data.item_type||'NA','</span>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'item type '
             },
             {
                 className: "",
@@ -379,7 +499,13 @@ var ShipmentsComponent = new function () {
             {
                 className: "s",
                 data: (data,index,tr)=>{
-                    const sender_info = ['<span class="sender-name d-block">',data.carrier_total_weight||'NA',' USD </span>'].join('');
+                    const sender_info = ['<div class="d-flex dd-field" data-field="carrier_total_weight" > <span class="sender-name dd-value fs-5-08 me-1">',data.carrier_total_weight||'NA','</span> USD ',
+                    `<a href="javascript:void(0)" data-id="" class="ps-btn-edit-prices ms-2">
+                        <i class="fa fa-edit text-warning fs-5"></i>
+                    </a>
+                    <a style="display:none" href="javascript:void(0)" data-id="`,data.id,`" data-zones="" data-dtype="`,data.item_type,`" class="ps-btn-save-prices ms-2">
+                        <i class="fa fa-save fs-5"></i>
+                    </a> </div>`].join('');
                     return sender_info;
                 },
                 // title: mThis.trans('Sender ID')
@@ -389,7 +515,13 @@ var ShipmentsComponent = new function () {
             {
                 className: "carrier_cost",
                 data: (data,index,tr)=>{
-                    const sender_info = ['<span class="sender-name d-block">',data.carrier_cost||'NA',' USD </span>'].join('');
+                    const sender_info = ['<div class="d-flex dd-field" data-field="carrier_cost"> <span class="sender-name  dd-value fs-5-08 me-1">',data.carrier_cost||'NA',' </span> USD',
+                    `<a href="javascript:void(0)" data-id="" class="ps-btn-edit-prices ms-2">
+                    <i class="fa fa-edit text-warning fs-5"></i>
+                    </a>
+                    <a style="display:none" href="javascript:void(0)" data-id="" data-zones="" data-dtype="" class="ps-btn-save-prices ms-2">
+                        <i class="fa fa-save fs-5"></i>
+                    </a> </div>`].join('');
                     return sender_info;
                 },
                 // title: mThis.trans('Sender ID')
@@ -413,11 +545,11 @@ var ShipmentsComponent = new function () {
             {
                 className: "",
                 data: (data,index,tr)=>{
-                    const sender_info = ['<span class="sender-name d-block">',data.total_carrier_cost||'NA',' USD </span>'].join('');
+                    const sender_info = ['<span class="sender-name dd-value me-1">',data.total_carrier_cost||').00','</span> USD',`</a> `].join('');
                     return sender_info;
                 },
                 // title: mThis.trans('Sender ID')
-                title: `<div class='d-b'>total cc</div><div class='d-n'>total carrier cost</div>`
+                title: `<div class='d-b'>carrier tc</div><div class='d-n'>carrier total cost</div>`
             },
             {
                 className: "receiver_name",
@@ -465,7 +597,7 @@ var ShipmentsComponent = new function () {
             // clientSidePagination: true,
             fetchApi: `${main_view.base_url}/abm/oversea_shipments/Shipment-list-paginate`,
             apiCluster: main_view.apiCluster,
-            tableClass: "table header-uppercase",
+            tableClass: "table shipment header-uppercase bg-white",
             perPage: 10,
             columns: mThis.cols,
             // processResponse: (res) => {
@@ -473,16 +605,18 @@ var ShipmentsComponent = new function () {
             //     return res.data;
             // },
             rowCreated:(data,index,tr)=>{
-                console.log(data);
+                //console.log(data);
               tr.dataset.id = data.id;  
               tr.classList.add('order');
               tr.classList.add('shipment');
+              
               tr.setAttribute('id',['shipment_',data.id].join('')); 
             //   tr.dataset.statusid = data.status_id;
               tr.dataset.senderid = data.sender_id;
               tr.dataset.country_zone = data.zone_code;
               tr.dataset.country_id = data.to_country_id;
               tr.dataset.price_list_id = data.price_list_id;
+              tr.dataset.item_type = data.item_type;
             //   tr.dataset.driverid = data.driver_id?data.driver_id:''; 
             }, 
 
@@ -490,9 +624,13 @@ var ShipmentsComponent = new function () {
             listContainerClass: null,
         });
 
+
+        
+
         /** NOTE: tblOrder is Vanila javascript object, whereas mThis.tblPickups is Jquery Object that represents the same table */
         mThis.tblOrders = mThis.shipmentListView.getTable();
         mThis.tblShipments = $(mThis.tblOrders);
+
 
         this.sh_container = mThis.shipmentListView.getListContainer();
         // mThis.setEvents($(mThis.container));
@@ -505,7 +643,7 @@ var ShipmentsComponent = new function () {
         }
 
         mThis.cfg = new ExpandableRowConfig(mThis.tblShipments.attr('id'), {
-            dontExpandByClickingOn: ['pkl_btn_receive','pkl_btn_pick','btn-show','btn_special_charge','lnk-assign-driver','lnk-set-address','dropdown-menu'],
+            dontExpandByClickingOn: ['pkl_btn_receive','ps-btn-save-prices','dd-input','ps-btn-edit-prices','pkl_btn_pick','btn_pickup_action','btn-show','btn_special_charge','lnk-assign-driver','lnk-set-address','dropdown-menu'],
             onOpen: (container, detail_tr, parent_tr) => {
                 mThis.shm_prev_editing_row = null;
                 const view_name = parent_tr.dataset.view; 
@@ -525,7 +663,23 @@ var ShipmentsComponent = new function () {
                mThis.hideQuickButtons(parent_tr)
             } 
         });
- 
+
+        
+        mThis.tblShipments.on('click', 'a.ps-btn-edit-prices', function (e) {
+            e.preventDefault();
+            let div = $(this).closest('div'); /** div.ps-fast or div.ps-normal **/
+            console.log('div',div);
+            mThis.setEditMode($(this), div);
+        });
+    
+        mThis.tblShipments.on('click', 'a.ps-btn-save-prices', function (e) {
+            e.preventDefault();
+            let div = $(this).closest('div'); /** div.ps-fast or div.ps-normal **/
+            mThis.savePrices($(this), div);
+        });
+        
+
+        
         // LocaleManager.setLanguageChangeHandler((lang) => {
         //     mThis.setTableLanguage();
         //     mThis.displayPickupList();
@@ -613,44 +767,44 @@ var ShipmentsComponent = new function () {
         mThis.tblShipments[0].addEventListener('click', e => {
             e.preventDefault();
             // Click on Pickup Action button | drop down action
-            // let btn = VSUtil.closestLimited(e.target, '.btn_pickup_action');
-            // if (btn) {
-            //     let p = btn.parentElement;
-            //     let shipment_id = btn.dataset.id;
-            //     let sender_id = btn.dataset.senderid;
-            //     let status_id = btn.dataset.statusid;
+            let btn = VSUtil.closestLimited(e.target, '.btn_pickup_action');
+            if (btn) {
+                let p = btn.parentElement;
+                let shipment_id = btn.dataset.id;
+                let sender_id = btn.dataset.senderid;
+                let status_id = btn.dataset.statusid;
         
-            //     let dropdownMenu = p.querySelector('.dropdown-menu');
-            //     if (!dropdownMenu || dropdownMenu.length === 0) {
-            //         p.insertAdjacentHTML('beforeend', mThis.createDropdownMenuHtml_pickup(shipment_id, sender_id, status_id));
-            //         dropdownMenu = p.querySelector('.dropdown-menu');
-            //     }
+                let dropdownMenu = p.querySelector('.dropdown-menu');
+                if (!dropdownMenu || dropdownMenu.length === 0) {
+                    p.insertAdjacentHTML('beforeend', mThis.createDropdownMenuHtml_pickup(shipment_id, sender_id, status_id));
+                    dropdownMenu = p.querySelector('.dropdown-menu');
+                }
         
-            //     if (mThis.prev_dropdownMenu && mThis.prev_dropdownMenu !== dropdownMenu) {
-            //         mThis.prev_dropdownMenu.classList.remove('show');
-            //     }
+                if (mThis.prev_dropdownMenu && mThis.prev_dropdownMenu !== dropdownMenu) {
+                    mThis.prev_dropdownMenu.classList.remove('show');
+                }
         
-            //     dropdownMenu.classList.toggle('show');
-            //     if (dropdownMenu.classList.contains('show')) {
-            //         mThis.prev_dropdownMenu = dropdownMenu;
-            //     }
-            //     return;
-            // }
+                dropdownMenu.classList.toggle('show');
+                if (dropdownMenu.classList.contains('show')) {
+                    mThis.prev_dropdownMenu = dropdownMenu;
+                }
+                return;
+            }
 
-            let btn = VSUtil.closestLimited(e.target, '.btn_special_charge');
+            btn = VSUtil.closestLimited(e.target, '.btn_special_charge');
             if (btn) {
                 let p = btn.parentElement;
                 let shipment_id = btn.dataset.id;
                 let sender_id = btn.dataset.senderid;
                 let status_id = btn.dataset.statusid;
                 let pt ={'shipment_id':shipment_id}
-                console.log('pt',pt);
+                //console.log('pt',pt);
                 let dropdownMenu = p.querySelector('.dropdown-menu');
                 
                 vsapi.call([mThis.base_url, '/abm/special-charge/list-paginate'].join(''), pt,null,null).then(res => {
                     if (res.status_code === 200) {
                         let data = res.data.data;
-                        console.log('data',data);
+                        //console.log('data',data);
                         if (!dropdownMenu || dropdownMenu.length === 0) {
                             p.insertAdjacentHTML('beforeend', mThis.createDropdownMenuHtml_special_charge(shipment_id, sender_id, status_id,data));
                             dropdownMenu = p.querySelector('.dropdown-menu');
@@ -746,7 +900,7 @@ var ShipmentsComponent = new function () {
                 let op = { 'title': 'Add Special Charge' ,'shipment_id':tr.dataset.id };
                 SpecialChargeDialog.show(op, (new_id) => {
                     if (new_id) {
-                        console.log('new_id',new_id);
+                        //console.log('new_id',new_id);
                         mThis.shipmentListView.showPage(mThis.getFilterData());
                     // mThis.loadFilterData(new_id);
                     }
@@ -756,7 +910,7 @@ var ShipmentsComponent = new function () {
             btn = VSUtil.closestLimited(e.target,'._pl_pa_motify_special_charge');
             if(btn){
                 let tr = btn.closest('tr');
-                console.log('btn.id',btn.dataset.sc_id);
+                //console.log('btn.id',btn.dataset.sc_id);
                 let op = { 'title': 'Motify Special Charge' ,
                             'shipment_id':tr.dataset.id ,
                             'id':btn.dataset.sc_id,
@@ -765,9 +919,9 @@ var ShipmentsComponent = new function () {
                             'remarks':btn.dataset.remarks,
                         };
                 SpecialChargeDialog.show(op, (new_id) => {
-                    console.log('new_id',new_id);
+                    //console.log('new_id',new_id);
                     if (new_id) {
-                        console.log('new_id',new_id);
+                        //console.log('new_id',new_id);
                     // mThis.loadFilterData(new_id);
                     mThis.shipmentListView.showPage();
                     }
@@ -779,15 +933,15 @@ var ShipmentsComponent = new function () {
             btn = VSUtil.closestLimited(e.target,'._pl_pa_delete_special_charge');
             if(btn){
                 let tr = btn.closest('tr');
-                console.log('btn.id',btn.dataset.sc_id);
+                //console.log('btn.id',btn.dataset.sc_id);
                 let p = {
                             'shipment_id':tr.dataset.id ,
                             'id':btn.dataset.sc_id,
                         };
-                console.log('p',p);
+                //console.log('p',p);
                 vsapi.call([mThis.base_url, '/abm/special-charge/delete-special-charge'].join(''), p).then(res => {
                     if (res.status_code === 200) {
-                        console.log('me');
+                        //console.log('me');
                     // let d = res.data;
                     // if (typeof mThis.onClose === 'function') {
                         mThis.shipmentListView.showPage(mThis.getFilterData());
@@ -804,7 +958,7 @@ var ShipmentsComponent = new function () {
               if(btn){
                   if(!AuthManager.allowed(221)) return;
                   let tr = btn.closest('tr');
-                  console.log(tr);
+                  //console.log(tr);
                   mThis.assignDriver(tr,btn);
                   return;
               }
@@ -815,6 +969,22 @@ var ShipmentsComponent = new function () {
                 if (!AuthManager.allowed(229)) return;
                 let tr = btn.closest('tr');
                 mThis.deleteOrder(tr); 
+                return;
+            }
+
+            //Click on Motify button
+            btn = VSUtil.getElementByClass(e.target,'_pl_pa_motify');
+            if(btn){
+                let shipment_tr = btn.closest('tr');
+                // let op = {'id' : shipment_tr.dataset.id}
+                const op = {
+                    'title': 'Motify',
+                    'id' : shipment_tr.dataset.id,
+                    'onClose': () => {
+                       mThis.shipmentListView.showPage(mThis.getFilterData());
+                    }
+                };
+                ShipmentDialog.show(op);
                 return;
             }
 
@@ -841,7 +1011,7 @@ var ShipmentsComponent = new function () {
             btn = VSUtil.getElementByClass(e.target,'pkl_btn_save');
             if(btn){
                 let tr = btn.closest('tr');
-                console.log('tr',tr);
+                //console.log('tr',tr);
                 mThis.saveItem(tr, btn,(e) =>{
                     if(e){
                         btn.closest('div.edit-actions').remove();
@@ -877,7 +1047,7 @@ var ShipmentsComponent = new function () {
              btn = VSUtil.getElementByClass(e.target,'pkl_btn_edit');
              if (btn){
                  const tr = btn.closest('tr');
-                 console.log('btn',btn);
+                 //console.log('btn',btn);
                  mThis.beginEditItem(tr,null,btn);
                  return;
              }
@@ -922,7 +1092,7 @@ var ShipmentsComponent = new function () {
         mThis.btnNewShipment.on('click', (e) => {
             if(!AuthManager.allowed(220)) return;
             const options = {
-                'title': 'Quick Order',
+                'title': 'Booking',
                 'onClose': () => {
                    mThis.shipmentListView.showPage(mThis.getFilterData());
                 }
@@ -947,16 +1117,13 @@ var ShipmentsComponent = new function () {
             let shipment_id = tr.dataset.id;
             let def_status_id = tr.dataset.statusid;
                
-                let sender_name = tr.querySelector('td.sender_name .sender-name').textContent;
-                let order_code = tr.querySelector('td.order_code .order-code').textContent;
-                let driver_id = tr.dataset.driverid;
-                let order = { 'shipment_id': shipment_id, 'order_code': order_code, 'sender_name': sender_name, 'driver_id': driver_id, 'status_id': def_status_id };
-                PickupStatusDialog.show(order, d => {
+                let sender_name = tr.querySelector('td.Customer-Name .sender-name').textContent;
+                let shipment_code = tr.querySelector('td.shipment-no .sender-name').textContent;
+                // let driver_id = tr.dataset.driverid;
+                let shipment = { 'shipment_id': shipment_id, 'shipment_code': shipment_code, 'sender_name': sender_name, 'status_id': def_status_id };
+                PickupStatusDialog.show(shipment, d => {
                     if (d) {
-                        tr.dataset.driverid =  d.driver_id;
-                        let span = tr.querySelector('td.driver_name .driver-name');
-                        if (d.deriver_id == 0 || !d.driver_id) d.driver_name = 'NA';
-                        span.textContent  = d.driver_name;
+                        console.log(shipment);
                         mThis.updatePickupStatus(tr, d);
                     }
                 });
@@ -1118,7 +1285,7 @@ var ShipmentsComponent = new function () {
             cv_interact.confirm('Delete this package?', { title: 'Delete Package', context: 'delete' }, function (e) {
                 if (e) {
                     let p = {'shipment_id': shipment_id, 'item_id': item_id,'id': item_id };
-                    console.log('p',p);
+                    //console.log('p',p);
                     vsapi.call([mThis.base_url, '/abm/oversea_shipments/delete-item'].join(''), p).then(res => {
                         if (res.status_code === 200) {
                             let d = res.data?res.data:{};
@@ -1193,15 +1360,15 @@ var ShipmentsComponent = new function () {
             `<a href="javascript:void(0)" class="pkl_btn_print_barcode" data-barcode="${d.barcode}" data-toggle="tooltip" data-placement="right" data-title="Print barcode"><i class="fa fa-barcode text-success fs-5"></i></a>`,
             , '</div></td>'].join('');
         tr_id = tr_id || DUtil.createGUID();
-        return ['<tr id="', tr_id, '" data-barcode="', d.barcode, '"  data-shipmentid="', d.shipment_id, '" data-country_zone="', d.country_zone,'" data-country_id="', d.country_id,'" data-price_list_id="', d.price_list_id,'" data-senderid="', d.sender_id, '" data-id="', d.id, '" data-statusid="', d.status_id, '" class="pkl-package-row pkl_', (d.id?d.id:0), '">', td_action, html_row, '</tr>'].join('');
+        return ['<tr id="', tr_id, '" data-barcode="', d.barcode, '"  data-shipmentid="', d.shipment_id, '" data-country_zone="', d.country_zone,'" data-country_id="', d.country_id,'" data-price_list_id="', d.price_list_id,'"  data-item_type="', d.item_type,'" data-senderid="', d.sender_id, '" data-id="', d.id, '" data-statusid="', d.status_id, '" class="pkl-package-row pkl_', (d.id?d.id:0), '">', td_action, html_row, '</tr>'].join('');
     }
 
-    this.createPackageTable_thead_html = (shipment_id,sender_id,country_zone,country_id,price_list_id)=>{
-        console.log('price_list_id',price_list_id,'country_id',country_id);
+    this.createPackageTable_thead_html = (shipment_id,sender_id,country_zone,country_id,price_list_id,item_type)=>{
+        //console.log('price_list_id',price_list_id,'country_id',country_id);
         let thead_html = ['<thead><tr>',
             '<th>',
                 '<div class="d-flex justify-content-between align-items-center gap-2">',
-                '<a data-senderid="', sender_id, '" data-country_zone="', country_zone, '"  data-shipmentid="', shipment_id,'" data-price_list_id="', price_list_id,'" data-country_id="', country_id,'" href="javascript:void(0)" style="font-weight:bold;width:50px" class="pkl-lnk_add_item"><div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-plus fs-5 text-success"></i><span class="fs-5-08">Add</span></div></a>',
+                '<a data-senderid="', sender_id, '" data-item_type="', item_type, '" data-country_zone="', country_zone, '"  data-shipmentid="', shipment_id,'" data-price_list_id="', price_list_id,'" data-country_id="', country_id,'" href="javascript:void(0)" style="font-weight:bold;width:50px" class="pkl-lnk_add_item"><div class="d-flex align-items-center gap-2"><i class="fa-solid fa-circle-plus fs-5 text-success"></i><span class="fs-5-08">Add</span></div></a>',
                 //   '<a data-senderid="', sender_id, '" data-orderid="', order_id, '" href="javascript:void(0)" class="pkl_btn_magic_entry"><i class="fa fa-cube fs-5 text-warning"></i></a>',
                 '</div>',
             '</th>', 
@@ -1220,8 +1387,8 @@ var ShipmentsComponent = new function () {
          return thead_html; 
       }
 
-    this.createPackageTable_html = (shipment_id,sender_id,country_zone,country_id,price_list_id)=>{
-       let html = [`<table class="pkl-package-table table">`,mThis.createPackageTable_thead_html(shipment_id,sender_id,country_zone,country_id,price_list_id),`<tbody></tbody>`,`</table>`].join('');
+    this.createPackageTable_html = (shipment_id,sender_id,country_zone,country_id,price_list_id,item_type)=>{
+       let html = [`<table class="pkl-package-table table">`,mThis.createPackageTable_thead_html(shipment_id,sender_id,country_zone,country_id,price_list_id,item_type),`<tbody></tbody>`,`</table>`].join('');
        return html; 
     }
 
@@ -1231,11 +1398,12 @@ var ShipmentsComponent = new function () {
         let sender_id = div.dataset.senderid;
         let country_zone = div.dataset.country_zone;
         let country_id = div.dataset.country_id;
-        console.log('country_id',country_id);
+        //console.log('country_id',country_id);
         let price_list_id = div.dataset.price_list_id;
+        let item_type = div.dataset.item_type;
         let table = div.querySelector('table.pkl-package-table');
         if(!table){
-            div.innerHTML = mThis.createPackageTable_html(shipment_id,sender_id,country_zone,country_id,price_list_id);
+            div.innerHTML = mThis.createPackageTable_html(shipment_id,sender_id,country_zone,country_id,price_list_id,item_type);
             table = div.querySelector('table.pkl-package-table'); 
         } 
         let tbody = table.querySelector('tbody');
@@ -1246,12 +1414,12 @@ var ShipmentsComponent = new function () {
          * price = 0, fees =0  are all default values when creating new item
         */
         
-        if (!d) d = {"sender_id":sender_id,"shipment_id":shipment_id,"status_id":1,"country_zone":country_zone,"country_id":country_id,"price_list_id":price_list_id,"price":0 ,"price_per_kg":0,"item_total":0,"billed_weight":0};
+        if (!d) d = {"sender_id":sender_id,"shipment_id":shipment_id,"status_id":1,"country_zone":country_zone,"country_id":country_id,"price_list_id":price_list_id ,"item_type":item_type,"price":0 ,"price_per_kg":0,"item_total":0,"billed_weight":0};
         let html_row = this.createItemRow_html(d,tr_id);
         //prepend html string to tbody
         tbody.insertAdjacentHTML('afterbegin',html_row);
         let new_tr = tbody.querySelector(['tr#', tr_id].join(''));
-        // console.log('new_tr',new_tr);
+        //console.log('new_tr',new_tr);
         if (edit_mode) mThis.beginEditItem(new_tr);
         if (refresh_count) {
             mThis.refresh_item_count(order_id,tbody);
@@ -1294,13 +1462,14 @@ var ShipmentsComponent = new function () {
     
     this.displayShipmentDetails = (container,shipment_tr,def_view='items')=>{
         container.innerHTML = null;
-        console.log('shipment',shipment_tr);
+        //console.log('shipment',shipment_tr);
         const shipment_id = shipment_tr.dataset.id;
         const sender_id = shipment_tr.dataset.senderid;
         const country_zone = shipment_tr.dataset.country_zone;
         const country_id = shipment_tr.dataset.country_id;
         const price_list_id = shipment_tr.dataset.price_list_id;
-        console.log('price_list_id',price_list_id,'country_id',country_id);
+        const item_type = shipment_tr.dataset.item_type;
+        //console.log('price_list_id',price_list_id,'country_id',country_id);
 
         let html = [
         `<div class="d-flex flex-column p-2 w-100">`,
@@ -1320,7 +1489,7 @@ var ShipmentsComponent = new function () {
         
         const div = container.querySelector('div.pkl-order-content');
         if(def_view ==='items'){
-             mThis.displayOverseaItems(div,shipment_id,sender_id,country_zone,country_id,price_list_id);
+             mThis.displayOverseaItems(div,shipment_id,sender_id,country_zone,country_id,price_list_id,item_type);
         }else{
             mThis.displayOrderImages(div,shipment_id,sender_id);
         }
@@ -1332,7 +1501,7 @@ var ShipmentsComponent = new function () {
             if (btn){
                 const viewname = btn.dataset.viewname;
                 if (viewname ==='items'){
-                     mThis.displayOverseaItems(div,shipment_id,sender_id,country_zone,country_id,price_list_id,btn);
+                     mThis.displayOverseaItems(div,shipment_id,sender_id,country_zone,country_id,price_list_id,item_type,btn);
                 }else{
                     mThis.displayOrderImages(div,shipment_id,sender_id,btn);
                 }
@@ -1355,7 +1524,8 @@ var ShipmentsComponent = new function () {
                 div.dataset.country_zone = country_zone;
                 div.dataset.country_id = btn.dataset.country_id;
                 div.dataset.price_list_id = btn.dataset.price_list_id;
-                console.log('div',div);
+                div.dataset.item_type = btn.dataset.item_type;
+                //console.log('div',div);
                 // console.log(div.dataset.senderid);
                 //const item_table = btn.closest('table.pkl-package-table');  
                 //const editing_tr = mThis.getCurrentEditingRow(item_table);
@@ -1438,17 +1608,17 @@ var ShipmentsComponent = new function () {
       return null;
     }
     //displayItemList  | renderPackageTable
-    this.displayOverseaItems = (div, shipment_id,sender_id,country_zone,country_id,price_list_id,btn=null) => {
+    this.displayOverseaItems = (div, shipment_id,sender_id,country_zone,country_id,price_list_id,item_type,btn=null) => {
         let p = { 'id':  shipment_id};
-        console.log(p);
+        //console.log(p);
         // const content_panel_class = 'pkl-order-content';
         // const div = container.querySelector(content_panel_class);
         //div.style.display= 'none';
         div.innerHTML = '<div class="d-flex justify-content-center flex-column align-items-center animation-line" style="height:2px;margin:0;"></div>';
         let html = '';
-        console.log('price_list_id',price_list_id,'country_id',country_id);
+        //console.log('price_list_id',price_list_id,'country_id',country_id);
 
-        const header_cols = mThis.createPackageTable_thead_html(shipment_id,sender_id,country_zone,country_id,price_list_id);
+        const header_cols = mThis.createPackageTable_thead_html(shipment_id,sender_id,country_zone,country_id,price_list_id,item_type);
         vsapi.call([mThis.base_url, '/abm/oversea_shipments/item-list'].join(''), p,null,null,null).then(res => {
             if (res.status_code === 200) {
                 let packages = StringSanitizer.sanitizeObject(res.data,null,['size']);
@@ -1461,7 +1631,7 @@ var ShipmentsComponent = new function () {
                     c.country_zone = country_zone;
                     c.country_id = country_id;
                     c.price_list_id = price_list_id;
-                    console.log('c',c);
+                    //console.log('c',c);
                     html = [html,mThis.createItemRow_html(c,null)].join('');
                     i++;
                 } while (c);
@@ -1469,7 +1639,7 @@ var ShipmentsComponent = new function () {
                    html = [`<table class="table pkl-package-table">`,header_cols,`<tbody>`, html ,`</tbody></table>`].join('');
                 }else{
                     mThis.shm_prev_editing_row = null;
-                    html = [`<div class="p-2 d-flex justify-content-center gap-2"><span class="h5 text-center p-1 fw-semibold">មិនទាន់បញ្ចូលកញ្ចប់ទំនិញ</span><a href="javascript:void(0)" data-shipmentid="`,shipment_id,`" data-price_list_id="`,price_list_id,`" data-country_id="`,country_id,`" data-country_zone="`,country_zone,`" data-senderid ="`,sender_id,`" class="pkl-lnk_add_item mt-2"><span class="p-2 border border-primary rounded-4">Add Item</span></a></div>`].join('');
+                    html = [`<div class="p-2 d-flex justify-content-center gap-2"><span class="h5 text-center p-1 fw-semibold">មិនទាន់បញ្ចូលកញ្ចប់ទំនិញ</span><a href="javascript:void(0)" data-shipmentid="`,shipment_id,`"  data-item_type="`,item_type,`" data-price_list_id="`,price_list_id,`" data-country_id="`,country_id,`" data-country_zone="`,country_zone,`" data-senderid ="`,sender_id,`" class="pkl-lnk_add_item mt-2"><span class="p-2 border border-primary rounded-4">Add Item</span></a></div>`].join('');
                 }
                 div.innerHTML = html;
                 //div.style.display ='block';
@@ -1696,8 +1866,8 @@ var ShipmentsComponent = new function () {
 
     this.setItemReadOnly = (tr, refresh = false, data =null) => {
         if (refresh) data = null;
-        console.log('data:',data);
-        console.log('tr:',tr);
+        //console.log('data:',data);
+        //console.log('tr:',tr);
         let ship_id = tr.dataset.shipmentid;
         let item_id = tr.dataset.id;
         let p = { 'shipment_id': ship_id, 'item_id': item_id };
@@ -1779,10 +1949,10 @@ var ShipmentsComponent = new function () {
             mThis.shm_prev_editing_row = null;
             return;
         }
-        console.log('p',p);
+        //console.log('p',p);
         vsapi.call([main_view.base_url, '/abm/oversea_shipments/item-details'].join(''), p).then(res => {
             if (res) {
-                console.log(res);
+                //console.log(res);
                 if (res.data == null) {
                     cv_interact.confirm('Are you sure to discard this item?', { title: 'Discard Item', context: 'delete' }, e => {
                         if (e) {
@@ -1839,7 +2009,7 @@ var ShipmentsComponent = new function () {
                             disp_value = [data.item_total,' USD'].join('');
                         }
                         else if (col_name == 'size') {
-                            console.log('data.size',data.size);
+                            //console.log('data.size',data.size);
                             if (data.size || typeof data.size === 'string')
                                 disp_value = DUtil.getFriendlySize(data.size);
                             else if(data.size) {
@@ -1873,18 +2043,18 @@ var ShipmentsComponent = new function () {
         //tr is the package tr , NOT shipment_tr
         let p = mThis.getItem(tr);
 
-        console.log('tr',tr);
+        //console.log('tr',tr);
         p.shipment_id = tr.dataset.shipmentid;
-        // console.log(tr.dataset.shipmentid);
+        // //console.log(tr.dataset.shipmentid);
         p.id = tr.dataset.id;
-        console.log('p',p);
+        //console.log('p',p);
 
         vsapi.call([mThis.base_url, '/abm/oversea_shipments/create-item'].join(''), p, lnk).then(res => {
             if (res.status_code === 200) {
                 let data = res.data;
                 let packageInfo = StringSanitizer.sanitizeObject(data.package,null,['size']);
-                console.log(packageInfo);
-                console.log('item',data.package.item_type);
+                //console.log(packageInfo);
+                //console.log('item',data.package.item_type);
                 if (!data.package.item_type) console.error('Problem in api/order/save-package because this method returns delivery_type (result.data.delivery_type) as NULL or empty');
                 // data.item_type = (packageInfo.item_type || '').toLowerCase();
 
@@ -1963,9 +2133,9 @@ var ShipmentsComponent = new function () {
 
     /** make item row editable */
     this.makeRowEditable = (tr,data)=>{
-        const readOnlyFields = ['price_per_kg','price','billed_weight','item_total'];
+        const readOnlyFields = ['item_type','price_per_kg','price','billed_weight','item_total'];
         const def_min_width ='90px';
-        // console.log('tr',tr);
+        //console.log('tr',tr);
         const minWidths = {
             // "cod":"100px",
             "item_type":"150px",
@@ -2043,7 +2213,7 @@ var ShipmentsComponent = new function () {
                 td.innerHTML = null;
                 let field_name = td.dataset.field;
                 let inputType = td.dataset.inputtype;
-                console.log(inputType);
+                //console.log(inputType);
                 let input_html;
                 let is_readOnly = null;
                 let readOnly = 0;
@@ -2129,8 +2299,8 @@ var ShipmentsComponent = new function () {
         if (!size) {
             return;
         }
-        console.log('tr',tr);
-        console.log('size',size);
+        //console.log('tr',tr);
+        //console.log('size',size);
 
         if (!size.length) return;
         let kg = 0;
@@ -2138,7 +2308,7 @@ var ShipmentsComponent = new function () {
         b = Number(b /5000);
         let actual_kg = EditableTable.getCellValue(tr, 'actual_weight',true);
         if (b > actual_kg) kg = b; else kg = actual_kg;
-        console.log('kg',kg);
+        //console.log('kg',kg);
         EditableTable.setCellValue(tr, 'billed_weight', Number(kg).toFixed(2));
         let alloc_kg = EditableTable.getCellValue(tr, 'allocated_kg',true);
         let total_kg = kg + alloc_kg;
@@ -2147,18 +2317,21 @@ var ShipmentsComponent = new function () {
         EditableTable.setCellValue(tr, 'price', Number(price).toFixed(2));
         let total_price = price_per_kg * total_kg;
         EditableTable.setCellValue(tr, 'item_total', Number(total_price).toFixed(2));
-        console.log('total price',total_price);
+        //console.log('total price',total_price);
 
     }
 
     /** When turning item row into Edit mode, this method will set onChange, and onClick event handlers for INPUT, SELECT elements. This method called inside mThis.beginEditItem() */
     this.setEditor_events = (tr)=>{
         //Event handler for Edit package on sub table inside tblpIckup
+        let item_type = EditableTable.getCellValue(tr,'item_type',false); 
+        //console.log('item',item_type);
+        mThis.showPrice_per_kg(tr,item_type);
         tr.querySelectorAll('.col-input').forEach( input => {
            const td = input.closest('td'); 
            const col_name = td.dataset.field;
            //todo: we can set data-field for the input.col-input for faster query selector
-            
+           
            input.onchange =  e =>{
               e.preventDefault();
               td.dataset.value = input.value;
@@ -2166,12 +2339,11 @@ var ShipmentsComponent = new function () {
                if (col_name == 'item_type') {
                     // let price_per_kg = 1.5;
                     let billed_kg = EditableTable.getCellValue(tr,'billed_weight',true); 
-                    let item_type = EditableTable.getCellValue(tr,'item_type',false); 
+                    
                     // item_type =='doc' ? item_type='doc_items' : item_type='non_doc_items';
-                    console.log(item_type);
-                    mThis.showPrice_per_kg(tr,item_type);
+                    
                     let price_per_kg = EditableTable.getCellValue(tr,'price_per_kg',true); 
-                    console.log(price_per_kg);
+                    //console.log(price_per_kg);
                     let price = price_per_kg * billed_kg;
                     EditableTable.setCellValue(tr,'item_total',Number(price).toFixed(2));
                 }
@@ -2208,7 +2380,7 @@ var ShipmentsComponent = new function () {
                     "country_id": tr.dataset.country_id ,
                     "zone_codes": tr.dataset.country_zone};
         // let item_type
-        console.log('p',p);
+        //console.log('p',p);
         vsapi.call([mThis.base_url, '/abm/getPriceList_data'].join(''), p, null).then(res => {
             let price_per_kg =0;
             if (res.status_code === 200) {
@@ -2224,7 +2396,7 @@ var ShipmentsComponent = new function () {
             }
             else cv_interact.warning(res.error_message);
             EditableTable.setCellValue(tr,'price_per_kg',price_per_kg);
-            console.log(price_per_kg);
+            //console.log(price_per_kg);
         });
     }
   
@@ -2237,8 +2409,8 @@ var ShipmentsComponent = new function () {
     this.hideQuickButtons = (tr)=>{
         // console.log(tr);
         // let td = tr.querySelector('td.request_date');
-        let td = tr.querySelector('td.Created-Date');
-        console.log(td);
+        let td = tr.querySelector('td.Booking-Date');
+        //console.log(td);
             let dx = td.querySelector('div.pkl-quick_action_buttons');
         if (dx){
             dx.remove();
@@ -2251,7 +2423,7 @@ var ShipmentsComponent = new function () {
         let status_id = tr.dataset.statusid;
         if (mThis.prev_quick_buttons) mThis.prev_quick_buttons.style.visibility = 'hidden';
         // let td = tr.querySelector('td.request_date');
-        let td = tr.querySelector('td.Created-Date');
+        let td = tr.querySelector('td.Booking-Date');
         let dx = td.querySelector('div.pkl-quick_action_buttons');
         if (dx) {
             if (status_id > 3){
@@ -2345,17 +2517,17 @@ var ShipmentsComponent = new function () {
         // }
     }
 
-    // this.createDropdownMenuHtml_pickup = function (shipment_id, sender_id, status_id) {
-    //     let html = ['<div class="dropdown-menu bg-white shadow" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '">',
-    //         '<a class="dropdown-item _pl_pa_assign_driver" href="javascript:void(0)"><i class="fa fa-biking" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '"></i> Assign Driver (Pickup)</a>',
-    //         '<a class="dropdown-item _pl_pa_receive" href="javascript:void(0)"><i class="fa fa-shipping-fast"></i> Arrive</a>',
-    //         '<div class="dropdown-divider"></div>',
-    //         '<a class="dropdown-item _pl_pa_delete" href="javascript:void(0)"><i class="fa fa-trash" style="color:red"></i> Delete Pickup</a>',
-    //         '<a class="dropdown-item _pl_pa_change_status" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue"></i> Change Order Status</a>',
-    //         // '<a class="dropdown-item _pl_pa_change_driver" href="javascript:void(0)"><i class="fa fa-user"></i> Change Driver (Pickup)</a>',
-    //         '</div>'].join('');
-    //     return html;
-    // };
+    this.createDropdownMenuHtml_pickup = function (shipment_id, sender_id, status_id) {
+        let html = ['<div class="dropdown-menu bg-white shadow" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '">',
+            '<a class="dropdown-item _pl_pa_motify" href="javascript:void(0)"><i class="fa fa-edit" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '"></i>Motify</a>',
+            '<a class="dropdown-item _pl_pa_receive" href="javascript:void(0)"><i class="fa fa-shipping-fast"></i> Arrive</a>',
+            '<div class="dropdown-divider"></div>',
+            '<a class="dropdown-item _pl_pa_delete" href="javascript:void(0)"><i class="fa fa-trash" style="color:red"></i> Delete Pickup</a>',
+            '<a class="dropdown-item _pl_pa_change_status" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue"></i> Change Shipment Status</a>',
+            // '<a class="dropdown-item _pl_pa_change_driver" href="javascript:void(0)"><i class="fa fa-user"></i> Change Driver (Pickup)</a>',
+            '</div>'].join('');
+        return html;
+    };
 
     this.createDropdownMenuHtml_special_charge = function (shipment_id, sender_id, status_id,data = []) {
         let html = ['<div class="dropdown-menu bg-white shadow" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '">',
@@ -4475,6 +4647,8 @@ let VerifyPackageDialog = new function () {
     };
 }
 
+
+
 const EditableTable = new function () {
     this.handlePriceError = (tr, d, display_span = null) => {
         if (display_span)
@@ -4614,17 +4788,18 @@ const ShipmentDialog = new function () {
     this.el_primary_cp = this.self.find('#_plq_primary_cp');
     this.el_secondary_cp = this.self.find('#_plq_secondary_cp');
 
-    this.prepareFormOptions = (onFinish) => {
-        vsapi.call(`${mThis.base_url}/abm/oversea_shipments/form-options`, null, null).then(res => {
+    this.prepareFormOptions = ( id, onFinish) => {
+        vsapi.call(`${mThis.base_url}/abm/oversea_shipments/form-options`, {id : id}, null).then(res => {
 
-            const d = (res.status_code === 200) ? res.data : {};
-            VSUtil.setComboItems(mThis.el_from_country, d.from_country, 'id', 'country_name', null, null, null);
+            let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data) : {};
+            VSUtil.setComboItems(mThis.el_from_country, d.from_country, 'id', 'country_name', true, '(select )' , null);
             // mThis.elWarehouse.val(d.warehouses[0].id).trigger('change'); 
-            VSUtil.setComboItems(mThis.elSender, d.senders, 'id', 'sender_name', null, null, null);
-            VSUtil.setComboItems(mThis.el_to_country, d.to_country, 'id', 'country_name', null, null, null);
-            VSUtil.setComboItems(mThis.el_primary_cp, d.primary_cp, 'id', 'cp_name', null, null, null);
-            VSUtil.setComboItems(mThis.el_secondary_cp, d.secondary_cp, 'id', 'cp_name', null, null, null);
+            VSUtil.setComboItems(mThis.elSender, d.senders, 'id', 'sender_name', true, '(select )', null);
+            VSUtil.setComboItems(mThis.el_to_country, d.to_country, 'id', 'country_name', true, '(select )', null);
+            VSUtil.setComboItems(mThis.el_primary_cp, d.primary_cp, 'id', 'cp_name', true, '(select )', null);
+            VSUtil.setComboItems(mThis.el_secondary_cp, d.secondary_cp, 'id', 'cp_name', true, '(select )', null);
             // VSUtil.setComboItems(mThis.elVehicleType, d.vehicle_types, 'code', 'vehicle_type', null, null,d.vehicle_types[0]?d.vehicle_types[0].code:'');
+            console.log('d2',d);
             onFinish(d);
         });
     }
@@ -4644,6 +4819,24 @@ const ShipmentDialog = new function () {
         return has_error ? null : p;
     }
 
+    this.setData = (d) => {
+        // mThis.body.querySelectorAll('.data-input').forEach(el => {
+        //     el.value = null;
+        // });
+        // if (!d) return;
+        d = d || {};
+        mThis.self[0].querySelectorAll('.data-input').forEach(el => {
+            const data_member = el.dataset.field;
+            el.value = d[data_member] ?? '';
+            console.log(d[data_member]);
+
+            if (el.tagName.toLowerCase() === 'select') {
+                el.dispatchEvent(new Event('change'));
+            }
+        });
+
+    }
+
     // this.elSender.on('change', (e) => {
     //     let m = { 'sender_id': mThis.elSender.val() };
     //     vsapi.call([mThis.base_url, '/dms/merchant/address'].join(''), m).then(res => {
@@ -4654,7 +4847,7 @@ const ShipmentDialog = new function () {
 
     this.btnCreate.on('click', (e) => {
         const p = mThis.getFormData(false);
-        console.log('p',p);
+        //console.log('p',p);
         if (!p) return;
         vsapi.call(`${mThis.base_url}/abm/oversea_shipments/save`, p, mThis.btnCreate).then(res => {
             if (res.status_code === 200) {
@@ -4668,7 +4861,13 @@ const ShipmentDialog = new function () {
     this.show = (options) => {
         options = options ? options : {};
         mThis.options = options;
-        mThis.prepareFormOptions(() => {
+        let p = options.id;
+        console.log('p',p);
+        mThis.prepareFormOptions( p , d => {
+            console.log("d",d);
+            if(d.shipment){
+                mThis.setData(d.shipment);
+            }
             mThis.self.modal({
                 'backdrop': 'static'
             });
@@ -4913,10 +5112,10 @@ const SpecialChargeDialog = new function () {
         mThis.elError.html('Charge is not valid');
         return;
       }
-      console.log('p',p);
+      //console.log('p',p);
       vsapi.call([mThis.base_url, '/abm/special-charge/save'].join(''), p).then(res => {
         if (res.status_code === 200) {
-            console.log('me');
+            //console.log('me');
           let d = res.data;
           if (typeof mThis.onClose === 'function') {
             mThis.onClose(d.id);
@@ -4946,7 +5145,7 @@ const SpecialChargeDialog = new function () {
     mThis.elRemarks.val('');
     mThis.elCategory.val('');
     mThis.elCharge.val('');
-    console.log('this is me',option);
+    //console.log('this is me',option);
     if(option.id){
     mThis.elScID.val(option.id);
     mThis.elRemarks.val(option.remarks);

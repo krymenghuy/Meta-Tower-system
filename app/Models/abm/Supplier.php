@@ -130,6 +130,7 @@ class Supplier //extends Model
                 ->whereRaw($str_where)
                 ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.sales_agent_id,sa.type_from_affilliate_type,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
        
+        // return $query;
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
         // $login_accounts = DB::table('um_users')->selectRaw('official_id')->get();

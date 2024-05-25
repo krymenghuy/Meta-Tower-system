@@ -77,12 +77,15 @@ use App\Http\controllers\abm\SpecialChargeController;
         Route::post('/save', [OverseaShipmentController::class, 'save']);
         Route::post('/Shipment-list', [OverseaShipmentController::class, 'getOverseaShipmentList']);
         Route::post('/Shipment-list-paginate', [OverseaShipmentController::class, 'ListPaginate']);
+        Route::post('/Shipment-list-BillValidate', [OverseaShipmentController::class, 'ListForBillValidate']);
         Route::post('/form-options', [OverseaShipmentController::class, 'getFormOptions']);
         Route::post('/item-details', [OverseaShipmentController::class, 'getItemDetails']);
     
         Route::post('/create-item', [OverseaShipmentController::class, 'createOverseaItem']);
         Route::post('/item-list', [OverseaShipmentController::class, 'getOverseaItemList']);
         Route::post('/delete-item', [OverseaShipmentController::class, 'deleteOrderitem']);
+
+        Route::post('/import', [OverseaShipmentController::class, 'import']);
 
     });
     Route::middleware([CustomRateLimiter::class])->prefix('special-charge')->group(function(){

@@ -92,6 +92,7 @@ namespace App\ScriptManagement;
                         '/assets/js/FileChooser.js',
                         '/assets/js/ListView.js',
                         '/assets/js/InputBoxes.js',
+                        '/assets/js/xlsx/xlsx.full.min.js',
                         // 'js/components/dms/SenderPaymentComponent.js',
                         // 'js/components/dms/TripListComponent.js',
                         // 'js/components/abm/RoleManagementComponent.js',

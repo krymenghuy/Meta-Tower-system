@@ -375,7 +375,7 @@ class OverseaItem //extends Model
             DB::table('os_shipments')->where('id',$shipment_id)->update(['package_qty'=>$count,'effective_weight'=>$shipmentInfo->effective_weight<0??0,'actual_weight'=>$shipmentInfo->actual_weight<0??0,'markup_weight'=>$shipmentInfo->markup_weight<0??0,'total_weight'=>$shipmentInfo->total_weight<0??0,'total_price'=>$shipmentInfo->total_price<0??0]);
         } else {
             $item = DB::table('os_items')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$item_id)->selectRaw('billed_weight , actual_weight , allocated_kg  , item_total ')->take(1)->first();
-            return JDV::result($item);
+            // return JDV::result($item);
             DB::table('os_items')->where('branch_id',$branch_id)->where('shipment_id',$shipment_id)->where('id',$item_id)->delete();
             $count = DB::table('os_items as r')->where('r.shipment_id',$shipment_id)->count('r.id'); 
             $shipmentInfo = DB::table('os_shipments as os')->where('os.id',$shipment_id)->selectRaw('os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.total_price ')->take(1)->first();
