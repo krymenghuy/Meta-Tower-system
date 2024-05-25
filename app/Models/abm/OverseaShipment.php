@@ -23,10 +23,11 @@ class OverseaShipment //extends Model
         
         $v_rule = [
             'sender_id' => '1|number',
+            'item_type'=>'1|choice|doc,non_doc,non-doc',
             'zone_code'=>'0|number',
             'to_country_id'=>'1|number',
-            'from_country_id'=>'0|number',
-            'primary_cp_id'=>'0|number',
+            'from_country_id'=>'0|number|default =14',
+            'primary_cp_id'=>'1|number',
             'secondary_cp_id'=>'0|number',
             
             'effective_weight'=>'0|number|default =0.00',
@@ -61,7 +62,16 @@ class OverseaShipment //extends Model
 
         // $check = isExist('shipments',$id,['description'=>$inputs['description']]);
         // if($check) return DV::error('Requirement is already to save...');
+        $created = !$id;
         $save = saveData($ss,'os_shipments',['id'=>$id],$inputs,[],1,0);   
+        if($save>0){
+            $new_code = null;
+            if($created){
+                $new_code  = self::setShipmentCode($ss,5);
+                $n = (object)$new_code;
+                DB::table('os_shipments')->where('id',$n->last_id)->update(['code'=>$n->code]);
+            }
+        }
         return DV::depends($save,['action'=>'saved']);
     }
 
@@ -100,45 +110,116 @@ class OverseaShipment //extends Model
         // $project_id = isset($d->project_id)?$d->project_id:null;
         $str_srch = '1=1';
         // $str_where = '1=1';
-        // if($search_value){
-        //     $skip_row = 0;
-        //     $str_srch = '(os.name LIKE \'%'.$search_value.'%\')';
-        // }
+        if($search_value){
+            $skip_row = 0;
+            $str_srch = '(os.name LIKE \'%'.$search_value.'%\')';
+        }
         // if($project_id){
         //     $str_where = 'r.project_id = '.$project_id;
         // }
         $skip_row = ($current_page - 1) * $per_page;
-        
+        $price_list_id = ',(SELECT s.price_list_id FROM sender as s WHERE s.id = os.sender_id ) as price_list_id';
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
        // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
         $query = DB::table('os_shipments as os')
                 ->join('affiliates as sa','os.primary_cp_id','=','sa.id') // Perform an inner join
-                ->join('loc_countries as lc', 'os.to_country_id', '=', 'lc.id')
-                ->join('price_list_details as p', 'p.country_id', '=', 'lc.id')
-                ->join('os_package_statuses as st', 'st.id', '=', 'os.status_id')
+                ->join('loc_countries as lc', 'lc.id', '=', 'os.to_country_id')
+                // ->join('price_list_details as p', 'p.country_id', '=', 'os.to_country_id')
+                ->join('delivery_statuses as st', 'st.id', '=', 'os.status_id')
                 ->join('sender as sd', 'sd.id', '=', 'os.sender_id')
                 
                 // ->whereRaw($str_srch)
                 // ->whereRaw($str_where)
                 // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
-                ->selectRaw('os.id, sd.name, os.remarks , p.price_list_id, os.zone_code, os.status_id, os.to_country_id, os.from_country_id, lc.name as to_country , os.primary_cp_id ,sa.name as primary_cp_name , sa.phone_number as primary_cp_phone , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , st.name as status , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time');
+                ->selectRaw('os.id,os.code, os.item_type , sd.name, os.remarks ,  os.zone_code, os.status_id, os.to_country_id, os.from_country_id, lc.name as to_country , os.primary_cp_id ,sa.name as primary_cp_name , sa.phone_number as primary_cp_phone , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , st.name as status , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time'.$price_list_id)
+                ->orderBy('os.id', 'DESC'); 
         
         $clone_query = clone $query;
-
-        $count = $clone_query->count('os.id');
+        
         // $login_accounts = DB::table('um_users')->selectRaw('official_id')->get();
         // return JDV::result($query->get());
         $rows = $query->skip($skip_row)->take($per_page)->get();
+        // return $rows;
+
+        $count = $clone_query->count('os.id');
+
         $unique_id = $this->getUnique_id($rows);
+        // return $rows;
+        $ret_rows = [];
+        foreach($unique_id as $id){
+            $m = $this->getShipmentList($id,$rows);  
+            $from_contry = DB::table('os_shipments as os')->join('loc_countries as lc', 'os.from_country_id', '=', 'lc.id')->where('os.id',$m->id)->select('lc.name')->first();
+            $m->from_country = $from_contry->name ?? ''; 
+            $ret_rows[] = $m;  
+        }   
+        // $count = count($ret_rows);
+        // return $count;
+
+        return new LengthAwarePaginator($ret_rows,$count,$per_page,$current_page);
+    }
+
+    function ListForBillValidate($filter,$ss){
+        $branch_id = $ss->branch_id;
+        $d = (object)$filter;
+        // return JDV::result($filter->page);
+
+        $current_page = isset($d->current_page)?$d->current_page:1;
+        $per_page = isset($d->per_page)?$d->per_page:20;
+        $shipment_no = isset($d->shipment_no)?$d->shipment_no:null;
+        $end_date = isset($d->end_date) ? $d->end_date : null;
+        $start_date = isset($d->start_date) ? $d->start_date : null;
+        // $project_id = isset($d->project_id)?$d->project_id:null;
+        $str_where = '1=1';
+        $str_dates = '2=2';
+        if($shipment_no){
+            $str_where = 'os.id = '.$shipment_no;
+        }else{
+            $end_date = convertDate($end_date);
+            $start_date = convertDate($start_date);
+            if ((bool)strtotime($start_date) && (bool)strtotime($end_date)) {
+                $str_dates = "DATE(os.create_date) >= '$start_date' AND DATE(os.create_date) <= '$end_date'";
+            // return $start_date;
+            }else if($end_date){
+               $start_date = date('Y-m-d', strtotime(date('Y-m-d') . ' -90 days'));
+               $str_dates = "DATE(os.create_date) >= '$start_date' AND DATE(os.create_date) <= '$end_date'";
+            // return $str_dates;
+
+            }
+        }
+        $skip_row = ($current_page - 1) * $per_page;
+        //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
+       // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
+        $query = DB::table('os_shipments as os')
+                // ->join('affiliates as sa','os.primary_cp_id','=','sa.id') // Perform an inner join
+                ->join('loc_countries as lc', 'lc.id', '=', 'os.to_country_id')
+                // ->join('price_list_details as p', 'p.country_id', '=', 'os.to_country_id')
+                // ->join('os_package_statuses as st', 'st.id', '=', 'os.status_id')
+                // ->join('sender as sd', 'sd.id', '=', 'os.sender_id')
+                
+                // ->whereRaw($str_srch)
+                ->whereRaw($str_where)
+                ->whereRaw($str_dates)
+                // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
+                ->selectRaw('os.id,os.code, os.item_type , lc.name as to_country , os.secondary_cp_id , os.total_weight , os.carrier_total_weight ,(os.carrier_total_weight - os.total_weight) as weight_diff, os.total_price ,(os.total_carrier_cost - os.total_price) as price_diff, os.total_carrier_cost , formatDate(os.create_date) as create_date')
+                ->orderBy('os.id', 'DESC'); 
         
-       
+        $clone_query = clone $query;
+
+        
+        // $login_accounts = DB::table('um_users')->selectRaw('official_id')->get();
+        // return JDV::result($query->get());
+        $rows = $query->skip($skip_row)->take($per_page)->get();
+        $count = $clone_query->count('os.id');
+
+        $unique_id = $this->getUnique_id($rows);
         $ret_rows = [];
         foreach($unique_id as $id){
             $m = $this->getShipmentList($id,$rows);  
             $ret_rows[] = $m;  
             
         }   
-        // return $ret_rows;
+        $count = count($ret_rows);
+        // return $count;
 
         return new LengthAwarePaginator($ret_rows,$count,$per_page,$current_page);
     }
@@ -168,6 +249,7 @@ class OverseaShipment //extends Model
     }
 
     function getUnique_id($rows){
+        // return $rows;
         $unique_id = [];
         foreach($rows as $row){
             if(!in_array($row->id,$unique_id)){
@@ -177,11 +259,13 @@ class OverseaShipment //extends Model
         return $unique_id;
     }
 
-    function details($id,$ss){
+     function details($id,$ss){
         $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
 
-        $row = DB::table('requirements as r')->where('r.id',$id)->where('r.branch_id',$branch_id)->selectRaw('r.id,r.project_id,r.description,r.status_id')->first();
+        $row = DB::table('os_shipments as os')->where('os.id',$id)->where('os.branch_id',$branch_id)
+        ->selectRaw('os.id,os.code, os.item_type , os.remarks , os.sender_id, os.zone_code, os.status_id, os.to_country_id, os.from_country_id, os.primary_cp_id , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time')
+        ->take(1)->first();
         return $row;
     }
     
@@ -191,6 +275,23 @@ class OverseaShipment //extends Model
 
         $delete = DB::table('requirements as r')->where('r.id',$id)->delete();
         return DV::depends($delete,['action','deleted']);
+    }
+
+    function setShipmentCode($uss,$len =5){
+        $branch_id = $uss->branch_id;
+        $prefix ='SH';
+        $str_prefix = $prefix? 'prefix =\''.$prefix.'\'' : '2=2';
+        $row = DB::table('shipment_code_control AS c')->where('branch_id',$branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
+       if($row) {
+            $num = $row->last_id;
+            $prefix = trim($row->prefix);
+            $num +=1;
+            DB::table('shipment_code_control')->where('branch_id',$branch_id)->whereRaw($str_prefix)->update(['last_id'=>$num]);
+        return ['code'=>$prefix.$branch_id.formatNumber($num,$len),'last_id'=>$num];
+        // return $prefix.$branch_id.formatNumber($num,$len);
+        }
+        DB::table('shipment_code_control')->insert(['branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix]);
+        return ['code'=>$prefix.$branch_id.formatNumber(1,$len),'last_id'=>$row->last_id];
     }
     
     // function getFormOptions($ss){
@@ -208,11 +309,13 @@ class OverseaShipment //extends Model
         $shipment = null;
         if($id ){
             $shipment = self::details($id,$ss);
+            // return $shipment;
         }
         return (object)[
             // 'project_types' => GeneralSettings::options_project_type($ss),
             'from_country'=>GeneralSettings::options_country_zone($ss),
             'to_country'=>GeneralSettings::options_country_zone($ss),
+            'shipment_code'=>GeneralSettings::options_shipment_code($ss),
             'senders'=>GeneralSettings::options_sender($ss),
             // 'sale_a'=>GeneralSettings::options_sales_affiliate($ss),
             'primary_cp'=>GeneralSettings::options_primary_cp($ss),

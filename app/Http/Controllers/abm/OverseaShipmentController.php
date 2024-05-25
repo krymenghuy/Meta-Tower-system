@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Abm;
 use App\Http\Controllers\Controller;
 use App\Models\Abm\OverseaShipment;
 use App\Models\Abm\OverseaItem;
+use App\Models\Abm\StudentEnrollment;
 use Illuminate\Http\Request;
 use App\Models\UM;
 use App\Models\JDV;
@@ -15,6 +16,7 @@ class OverseaShipmentController extends Controller
     function __construct(){
         $this->shipment = new OverseaShipment();
         $this->item = new OverseaItem();
+        $this->student = new StudentEnrollment(); //test import
     }
     function save(Request $req){
 
@@ -37,6 +39,14 @@ class OverseaShipmentController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $data = $this->shipment->ListPaginate($req->all(),$ss);
+        
+        return JDV::result($data);
+    }
+    
+    function ListForBillValidate(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $data = $this->shipment->ListForBillValidate($req->all(),$ss);
         
         return JDV::result($data);
     }
@@ -78,5 +88,13 @@ class OverseaShipmentController extends Controller
         if($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->id;
         return JDV::result($this->shipment->getFormOptions($id,$ss));
+    }
+
+    function import(Request $req) {
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !== 200) return JDV::raw($ss);
+        $id = $req->id;
+        // $d = $req->file;
+        return JDV::result($this->student->import($req->all(),$ss,$id));
     }
 }

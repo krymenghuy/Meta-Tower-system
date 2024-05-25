@@ -110,7 +110,7 @@ class Supplier //extends Model
         $status_code = isset($d->status_code)?$d->status_code:null;
         $price_list_id = isset($d->price_list_id)?$d->price_list_id:null;
         $str_srch = '1=1';
-        $str_where = '1=1';
+        $str_where = '2=2';
         if($search_value){
             $skip_row = 0;
             $str_srch = '(s.name LIKE \'%'.$search_value.'%\')';
@@ -125,11 +125,12 @@ class Supplier //extends Model
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
        // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
         $query = DB::table('suppliers as s')
-                ->join(' as sa','sa.id','s.sales_agent_id')
-                ->whereRaw($str_srch)
-                ->whereRaw($str_where)
+                ->join(' affiliates as sa','sa.id','=','s.sales_agent_id')
+                // ->whereRaw($str_srch)
+                // ->whereRaw($str_where)
                 ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.sales_agent_id,sa.type_from_affilliate_type,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
        
+        // return $query;
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
         // $login_accounts = DB::table('um_users')->selectRaw('official_id')->get();
