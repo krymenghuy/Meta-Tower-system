@@ -25,15 +25,14 @@ class StudentEnrollment
     //     '9' => 'parent_address',
     // ];
     protected static $xlsx_cols =[ 
-        '1' => 'first_name',
-        '2' => 'last_name',
-        '3' => 'sex', 
-        '4' => 'dob',
-        '5' => 'email',
-        '6' => 'code',
-        '7' => 'phone',
-        '8' => 'parent_phone',
-        '9' => 'parent_address',
+        '23' => 'Waybill_no',
+        '24' => 'shipment_date',
+        '30' => 'product', 
+        '49' => 'dest_country',
+        '69' => 'weight',
+        '72' => 'total_amount',
+        // '8' => 'parent_phone',
+        // '9' => 'parent_address',
     ];
 
     static function programExists($id){
@@ -186,26 +185,37 @@ class StudentEnrollment
     static function validateStudents($students){
         $sts = [];
         foreach($students as $row_index =>$row){
-          if($row_index > 2){
+          if($row_index = 3){
             $this_student = [];
             foreach($row as $idx => $cell_value){
                 //NOTE: if($idx < 9) => we allow only 9 columns at Max
-                if($idx < 9 ) $this_student[self::$xlsx_cols[$idx+1]] = $cell_value;
+                if($idx < 73){ 
+                    if($idx == 23) $this_student[self::$xlsx_cols[23]] = $cell_value;
+                    if($idx == 24) $this_student[self::$xlsx_cols[24]] = $cell_value;
+                    if($idx == 30) $this_student[self::$xlsx_cols[30]] = $cell_value;
+                    if($idx == 49) $this_student[self::$xlsx_cols[49]] = $cell_value;
+                    if($idx == 69) $this_student[self::$xlsx_cols[69]] = $cell_value;
+                    if($idx == 72) $this_student[self::$xlsx_cols[72]] = $cell_value;
+                }
             }
-            $code = isset($this_student['code'])? $this_student['code'] : null;
-            $first_name = isset($this_student['first_name'])? $this_student['first_name'] : null;
-            $last_name = isset($this_student['last_name'])? $this_student['last_name'] : null;
-            $phone_number = isset($this_student['phone'])? $this_student['phone']:null;
+            $sts[] = $this_student;  
+
+            // $this_student['first_name'] = 'I' ? $sts[] = $this_student:$sts[] = null;
+
+            // $code = isset($this_student['code'])? $this_student['code'] : null;
+            // $first_name = isset($this_student['first_name'])? $this_student['first_name'] : null;
+            // $last_name = isset($this_student['last_name'])? $this_student['last_name'] : null;
+            // $phone_number = isset($this_student['phone'])? $this_student['phone']:null;
 
             //return (object)['error'=>print_r($this_student,true)];
-            if(isset($this_student['code']) && isset($this_student['first_name'])){
-                $name = $last_name.' '.$first_name;
-                $err = self::checkDuplicateStudent($sts,$code,$phone_number,$name);
-                if($err) 
-                   return (object)['error'=>$err,'students'=>[]];
-                else 
-                $sts[] = $this_student;  
-            }
+            // if(isset($this_student['code']) && isset($this_student['first_name'])){
+            //     $name = $last_name.' '.$first_name;
+            //     $err = self::checkDuplicateStudent($sts,$code,$phone_number,$name);
+            //     if($err) 
+            //        return (object)['error'=>$err,'students'=>[]];
+            //     else 
+            //     $sts[] = $this_student;  
+            // }
            
           } 
         }
