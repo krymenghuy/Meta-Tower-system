@@ -241,7 +241,7 @@
             } */
         </style>
     </head>
-    <body 'onload="checkDevice()"'>
+    <body >
         <div class="vs-container-login shadow-lg">
             <div>
                 <!-- <img class="img-background" src="{{ asset('assets/images/logo/houxepress4.svg') }}"/> -->

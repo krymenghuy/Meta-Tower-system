@@ -15,7 +15,28 @@ use Config;
 class OsSalesAgentController extends Controller
 {
     protected $salesAgentModel;
-      
+    function saveProfilePicture(Request $req)
+    {
+        $ss = UM::getUserInfoByToken($req, -1);
+        if ($ss->status_code !== 200)
+            return JDV::raw($ss); //user not authenticated
+        $id = $req->id ? $req->id : $req->sender_id;
+        $photo = $req->photo;
+        $cus = new SalesAgent($id, $ss);
+        $res = $cus->saveProfilePicture($photo, $req->file_type);
+
+        return JDV::raw($res);
+    }
+    function deleteProfilePicture(Request $req)
+    {
+        $ss = UM::getUserInfoByToken($req, -1);
+        if ($ss->status_code !== 200)
+            return JDV::raw($ss); //user not authenticated
+        $id = $req->id ? $req->id : $req->affiliate_id;
+        $cus = new SalesAgent($id, $ss);
+        $res = $cus->deleteProfilePicture();
+        return JDV::raw($res);
+    }
     function getCommissionSummary(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
@@ -119,7 +140,7 @@ class OsSalesAgentController extends Controller
       $cache_key = $ss->user_class.'profile_'.$ss->user_id;
       $cache_data = Cache::get($cache_key);
       if($cache_data !== null) return JDV::result($cache_data);
-      $data = \App\Models\SalesAgent::details($agent_id,$ss);  
+      $data = \App\Models\Abm\SalesAgent::details($agent_id,$ss);  
       if(!$data) return JDV::error('It seems your profile information does not exist or is missing');
       $data->notif_topic_private= $ss->branch_id.topic_prefix($ss->user_class)."private".$ss->user_id;
       $data->notif_topic_general=$ss->branch_id.topic_prefix($ss->user_class)."general";

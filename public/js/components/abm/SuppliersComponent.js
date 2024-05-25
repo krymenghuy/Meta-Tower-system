@@ -928,6 +928,7 @@ const SupplierDialog = new function(){
                 
            
         });
+        console.log(d);
     mThis.imgBox.setImage(d.photo || d.image_url);
 
     }

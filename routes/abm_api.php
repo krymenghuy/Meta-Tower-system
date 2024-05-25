@@ -9,7 +9,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UMController; 
 
 use App\Http\Controllers\abm\PackageController;
-//use App\Http\Controllers\abm\ShipmentController;
+use App\Http\Controllers\abm\AccountingController;
 use App\Http\Controllers\abm\OverseaShipmentController;
 use App\Http\Controllers\abm\SupplierController;
 use App\Http\controllers\abm\CustomerController;
@@ -68,7 +68,9 @@ use App\Http\controllers\abm\SpecialChargeController;
         Route::post('/sa-list', [OsSalesAgentController::class, 'getSalesAgentList']);
         Route::post('/cp-list', [OsSalesAgentController::class, 'getContactPersonList']);
         Route::post('/form-options', [OsSalesAgentController::class, 'getFormOptions']);
-        // Route::post('/save-profile-picture', [OsSalesAgentController::class, 'saveProfilePicture']);
+        Route::post('/save-profile-picture', [OsSalesAgentController::class, 'saveProfilePicture']);
+        Route::post('/delete-profile-picture', [OsSalesAgentController::class, 'deleteProfilePicture']);
+
         Route::post('/update-status', [OsSalesAgentController::class, 'updateStatus']);
         Route::post('/list-paginate', [OsSalesAgentController::class, 'getListPaginate']);
         Route::post('/delete', [OsSalesAgentController::class, 'deleteSalesAgent']);
@@ -112,6 +114,9 @@ use App\Http\controllers\abm\SpecialChargeController;
         Route::post('/set-price-list', [CustomerController::class, 'setPriceList']);
         Route::post('/save-profile-picture', [CustomerController::class, 'saveProfilePicture']);
         Route::post('/delete-profile-picture', [CustomerController::class, 'deleteProfilePicture']);
+    });
+    Route::prefix('accounting')->group(function(){
+        Route::post('/save',[AccountingController::class,'save']);
     });
 
     

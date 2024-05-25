@@ -199,7 +199,9 @@
                         <div class="vs-form-login">
                             <h1 class="vs-title">WELCOME</h1>
                             <div class="vs-form-group">
-                                <form action="{{ url('/processLogin') }}" method="POST">
+                            <form action="{{ url('/processLogin') }}" method="POST">
+
+                                <!-- <form action="{{ url('/loading') }}" method="POST"> -->
                                     {{ csrf_field() }}
                                     <div>
                                         <span class="error_text">

@@ -132,6 +132,10 @@
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Billing Validation"></span>
                 </a>
             </li>
+            <li class="kt-menu__section" <?php v_display(null,[105,106,218,220,210,102,221,216,212,100,101]);?>>
+                <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Accountings"></h4>
+                <i class="kt-menu__section-icon flaticon-more-v2"></i>
+            </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>
                 <a href="AccountingComponent" modid="206" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
