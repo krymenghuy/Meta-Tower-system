@@ -29,6 +29,7 @@ class GeneralSettings //extends Model
         "lead"=>"lead",
         "merchant"=>"merchant",
         "sales_agent"=>"sales_agent",
+        "supplier_bills"=>"supplier_bills",
         "sender"=>"merchant",
         "staff"=>"staff",
         "employee"=>"staff",

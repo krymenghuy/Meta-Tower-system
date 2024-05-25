@@ -87,6 +87,11 @@
     th:hover div.d-b{
         display: none !important;
     }
+    table.shipment td {
+        vertical-align: middle; /* Vertically center the content */
+        /* text-align: center; Horizontally center the content */
+    }
+
 </style>
 
 <div id="_main_shipmentsComponent" style="display:none; margin-right:15px;">
@@ -509,6 +514,17 @@
                         <span class="simple-label">zone_code</span>
                         <select id="_plq_warehouse" class="modal-select2 data-input" data-field="zone_code"></select>
                     </div> -->
+                    <div class="form-group col-md-6">
+                        <span class="simple-label">Item Type</span>
+                        <div>
+                            <!-- <select id="_plq_sender" class="modal-select2 data-input" data-field="sender_id"></select> -->
+                            <select  class="modal-select2 data-input" data-field="item_type">
+                                <option value="">Select item type</option>
+                                <option value="doc">Doc</option>
+                                <option value="non_doc">Non-doc</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="form-group col-md-6">
                         <span class="simple-label">Customer</span>
                         <div>

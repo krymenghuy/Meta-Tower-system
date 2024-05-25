@@ -29,12 +29,12 @@
   }
 
   .ps-zones {
-    font-size: 0.9em;
+    /* font-size: 0.9em; */
   }
 
   .dd-label,
   .dd-value {
-    font-size: 0.8em;
+    /* font-size: 0.8em; */
   }
 
   div.ps-zones {
@@ -42,7 +42,7 @@
     padding-bottom: 5px;
     font-weight: bold;
     color: grey;
-    font-size: 0.9em;
+    /* font-size: 0.9em; */
     /* text-align: center; */
   }
 
