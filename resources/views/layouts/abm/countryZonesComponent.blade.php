@@ -44,7 +44,7 @@
             <div class="form-group">
               <label for="country_name" class="col-form-label">Country Name(KH)</label>
               <span class="text-danger">*(ឈ្មោះប្រទេស)</span>
-              <input type="text" class="form-control text-primary data-input" data-field="name" placeholder="(ប្រទេសកម្ពុជា)">
+              <input type="text" class="form-control text-primary data-input" data-field="name_kh" placeholder="(ប្រទេសកម្ពុជា)">
             </div>
           </div>
           <div class="col-lg-6">

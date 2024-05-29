@@ -132,7 +132,7 @@
     <div class="modal-dialog modal-lg" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="_pl_dlgPickupStatusTitle">Set Pickup Status</h5>
+                <h5 class="modal-title" id="_pl_dlgPickupStatusTitle">Set shipment Status</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -140,14 +140,14 @@
             <div class="modal-body">
                 <div class="row">
                     <div class="col-md-6">
-                        <label for="" class="col-form-label">Order ID</label>
-                        <input type="text" id="_pl_ps_order_code" class="form-control" readonly>
-                        <input type="hidden" id="_pl_ps_order_id" class="data-input" data-field="order_id">
+                        <label for="" class="col-form-label">Shipment ID</label>
+                        <input type="text" id="_pl_ps_shipment_code" class="form-control" readonly>
+                        <input type="hidden" id="_pl_ps_shipment_id" class="data-input" data-field="shipment_id">
                     </div>
                     <div class="col-md-6">
-                        <label for="" class="col-form-label">Merchant Name</label>
+                        <label for="" class="col-form-label">Customer Name</label>
                         <input type="text" id="_pl_ps_sender_name" class="form-control" readonly>
-                        <input type="hidden" id="_pl_ps_order_id" class="data-input" data-field="order_id">
+                        <input type="hidden" id="_pl_ps_order_id" class="data-input" data-field="dhipment_id">
                     </div>
                 </div>
                 <div class="row" style="display:none">
@@ -156,14 +156,18 @@
                         <input type="text" id="_pl_ps_request_date" class="form-control" readonly>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" id="div_select_fields">
                     <div class="col-md-6">
                         <label class="col-form-label">Status</label>
-                        <select class="modal-select2" id="_pl_ps_status"></select>
+                        <select class="modal-select2 status-field" id="_pl_ps_status"></select>                  
                     </div>
-                    <div class="col-md-6">
+                    <div class="col-md-6" style="display:none">
                         <label class="col-form-label">Driver</label>
                         <select class="modal-select2" id="_pl_ps_driver"></select>
+                    </div>
+                    <div class="col-md-6 qr_code d-none" style="display:">
+                        <label for="" class="col-form-label">Set Qr Code</label>
+                        <input type="number" id="_pl_ps_qr_code" class="form-control">
                     </div>
                 </div>
             </div>

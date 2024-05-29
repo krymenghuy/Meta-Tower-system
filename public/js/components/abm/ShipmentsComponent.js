@@ -1,154 +1,7 @@
 
 'use strict';
 
-// var ShipmentsComponent = new function () {
-//     const mThis = this;
-//     this.title_prop = "Dashboard";
-//     this.self = main_view.appContent.children('#_main_shipmentsComponent');
 
-//     this.tblShipment = this.self.find('#_ido_shipment');
-
-
-//     this.init= () => {
-//         if(mThis.initAlready) return;
-
-//         this.cfg = new ExpandableRowConfig('_ido_shipment',{
-//             'dontExpandByClickingOn':['btn_odi_modify','btn-odi-delete','btn_odi_action','btn_odi_print'],
-//             'onOpen':(container,detail_tr,parent_tr)=>{
-//                 let qtr = $(parent_tr);
-//                 let orderImage_id = qtr.data('id');
-//                 let empty_row = parent_tr.querySelector('td.dataTables_empty');
-//                 //Display details only when parent row is NOT the empty row 
-//                 if (!empty_row) mThis.displayOrderImagesDetails($(detail_tr),orderImage_id);
-//              }
-//         });
-        
-//         mThis.initAlready = true;
-
-//     }
-//     this.displayOrderImagesDetails = (detail_tr,orderImage_id = 0) => {
-//         let div_wrapper = detail_tr.find('div.expandable-row-container');
-//         div_wrapper.html('<div class="animation-line" style="height:2px;margin:0;"></div>');
-//         let p = {'id': orderImage_id};
-//         vsapi.call(`${mThis.base_url}/api/img-order/images`,p,null,false).then(res => {
-//             let html = null;
-//             let cnt =0;
-//             if(res.status_code === 200){
-//                 let imgs = StringSanitizer.sanitizeObject(res.data,null,["image_url"]);
-//                 let image_html = "";
-//                 imgs.map(item => {
-//                     image_html = [image_html,`<div class="d-flex flex-column pe-4">
-//                         <img data-id="${item.id}" class="img-thumbnail" style="width:285px; height:177px; min-width: 285px;" src="${item.image_url}" data-url="${item.image_url}"/>
-//                         <div class="d-flex align-items-center pt-2 w-100 px-2 bootstrap-custom">
-//                             <div>
-//                                 <button class="btn btn-warning btn-view-img" type="button" data-id="${item.id}" data-url="${item.image_url}">
-//                                     <span class="trans-text" data-langprop="buttons.View">View</span>
-//                                 </button>
-//                             </div>
-//                             <div class="d-flex justify-content-end w-100">
-//                                 <button class="btn btn-danger btn-delete-img" type="button" data-id="${item.id}">
-//                                     <span class="trans-text" data-langprop="buttons.Delete">Delete</span>
-//                                 </button>
-//                             </div>
-//                         </div>
-//                     </div>`].join('');
-//                     cnt++;
-//                 });
-                
-//                 let container_id = ['oi_order_',orderImage_id].join(''); 
-//                 if (cnt>0) 
-//                    html = [`<div class="d-flex align-items-center pb-4 shadow border rounded-3 p-3 my-3 mb-4" style="overflow-x: auto; width:86vw;" id="${container_id}">`,image_html,`</div>`].join('');
-//                 else
-//                 {
-//                     let empty_text = LocaleManager.trans('No images to display'); 
-//                     html = [`<div class="d-flex align-items-center" id="${container_id}"> <span class ="no-image-text p-3 d-block border border-rounded border-warning fw-bold">${empty_text}</span> </div>`].join('');
-//                 }
-//             }
-//             else{
-//                 html =`<div class="expanded-row-error">${res.error_message}</div>`;
-//             }
-//             div_wrapper.html(html);
-//         });
-//     }
-
-//     this.displayOrderImages = () => {
-//         // let p = {'search_value': mThis.elSearch.val(),'start_date': mThis.elFilter_start_date.val(),'end_date': mThis.elFilter_end_date.val(),'sender_name': mThis.elFilter_sender.val()};
-//         vsapi.call(`${main_view.base_url}/api/shipments/list`,null,null).then(res => {
-//             console.log(res);
-//             if(res.status_code === 200){
-//                 if(mThis.table){
-//                     mThis.tblShipment.DataTable().clear().destroy();
-//                     mThis.tblShipment.empty();
-//                     mThis.table = null;
-//                 }
-
-//                 let data = StringSanitizer.sanitizeObject(res.data);
-
-//                 let columns = [{
-//                     title: "Created Time",
-//                     data:(data,a,b)=>{
-//                         return [`<span class="fw-bold d-block">${data.created_at}</span><span class="text-secondary p-2">${data.order_time}</span>`].join('');
-//                     }
-//                 },{
-//                     title: "Zone code",
-//                     data: "zone_code"
-//                 },{
-//                     title: "Sender_id",
-//                     data: "sender_id"
-//                 },
-//                 ];
-
-//                 if(!mThis.table)
-//                 mThis.table = mThis.tblShipment.DataTable({
-//                     searching:false,
-//                     ordering:false,
-//                     destroy:true,
-//                     paging:true,
-//                     retrieve: true,
-//                     //scrollY:390,
-//                     //scrollX:500,
-//                     //pagingType:'numbers',
-//                     info:true,
-//                     bLengthChange:false,
-//                     saveState:true,
-//                     'processing': false,
-//                     'language': {
-//                         'loadingRecords': '&nbsp;',
-//                         'processing': 'Loading...',
-//                         "emptyTable": "No data to display"
-//                     },
-//                     data:data,
-//                     columns: columns
-//                     ,"createdRow": function(row, data, dataIndex){
-//                         let tr = $(row);
-//                         tr.data('id',data.id);   
-//                     }
-//                 });
-//             }
-//         });
-
-//         // let p = {"search_value":mThis.elSearch.val(), "order_date":mThis.elFilter_date.val(),"sender":mThis.elFilter_sender.val()};
-//         // vsapi.call(`${main_view.base_url}/api/merchant/v2/order-images`,null).then(res=>{
-//         //     if(res.status_code === 200){
-//         //          let data = res.data;
-//         //     }
-//         // });
-//     }
-
-//     this.show= (options)=>{
-//         if (!options) options = {};
-//             mThis.options = options;
-//         mThis.init();
-//         mThis.displayOrderImages();
-
-//         main_view.setTitle(mThis.title_prop);
-//         // mThis.workSpaceListView.showPage(null, null, () => {
-//             $(mThis.self).siblings().hide();
-//             $(mThis.self).fadeIn(204);
-//         // });
-//     }
-// }
-// "use strict";
 const FilterDialog_pickup = new function () {
     let mThis = this;
     this.base_url = main_view.base_url; //** || document.querySelector('meta[name="base_url"]').getAttribute('content');*/
@@ -187,27 +40,27 @@ const FilterDialog_pickup = new function () {
         if (data) {
             VSUtil.setComboItems(mThis.elFilter_warehouse, data.warehouses, 'id', 'warehouse_name', false, '(Select Warehouse)', def.warehouse_id);
             VSUtil.setComboItems(mThis.elFilter_sender, data.senders, 'id', 'sender_name', false, null, def.sender_id);
-            VSUtil.setComboItems(mThis.elFilter_driver, data.drivers, 'id', 'driver_name', false, null, def.driver_id);
-            VSUtil.setComboItems(mThis.elFilter_status, data.order_statuses, 'status_id', 'status_name', false, '(All Status)', def.status_id);
+            // VSUtil.setComboItems(mThis.elFilter_driver, data.drivers, 'id', 'driver_name', false, null, def.driver_id);
+            VSUtil.setComboItems(mThis.elFilter_status, data.shipment_status, 'status_id', 'status_name', false, '(All Status)', def.status_id);
             if (typeof onFinish == 'function') onFinish(data);
             return;
         }
 
-        vsapi.call([mThis.base_url, '/dms/getForm_options_pickuplist'].join(''), null).then(res => {
+        vsapi.call([mThis.base_url, '/abm/oversea_shipments/form-options'].join(''), null).then(res => {
             if (res.status_code === 200) {
                 let data = res.data;
-                data.warehouses = StringSanitizer.sanitizeObject(data.warehouses);
+                // data.warehouses = StringSanitizer.sanitizeObject(data.warehouses);
                 data.senders = StringSanitizer.sanitizeObject(data.senders);
-                data.order_statuses = StringSanitizer.sanitizeObject(data.order_statuses);
-                data.drivers = StringSanitizer.sanitizeObject(data.drivers);
-                data.zones = StringSanitizer.sanitizeObject(data.zones);
-                (data.order_statuses || []).unshift({ "status_id": "-1", "status_name": "(All Statuses)" });
+                data.shipment_status = StringSanitizer.sanitizeObject(data.shipment_status);
+                // data.drivers = StringSanitizer.sanitizeObject(data.drivers);
+                // data.zones = StringSanitizer.sanitizeObject(data.zones);
+                (data.shipment_status || []).unshift({ "status_id": "-1", "status_name": "(All Statuses)" });
                 (data.senders || []).unshift({ "id": null, "sender_name": "(All Merchants)" });
-                (data.drivers || []).unshift({ "id": null, "driver_name": "(All Drivers)" });
-                VSUtil.setComboItems(mThis.elFilter_warehouse, data.warehouses, 'id', 'warehouse_name', false, '(Select Warehouse)', def.warehouse_id);
+                // (data.drivers || []).unshift({ "id": null, "driver_name": "(All Drivers)" });
+                // VSUtil.setComboItems(mThis.elFilter_warehouse, data.warehouses, 'id', 'warehouse_name', false, '(Select Warehouse)', def.warehouse_id);
                 VSUtil.setComboItems(mThis.elFilter_sender, data.senders, 'id', 'sender_name', false, null, def.sender_id);
-                VSUtil.setComboItems(mThis.elFilter_driver, data.drivers, 'id', 'driver_name', false, null, def.driver_id);
-                VSUtil.setComboItems(mThis.elFilter_status, data.order_statuses, 'status_id', 'status_name', false, null, def.status_id);
+                // VSUtil.setComboItems(mThis.elFilter_driver, data.drivers, 'id', 'driver_name', false, null, def.driver_id);
+                VSUtil.setComboItems(mThis.elFilter_status, data.shipment_status, 'status_id', 'status_name', false, null, def.status_id);
                 mThis.form_data = data;
                 if (typeof onFinish === 'function') onFinish(data);
                 ShipmentsComponent.form_data = data;
@@ -387,7 +240,7 @@ var ShipmentsComponent = new function () {
                 className: 'col_action',
                 data: function (data, row, display) {
                     let html = ['<div class="dropdown">',
-                        '<a href="javascript:void(0)" data-orderid="', data.order_id, '" data-senderid="', data.sender_id, '" data-statusid="', data.status_id, '" class="btn_pickup_action" aria-haspopup="true" aria-expanded="false">',
+                        '<a href="javascript:void(0)" data-shipmentid="', data.shipment_id, '" data-senderid="', data.sender_id, '" data-statusid="', data.status_id, '" class="btn_pickup_action" aria-haspopup="true" aria-expanded="false">',
                         '<i class="fa fa-chevron-down" style="color:#E9E7E7;font-size:1.5em"></i>',
                         '</a>',
                         '</div>'].join('');
@@ -611,7 +464,7 @@ var ShipmentsComponent = new function () {
               tr.classList.add('shipment');
               
               tr.setAttribute('id',['shipment_',data.id].join('')); 
-            //   tr.dataset.statusid = data.status_id;
+              tr.dataset.statusid = data.status_id;
               tr.dataset.senderid = data.sender_id;
               tr.dataset.country_zone = data.zone_code;
               tr.dataset.country_id = data.to_country_id;
@@ -880,7 +733,7 @@ var ShipmentsComponent = new function () {
             btn = VSUtil.closestLimited(e.target,'.change-order-status');
             if(btn){
                 let tr = btn.closest('tr');
-                mThis.changeOrderStatus(tr);
+                mThis.changeShipmentStatus(tr);
                 return;
             }
 
@@ -888,7 +741,8 @@ var ShipmentsComponent = new function () {
             btn = VSUtil.closestLimited(e.target,'._pl_pa_change_status');
             if(btn){
                 let tr = btn.closest('tr');
-                mThis.changeOrderStatus(tr);
+                console.log('tr',tr);
+                mThis.changeShipmentStatus(tr);
                 return;
             }
 
@@ -1113,7 +967,7 @@ var ShipmentsComponent = new function () {
     }
     //End:: PickupListComponent.init()
 
-    this.changeOrderStatus = (tr)=>{
+    this.changeShipmentStatus = (tr)=>{
             let shipment_id = tr.dataset.id;
             let def_status_id = tr.dataset.statusid;
                
@@ -1121,10 +975,10 @@ var ShipmentsComponent = new function () {
                 let shipment_code = tr.querySelector('td.shipment-no .sender-name').textContent;
                 // let driver_id = tr.dataset.driverid;
                 let shipment = { 'shipment_id': shipment_id, 'shipment_code': shipment_code, 'sender_name': sender_name, 'status_id': def_status_id };
-                PickupStatusDialog.show(shipment, d => {
+                ShipmentStatusDialog.show(shipment, d => {
                     if (d) {
                         console.log(shipment);
-                        mThis.updatePickupStatus(tr, d);
+                        mThis.updateShipmentStatus(tr, d);
                     }
                 });
     };
@@ -1170,7 +1024,7 @@ var ShipmentsComponent = new function () {
                         let statusInfo =d.statusInfo;
                         tr.dataset.driverid  = d.driver_id;
                         tr.querySelector('td.driver_name .driver-name').textContent = d.driver_name;
-                        mThis.updatePickupStatus(tr, statusInfo);
+                        mThis.updateShipmentStatus(tr, statusInfo);
                         if(option.manualClosing) InputBox2.close();
                         cv_interact.success(['The driver ',data.text,' got assigned successfully!'].join(''));
                     }
@@ -1205,7 +1059,7 @@ var ShipmentsComponent = new function () {
                         let statusInfo =d.statusInfo;
                         tr.dataset.driverid  = d.driver_id;
                         tr.querySelector('td.driver_name .driver-name').textContent = d.driver_name;
-                        mThis.updatePickupStatus(tr, statusInfo);
+                        mThis.updateShipmentStatus(tr, statusInfo);
                         if(option.manualClosing) InputBox2.close();
                         cv_interact.success(['The driver ',data.text,' got assigned successfully!'].join(''));
                     }
@@ -1257,7 +1111,7 @@ var ShipmentsComponent = new function () {
                 vsapi.call([mThis.base_url, '/dms/order/pick'].join(''), p,null,null).then(res => {
                     if (res.status_code === 200) {
                         let d = StringSanitizer.sanitizeObject(res.data);
-                        mThis.updatePickupStatus(tr, d);
+                        mThis.updateShipmentStatus(tr, d);
                         if (typeof onFinish === 'function') onFinish(true,d);
                     }
                     else {
@@ -2483,7 +2337,7 @@ var ShipmentsComponent = new function () {
         else return 'text-info';
     }
 
-    this.updatePickupStatus = (tr, status_info) => {
+    this.updateShipmentStatus = (tr, status_info) => {
         if (!tr || !status_info) return;
         let div_dropdown = tr.querySelector('td.col_action div.dropdown');
         let el = div_dropdown.querySelector('a.btn_pickup_action');
@@ -2705,201 +2559,76 @@ var ShipmentsComponent = new function () {
     }
 }
 
-
-
-const DMSFilterDialog = new function () {
-    let mThis = this;
-    this.options = {};
-    const html = `<div class="modal fade" id="_mainGenFilter" tabindex="-1" role="dialog" aria-labelledby="_mainGenFilterTitle" aria-hidden="true">
-    <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-            <div class="row"></div
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn-filter-cancel btn btn-secondary">Cancel</button>
-                <button type="button" class="btn-filter-ok btn btn-success">OK</button>
-            </div>
-        </div>
-    </div>
-  </div>`;
-    main_view.appContent.append(html);
-    this.self = main_view.appContent.find('#_mainGenFilter');
-
-    this.modalBody = this.self.find('.modal-body');
-    this.elTitle = this.self.find('.modal-title');
-
-    this.self.on('click', e => {
-        e.preventDefault();
-        //Click on Cancel Close
-        let btn = VSUtil.closestLimited(e.target, '.btn-filter-cancel');
-        if (btn) {
-            mThis.self.modal('hide');
-            return;
-        }
-
-        //Click on Submit or OK
-        btn = VSUtil.closestLimited(e.target, '.btn-filter-ok');
-        if (btn) {
-            let p = mThis.getData(); 
-            mThis.options.onClose({
-                "paramString": mThis.translateToQueryString(p),
-                "data": p
-            });
-            if(mThis.options.filterButton) mThis.options.filterButton.querySelector('.filter-info').innerHTML = '<span class="shadow-lg rounded-5 pl-2 pr-2 bg-danger" style="min-width:7px">F</span>';
-            mThis.self.modal('hide');
-            return;
-        }
-
-    });
-
-    this.getData = () =>{
-        let p = {};
-        const div = mThis.modalBody.children('div.row')[0];
-        div.querySelectorAll('.data-input').forEach(el => {
-            const f = el.dataset.field;
-            const required = el.dataset.required;
-            if (required == 1 || required == true) {
-                if (!el.value) {
-                    cv_interact.warning(`${field_name} is required`);
-                    return null;
-                }
-            }
-            p[f] = el.value;
-        });
-        return p;
-    };
-
-    this.renderFields = (fields = {}) => {
-        const div = mThis.modalBody.children('div.row')[0];
-        div.innerHTML = '';
-        let html = '';
-
-        for (const field_name in fields) {
-            if (fields.hasOwnProperty(field_name)) {
-                const field = fields[field_name];
-                let input_html = field.type === 'select' ? `<select data-required=""${field.required} class="modal-select2 data-input" data-field="${field_name}"></select>` : `<input type="text" class="form-control data-input" data-required=""${field.required} data-field="${field_name}"/>`;
-                html = [html,
-                    `<div class="form-group col-lg-6">
-                <label for="`, field_name, `" class="form-label">`, field.label, `</label>
-                <div>`, input_html, `</div> 
-              </div>`
-                ].join('');
-            }
-        }
-
-        div.innerHTML = html;
-        div.querySelectorAll('.data-input').forEach(el => {
-            if (el.classList.contains('modal-select2')) {
-                const field_name = el.dataset.field;
-                const field = fields[field_name];
-                let value_field = field.value_field;
-                let text_field = field.text_field;
-                value_field = value_field ? value_field : 'id';
-                text_field = text_field ? text_field : 'name';
-                VSUtil.setComboItems(el, field.data, value_field, text_field, null, `(All ${field.label})`, field.defaultValue);
-                $(el).select2({ width: "100%" }); //.val(field.defaultValue).trigger('change');
-                if(field.defaultValue) el.dispatchEvent(new Event('change'));
-            } else {
-                DateTimePicker.init(el);
-            }
-        });
-    };
-
-    this.translateToQueryString = (json_ob) => {
-        let q = '';
-        for (let prop in json_ob) {
-            let sp = '';
-            if (q) sp = '&';
-            let var_name = prop.replace(/_/g, '');
-            q = [q, sp, var_name, '=', json_ob[prop]].join('');
-        }
-        return q;
-    }
-
-    this.show = (options = null) => {
-        options = options || {};
-        mThis.options = options;
-        mThis.elTitle.text(options.title || 'Data Filter');
-        mThis.renderFields(options.fields);
-        mThis.self.modal({
-            backdrop: 'static'
-        });
-    }
-
-}
-
-const PickupStatusDialog = new function () {
+const ShipmentStatusDialog = new function () {
     let mThis = this;
     this.self = main_view.appContent.children('#_pl_dlgPickupStatus');
     this.base_url = main_view.base_url;
     this.btnOK = this.self.find('#_pl_ps_btnOK');
 
     this.elSenderName = this.self.find('#_pl_ps_sender_name');
-    this.elOrderCode = this.self.find('#_pl_ps_order_code');
-    this.elOrderId = this.self.find('#_pl_ps_order_id');
+    this.elShipmentCode = this.self.find('#_pl_ps_shipment_code');
+    this.elShipment = this.self.find('#_pl_ps_shipment_id');
 
-    this.elDriver = this.self.find('#_pl_ps_driver');
+    this.div_select_fields = this.self[0].querySelector('#div_select_fields');
+    this.elQrCode = this.self.find('#_pl_ps_qr_code');
     this.elStatus = this.self.find('#_pl_ps_status');
     this.elNotes = this.self.find('#_pl_ps_notes');
     this.elError = this.self.find('#_pl_ps_error');
 
+    this.div_select_fields.querySelectorAll('.status-field').forEach(el =>{
+        el.onchange = e => {
+            e.preventDefault();
+            let status_id = mThis.elStatus.val();
+            // mThis.body.querySelectorAll('.data-input').forEach(el => {
+        //     el.value = null;
+        // });
+            if (status_id == 1) {
+                mThis.div_select_fields.querySelector('.qr_code').classList.remove('d-block');    
+                mThis.div_select_fields.querySelector('.qr_code').classList.add('d-none');     
+            }
+            else{
+                // mThis.div_select_fields.querySelector('#_pl_ps_qr_code').value = null;   
+                mThis.div_select_fields.querySelector('.qr_code').classList.remove('d-none');    
+                mThis.div_select_fields.querySelector('.qr_code').classList.add('d-block');    
+            }
+        };
+    });
+
     this.btnOK.on('click', function (e) {
         e.preventDefault();
         let status_id = mThis.elStatus.val();
-        let driver_id = mThis.elDriver.val();
+        let qr_code = mThis.elQrCode.val();
 
         if (status_id == 1) {
-            driver_id = null;
+            qr_code = null;
         }
-        else if (status_id == 2) {
-            if (!driver_id || driver_id <= 0) {
-                cv_interact.warning('Accepted by which driver?');
-                return;
-            }
-        }
-        else if (status_id == 3) {
-            if (!driver_id || driver_id <= 0) {
-                cv_interact.warning('Please choose a driver to pickup');
-                return;
-            }
-        }
-        // else if (status_id == 4) {
-        //     if (!driver_id || driver_id <= 0) { }
-        // }
-        else if (status_id == 5 || status_id == 6) { }
 
-        let p = { 'order_id': mThis.order_id, 'driver_id': driver_id, 'status_id': status_id };
-        vsapi.call([mThis.base_url, '/dms/updateOrderStatus'].join(''), p, mThis.btnOK).then(res => {
+        let p = { 'shipment_id': mThis.shipment_id, 'qr_code': qr_code, 'status_id': status_id };
+        console.log('p',p);
+        vsapi.call([mThis.base_url, '/abm/oversea_shipments/update-status'].join(''), p, mThis.btnOK).then(res => {
             if (res.status_code === 200) {
                 let result = StringSanitizer.sanitizeObject(res.data);
-                let x = {};
-                x.driver_id = result.driver_id;
-                x.driver_name = result.driver_name;
-                x.status = result.status_name;
-                x.status_id = result.status_id;
-                if (typeof mThis.onClose === 'function') mThis.onClose(x);
+                if (typeof mThis.onClose === 'function') mThis.onClose();
                 mThis.self.modal('hide');
             }
             else cv_interact.warning(res.error_message);
         });
     });
 
-    this.show = (order, onClose) => {
-        order = order || {};
+    this.show = (shipment, onClose) => {
+        shipment = shipment || {};
+        console.log('shipment',shipment);
         mThis.elError.html(null);
         mThis.onClose = onClose;
-        mThis.order_id = order.order_id;
-        mThis.order = order;
+        mThis.shipment_id = shipment.shipment_id;
+        mThis.shipment = shipment;
         mThis.form_data = ShipmentsComponent.form_data;
-        mThis.elOrderId.val(order.id || order.order_id);
-        mThis.elSenderName.val(order.sender_name);
-        mThis.elOrderCode.val(order.order_code);
-        mThis.prepreData(order, () => {
+        console.log('form_data',mThis.form_data);
+        mThis.elShipment.val(shipment.id || shipment.shipment_id);
+        mThis.elSenderName.val(shipment.sender_name);
+        mThis.elShipmentCode.val(shipment.shipment_code);
+        mThis.prepreData(shipment, (d) => {
+            mThis.elQrCode.val(d);
             mThis.self.modal({
                 backdrop: 'static'
             });
@@ -2912,16 +2641,23 @@ const PickupStatusDialog = new function () {
             FilterDialog_pickup.loadFilterData((d) => {
                 mThis.form_data = d;
                 if (!mThis.form_data) mThis.form_data = {};
-                VSUtil.setComboItems(mThis.elStatus, mThis.form_data.order_statuses, 'status_id', 'status_name', true, '(Select status)', def.status_id);
-                VSUtil.setComboItems(mThis.elDriver, mThis.form_data.drivers, 'id', 'driver_name', true, '(Select a driver)', def.driver_id);
+                VSUtil.setComboItems(mThis.elStatus, mThis.form_data.shipment_status, 'status_id', 'status_name', false, '(Select status)', def.status_id);
+                // VSUtil.setComboItems(mThis.elDriver, mThis.form_data.drivers, 'id', 'driver_name', true, '(Select a driver)', def.driver_id);
 
                 if (typeof onFinish == 'function') onFinish();
             });
         }
         else {
-            VSUtil.setComboItems(mThis.elStatus, mThis.form_data.order_statuses, 'status_id', 'status_name', true, '(Select status)', def.status_id);
-            VSUtil.setComboItems(mThis.elDriver, mThis.form_data.drivers, 'id', 'driver_name', true, '(Select a driver)', def.driver_id);
-            if (typeof onFinish == 'function') onFinish();
+            vsapi.call(`${mThis.base_url}/abm/oversea_shipments/form-options`,{
+                id: def.shipment_id
+            },null).then(res => {
+                let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
+                VSUtil.setComboItems(mThis.elStatus, d.shipment_status, 'status_id', 'status_name', false, '(Select status)', def.status_id);
+                onFinish(d.shipment.qr_code);
+            });
+
+            // VSUtil.setComboItems(mThis.elDriver, mThis.form_data.drivers, 'id', 'driver_name', true, '(Select a driver)', def.driver_id);
+            // if (typeof onFinish == 'function') onFinish();
         }
     }
 }
@@ -2936,8 +2672,8 @@ let PickupRequestDialog = new function () {
     this.btnAddPackage = this.self.find('#_pl_pr_add_package');
     this.btnSaveRequest = this.self.find('#_pl_pr_btnSaveRequest');
 
-    this.elOrderId = this.self.find('#_pl_pr_order_id');
-    this.elOrderCode = this.self.find('#_pl_pr_order_code');
+    this.elShipment = this.self.find('#_pl_pr_order_id');
+    this.elShipmentCode = this.self.find('#_pl_pr_order_code');
 
     this.elSender = this.self.find('#_pl_pr_sender');
 
@@ -3371,7 +3107,7 @@ let PickupRequestDialog = new function () {
     this.getData = function () {
         let p = {};
         p.order_id = mThis.order_id;
-        p.order_code = mThis.elOrderCode.val();
+        p.order_code = mThis.elShipmentCode.val();
         p.sender_id = mThis.elSender.val();
         p.pickup_date = mThis.elPickupDate.val();
         p.request_date = mThis.elRequestDate.val();
@@ -3439,8 +3175,8 @@ let PerformPickupDialog = new function () {
     this.elDriver = this.self.find('#_pl_dd_driver');
     this.elDriverCode = this.self.find('#_pl_dd_driver_code');
 
-    this.elOrderId = this.self.find('#_pl_dd_order_id');
-    this.elOrderCode = this.self.find('#_pl_dd_order_code');
+    this.elShipment = this.self.find('#_pl_dd_order_id');
+    this.elShipmentCode = this.self.find('#_pl_dd_order_code');
     this.elSenderId = this.self.find('#_pl_dd_sender_id');
     this.elSenderName = this.self.find('#_pl_dd_sender_name');
     this.elSenderCode = this.self.find('#_pl_dd_sender_code');
@@ -3823,7 +3559,7 @@ let PerformPickupDialog = new function () {
                 packages = StringSanitizer.sanitizeObject(packages);
 
                 mThis.order_id = d.order_id;
-                mThis.elOrderCode.val(d.order_code);
+                mThis.elShipmentCode.val(d.order_code);
                 mThis.elSenderName.val(d.sender_name);
                 mThis.elSenderId.val(d.sender_id);
                 mThis.elSenderCode.val(d.sender_code);
@@ -3871,7 +3607,7 @@ let PerformPickupDialog = new function () {
                     cv_interact.success(['<span style="font-weight:bold;color:green">Pickup action succeeded!'].join(''));
                 }
                 else cv_interact.warning(['<span style="font-weight:bold;color:red">', d.success_count ? d.success_count : 0, ' packages received'].join(''));
-                if (d.success_count > 0) ShipmentsComponent.updatePickupStatus(tr, { 'status_id': d.status_id, 'status': d.status, 'completed': d.completed });
+                if (d.success_count > 0) ShipmentsComponent.updateShipmentStatus(tr, { 'status_id': d.status_id, 'status': d.status, 'completed': d.completed });
             }
         });
     }
@@ -3893,7 +3629,7 @@ let PerformPickupDialog = new function () {
     this.getData = function () {
         let p = {};
         p.order_id = mThis.order_id;
-        p.order_code = mThis.elOrderCode.val();
+        p.order_code = mThis.elShipmentCode.val();
         p.sender_id = mThis.elSenderId.val();
         p.sender_code = mThis.elSenderCode.val();
         p.pickup_date = mThis.elPickupDate.val();
@@ -4007,8 +3743,8 @@ let VerifyPackageDialog = new function () {
     this.elDriver = this.self.find('#_pl_rps_driver');
     this.elDriverCode = this.self.find('#_pl_rps_driver_code');
 
-    this.elOrderId = this.self.find('#_pl_rps_order_id');
-    this.elOrderCode = this.self.find('#_pl_rps_order_code');
+    this.elShipment = this.self.find('#_pl_rps_order_id');
+    this.elShipmentCode = this.self.find('#_pl_rps_order_code');
     this.elSenderId = this.self.find('#_pl_rps_sender_id');
     this.elSenderName = this.self.find('#_pl_rps_sender_name');
     this.elSenderCode = this.self.find('#_pl_rps_sender_code');
@@ -4358,8 +4094,8 @@ let VerifyPackageDialog = new function () {
                 mThis.elSenderName.val(null);
                 mThis.elSenderId.val(null);
                 mThis.elSenderCode.val(null);
-                mThis.elOrderCode.val(null);
-                mThis.elOrderId.val(null);
+                mThis.elShipmentCode.val(null);
+                mThis.elShipment.val(null);
                 mThis.tblPackages.find('tbody').empty();
                 mThis.addPackageRow();
                 mThis.self.modal({
@@ -4391,7 +4127,7 @@ let VerifyPackageDialog = new function () {
                 let packages = d.packages ? d.packages : [];
                 packages = StringSanitizer.sanitizeObject(packages, null, ['size']);
                 mThis.order_id = d.order_id;
-                mThis.elOrderCode.val(d.order_code);
+                mThis.elShipmentCode.val(d.order_code);
                 mThis.elSenderName.val(d.sender_name);
                 mThis.elSenderId.val(d.sender_id);
                 mThis.elSenderCode.val(d.sender_code);
@@ -4469,7 +4205,7 @@ let VerifyPackageDialog = new function () {
         p.delivery_type = mThis.elDeliveryType.val();
         p.id = mThis.order_id;
         //p.order_id = mThis.order_id;
-        p.order_code = mThis.elOrderCode.val();
+        p.order_code = mThis.elShipmentCode.val();
         p.sender_id = mThis.elSenderId.val();
         p.sender_code = mThis.elSenderCode.val();
         p.delivery_date = mThis.elDeliveryDate.val();

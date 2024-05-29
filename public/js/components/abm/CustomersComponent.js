@@ -20,7 +20,6 @@
 
     this.sender_dropdown_menu = this.self.find('div.dropdown');
     
-
         this.setCustomerPriceList = (id,name=null,span=null,def_price_list_id=null) => {
             mThis.getPriceListItems((items) => {
                 items.unshift({
@@ -546,7 +545,7 @@
             // },
             "onLoadImage":(photo) =>{
                 let p = {"id":mThis.options.id,"id":mThis.options.id,"photo":photo};
-                console.log(photo);
+                console.log('photo',photo);
                 if(!p.id) return; 
                 vsapi.call(`${main_view.base_url}/abm/customers/save-profile-picture`,p,null,null,false).then(res =>{
                     if(res.status_code ===200){

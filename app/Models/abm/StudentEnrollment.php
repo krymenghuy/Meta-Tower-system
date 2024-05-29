@@ -29,8 +29,8 @@ class StudentEnrollment
         '24' => 'shipment_date',
         '30' => 'product', 
         '49' => 'dest_country',
-        '69' => 'weight',
-        '72' => 'total_amount',
+        '68' => 'carrier_weight',
+        '71' => 'carrier_amount',
         // '8' => 'parent_phone',
         // '9' => 'parent_address',
     ];
@@ -120,63 +120,66 @@ class StudentEnrollment
             //return DV::error("test = ".print_r($rows,true));
             //Check if there are duplicate IDs or name
             $x_res = self::validateStudents($rows);
-            return $x_res;
+            // return $x_res;
 
             if($x_res->error) return DV::error($x_res->error);
             $success_cnt =0;
             foreach ($x_res->students as $inputs){
-                    $code = $inputs['code'];
-                    $first_name = $inputs['first_name'];
-                    $last_name = $inputs['last_name'];
-                    $first_name =  $first_name? $first_name:'';
-                    $last_name= $last_name? $last_name:'';
+                $Waybill_no = $inputs['Waybill_no'];
+                $check = isExist('bill_validation',$id,['waybill_no'=>$Waybill_no]);
+                // if($check) return DV::error('Requirement is already to save...');
+                if(!$check) {
+                    $shipment_info = DB::table('os_shipments as os')->where('qr_code',$Waybill_no)->selectRaw('total_weight,total_price')->take(1)->first();
+                    $info = (object) $shipment_info;
                     
-                    $student_id = DB::table('students as st')->where('code',$code)->take(1)->value('id');
-                    if($student_id){
-                        $student_prog_id =DB::table('student_programs')->where('student_id',$student_id)->where('program_id',$program_id)->value('id');
-                        saveData($ss,'student_programs',['id'=>$student_prog_id],['program_id'=>$program_id,'student_id'=>$student_id],[],0,true);                            
+                    // return $shipment_info->total_weight;
+                    if($shipment_info){
+                        // $student_prog_id =DB::table('bill_validation')->where('student_id',$student_id)->where('program_id',$program_id)->value('id');
+                        $inputs['shipment_date'] = convertDate($inputs['shipment_date']);
+                        $inputs['jto_weight'] = $info->total_weight;
+                        $inputs['jto_amount'] = $info->total_price;
+                        $id = saveData($ss,'bill_validation',['id'=>null],$inputs,[],1,0);                            
                     }
                     else{
-                        $inputs['category_id'] = self::getCategoryBySex($inputs['sex']);
-                        $inputs['dob'] = convertDate($inputs['dob']);
-                        $student_id = saveData($ss,'students',['id'=>null],$inputs,[],1,false);
-                        if($student_id){
-                            $student_prog_id =DB::table('student_programs')->where('student_id',$student_id)->where('program_id',$program_id)->value('id');
-                            saveData($ss,'student_programs',['id'=>$student_prog_id],['program_id'=>$program_id,'student_id'=>$student_id],[],0,true);                            
-                            $arr= [
-                                'login_name' =>$inputs['code'],
-                                'user_class' => 'student',
-                                'role_id' => 2,
-                                'official_id' => $student_id,
-                                'official_code' => $inputs['code'],
-                                'email' => $inputs['email'],
-                                'password' => "123456",
-                                'full_name' => $inputs['first_name'].' '.$inputs['last_name'],
-                            ];
-                            $u_res = $um->saveUser($arr,$ss);
-                            if($u_res->status ==='Error') return DV::error($u_res->error_message); 
-                            $success_cnt++;
-                        }
+                        // $inputs['category_id'] = self::getCategoryBySex($inputs['sex']);
+                        // $inputs['shipment_date'] = convertDate($inputs['shipment_date']);
+                        // $student_id = saveData($ss,'students',['id'=>null],$inputs,[],1,false);
+                        // if($student_id){
+                        //     $student_prog_id =DB::table('student_programs')->where('student_id',$student_id)->where('program_id',$program_id)->value('id');
+                        //     saveData($ss,'student_programs',['id'=>$student_prog_id],['program_id'=>$program_id,'student_id'=>$student_id],[],0,true);                            
+                        //     $arr= [
+                        //         'login_name' =>$inputs['code'],
+                        //         'user_class' => 'student',
+                        //         'role_id' => 2,
+                        //         'official_id' => $student_id,
+                        //         'official_code' => $inputs['code'],
+                        //         'email' => $inputs['email'],
+                        //         'password' => "123456",
+                        //         'full_name' => $inputs['first_name'].' '.$inputs['last_name'],
+                        //     ];
+                        //     $u_res = $um->saveUser($arr,$ss);
+                        //     if($u_res->status ==='Error') return DV::error($u_res->error_message); 
+                        //     $success_cnt++;
+                        // }
                     }
+                }
             }
-            return DV::depends(1,['success_count'=>$success_cnt,'file_name'=>$x->file_name]);
+            return DV::depends(1,['success_count'=>$success_cnt,'file_name'=>$x->file_name ,'save'=>$id]);
 
         }
         return DV::error('Something went wrong when the system was trying to import students!');
     }
 
-    static function checkDuplicateStudent($students,$code,$phone_number,$name){
+    static function checkDuplicateStudent($students,$Waybill_no){
        $i=0;
        $c = null;
        do{
          if(!isset($students[$i])) break;
          $c = (object)$students[$i];
          //return print_r($c,true);
-         if(strtolower($c->code) == strtolower($code)){
+         if(strtolower($c->Waybill_no) == strtolower($Waybill_no)){
              return 'Student named '.$name.' with ID '.$code.' has the same ID with another student in the Excel Sheet';
-         }else if($phone_number){
-             if(strtolower($phone_number) == strtolower($c->phone)) return 'Student named '.$name.' with ID '.$code.' has the same phone number with another student';
-         } 
+         }
          $i++;
        }while($c);
        return null;
@@ -185,7 +188,8 @@ class StudentEnrollment
     static function validateStudents($students){
         $sts = [];
         foreach($students as $row_index =>$row){
-          if($row_index = 3){
+            // return row;
+          if($row_index >= 2){
             $this_student = [];
             foreach($row as $idx => $cell_value){
                 //NOTE: if($idx < 9) => we allow only 9 columns at Max
@@ -194,28 +198,27 @@ class StudentEnrollment
                     if($idx == 24) $this_student[self::$xlsx_cols[24]] = $cell_value;
                     if($idx == 30) $this_student[self::$xlsx_cols[30]] = $cell_value;
                     if($idx == 49) $this_student[self::$xlsx_cols[49]] = $cell_value;
-                    if($idx == 69) $this_student[self::$xlsx_cols[69]] = $cell_value;
-                    if($idx == 72) $this_student[self::$xlsx_cols[72]] = $cell_value;
+                    if($idx == 68) $this_student[self::$xlsx_cols[68]] = $cell_value;
+                    if($idx == 71) $this_student[self::$xlsx_cols[71]] = $cell_value;
                 }
             }
-            $sts[] = $this_student;  
+            // $sts[] = $this_student;  
 
             // $this_student['first_name'] = 'I' ? $sts[] = $this_student:$sts[] = null;
 
-            // $code = isset($this_student['code'])? $this_student['code'] : null;
+            $Waybill_no = isset($this_student['Waybill_no'])? $this_student['Waybill_no'] : null;
             // $first_name = isset($this_student['first_name'])? $this_student['first_name'] : null;
             // $last_name = isset($this_student['last_name'])? $this_student['last_name'] : null;
             // $phone_number = isset($this_student['phone'])? $this_student['phone']:null;
 
-            //return (object)['error'=>print_r($this_student,true)];
-            // if(isset($this_student['code']) && isset($this_student['first_name'])){
-            //     $name = $last_name.' '.$first_name;
-            //     $err = self::checkDuplicateStudent($sts,$code,$phone_number,$name);
-            //     if($err) 
-            //        return (object)['error'=>$err,'students'=>[]];
-            //     else 
-            //     $sts[] = $this_student;  
-            // }
+            // return (object)['error'=>print_r($this_student,true)];
+            if(isset($this_student['Waybill_no'])){
+                $err = self::checkDuplicateStudent($sts,$Waybill_no);
+                if($err) 
+                   return (object)['error'=>$err,'students'=>[]];
+                else 
+                $sts[] = $this_student;  
+            }
            
           } 
         }

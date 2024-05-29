@@ -80,6 +80,7 @@ use App\Http\controllers\abm\SpecialChargeController;
         Route::post('/Shipment-list-BillValidate', [OverseaShipmentController::class, 'ListForBillValidate']);
         Route::post('/form-options', [OverseaShipmentController::class, 'getFormOptions']);
         Route::post('/item-details', [OverseaShipmentController::class, 'getItemDetails']);
+        Route::post('/update-status', [OverseaShipmentController::class, 'updateStatus']);
     
         Route::post('/create-item', [OverseaShipmentController::class, 'createOverseaItem']);
         Route::post('/item-list', [OverseaShipmentController::class, 'getOverseaItemList']);
