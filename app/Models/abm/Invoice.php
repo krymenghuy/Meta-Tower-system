@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Cache;
 
 
 
-class Accounting //extends Model
+class Invoice //extends Model
 {
     protected $id =null;
     protected $userInfo = null;

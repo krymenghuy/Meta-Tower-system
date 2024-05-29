@@ -137,11 +137,11 @@
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>
-                <a href="AccountingComponent" modid="206" class="menu-item kt-menu__link">
+                <a href="InvoicesComponent" modid="206" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/marchant_transactions.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Accounting"></span>
+                    <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Invoices"></span>
                 </a>
             </li>
             <!-- <li class="kt-menu__item" aria-haspopup="true" style="display:none" <?php v_display(223);?>>

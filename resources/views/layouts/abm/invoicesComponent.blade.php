@@ -1,4 +1,4 @@
-<div id="_main_accountingComponent" style="display:none; padding-right: 15px;">
+<div id="_main_invoicesComponent" style="display:none; padding-right: 15px;">
     <div class="d-flex justify-content-between bg-white rounded-3 p-3 border">
         <div class="d-flex gap-2">
 
@@ -110,7 +110,6 @@
                             <th scope="col">Amount Due</th>
                             <th scope="col">Issue Date</th>
                             <th scope="col">Due Date</th>
-                            <th scope="col">Payment Terms</th>
                             <th scope="col">Status</th>
                             <th scope="col">Actions</th>
 
@@ -118,48 +117,118 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td>1</td>
+                            <td class="text-success">No100001</td>
                             <td>John Doe</td>
-                            <td>tax</td>
+                            <td class="text-muted">tax</td>
                             <td>$1000</td>
                             <td>10%</td>
                             <td style="color:#fc0758;">$900</td>
                             <td>2024-05-01</td>
                             <td>2024-06-01</td>
-                            <td>Net 30</td>
-                            <td>Unpaid</td>
-                            <td></td>
+                            <td class="text-danger">Unpaid</td>
+                            <td>
+                                <button class="btn btn-success ">Actions</button>
+                            </td>
+
 
                         </tr>
                         <tr>
-                            <td>2</td>
-                            <td>Jane Smith</td>
-                            <td>informal</td>
-                            <td>$1050</td>
-                            <td>5%</td>
-                            <td style="color:#fc0758;">$950</td>
-                            <td>2024-05-10</td>
-                            <td>2024-06-10</td>
-                            <td>Net 30</td>
-                            <td>Unpaid</td>
-                            <td></td>
+                            <td class="text-success">No100002</td>
+                            <td>John Doe</td>
+                            <td class="text-muted">informal</td>
+                            <td>$1000</td>
+                            <td>10%</td>
+                            <td style="color:#fc0758;">$900</td>
+                            <td>2024-05-01</td>
+                            <td>2024-06-01</td>
+                            <td class="text-danger">Unpaid</td>
+                            <td>
+                                <button class="btn btn-success ">Actions</button>
+                            </td>
+
 
                         </tr>
                         <tr>
-                            <td>3</td>
-                            <td>Jane Smith</td>
-                            <td>commercial</td>
-                            <td>$1050</td>
-                            <td>5%</td>
-                            <td style="color:#fc0758;">$950</td>
-                            <td>2024-05-10</td>
-                            <td>2024-06-10</td>
-                            <td>Net 30</td>
-                            <td>Unpaid</td>
-                            <td></td>
+                            <td class="text-success">No100003</td>
+                            <td>John Doe</td>
+                            <td class="text-muted">commercial</td>
+                            <td>$1000</td>
+                            <td>10%</td>
+                            <td style="color:#fc0758;">$900</td>
+                            <td>2024-05-01</td>
+                            <td>2024-06-01</td>
+                            <td class="text-danger">Unpaid</td>
+                            <td>
+                                <button class="btn btn-success ">Actions</button>
+                            </td>
+
 
                         </tr>
+                        <tr>
+                            <td class="text-success">No100004</td>
+                            <td>John Doe</td>
+                            <td class="text-muted">tax</td>
+                            <td>$1000</td>
+                            <td>10%</td>
+                            <td style="color:#fc0758;">$900</td>
+                            <td>2024-05-01</td>
+                            <td>2024-06-01</td>
+                            <td class="text-danger">Unpaid</td>
+                            <td>
+                                <button class="btn btn-success ">Actions</button>
+                            </td>
 
+
+                        </tr>
+                        <tr>
+                            <td class="text-success">commercial</td>
+                            <td>John Doe</td>
+                            <td class="text-muted">tax</td>
+                            <td>$1000</td>
+                            <td>10%</td>
+                            <td style="color:#fc0758;">$900</td>
+                            <td>2024-05-01</td>
+                            <td>2024-06-01</td>
+                            <td class="text-danger">Unpaid</td>
+                            <td>
+                                <button class="btn btn-success ">Actions</button>
+                            </td>
+
+
+                        </tr>
+                        <tr>
+                            <td class="text-success">No100006</td>
+                            <td>John Doe</td>
+                            <td class="text-muted">informal</td>
+                            <td>$1000</td>
+                            <td>10%</td>
+                            <td style="color:#fc0758;">$900</td>
+                            <td>2024-05-01</td>
+                            <td>2024-06-01</td>
+                            <td class="text-danger">Unpaid</td>
+                            <td>
+                                <button class="btn btn-success ">Actions</button>
+                            </td>
+
+
+                        </tr>
+                        <tr>
+                            <td class="text-success">No100007</td>
+                            <td>John Doe</td>
+                            <td class="text-muted">commercial</td>
+                            <td>$1000</td>
+                            <td>10%</td>
+                            <td style="color:#fc0758;">$900</td>
+                            <td>2024-05-01</td>
+                            <td>2024-06-01</td>
+                            <td class="text-danger">Unpaid</td>
+                            <td>
+                                <button class="btn btn-success ">Actions</button>
+                            </td>
+
+
+                        </tr>
+                      
                     </tbody>
                 </table>
             </body>

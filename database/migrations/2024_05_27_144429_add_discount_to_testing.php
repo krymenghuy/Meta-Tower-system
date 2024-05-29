@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDb extends Migration
+class AddDiscountToTesting extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateDb extends Migration
      */
     public function up()
     {
-        DB::unprepared(file_get_contents(getCWD()."/db/mclinic_db.sql"));
-        DB::unprepared(file_get_contents(getCWD()."/db/mclinic_db_functions.sql"));
-        //DB::unprepared(file_get_contents(getCWD()."/db1/accounting_init_data.sql"));
+        Schema::table('testing', function (Blueprint $table) {
+            $table->integer('discount')->nullable()->default(0.00)->after('price');
+        });
     }
 
     /**
@@ -25,7 +25,8 @@ class CreateDb extends Migration
      */
     public function down()
     {
-        return;
-        //Schema::dropIfExists('db');
+        Schema::table('testing', function (Blueprint $table) {
+            $table->dropColumn('discount');
+        });
     }
 }

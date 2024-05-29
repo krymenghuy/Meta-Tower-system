@@ -208,7 +208,7 @@
                                 @include('layouts.abm.suppliersComponent')
                                 @include('layouts.abm.salesAffiliatesComponent')
                                 @include('layouts.abm.billingValidationComponent')
-                                @include('layouts.abm.AccountingComponent')
+                                @include('layouts.abm.invoicesComponent')
 
                                 @include('layouts.abm.priceSettingsComponent')
                                 @include('layouts.abm.locationComponent')

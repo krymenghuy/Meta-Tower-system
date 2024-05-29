@@ -1,0 +1,55 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+class CreateCustomerInvoicesTable extends Migration
+{
+    /**
+     * Run the migrations.
+     *
+     * @return void
+     */
+    public function up()
+    {
+        Schema::create('customer_invoices', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('customer_id')->nullable();
+            $table->string('customer_email',100)->nullable();
+            $table->string('customer_address',250)->nullable();
+            $table->string('invoice_type',40)->default('commercial')->comment('	invoice_type = {informal, commercial, tax}');
+            $table->decimal('amount',10,2)->default(0.00);
+            $table->decimal('discount_percent',10,2)->default(0.00);
+            $table->decimal('discount_amount',10,2)->default(0.00);
+            $table->string('discount_type',35)->nullable();
+            $table->decimal('amount_due',10,2)->default(0.00);
+            $table->timestamp('issue_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('due_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
+            $table->string('pmt_terms',35)->nullable();
+            $table->string('public_remarks',255)->nullable();
+            $table->string('private_remarks',255)->nullable();
+            $table->integer('branch_id');
+            $table->integer('create_uid')->nullable();
+            $table->integer('update_uid')->nullable();
+            $table->timestamp('update_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('create_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
+            $table->string('create_user',50)->nullable();;
+            $table->string('update_user',50)->nullable();
+
+            
+
+
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     *
+     * @return void
+     */
+    public function down()
+    {
+        Schema::dropIfExists('customer_invoices');
+    }
+}

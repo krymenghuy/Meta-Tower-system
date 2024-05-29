@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use Config;
 
 
-class AccountingController extends Controller
+class InvoiceController extends Controller
 {
     
 }

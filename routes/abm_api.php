@@ -9,7 +9,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\UMController; 
 
 use App\Http\Controllers\abm\PackageController;
-use App\Http\Controllers\abm\AccountingController;
+use App\Http\Controllers\abm\InvoiceController;
 use App\Http\Controllers\abm\OverseaShipmentController;
 use App\Http\Controllers\abm\SupplierController;
 use App\Http\controllers\abm\CustomerController;
@@ -118,8 +118,8 @@ use App\Http\controllers\abm\SpecialChargeController;
         Route::post('/save-profile-picture', [CustomerController::class, 'saveProfilePicture']);
         Route::post('/delete-profile-picture', [CustomerController::class, 'deleteProfilePicture']);
     });
-    Route::prefix('accounting')->group(function(){
-        Route::post('/save',[AccountingController::class,'save']);
+    Route::prefix('invoice')->group(function(){
+        Route::post('/save',[InvoiceController::class,'save']);
     });
 
     

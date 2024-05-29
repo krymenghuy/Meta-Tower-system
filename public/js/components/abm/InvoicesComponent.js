@@ -216,10 +216,10 @@
 
 // }
 'use strict';
-var AccountingComponent = new function(){
+var InvoicesComponent = new function(){
     const mThis = this;
-    this.title_prop = "Accounting";
-    this.self = main_view.appContent.children('#_main_accountingComponent')[0];
+    this.title_prop = "Invoices";
+    this.self = main_view.appContent.children('#_main_invoicesComponent')[0];
    
 
     this.headerList = [];
