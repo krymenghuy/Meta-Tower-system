@@ -1664,6 +1664,13 @@ function createUUIDV1()
       return Config::get('app.app_id');
     }
 
+    function getDefaultSubscription(){
+        return (object)[
+            'id'=>'B5F30F8A5F2BF715DC0586A27E669726CB7',
+            'name'=>'A'
+        ];
+    }
+
     function getAppId(){
         return Config::get('app.app_id');
     }

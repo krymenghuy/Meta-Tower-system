@@ -163,7 +163,7 @@ class SMS //extends Model
         
         curl_close($ch);
         if ($err_message) {
-            return DV::error($err_message);
+            return DV::error('sms provider issue: '.$err_message);
         }
         
         return DV::success(['data' => json_decode($json_string, true)]);
@@ -183,7 +183,7 @@ class SMS //extends Model
         $b = DB::table('um_branches as b')->where('branch_id',$branch_id)->selectRaw('name,phone_number')->first();
         $company_name = $b?$b->name.': ':'';
         switch($purpose){
-            case "change_password":{
+            case 'change_password':{
                 return $company_name. ' លេខសំងត់ '.($otp?$otp:"otp_code").' សំរាប់ប្តូរពាក្យសំងាត់';
                 break;
             }

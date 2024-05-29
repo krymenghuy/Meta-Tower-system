@@ -67,7 +67,7 @@ namespace App\ScriptManagement;
                     '/assets/js/initializeSelect2.js',
                     '/assets/js/toastr.min.js',
                     '/assets/js/init.toastr.js',
-                    '/assets/js/demo1/scripts.bundle.js',
+                    '/assets/js/scripts.bundle.js',
                     '/assets/js/datatables.bundle.min.js',/** to be removed soon */
                     '/assets/js/browsercontrol.js'
                 ]
