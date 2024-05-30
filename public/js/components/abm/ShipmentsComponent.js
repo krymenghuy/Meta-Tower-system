@@ -113,7 +113,7 @@ var ShipmentsComponent = new function () {
     this.btnNewShipment = this.self.find('#btn_newQuickOrder');
 
     this.elSearchPickup = this.self.find('#_pl_search');
-    this.btnSearch = this.self.find('#_pl_btnSearch');
+    this.btnRefresh = this.self.find('#_pl_btnRefresh');
 
     this.btnToggleFilter = this.self.find('#_pl_btnToggleFilter');
     this.div_filter_fields = mThis.self.find('#_sdl_filter_fields')[0];
@@ -144,13 +144,16 @@ var ShipmentsComponent = new function () {
         let btnEdit = div.find('a.ps-btn-edit-prices');
         let has_error = false;
         let p = {};
+        let f ;
+        console.log(1,div[0]);
+
         div.find('.dd-field').each(function () {
+            // console.log(2,'hello');
             let field = $(this);
             let span = field.find('.dd-value');
             let input = field.find('.dd-input');
             input.removeClass('has-error');
-
-            let f = field.data('field');
+            f = field.data('field');
             let val = (input.val() + '').toLowerCase().trim();
 
             if (f == 'carrier_total_weight') {
@@ -168,7 +171,6 @@ var ShipmentsComponent = new function () {
                 }
             }
             p[f] = input.val();
-            log(p);
             if (!has_error) {
                 div.find('.dd-value').show();
                 span.text(input.val());
@@ -179,20 +181,27 @@ var ShipmentsComponent = new function () {
         if (!has_error) {
             // let price_list_id = mThis.elFilter_price_list.val();
             //let x =  div.closest('div.ps-zones');
-            let zone_codes = that.data('zones');
+            console.log(2,p[f]);
             //need to modify html
             //need to modify html
             let item_type = that.data('dtype');
-
+            let carrier_total_weight = that.data('carrier_total_weight');
+            let carrier_cost = that.data('carrier_cost');
+            let total_carrier_cost = that.data('total_carrier_cost');
+            let carrier_special_charge = that.data('carrier_special_charge');
+            console.log(3,f);
             p.id = that.data('id');
-            p.zone_codes = zone_codes;
+            f=='carrier_total_weight'? p.carrier_total_weight = parseFloat(p[f]) : p.carrier_total_weight = carrier_total_weight;
+            f=='carrier_cost'? p.carrier_cost = parseFloat(p[f]) : p.carrier_cost = carrier_cost;
+            f=='carrier_cost'? p.total_carrier_cost = (parseFloat(p[f]) + carrier_special_charge) : p.total_carrier_cost = total_carrier_cost;
             p.item_type = item_type;
-            console.log(p);
-            // vsapi.call(`${mThis.base_url}/abm/savePriceLineInfo`, p).then(res => {
-            // if (res.status_code === 200) {
-            //     that.data('id', res.id);
-            // } else cv_interact.error(res.error_message);
-            // });
+            console.log(4,p);
+            vsapi.call(`${mThis.base_url}/abm/oversea_shipments/update-carrier-info`, p).then(res => {
+                if (res.status_code === 200) {
+                    // that.data('id', res.id);
+                    mThis.shipmentListView.showPage(mThis.getFilterData()); 
+                } else cv_interact.error(res.error_message);
+            });
 
             //hide btnSave
             that.hide();
@@ -240,10 +249,10 @@ var ShipmentsComponent = new function () {
                 className: 'col_action',
                 data: function (data, row, display) {
                     let html = ['<div class="dropdown">',
-                        '<a href="javascript:void(0)" data-shipmentid="', data.shipment_id, '" data-senderid="', data.sender_id, '" data-statusid="', data.status_id, '" class="btn_pickup_action" aria-haspopup="true" aria-expanded="false">',
+                        '<a href="javascript:void(0)" data-shipmentid="', data.shipment_id, '" data-senderid="', data.sender_id, '" data-statusid="', data.status_id, '" class="btn_shipment_action" aria-haspopup="true" aria-expanded="false">',
                         '<i class="fa fa-chevron-down" style="color:#E9E7E7;font-size:1.5em"></i>',
                         '</a>',
-                        '</div>'].join('');
+                        '</div>',].join('');
                     return html;
                 }
             },
@@ -350,15 +359,26 @@ var ShipmentsComponent = new function () {
                 title: 'total price'
             },
             {
-                className: "s",
+                className: "",
                 data: (data,index,tr)=>{
-                    const sender_info = ['<div class="d-flex dd-field" data-field="carrier_total_weight" > <span class="sender-name dd-value fs-5-08 me-1">',data.carrier_total_weight||'NA','</span> USD ',
-                    `<a href="javascript:void(0)" data-id="" class="ps-btn-edit-prices ms-2">
-                        <i class="fa fa-edit text-warning fs-5"></i>
-                    </a>
-                    <a style="display:none" href="javascript:void(0)" data-id="`,data.id,`" data-zones="" data-dtype="`,data.item_type,`" class="ps-btn-save-prices ms-2">
-                        <i class="fa fa-save fs-5"></i>
-                    </a> </div>`].join('');
+                    const sender_info = ['<div class="" > ',
+                        '<span class = "dd-field d-flex " data-field="carrier_total_weight">',
+                            ' <span class="sender-name dd-value fs-5-08 me-1">',data.carrier_total_weight||'NA','</span> USD ',
+                            `<a href="javascript:void(0)" data-id="`,data.id,`" class="ps-btn-edit-prices ms-2 `,data.status_id == 1 ? 'd-none' : '',`">    
+                                <i class="fa fa-edit text-warning fs-5"></i>
+                            </a>
+                            <a style="display:none" href="javascript:void(0)" class="ps-btn-save-prices ms-2"
+                                data-id="`,data.id,`" 
+                                data-carrier_total_weight="`,parseFloat(data.carrier_total_weight),`" 
+                                data-carrier_cost="`,parseFloat(data.carrier_cost),`" 
+                                data-total_carrier_cost="`,parseFloat(data.total_carrier_cost),`" 
+                                data-carrier_special_charge="`,parseFloat(data.carrier_special_charge),`" 
+                                data-dtype="`,data.item_type,`" 
+                            >
+                                <i class="fa fa-save fs-5"></i>
+                            </a> `,
+                        `</span> `,
+                    `</div>`].join('');
                     return sender_info;
                 },
                 // title: mThis.trans('Sender ID')
@@ -368,13 +388,24 @@ var ShipmentsComponent = new function () {
             {
                 className: "carrier_cost",
                 data: (data,index,tr)=>{
-                    const sender_info = ['<div class="d-flex dd-field" data-field="carrier_cost"> <span class="sender-name  dd-value fs-5-08 me-1">',data.carrier_cost||'NA',' </span> USD',
-                    `<a href="javascript:void(0)" data-id="" class="ps-btn-edit-prices ms-2">
-                    <i class="fa fa-edit text-warning fs-5"></i>
-                    </a>
-                    <a style="display:none" href="javascript:void(0)" data-id="" data-zones="" data-dtype="" class="ps-btn-save-prices ms-2">
-                        <i class="fa fa-save fs-5"></i>
-                    </a> </div>`].join('');
+                    const sender_info = ['<div class=""> ',
+                        '<span class="dd-field d-flex" data-field="carrier_cost">',
+                            '<span class="sender-name  dd-value fs-5-08 me-1">',data.carrier_cost||'NA',' </span> USD',
+                            `<a href="javascript:void(0)" data-id="" class="ps-btn-edit-prices ms-2 `,data.status_id == 1 ? 'd-none' : '',`">
+                            <i class="fa fa-edit text-warning fs-5"></i>
+                            </a>
+                            <a style="display:none" href="javascript:void(0)" class="ps-btn-save-prices ms-2"
+                                data-id="`,data.id,`" 
+                                data-carrier_total_weight="`,parseFloat(data.carrier_total_weight),`" 
+                                data-carrier_cost="`,parseFloat(data.carrier_cost),`" 
+                                data-total_carrier_cost="`,parseFloat(data.total_carrier_cost),`" 
+                                data-carrier_special_charge="`,parseFloat(data.carrier_special_charge),`" 
+                                data-dtype="`,data.item_type,`" 
+                            >
+                                <i class="fa fa-save fs-5"></i>
+                            </a>`,
+                        `</span>`,
+                    ` </div>`].join('');
                     return sender_info;
                 },
                 // title: mThis.trans('Sender ID')
@@ -496,7 +527,7 @@ var ShipmentsComponent = new function () {
         }
 
         mThis.cfg = new ExpandableRowConfig(mThis.tblShipments.attr('id'), {
-            dontExpandByClickingOn: ['pkl_btn_receive','ps-btn-save-prices','dd-input','ps-btn-edit-prices','pkl_btn_pick','btn_pickup_action','btn-show','btn_special_charge','lnk-assign-driver','lnk-set-address','dropdown-menu'],
+            dontExpandByClickingOn: ['pkl_btn_receive','ps-btn-save-prices','dd-input','ps-btn-edit-prices','pkl_btn_pick','btn_shipment_action','btn-show','btn_special_charge','lnk-assign-driver','lnk-set-address','dropdown-menu'],
             onOpen: (container, detail_tr, parent_tr) => {
                 mThis.shm_prev_editing_row = null;
                 const view_name = parent_tr.dataset.view; 
@@ -606,7 +637,7 @@ var ShipmentsComponent = new function () {
             });
         });
 
-        mThis.btnSearch.on('click', (e) => {
+        mThis.btnRefresh.on('click', (e) => {
             mThis.shipmentListView.showPage(mThis.getFilterData()); 
         });
         mThis.elSearchPickup.on('keyup', function (e) {
@@ -620,7 +651,7 @@ var ShipmentsComponent = new function () {
         mThis.tblShipments[0].addEventListener('click', e => {
             e.preventDefault();
             // Click on Pickup Action button | drop down action
-            let btn = VSUtil.closestLimited(e.target, '.btn_pickup_action');
+            let btn = VSUtil.closestLimited(e.target, '.btn_shipment_action');
             if (btn) {
                 let p = btn.parentElement;
                 let shipment_id = btn.dataset.id;
@@ -629,7 +660,7 @@ var ShipmentsComponent = new function () {
         
                 let dropdownMenu = p.querySelector('.dropdown-menu');
                 if (!dropdownMenu || dropdownMenu.length === 0) {
-                    p.insertAdjacentHTML('beforeend', mThis.createDropdownMenuHtml_pickup(shipment_id, sender_id, status_id));
+                    p.insertAdjacentHTML('beforeend', mThis.createDropdownMenuHtml_shipment(shipment_id, sender_id, status_id));
                     dropdownMenu = p.querySelector('.dropdown-menu');
                 }
         
@@ -923,16 +954,16 @@ var ShipmentsComponent = new function () {
         mThis.tblShipments.on('mouseover','tr',function(e){
             let x = $(this);
             let col_action = x.find('td.col_action');
-            // let btn_barcode = x.find('a._cpl_pa_quick_btn_barcode');
-            // btn_barcode.show();
-            col_action.find('a.btn_pickup_action>i').addClass('action-button-zoomin');    
+            let btn_barcode = x.find('a._cpl_pa_quick_btn_barcode');
+            btn_barcode.show();
+            col_action.find('a.btn_shipment_action>i').addClass('action-button-zoomin');    
         }).on('mouseleave','tr',function(e) {
             let x = $(this);
             let col_action = x.find('td.col_action');
-            // let btn_barcode = x.find('a._cpl_pa_quick_btn_barcode');
-            // btn_barcode.hide();
-            col_action.find('a.btn_pickup_action>i').removeClass('action-button-zoomin');
-            col_action.find('div.dropdown-menu').removeClass('show');  
+            let btn_barcode = x.find('a._cpl_pa_quick_btn_barcode');
+            btn_barcode.hide();
+            col_action.find('a.btn_shipment_action>i').removeClass('action-button-zoomin');
+            // col_action.find('div.dropdown-menu').removeClass('show');  
         });
 
         document.addEventListener('click', function (e) {
@@ -2340,7 +2371,7 @@ var ShipmentsComponent = new function () {
     this.updateShipmentStatus = (tr, status_info) => {
         if (!tr || !status_info) return;
         let div_dropdown = tr.querySelector('td.col_action div.dropdown');
-        let el = div_dropdown.querySelector('a.btn_pickup_action');
+        let el = div_dropdown.querySelector('a.btn_shipment_action');
 
         tr.dataset.statusid = status_info.status_id;
         if(el) el.dataset.statusid =  status_info.status_id;
@@ -2371,13 +2402,13 @@ var ShipmentsComponent = new function () {
         // }
     }
 
-    this.createDropdownMenuHtml_pickup = function (shipment_id, sender_id, status_id) {
+    this.createDropdownMenuHtml_shipment = function (shipment_id, sender_id, status_id) {
         let html = ['<div class="dropdown-menu bg-white shadow" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '">',
             '<a class="dropdown-item _pl_pa_motify" href="javascript:void(0)"><i class="fa fa-edit" data-orderid="', shipment_id, '" data-senderid="', sender_id, '" data-statusid="', status_id, '"></i>Motify</a>',
-            '<a class="dropdown-item _pl_pa_receive" href="javascript:void(0)"><i class="fa fa-shipping-fast"></i> Arrive</a>',
+            // '<a class="dropdown-item _pl_pa_receive" href="javascript:void(0)"><i class="fa fa-shipping-fast"></i> Arrive</a>',
             '<div class="dropdown-divider"></div>',
-            '<a class="dropdown-item _pl_pa_delete" href="javascript:void(0)"><i class="fa fa-trash" style="color:red"></i> Delete Pickup</a>',
-            '<a class="dropdown-item _pl_pa_change_status" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue"></i> Change Shipment Status</a>',
+            '<a class="dropdown-item _pl_pa_delete" href="javascript:void(0)"><i class="fa fa-trash" style="color:red"></i> Delete Shipment</a>',
+            '<a class="dropdown-item _pl_pa_change_status" href="javascript:void(0)"><i class="fa fa-edit" style="color:blue"></i> Change Status</a>',
             // '<a class="dropdown-item _pl_pa_change_driver" href="javascript:void(0)"><i class="fa fa-user"></i> Change Driver (Pickup)</a>',
             '</div>'].join('');
         return html;
@@ -2533,7 +2564,7 @@ var ShipmentsComponent = new function () {
         let qty_html =  ['<div class="d-flex justify-content-between"><span class="fw-semibold package_count mt-1">', d.qty, '</span>', is_from_mobile, '</div>'].join('');
         
         let html_tr = [`<tr data-id="`,order_id,`" class="order" id="order_`,order_id,`" data-statusid="`,d.status_id,`" data-senderid="`,d.sender_id,`" data-driverid="`,d.driver_id,`">`,
-        `<td class="col_action"><div class="dropdown"><a href="javascript:void(0)" data-orderid="`,order_id,`" data-senderid="`,d.sender_id,`" data-statusid="`,d.status_id,`" class="btn_pickup_action" aria-haspopup="true" aria-expanded="false"><i class="fa fa-chevron-down" style="color:#E9E7E7;font-size:1.5em"></i></a></div></td>`,
+        `<td class="col_action"><div class="dropdown"><a href="javascript:void(0)" data-orderid="`,order_id,`" data-senderid="`,d.sender_id,`" data-statusid="`,d.status_id,`" class="btn_shipment_action" aria-haspopup="true" aria-expanded="false"><i class="fa fa-chevron-down" style="color:#E9E7E7;font-size:1.5em"></i></a></div></td>`,
         `<td class="request_date Request-Date"><span class="pl-request_date">`,d.request_date,`</span><span class="pl-request_time">`,d.request_time,`</span></td>`,
         `<td class="order_code Order-ID"><div><div class="pl-order-special-status"><span class="rounded-3 pl-order-special-status-text pl-order-status-1"></span></div><span class="rounded-3 order-code">`,d.code,`</span></div></td>`,
         `<td class="sender_name Merchant"><span class="sender-name d-block">`,d.sender_name,`</span><span class="sender-code d-block text-center text-info">`,d.sender_code,`</span></td>`,
@@ -4526,16 +4557,15 @@ const ShipmentDialog = new function () {
 
     this.prepareFormOptions = ( id, onFinish) => {
         vsapi.call(`${mThis.base_url}/abm/oversea_shipments/form-options`, {id : id}, null).then(res => {
-
-            let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data) : {};
-            VSUtil.setComboItems(mThis.el_from_country, d.from_country, 'id', 'country_name', true, '(select )' , null);
+            console.log('d2',res.data.to_country);
+            let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data , null, ['country_name','cp_name'] ) : {};
+            // VSUtil.setComboItems(mThis.el_from_country, d.from_country, 'id', 'country_name', true, '(select )' , null);
             // mThis.elWarehouse.val(d.warehouses[0].id).trigger('change'); 
             VSUtil.setComboItems(mThis.elSender, d.senders, 'id', 'sender_name', true, '(select )', null);
-            VSUtil.setComboItems(mThis.el_to_country, d.to_country, 'id', 'country_name', true, '(select )', null);
-            VSUtil.setComboItems(mThis.el_primary_cp, d.primary_cp, 'id', 'cp_name', true, '(select )', null);
-            VSUtil.setComboItems(mThis.el_secondary_cp, d.secondary_cp, 'id', 'cp_name', true, '(select )', null);
+            VSUtil.setComboItems(mThis.el_to_country, d.to_country, 'id', 'country_name', true, '(select country)', null);
+            VSUtil.setComboItems(mThis.el_primary_cp, d.primary_cp, 'id', 'cp_name', true, '(select primary cp)', null);
+            VSUtil.setComboItems(mThis.el_secondary_cp, d.secondary_cp, 'id', 'cp_name', true, '(select secondary cp)', null);
             // VSUtil.setComboItems(mThis.elVehicleType, d.vehicle_types, 'code', 'vehicle_type', null, null,d.vehicle_types[0]?d.vehicle_types[0].code:'');
-            console.log('d2',d);
             onFinish(d);
         });
     }

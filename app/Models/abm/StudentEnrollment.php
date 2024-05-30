@@ -147,28 +147,7 @@ class StudentEnrollment
                         $success_cnt++;                    
 
                     }
-                    else{
-                        // $inputs['category_id'] = self::getCategoryBySex($inputs['sex']);
-                        // $inputs['shipment_date'] = convertDate($inputs['shipment_date']);
-                        // $student_id = saveData($ss,'students',['id'=>null],$inputs,[],1,false);
-                        // if($student_id){
-                        //     $student_prog_id =DB::table('student_programs')->where('student_id',$student_id)->where('program_id',$program_id)->value('id');
-                        //     saveData($ss,'student_programs',['id'=>$student_prog_id],['program_id'=>$program_id,'student_id'=>$student_id],[],0,true);                            
-                        //     $arr= [
-                        //         'login_name' =>$inputs['code'],
-                        //         'user_class' => 'student',
-                        //         'role_id' => 2,
-                        //         'official_id' => $student_id,
-                        //         'official_code' => $inputs['code'],
-                        //         'email' => $inputs['email'],
-                        //         'password' => "123456",
-                        //         'full_name' => $inputs['first_name'].' '.$inputs['last_name'],
-                        //     ];
-                        //     $u_res = $um->saveUser($arr,$ss);
-                        //     if($u_res->status ==='Error') return DV::error($u_res->error_message); 
-                        //     $success_cnt++;
-                        // }
-                    }
+                    
                 }
             }
             $arr = [
@@ -178,12 +157,13 @@ class StudentEnrollment
             ];
             DB::table('os_bill_validation_sessions')->where('id',$rowCount)->update($arr);
 
-            $file_name = DB::table('os_bill_validation_sessions')->where('id',$rowCount)->take(1)->value('file_name');
-            if($file_name){
-                PublicStorage::delete($ss->branch_id,'supplier_bills','xlsx',$file_name); 
-                // $inputs['photo_file_name']=null;
-            }
+            // $file_name = DB::table('os_bill_validation_sessions')->where('id',$rowCount)->take(1)->value('file_name');
+            // if($file_name){
+            //     PublicStorage::delete($ss->branch_id,'supplier_bills','xlsx',$file_name); 
+            //     // $inputs['photo_file_name']=null;
+            // }
             // $x = PublicStorage::savefile($ss->branch_id,'supplier_bills','xlsx',$base64,'document');
+
             return DV::depends(1,[
                 'shipment_count' => $shipment_count,
                 'match_count' => $success_cnt,

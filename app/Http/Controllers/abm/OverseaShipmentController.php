@@ -52,6 +52,14 @@ class OverseaShipmentController extends Controller
          $res = $this->shipment->updateStatus($status_id,$qr_code,$id);
          return JDV::raw($res); 
     }
+
+    function updateCarrierInfo(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !== 200) return JDV::raw($ss);
+         $id = $req->id ?? $req->shipment_id;
+         $res = $this->shipment->updateCarrierInfo($req->all(),$id);
+         return JDV::raw($res); 
+    }
     
     function ListForBillValidate(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);

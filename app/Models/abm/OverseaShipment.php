@@ -55,8 +55,10 @@ class OverseaShipment //extends Model
         $d = (object) $inputs;
         $to_cnt = $d->to_country_id; 
         $sender_id = $d->sender_id; 
-        $d->zone_code= self::getZoneCode($to_cnt,$sender_id);
-        $inputs['zone_code'] = $d->zone_code->zone_code;
+        $d->zone_code = self::getZoneCode($to_cnt,$sender_id);
+        if($d->zone_code['error'] != null) return DV::error($d->zone_code['error']);
+        // return $d->zone_code['zone_code'];
+        $inputs['zone_code'] = $d->zone_code['zone_code'];
         // return JDV::result($inputs); 
 
         // $check = isExist('shipments',$id,['description'=>$inputs['description']]);
@@ -78,9 +80,14 @@ class OverseaShipment //extends Model
     public function getZoneCode($country_id,$sender_id){
         $pid = DB::table('sender')->where('id',$sender_id)->select('price_list_id')->first();
         $price_list_id = $pid->price_list_id;
-        $zone_cone = DB::table('price_list_details')->where('price_list_id',$price_list_id)->where('country_id','=',$country_id)->select('zone_code')->first();
-        // return JDV::result($zone_cone);
-        return $zone_cone;
+        $zone_code = DB::table('price_list_details')->where('price_list_id',$price_list_id)->where('country_id','=',$country_id)->select('zone_code')->first();
+        // return JDV::result($zone_code);
+        if($zone_code == null){
+            $country = DB::table('loc_countries')->where('id',$country_id)->select('name')->first();
+            // return $country->name; 
+            return ['error'=>'Customer price list dont have country zone : ('.$country->name.')! Chose another country.'];
+        } 
+        return ['error'=>'','zone_code'=>$zone_code->zone_code];
     }
 
     function getOverseaShipmentList(){
@@ -164,6 +171,16 @@ class OverseaShipment //extends Model
         if(!in_array(strtolower($status_id),[1,2])) return DV::error('Status id is not correct');
         DB::table('os_shipments')->where('id',$id)->update(['status_id'=>$status_id,'qr_code'=>$qr_code]);
         return DV::depends(1,['update'=>'done']);
+    }
+
+    function updateCarrierInfo($arr,$shipment_id=null){
+        // return $arr['carrier_total_weight'];
+        $carrier_total_weight = $arr['carrier_total_weight'];
+        $carrier_cost = $arr['carrier_cost'];
+        $total_carrier_cost = $arr['total_carrier_cost'];
+        if(!in_array(strtolower($arr['item_type']),['non_doc','doc'])) return DV::error('Item type id is not correct');
+        DB::table('os_shipments')->where('id',$shipment_id)->update(['carrier_total_weight'=>$carrier_total_weight,'carrier_cost'=>$carrier_cost ,'total_carrier_cost'=>$total_carrier_cost]);
+        return DV::depends(1,['update'=>'Sucess']);
     }
 
     function ListForBillValidate($filter,$ss){

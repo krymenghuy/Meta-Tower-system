@@ -14,6 +14,9 @@
         border-top: 1px solid #1E38A4;
         padding: 5px;
     }
+    span svg{
+        display: none;
+    }
 
     .small-box>.inner {
         min-height: 160px;
@@ -91,6 +94,11 @@
         vertical-align: middle; /* Vertically center the content */
         /* text-align: center; Horizontally center the content */
     }
+    tr td a.btn_shipment_action>i.action-button-zoomin{
+        transform: scale(1.5);
+        transition: transform .2s;
+        color: #96c949 !important;
+    }
 
 </style>
 
@@ -107,7 +115,7 @@
                         </button>
                     </div>
                     <input type="text" id="_pl_search"  class="form-control min-width-search height" data-field="search" placeholder="Search request"/>
-                    <button type="button" id="_pl_btnSearch" class="btn btn-primary height">
+                    <button type="button" id="_pl_btnRefresh" class="btn btn-primary height">
                         <i class="fa fa-sync-alt"></i>
                     </button>
                     <button type="button" class="btn btn-outline-success height" id="_pl_btnToggleFilter">
@@ -538,7 +546,10 @@
                     <div class="form-group col-md-6">
                         <span class="simple-label">from country</span>
                         <div>
-                            <select id="_plq_from_country" class="modal-select2 data-input" data-field="from_country_id"></select>
+                            <select class="modal-select2 data-input" data-field="from_country_id" >
+                                <option value="14">Cambodia (9)</option>
+                            </select>
+                            <!-- <select id="_plq_from_country" class="modal-select2 data-input" data-field="from_country_id"></select> -->
                         </div>
                     </div>
                     <div class="form-group col-md-6">
