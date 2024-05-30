@@ -776,7 +776,8 @@ class Price //extends Model
         $rows = DB::table('price_list_details AS l')->where('branch_id',$branch_id)->where('zone_code',$zone_codes)->where('item_type',$item_type)->selectRaw("l.id")->get();
         //if the pricing condition already exist => then UPDATE (base_fee, delivery_fee, price_option) of the existing one
         foreach($rows as $row) {
-          $qres = DB::table('price_list_details')->where('branch_id',$branch_id)->where('zone_code',$zone_codes)->where('item_type',$item_type)->where('price_list_id',$price_list_id)->update([
+          $qres = DB::table('price_list_details')->where('branch_id',$branch_id)->where('zone_code',$zone_codes)->where('item_type',$item_type)->where('price_list_id',$price_list_id)
+          ->update([
             //   'base_price'=>$base_fee,
               'price_per_kg'=>$price_per_kg,
             //   'price'=>$price, // price

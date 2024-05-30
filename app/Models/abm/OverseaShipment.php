@@ -55,8 +55,10 @@ class OverseaShipment //extends Model
         $d = (object) $inputs;
         $to_cnt = $d->to_country_id; 
         $sender_id = $d->sender_id; 
-        $d->zone_code= self::getZoneCode($to_cnt,$sender_id);
-        $inputs['zone_code'] = $d->zone_code->zone_code;
+        $d->zone_code = self::getZoneCode($to_cnt,$sender_id);
+        if($d->zone_code['error'] != null) return DV::error($d->zone_code['error']);
+        // return $d->zone_code['zone_code'];
+        $inputs['zone_code'] = $d->zone_code['zone_code'];
         // return JDV::result($inputs); 
 
         // $check = isExist('shipments',$id,['description'=>$inputs['description']]);
@@ -78,9 +80,14 @@ class OverseaShipment //extends Model
     public function getZoneCode($country_id,$sender_id){
         $pid = DB::table('sender')->where('id',$sender_id)->select('price_list_id')->first();
         $price_list_id = $pid->price_list_id;
-        $zone_cone = DB::table('price_list_details')->where('price_list_id',$price_list_id)->where('country_id','=',$country_id)->select('zone_code')->first();
-        // return JDV::result($zone_cone);
-        return $zone_cone;
+        $zone_code = DB::table('price_list_details')->where('price_list_id',$price_list_id)->where('country_id','=',$country_id)->select('zone_code')->first();
+        // return JDV::result($zone_code);
+        if($zone_code == null){
+            $country = DB::table('loc_countries')->where('id',$country_id)->select('name')->first();
+            // return $country->name; 
+            return ['error'=>'Customer price list dont have country zone : ('.$country->name.')! Chose another country.'];
+        } 
+        return ['error'=>'','zone_code'=>$zone_code->zone_code];
     }
 
     function getOverseaShipmentList(){
@@ -125,13 +132,13 @@ class OverseaShipment //extends Model
                 ->join('affiliates as sa','os.primary_cp_id','=','sa.id') // Perform an inner join
                 ->join('loc_countries as lc', 'lc.id', '=', 'os.to_country_id')
                 // ->join('price_list_details as p', 'p.country_id', '=', 'os.to_country_id')
-                ->join('delivery_statuses as st', 'st.id', '=', 'os.status_id')
                 ->join('sender as sd', 'sd.id', '=', 'os.sender_id')
+                ->join('os_shipment_statuses as oss', 'oss.id', '=', 'os.status_id')
                 
                 // ->whereRaw($str_srch)
                 // ->whereRaw($str_where)
                 // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
-                ->selectRaw('os.id,os.code, os.item_type , sd.name, os.remarks ,  os.zone_code, os.status_id, os.to_country_id, os.from_country_id, lc.name as to_country , os.primary_cp_id ,sa.name as primary_cp_name , sa.phone_number as primary_cp_phone , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , st.name as status , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time'.$price_list_id)
+                ->selectRaw('os.id,os.code, os.item_type ,sd.id as sender_id, sd.name, os.remarks ,  os.zone_code, os.status_id, os.to_country_id, os.from_country_id, lc.name as to_country , os.primary_cp_id ,sa.name as primary_cp_name , sa.phone_number as primary_cp_phone , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , oss.name as status , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time'.$price_list_id)
                 ->orderBy('os.id', 'DESC'); 
         
         $clone_query = clone $query;
@@ -148,7 +155,9 @@ class OverseaShipment //extends Model
         $ret_rows = [];
         foreach($unique_id as $id){
             $m = $this->getShipmentList($id,$rows);  
-            $from_contry = DB::table('os_shipments as os')->join('loc_countries as lc', 'os.from_country_id', '=', 'lc.id')->where('os.id',$m->id)->select('lc.name')->first();
+            $from_contry = DB::table('os_shipments as os')
+            ->join('loc_countries as lc', 'os.from_country_id', '=', 'lc.id')
+            ->where('os.id',$m->id)->select('lc.name')->first();
             $m->from_country = $from_contry->name ?? ''; 
             $ret_rows[] = $m;  
         }   
@@ -156,6 +165,22 @@ class OverseaShipment //extends Model
         // return $count;
 
         return new LengthAwarePaginator($ret_rows,$count,$per_page,$current_page);
+    }
+
+    function updateStatus($status_id,$qr_code,$id=null){
+        if(!in_array(strtolower($status_id),[1,2])) return DV::error('Status id is not correct');
+        DB::table('os_shipments')->where('id',$id)->update(['status_id'=>$status_id,'qr_code'=>$qr_code]);
+        return DV::depends(1,['update'=>'done']);
+    }
+
+    function updateCarrierInfo($arr,$shipment_id=null){
+        // return $arr['carrier_total_weight'];
+        $carrier_total_weight = $arr['carrier_total_weight'];
+        $carrier_cost = $arr['carrier_cost'];
+        $total_carrier_cost = $arr['total_carrier_cost'];
+        if(!in_array(strtolower($arr['item_type']),['non_doc','doc'])) return DV::error('Item type id is not correct');
+        DB::table('os_shipments')->where('id',$shipment_id)->update(['carrier_total_weight'=>$carrier_total_weight,'carrier_cost'=>$carrier_cost ,'total_carrier_cost'=>$total_carrier_cost]);
+        return DV::depends(1,['update'=>'Sucess']);
     }
 
     function ListForBillValidate($filter,$ss){
@@ -191,7 +216,8 @@ class OverseaShipment //extends Model
        // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
         $query = DB::table('os_shipments as os')
                 // ->join('affiliates as sa','os.primary_cp_id','=','sa.id') // Perform an inner join
-                ->join('loc_countries as lc', 'lc.id', '=', 'os.to_country_id')
+                // ->join('loc_countries as lc', 'lc.id', '=', 'os.to_country_id')
+                ->join('os_bill_validation as bv', 'bv.waybill_no', '=', 'os.qr_code')
                 // ->join('price_list_details as p', 'p.country_id', '=', 'os.to_country_id')
                 // ->join('os_package_statuses as st', 'st.id', '=', 'os.status_id')
                 // ->join('sender as sd', 'sd.id', '=', 'os.sender_id')
@@ -200,12 +226,11 @@ class OverseaShipment //extends Model
                 ->whereRaw($str_where)
                 ->whereRaw($str_dates)
                 // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
-                ->selectRaw('os.id,os.code, os.item_type , lc.name as to_country , os.secondary_cp_id , os.total_weight , os.carrier_total_weight ,(os.carrier_total_weight - os.total_weight) as weight_diff, os.total_price ,(os.total_carrier_cost - os.total_price) as price_diff, os.total_carrier_cost , formatDate(os.create_date) as create_date')
+                ->selectRaw('os.id,os.code, os.item_type , bv.dest_country as to_country , os.secondary_cp_id , os.total_weight , bv.carrier_weight as carrier_total_weight ,(bv.carrier_weight - os.total_weight) as weight_diff, os.total_price ,(bv.carrier_amount - os.total_price) as price_diff, bv.carrier_amount as total_carrier_cost , formatDate(os.create_date) as create_date')
                 ->orderBy('os.id', 'DESC'); 
         
         $clone_query = clone $query;
 
-        
         // $login_accounts = DB::table('um_users')->selectRaw('official_id')->get();
         // return JDV::result($query->get());
         $rows = $query->skip($skip_row)->take($per_page)->get();
@@ -266,7 +291,7 @@ class OverseaShipment //extends Model
         $branch_id = $ss->branch_id;
 
         $row = DB::table('os_shipments as os')->where('os.id',$id)->where('os.branch_id',$branch_id)
-        ->selectRaw('os.id,os.code, os.item_type , os.remarks , os.sender_id, os.zone_code, os.status_id, os.to_country_id, os.from_country_id, os.primary_cp_id , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time')
+        ->selectRaw('os.id,os.code,os.qr_code, os.item_type , os.remarks , os.sender_id, os.zone_code, os.status_id, os.to_country_id, os.from_country_id, os.primary_cp_id , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time')
         ->take(1)->first();
         return $row;
     }
@@ -319,6 +344,7 @@ class OverseaShipment //extends Model
             'to_country'=>GeneralSettings::options_country_zone($ss),
             'shipment_code'=>GeneralSettings::options_shipment_code($ss),
             'senders'=>GeneralSettings::options_sender($ss),
+            'shipment_status'=> DB::table('os_shipment_statuses AS os')->selectRaw('os.id AS status_id,os.name as status_name')->get(),
             // 'sale_a'=>GeneralSettings::options_sales_affiliate($ss),
             'primary_cp'=>GeneralSettings::options_primary_cp($ss),
             'secondary_cp'=>GeneralSettings::options_secondary_cp($ss),

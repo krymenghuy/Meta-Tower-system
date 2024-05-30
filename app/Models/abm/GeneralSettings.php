@@ -181,9 +181,9 @@ class GeneralSettings //extends Model
         }
         return $rows;
     }
-    static function options_shipment_code($ss,$include_all =false,$active_only=true){
-        $str_active = $active_only? 's.status_id =\'1\'':'2=2';
-        $rows = DB::table("os_shipments as s")->where('branch_id',$ss->branch_id)->whereRaw($str_active)->selectRaw('s.id, s.code AS shipment_code')->get();
+    static function options_shipment_code($ss,$include_all =false,$shipping_only=true){
+        $str_status = $shipping_only? 's.status_id =\'2\'':'2=2';
+        $rows = DB::table("os_shipments as s")->where('branch_id',$ss->branch_id)->whereRaw($str_status)->selectRaw('s.id, s.code AS shipment_code')->get();
         if($include_all){
            $rows->prepend((object)['id'=>null,'shipment_code'=>'(Select JTO shipment No.)']);
         }
@@ -196,7 +196,7 @@ class GeneralSettings //extends Model
         ->where('a.branch_id',$ss->branch_id)
         ->where('cp.cp_type',1)
         ->whereRaw($str_active)
-        ->selectRaw('a.id,CONCAT(a.name,\'(\',a.code,\')\') AS cp_name,a.code')->get();
+        ->selectRaw('a.id,CONCAT(a.name,\' (\',a.code,\')\') AS cp_name,a.code')->get();
         if($include_all){
            $rows->prepend((object)['id'=>null,'agent_name'=>'(All Agents)']);
         }
@@ -209,7 +209,7 @@ class GeneralSettings //extends Model
         ->where('a.branch_id',$ss->branch_id)
         ->where('cp.cp_type',2)
         ->whereRaw($str_active)
-        ->selectRaw('a.id,CONCAT(a.name,\'(\',a.code,\')\') AS cp_name,a.code')->get();
+        ->selectRaw('a.id,CONCAT(a.name,\' (\',a.code,\')\') AS cp_name,a.code')->get();
         if($include_all){
            $rows->prepend((object)['id'=>null,'agent_name'=>'(All Agents)']);
         }
