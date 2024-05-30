@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateCustomerInvoicesTable extends Migration
+class CreateOsCustomerInvoicesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateCustomerInvoicesTable extends Migration
      */
     public function up()
     {
-        Schema::create('customer_invoices', function (Blueprint $table) {
+        Schema::create('os_customer_invoices', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('customer_id')->nullable();
             $table->string('customer_email',100)->nullable();
@@ -50,6 +50,6 @@ class CreateCustomerInvoicesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('customer_invoices');
+        Schema::dropIfExists('os_customer_invoices');
     }
 }

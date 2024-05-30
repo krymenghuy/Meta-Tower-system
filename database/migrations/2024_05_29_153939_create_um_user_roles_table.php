@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateShipmentCodeControlTable extends Migration
+class CreateUmUserRolesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,12 @@ class CreateShipmentCodeControlTable extends Migration
      */
     public function up()
     {
-        Schema::create('shipment_code_control', function (Blueprint $table) {
-            $table->increments('id');
+        Schema::create('um_user_roles', function (Blueprint $table) {
+            $table->integer('uer_id');
+            $table->integer('role_id');
             $table->integer('branch_id');
-            $table->integer('last_id')->nullable();
-            $table->string('prefix',10)->nullable();
-
+            $table->string('app_id',50);
+            $table->tinyInteger('is_primary_role')->default(0);
         });
     }
 
@@ -29,6 +29,6 @@ class CreateShipmentCodeControlTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('shipment_code_control');
+        Schema::dropIfExists('um_user_roles');
     }
 }

@@ -18,9 +18,6 @@ class DatabaseSeeder extends Seeder
         $this->call([
             testingSeeder::class,
         ]);
-        $this->call([
-            UmUsersSeeder::class,
-
-        ]);
+        
     }
 }

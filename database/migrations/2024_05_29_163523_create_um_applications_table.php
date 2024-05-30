@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTestingTable extends Migration
+class CreateUmApplicationsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateTestingTable extends Migration
      */
     public function up()
     {
-        Schema::create('testing', function (Blueprint $table) {
+        Schema::create('um_applications', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-        
+            $table->string('name',150);
+            $table->string('name_native',150);
+            $table->tinyInteger('is_mobile_app')->nullable()->default(0);
+            $table->string('icon_file_name',150)->nullable();
         });
     }
 
@@ -27,6 +29,6 @@ class CreateTestingTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('testing');
+        Schema::dropIfExists('um_applications');
     }
 }

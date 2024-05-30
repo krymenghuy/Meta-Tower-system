@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateSupplierBillsTable extends Migration
+class CreateOsSupplierBillsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateSupplierBillsTable extends Migration
      */
     public function up()
     {
-        Schema::create('supplier_bills', function (Blueprint $table) {
+        Schema::create('os_supplier_bills', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('supplier_id')->nullable();
             $table->string('supplier_email',100)->nullable();
@@ -48,6 +48,6 @@ class CreateSupplierBillsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('supplier_bills');
+        Schema::dropIfExists('os_supplier_bills');
     }
 }

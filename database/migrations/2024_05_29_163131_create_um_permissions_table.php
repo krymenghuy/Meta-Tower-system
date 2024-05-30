@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInvoiceStatusesTable extends Migration
+class CreateUmPermissionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateInvoiceStatusesTable extends Migration
      */
     public function up()
     {
-        Schema::create('invoice_statuses', function (Blueprint $table) {
+        Schema::create('um_permissions', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name',30)->nullable();
-            $table->string('code',30)->nullable();
+            $table->string('name',150);
+            $table->integer('module_id');
+            $table->string('app_id',50);
+            $table->string('category',30)->nullable();
         });
     }
 
@@ -27,6 +29,6 @@ class CreateInvoiceStatusesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('invoice_statuses');
+        Schema::dropIfExists('um_permissions');
     }
 }

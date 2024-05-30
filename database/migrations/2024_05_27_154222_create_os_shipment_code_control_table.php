@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTestingTable extends Migration
+class CreateOsShipmentCodeControlTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,12 @@ class CreateTestingTable extends Migration
      */
     public function up()
     {
-        Schema::create('testing', function (Blueprint $table) {
+        Schema::create('os_shipment_code_control', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-        
+            $table->integer('branch_id');
+            $table->integer('last_id')->nullable();
+            $table->string('prefix',10)->nullable();
+
         });
     }
 
@@ -27,6 +29,6 @@ class CreateTestingTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('testing');
+        Schema::dropIfExists('os_shipment_code_control');
     }
 }

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTestingTable extends Migration
+class CreateUmRoleModulesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateTestingTable extends Migration
      */
     public function up()
     {
-        Schema::create('testing', function (Blueprint $table) {
+        Schema::create('um_role_modules', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name');
-        
+            $table->integer('role_id');
+            $table->integer('module_id');
+            $table->timestamp('start_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
         });
     }
 
@@ -27,6 +28,6 @@ class CreateTestingTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('testing');
+        Schema::dropIfExists('um_role_modules');
     }
 }

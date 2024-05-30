@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateInvoiceTypesTable extends Migration
+class CreateOsAgentCodeControlTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,12 @@ class CreateInvoiceTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('invoice_types', function (Blueprint $table) {
+        Schema::create('os_agent_code_control', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('name',50);
+            $table->integer('branch_id');
+            $table->integer('last_id')->nullable();
+            $table->string('prefix',10)->nullable();
+
         });
     }
 
@@ -26,6 +29,6 @@ class CreateInvoiceTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('invoice_types');
+        Schema::dropIfExists('os_agent_code_control');
     }
 }
