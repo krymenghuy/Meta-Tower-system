@@ -85,18 +85,18 @@ class StudentEnrollment
             $i = 0;
             $um = new UM();
             $rows = self::readExcel(public_path('/uploads/public/'.$ss->branch_id.'_data/supplier_bills/documents/'.$x->file_name));
+            $arr = [
+                'file_name' => $x->file_name,
+                'create_uid' => $ss->id,
+                'update_uid' => $ss->id,
+                'create_user' => $ss->full_name,
+                'update_user' => $ss->full_name,
+                'branch_id' => $ss->branch_id,
+                'create_date'=>getNowTime()
+            ];
+            DB::table('os_bill_validation_sessions')->insert($arr);
+            $rowCount = DB::table('os_bill_validation_sessions AS s')->count('s.id');
             
-            // $arr = [
-            //     'file_name' => $x->file_name,
-            //     'create_uid' => $ss->id,
-            //     'update_uid' => $ss->id,
-            //     'create_user' => $ss->full_name,
-            //     'update_user' => $ss->full_name,
-            //     'branch_id' => $ss->branch_id,
-            //     'created_at'=>getNowTime()
-            // ];
-            // DB::table('students_imports')->insert($arr);
-            // $rowCount = DB::table('students_imports AS s')->count('s.id');
 
             // if($rowCount > 3){
             //     //$deleteRows = $rowCount - 3;
@@ -119,26 +119,33 @@ class StudentEnrollment
             
             //return DV::error("test = ".print_r($rows,true));
             //Check if there are duplicate IDs or name
+            $shipment_count = 0;
+            foreach($rows as $row_index =>$row){
+                $shipment_count = $row_index -1;
+            }
             $x_res = self::validateStudents($rows);
-            // return $x_res;
 
             if($x_res->error) return DV::error($x_res->error);
             $success_cnt =0;
+            $unacceptable_count =0;
+           
             foreach ($x_res->students as $inputs){
                 $Waybill_no = $inputs['Waybill_no'];
-                $check = isExist('bill_validation',$id,['waybill_no'=>$Waybill_no]);
+                $check = isExist('os_bill_validation',$id,['waybill_no'=>$Waybill_no]);
                 // if($check) return DV::error('Requirement is already to save...');
                 if(!$check) {
                     $shipment_info = DB::table('os_shipments as os')->where('qr_code',$Waybill_no)->selectRaw('total_weight,total_price')->take(1)->first();
                     $info = (object) $shipment_info;
-                    
-                    // return $shipment_info->total_weight;
                     if($shipment_info){
-                        // $student_prog_id =DB::table('bill_validation')->where('student_id',$student_id)->where('program_id',$program_id)->value('id');
+                        // $student_prog_id =DB::table('os_bill_validation')->where('student_id',$student_id)->where('program_id',$program_id)->value('id');
                         $inputs['shipment_date'] = convertDate($inputs['shipment_date']);
                         $inputs['jto_weight'] = $info->total_weight;
                         $inputs['jto_amount'] = $info->total_price;
-                        $id = saveData($ss,'bill_validation',['id'=>null],$inputs,[],1,0);                            
+                        $inputs['session_id'] = $rowCount;
+                        $id = saveData($ss,'os_bill_validation',['id'=>null],$inputs,[],1,0);
+                        $inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ? $unacceptable_count++ : $unacceptable_count;
+                        $success_cnt++;                    
+
                     }
                     else{
                         // $inputs['category_id'] = self::getCategoryBySex($inputs['sex']);
@@ -164,7 +171,26 @@ class StudentEnrollment
                     }
                 }
             }
-            return DV::depends(1,['success_count'=>$success_cnt,'file_name'=>$x->file_name ,'save'=>$id]);
+            $arr = [
+                'shipment_count' => $shipment_count,
+                'match_count' => $success_cnt,
+                'unacceptable_count' => $unacceptable_count,
+            ];
+            DB::table('os_bill_validation_sessions')->where('id',$rowCount)->update($arr);
+
+            $file_name = DB::table('os_bill_validation_sessions')->where('id',$rowCount)->take(1)->value('file_name');
+            if($file_name){
+                PublicStorage::delete($ss->branch_id,'supplier_bills','xlsx',$file_name); 
+                // $inputs['photo_file_name']=null;
+            }
+            // $x = PublicStorage::savefile($ss->branch_id,'supplier_bills','xlsx',$base64,'document');
+            return DV::depends(1,[
+                'shipment_count' => $shipment_count,
+                'match_count' => $success_cnt,
+                'unacceptable_count' => $unacceptable_count,
+                'file_name'=>$x->file_name ,
+                'save'=>$id
+            ]);
 
         }
         return DV::error('Something went wrong when the system was trying to import students!');

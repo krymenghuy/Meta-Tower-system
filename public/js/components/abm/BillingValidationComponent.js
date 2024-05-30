@@ -104,10 +104,12 @@ var BillingValidationComponent = new function () {
             {
                 className: "total_weight",
                 data: (data,index,tr)=>{
+                    let weight_diff = 0;
+                    data.weight_diff < 0 ? weight_diff = data.weight_diff * -1 : weight_diff = data.weight_diff;
                     const sender_info = [`<div class="row">`,
                             `<div class='col-4 table-success'><span class="sender-name d-block">`,data.total_weight||`NA`,` </span></div>`,
                             `<div class='col-4 table-warning'><span class="sender-name d-block">`,data.carrier_total_weight||`NA`,` </span></div>`,
-                            `<div class='col-4 table-secondary'><span class="sender-name `,data.weight_diff > 0.03 ? "text-danger" : "",` d-block">`,data.weight_diff||`-`,` </span></div>`,
+                            `<div class='col-4 table-secondary'><span class="sender-name `,weight_diff > 0.03 ? "text-danger" : "text-success",` d-block">`,weight_diff||`-`,` </span></div>`,
                         `</div>`].join('');
                     return sender_info;
                 },
@@ -131,10 +133,12 @@ var BillingValidationComponent = new function () {
             {
                 className: "total_weight",
                 data: (data,index,tr)=>{
+                    let price_diff = 0;
+                    data.price_diff < 0 ? price_diff = data.price_diff * -1 : price_diff = data.price_diff;
                     const sender_info = [`<div class="row">`,
                             `<div class='col-4 table-success'><span class="sender-name d-block">`,data.total_price||`NA`,` </span></div>`,
                             `<div class='col-4 table-warning'><span class="sender-name d-block">`,data.total_carrier_cost||`NA`,` </span></div>`,
-                            `<div class='col-4 table-secondary'><span class="sender-name `,data.weight_diff > 0.03 ? "text-danger" : "",` d-block ">`,data.price_diff||`-`,` </span></div>`,
+                            `<div class='col-4 table-secondary'><span class="sender-name `,price_diff > 0.03 ? "text-danger" : "",` d-block ">`,price_diff||`-`,` </span></div>`,
                         `</div>`].join('');
                     return sender_info;
                 },
