@@ -2640,7 +2640,9 @@ const ShipmentStatusDialog = new function () {
             if (res.status_code === 200) {
                 let result = StringSanitizer.sanitizeObject(res.data);
                 if (typeof mThis.onClose === 'function') mThis.onClose();
+                ShipmentsComponent.shipmentListView.showPage(); 
                 mThis.self.modal('hide');
+                // console.log(1,ShipmentsComponent.shipmentListView);
             }
             else cv_interact.warning(res.error_message);
         });

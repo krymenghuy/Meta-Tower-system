@@ -134,7 +134,7 @@ class StudentEnrollment
                 $check = isExist('os_bill_validation',$id,['waybill_no'=>$Waybill_no]);
                 // if($check) return DV::error('Requirement is already to save...');
                 if(!$check) {
-                    $shipment_info = DB::table('os_shipments as os')->where('qr_code',$Waybill_no)->selectRaw('total_weight,total_price')->take(1)->first();
+                    $shipment_info = DB::table('os_shipments as os')->join('loc_countries as loc','loc.id','=','os.to_country_id')->where('os.qr_code',$Waybill_no)->selectRaw('os.total_weight , os.total_price , os.item_type , loc.name as country_name')->take(1)->first();
                     $info = (object) $shipment_info;
                     if($shipment_info){
                         // $student_prog_id =DB::table('os_bill_validation')->where('student_id',$student_id)->where('program_id',$program_id)->value('id');
@@ -142,8 +142,18 @@ class StudentEnrollment
                         $inputs['jto_weight'] = $info->total_weight;
                         $inputs['jto_amount'] = $info->total_price;
                         $inputs['session_id'] = $rowCount;
+                        $inputs['unacceptable_price'] = 0;
+                        if($inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ){ 
+                            $unacceptable_count++ ;
+                            $inputs['unacceptable_price'] = 1;
+                            $inputs['jto_weight'] - $inputs['carrier_weight'] > 0.03 || $inputs['jto_weight'] - $inputs['carrier_weight'] < -0.03 ? $inputs['unacceptable_weight'] = 1 : $inputs['unacceptable_weight'] = 0 ;
+                            $inputs['dest_country'] == $info->country_name ? $inputs['wrong_country'] = 0 : $inputs['wrong_country'] = 1 ;
+                            $info->item_type == 'non_doc'? $info->item_type = 'D' : $info->item_type = 'P';
+                            $inputs['product'] == $info->item_type ? $inputs['wrong_type'] = 0 : $inputs['wrong_type'] = 1 ;
+                        }
                         $id = saveData($ss,'os_bill_validation',['id'=>null],$inputs,[],1,0);
-                        $inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ? $unacceptable_count++ : $unacceptable_count;
+                        // $inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ? $unacceptable_count++ : $unacceptable_count;
+                        
                         $success_cnt++;                    
 
                     }
