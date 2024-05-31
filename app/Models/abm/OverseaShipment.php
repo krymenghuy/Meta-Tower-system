@@ -189,7 +189,7 @@ class OverseaShipment //extends Model
         // return JDV::result($filter->page);
 
         $current_page = isset($d->current_page)?$d->current_page:1;
-        $per_page = isset($d->per_page)?$d->per_page:20;
+        $per_page = isset($d->per_page)?$d->per_page:10;
         $shipment_no = isset($d->shipment_no)?$d->shipment_no:null;
         $end_date = isset($d->end_date) ? $d->end_date : null;
         $start_date = isset($d->start_date) ? $d->start_date : null;
@@ -226,7 +226,7 @@ class OverseaShipment //extends Model
                 ->whereRaw($str_where)
                 ->whereRaw($str_dates)
                 // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
-                ->selectRaw('os.id,os.code, os.item_type , bv.dest_country as to_country , os.secondary_cp_id , os.total_weight , bv.carrier_weight as carrier_total_weight ,(bv.carrier_weight - os.total_weight) as weight_diff, os.total_price ,(bv.carrier_amount - os.total_price) as price_diff, bv.carrier_amount as total_carrier_cost , formatDate(os.create_date) as create_date')
+                ->selectRaw('os.id,os.code, os.item_type , bv.dest_country as to_country ,bv.unacceptable_weight ,bv.unacceptable_price ,bv.wrong_country ,bv.wrong_type , os.secondary_cp_id , os.total_weight , bv.carrier_weight as carrier_total_weight ,(bv.carrier_weight - os.total_weight) as weight_diff, os.total_price ,(bv.carrier_amount - os.total_price) as price_diff, bv.carrier_amount as total_carrier_cost , formatDate(os.create_date) as create_date')
                 ->orderBy('os.id', 'DESC'); 
         
         $clone_query = clone $query;
@@ -245,7 +245,7 @@ class OverseaShipment //extends Model
             $m->from_country = $from_contry->name ?? ''; 
             $ret_rows[] = $m;  
         }   
-        $count = count($ret_rows);
+        // $count = count($ret_rows);
         // return $count;
 
         return new LengthAwarePaginator($ret_rows,$count,$per_page,$current_page);

@@ -10,6 +10,9 @@
         /* text-align: center; Horizontally center the content */
         padding: 0 10px;
     }
+    /* table.bill_Validate th{
+        width: 100px;
+    } */
     table.bill_Validate th div {
         color: #0e75d9 !important;
     }
@@ -27,19 +30,6 @@
             </button>
          </div> -->
          <div class="d-flex gap-2 w-50" >
-            <div class="d-flex flex-row w-50 gap-2 ">
-                <div class="col-lg-12" id="">
-                    <label class="form-label trans-text">JTO Shipment</label>
-                    <!-- <select id="_sal_agent_type" class="modal-select2 data-input" data-field="agent_types_id"></select> -->
-                    <!-- <select class="form-control data-input" id="_sal_agent_type" data-field="agent_types_id"></select> -->
-                    <select id="_select_shipment_No" class="modal-select2 filter-field" data-field="shipment_no">
-                    <!-- <option selected>(Select JTO shipment No.)</option>
-                    <option value="1">#00001</option>
-                    <option value="2">#00002</option>
-                    <option value="3">#00003</option> -->
-                    </select>
-                </div>
-            </div>
             <div class="d-flex flex-row w-75 gap-2 ml-2">
                 <div class="col-lg-12" id="">
                     <label class="form-label trans-text">DHL Shipment</label>
@@ -66,6 +56,19 @@
                             <i class="fa fa-sync-alt"></i>
                         </label>    
                     </div>
+                </div>
+            </div>
+            <div class="d-flex flex-row w-50 gap-2 ">
+                <div class="col-lg-12" id="">
+                    <label class="form-label trans-text">JTO Shipment</label>
+                    <!-- <select id="_sal_agent_type" class="modal-select2 data-input" data-field="agent_types_id"></select> -->
+                    <!-- <select class="form-control data-input" id="_sal_agent_type" data-field="agent_types_id"></select> -->
+                    <select id="_select_shipment_No" class="modal-select2 filter-field" data-field="shipment_no">
+                    <!-- <option selected>(Select JTO shipment No.)</option>
+                    <option value="1">#00001</option>
+                    <option value="2">#00002</option>
+                    <option value="3">#00003</option> -->
+                    </select>
                 </div>
             </div>
         </div>
