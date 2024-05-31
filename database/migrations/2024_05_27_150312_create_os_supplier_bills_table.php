@@ -14,6 +14,7 @@ class CreateOsSupplierBillsTable extends Migration
     public function up()
     {
         Schema::create('os_supplier_bills', function (Blueprint $table) {
+           
             $table->increments('id');
             $table->integer('supplier_id')->nullable();
             $table->string('supplier_email',100)->nullable();

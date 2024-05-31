@@ -1,9 +1,9 @@
 // 'use strict';
-// var AccountingComponent = new function(){
+// var InvoicesComponent = new function(){
 //     const mThis = this;
-//     this.title_prop = "Accounting";
+//     this.title_prop = "Invoices";
 //     this.form_data = null;
-//     this.self = main_view.appContent.children('#_main_accountingComponent');
+//     this.self = main_view.appContent.children('#_main_invoicesComponent');
 //     this.base_url = main_view.base_url;
 //     this.btnNewInvoice = this.self.find('#_new_invoice');
 
@@ -22,34 +22,18 @@
 
 //     mThis.cols = [
         
-//         {
-//             className: 'col_action align-middle',
-//             data: function (data, row, display) {
-//                 let html = ['<div class="dropdown d-block ">',
-//                     '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-name="', data.name, '"data-status="', data.status_code, '"     class="btn_pickup_action " aria-haspopup="true" aria-expanded="false">',
-//                     '<i class="fa-solid fa-list" style="color:#8DC63F;font-size:1.5em"></i>',
-//                     '</a>',
-//                     '</div>'].join('');
-//                 return html;
-//             },
-//         },
-//         {
-//             title:"Date",
-//             data:(data,index,tr)=>{
-//               return [`<span class="d-block fw-semibold">`,data.create_user,`</span><span class="d-block p-1"><small>`,data.create_date,`</small></span>`].join('');
-//             }
-//          },
+       
 //             {
-//                 className: "customer_code",
+//                 className: "invoice_id",
 //                 data: function (data,index,tr) {
-//                     return ['<div><span class="rounded-3 customer-code">', data.customer_code, '</span></div>'].join('');
+//                     return ['<div><span class="rounded-3 customer-code">', data.id, '</span></div>'].join('');
 //                 },
-//                 title: 'ID'
+//                 title: 'InvoiceNo'
 //             },
 //             {
 //                 className: "customer_name",
 //                 data: (data,index,tr)=>{
-//                     const customer_info = ['<span class="customer-name d-block">',data.customer_name,'</span>','<span class="sender-code d-block text-center text-info">',data.sender_code,'</span>'].join('');
+//                     const customer_info = ['<span class="customer-name d-block">',data.customer_name,'</span>'].join('');
 //                     return customer_info;
 //                 },
 //                 title: 'Name'
@@ -58,8 +42,24 @@
 //                 className: "invoice_type",
 //                 title: 'Invoice Type',
 //                 data: (data,index,tr)=>{
-//                     return [`<div class="d-flex gap-2"><i class="fa fa-motobike"></i><span class="text-nowrap">`,data.invoice_type,`</span></div>`].join('');
+//                     return [`<div class="d-flex gap-2"><span class="text-nowrap">`,data.invoice_type,`</span></div>`].join('');
 //                 },
+//             },
+//             // {
+//             //     className: "qty",
+//             //     data:(data,index,tr)=>{
+//             //         return ['<span class="item-qty"></span>'].join('');
+//             //     },
+//             //     title:'QTY'
+
+//             // },
+//             {
+//                 className: "total_weight",
+//                 data:(data,index,tr)=>{
+//                     return ['<span class="item-weight"></span>'].join('');
+//                 },
+//                 title:'Total Weight'
+
 //             },
 //             {
 //                 title: "Amount",
@@ -79,6 +79,7 @@
 //                     ].join("");
 //                 },
 //             },
+           
         
    
 //             {
@@ -87,83 +88,51 @@
 //                     let pickup_address = mThis.transformPickupAddress(data.pickup_address,data.map_url,data.sender_phone);
 //                     return [`<span class="long-text-wrap-250">`,(pickup_address?pickup_address:'No pickup address'),`</span>`].join('');
 //                 },
-//                 title: 'Dis %'
+//                 title: 'Discount'
 //             },
 //             {
-//                 className: "discount_amount",
-//                 data: (data, index, tr) => {
-//                     let pickup_address = mThis.transformPickupAddress(data.pickup_address,data.map_url,data.sender_phone);
-//                     return [`<span class="long-text-wrap-250">`,(pickup_address?pickup_address:'No pickup address'),`</span>`].join('');
+//                 className: "special_charge",
+//                 data:(data,index,tr)=>{
+//                     return ['<span class="spacial_charge"></span>'].join('');
 //                 },
-//                 title: 'Dis $'
+//                 title:'Spacial Charge'
+
 //             },
+      
 //             {
-//                 className: "discount_type",
-//                 data: (data, index, tr) => {
-//                     return [`<span class="long-text-wrap-250">`,pickup_address,`</span>`].join('');
-//                 },
-//                 title: 'Dis Type'
-//             },
-//             {
-//                 className: "amount_due",
+//                 className: "total_amount",
 //                 data: (data, index, tr) => {
 //                     return [`<span class="long-text-wrap-250">`,pickup_address,`</span>`].join('');
 //                 },
-//                 title: 'Amount Due'
+//                 title: 'Total Amount'
 //             },
-//             {
-//                 className: "issue_date",
-//                 data: (data, index, tr) => {
-//                     return [`<span class="long-text-wrap-250">`,pickup_address,`</span>`].join('');
-//                 },
-//                 title: 'Dis Issue_date'
-//             },
-//             {
-//                 className: "due_date",
-//                 data: (data, index, tr) => {
-//                     return [`<span class="long-text-wrap-250">`,pickup_address,`</span>`].join('');
-//                 },
-//                 title: 'Due_date'
-//             },
-//             {
-//                 className: "pmt_terms",
-//                 data: (data, index, tr) => {
-//                     return [`<span class="long-text-wrap-250">`,pickup_address,`</span>`].join('');
-//                 },
-//                 title: 'pmt_terms'
-//             },
-//             {
-//                 className: "public_remarks",
-//                 data: (data, index, tr) => {
-//                     return [`<span class="long-text-wrap-250">`,pickup_address,`</span>`].join('');
-//                 },
-//                 title: 'public_remarks'
-//             },
-//             {
-//                 className: "private_remarks",
-//                 data: (data, index, tr) => {
-//                     return [`<span class="long-text-wrap-250">`,pickup_address,`</span>`].join('');
-//                 },
-//                 title: 'private_remarks'
-//             },
-//             {
-//                 className: "due_date",
-//                 data: (data, index, tr) => {
-//                     return [`<span class="long-text-wrap-250">`,pickup_address,`</span>`].join('');
-//                 },
-//                 title: 'Dis Due_date'
-//             },
+      
        
           
 //             {
-//                 className: "order_status status",
+//                 className: "status",
 //                 data: function (data, index, tr) {
-//                     if (!data.order_status || data.order_status == '') data.order_status = '?';
+//                     if (!data.invoice_status || data.invoice_status == '') data.invoice_status = '?';
 //                     const color_class = mThis.getOrderStatusColorClass(data.status_id);
-//                     return ['<a class="change-order-status order-status" data-statusid="', data.status_id, '" data-id="', data.order_id, '" data-senderid="', data.sender_id, '" href="javascript:void(0)"><span class="order_status ',color_class,'">', data.order_status, '</span></a>'].join('');
+//                     return ['<a class="change-order-status order-status" data-statusid="', data.status_id, '" data-id="', data.invoice_id, '" data-senderid="', data.sender_id, '" href="javascript:void(0)"><span class="invoice_status ',color_class,'">', data.invoice_status, '</span></a>'].join('');
 //                 },
 //                 title: 'Status'
+//             },
+//             {
+//                 title: "Action",
+//                 className: 'align-middle text-capitalize',
+//                 data: (data, index, tr) => {
+              
+//                 let html = ['<div class="dropdown d-block ">',
+//                             '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-suppliername="', data.name, '" data-status="', data.status_code='active'? 1 : 2, '" class="btn_action " aria-haspopup="true" aria-expanded="false">',
+//                             '<i class="fa fa-chevron-down" style="color:#8DC63F;font-size:1.5em"></i>',
+//                             '</a>',
+//                             '</div>'].join('');
+//                         return html;
+//                 }
+                
 //             }
+         
         
 //     ];
 

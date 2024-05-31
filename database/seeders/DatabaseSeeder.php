@@ -18,6 +18,25 @@ class DatabaseSeeder extends Seeder
         $this->call([
             testingSeeder::class,
         ]);
-        
+        $this->call([
+            UmUserSeeder::class,
+        ]);
+        $this->call([
+            OsAgentTypeSeeder::class,
+        ]);
+        $this->call([
+            OsContactPersonTypeSeeder::class,
+        ]);
+        $this->call([
+            OsPackageStatusesSeeder::class,
+
+        ]);
+        $this->call([
+            SenderStatusesSeeder::class,
+        ]);
+        $this->call([
+            SenderTypeSeeder::class,
+
+        ]);
     }
 }

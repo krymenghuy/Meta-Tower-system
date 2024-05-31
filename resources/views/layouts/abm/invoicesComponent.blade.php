@@ -1,5 +1,5 @@
 <div id="_main_invoicesComponent" style="display:none; padding-right: 15px;">
-    <div class="d-flex justify-content-between bg-white rounded-3 p-3 border">
+    <div class="d-flex justify-content-between bg-white rounded-3 p-2 border">
         <div class="d-flex gap-2">
 
             <div class="input-group flex-nowrap">
@@ -32,7 +32,7 @@
         </div>
     </div>
 
-    <div class="d-flex align-items-center gap-2 p-1 mt-3">
+    <div style="background-color:#e6e6e6;" class="d-flex align-items-center  gap-2 p-2 mt-3">
         <button id="_new_invoice" data-toggle="modal" class="btn btn-primary text-nowrap">
             <i class="fa fa-user-plus"></i>
             <span class="kt-hidden-mobile text-nowrap">Add Invoice</span>
@@ -71,169 +71,88 @@
             <head>
                 <meta charset="UTF-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
                 <title>Invoice Table</title>
                 <style>
-                    table {
-                        width: 100%;
-                        border-collapse: collapse;
-                    }
-
-                    /* th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-        } */
-                    th {
-                        background-color: #f2f2f2;
-                        text-align: left;
-                    }
-
-                    tr:hover {
-                        background-color: #f1f1f1;
-                    }
-
-                    .action-buttons {
-                        display: flex;
-                        gap: 5px;
+                    .amount-cell {
+                        color: #fc0758;
                     }
                 </style>
             </head>
 
             <body>
-                <table id="invoiceTable" class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th scope="col">Invoice ID</th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Invoice Type</th>
-                            <th scope="col">Amount, USD</th>
-                            <th scope="col">Dis %</th>
-                            <th scope="col">Amount Due</th>
-                            <th scope="col">Issue Date</th>
-                            <th scope="col">Due Date</th>
-                            <th scope="col">Status</th>
-                            <th scope="col">Actions</th>
-
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-success">No100001</td>
-                            <td>John Doe</td>
-                            <td class="text-muted">tax</td>
-                            <td>$1000</td>
-                            <td>10%</td>
-                            <td style="color:#fc0758;">$900</td>
-                            <td>2024-05-01</td>
-                            <td>2024-06-01</td>
-                            <td class="text-danger">Unpaid</td>
-                            <td>
-                                <button class="btn btn-success ">Actions</button>
-                            </td>
-
-
-                        </tr>
-                        <tr>
-                            <td class="text-success">No100002</td>
-                            <td>John Doe</td>
-                            <td class="text-muted">informal</td>
-                            <td>$1000</td>
-                            <td>10%</td>
-                            <td style="color:#fc0758;">$900</td>
-                            <td>2024-05-01</td>
-                            <td>2024-06-01</td>
-                            <td class="text-danger">Unpaid</td>
-                            <td>
-                                <button class="btn btn-success ">Actions</button>
-                            </td>
-
-
-                        </tr>
-                        <tr>
-                            <td class="text-success">No100003</td>
-                            <td>John Doe</td>
-                            <td class="text-muted">commercial</td>
-                            <td>$1000</td>
-                            <td>10%</td>
-                            <td style="color:#fc0758;">$900</td>
-                            <td>2024-05-01</td>
-                            <td>2024-06-01</td>
-                            <td class="text-danger">Unpaid</td>
-                            <td>
-                                <button class="btn btn-success ">Actions</button>
-                            </td>
-
-
-                        </tr>
-                        <tr>
-                            <td class="text-success">No100004</td>
-                            <td>John Doe</td>
-                            <td class="text-muted">tax</td>
-                            <td>$1000</td>
-                            <td>10%</td>
-                            <td style="color:#fc0758;">$900</td>
-                            <td>2024-05-01</td>
-                            <td>2024-06-01</td>
-                            <td class="text-danger">Unpaid</td>
-                            <td>
-                                <button class="btn btn-success ">Actions</button>
-                            </td>
-
-
-                        </tr>
-                        <tr>
-                            <td class="text-success">commercial</td>
-                            <td>John Doe</td>
-                            <td class="text-muted">tax</td>
-                            <td>$1000</td>
-                            <td>10%</td>
-                            <td style="color:#fc0758;">$900</td>
-                            <td>2024-05-01</td>
-                            <td>2024-06-01</td>
-                            <td class="text-danger">Unpaid</td>
-                            <td>
-                                <button class="btn btn-success ">Actions</button>
-                            </td>
-
-
-                        </tr>
-                        <tr>
-                            <td class="text-success">No100006</td>
-                            <td>John Doe</td>
-                            <td class="text-muted">informal</td>
-                            <td>$1000</td>
-                            <td>10%</td>
-                            <td style="color:#fc0758;">$900</td>
-                            <td>2024-05-01</td>
-                            <td>2024-06-01</td>
-                            <td class="text-danger">Unpaid</td>
-                            <td>
-                                <button class="btn btn-success ">Actions</button>
-                            </td>
-
-
-                        </tr>
-                        <tr>
-                            <td class="text-success">No100007</td>
-                            <td>John Doe</td>
-                            <td class="text-muted">commercial</td>
-                            <td>$1000</td>
-                            <td>10%</td>
-                            <td style="color:#fc0758;">$900</td>
-                            <td>2024-05-01</td>
-                            <td>2024-06-01</td>
-                            <td class="text-danger">Unpaid</td>
-                            <td>
-                                <button class="btn btn-success ">Actions</button>
-                            </td>
-
-
-                        </tr>
-                      
-                    </tbody>
-                </table>
+                <div class="">
+                    <table id="invoiceTable" class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th scope="col">Invoice No</th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Invoice Type</th>
+                                <th scope="col">Qty</th>
+                                <th scope="col">Total Weight</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Discount</th>
+                                <th scope="col">Special Charge</th>
+                                <th scope="col">Total Amount</th>
+                                <th scope="col">Status</th>
+                                <th scope="col">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-success">No100001</td>
+                                <td>John Doe</td>
+                                <td class="text-muted">tax</td>
+                                <td>5</td>
+                                <td>100 kg</td>
+                                <td>$1000</td>
+                                <td>10%</td>
+                                <td>$50</td>
+                                <td class="amount-cell">$950</td>
+                                <td class="text-danger">Unpaid</td>
+                                <td>
+                                    <button class="btn btn-success">Actions</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-success">No100001</td>
+                                <td>John Doe</td>
+                                <td class="text-muted">tax</td>
+                                <td>5</td>
+                                <td>100 kg</td>
+                                <td>$1000</td>
+                                <td>10%</td>
+                                <td>$50</td>
+                                <td class="amount-cell">$950</td>
+                                <td class="text-danger">Unpaid</td>
+                                <td>
+                                    <button class="btn btn-success">Actions</button>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="text-success">No100001</td>
+                                <td>John Doe</td>
+                                <td class="text-muted">tax</td>
+                                <td>5</td>
+                                <td>100 kg</td>
+                                <td>$1000</td>
+                                <td>10%</td>
+                                <td>$50</td>
+                                <td class="amount-cell">$950</td>
+                                <td class="text-danger">Unpaid</td>
+                                <td>
+                                    <button class="btn btn-success">Actions</button>
+                                </td>
+                            </tr>
+                            
+                            <!-- Additional rows can be added here -->
+                        </tbody>
+                    </table>
+                </div>
             </body>
 
             </html>
+
 
         </div>
     </div>
