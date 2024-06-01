@@ -211,7 +211,9 @@ var PriceSettingsComponent = new function () {
     let btnEdit = div.find('a.ps-btn-edit-prices');
     let has_error = false;
     let p = {};
+    console.log(1,div);
     div.find('.dd-field').each(function () {
+      console.log(2,'hello');
       let field = $(this);
       let span = field.find('.dd-value');
       let input = field.find('.dd-input');

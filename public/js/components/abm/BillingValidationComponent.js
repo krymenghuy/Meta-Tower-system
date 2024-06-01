@@ -29,39 +29,17 @@ var BillingValidationComponent = new function () {
         }
         fileReader.onload = (event) => { 
             let fileData = event.target.result;
-            let workbook = XLSX.read(
-                fileData,
-                { type: "binary" }
-            );
-            workbook.SheetNames.forEach(async (sheet) => {
-                const result = XLSX.utils.sheet_to_json(workbook.Sheets[sheet], {
-                    raw: false,
-                });
-                console.log(result);
-                if(!result[0]) {
-                    alert('File error!');
-                    return;
-                }
-                let i=0;
-                let fieldNames = Object.keys(result[i]);
-
-                result.shift();
-
-                const jsonObjects = [];
-
-                result.forEach((row) => {
-                    const jsonObject = {};
-
-                    fieldNames.forEach((field) => {
-                        const key = field.trim().replace(/ /g, '').toLowerCase();
-                        jsonObject[key] = row[field];
-                    });
-
-                    jsonObjects.push(jsonObject);
-                });
-                i++;
-                console.log(jsonObjects);
+            console.log('file',btoa(fileData));
+            let p = {'file':btoa(fileData)};
+            if(!p.file) return; 
+            vsapi.call(`${main_view.base_url}/abm/oversea_shipments/import`,p,null,null,false).then(res =>{
+                if(res.status_code ===200){
+                    console.log('data',res.data);
+                    cv_interact.success('file has been saved');
+                    BillingValidationComponent.billValidationListView.showPage(); 
+                }else cv_interact.error(res.error_message);
             });
+           
         };
     });
 
@@ -125,12 +103,14 @@ var BillingValidationComponent = new function () {
                 title: 'product'
             },
             {
-                className: "total_weight",
+                className: "total_weight border-0",
                 data: (data,index,tr)=>{
+                    let weight_diff = 0;
+                    data.weight_diff < 0 ? weight_diff = data.weight_diff * -1 : weight_diff = data.weight_diff;
                     const sender_info = [`<div class="row">`,
                             `<div class='col-4 table-success'><span class="sender-name d-block">`,data.total_weight||`NA`,` </span></div>`,
                             `<div class='col-4 table-warning'><span class="sender-name d-block">`,data.carrier_total_weight||`NA`,` </span></div>`,
-                            `<div class='col-4 table-secondary'><span class="sender-name d-block">`,data.weight_diff||`-`,` </span></div>`,
+                            `<div class='col-4 table-'><span class="sender-name `,weight_diff > 0.03 ? "text-danger" : "text-success",` d-block">`,weight_diff||`-`,` </span></div>`,
                         `</div>`].join('');
                     return sender_info;
                 },
@@ -139,7 +119,7 @@ var BillingValidationComponent = new function () {
                             <div class='col-12 text-center p-2'>Weight (Kg)</div>
                             <div class='col-4 table-success p-2'>JTO</div>
                             <div class='col-4 table-warning p-2'>DHL</div>
-                            <div class='col-4 table-secondary p-2'>Diff.</div>
+                            <div class='col-4 table- p-2'>Diff.</div>
                         </div>`
             },
             // {
@@ -152,12 +132,14 @@ var BillingValidationComponent = new function () {
             //     title: `<div class='d-b'>carrier tw</div><div class='d-n'>carrier total weight</div>`
             // },
             {
-                className: "total_weight",
+                className: "total_amount border-0",
                 data: (data,index,tr)=>{
+                    let price_diff = 0;
+                    data.price_diff < 0 ? price_diff = data.price_diff * -1 : price_diff = data.price_diff;
                     const sender_info = [`<div class="row">`,
                             `<div class='col-4 table-success'><span class="sender-name d-block">`,data.total_price||`NA`,` </span></div>`,
                             `<div class='col-4 table-warning'><span class="sender-name d-block">`,data.total_carrier_cost||`NA`,` </span></div>`,
-                            `<div class='col-4 table-secondary'><span class="sender-name d-block">`,data.price_diff||`-`,` </span></div>`,
+                            `<div class='col-4 table-'><span class="sender-name `,price_diff > 0.03 ? "text-danger" : "",` d-block ">`,price_diff||`-`,` </span></div>`,
                         `</div>`].join('');
                     return sender_info;
                 },
@@ -166,8 +148,29 @@ var BillingValidationComponent = new function () {
                             <div class='col-12 text-center p-2'>Amount (USD) </div>
                             <div class='col-4 table-success p-2'>JTO</div>
                             <div class='col-4 table-warning p-2'>DHL</div>
-                            <div class='col-4 table-secondary p-2'>Diff.</div>
+                            <div class='col-4  p-2'>Diff.</div>
                         </div>`
+            },
+
+            {
+                className: "unacceptable" ,
+                data: (data,index,tr)=>{
+                    const sender_info = [`<div class="row ">`,
+                            `<div class='col-3 table-secondary'><span class="sender-name `,data.unacceptable_weight > 0 ? "text-danger" : "text-success",` d-block">`,data.unacceptable_weight||`0`,` </span></div>`,
+                            `<div class='col-3 table-secondary'><span class="sender-name `,data.unacceptable_price > 0 ? "text-danger" : "text-success",` d-block">`,data.unacceptable_price||`0`,` </span></div>`,
+                            `<div class='col-3 table-secondary'><span class="sender-name `,data.wrong_type > 0 ? "text-danger" : "text-success",` d-block ">`,data.wrong_type||`0`,` </span></div>`,
+                            `<div class='col-3 table-secondary'><span class="sender-name `,data.wrong_country > 0 ? "text-danger" : "text-success",` d-block ">`,data.wrong_country||`0`,` </span></div>`,
+                        `</div>`].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: ` <div class='row '>
+                            <div class='col-12 text-center p-2'> unacceptable </div>
+                            <div class='col-3 table-secondary p-2'>wei.</div>
+                            <div class='col-3 table-secondary p-2'>pri.</div>
+                            <div class='col-3 table-secondary p-2'>type</div>
+                            <div class='col-3 table-secondary p-2'>con.</div>
+                        </div> `
             },
             // {
             //     className: "",
@@ -195,14 +198,14 @@ var BillingValidationComponent = new function () {
             fetchApi: `${main_view.base_url}/abm/oversea_shipments/Shipment-list-BillValidate`,
             apiCluster: main_view.apiCluster,
             tableClass: "table bill_Validate table-bordered header-uppercase bg-white",
-            perPage: 20,
+            perPage: 10,
             columns: mThis.cols,
             // processResponse: (res) => {
             //     console.log(res.data);
             //     return res.data;
             // },
             rowCreated:(data,index,tr)=>{
-                // console.log(data);
+                
               tr.dataset.id = data.id;  
               tr.classList.add('order');
               tr.classList.add('shipment');
