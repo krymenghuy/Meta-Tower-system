@@ -117,8 +117,8 @@ Route::get('/', function () {
 Route::get('logout',function(){
     return view('login.index');
 });
-Route::post('loading',function(){
-    return view('load.loading');
+Route::post('landing',function(){
+    return view('landing.landing');
 });
 
 Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
