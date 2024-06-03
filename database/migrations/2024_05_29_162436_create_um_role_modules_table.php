@@ -8,7 +8,7 @@ class CreateUmRoleModulesTable extends Migration
 {
     /**
      * Run the migrations.
-     *
+     *3
      * @return void
      */
     public function up()

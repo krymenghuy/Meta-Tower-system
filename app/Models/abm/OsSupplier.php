@@ -9,11 +9,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use Sanitizer;
-class Supplier //extends Model
+class OsSupplier //extends Model
 {   
     protected $id = null;
     protected $userInfo = null;
-    protected static $img_dir = 'supplier';
+    protected static $img_dir = 'os_supplier';
     function __construct($id=null,$userInfo=null){
         $this->id=$id;
         $this->userInfo =$userInfo;
@@ -53,38 +53,38 @@ class Supplier //extends Model
         // return JDV::result($inputs);
 
         $delete_prev_image =($id > 0 && (!$photo || isImage($photo)));
-        $id = saveData($ss,'suppliers',['id'=>$id],$inputs,[],1,0);   
+        $id = saveData($ss,'os_suppliers',['id'=>$id],$inputs,[],1,0);   
         if($id > 0){
             $new_code = null;
             if($delete_prev_image){
-                $file_name = DB::table('suppliers as s')->where('s.id',$id)->take(1)->value('s.photo_file_name');
+                $file_name = DB::table('os_suppliers as s')->where('s.id',$id)->take(1)->value('s.photo_file_name');
                 if($file_name) PublicStorage::delete($branch_id,self::$img_dir,'image',$file_name);
-                DB::table('suppliers as s')->where('s.id',$id)->update(['photo_file_name'=>null]);
+                DB::table('os_suppliers as s')->where('s.id',$id)->update(['photo_file_name'=>null]);
             }
-            PublicStorage::saveImage($branch_id,self::$img_dir,null,$photo,null,['id'=>$id,'store'=>'suppliers.photo_file_name']);  
+            PublicStorage::saveImage($branch_id,self::$img_dir,null,$photo,null,['id'=>$id,'store'=>'os_suppliers.photo_file_name']);  
             
             if ($supplier_created){
                 $new_code = $this->getNextSenderCode($ss); // formatNumber($sender_id,5);
                 //$inputs['code'] = $new_code;
-                DB::table('suppliers')->where('id',$id)->update(['code'=>$new_code]);
+                DB::table('os_suppliers')->where('id',$id)->update(['code'=>$new_code]);
              }
 
         }
-    //    return DV::error('Something went wrong in saving sender profile');
+    //return DV::error('Something went wrong in saving sender profile');
         return DV::depends($id,['action'=>'saved']);
 
     }
 
     function getSuplierList(){
         // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());
-        return DB::table('suppliers')->selectRaw('id,name, phone_number, email, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->get();
+        return DB::table('os_suppliers')->selectRaw('id,name, phone_number, email, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->get();
     }
 
     function checkUniquePerson($branch_id,$phone_number,$id=null){
         $str_id ="1=1";
         if(!$phone_number) return 'Phone number cannot be empty';
         if ($id>0) $str_id="s.id <> $id";
-        $x = DB::table('suppliers as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+        $x = DB::table('os_suppliers as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
         if ($x) return 'Phone number "'.$phone_number.'" is already save...';
         return null;
       }
@@ -94,9 +94,7 @@ class Supplier //extends Model
         return DB::table('oversea_items')->selectRaw('item_type, billed_weight, actual_weight, allocated_kg, heigth, weigth, length')->get();
     }
 
-    function List(){
-        return DB::table('requirements')->selectRaw('project_id,description,status_id')->get();
-    }
+  
 
     
     function getSuplierListPaginate($filter,$ss){
@@ -107,6 +105,7 @@ class Supplier //extends Model
         $current_page = isset($d->current_page)?$d->current_page:1;
         $per_page = isset($d->per_page)?$d->per_page:10;
         $search_value = isset($d->search_value)?$d->search_value:null;
+        
         $status_code = isset($d->status_code)?$d->status_code:null;
         $price_list_id = isset($d->price_list_id)?$d->price_list_id:null;
         $str_srch = '1=1';
@@ -124,10 +123,10 @@ class Supplier //extends Model
         $skip_row = ($current_page - 1) * $per_page;
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
        // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
-        $query = DB::table('suppliers as s')
-                ->join('affiliates as sa','sa.id','=','s.sales_agent_id')
-                // ->whereRaw($str_srch)
-                // ->whereRaw($str_where)
+        $query = DB::table('os_suppliers as s')
+                ->join('os_affiliates as sa','sa.id','=','s.sales_agent_id')
+                ->whereRaw($str_srch)
+                ->whereRaw($str_where)
                 ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.sales_agent_id,sa.type_from_affilliate_type,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
        
         // return $query;
@@ -157,7 +156,7 @@ class Supplier //extends Model
         $p = getDataRow('price_list_names',["id"=>$price_list_id],"id,name");
         if(!$p) return DV::error("Price list ID is not valid");
         $p_name = $p->name;
-        DB::table('suppliers')->where('id',$id)->update(array(
+        DB::table('os_suppliers')->where('id',$id)->update(array(
         'price_list_id'=>$price_list_id));
         // return JDV::result($price_list_id );
         return DV::success(['list_name'=>$p_name,'list_id'=>$price_list_id]);
@@ -175,7 +174,7 @@ class Supplier //extends Model
 
         $id = $id ?? $this->id;
 
-        $delete = DB::table('suppliers')->where('id',$id)->delete();
+        $delete = DB::table('os_suppliers')->where('id',$id)->delete();
         return DV::depends($delete,['action','deleted']);
     }
 
@@ -202,7 +201,7 @@ class Supplier //extends Model
             $err = self::getOutstandingBalanceError($id);
             if($err) return DV::error($err);
             }
-        $x = DB::table('suppliers')->where('id',$id)->update([
+        $x = DB::table('os_suppliers')->where('id',$id)->update([
             'status_code'=>$status_code
         ]);
         return DV::depends($x,['Supplier status','updated']);
@@ -228,13 +227,13 @@ class Supplier //extends Model
         // $data->sender_types = DB::table('sender_type')->where('branch_id',$branch_id)->selectRaw('id,name AS sender_type')->get();
         $data->business_types = DB::table('sender_business_types')->selectRaw('business_type AS code,business_type')->get();
         $data->sender_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name AS status_name')->get();
-        $data->sales_agents = DB::table('affiliates AS sa')->where('branch_id',$branch_id)->selectRaw('sa.id,sa.name AS agent_name')->get();
+        $data->sales_agents = DB::table('os_affiliates AS sa')->where('branch_id',$branch_id)->selectRaw('sa.id,sa.name AS agent_name')->get();
         $data->price_list = DB::table('price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name')->get();
         return $data;
     }
     static function details($id,$ss,$includeProfilePicture=false,$includeBankAccount=true){
         $branch_id = $ss->branch_id;    
-        $row = DB::table('suppliers')->selectRaw('id,name,code, phone_number, email,sales_agent_id,photo_file_name, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
+        $row = DB::table('os_suppliers')->selectRaw('id,name,code, phone_number, email,sales_agent_id,photo_file_name, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
         if (!$row) return null;
             //$accounts = self::bankAccounts($id,1);
             // if($row->loc_lat ==0) $row->loc_lat = null;
@@ -254,23 +253,23 @@ class Supplier //extends Model
      function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
         $id = $id?$id:$this->id;
         $ss = $ss?$ss:$this->userInfo;
-        $supplier = DB::table('suppliers')->where('id',$id)->selectRaw('id,branch_id,photo_file_name')->first();
+        $supplier = DB::table('os_suppliers')->where('id',$id)->selectRaw('id,branch_id,photo_file_name')->first();
         $delete_image = (!$photo_data || isImage($photo_data));
         if(!$supplier)return DV::error('Supplier identity is not correct!');
         if($delete_image){
           PublicStorage::delete($ss->branch_id,'general','image',$supplier->photo_file_name);
-          DB::table('suppliers')->where('id',$id)->update(['photo_file_name'=>null]);
+          DB::table('os_suppliers')->where('id',$id)->update(['photo_file_name'=>null]);
         }
-        return PublicStorage::saveImage($ss->branch_id,self::$img_dir, null,$photo_data,null,['id'=>$id,'store'=>'suppliers.photo_file_name']);  
+        return PublicStorage::saveImage($ss->branch_id,self::$img_dir, null,$photo_data,null,['id'=>$id,'store'=>'os_suppliers.photo_file_name']);  
         
       }
       static function getProfilePicture($id)
   {
-    $row = DB::table('suppliers ')->where('id', $id)->selectRaw('branch_id,photo_file_name')->first();
+    $row = DB::table('os_suppliers ')->where('id', $id)->selectRaw('branch_id,photo_file_name')->first();
     if (!$row) {
       return self::defaultImage(1);
     }
-    $url = PublicStorage::getUrl($row->branch_id, 'supplier', 'image') . $row->photo_file_name;
+    $url = PublicStorage::getUrl($row->branch_id, 'os_supplier', 'image') . $row->photo_file_name;
     return validateUrl($url, '');
   }
 
@@ -278,11 +277,11 @@ class Supplier //extends Model
       {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $supplier = DB::table('suppliers')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
+        $supplier = DB::table('os_suppliers')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
         if (!$supplier)
           return DV::error('Supplier identity is not correct!');
-        PublicStorage::delete($ss->branch_id, 'supplier', 'image', $supplier->photo_file_name);
-        DB::table('suppliers')->where('id', $id)->update(['photo_file_name' => null]);
+        PublicStorage::delete($ss->branch_id, 'os_supplier', 'image', $supplier->photo_file_name);
+        DB::table('os_suppliers')->where('id', $id)->update(['photo_file_name' => null]);
         return DV::depends($id,['Supplier are','update']);
       }
 }

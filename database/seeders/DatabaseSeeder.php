@@ -15,9 +15,7 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
 
-        $this->call([
-            testingSeeder::class,
-        ]);
+        
         $this->call([
             UmUserSeeder::class,
         ]);
@@ -36,6 +34,17 @@ class DatabaseSeeder extends Seeder
         ]);
         $this->call([
             SenderTypeSeeder::class,
+
+        ]);
+        $this->call([
+            SenderCodeControlSeeder::class,
+        ]);
+        $this->call([
+            OsContactPersonStatusesSeeder::class,
+
+        ]);
+        $this->call([
+            SalesAgentsStatusesSeeder::class,
 
         ]);
     }

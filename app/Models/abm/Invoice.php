@@ -16,7 +16,9 @@ use Illuminate\Support\Facades\Cache;
 
 class Invoice //extends Model
 {
-    protected $id =null;
+
+
+    protected $id = null;
     protected $userInfo = null;
     function __construct($id=null,$userInfo=null){
         $this->id=$id;

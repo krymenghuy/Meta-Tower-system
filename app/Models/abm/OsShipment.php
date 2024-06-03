@@ -8,7 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 
-class OverseaShipment //extends Model
+class OsShipment //extends Model
 {   
     protected $id = null;
     protected $userInfo = null;
@@ -99,9 +99,7 @@ class OverseaShipment //extends Model
         return DB::table('oversea_items')->selectRaw('item_type, billed_weight, actual_weight, allocated_kg, heigth, weigth, length')->get();
     }
 
-    function List(){
-        return DB::table('requirements')->selectRaw('project_id,description,status_id')->get();
-    }
+   
 
     
     
@@ -128,7 +126,7 @@ class OverseaShipment //extends Model
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
        // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
         $query = DB::table('os_shipments as os')
-                ->join('affiliates as sa','os.primary_cp_id','=','sa.id') // Perform an inner join
+                ->join('os_affiliates as sa','os.primary_cp_id','=','sa.id') // Perform an inner join
                 ->join('loc_countries as lc', 'lc.id', '=', 'os.to_country_id')
                 // ->join('price_list_details as p', 'p.country_id', '=', 'os.to_country_id')
                 ->join('sender as sd', 'sd.id', '=', 'os.sender_id')
@@ -305,16 +303,16 @@ class OverseaShipment //extends Model
         $branch_id = $uss->branch_id;
         $prefix ='SH';
         $str_prefix = $prefix? 'prefix =\''.$prefix.'\'' : '2=2';
-        $row = DB::table('shipment_code_control AS c')->where('branch_id',$branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
+        $row = DB::table('os_shipment_code_control AS c')->where('branch_id',$branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
        if($row) {
             $num = $row->last_id;
             $prefix = trim($row->prefix);
             $num +=1;
-            DB::table('shipment_code_control')->where('branch_id',$branch_id)->whereRaw($str_prefix)->update(['last_id'=>$num]);
+            DB::table('os_shipment_code_control')->where('branch_id',$branch_id)->whereRaw($str_prefix)->update(['last_id'=>$num]);
         return ['code'=>$prefix.$branch_id.formatNumber($num,$len),'last_id'=>$num];
         // return $prefix.$branch_id.formatNumber($num,$len);
         }
-        DB::table('shipment_code_control')->insert(['branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix]);
+        DB::table('os_shipment_code_control')->insert(['branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix]);
         return ['code'=>$prefix.$branch_id.formatNumber(1,$len),'last_id'=>$row->last_id];
     }
     
@@ -341,11 +339,11 @@ class OverseaShipment //extends Model
             'to_country'=>GeneralSettings::options_country_zone($ss),
             'shipment_code'=>GeneralSettings::options_shipment_code($ss),
             'senders'=>GeneralSettings::options_sender($ss),
-            'shipment_status'=> DB::table('os_shipment_statuses AS os')->selectRaw('os.id AS status_id,os.name as status_name')->get(),
+            'os_shipment_status'=> DB::table('os_shipment_statuses AS os')->selectRaw('os.id AS status_id,os.name as status_name')->get(),
             // 'sale_a'=>GeneralSettings::options_sales_affiliate($ss),
             'primary_cp'=>GeneralSettings::options_primary_cp($ss),
             'secondary_cp'=>GeneralSettings::options_secondary_cp($ss),
-            'shipment' => $shipment
+            'os_shipment' => $shipment
         ];
     }
 }

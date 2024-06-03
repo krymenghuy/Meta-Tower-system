@@ -175,7 +175,7 @@ class GeneralSettings //extends Model
 
     static function options_sales_affiliate($ss,$include_all =false,$active_only=true){
         $str_active = $active_only? 'a.status_code =\'active\'':'2=2';
-        $rows = DB::table("affiliates as a")->where('branch_id',$ss->branch_id)->whereRaw($str_active)->selectRaw('a.id,CONCAT(a.name,\'(\',a.code,\')\') AS agent_name,a.code')->get();
+        $rows = DB::table("os_affiliates as a")->where('branch_id',$ss->branch_id)->whereRaw($str_active)->selectRaw('a.id,CONCAT(a.name,\'(\',a.code,\')\') AS agent_name,a.code')->get();
         if($include_all){
            $rows->prepend((object)['id'=>null,'agent_name'=>'(All Agents)']);
         }
@@ -191,7 +191,7 @@ class GeneralSettings //extends Model
     }
     static function options_primary_cp($ss,$include_all =false,$active_only=true){
         $str_active = $active_only? 'a.status_code =\'active\'':'2=2';
-        $rows = DB::table("affiliates as a")
+        $rows = DB::table("os_affiliates as a")
         ->join('os_contact_persons as cp','cp.affiliate_id','=','a.id')
         ->where('a.branch_id',$ss->branch_id)
         ->where('cp.cp_type',1)
@@ -204,7 +204,7 @@ class GeneralSettings //extends Model
     }
     static function options_secondary_cp($ss,$include_all =false,$active_only=true){
         $str_active = $active_only? 'a.status_code =\'active\'':'2=2';
-        $rows = DB::table("affiliates as a")
+        $rows = DB::table("os_affiliates as a")
         ->join('os_contact_persons as cp','cp.affiliate_id','=','a.id')
         ->where('a.branch_id',$ss->branch_id)
         ->where('cp.cp_type',2)

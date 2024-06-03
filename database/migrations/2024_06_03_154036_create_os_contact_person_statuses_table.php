@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddDiscountToTesting extends Migration
+class CreateOsContactPersonStatusesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class AddDiscountToTesting extends Migration
      */
     public function up()
     {
-        Schema::table('testing', function (Blueprint $table) {
-            $table->integer('discount')->nullable()->default(0.00)->after('price');
+        Schema::create('os_contact_person_statuses', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('code',20)->nullable();
+            $table->string('name',20)->nullable();
         });
     }
 
@@ -25,8 +27,6 @@ class AddDiscountToTesting extends Migration
      */
     public function down()
     {
-        Schema::table('testing', function (Blueprint $table) {
-            $table->dropColumn('discount');
-        });
+        Schema::dropIfExists('os_contact_person_statuses');
     }
 }

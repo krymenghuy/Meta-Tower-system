@@ -1,9 +1,11 @@
 <div id="_main_invoicesComponent" style="display:none; padding-right: 15px;">
-    <div class="d-flex justify-content-between bg-white rounded-3 p-2 border">
+    <div class="d-flex justify-content-between bg-white rounded-3 mt-3 p-2 border border-white">
         <div class="d-flex gap-2">
 
-            <div class="input-group flex-nowrap">
-                <input id="_search_invoice" type="text" class="form-control height" placeholder="search name or phone">
+            <div class="input-group flex-nowrap ">
+                <!-- <input id="_search_invoice" type="text" class="form-control  height" placeholder="search name or phone"> -->
+                <div><input type="text" id="_pl_search" class="form-control min-width-search height" placeholder="Search request"/></div>
+
                 <div id="_btnSearch" class="input-group-text" role="button">
                     <i class="fa fa-sync-alt fs-5 text-success"></i>
                 </div>
@@ -13,22 +15,20 @@
             </div>
 
         </div>
-        <div class="d-flex gap-2">
 
-            <div class="d-flex gap-2">
-                <button id="_invoice_btnPrint" type="button" class="btn btn-warning text-nowrap text-white">
+        <div class="d-flex gap-2 ">
+                <button id="_invoice_btnPrint" type="button" class="btn btn-warning mr-3 text-nowrap text-white">
                     <i class="fas fa-print fs-5"></i>
                     <span>Print</span>
                 </button>
-                <button id="_invoice_btnPDF" type="button" class="btn btn-primary text-nowrap">
+                <button id="_invoice_btnPDF" type="button" class="btn btn-primary mr-3 text-nowrap">
                     <i class="fas fa-file-pdf fs-5"></i>
                     <span>PDF</span>
                 </button>
-                <button id="_invoice_btnExcel" type="button" class="btn btn-success text-nowrap">
+                <button id="_invoice_btnExcel" type="button" class="btn btn-success mr-5 text-nowrap">
                     <i class="fas fa-file-excel fs-5"></i>
                     <span>Excel</span>
                 </button>
-            </div>
         </div>
     </div>
 
@@ -65,20 +65,7 @@
 
     <div class="shadow rounded-3 bg-white mt-3 p-2 overflow-hidden">
         <div id="_invoice_list" class="p-2">
-            <!DOCTYPE html>
-            <html lang="en">
-
-            <head>
-                <meta charset="UTF-8">
-                <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-                <title>Invoice Table</title>
-                <style>
-                    .amount-cell {
-                        color: #fc0758;
-                    }
-                </style>
-            </head>
+           
 
             <body>
                 <div class="">
@@ -86,8 +73,9 @@
                         <thead>
                             <tr>
                                 <th scope="col">Invoice No</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Invoice Type</th>
+                                <th scope="col">Customer Name</th>
+                                <th scope="col">Send To Country</th>
+                                <th scope="col">Item Type</th>
                                 <th scope="col">Qty</th>
                                 <th scope="col">Total Weight</th>
                                 <th scope="col">Amount</th>
@@ -102,7 +90,7 @@
                             <tr>
                                 <td class="text-success">No100001</td>
                                 <td>John Doe</td>
-                                <td class="text-muted">tax</td>
+                                <td class="text-muted">England<p class="text-success">tax</p></td>
                                 <td>5</td>
                                 <td>100 kg</td>
                                 <td>$1000</td>
@@ -114,36 +102,8 @@
                                     <button class="btn btn-success">Actions</button>
                                 </td>
                             </tr>
-                            <tr>
-                                <td class="text-success">No100001</td>
-                                <td>John Doe</td>
-                                <td class="text-muted">tax</td>
-                                <td>5</td>
-                                <td>100 kg</td>
-                                <td>$1000</td>
-                                <td>10%</td>
-                                <td>$50</td>
-                                <td class="amount-cell">$950</td>
-                                <td class="text-danger">Unpaid</td>
-                                <td>
-                                    <button class="btn btn-success">Actions</button>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-success">No100001</td>
-                                <td>John Doe</td>
-                                <td class="text-muted">tax</td>
-                                <td>5</td>
-                                <td>100 kg</td>
-                                <td>$1000</td>
-                                <td>10%</td>
-                                <td>$50</td>
-                                <td class="amount-cell">$950</td>
-                                <td class="text-danger">Unpaid</td>
-                                <td>
-                                    <button class="btn btn-success">Actions</button>
-                                </td>
-                            </tr>
+                           
+                            
                             
                             <!-- Additional rows can be added here -->
                         </tbody>
@@ -151,7 +111,6 @@
                 </div>
             </body>
 
-            </html>
 
 
         </div>

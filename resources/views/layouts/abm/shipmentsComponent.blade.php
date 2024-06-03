@@ -103,7 +103,7 @@
 </style>
 
 <div id="_main_shipmentsComponent" style="display:none; margin-right:15px;">
-    <div class="p-3 bg-white shadow rounded-3">
+    <div class="p-3 bg-white shadow mt-3 rounded-3">
         <div class="kt-portlet__head-toolbar form-inline" id="_dl_filter_panel">
             <div class="d-flex w-100 justify-content-between">
                 <div class="d-flex flex-row gap-2 " id="_sdl_filter_fields">

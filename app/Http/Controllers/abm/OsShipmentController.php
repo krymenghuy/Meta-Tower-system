@@ -3,19 +3,19 @@
 namespace App\Http\Controllers\Abm;
 
 use App\Http\Controllers\Controller;
-use App\Models\Abm\OverseaShipment;
-use App\Models\Abm\OverseaItem;
+use App\Models\Abm\OsShipment;
+use App\Models\Abm\OsItem;
 use App\Models\Abm\StudentEnrollment;
 use Illuminate\Http\Request;
 use App\Models\UM;
 use App\Models\JDV;
 
-class OverseaShipmentController extends Controller
+class OsShipmentController extends Controller
 {
     protected $shipment = null;
     function __construct(){
-        $this->shipment = new OverseaShipment();
-        $this->item = new OverseaItem();
+        $this->shipment = new OsShipment();
+        $this->item = new OsItem();
         $this->student = new StudentEnrollment(); //test import
     }
     function save(Request $req){

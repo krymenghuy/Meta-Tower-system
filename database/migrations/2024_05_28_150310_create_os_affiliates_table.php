@@ -26,7 +26,7 @@ class CreateOsAffiliatesTable extends Migration
             $table->string('status_code',15)->default('active');
             $table->string('position_title',255)->nullable();
             $table->integer('affiliate_type')->nullable()->default(1)->comment('1= sales agent ,2= contact person');
-            $table->string('type_from_affiliate_type',35)->nullable()->comment('sales type from affiliate_type_id');
+            $table->string('type_from_affilliate_type',35)->nullable()->comment('sales type from affiliate_type_id');
             $table->integer('branch_id');
             $table->integer('create_uid')->nullable();
             $table->integer('update_uid')->nullable();

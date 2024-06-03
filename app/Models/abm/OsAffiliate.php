@@ -14,10 +14,10 @@ use App\Models\Sender;
 use Config;
 use Illuminate\Support\Facades\Cache;
 
-class SalesAgent //extends Model
+class OsAffiliate //extends Model
 {
     protected $id = null, $userInfo = null;
-    protected static $photo_dir = 'affiliate';
+    protected static $photo_dir = 'os_affiliate';
     /** This is for Full-timer sales staff: the Threhold is set to 3000pcs in order to get $100 bonus, and each additional package, he gets 0.05 USD */
     protected static $ft_item_count_threhold = 500, $ft_amount_per_unit =0.05, $ft_bonus_amount =100;
     ///** This is the standard columns for commission summary. Some of these columns will be restructured or remaned according to whether the Summary is Closed or Real-time */
@@ -50,9 +50,9 @@ class SalesAgent //extends Model
        $ss = $ss ?? $this->userInfo;
       //  return JDV::result([$as,$id]);
       //  $this->deleteProfilePhoto($id,$ss);
-       $x = DB::table('affiliates')->where('id',$id)->delete();
+       $x = DB::table('os_affiliates')->where('id',$id)->delete();
        if($x){
-        DB::table('suppliers')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
+        DB::table('os-suppliers')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
         // DB::table('leads')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
         // DB::table('um_users')->where('official_id',$id)->where('user_class','sales_agent')->delete();
         if($as=='sa'){
@@ -118,21 +118,21 @@ class SalesAgent //extends Model
       $is_sales_agent = $as->as=='sa';
       $is_sales_agent ? $inputs['affiliate_type'] = 1 : $inputs['affiliate_type']=2 ;
       // return $inputs;
-      $id = saveData($ss,'affiliates',['id'=>$id],$inputs,[],1,false);
+      $id = saveData($ss,'os_affiliates',['id'=>$id],$inputs,[],1,false);
       if($id>0){
         $new_code = null;
 
         if($delete_prev_image){
-          $file_name = DB::table('affiliates as a')->where('a.id',$id)->take(1)->value('a.photo_file_name');
+          $file_name = DB::table('os_affiliates as a')->where('a.id',$id)->take(1)->value('a.photo_file_name');
           if($file_name) PublicStorage::delete($branch_id,self::$photo_dir,'image',$file_name);
-          DB::table('affiliates as a')->where('a.id',$id)->update(['photo_file_name'=>null]);
+          DB::table('os_affiliates as a')->where('a.id',$id)->update(['photo_file_name'=>null]);
         }
-        PublicStorage::saveImage($branch_id,self::$photo_dir,null,$photo,null,['id'=>$id,'store'=>'affiliates.photo_file_name']);  
+        PublicStorage::saveImage($branch_id,self::$photo_dir,null,$photo,null,['id'=>$id,'store'=>'os_affiliates.photo_file_name']);  
         
         if($created){
             $new_code  = self::setAgentCode($ss,5);
             $n = (object)$new_code;
-            DB::table('affiliates')->where('id',$n->last_id)->update(['code'=>$n->code]);
+            DB::table('os_affiliates')->where('id',$n->last_id)->update(['code'=>$n->code]);
             
             
             //return JDV::result([$n->last_id]);
@@ -215,42 +215,20 @@ class SalesAgent //extends Model
                     $um->addRoleMember($d->user_id,$default_role_id,$ss);
     }
 
-  //   function saveProfilePhoto($photo, $id,$ss){
-  //       $id = $id ?? $this->id;
-  //       $ss = $ss ?? $this->userInfo;
-  //       $branch_id = $ss->branch_id;
-  //       if(isImage($photo)){
-  //         $file_name = DB::table('affiliates as a')->where('id',$id)->take(1)->value('photo_file_name');
-  //         if($file_name) PublicStorage::delete($branch_id,self::$photo_dir,'image',$file_name);
-  //         $m_res = PublicStorage::saveImage($branch_id,self::$photo_dir,null,$photo,null,['id'=>$id,'store'=>'affiliates.photo_file_name']); 
-  //         if($m_res->status =='Error') return DV::error($m_res->error_message);
-  //         else return DV::success();
-  //       }
-  //      return DV::error('Failed to save affiliate profile photo');  
-  //   }
-
-  //   function deleteProfilePhoto($id,$ss){
-  //     $id = $id ?? $this->id;
-  //     $ss = $ss ?? $this->userInfo;
-  //     $branch_id = $ss->branch_id;
-  //     $file_name = DB::table('affiliates as a')->where('id',$id)->take(1)->value('photo_file_name');
-
-  //     if($file_name) PublicStorage::delete($branch_id,self::$photo_dir,'image',$file_name);
-  //     return DV::depends(1);       
-  // }
+  
   function saveProfilePicture($photo_data, $file_type = null, $id = null, $ss = null)
   {
     $id = $id ? $id : $this->id;
     $ss = $ss ? $ss : $this->userInfo;
-    $affiliate = DB::table('affiliates as a')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
+    $affiliate = DB::table('os_affiliates as a')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
     $delete_image = (!$photo_data || isImage($photo_data));
     if (!$affiliate)
       return DV::error('Affiliate identity is not correct!');
     if ($delete_image) {
-      PublicStorage::delete($ss->branch_id, 'affiliate', 'image', $affiliate->photo_file_name);
-      DB::table('affiliates')->where('id', $id)->update(['photo_file_name' => null]);
+      PublicStorage::delete($ss->branch_id, 'os_affiliate', 'image', $affiliate->photo_file_name);
+      DB::table('os_affiliates')->where('id', $id)->update(['photo_file_name' => null]);
     }
-    return PublicStorage::saveImage($ss->branch_id, self::$photo_dir, null, $photo_data, null, ['id' => $id, 'store' => 'affiliates.photo_file_name']);
+    return PublicStorage::saveImage($ss->branch_id, self::$photo_dir, null, $photo_data, null, ['id' => $id, 'store' => 'os_affiliates.photo_file_name']);
   }
   static function defaultImage($branch_id)
   {
@@ -259,45 +237,45 @@ class SalesAgent //extends Model
   }
   static function getProfilePicture($id)
   {
-    $row = DB::table('affiliates as a')->where('id', $id)->selectRaw('a.branch_id,a.photo_file_name')->first();
+    $row = DB::table('os_affiliates as a')->where('id', $id)->selectRaw('a.branch_id,a.photo_file_name')->first();
     if (!$row) {
       return self::defaultImage(1);
     }
-    $url = PublicStorage::getUrl($row->branch_id, 'affiliate', 'image') . $row->photo_file_name;
+    $url = PublicStorage::getUrl($row->branch_id, 'os_affiliate', 'image') . $row->photo_file_name;
     return validateUrl($url, '');
   }
   function deleteProfilePicture($id = null, $ss = null)
   {
     $id = $id ?? $this->id;
     $ss = $ss ?? $this->userInfo;
-    $affiliate = DB::table('affiliates as a ')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
+    $affiliate = DB::table('os_affiliates as a ')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
     if (!$affiliate)
       return DV::error('Affiliate identity is not correct!');
-    PublicStorage::delete($ss->branch_id, 'affiliate', 'image', $affiliate->photo_file_name);
-    DB::table('affiliates as a')->where('id', $id)->update(['photo_file_name' => null]);
+    PublicStorage::delete($ss->branch_id, 'os_affiliate', 'image', $affiliate->photo_file_name);
+    DB::table('os_affiliates as a')->where('id', $id)->update(['photo_file_name' => null]);
     return DV::depends($id,['Affiliate are ','update']);
   }
 
     function agent_name_exists($branch_id,$name,$id) {
        $str_id = $id>0 ? 'id <> '.$id:'1=1'; 
-       $row = DB::table('sales_agents AS a')->where('a.branch_id',$branch_id)->where('a.name',$name)->whereRaw($str_id)->selectRaw('id')->take(1)->first();
+       $row = DB::table('os_sales_agents AS a')->where('a.branch_id',$branch_id)->where('a.name',$name)->whereRaw($str_id)->selectRaw('id')->take(1)->first();
        return $row?true:false;
     }
 
     function setAgentCode($uss,$len =5){
         $branch_id = $uss->branch_id;
-        $prefix ='HA';
+        $prefix ='AF';
         $str_prefix = $prefix? 'prefix =\''.$prefix.'\'' : '2=2';
-        $row = DB::table('agent_code_control AS c')->where('branch_id',$branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
+        $row = DB::table('os_agent_code_control AS c')->where('branch_id',$branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
        if($row) {
             $num = $row->last_id;
             $prefix = trim($row->prefix);
             $num +=1;
-            DB::table('agent_code_control')->where('branch_id',$branch_id)->whereRaw($str_prefix)->update(['last_id'=>$num]);
+            DB::table('os_agent_code_control')->where('branch_id',$branch_id)->whereRaw($str_prefix)->update(['last_id'=>$num]);
         return ['code'=>$prefix.$branch_id.formatNumber($num,$len),'last_id'=>$num];
         // return $prefix.$branch_id.formatNumber($num,$len);
         }
-        DB::table('agent_code_control')->insert(['branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix]);
+        DB::table('os_agent_code_control')->insert(['branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix]);
         return ['code'=>$prefix.$branch_id.formatNumber(1,$len),'last_id'=>$row->last_id];
     }
     
@@ -307,7 +285,7 @@ class SalesAgent //extends Model
         // return DB::table('os_agent_types')->selectRaw('name as id,name AS agent_type')->get();
         return (object)[
            'details'=>$d, 
-           'statuses'=>DB::table('sales_agent_statuses AS ss')->selectRaw('ss.code As status_code,ss.name AS status_name')->get(),
+           'statuses'=>DB::table('os_sales_agents_statuses AS ss')->selectRaw('ss.code As status_code,ss.name AS status_name')->get(),
            'agent_types'=> DB::table('os_agent_types')->selectRaw('name as id,name AS agent_type')->get(),
            'cp_types'=> DB::table('os_contact_person_types')->selectRaw('name as id,name AS cp_types')->get(),
         ];
@@ -326,7 +304,7 @@ class SalesAgent //extends Model
          'month_years'=>$month_years,
          'pmt_methods' => DB::table('payment_methods as m')->selectRaw('m.id,m.name AS pmt_method')->get(),
          'exchange_info'=>GeneralSettings::getExchangeRate(null,$ss),
-         'agent_types'=> DB::table('sales_agent_types')->selectRaw('id,name AS agent_type')->get(),
+         'agent_types'=> DB::table('os_agent_types')->selectRaw('id,name AS agent_type')->get(),
       ];
     }
 
@@ -424,16 +402,16 @@ class SalesAgent //extends Model
       $id = null;
       $agent_code = null;
       $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
-      $id = saveData($ss,'affiliates',['id'=>$id],$inputs,[],1,false);
+      $id = saveData($ss,'os_affiliates',['id'=>$id],$inputs,[],1,false);
       if($id > 0){
         if($delete_prev_image){
-            $file_name = DB::table('affiliates as a')->where('id',$id)->take(1)->value('photo_file_name');
+            $file_name = DB::table('os_affiliates as a')->where('id',$id)->take(1)->value('photo_file_name');
             if($file_name) PublicStorage::delete($branch_id,self::$photo_dir,'image',$file_name);
-            DB::table('affiliates as a')->where('id',$id)->update(['photo_file_name'=>null]);
+            DB::table('os_affiliates as a')->where('id',$id)->update(['photo_file_name'=>null]);
         }
         $agent_code = self::setAgentCode($ss,5);
-        DB::table('sales_agents')->where('id',$id)->update(['code'=>$agent_code]);
-        PublicStorage::saveImage($branch_id,self::$photo_dir,null,$photo,null,['id'=>$id,'affiliates.photo_file_name']);
+        DB::table('os_sales_agents')->where('id',$id)->update(['code'=>$agent_code]);
+        PublicStorage::saveImage($branch_id,self::$photo_dir,null,$photo,null,['id'=>$id,'os_affiliates.photo_file_name']);
          
               //begin::create user profile in table umt_users
                        //$otp_code = $this->newOTP(6); 
@@ -503,14 +481,14 @@ class SalesAgent //extends Model
  
 
   static function setCommissionPolicy($policy_id,$id){
-     DB::table('sales_agents')->where('id',$id)->update([
+     DB::table('os_sales_agents')->where('id',$id)->update([
        'policy_id'=>$policy_id
      ]);
      return DV::depends(1);
   }
   function updateStatus($status_code,$id=null){
     if(!in_array(strtolower($status_code),['active','inactive'])) return DV::error('Status code is not correct');
-    DB::table('affiliates')->where('id',$id)->update(['status_code'=>$status_code]);
+    DB::table('os_affiliates')->where('id',$id)->update(['status_code'=>$status_code]);
     return DV::depends(1,['update'=>'don']);
   }
     //Called by Sales mobile app to update user profile quickly
@@ -538,7 +516,7 @@ class SalesAgent //extends Model
     if ($org_phone_number && $d->phone_number && ($org_phone_number != $d->phone_number)){
         unset($inputs['phone_number']);
     }
-    $id = saveData($ss,'sales_agents',['id'=>$id],$inputs,[],1,false);
+    $id = saveData($ss,'os_sales_agents',['id'=>$id],$inputs,[],1,false);
     if($id){
       $sms_err = null;
       //Check if sales changed his phoner number   
@@ -561,19 +539,19 @@ function agentCodeExists($uss,$code,$id) {
   $rows = [];
   if (!$code) return false;
   $str_id = $id > 0 ? 's.id <> '.$id : '1=1';
-  $row = DB::table('sales_agents AS s')->where('s.branch_id',$branch_id)->where('s.code',$code)->whereRaw($str_id)->selectRaw('s.id')->take(1)->first();
+  $row = DB::table('os_sales_agents AS s')->where('s.branch_id',$branch_id)->where('s.code',$code)->whereRaw($str_id)->selectRaw('s.id')->take(1)->first();
   return $row? true:false;
 }
 
 static function getAgentProp($id,$prop){
-  return DB::table('sales_agents')->where('id',$id)->selectRaw($prop)->take(1)->first();
+  return DB::table('os_sales_agents')->where('id',$id)->selectRaw($prop)->take(1)->first();
 }
 
 function checkUniquePerson($branch_id,$phone_number,$id=null){
   $str_id ="1=1";
   if(!$phone_number) return 'Phone number cannot be empty';
   if ($id>0) $str_id="s.id <> $id";
-  $x = DB::table('sales_agents as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+  $x = DB::table('os_sales_agents as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
   if ($x) return 'Phone number "'.$phone_number.'" has been used by another registered sales personnel';
   $x = DB::table('driver as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->select('id')->take(1)->exists();
   if($x) return 'Phone number "'.$phone_number.'" has been used by a driver';
@@ -607,7 +585,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
         }
        
         $query = DB::table('os_sales_agents AS sa')
-        ->join('affiliates as d','d.id','=','sa.affiliate_id')
+        ->join('os_affiliates as d','d.id','=','sa.affiliate_id')
         ->where('sa.branch_id',$branch_id)
         ->whereRaw($str_search)
         ->whereRaw($str_status)
@@ -669,7 +647,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
       }
      
       $query = DB::table('os_contact_persons AS cp')
-      ->join('affiliates as d','d.id','=','cp.affiliate_id')
+      ->join('os_affiliates as d','d.id','=','cp.affiliate_id')
       ->where('cp.branch_id',$branch_id)
       ->whereRaw($str_cp_type)
       ->whereRaw($str_status)
@@ -744,7 +722,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
        $d->year = isset($d->year)?  $d->year:date('Y');
        $d->remarks = isset($d->remarks)? $d->remarks: null;
         
-       $agent = DB::table('sales_agents as a')->join('commission_policies AS p','p.id','=','a.policy_id')->where('a.id',$id)->where('a.branch_id',$branch_id)->selectRaw('a.id,a.agent_type_id,a.policy_id,a.agent_type_id, p.name AS policy_name,p.rule_class,p.count_type')->first();
+       $agent = DB::table('os_sales_agents as a')->join('commission_policies AS p','p.id','=','a.policy_id')->where('a.id',$id)->where('a.branch_id',$branch_id)->selectRaw('a.id,a.agent_type_id,a.policy_id,a.agent_type_id, p.name AS policy_name,p.rule_class,p.count_type')->first();
        if(!$agent)return DV::error('Sales Agent ID does not exist or there is no commission policy assigned to the agent');
        $rule = strtoupper($agent->rule_class);
        if ($rule =='A'){
@@ -881,7 +859,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
 
     /** Given sales_agent_id, return policy details indlucing policy ID , policy name, and detailed items or conditions */
     static function getCommissionPolicyDetails($id){
-       $agent = DB::table('sales_agents AS a')->where('a.id',$id)->selectRaw('a.branch_id,a.id,a.agent_type_id,a.policy_id')->first();
+       $agent = DB::table('os_sales_agents AS a')->where('a.id',$id)->selectRaw('a.branch_id,a.id,a.agent_type_id,a.policy_id')->first();
        if(!$agent) return null;
        $cm = new \App\Models\SalesCommissionPolicy($agent->policy_id);
        $ss = (object)['branch_id'=>$agent->branch_id];
@@ -909,7 +887,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
         $str_status = $status_code? 'status_code =\''.$status_code.'\'' : '1=1';
         $str_agent_type = $agent_type_id > 0 ? 'agent_type_id ='.$agent_type_id : '2=2';
 
-        $rows = DB::table('sales_agents AS d')->join('sales_agent_types AS t','t.id','=','d.type_from_affilliate_type_id')->where('branch_id',$branch_id)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.policy_id,d.email,d.phone_number,d.address,d.status_code,t.name AS agent_type')->get(); 
+        $rows = DB::table('os_sales_agents AS d')->join('os_sales_agent_types AS t','t.id','=','d.type_from_affilliate_type_id')->where('branch_id',$branch_id)->whereRaw($str_status)->whereRaw($str_agent_type)->selectRaw('d.id,d.name,d.code,d.policy_id,d.email,d.phone_number,d.address,d.status_code,t.name AS agent_type')->get(); 
    
         foreach($rows as $row){
           $row->image_url = '';
@@ -925,7 +903,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
 
     static function details($id,$ss,$includeProfilePicture=false){ 
         $branch_id = $ss->branch_id;
-        $row = DB::table('affiliates AS d')
+        $row = DB::table('os_affiliates AS d')
         ->where('d.id',$id)
         ->selectRaw('d.id,d.name,d.photo_file_name,d.type_from_affilliate_type,d.type_from_affilliate_type as agent_type,d.type_from_affilliate_type as cp_type,d.code,d.email,d.phone_number,d.sex,d.address,d.status_code,formatDate(d.create_date) AS create_date')->take(1)->first(); 
         if (!$row) return null;
@@ -944,7 +922,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
         $ss = $ss?$ss:$this->userInfo;
         $id = $id? $id : $this->id;
         //$branch_id = $ss->branch_id;
-        $x = DB::table('sales_agents')->where('id',$id)->update(['status_code'=>$status_code]);
+        $x = DB::table('os_sales_agents')->where('id',$id)->update(['status_code'=>$status_code]);
         return DV::depends($x,null,'Failed to update Agent status');
     }
 
@@ -979,7 +957,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
   }
 
   static function getCommissionAmountPerUnit_realtime($year,$month,$id =null,$ss = null){
-    $agent = DB::table('sales_agents as a')->where('id',$id)->selectRaw('id,name,policy_id,agent_type_id')->first();
+    $agent = DB::table('os_sales_agents as a')->where('id',$id)->selectRaw('id,name,policy_id,agent_type_id')->first();
     if(!$agent) return (object)['error'=>'Agent ID '.$id.' does not exist','summary_type'=>null,'amount_per_unit'=>0,'count'=>0];
     $policy = self::getPolicyInfo($agent->policy_id,$ss);
     if(!$policy) return (object)['error'=>'There is no commission policy set for agent ID '.$id.' does not exist','summary_type'=>null,'amount_per_unit'=>0,'policy_id'=>null,'count'=>0,'count_type'=>null];
@@ -1011,7 +989,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
   function getCommissionAmountPerUnit($year,$month,$id =null,$ss = null){
       $ss = $ss ?? $this->userInfo;
       $id = $id ?? $this->id;
-      $agent = DB::table('sales_agents as a')->where('id',$id)->selectRaw('id,name,policy_id,agent_type_id')->first();
+      $agent = DB::table('os_sales_agents as a')->where('id',$id)->selectRaw('id,name,policy_id,agent_type_id')->first();
       if(!$agent) return (object)['error'=>'Agent ID '.$id.' does not exist','summary_type'=>null,'amount_per_unit'=>0];
       $closed_summary = DB::table('closed_commissions AS c')->where('op_month',$month)->where('op_year',$year)->selectRaw('id,sales_agent_id,policy_id,count_type,amount_per_unit')->first();
       if($closed_summary) return (object)['error'=>null,'summary_type'=>'closed','amount_per_unit'=>$closed_summary->amount_per_unit,'count_type'=>$closed_summary->count_type,'policy_id'=>$closed_summary->policy_id];
@@ -1028,7 +1006,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
       }else {
         $str_months = 'MONTH(s.create_date) ='.$month.' AND YEAR(s.create_date) ='.$year;
         $str_status = 's.status_code =\'active\''; 
-        $count = DB::table('sender as s')->join('sales_agents as a','a.id','=','s.sales_agent_id')->where('a.id',$id)->whereRaw($str_status)->whereRaw($str_months)->count('s.id');
+        $count = DB::table('sender as s')->join('os_sales_agents as a','a.id','=','s.sales_agent_id')->where('a.id',$id)->whereRaw($str_status)->whereRaw($str_months)->count('s.id');
         $count = $count  ?? 0;
       } 
       //Here if $count == -1 then it means the process above does not count or query correctly => suspected error 500
@@ -1110,7 +1088,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
 
     $cols =['c.id AS closing_id','t.name AS agent_type','a.name AS agent_name','c.merchant_count','c.marker_qty','c.sales_agent_id','c.op_month','c.op_year','c.target_count','c.effective_count','c.amount_per_unit','c.bonus_amount','c.total_amount','c.paid_amount','c.currency_code','c.policy_id','c.policy_name','c.rule_class','t.id AS agent_type_id','c.remarks','\'Closed\'summary_type','c.calculate_method','c.create_user','formatDate(c.create_date) AS create_date'];
     $str_cols = implode(',',$cols);
-    $rows = DB::table('closed_commissions AS c')->join('sales_agents AS a','a.id','=','c.sales_agent_id')->join('sales_agent_types as t','t.id','=','a.agent_type_id')->where('a.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($where_months->sql)->selectRaw($str_cols)->get();
+    $rows = DB::table('closed_commissions AS c')->join('os_sales_agents AS a','a.id','=','c.sales_agent_id')->join('sales_agent_types as t','t.id','=','a.agent_type_id')->where('a.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($where_months->sql)->selectRaw($str_cols)->get();
     $last_op_months = [];
     $last_op_year = 0 ;
     $last_op_month = 0;
@@ -1263,7 +1241,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
     $month = isset($d->month)? $d->month:date('m');
     $year = isset($d->year)? $d->year:date('Y');
 
-    $pol = DB::table('sales_agents as a')->join('commission_policies AS p','p.id','=','a.policy_id')->join('sales_agent_types as t','t.id','=','a.agent_type_id')->where('a.id',$id)->selectRaw('\'\' AS closing_id,a.name AS agent_name, a.code AS agent_code,p.id AS policy_id,p.name AS policy_name,a.agent_type_id,t.id as agent_type_id,t.name AS agent_type,p.count_type,p.rule_class')->first(); 
+    $pol = DB::table('os_sales_agents as a')->join('commission_policies AS p','p.id','=','a.policy_id')->join('sales_agent_types as t','t.id','=','a.agent_type_id')->where('a.id',$id)->selectRaw('\'\' AS closing_id,a.name AS agent_name, a.code AS agent_code,p.id AS policy_id,p.name AS policy_name,a.agent_type_id,t.id as agent_type_id,t.name AS agent_type,p.count_type,p.rule_class')->first(); 
     if(!$pol){
       return (object)[
         'error'=>'No commission policy assigned to the sales agent',
@@ -1420,7 +1398,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
     }
     $str_months = 'MONTH(s.create_date) ='.$month.' AND YEAR(s.create_date) ='.$year;
     $str_status = 's.status_code =\'active\''; 
-    $count = DB::table('sender as s')->join('sales_agents as a','a.id','=','s.sales_agent_id')->where('a.id',$id)->whereRaw($str_status)->whereRaw($str_months)->count('s.id');
+    $count = DB::table('sender as s')->join('os_sales_agents as a','a.id','=','s.sales_agent_id')->where('a.id',$id)->whereRaw($str_status)->whereRaw($str_months)->count('s.id');
     $countInfo = (object)['count'=>$count,'merchant_count'=>$count,'count_type'=>'merchant','summary_type'=>'real-time'];
     Cache::put($cache_key, $countInfo, 2);
     return $countInfo;
@@ -1431,7 +1409,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
     $count = Cache::get($cache_key); 
     $str_months = 'MONTH(s.create_date) ='.$month.' AND YEAR(s.create_date) ='.$year;
     $str_status = 's.status_code =\'active\''; 
-    $count = DB::table('sender as s')->join('sales_agents as a','a.id','=','s.sales_agent_id')->where('a.id',$id)->whereRaw($str_status)->whereRaw($str_months)->count('s.id');
+    $count = DB::table('sender as s')->join('os_sales_agents as a','a.id','=','s.sales_agent_id')->where('a.id',$id)->whereRaw($str_status)->whereRaw($str_months)->count('s.id');
     Cache::put($cache_key, $count, 5);
     return $count;
   }

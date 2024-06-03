@@ -22,7 +22,7 @@
 
 </style>
 <div id="_main_billingValidationComponent" style="display:none; padding-right: 15px;">
-    <div class="d-flex justify-content-between shadow rounded-3 pb-3 pt-3 p-2 bg-white" id="_sdl_filter_fields">
+    <div class="d-flex justify-content-between shadow rounded-3 mt-3 pb-3 pt-3 p-2 bg-white" id="_sdl_filter_fields">
          <!-- <div class="d-flex flex-row gap2">
             <button id="_sale_agent_btnNew" class="btn btn-primary" type="button">
                   <i class="fa fa-plus"></i>

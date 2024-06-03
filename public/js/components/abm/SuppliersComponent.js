@@ -4,16 +4,14 @@ var SuppliersComponent = new function(){
     this.title_prop = "Supplier";
     this.base_url = main_view.base_url;
     this.self = main_view.appContent.children('#_main_suppliersComponent');
-    this.elFilter_business_type = mThis.self.find('#_sdl_filter_business_type');
-    this.elFilter_sender_status = mThis.self.find('#_sdl_filter_supplier_status');
+    this.elFilter_supplier_status = mThis.self.find('#_sdl_filter_supplier_status');
     this.div_filter_fields = mThis.self.find('#_sdl_filter_fields')[0];
 
     this.btnNewSupplier = mThis.self.find('#_sdl_btnNewSupplier');
-    this.elSearch = mThis.self.find('#_sdl_search_sender');
+    this.elSearch = mThis.self.find('#_sdl_search_supplier');
     this.btnSearch = mThis.self.find('#_sdl_btnSearch');
-    this.tblSenders = mThis.self.find('#_sdl_tblSenders');
-    this.tblSenders_body = mThis.self.find('#_sdl_tblSenders_body');
-    this.sender_dropdown_menu = mThis.tblSenders.find('div.dropdown');
+    this.tblSenders_body = mThis.self.find('#_sdl_supplier_body');
+    this.sender_dropdown_menu = this.self.find('div.dropdown');
 
     this.btnPrint = mThis.self.find('#_sdl_btnPrint');
     this.btnPDF = mThis.self.find('#_sdl_btnPDF');
@@ -551,7 +549,7 @@ var SuppliersComponent = new function(){
 
                             vsapi.call(`${mThis.base_url}/abm/os_suppliers/update-status`,p).then(res => {
                                 if(res.status_code === 200){
-                                    mThis.elFilter_sender_status.val(d.value).trigger('change');
+                                    mThis.elFilter_supplier_status.val(d.value).trigger('change');
                                     cv_interact.success('The status has been updated');
                                     mThis.listView.showPage(mThis.getFilterData());
                                 }
@@ -576,8 +574,8 @@ var SuppliersComponent = new function(){
         mThis.allow_filter = false;
         vsapi.call(`${mThis.base_url}/abm/os_suppliers/form-options`, null,null,main_view.apiCluster).then(res => {
             let d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
-            VSUtil.setComboItems(mThis.elFilter_sender_status, d.sender_statuses, 'status_code', 'status_name', true, '(All Status)', mThis.def_filter.status_code);
-            VSUtil.setComboItems(mThis.elFilter_business_type, d.business_types, 'business_type', 'business_type', true, '(All Business Types)', 0);
+            VSUtil.setComboItems(mThis.elFilter_supplier_status, d.sender_statuses, 'status_code', 'status_name', true, '(All Status)', mThis.def_filter.status_code);
+            // VSUtil.setComboItems(mThis.elFilter_business_type, d.business_types, 'business_type', 'business_type', true, '(All Business Types)', 0);
             // VSUtil.setComboItems(SupplierDialog.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
             onFinish();
             mThis.allow_filter = true;
@@ -604,7 +602,7 @@ var SuppliersComponent = new function(){
                 
               tr.dataset.id = data.id;  
               tr.classList.add('supplier');
-              tr.setAttribute('id',['supplier_',data.id].join('')); 
+              tr.setAttribute('id',['supplier_id',data.id].join('')); 
             //   tr.dataset.statusid = data.status_id;
             //   tr.dataset.senderid = data.sender_id;
             //   tr.dataset.driverid = data.driver_id?data.driver_id:''; 
@@ -631,9 +629,10 @@ var SuppliersComponent = new function(){
         this.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
             el.onchange = e => {
                 e.preventDefault();
-                if(mThis.allow_filter){
+                console.log(1,mThis.getFilterData());
+
                     mThis.listView.showPage(mThis.getFilterData());
-                }
+               
             };
         });
 
@@ -704,6 +703,7 @@ var SuppliersComponent = new function(){
         });
 
         mThis.elSearch.on('keyup', () => {
+
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
                 mThis.listView.showPage(mThis.getFilterData());
@@ -798,7 +798,7 @@ const SupplierDialog = new function(){
     this.elError =  this.self.find('#_sdl_sender_error');
 
     this.body =  this.self.find('.modal-body')[0];
-    this.div_sender_info =  this.body.querySelector('#div_merchant_info');
+    this.div_sender_info =  this.body.querySelector('#_sdl_supplier_body');
     // this.div_bank_account = this.body.querySelector('#div_bank_account');
     mThis.imgBox = new ImageBox(mThis.divPhoto,{
         "dataField":"photo",

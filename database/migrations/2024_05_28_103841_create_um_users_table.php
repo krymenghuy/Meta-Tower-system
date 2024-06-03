@@ -39,7 +39,7 @@ class CreateUmUsersTable extends Migration
             $table->integer('update_uid')->nullable();
             $table->string('update_user',50)->nullable();
             $table->timestamp('update_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
-            $table->integer('is_system_admin')->default(0);
+            $table->integer('is_system_admin')->default(1);
             $table->timestamp('updated_at')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->string('photo_file_name',150)->nullable();
             $table->integer('um_remarks')->default(0);

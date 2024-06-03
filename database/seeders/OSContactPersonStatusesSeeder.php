@@ -5,8 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-
-class OsShipmentStatusesSeeder extends Seeder
+class OSContactPersonStatusesSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -15,14 +14,16 @@ class OsShipmentStatusesSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('os_shipment_statuses')->insert([
-            [
-                'name'=>'Pending',
+        DB::table('os_contact_person_statuses')->insert([
+            [ 
+                'name'=>'Active',
+                'code'=>'Active'
             ],
             [
-                'name'=>'Shipping',
+                'name'=>'Inactive',
+                'code'=>'Inactive'
             ]
-            
+
         ]);
     }
 }

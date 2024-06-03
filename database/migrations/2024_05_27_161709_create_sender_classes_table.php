@@ -23,7 +23,7 @@ class CreateSenderClassesTable extends Migration
             $table->integer('create_uid')->nullable();
             $table->integer('update_uid')->nullable();
             $table->string('update_user',50)->nullable();
-            $table->string('create-user',50)->nullable();
+            $table->string('create_user',50)->nullable();
         });
     }
 

@@ -46,7 +46,7 @@
                   </div>
                     <div class="d-flex justify-content-between install mt-3">
                       <span class="text-primary link-view-app">View&nbsp;<i class="fa fa-angle-right"></i></span>
-                      <h6 class="text-warning text-capitalize">Last login : <span class="text-muted" >01-03-2024</span></h6>
+                      <h6 style="font-size:15px;" class="text-primary text-capitalize">Last login : <span class="text-muted" >01-03-2024</span></h6>
                     </div>
                 </div>
             </div>
@@ -62,7 +62,8 @@
                   </div>
                     <div class="d-flex justify-content-between install mt-3">
                       <span class="text-primary link-view-app">View&nbsp;<i class="fa fa-angle-right"></i></span>
-                      <h6 class="text-warning text-capitalize">Last login : <span class="text-muted" >01-03-2024</span></h6>
+                      <h6 style="font-size:15px;" class="text-primary text-capitalize">Last login : <span class="text-muted" >01-03-2024</span></h6>
+                      
                     </div>
                 </div>
             </div>

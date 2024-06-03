@@ -9,7 +9,7 @@ use Sanitizer;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 
-class OverseaItem //extends Model
+class OsItem //extends Model
 {   
     protected $id = null;
     protected $userInfo = null;
