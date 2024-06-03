@@ -75,6 +75,7 @@ class Customer //extends Model
       $res = UM::updatePhoneNumber($phone_number, $user_id);
       if ($res->status == 'Error')
         return $res->error_message;
+    
     }
     DB::table('package')->where('sender_id', $id)->update(['sender_phone' => $phone_number]);
     DB::table('order_receivers')->where('sender_id', $id)->update(['sender_phone' => $phone_number]);
@@ -280,7 +281,7 @@ class Customer //extends Model
     $branch_id = $ss->branch_id;
 
     $current_page = isset($d->current_page) ? $d->current_page : 1;
-    $per_page = isset($d->per_page) ? $d->per_page : 4;
+    $per_page = isset($d->per_page) ? $d->per_page : 10;
     if (!is_numeric($current_page))
       $current_page = 1;
     $skip_rows = ($current_page - 1) * $per_page;
@@ -324,7 +325,7 @@ class Customer //extends Model
       if (in_array(strtolower($status), ['active', 'inactive']))
         $str_status = 's.status_code =\'' . $status . '\'';
     }
-    $select_referrer_name = ',(SELECT r.`name` FROM sales_agents as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name';
+    $select_referrer_name = ',(SELECT r.`name` FROM os_affiliates as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name';
     //$query = DB::table('sender_classes as sc')->join('sender as s ','s.id','sc.sender_id')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_types_id LIMIT 1) AS agent_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at, sc.sender_class')->where('s.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
     //  $query = DB::table('sender as s')->join('sender_classes as sc ','sc.id','s.id')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_types_id LIMIT 1) AS agent_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at, sc.sender_class')->where('s.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
     $query = DB::table('sender as s')
@@ -375,7 +376,7 @@ class Customer //extends Model
       if (in_array(strtolower($status), ['active', 'inactive']))
         $str_status = 's.status_code =\'' . $status . '\'';
     }
-    $select_referrer_name = ',(SELECT r.`name` FROM sales_agents as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name';
+    $select_referrer_name = ',(SELECT r.`name` FROM os_affiliates as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name';
     $query = DB::table('sender as s')
     ->join('sender_classes as sc', 'sc.sender_id', '=', 's.id')
   
@@ -428,7 +429,7 @@ class Customer //extends Model
     $data = (object) [];
     $data->sender = $customer_details;
     $data->branches = [(object) ['id' => 1, 'branch_name' => 'Head Quarter']];
-    $data->sales_agents = DB::table('sales_agents as a')->where('a.branch_id', $branch_id)->selectRaw('id,name AS agent_name')->get();
+    $data->sales_agents = DB::table('os_affiliates as a')->where('a.branch_id', $branch_id)->selectRaw('id,name AS agent_name')->get();
     //$data->categories = DB::table('lead_categories as c')->selectRaw('id,name AS category')->get();
     $data->business_types = DB::table('sender_business_types')->selectRaw('business_type')->get();
     $data->customer_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name as status_name')->get();

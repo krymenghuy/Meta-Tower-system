@@ -1,0 +1,96 @@
+* {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+
+}
+
+#body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  margin: 0;
+  background-color: #46969e;
+  background-position: center;
+  background-image: linear-gradient(182deg, rgb(240 233 233 / 0%) 0%, rgb(255 255 255) 100%);
+  /* background-size: cover;
+  background-attachment: fixed;
+  background-image: url('https://img.freepik.com/free-photo/abstract-luxury-gradient-blue-background-smooth-dark-blue-with-black-vignette-studio-banner_1258-70882.jpg'); */
+  /* background-image: url('../../assets/images/logo/background_1.png'); */
+
+}
+
+.box-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30%;
+  height: 100%;
+}
+
+.container {
+  width: 30%;
+  height: auto;
+  background-position: center;
+  background-size: cover;
+  background-attachment: fixed;
+  background-image: url('https://cdn.pixabay.com/photo/2016/12/27/11/50/banner-1933786_1280.png');
+
+}
+
+.logo_ {
+  width: 100%;
+  height: 100px;
+  padding-top: 10px;
+  display: flex;
+  justify-content: center;
+
+
+}
+
+.vs-title {
+  font-size: 50px;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+}
+
+.link-view-app {
+  cursor: pointer;
+}
+
+.ratings i {
+  color: gold;
+}
+
+
+
+
+.card {
+  transition: all .5s;
+}
+
+.card:hover {
+  transform: scale(1.05);
+
+}
+.vs-d-flex-copyright{
+  width:100%;
+  /* display:none; */
+  display:flex;
+  height:20%;
+  align-items:center;
+  justify-content:center;
+  flex-direction: column;
+
+  /* color:#fff; */
+  font-size:14px;
+}
+
+
+ .vs-d-flex-copyright p{
+  padding:5px 0;
+  color: rgb(10, 89, 227);
+}

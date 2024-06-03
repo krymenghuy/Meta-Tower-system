@@ -25,7 +25,7 @@
 
 </style>
 <div id="_main_suppliersComponent" style="display:none; margin-right:15px;">
-    <div class="d-flex justify-content-between shadow rounded-3 p-3 bg-white">
+    <div class="d-flex justify-content-between shadow rounded-3 mt-3 p-3 bg-white">
         <div class="d-flex gap-2">
             <div class="d-flex gap-2">
             <button id="_sdl_btnNewSupplier" data-toggle="modal" class="btn btn-primary">
@@ -35,7 +35,7 @@
                
             </div>
             <div class="d-flex gap-2">
-                <input type="text" class="form-control" id="_sdl_search_sender" placeholder="Search Supplier">
+                <input type="text" class="form-control" id="_sdl_search_supplier" placeholder="Search Supplier">
                 <button id="_sdl_btnSearch" role="button" class="btn btn-primary height">
                     <i class="la la-search"></i>
                 </button>
@@ -83,7 +83,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row" id="div_merchant_info">
+                <div class="row" id="_sdl_supplier_body">
                     <div class="col-xs-12 col-md-12 col-lg-3">
                         <div class="d-flex align-items-center"> <div id="_supplier_profile_photo" style="height:165px" class="mt-2"></div></div>
                      </div>

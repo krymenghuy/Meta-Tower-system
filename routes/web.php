@@ -117,6 +117,9 @@ Route::get('/', function () {
 Route::get('logout',function(){
     return view('login.index');
 });
+Route::post('loading',function(){
+    return view('load.loading');
+});
 
 Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
 Route::get('dms-gen-report/{q}', [WebReportController::class, 'general_report']);

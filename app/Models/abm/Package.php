@@ -1369,7 +1369,7 @@ class Package //extends Model
           $id = $data->delivery_id;
           DB::table('package')->where('branch_id',$branch_id)->where('delivery_id',$id)->delete();
           DB::table('delivery')->where('branch_id',$branch_id)->where('id',$id)->delete();
-          DB::table('order')->where('branch_id',$branch_id)->where('id',$order_id)->update(array('a'));
+          DB::table('order')->where('branch_id',$branch_id)->where('id',$id)->update(array('a'));
          return (null);
       }
    
@@ -1746,7 +1746,7 @@ class Package //extends Model
 
               if ($status_id ===9)
                {
-                $data->message ="កញ្ចប់ $p->receiver_phone ដឹកមិនបានសំរេច។ $failure_notes (By Admin $ss->login_name)"; 
+                $data->message ="កញ្ចប់ $p->receiver_phone ដឹកមិនបានសំរេច។ $falure_notes (By Admin $ss->login_name)"; 
                 $event_name =='delivery_failed';
                }
               else if ($status_id===8) 

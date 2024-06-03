@@ -23,11 +23,7 @@ var SalesAffiliatesComponent = new function () {
     this.listViewConfig = {};
 
     this.tabs = this.self[0].querySelector('ul#custom-tabs-one-tab');
-    // this.sa = this.tabs.find('#custom-tabs-one-sales-agent');
-    // const sa = mThis.tabs[0].querySelector("#custom-tabs-one-sales-agent");
-    // el.className = el.className === "active" ? "inactive" : "active";
-    // console.log('tabs',mThis.tabs);
-    // this.tab = this.self[0].querySelector('#_um_role_tab');
+    
     this.tabHeader = this.tabs;
     this.tabBody = this.tabs.querySelector('ul.vs-tab-body');
     // this.tabPages = {};
@@ -35,15 +31,11 @@ var SalesAffiliatesComponent = new function () {
 
     this.initListView = (view_name=null)=>{
         view_name=view_name || mThis.last_view_name;
-        // console.log('1',view_name);
-        // console.log('2',mThis.getContentList(view_name));
-        // console.log('3',mThis.getEndPoint(view_name));
-        // console.log('4',mThis.getColumns(view_name));
         this.listViewConfig[view_name] =  new ListView(mThis.getContentList(view_name),{
             'fetchApi': mThis.getEndPoint(view_name),
             'apiCluster': main_view.apiCluster,
             'columns': mThis.getColumns(view_name),
-            'tableClass':"table affiliate header-light-blue header-uppercase bg-white",
+            'tableClass':"table affiliate header-light-blue header-uppercase  bg-white ",
             listContainerClass: null,
             // 'processResponse':(res)=>{
             //     console.log(res.data);
@@ -54,7 +46,6 @@ var SalesAffiliatesComponent = new function () {
                 mThis.setTrClassList(tr,view_name);
                 // tr.classList.add("table-primary");
                 // tr.classList.add("shadow");
-                console.log('tr',tr);
                 mThis.store_agents[data.id] = {
                     code: data.code,
                     name: data.name,
@@ -105,7 +96,7 @@ var SalesAffiliatesComponent = new function () {
                 if (!dropdownMenu || dropdownMenu.length === 0) {
                     p.insertAdjacentHTML('afterbegin', mThis.createDropdownMenuHtml_pickup(agent_id, pricelist_id, agent_name ,status_code,view_name));
                     dropdownMenu = p.querySelector('.dropdown-menu');
-                    dropdownMenu.setAttribute('style',` left: -130px;`);
+                    dropdownMenu.setAttribute('style',` left: -160px;`);
                 }
         
                 if (mThis.prev_dropdownMenu && mThis.prev_dropdownMenu !== dropdownMenu) {
@@ -158,8 +149,8 @@ var SalesAffiliatesComponent = new function () {
         let i =1;
         console.log(data);
         let html = `
-                    <table class="table table-light m-0">
-                        <thead class="w-100 bg-info">
+                    <table class="table m-0">
+                        <thead class="w-100">
                             <tr>
                                 <th scope="col" style=" width: 13.28%;">PHOTO</th>
                                 <th scope="col" style=" width: 12.28%">ID</th>
@@ -167,7 +158,7 @@ var SalesAffiliatesComponent = new function () {
                                 <th scope="col" style=" width: 14.28%;">EMAIL</th> 
                                 <th scope="col" style=" width: 13.28%;">TYPE</th>
                                 <th scope="col" style=" width: 14.28%;">START DATE</th>
-                                <th scope="col" style=" width: 12.28%;">TAGET COUNT</th>
+                                <th scope="col" style=" width: 12.28%;">TARGET COUNT</th>
                                 <th scope="col" style=" width: 12.28%;">STATUS</th>
                                 <th scope="col" style=" width: 12.28%;">ACTION</th>
                             </tr>
@@ -307,11 +298,11 @@ var SalesAffiliatesComponent = new function () {
 
     this.setTrClassList = (tr,view_name)=>{
         if(view_name == 'view_contact_person'){
-            tr.classList.add("table-success");
-            tr.classList.add("shadow");
+            tr.classList.add("table");
+            tr.classList.add("shadow ");
         }
         else{
-            tr.classList.add("table-info");
+            tr.classList.add("table");
             tr.classList.add("shadow");
         }
     }
@@ -373,19 +364,7 @@ var SalesAffiliatesComponent = new function () {
             SalesAgentDialog.show(op);
         });
 
-        // mThis.tblSPY = mThis.salesAgentsListView.getTable();
-        // mThis.tblSale_agent = $(mThis.tblSalesAgents);//old
-        // mThis.tblSale_agent = $(mThis.container);
-
-        
-        
-        // mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
-        //     el.onchange = (e)=>{
-        //         e.preventDefault();
-        //         mThis.salesAgentsListView.showPage(mThis.getFilterData());
-        //     }
-        // });
-        
+     
         mThis.initAlready = true;
 
     }
@@ -693,7 +672,7 @@ var SalesAffiliatesComponent = new function () {
             title: "ID",
             className: "align-middle text-capitalize text-nowrap",
             data:(data,index,tr)=>{
-                return `<span class="code text-success">#${data.code ? data.code:'N/A'}</span>`;
+                return `<span class="code text-success">${data.code ? data.code:'N/A'}</span>`;
             }
         },
         {
@@ -714,7 +693,7 @@ var SalesAffiliatesComponent = new function () {
     
         {
             title: "Type",
-            className: 'align-middle text-capitalize',
+            className: 'align-middle ',
             data: (data, index,tr) => {
                 return data.type_from_affilliate_type||"NA";
             }
@@ -786,7 +765,7 @@ var SalesAffiliatesComponent = new function () {
             title: "ID",
             className: "align-middle text-capitalize text-nowrap",
             data:(data,index,tr)=>{
-                return `<span class="code text-info">#${data.code ? data.code:'N/A'}</span>`;
+                return `<span class="code text-info">${data.code ? data.code:'N/A'}</span>`;
             }
         },
         {
@@ -872,22 +851,23 @@ const SalesAgentDialog = new function(){
     // this.elAgentType =  this.self.find('#_sal_agent_type');
     this.onClose = null;
     this.body =  this.self.find('.modal-body')[0];
-    this.divPhoto = this.self[0].querySelector('#_saleAgent_profile_photo');
+    this.divPhoto = this.self[0].querySelector('#_saleAffiliate_profile_photo');
 
 
     mThis.imgBox = new ImageBox(mThis.divPhoto,{
         "dataField":"photo",
-        "cssClass":"data-input ",
+        "cssClass":"data-input",
         containerClass:null,
         // onDeleteImage:()=>{
         //   alert('Deleting image');
         //   return false;
         // },
         "onLoadImage":(photo) =>{
-            let p = {"id":mThis.options.id,"supplier_id":mThis.options.id,"photo":photo};
-            // console.log(p);
+            let p = {"id":mThis.options.id,"affiliate_id":mThis.options.id,"photo":photo};
+            console.log(p);
             if(!p.id) return; 
-            vsapi.call(`${main_view.base_url}/abm/os_suppliers/save-profile-picture`,p,null,null,false).then(res =>{
+
+            vsapi.call(`${main_view.base_url}/abm/os-sales-agents/save-profile-picture`,p,null,null,false).then(res =>{
                 if(res.status_code ===200){
                     mThis.imgBox.setImage(photo);
                     cv_interact.success('Photo has been saved');
@@ -895,9 +875,9 @@ const SalesAgentDialog = new function(){
             });
         },
         "deleteAPI":{
-            "endPoint":`${main_view.base_url}/dms/sales-app/agent/delete-profile-picture`,
+            "endPoint":`${main_view.base_url}/abm/os-sales-agents/delete-profile-picture`,
             "params":()=>{
-                return {"id": mThis.options.id,"sales_agent_id":mThis.options.id}
+                return {"id": mThis.options.id,"affiliate_id":mThis.options.id}
             }
         }
     });
@@ -908,7 +888,7 @@ const SalesAgentDialog = new function(){
         vsapi.call(`${mThis.base_url}/abm/os-sales-agents/form-options`,{
             id: id
         },null).then(res => {
-            let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
+            let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data,null,['email','address','image_url','photo']) : {};
             // console.log(d);
             // d.bank_accounts = d.bank_accounts || [];
             // VSUtil.setComboItems(mThis.elAgentType, d.agent_types, 'id', 'agent_type', true, '(Select agent_types Type)', def.agent_types_id);
@@ -922,7 +902,7 @@ const SalesAgentDialog = new function(){
     mThis.btnSave.on('click', function(e){
         e.preventDefault();
         let p = mThis.getData();
-        // console.log('sa',p);
+        console.log(p);
         vsapi.call(`${mThis.base_url}/abm/os-sales-agents/save`, p).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');
@@ -952,9 +932,11 @@ const SalesAgentDialog = new function(){
     this.show = (options)=>{
         if (!options) options = {};
         mThis.options = options;
+        console.log(options);
         let title ='';
         options.as == 'sa'? title = 'Sales Agent' : title = 'Contact Person';
         mThis.el_Type(options.as);
+        
         
         mThis.prepareData(mThis.options.id,{},data => { 
             if(data.details){
@@ -968,29 +950,67 @@ const SalesAgentDialog = new function(){
                 backdrop: 'static'
             });
         });
-        // mThis.setData();
-        // mThis.self.modal({
-        //     backdrop:'static'
-        // });
-                    
+ 
     }
+    // this.show = (options)=>{
+    //     mThis.options = options || {};
+    //     mThis.elTitle.innerHTML = options.title;
+    //     console.log(mThis.options.id);
+    //     if (mThis.options.id > 0) {
+    //         mThis.elTitle.innerHTML = "Affiliate Details";
+    //         let p = {'id':mThis.options.id};
+    //         vsapi.call([main_view.base_url,'/abm/os-sales-agents/form-options'].join(''),p,null).then(res=>{
+                
+    //             if(res.status_code === 200){
+    //                 let d = res.data.affiliate;
+    //             console.log(d);
+
+    //                 d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
+    //                 mThis.prepareData(d, {}, data => {
+    //                     mThis.setData(d);
+    //                     mThis.self.modal({
+    //                         backdrop:'static'
+    //                     });
+    //                 });
+    //             }
+    //         });
+    //     }
+    //     else{
+    //         mThis.elTitle.innerHTML =  "New Customers";
+    //         mThis.prepareData({'id':1},{},data =>{
+    //             mThis.setData(null);
+    //             mThis.self.modal({
+    //                 backdrop:'static'
+    //             });       
+    //         });
+    //     }
+    // }
 
     this.setData = (d)=>{
         d = d || {};
         mThis.body.querySelectorAll('.data-input').forEach(el =>{
             const f = el.dataset.field;
-            if(el.tagName.toLowerCase() ==='select'){
+            el.value = d [f] ?? '';
+            // if(el.tagName.toLowerCase() ==='select'){
 
-                 el.value = d[f];
-                 let event = new Event('change',{
-                    bubbles: true,
-                    cancelable: true
-                 });
-                 el.dispatchEvent(event);
-            }else{
-                el.value = d[f]?? '';
+            //      el.value = d[f];
+            //      let event = new Event('change',{
+            //         bubbles: true,
+            //         cancelable: true
+            //      });
+            //      el.dispatchEvent(event);
+            // }else{
+            //     el.value = d[f]?? '';
+            // }
+            if (el.tagName.toLowerCase() === 'select') {
+                el.dispatchEvent(new Event('change'));
+            }else if(el.tagName ==='IMG'){
+                el.setAttribute('src',d[f] || '');
             }
         });
+        console.log(d);
+        mThis.imgBox.setImage(d.photo || d.image_url);
+
 
     }
 
@@ -999,7 +1019,10 @@ const SalesAgentDialog = new function(){
         p.id = mThis.options.id;
         mThis.self[0].querySelectorAll('.data-input').forEach(el =>{
             const f = el.dataset.field;
-            p[f] = el.value;
+            if(el.tagName ==='IMG') 
+                p[f] = el.getAttribute('src');
+            else 
+                p[f] = el.value;
         });
         // console.log(mThis.elTitle.text()); 
         if(mThis.elTitle.text() == 'Create Sales Agent' || mThis.elTitle.text() =='Modify Sales Agent Information'){
