@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <link rel="icon" type="image/png" href="background-image.png" />
-  <title>LOADING</title>
+  <title>LANDING PAGE</title>
   <script>
     function checkDevice() {
       if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
@@ -20,7 +20,7 @@
       //return true;
     }
   </script>
-  <?php StyleManager::render('loading-styles', 1); ?>
+  <?php StyleManager::render('landing-styles', 1); ?>
 
 
 
