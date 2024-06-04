@@ -113,6 +113,6 @@ class OverseaShipmentController extends Controller
         if($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->id;
         // $d = $req->file;
-        return JDV::result($this->student->import($req->all(),$ss,$id));
+        return JDV::raw($this->student->import($req->all(),$ss,$id));
     }
 }

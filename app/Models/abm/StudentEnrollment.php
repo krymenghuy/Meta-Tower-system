@@ -85,19 +85,7 @@ class StudentEnrollment
             $i = 0;
             $um = new UM();
             $rows = self::readExcel(public_path('/uploads/public/'.$ss->branch_id.'_data/supplier_bills/documents/'.$x->file_name));
-            $arr = [
-                'file_name' => $x->file_name,
-                'create_uid' => $ss->id,
-                'update_uid' => $ss->id,
-                'create_user' => $ss->full_name,
-                'update_user' => $ss->full_name,
-                'branch_id' => $ss->branch_id,
-                'create_date'=>getNowTime()
-            ];
-            DB::table('os_bill_validation_sessions')->insert($arr);
-            $rowCount = DB::table('os_bill_validation_sessions AS s')->count('s.id');
             
-
             // if($rowCount > 3){
             //     //$deleteRows = $rowCount - 3;
             //     DB::table('students_imports')
@@ -119,47 +107,86 @@ class StudentEnrollment
             
             //return DV::error("test = ".print_r($rows,true));
             //Check if there are duplicate IDs or name
-            $shipment_count = 0;
-            foreach($rows as $row_index =>$row){
-                $shipment_count = $row_index -1;
-            }
             $x_res = self::validateStudents($rows);
-
             if($x_res->error) return DV::error($x_res->error);
-            $success_cnt =0;
-            $unacceptable_count =0;
-           
-            foreach ($x_res->students as $inputs){
-                $Waybill_no = $inputs['Waybill_no'];
-                $check = isExist('os_bill_validation',$id,['waybill_no'=>$Waybill_no]);
-                // if($check) return DV::error('Requirement is already to save...');
-                if(!$check) {
-                    $shipment_info = DB::table('os_shipments as os')->join('loc_countries as loc','loc.id','=','os.to_country_id')->where('os.qr_code',$Waybill_no)->selectRaw('os.total_weight , os.total_price , os.item_type , loc.name as country_name')->take(1)->first();
-                    $info = (object) $shipment_info;
-                    if($shipment_info){
-                        // $student_prog_id =DB::table('os_bill_validation')->where('student_id',$student_id)->where('program_id',$program_id)->value('id');
-                        $inputs['shipment_date'] = convertDate($inputs['shipment_date']);
-                        $inputs['jto_weight'] = $info->total_weight;
-                        $inputs['jto_amount'] = $info->total_price;
-                        $inputs['session_id'] = $rowCount;
-                        $inputs['unacceptable_price'] = 0;
-                        if($inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ){ 
-                            $unacceptable_count++ ;
-                            $inputs['unacceptable_price'] = 1;
-                            $inputs['jto_weight'] - $inputs['carrier_weight'] > 0.03 || $inputs['jto_weight'] - $inputs['carrier_weight'] < -0.03 ? $inputs['unacceptable_weight'] = 1 : $inputs['unacceptable_weight'] = 0 ;
-                            $inputs['dest_country'] == $info->country_name ? $inputs['wrong_country'] = 0 : $inputs['wrong_country'] = 1 ;
-                            $info->item_type == 'non_doc'? $info->item_type = 'D' : $info->item_type = 'P';
-                            $inputs['product'] == $info->item_type ? $inputs['wrong_type'] = 0 : $inputs['wrong_type'] = 1 ;
-                        }
-                        $id = saveData($ss,'os_bill_validation',['id'=>null],$inputs,[],1,0);
-                        // $inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ? $unacceptable_count++ : $unacceptable_count;
-                        
-                        $success_cnt++;                    
 
-                    }
-                    
+            $shipment_count = 0;
+            $Waybill_no_arr = []; 
+            foreach ($x_res->students as $row_index=>$inputs){
+                $Waybill_no_arr [] = $inputs['Waybill_no'];
+                $shipment_count = $row_index + 1 ;
+            }
+            $shipment_un_Waybill_no =[];
+            $has = 0;
+            $non = 0;
+            foreach ($Waybill_no_arr as $i=>$Waybill_no){
+                $check = isExist('os_shipments',$id,['qr_code'=>$Waybill_no]);
+                if($check) {
+                    $has ++;
+                }
+                if(!$check) {
+                    $shipment_un_Waybill_no [$i+3] = $Waybill_no;
+                    $non ++;
                 }
             }
+            if($non > 0){
+                $mesege = 'System dont have Shipment or Supplyer QR code yet ! Please Enter Supplyer QR code in Shipment: '."\n"; 
+                foreach ($shipment_un_Waybill_no as $i=>$Waybill_no){
+                    $mesege =  $mesege . ' , ('.$Waybill_no.')';
+                } 
+                // $error = ['error'=>$mesege];
+                // return $mesege;
+                // return [ 'error'=>'System dont have Supplyer QR code yet : ('.$shipment_un_Waybill_no.')! Please Enter Supplyer QR code.'];
+                return DV::error($mesege);
+            }
+
+            $arr = [
+                'file_name' => $x->file_name,
+                'create_uid' => $ss->id,
+                'update_uid' => $ss->id,
+                'create_user' => $ss->full_name,
+                'update_user' => $ss->full_name,
+                'branch_id' => $ss->branch_id,
+                'create_date'=>getNowTime()
+            ];
+            DB::table('os_bill_validation_sessions')->insert($arr);
+            $rowCount = DB::table('os_bill_validation_sessions AS s')->count('s.id');
+
+            $success_cnt =0;
+            $unacceptable_count =0;
+            foreach ($x_res->students as $inputs){
+                $Waybill_no_arr [] = $inputs['Waybill_no'];
+                $Waybill_no = $inputs['Waybill_no'];
+                // $check = isExist('os_bill_validation',$id,['waybill_no'=>$Waybill_no]);
+                // if($check) return DV::error('Requirement is already to save...');
+                // if(!$check) {
+                $shipment_info = DB::table('os_shipments as os')->join('loc_countries as loc','loc.id','=','os.to_country_id')->where('os.qr_code',$Waybill_no)->selectRaw('os.total_weight , os.total_price , os.item_type , loc.name as country_name')->take(1)->first();
+                $info = (object) $shipment_info;
+                if($shipment_info){
+                    // $student_prog_id =DB::table('os_bill_validation')->where('student_id',$student_id)->where('program_id',$program_id)->value('id');
+                    $inputs['shipment_date'] = convertDate($inputs['shipment_date']);
+                    $inputs['jto_weight'] = $info->total_weight;
+                    $inputs['jto_amount'] = $info->total_price;
+                    $inputs['session_id'] = $rowCount;
+                    $inputs['unacceptable_price'] = 0;
+                    if($inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ){ 
+                        $unacceptable_count++ ;
+                        $inputs['unacceptable_price'] = 1;
+                        $inputs['jto_weight'] - $inputs['carrier_weight'] > 0.03 || $inputs['jto_weight'] - $inputs['carrier_weight'] < -0.03 ? $inputs['unacceptable_weight'] = 1 : $inputs['unacceptable_weight'] = 0 ;
+                        $inputs['dest_country'] == $info->country_name ? $inputs['wrong_country'] = 0 : $inputs['wrong_country'] = 1 ;
+                        $info->item_type == 'non_doc'? $info->item_type = 'D' : $info->item_type = 'P';
+                        $inputs['product'] == $info->item_type ? $inputs['wrong_type'] = 0 : $inputs['wrong_type'] = 1 ;
+                    }
+                    $id = saveData($ss,'os_bill_validation',['id'=>null],$inputs,[],1,0);
+                    // $inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ? $unacceptable_count++ : $unacceptable_count;
+                    
+                    $success_cnt++;                    
+
+                }
+                    
+                // }
+            }
+            
             $arr = [
                 'shipment_count' => $shipment_count,
                 'match_count' => $success_cnt,
@@ -179,7 +206,8 @@ class StudentEnrollment
                 'match_count' => $success_cnt,
                 'unacceptable_count' => $unacceptable_count,
                 'file_name'=>$x->file_name ,
-                'save'=>$id
+                'save'=>$id ,
+                'session_id'=>$rowCount
             ]);
 
         }

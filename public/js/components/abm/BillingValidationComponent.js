@@ -33,11 +33,13 @@ var BillingValidationComponent = new function () {
             let p = {'file':btoa(fileData)};
             if(!p.file) return; 
             vsapi.call(`${main_view.base_url}/abm/oversea_shipments/import`,p,null,null,false).then(res =>{
+                console.log('data',res.error_message);
                 if(res.status_code ===200){
                     console.log('data',res.data);
-                    cv_interact.success('file has been saved');
-                    BillingValidationComponent.billValidationListView.showPage(); 
-                }else cv_interact.error(res.error_message);
+                    let p = { "count" : res.data.match_count,"session_id" : res.data.session_id }
+                    cv_interact.success('File saved and Validated');    
+                    BillingValidationComponent.billValidationListView.showPage(p); 
+                }else ErrorMesageDialog.show(res.error_message);
             });
            
         };
@@ -156,20 +158,20 @@ var BillingValidationComponent = new function () {
                 className: "unacceptable" ,
                 data: (data,index,tr)=>{
                     const sender_info = [`<div class="row ">`,
-                            `<div class='col-3 table-secondary'><span class="sender-name `,data.unacceptable_weight > 0 ? "text-danger" : "text-success",` d-block">`,data.unacceptable_weight||`0`,` </span></div>`,
-                            `<div class='col-3 table-secondary'><span class="sender-name `,data.unacceptable_price > 0 ? "text-danger" : "text-success",` d-block">`,data.unacceptable_price||`0`,` </span></div>`,
-                            `<div class='col-3 table-secondary'><span class="sender-name `,data.wrong_type > 0 ? "text-danger" : "text-success",` d-block ">`,data.wrong_type||`0`,` </span></div>`,
-                            `<div class='col-3 table-secondary'><span class="sender-name `,data.wrong_country > 0 ? "text-danger" : "text-success",` d-block ">`,data.wrong_country||`0`,` </span></div>`,
+                            `<div class='col-3 table-secondary'><span class="sender-name `,data.unacceptable_weight > 0 ? "text-danger" : "text-success",` d-block"> <i class="fas fa-check `,data.unacceptable_weight > 0 ? "d-none" : "",`"></i> <i class="fas fa-times `,data.unacceptable_weight == 0 ? "d-none" : "",`"></i> </span></div>`,
+                            `<div class='col-3 table-secondary'><span class="sender-name `,data.unacceptable_price > 0 ? "text-danger" : "text-success",` d-block"><i class="fas fa-check `,data.unacceptable_price > 0 ? "d-none" : "",`"></i> <i class="fas fa-times `,data.unacceptable_price == 0 ? "d-none" : "",`"></i>  </span></div>`,
+                            `<div class='col-3 table-secondary'><span class="sender-name `,data.wrong_type > 0 ? "text-danger" : "text-success",` d-block "><i class="fas fa-check `,data.wrong_type > 0 ? "d-none" : "",`"></i> <i class="fas fa-times `,data.wrong_type == 0 ? "d-none" : "",`"></i>  </span></div>`,
+                            `<div class='col-3 table-secondary'><span class="sender-name `,data.wrong_country > 0 ? "text-danger" : "text-success",` d-block "><i class="fas fa-check `,data.wrong_country > 0 ? "d-none" : "",`"></i> <i class="fas fa-times `,data.wrong_country == 0 ? "d-none" : "",`"></i>  </span></div>`,
                         `</div>`].join('');
                     return sender_info;
                 },
                 // title: mThis.trans('Sender ID')
                 title: ` <div class='row '>
                             <div class='col-12 text-center p-2'> unacceptable </div>
-                            <div class='col-3 table-secondary p-2'>wei.</div>
-                            <div class='col-3 table-secondary p-2'>pri.</div>
+                            <div class='col-3 table-secondary p-2'>weight</div>
+                            <div class='col-3 table-secondary p-2'>price</div>
                             <div class='col-3 table-secondary p-2'>type</div>
-                            <div class='col-3 table-secondary p-2'>con.</div>
+                            <div class='col-3 table-secondary p-2'>coun.</div>
                         </div> `
             },
             // {
@@ -280,6 +282,7 @@ var BillingValidationComponent = new function () {
         });
         mThis.refreshPriceListOptions(null);
         mThis.billValidationListView.showPage(mThis.getFilterData()); 
+        
     });
 
     }
@@ -326,5 +329,36 @@ var BillingValidationComponent = new function () {
         });
         console.log('p',p);
         return p;
+    }
+}
+
+const ErrorMesageDialog = new function(){
+    const mThis = this;
+    this.self = main_view.appContent.find('#ErrorModalLong');
+    
+    this.elTitle = this.self.find('#ErrorModalLongTitle');
+    this.btnOk =  this.self.find('#_sdl_btnOk');
+    // console.log(mThis.btnSave);
+    // this.elSenderType =  this.self.find('#_sdl_sender_sendertype');
+    // this.elBusinessType =  this.self.find('#_sdl_sender_businesstype');
+    
+    this.onClose = null;
+
+
+    this.body =  this.self.find('.modal-body')[0];
+ 
+    this.btnOk.on('click', function(e){
+        e.preventDefault();
+        mThis.self.modal('hide');
+    });
+
+    this.show = (options) => {
+        console.log(options);
+        if (!options) options = {};
+        mThis.body.innerHTML = options;
+      
+        mThis.self.modal({
+            backdrop: 'static'
+        });
     }
 }
