@@ -1,4 +1,4 @@
-<style>
+<!-- <style>
     .dbc-card-period {
         padding: 3px;
         display: inline-block;
@@ -70,8 +70,131 @@
         font-size: 0.6em;
         color: grey;
     }
-</style>
+</style> -->
 
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+    }
+
+    .content {
+        margin: 10px;
+        padding: 10px;
+    }
+
+    .navbar {
+        margin-left: 10px;
+        background-color: #fff;
+        border-bottom: 1px solid #dee2e6;
+    }
+
+    .card {
+        margin-bottom: 20px;
+    }
+
+    .status-success {
+        color: #28a745;
+    }
+
+    .status-pending {
+        color: #ffc107;
+    }
+
+    .status-failed {
+        color: #dc3545;
+    }
+</style>
 <div id="_main_dashboardComponent" style="display:none;padding:15px">
-    <h1>Hello</h1>
+
+
+
+    <body>
+
+        <body>
+
+
+
+            <!-- Main content -->
+            <div class="content">
+
+
+
+                <!-- Dashboard Widgets -->
+                <div class=" mt-4">
+                    <div class="row">
+                        <!-- Widget 1: Active Shipments -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-shipping-fast"></i> Active Shipments
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Shipment #12345
+                                            <span class="badge badge-success badge-pill">On Schedule</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Shipment #67890
+                                            <span class="badge badge-warning badge-pill">Delayed</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Shipment #11223
+                                            <span class="badge badge-success badge-pill">In Transit</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Widget 2: Recent Orders -->
+                        <div class="col-md-6">
+                            <div class="card">
+                                <div class="card-header">
+                                    <i class="fas fa-box"></i> Recent Orders
+                                </div>
+                                <div class="card-body">
+                                    <ul class="list-group">
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Order #54321
+                                            <span class="badge badge-success badge-pill">Completed</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Order #09876
+                                            <span class="badge badge-warning badge-pill">Pending</span>
+                                        </li>
+                                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                                            Order #33445
+                                            <span class="badge badge-danger badge-pill">Failed</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Shipment Map -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="card mt-4">
+                                <div class="card-header">
+                                    <i class="fas fa-map-marked-alt"></i> Shipment Tracking Map
+                                </div>
+                                <div class="card-body">
+                                    <!-- You can integrate a map here using a service like Google Maps or Mapbox -->
+                                    <div id="map" style="height: 400px; background-color: #e9ecef;"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </body>
+
+
+
+
 </div>

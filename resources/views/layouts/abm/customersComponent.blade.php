@@ -1,6 +1,6 @@
 
  <div id="_main_customersComponent"  style="display:none;">
-    <div class="d-flex w-100  justify-content-between bg-white shadow rounded-3  p-3" id="_cus_filter_fields">
+    <div class="d-flex w-100  justify-content-between bg-white shadow rounded-3  mt-3 p-3" id="_cus_filter_fields">
         <div class="d-flex flex-row gap-2  ">
             <div class="d-flex flex-row gap-1">
             <input type="text" class="form-control" id="_cul_search_customer" placeholder="Search Customer">

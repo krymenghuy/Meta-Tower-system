@@ -14,5 +14,38 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // \App\Models\User::factory(10)->create();
+
+        
+        $this->call([
+            UmUserSeeder::class,
+        ]);
+        $this->call([
+            OsAgentTypeSeeder::class,
+        ]);
+        $this->call([
+            OsContactPersonTypeSeeder::class,
+        ]);
+        $this->call([
+            OsPackageStatusesSeeder::class,
+
+        ]);
+        $this->call([
+            SenderStatusesSeeder::class,
+        ]);
+        $this->call([
+            SenderTypeSeeder::class,
+
+        ]);
+        $this->call([
+            SenderCodeControlSeeder::class,
+        ]);
+        $this->call([
+            OsContactPersonStatusesSeeder::class,
+
+        ]);
+        $this->call([
+            SalesAgentsStatusesSeeder::class,
+
+        ]);
     }
 }

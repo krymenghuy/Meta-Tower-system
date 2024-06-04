@@ -111,21 +111,23 @@
 </button> -->
 
 <!-- Modal -->
-<div class="modal fade" id="ErrorModalLong" tabindex="-1" role="dialog" aria-labelledby="ErrorModalLongTitle" aria-hidden="true">
-  <div class="modal-dialog" role="document">
+<div class="modal fade" id="ErrorModalLong" tabindex="-1" role="dialog" aria-labelledby="AlertModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" id="modal-dialog" role="document" style="max-width: 400px;">
     <div class="modal-content">
       <div class="modal-header d-flex justify-content-center border-0">
-        <!-- <h5 class="modal-title" id="ErrorModalLongTitle">Error Validation</h5> -->
-        <i class="fa-regular fa-circle-xmark text-danger" style="font-size: 80px;"></i>
+        <div class="" id="AlertModalLongTitle"> 
+            
+        </div>
         <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+            <span aria-hidden="true">&times;</span>
         </button> -->
       </div>
       <div class="modal-body ps-4 pe-4 pt-0 pb-0">
-
+        <h class="header"></h>
+        <p class="body ps-5 pe-5"></p>
       </div>
       <div class="modal-footer d-flex justify-content-center border-0">
-        <!-- <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button> -->
+        <button type="button" id="_sdl_btnCancel"class="btn btn-secondary" data-dismiss="modal">Cancel</button>
         <button type="button" id="_sdl_btnOk" class="btn btn-primary">Ok</button>
       </div>
     </div>

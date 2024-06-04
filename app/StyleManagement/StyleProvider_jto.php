@@ -47,7 +47,9 @@ class StyleProvider
                 '/assets/css/font-awesome/6.2.0/css/all.min.css',
                 'assets/css/bootstrap.min.css'
             ]
-        ]
+        ],
+    
+
     ];
 
     static function bundle($bundle_name = null)

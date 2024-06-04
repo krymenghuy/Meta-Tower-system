@@ -14,6 +14,10 @@ var BillingValidationComponent = new function () {
     this.self[0].querySelector("#excel").addEventListener("change", (event) => {
         selectedFile = event.target.files[0];
         console.log(selectedFile);
+        if(selectedFile){
+            let message = 'alert';
+            AlertMesageDialog.show(message);
+        }
     });
     this.btnUploard.addEventListener("click", (e) => {
         e.preventDefault();
@@ -33,13 +37,17 @@ var BillingValidationComponent = new function () {
             let p = {'file':btoa(fileData)};
             if(!p.file) return; 
             vsapi.call(`${main_view.base_url}/abm/oversea_shipments/import`,p,null,null,false).then(res =>{
-                console.log('data',res.error_message);
+                console.log('data',res);
                 if(res.status_code ===200){
                     console.log('data',res.data);
                     let p = { "count" : res.data.match_count,"session_id" : res.data.session_id }
-                    cv_interact.success('File saved and Validated');    
+                    AlertMesageDialog.show('saved');
+                    // cv_interact.success('File saved and Validated');    
                     BillingValidationComponent.billValidationListView.showPage(p); 
-                }else ErrorMesageDialog.show(res.error_message);
+                }
+                else{
+                    AlertMesageDialog.show(res.error_message,res.data);
+                } 
             });
            
         };
@@ -267,7 +275,7 @@ var BillingValidationComponent = new function () {
     }
 
     this.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
-        el.onchange = e => {
+        el.onchange = e => { 
             e.preventDefault();
             if(mThis.allow_filter){
                 mThis.billValidationListView.showPage(mThis.getFilterData());
@@ -286,8 +294,6 @@ var BillingValidationComponent = new function () {
     });
 
     }
-
-    
 
     this.loadFilterData = (def_shipment_no) => {
         mThis.refreshPriceListOptions(def_shipment_no);
@@ -332,31 +338,76 @@ var BillingValidationComponent = new function () {
     }
 }
 
-const ErrorMesageDialog = new function(){
+const AlertMesageDialog = new function(){
     const mThis = this;
     this.self = main_view.appContent.find('#ErrorModalLong');
-    
-    this.elTitle = this.self.find('#ErrorModalLongTitle');
+
+    this.scrollable = this.self.find('#modal-dialog');
+    this.elTitle = this.self.find('#AlertModalLongTitle')[0];
     this.btnOk =  this.self.find('#_sdl_btnOk');
+    this.btnCancel =  this.self.find('#_sdl_btnCancel');
     // console.log(mThis.btnSave);
     // this.elSenderType =  this.self.find('#_sdl_sender_sendertype');
     // this.elBusinessType =  this.self.find('#_sdl_sender_businesstype');
     
     this.onClose = null;
+    let alert = null;
 
 
-    this.body =  this.self.find('.modal-body')[0];
+    this.header =  this.self.find('h.header')[0];
+    this.body =  this.self.find('p.body')[0];
  
     this.btnOk.on('click', function(e){
         e.preventDefault();
-        mThis.self.modal('hide');
+        console.log(4,alert);
+        if(alert)
+            BillingValidationComponent.btnUploard.click();
+        else
+            mThis.self.modal('hide');
     });
 
-    this.show = (options) => {
-        console.log(options);
-        if (!options) options = {};
-        mThis.body.innerHTML = options;
-      
+    this.show = (message, d) => {
+        console.log(1,message ,2, d);
+        console.log(3,mThis.elTitle);
+        // console.log(4,mThis.btnOk[0]);
+        if (!message) message = {};
+           
+        if(message == 'alert'){
+            mThis.elTitle.innerHTML = `<i class="far fa-question-circle text-info" style="font-size: 80px;"></i>`;
+            alert = message;
+            mThis.header.innerHTML = '<h5 class="ps-4 pe-4 text-center">Validate Now?</h5>';
+            mThis.btnCancel[0].classList.add('d-block');
+            mThis.btnCancel[0].classList.remove('d-none');
+            mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
+            mThis.body.innerHTM = '';
+        }else if(message == 'saved'){
+            mThis.elTitle.innerHTML = `<i class="far fa-check-circle text-success" style="font-size: 80px;"></i>`;
+            alert = 0;
+            mThis.header.innerHTML = '<h5 class="ps-4 pe-4 text-center">File saved and Validated</h5>';
+            mThis.btnCancel[0].classList.add('d-none');
+            mThis.btnCancel[0].classList.remove('d-block');
+            mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
+        }else {
+            mThis.elTitle.innerHTML = `<i class="fa-regular fa-circle-xmark text-danger" style="font-size: 80px;"></i>`;
+            alert = 0;
+            mThis.header.innerHTML = '<h6 class="ps-4 pe-4">' + message + '</h6>';
+            mThis.btnCancel[0].classList.add('d-none');
+            mThis.btnCancel[0].classList.remove('d-block');
+            // mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
+        }
+
+        let html = '';
+        if(d){
+            mThis.scrollable[0].classList.add('modal-dialog-scrollable');
+            d.forEach(element => {
+                html += `<span> - Supplyer QR : ` + element + ` , </span><br>`;
+            });
+            mThis.body.innerHTML = html;
+        }else{
+            mThis.body.innerHTML = null;
+            mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
+        }
+
         mThis.self.modal({
             backdrop: 'static'
         });

@@ -121,7 +121,7 @@ class SpecialCharge //extends Model
         // ]);
 
         // try{
-        //    DB::table('order_images')->where('package_id',$package_id)->update(['package_id'=>null,'qr_code'=>null]); 
+        //    DB::tablee('order_images')->where('package_id',$package_id)->update(['package_id'=>null,'qr_code'=>null]); 
         // }catch(\Throwable $e){
         //    Log::error($e->getMessage());
         //    Log::error($e->getTraceAsString());

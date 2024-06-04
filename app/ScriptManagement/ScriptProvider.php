@@ -108,7 +108,7 @@ namespace App\ScriptManagement;
                         '/js/components/abm/CountryZonesComponent.js',
                         '/js/components/abm/SalesAffiliatesComponent.js',
                         '/js/components/abm/BillingValidationComponent.js',
-                        // '/js/components/abm/SalesAgentsComponent.js',
+                        '/js/components/abm/AccountingComponent.js',
                         '/js/components/abm/CustomersComponent.js',
                         
                         '/js/components/abm/DashboardComponent.js',
@@ -116,7 +116,7 @@ namespace App\ScriptManagement;
                         //'/js/components/abm/CustomersComponent.js',
                         '/js/components/abm/ShipmentsComponent.js',
                         'js/components/abm/PriceSettingsComponent.js',
-                        'js/components/abm/LocationComponent.js?v=1',
+                        'js/components/abm/InvoicesComponent.js',
 
 
                     ]
