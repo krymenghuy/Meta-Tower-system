@@ -16,7 +16,7 @@ class CreateOsAgentCodeControlTable extends Migration
         Schema::create('os_agent_code_control', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('branch_id');
-            $table->integer('last_id')->nullable();
+            $table->integer('last_id')->nullable()->default(0);
             $table->string('prefix',10)->nullable();
 
         });

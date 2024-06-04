@@ -133,7 +133,7 @@ class Package //extends Model
       // $base_fee =-1;
       $billed_weight= $billed_weight?$billed_weight:0;
       //$today = date('Y-m-d');
-      $table ="price_list_details AS l";
+      $table ="os_price_list_details AS l";
       // $table ="price_list AS l";
       
       // $cod_fee_percent =0;
