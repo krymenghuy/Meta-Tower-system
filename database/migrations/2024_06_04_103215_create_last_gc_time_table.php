@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOsShipmentStatusesTable extends Migration
+class CreateLastGcTimeTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class CreateOsShipmentStatusesTable extends Migration
      */
     public function up()
     {
-        Schema::create('os_shipment_statuses', function (Blueprint $table) {
-            $table->increments('id');
-            $table->string('name',50)->nullable();
-            $table->string('code',50)->nullable();
+        Schema::create('last_gc_time', function (Blueprint $table) {
+            $table->integer('id');
+            $table->timestamp('last_cg_time')->default(\DB::raw('CURRENT_TIMESTAMP'));
         });
     }
 
@@ -27,6 +26,6 @@ class CreateOsShipmentStatusesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('os_shipment_statuses');
+        Schema::dropIfExists('last_gc_time');
     }
 }

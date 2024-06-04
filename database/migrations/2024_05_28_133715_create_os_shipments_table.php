@@ -21,7 +21,7 @@ class CreateOsShipmentsTable extends Migration
             $table->string('item_type',10)->default('doc');
             $table->integer('zone_code');
             $table->integer('to_country_id');
-            $table->integer('from_country_id')->default('14');
+            $table->integer('from_country_id')->default('1');
             $table->integer('primary_cp_id')->nullable();
             $table->integer('secondary_cp_id')->nullable();
             $table->decimal('effective_weight',10,2)->nullable()->default(0.00);

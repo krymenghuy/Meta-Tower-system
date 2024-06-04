@@ -18,9 +18,11 @@ class OsShipmentStatusesSeeder extends Seeder
         DB::table('os_shipment_statuses')->insert([
             [
                 'name'=>'Pending',
+                'code'=>'Pending',
             ],
             [
                 'name'=>'Shipping',
+                'code'=>'Shipping',
             ]
             
         ]);

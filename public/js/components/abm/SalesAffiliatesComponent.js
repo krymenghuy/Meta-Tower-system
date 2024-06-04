@@ -37,10 +37,10 @@ var SalesAffiliatesComponent = new function () {
             'columns': mThis.getColumns(view_name),
             'tableClass':"table affiliate header-light-blue header-uppercase  bg-white ",
             listContainerClass: null,
-            // 'processResponse':(res)=>{
-            //     console.log(res.data);
-            //     return res.data;    
-            // },
+            'processResponse':(res)=>{
+                console.log(1,res.data);
+                return res.data;    
+            },
             'rowCreated':(data, index, tr) => {
                 tr.dataset.id = data.id;
                 mThis.setTrClassList(tr,view_name);
@@ -865,6 +865,7 @@ const SalesAgentDialog = new function(){
         "onLoadImage":(photo) =>{
             let p = {"id":mThis.options.id,"affiliate_id":mThis.options.id,"photo":photo};
             console.log(p);
+            
             if(!p.id) return; 
 
             vsapi.call(`${main_view.base_url}/abm/os-sales-agents/save-profile-picture`,p,null,null,false).then(res =>{
@@ -902,7 +903,7 @@ const SalesAgentDialog = new function(){
     mThis.btnSave.on('click', function(e){
         e.preventDefault();
         let p = mThis.getData();
-        console.log(p);
+        // console.log(1,p);
         vsapi.call(`${mThis.base_url}/abm/os-sales-agents/save`, p).then(res => {
             if(res.status_code === 200){
                 mThis.self.modal('hide');

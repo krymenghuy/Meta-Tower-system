@@ -15,7 +15,7 @@ use App\Http\Controllers\abm\OsSupplierController;
 use App\Http\controllers\abm\CustomerController;
 use App\Http\Controllers\abm\CountryZoneController;
 use App\Http\controllers\abm\OsAffiliateController;
-use App\Http\controllers\abm\PriceController;
+use App\Http\controllers\abm\OsPriceController;
 use App\Http\controllers\abm\GeneralSettingsController;
 use App\Http\controllers\abm\SpecialChargeController;
  
@@ -129,11 +129,11 @@ use App\Http\controllers\abm\SpecialChargeController;
     });
 
     
-    Route::post('savePriceLineZones', [PriceController::class, 'savePriceLineZones']);
-    Route::post('getPriceList_data', [PriceController::class, 'getPriceList_data']);
-    Route::post('savePriceLineInfo', [PriceController::class, 'savePriceLineInfo']);
-    Route::post('updateZoneCodes', [PriceController::class, 'updateZoneCodes']);
-    Route::post('deletePriceZones', [PriceController::class, 'deletePriceZones']);
+    Route::post('savePriceLineZones', [OsPriceController::class, 'savePriceLineZones']);
+    Route::post('getPriceList_data', [OsPriceController::class, 'getPriceList_data']);
+    Route::post('savePriceLineInfo', [OsPriceController::class, 'savePriceLineInfo']);
+    Route::post('updateZoneCodes', [OsPriceController::class, 'updateZoneCodes']);
+    Route::post('deletePriceZones', [OsPriceController::class, 'deletePriceZones']);
 
     
    //begin:: Counties_Zone_Code

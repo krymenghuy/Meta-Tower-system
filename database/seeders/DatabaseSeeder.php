@@ -20,32 +20,63 @@ class DatabaseSeeder extends Seeder
             UmUserSeeder::class,
         ]);
         $this->call([
-            OsAgentTypeSeeder::class,
-        ]);
-        $this->call([
-            OsContactPersonTypeSeeder::class,
-        ]);
-        $this->call([
-            OsPackageStatusesSeeder::class,
+            SenderTypeSeeder::class,
 
         ]);
         $this->call([
             SenderStatusesSeeder::class,
         ]);
         $this->call([
-            SenderTypeSeeder::class,
+            SenderBusinessTypesSeeder::class,
+
+        ]);
+      
+        $this->call([
+            PriceListNameSeeder::class,
+        ]);
+        $this->call([
+            OsShipmentStatusesSeeder::class,
+        ]);
+        $this->call([
+            OsSaleAgentStatusesSeeder::class,
 
         ]);
         $this->call([
-            SenderCodeControlSeeder::class,
+            OsPackageStatusesSeeder::class,
+
+        ]);
+        $this->call([
+            OsInvoiceTypeSeeder::class,
+
+        ]);
+        $this->call([
+            OsInvoiceStatusesSeeder::class,
+
+        ]);
+        $this->call([
+            OsContactPersonTypeSeeder::class,
         ]);
         $this->call([
             OsContactPersonStatusesSeeder::class,
 
         ]);
         $this->call([
-            SalesAgentsStatusesSeeder::class,
+            OsAgentTypeSeeder::class,
+        ]);
+        $this->call([
+            LocCountriesSeeder::class,
 
         ]);
+
+       
+       
+        
+       
+      
+       
+        
+        
+       
+       
     }
 }
