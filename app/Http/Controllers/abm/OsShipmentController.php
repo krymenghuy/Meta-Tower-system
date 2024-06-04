@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Abm;
 use App\Http\Controllers\Controller;
 use App\Models\Abm\OsShipment;
 use App\Models\Abm\OsItem;
-use App\Models\Abm\StudentEnrollment;
+use App\Models\Abm\ShipmentEnrollment;
 use Illuminate\Http\Request;
 use App\Models\UM;
 use App\Models\JDV;
@@ -16,7 +16,7 @@ class OsShipmentController extends Controller
     function __construct(){
         $this->shipment = new OsShipment();
         $this->item = new OsItem();
-        $this->student = new StudentEnrollment(); //test import
+        $this->shipmentEnroll = new ShipmentEnrollment(); //test import
     }
     function save(Request $req){
 
@@ -113,6 +113,6 @@ class OsShipmentController extends Controller
         if($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->id;
         // $d = $req->file;
-        return JDV::result($this->student->import($req->all(),$ss,$id));
+        return JDV::raw($this->shipmentEnroll->import($req->all(),$ss,$id));
     }
 }

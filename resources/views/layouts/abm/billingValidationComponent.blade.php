@@ -22,7 +22,9 @@
 
 </style>
 <div id="_main_billingValidationComponent" style="display:none; padding-right: 15px;">
-    <div class="d-flex justify-content-between shadow rounded-3 mt-3 pb-3 pt-3 p-2 bg-white" id="_sdl_filter_fields">
+
+
+    <div class="d-flex justify-content-between shadow rounded-3 pb-3 pt-3 p-2 bg-white" id="_sdl_filter_fields">
          <!-- <div class="d-flex flex-row gap2">
             <button id="_sale_agent_btnNew" class="btn btn-primary" type="button">
                   <i class="fa fa-plus"></i>
@@ -36,13 +38,13 @@
                     <!-- <select id="_sal_agent_type" class="modal-select2 data-input" data-field="agent_types_id"></select> -->
                     <!-- <select class="form-control data-input" id="_sal_agent_type" data-field="agent_types_id"></select> -->
                     <div class="d-flex flex-row gap-2 ">
-                        <label for="excel" class="w-50 custom-file-upload btn btn-outline-success">
+                        <label for="excel" class="w-50 custom-file-upload btn btn-outline-success d-flex align-items-center">
                             <i class="fa fa-file fs-5"></i>
                             <span>Uploard file</span>
                         </label>
                         <input type="file" name="upload_excel" id="excel" class="d-none" />
 
-                        <label typle= "buttom" id="com_btn_uploard_file" class=" btn btn-outline-success">
+                        <label typle= "buttom" id="com_btn_uploard_file" class=" btn btn-outline-success d-flex align-items-center">
                             <!-- <i class="fa fa-file fs-5"></i> -->
                             <span>Validate</span>
                         </label>
@@ -52,9 +54,7 @@
                             <i class="fa-regular fa-trash-can fs-5"></i>
                             <span></span>
                         </button> -->
-                        <label type="button" id="_pl_btnRefress" class="btn btn-primary height">
-                            <i class="fa fa-sync-alt"></i>
-                        </label>    
+                           
                     </div>
                 </div>
             </div>
@@ -73,127 +73,63 @@
             </div>
         </div>
         <div class="d-flex gap-2 w-50" id="_sdl_filter_fields_date">
-            <div class="d-flex flex-row w-50 gap2 ">
-                <div class="col-lg-12" id="">
+            <div class="d-flex flex-row w-100 gap-2 ">
+                <div class="col-lg-5" id="">
                     <label class="form-label trans-text" data-langprop="titles.Start Date">Start Date</label>
                     <input data-select="datepicker" class="form-control filter-field" data-field="start_date" placeholder="Start Date" id="_shm_filter_start_date" />
                 </div>
-            </div>
-            <div class="d-flex flex-row w-50 gap2 ">
-                <div class="col-lg-12" id="">
+                <div class="col-lg-5" id="">
                     <label class="form-label trans-text" data-langprop="titles.End Date">End Date</label>
                     <input data-select="datepicker" class="form-control filter-field" data-field="end_date" placeholder="End Date" id="_shm_fliter_end_date" />
                 </div>
+                <div class="col-lg-2">
+                    <label class="form-label text-white" >Refress</label>
+                    <label type="button" id="_pl_btnRefress" class="btn btn-primary height ">
+                        <i class="fa fa-sync-alt"></i>
+                    </label> 
+                </div>
             </div>
+            <!-- <div class="d-flex flex-row w-50 gap-2 ">
+                
+            </div> -->
+            
         </div>
+        
         
     </div>
 
-   
         
     <div class="shadow rounded-3 bg-light mt-2">
         <div id="_billValidation_list"></div>
     </div>
 
-    <!-- <div class="shadow rounded-3 bg-light mt-2">
-        <table class="table bill_Validate table-bordered">
-            <caption>List of Bill Validation</caption>
-            <thead>
-                <tr>
-                    <th scope="col" class="" rowspan="2">Waybill No.</th>
-                    <th scope="col" rowspan="2">Shipment Date</th>
-                    <th scope="col" rowspan="2">Dest Country</th>
-                    <th scope="col" rowspan="2">Product</th>
-                
-                    <th scope="col" class="text-center bg-" colspan="3"> Weight (Kg) </th>
-                    <th scope="col" class="text-center bg-" colspan="3"> Amount (USD) </th>
-                </tr>
-                <tr>
-                    
-                    <th scope="col" class="success"> JTO </th>
-                    <th scope="col" class="warning">DHL</th>
-                    <th scope="col"> Diff. </th>
-                    <th scope="col" class="success"> JTO </th>
-                    <th scope="col" class="warning">DHL</th>
-                    <th scope="col"> Diff. </th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                <th scope="row">1957271702</th>
-                <td>18-01-2022</td>
-                <td>CHINA</td>
-                <td>NDOC</td>
-                <td  class="success"> 2.0 </td>
-                <td class="warning"> 2.0 </td>
-                <td> -   </td>
-                <td  class="success"> 44.26 </td>
-                <td class="warning"> 44.27 </td>
-                <td>  (0.01) </td>
-                </tr>
-                <tr>
-                <th scope="row">6648201755</th>
-                <td>25-01-2022</td>
-                <td>CHINA</td>
-                <td>DOC</td>
-                <td  class="success">  0.5  </td>
-                <td class="warning"> 0.5 </td>
-                <td> - </td>
-                <td  class="success"> 24.16  </td>
-                <td class="warning"> 24.15  </td>
-                <td> 0.01 </td>
-                </tr>
-                <tr>
-                <th scope="row">1957271702</th>
-                <td>18-01-2022</td>
-                <td>CHINA</td>
-                <td>NDOC</td>
-                <td  class="success"> 2.0 </td>
-                <td class="warning"> 2.0 </td>
-                <td> -   </td>
-                <td  class="success"> 44.26 </td>
-                <td class="warning"> 44.27 </td>
-                <td>  (0.01) </td>
-                </tr>
-                <tr>
-                <th scope="row">6648201755</th>
-                <td>25-01-2022</td>
-                <td>CHINA</td>
-                <td>DOC</td>
-                <td  class="success">  0.5  </td>
-                <td class="warning"> 0.5 </td>
-                <td> - </td>
-                <td class="success"> 24.16  </td>
-                <td class="warning"> 24.15  </td>
-                <td> 0.01 </td>
-                </tr>
-                <tr>
-                <th scope="row">1957271702</th>
-                <td>18-01-2022</td>
-                <td>CHINA</td>
-                <td>NDOC</td>
-                <td class="success"> 2.0 </td>
-                <td class="warning"> 2.0 </td>
-                <td> -   </td>
-                <td class="success"> 44.26 </td>
-                <td class="warning"> 44.27 </td>
-                <td>  (0.01) </td>
-                </tr>
-                <tr>
-                <th scope="row">6648201755</th>
-                <td>25-01-2022</td>
-                <td>CHINA</td>
-                <td>DOC</td>
-                <td class="success">  0.5  </td>
-                <td class="warning"> 0.5 </td>
-                <td> - </td>
-                <td class="success"> 24.16  </td>
-                <td class="warning"> 24.15  </td>
-                <td> 0.01 </td>
-                </tr>
-            </tbody>
-        </table>
-    </div> -->
+</div>
 
+<!-- Button trigger modal -->
+<!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#ErrorModalLong">
+  Launch demo modal
+</button> -->
 
+<!-- Modal -->
+<div class="modal fade" id="ErrorModalLong" tabindex="-1" role="dialog" aria-labelledby="AlertModalLongTitle" aria-hidden="true">
+  <div class="modal-dialog" id="modal-dialog" role="document" style="max-width: 400px;">
+    <div class="modal-content">
+      <div class="modal-header d-flex justify-content-center border-0">
+        <div class="" id="AlertModalLongTitle"> 
+            
+        </div>
+        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button> -->
+      </div>
+      <div class="modal-body ps-4 pe-4 pt-0 pb-0">
+        <h class="header"></h>
+        <p class="body ps-5 pe-5"></p>
+      </div>
+      <div class="modal-footer d-flex justify-content-center border-0">
+        <button type="button" id="_sdl_btnCancel"class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" id="_sdl_btnOk" class="btn btn-primary">Ok</button>
+      </div>
+    </div>
+  </div>
 </div>

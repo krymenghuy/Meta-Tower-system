@@ -299,7 +299,7 @@ var SalesAffiliatesComponent = new function () {
     this.setTrClassList = (tr,view_name)=>{
         if(view_name == 'view_contact_person'){
             tr.classList.add("table");
-            tr.classList.add("shadow ");
+            tr.classList.add("shadow");
         }
         else{
             tr.classList.add("table");

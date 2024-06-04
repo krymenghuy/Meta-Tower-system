@@ -10,7 +10,7 @@ use App\Models\UM;
 use App\Models\JDV;
 use DB;
 
-class StudentEnrollment
+class ShipmentEnrollment
 {
     protected static $img_dir ='student';
     // protected static $xlsx_cols =[ 
@@ -85,19 +85,7 @@ class StudentEnrollment
             $i = 0;
             $um = new UM();
             $rows = self::readExcel(public_path('/uploads/public/'.$ss->branch_id.'_data/supplier_bills/documents/'.$x->file_name));
-            $arr = [
-                'file_name' => $x->file_name,
-                'create_uid' => $ss->id,
-                'update_uid' => $ss->id,
-                'create_user' => $ss->full_name,
-                'update_user' => $ss->full_name,
-                'branch_id' => $ss->branch_id,
-                'create_date'=>getNowTime()
-            ];
-            DB::table('os_bill_validation_sessions')->insert($arr);
-            $rowCount = DB::table('os_bill_validation_sessions AS s')->count('s.id');
             
-
             // if($rowCount > 3){
             //     //$deleteRows = $rowCount - 3;
             //     DB::table('students_imports')
@@ -119,47 +107,91 @@ class StudentEnrollment
             
             //return DV::error("test = ".print_r($rows,true));
             //Check if there are duplicate IDs or name
+            $x_res = self::validateShipments($rows);
+            // return $x_res;
+            if($x_res->error){
+                PublicStorage::delete($ss->branch_id,'supplier_bills','xlsx',$x->file_name); 
+                return DV::error($x_res->error);
+            } 
             $shipment_count = 0;
-            foreach($rows as $row_index =>$row){
-                $shipment_count = $row_index -1;
+            $Waybill_no_arr = []; 
+            foreach ($x_res->shipments as $row_index=>$inputs){
+                $Waybill_no_arr [] = $inputs['Waybill_no'];
+                $shipment_count = $row_index + 1 ;
             }
-            $x_res = self::validateStudents($rows);
-
-            if($x_res->error) return DV::error($x_res->error);
-            $success_cnt =0;
-            $unacceptable_count =0;
-           
-            foreach ($x_res->students as $inputs){
-                $Waybill_no = $inputs['Waybill_no'];
-                $check = isExist('os_bill_validation',$id,['waybill_no'=>$Waybill_no]);
-                // if($check) return DV::error('Requirement is already to save...');
+            $shipment_un_Waybill_no =[];
+            $has = 0;
+            $non = 0;
+            foreach ($Waybill_no_arr as $i=>$Waybill_no){
+                $check = isExist('os_shipments',$id,['qr_code'=>$Waybill_no]);
+                if($check) {
+                    $has ++;
+                }
                 if(!$check) {
-                    $shipment_info = DB::table('os_shipments as os')->join('loc_countries as loc','loc.id','=','os.to_country_id')->where('os.qr_code',$Waybill_no)->selectRaw('os.total_weight , os.total_price , os.item_type , loc.name as country_name')->take(1)->first();
-                    $info = (object) $shipment_info;
-                    if($shipment_info){
-                        // $student_prog_id =DB::table('os_bill_validation')->where('student_id',$student_id)->where('program_id',$program_id)->value('id');
-                        $inputs['shipment_date'] = convertDate($inputs['shipment_date']);
-                        $inputs['jto_weight'] = $info->total_weight;
-                        $inputs['jto_amount'] = $info->total_price;
-                        $inputs['session_id'] = $rowCount;
-                        $inputs['unacceptable_price'] = 0;
-                        if($inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ){ 
-                            $unacceptable_count++ ;
-                            $inputs['unacceptable_price'] = 1;
-                            $inputs['jto_weight'] - $inputs['carrier_weight'] > 0.03 || $inputs['jto_weight'] - $inputs['carrier_weight'] < -0.03 ? $inputs['unacceptable_weight'] = 1 : $inputs['unacceptable_weight'] = 0 ;
-                            $inputs['dest_country'] == $info->country_name ? $inputs['wrong_country'] = 0 : $inputs['wrong_country'] = 1 ;
-                            $info->item_type == 'non_doc'? $info->item_type = 'D' : $info->item_type = 'P';
-                            $inputs['product'] == $info->item_type ? $inputs['wrong_type'] = 0 : $inputs['wrong_type'] = 1 ;
-                        }
-                        $id = saveData($ss,'os_bill_validation',['id'=>null],$inputs,[],1,0);
-                        // $inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ? $unacceptable_count++ : $unacceptable_count;
-                        
-                        $success_cnt++;                    
-
-                    }
-                    
+                    $shipment_un_Waybill_no [$i+3] = $Waybill_no;
+                    $non ++;
                 }
             }
+            if($non > 0){
+                // $mesege = 'System dont have Shipment or Supplyer QR code yet ! Please Enter Supplyer QR code in Shipment: '."\n"; 
+                $data = [];
+                foreach ($shipment_un_Waybill_no as $i=>$Waybill_no){
+                    $data [] = $Waybill_no;
+                } 
+                PublicStorage::delete($ss->branch_id,'supplier_bills','xlsx',$x->file_name); 
+                // $error = ['error'=>$shipment_un_Waybill_no];
+                return (object)['status'=>'error','status_code'=>405,'error_message'=>$non.' Supplyer QR code don\'t have in System yet ! Please Enter Supplyer QR code in Shipment befor validation:','data'=>$data];
+                // return [ 'error'=>'System dont have Supplyer QR code yet : ('.$shipment_un_Waybill_no.')! Please Enter Supplyer QR code.'];
+                return DV::error($mesege);
+            }
+
+            $arr = [
+                'file_name' => $x->file_name,
+                'create_uid' => $ss->id,
+                'update_uid' => $ss->id,
+                'create_user' => $ss->full_name,
+                'update_user' => $ss->full_name,
+                'branch_id' => $ss->branch_id,
+                'create_date'=>getNowTime()
+            ];
+            DB::table('os_bill_validation_sessions')->insert($arr);
+            $rowCount = DB::table('os_bill_validation_sessions AS s')->count('s.id');
+
+            $success_cnt =0;
+            $unacceptable_count =0;
+            foreach ($x_res->shipments as $inputs){
+                $Waybill_no_arr [] = $inputs['Waybill_no'];
+                $Waybill_no = $inputs['Waybill_no'];
+                // $check = isExist('os_bill_validation',$id,['waybill_no'=>$Waybill_no]);
+                // if($check) return DV::error('Requirement is already to save...');
+                // if(!$check) {
+                $shipment_info = DB::table('os_shipments as os')->join('loc_countries as loc','loc.id','=','os.to_country_id')->where('os.qr_code',$Waybill_no)->selectRaw('os.total_weight , os.total_price , os.item_type , loc.name as country_name')->take(1)->first();
+                $info = (object) $shipment_info;
+                if($shipment_info){
+                    // $student_prog_id =DB::table('os_bill_validation')->where('student_id',$student_id)->where('program_id',$program_id)->value('id');
+                    $inputs['shipment_date'] = convertDate($inputs['shipment_date']);
+                    $inputs['jto_weight'] = $info->total_weight;
+                    $inputs['jto_amount'] = $info->total_price;
+                    $inputs['session_id'] = $rowCount;
+                    $inputs['unacceptable_price'] = 0;
+                    if($inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ){ 
+                        $unacceptable_count++ ;
+                        $inputs['unacceptable_price'] = 1;
+                        $inputs['jto_weight'] - $inputs['carrier_weight'] > 0.03 || $inputs['jto_weight'] - $inputs['carrier_weight'] < -0.03 ? $inputs['unacceptable_weight'] = 1 : $inputs['unacceptable_weight'] = 0 ;
+                        $inputs['dest_country'] == $info->country_name ? $inputs['wrong_country'] = 0 : $inputs['wrong_country'] = 1 ;
+                        $info->item_type == 'non_doc'? $info->item_type = 'D' : $info->item_type = 'P';
+                        $inputs['product'] == $info->item_type ? $inputs['wrong_type'] = 0 : $inputs['wrong_type'] = 1 ;
+                    }
+                    $id = saveData($ss,'os_bill_validation',['id'=>null],$inputs,[],1,0);
+                    // $inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ? $unacceptable_count++ : $unacceptable_count;
+                    
+                    $success_cnt++;                    
+
+                }
+                    
+                // }
+            }
+            
             $arr = [
                 'shipment_count' => $shipment_count,
                 'match_count' => $success_cnt,
@@ -179,19 +211,20 @@ class StudentEnrollment
                 'match_count' => $success_cnt,
                 'unacceptable_count' => $unacceptable_count,
                 'file_name'=>$x->file_name ,
-                'save'=>$id
+                'save'=>$id ,
+                'session_id'=>$rowCount
             ]);
 
         }
-        return DV::error('Something went wrong when the system was trying to import students!');
+        return DV::error('Something went wrong when the system was trying to import shipments!');
     }
 
-    static function checkDuplicateStudent($students,$Waybill_no){
+    static function checkDuplicateShipment($shipments,$Waybill_no){
        $i=0;
        $c = null;
        do{
-         if(!isset($students[$i])) break;
-         $c = (object)$students[$i];
+         if(!isset($shipments[$i])) break;
+         $c = (object)$shipments[$i];
          //return print_r($c,true);
          if(strtolower($c->Waybill_no) == strtolower($Waybill_no)){
              return 'Student named '.$name.' with ID '.$code.' has the same ID with another student in the Excel Sheet';
@@ -201,44 +234,47 @@ class StudentEnrollment
        return null;
     }
 
-    static function validateStudents($students){
+    static function validateShipments($shipments){
         $sts = [];
-        foreach($students as $row_index =>$row){
+        foreach($shipments as $row_index =>$row){
             // return row;
           if($row_index >= 2){
-            $this_student = [];
+            $this_shipment = [];
             foreach($row as $idx => $cell_value){
                 //NOTE: if($idx < 9) => we allow only 9 columns at Max
                 if($idx < 73){ 
-                    if($idx == 23) $this_student[self::$xlsx_cols[23]] = $cell_value;
-                    if($idx == 24) $this_student[self::$xlsx_cols[24]] = $cell_value;
-                    if($idx == 30) $this_student[self::$xlsx_cols[30]] = $cell_value;
-                    if($idx == 49) $this_student[self::$xlsx_cols[49]] = $cell_value;
-                    if($idx == 68) $this_student[self::$xlsx_cols[68]] = $cell_value;
-                    if($idx == 71) $this_student[self::$xlsx_cols[71]] = $cell_value;
+                    if($idx == 23) $this_shipment[self::$xlsx_cols[23]] = $cell_value;
+                    if($idx == 24) $this_shipment[self::$xlsx_cols[24]] = $cell_value;
+                    if($idx == 30) $this_shipment[self::$xlsx_cols[30]] = $cell_value;
+                    if($idx == 49) $this_shipment[self::$xlsx_cols[49]] = $cell_value;
+                    if($idx == 68) $this_shipment[self::$xlsx_cols[68]] = $cell_value;
+                    if($idx == 71) $this_shipment[self::$xlsx_cols[71]] = $cell_value;
                 }
             }
+            // return $this_shipment;
+            if($this_shipment == null)
+            return (object)['error'=>'Wrong file formart! System can\'t validate the file','shipments'=>0];   
             // $sts[] = $this_student;  
 
             // $this_student['first_name'] = 'I' ? $sts[] = $this_student:$sts[] = null;
 
-            $Waybill_no = isset($this_student['Waybill_no'])? $this_student['Waybill_no'] : null;
+            $Waybill_no = isset($this_shipment['Waybill_no'])? $this_shipment['Waybill_no'] : null;
             // $first_name = isset($this_student['first_name'])? $this_student['first_name'] : null;
             // $last_name = isset($this_student['last_name'])? $this_student['last_name'] : null;
             // $phone_number = isset($this_student['phone'])? $this_student['phone']:null;
 
             // return (object)['error'=>print_r($this_student,true)];
-            if(isset($this_student['Waybill_no'])){
-                $err = self::checkDuplicateStudent($sts,$Waybill_no);
+            if(isset($this_shipment['Waybill_no'])){
+                $err = self::checkDuplicateShipment($sts,$Waybill_no);
                 if($err) 
-                   return (object)['error'=>$err,'students'=>[]];
+                   return (object)['error'=>$err,'shipments'=>[]];
                 else 
-                $sts[] = $this_student;  
+                $sts[] = $this_shipment;  
             }
            
           } 
         }
-        return (object)['error'=>null,'students'=>$sts];
+        return (object)['error'=>null,'shipments'=>$sts];
     }
 
     static function readExcel($file_name){
