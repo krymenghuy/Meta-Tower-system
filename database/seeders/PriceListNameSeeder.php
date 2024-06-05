@@ -1,10 +1,11 @@
 <?php
 
 namespace Database\Seeders;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Seeder;
 
-class SenderCodeControlSeeder extends Seeder
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+
+class PriceListNameSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -13,11 +14,13 @@ class SenderCodeControlSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('sender_code_control')->insert([
+        DB::table('price_list_names')->insert([
             [
+                'name'=>'C001',
                 'branch_id'=>1,
-                'prefix'=>'HM',
-                'last_id'=>1
+                'kg_marker'=>'2',
+                
+
             ]
             ]);
     }

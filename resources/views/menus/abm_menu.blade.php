@@ -286,7 +286,7 @@
                                 <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Remarks"></span>
                             </a>
                         </li> -->
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(104); ?>>
+                        <!-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(104); ?>>
                             <a href="LocationComponent" modid="102" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/countries_and_cities.svg') }}" />
@@ -301,7 +301,7 @@
                                 </span>
                                 <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Delivery Zones"></span>
                             </a>
-                        </li>
+                        </li> -->
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(220); ?>>
                             <a href="PriceSettingsComponent" modid="220" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">

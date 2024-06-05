@@ -276,7 +276,7 @@ class OsAffiliate //extends Model
         // return $prefix.$branch_id.formatNumber($num,$len);
         }
         DB::table('os_agent_code_control')->insert(['branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix]);
-        return ['code'=>$prefix.$branch_id.formatNumber(1,$len),'last_id'=>$row->last_id];
+        return ['code'=>$prefix.$branch_id.formatNumber(1,$len),'last_id'=>1];
     }
     
     static function getFormOptions($id,$ss){
@@ -652,7 +652,7 @@ function checkUniquePerson($branch_id,$phone_number,$id=null){
       ->whereRaw($str_cp_type)
       ->whereRaw($str_status)
       ->whereRaw($str_search)
-        // ->whereRaw($str_agent_type)
+      // ->whereRaw($str_agent_type)
       ->selectRaw('d.id,d.sex,d.code,d.name,d.status_code,d.email,d.phone_number,d.address,d.photo_file_name,d.type_from_affilliate_type,d.branch_id,formatDate(d.create_date) AS start_date,formatTime(d.create_date) AS create_date')
       ->orderBy('d.id', 'DESC'); 
       $count_query = clone $query;

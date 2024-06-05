@@ -110,13 +110,6 @@ class Customer //extends Model
       'price_list_id' => '0|number',
       'code' => '0|string|0-25',
       'photo'=>'0|image'        
-
-
-      //'loc_lat'=>'0|number|default=0',
-      //'loc_lng'=>'0|number|default=0',
-      // 'sales_agent_id'=>'0|number',
-
-
     ];
 
     $img_char = ['+',':',',',';','/','\\','=','?'];
@@ -141,23 +134,7 @@ class Customer //extends Model
     if (!$d->phone_number)
       return DV::error('Phone number is required for valid Customer account');
     $sender_created = $id > 0 ? 0 : 1;
-    // if ($id > 0) {
-    //   $org_sender = DB::table('sender_classes as sc')->where('sc.id', $id)->selectRaw('sc.sender_id,sc.sender_class')->take(1)->first();
-    //   if (!$org_sender)
-    //     return DV::error('Failed to identify existing merchant for updating their information');
-    //   if ($d->phone_number != $org_sender->phone_number) {
-    //     //Change merchant's phone number in tables "um_users","package","order_receivers", and then notify merchant Mobile App
-    //     $change_phone_error = self::updateMerchantPhone($id, $d->phone_number);
-    //     if ($change_phone_error)
-    //       return DV::error($change_phone_error);
-    //   }
-    //   if ($org_sender->name != $d->name) {
-    //     //Change merchant's name in tables "um_users","package","order_receivers", and then notify Merchant mobile App
-    //     $change_name_error = self::updateMerchantName($id, $d->name);
-    //     if ($change_name_error)
-    //       return DV::error($change_name_error);
-    //   }
-    // }
+
     $sender_created = !$id;
 
     $id = saveData($ss, 'sender', ['id' => $id], $inputs, [], 1, false);
@@ -166,13 +143,14 @@ class Customer //extends Model
     if($sender_created){
 
       $prefix = 'HM';
-      
+      $num=1;
       $str_prefix = $prefix ? 'prefix =\'' . $prefix . '\'' : '2=2';
       $row = DB::table('sender_code_control AS c')->where('branch_id', $branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
       
       if ($row) {
         $num = $row->last_id+1;
       }
+
       $s=null;
       $data =(object)$s;
 
@@ -273,7 +251,9 @@ class Customer //extends Model
       return $prefix . $branch_id . formatNumber($num, $len);
     }
     DB::table('sender_code_control')->insert(array('branch_id' => $branch_id, 'last_id' => 1, 'prefix' => $prefix));
-    return $prefix . $branch_id . formatNumber(1, $len);
+    return $prefix.$branch_id.formatNumber(1,$len);
+
+
   }
   static function list($arr, $ss)
   {
