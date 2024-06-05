@@ -253,7 +253,7 @@ class ShipmentEnrollment
             }
             // return $this_shipment;
             if($this_shipment == null)
-            return (object)['error'=>'Wrong file formart! System can\'t validate the file','shipments'=>0];   
+            return (object)['error'=>'Wrong file formart! The System can\'t validate this file','shipments'=>0];   
             // $sts[] = $this_student;  
 
             // $this_student['first_name'] = 'I' ? $sts[] = $this_student:$sts[] = null;
