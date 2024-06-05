@@ -366,12 +366,7 @@ const AlertMesageDialog = new function(){
             mThis.self.modal('hide');
     });
 
-    this.show = (message, d) => {
-        console.log(1,message ,2, d);
-        console.log(3,mThis.elTitle);
-        // console.log(4,mThis.btnOk[0]);
-        if (!message) message = {};
-           
+    this.checkAlert = (message) =>{
         if(message == 'alert'){
             mThis.elTitle.innerHTML = `<i class="far fa-question-circle text-info" style="font-size: 80px;"></i>`;
             alert = message;
@@ -395,17 +390,29 @@ const AlertMesageDialog = new function(){
             mThis.btnCancel[0].classList.remove('d-block');
             // mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
         }
+    }
 
-        let html = '';
+    this.show = (message, d) => {
+        console.log(1,message ,2, d);
+        console.log(3,mThis.elTitle);
+        // console.log(4,mThis.btnOk[0]);
+        if (!message) message = {};
+           
+        mThis.checkAlert(message);
+
+        let html = '<span >- Supplyer QR : <br>';
         if(d){
             mThis.scrollable[0].classList.add('modal-dialog-scrollable');
+            mThis.scrollable[0].style.margin = '';
             d.forEach(element => {
-                html += `<span> - Supplyer QR : ` + element + ` , </span><br>`;
+                html += element + ` , `;
             });
+            html += `</span>`;
             mThis.body.innerHTML = html;
         }else{
             mThis.body.innerHTML = null;
             mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
+            mThis.scrollable[0].style.margin = '10rem auto';
         }
 
         mThis.self.modal({
