@@ -15,9 +15,9 @@ class CreateOsCustomerInvoicesTable extends Migration
     {
         Schema::create('os_customer_invoices', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('customer_id')->nullable();
-            $table->string('customer_email',100)->nullable();
-            $table->string('customer_address',250)->nullable();
+            $table->string('code',15)->nullable();
+            $table->integer('sender_id')->nullable();
+            $table->integer('shipment_id')->nullable();
             $table->string('invoice_type',40)->default('commercial')->comment('	invoice_type = {informal, commercial, tax}');
             $table->decimal('amount',10,2)->default(0.00);
             $table->decimal('discount_percent',10,2)->default(0.00);
@@ -29,6 +29,7 @@ class CreateOsCustomerInvoicesTable extends Migration
             $table->string('pmt_terms',35)->nullable();
             $table->string('public_remarks',255)->nullable();
             $table->string('private_remarks',255)->nullable();
+            $table->integer('status_id')->nullable();
             $table->integer('branch_id');
             $table->integer('create_uid')->nullable();
             $table->integer('update_uid')->nullable();

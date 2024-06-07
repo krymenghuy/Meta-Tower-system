@@ -122,9 +122,9 @@ use App\Http\controllers\abm\SpecialChargeController;
     });
     Route::prefix('invoice')->group(function(){
         Route::post('/save',[InvoiceController::class,'save']);
-        Route::post('/list',[InvoiceController::class,'list']);
-        Route::post('/list-paginate',[InvoiceController::class,'list-paginate']);
-        Route::post('/detail',[InvoiceController::class,'detailInvoice']);
+        Route::post('/list',[InvoiceController::class,'getInvoiceList']);
+        Route::post('/list-paginate',[InvoiceController::class,'getInvoiceListPaginate']);
+        Route::post('/form-options',[InvoiceController::class,'getFormOptions']);
         Route::post('/delete',[InvoiceController::class,'deleteInvoice']);
     });
 
