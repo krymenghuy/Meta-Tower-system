@@ -14,6 +14,10 @@ var BillingValidationComponent = new function () {
     this.self[0].querySelector("#excel").addEventListener("change", (event) => {
         selectedFile = event.target.files[0];
         console.log(selectedFile);
+        if(selectedFile){
+            let message = 'alert';
+            AlertMesageDialog.show(message);
+        }
     });
     this.btnUploard.addEventListener("click", (e) => {
         e.preventDefault();
@@ -33,11 +37,17 @@ var BillingValidationComponent = new function () {
             let p = {'file':btoa(fileData)};
             if(!p.file) return; 
             vsapi.call(`${main_view.base_url}/abm/oversea_shipments/import`,p,null,null,false).then(res =>{
+                console.log('data',res);
                 if(res.status_code ===200){
                     console.log('data',res.data);
-                    cv_interact.success('file has been saved');
-                    BillingValidationComponent.billValidationListView.showPage(); 
-                }else cv_interact.error(res.error_message);
+                    let p = { "count" : res.data.match_count,"session_id" : res.data.session_id }
+                    AlertMesageDialog.show('saved');
+                    // cv_interact.success('File saved and Validated');    
+                    BillingValidationComponent.billValidationListView.showPage(p); 
+                }
+                else{
+                    AlertMesageDialog.show(res.error_message,res.data);
+                } 
             });
            
         };
@@ -156,20 +166,20 @@ var BillingValidationComponent = new function () {
                 className: "unacceptable" ,
                 data: (data,index,tr)=>{
                     const sender_info = [`<div class="row ">`,
-                            `<div class='col-3 table-secondary'><span class="sender-name `,data.unacceptable_weight > 0 ? "text-danger" : "text-success",` d-block">`,data.unacceptable_weight||`0`,` </span></div>`,
-                            `<div class='col-3 table-secondary'><span class="sender-name `,data.unacceptable_price > 0 ? "text-danger" : "text-success",` d-block">`,data.unacceptable_price||`0`,` </span></div>`,
-                            `<div class='col-3 table-secondary'><span class="sender-name `,data.wrong_type > 0 ? "text-danger" : "text-success",` d-block ">`,data.wrong_type||`0`,` </span></div>`,
-                            `<div class='col-3 table-secondary'><span class="sender-name `,data.wrong_country > 0 ? "text-danger" : "text-success",` d-block ">`,data.wrong_country||`0`,` </span></div>`,
+                            `<div class='col-3 table-secondary'><span class="sender-name `,data.unacceptable_weight > 0 ? "text-danger" : "text-success",` d-block"> <i class="fas fa-check `,data.unacceptable_weight > 0 ? "d-none" : "",`"></i> <i class="fas fa-times `,data.unacceptable_weight == 0 ? "d-none" : "",`"></i> </span></div>`,
+                            `<div class='col-3 table-secondary'><span class="sender-name `,data.unacceptable_price > 0 ? "text-danger" : "text-success",` d-block"><i class="fas fa-check `,data.unacceptable_price > 0 ? "d-none" : "",`"></i> <i class="fas fa-times `,data.unacceptable_price == 0 ? "d-none" : "",`"></i>  </span></div>`,
+                            `<div class='col-3 table-secondary'><span class="sender-name `,data.wrong_type > 0 ? "text-danger" : "text-success",` d-block "><i class="fas fa-check `,data.wrong_type > 0 ? "d-none" : "",`"></i> <i class="fas fa-times `,data.wrong_type == 0 ? "d-none" : "",`"></i>  </span></div>`,
+                            `<div class='col-3 table-secondary'><span class="sender-name `,data.wrong_country > 0 ? "text-danger" : "text-success",` d-block "><i class="fas fa-check `,data.wrong_country > 0 ? "d-none" : "",`"></i> <i class="fas fa-times `,data.wrong_country == 0 ? "d-none" : "",`"></i>  </span></div>`,
                         `</div>`].join('');
                     return sender_info;
                 },
                 // title: mThis.trans('Sender ID')
                 title: ` <div class='row '>
                             <div class='col-12 text-center p-2'> unacceptable </div>
-                            <div class='col-3 table-secondary p-2'>wei.</div>
-                            <div class='col-3 table-secondary p-2'>pri.</div>
+                            <div class='col-3 table-secondary p-2'>weight</div>
+                            <div class='col-3 table-secondary p-2'>price</div>
                             <div class='col-3 table-secondary p-2'>type</div>
-                            <div class='col-3 table-secondary p-2'>con.</div>
+                            <div class='col-3 table-secondary p-2'>coun.</div>
                         </div> `
             },
             // {
@@ -265,7 +275,7 @@ var BillingValidationComponent = new function () {
     }
 
     this.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
-        el.onchange = e => {
+        el.onchange = e => { 
             e.preventDefault();
             if(mThis.allow_filter){
                 mThis.billValidationListView.showPage(mThis.getFilterData());
@@ -280,11 +290,10 @@ var BillingValidationComponent = new function () {
         });
         mThis.refreshPriceListOptions(null);
         mThis.billValidationListView.showPage(mThis.getFilterData()); 
+        
     });
 
     }
-
-    
 
     this.loadFilterData = (def_shipment_no) => {
         mThis.refreshPriceListOptions(def_shipment_no);
@@ -326,5 +335,88 @@ var BillingValidationComponent = new function () {
         });
         console.log('p',p);
         return p;
+    }
+}
+
+const AlertMesageDialog = new function(){
+    const mThis = this;
+    this.self = main_view.appContent.find('#ErrorModalLong');
+
+    this.scrollable = this.self.find('#modal-dialog');
+    this.elTitle = this.self.find('#AlertModalLongTitle')[0];
+    this.btnOk =  this.self.find('#_sdl_btnOk');
+    this.btnCancel =  this.self.find('#_sdl_btnCancel');
+    // console.log(mThis.btnSave);
+    // this.elSenderType =  this.self.find('#_sdl_sender_sendertype');
+    // this.elBusinessType =  this.self.find('#_sdl_sender_businesstype');
+    
+    this.onClose = null;
+    let alert = null;
+
+
+    this.header =  this.self.find('h.header')[0];
+    this.body =  this.self.find('p.body')[0];
+ 
+    this.btnOk.on('click', function(e){
+        e.preventDefault();
+        console.log(4,alert);
+        if(alert)
+            BillingValidationComponent.btnUploard.click();
+        else
+            mThis.self.modal('hide');
+    });
+
+    this.checkAlert = (message) =>{
+        if(message == 'alert'){
+            mThis.elTitle.innerHTML = `<i class="far fa-question-circle text-info" style="font-size: 80px;"></i>`;
+            alert = message;
+            mThis.header.innerHTML = '<h5 class="ps-4 pe-4 text-center">Validate Now?</h5>';
+            mThis.btnCancel[0].classList.add('d-block');
+            mThis.btnCancel[0].classList.remove('d-none');
+            mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
+            mThis.body.innerHTM = '';
+        }else if(message == 'saved'){
+            mThis.elTitle.innerHTML = `<i class="far fa-check-circle text-success" style="font-size: 80px;"></i>`;
+            alert = 0;
+            mThis.header.innerHTML = '<h5 class="ps-4 pe-4 text-center">File saved and Validated</h5>';
+            mThis.btnCancel[0].classList.add('d-none');
+            mThis.btnCancel[0].classList.remove('d-block');
+            mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
+        }else {
+            mThis.elTitle.innerHTML = `<i class="fa-regular fa-circle-xmark text-danger" style="font-size: 80px;"></i>`;
+            alert = 0;
+            mThis.header.innerHTML = '<h6 class="ps-4 pe-4">' + message + '</h6>';
+            mThis.btnCancel[0].classList.add('d-none');
+            mThis.btnCancel[0].classList.remove('d-block');
+            // mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
+        }
+    }
+
+    this.show = (message, d) => {
+        console.log(1,message ,2, d);
+        console.log(3,mThis.elTitle);
+        // console.log(4,mThis.btnOk[0]);
+        if (!message) message = {};
+           
+        mThis.checkAlert(message);
+
+        let html = '<span >- Supplyer QR : <br>';
+        if(d){
+            mThis.scrollable[0].classList.add('modal-dialog-scrollable');
+            mThis.scrollable[0].style.margin = '';
+            d.forEach(element => {
+                html += element + ` , `;
+            });
+            html += `</span>`;
+            mThis.body.innerHTML = html;
+        }else{
+            mThis.body.innerHTML = null;
+            mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
+            mThis.scrollable[0].style.margin = '10rem auto';
+        }
+
+        mThis.self.modal({
+            backdrop: 'static'
+        });
     }
 }

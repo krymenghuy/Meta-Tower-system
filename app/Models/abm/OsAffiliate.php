@@ -52,7 +52,7 @@ class OsAffiliate //extends Model
       //  $this->deleteProfilePhoto($id,$ss);
        $x = DB::table('os_affiliates')->where('id',$id)->delete();
        if($x){
-        DB::table('os-suppliers')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
+        DB::table('os_suppliers')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
         // DB::table('leads')->where('sales_agent_id',$id)->update(['sales_agent_id'=>null]);
         // DB::table('um_users')->where('official_id',$id)->where('user_class','sales_agent')->delete();
         if($as=='sa'){

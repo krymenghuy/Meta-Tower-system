@@ -190,11 +190,17 @@ class OsShipment //extends Model
         $shipment_no = isset($d->shipment_no)?$d->shipment_no:null;
         $end_date = isset($d->end_date) ? $d->end_date : null;
         $start_date = isset($d->start_date) ? $d->start_date : null;
+        $start_date = isset($d->start_date) ? $d->start_date : null;
+        $session_id  = isset($d->session_id) ? $d->session_id : null;
         // $project_id = isset($d->project_id)?$d->project_id:null;
         $str_where = '1=1';
         $str_dates = '2=2';
+        $str_session = '3=3';
+        // return $session_id;
         if($shipment_no){
             $str_where = 'os.id = '.$shipment_no;
+        }elseif ($session_id) {
+            $str_session = 'bv.session_id = '.$session_id;
         }else{
             $end_date = convertDate($end_date);
             $start_date = convertDate($start_date);
@@ -218,12 +224,11 @@ class OsShipment //extends Model
                 // ->join('price_list_details as p', 'p.country_id', '=', 'os.to_country_id')
                 // ->join('os_package_statuses as st', 'st.id', '=', 'os.status_id')
                 // ->join('sender as sd', 'sd.id', '=', 'os.sender_id')
-                
-                // ->whereRaw($str_srch)
+                ->whereRaw($str_session)
                 ->whereRaw($str_where)
                 ->whereRaw($str_dates)
                 // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
-                ->selectRaw('os.id,os.code, os.item_type , bv.dest_country as to_country ,bv.unacceptable_weight ,bv.unacceptable_price ,bv.wrong_country ,bv.wrong_type , os.secondary_cp_id , os.total_weight , bv.carrier_weight as carrier_total_weight ,(bv.carrier_weight - os.total_weight) as weight_diff, os.total_price ,(bv.carrier_amount - os.total_price) as price_diff, bv.carrier_amount as total_carrier_cost , formatDate(os.create_date) as create_date')
+                ->selectRaw('os.id,os.code, os.item_type ,bv.session_id, bv.dest_country as to_country ,bv.unacceptable_weight ,bv.unacceptable_price ,bv.wrong_country ,bv.wrong_type , os.secondary_cp_id , os.total_weight , bv.carrier_weight as carrier_total_weight ,(bv.carrier_weight - os.total_weight) as weight_diff, os.total_price ,(bv.carrier_amount - os.total_price) as price_diff, bv.carrier_amount as total_carrier_cost , formatDate(os.create_date) as create_date')
                 ->orderBy('os.id', 'DESC'); 
         
         $clone_query = clone $query;
@@ -231,17 +236,22 @@ class OsShipment //extends Model
         // $login_accounts = DB::table('um_users')->selectRaw('official_id')->get();
         // return JDV::result($query->get());
         $rows = $query->skip($skip_row)->take($per_page)->get();
-        $count = $clone_query->count('os.id');
+        $count = isset($d->count) ? (int)$d->count : $clone_query->count('os.id');
+        // $count = $clone_query->count('os.id');
 
-        $unique_id = $this->getUnique_id($rows);
+        $unique_id = $this->getUnique_id($rows); 
+        // return $rows;
         $ret_rows = [];
-        foreach($unique_id as $id){
-            $m = $this->getShipmentList($id,$rows);  
+        foreach($rows as $i=>$row){
+            if($i >= $count) break;
+            $m = $this->getShipmentList($row->id,$rows);  
+            $from_contry = DB::table('os_shipments as os')->join('loc_countries as lc', 'os.from_country_id', '=', 'lc.id')->where('os.id',$m->id)->select('lc.name')->first();
+            $m->from_country = $from_contry->name ?? ''; 
             $ret_rows[] = $m;  
             
         }   
         // $count = count($ret_rows);
-        // return $count;
+        // return $ret_rows;
 
         return new LengthAwarePaginator($ret_rows,$count,$per_page,$current_page);
     }
