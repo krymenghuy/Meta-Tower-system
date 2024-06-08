@@ -53,5 +53,13 @@ class InvoiceController extends Controller
          $delete = $invoice->deleteInvoice($id);
          return JDV::raw($delete);
      }
+     function ListPaginate(Request $req){
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $data = $this->invoice->ListPaginate($req->all(),$ss);
+        
+        return JDV::result($data);
+    }
+
  
 }

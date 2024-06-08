@@ -126,6 +126,8 @@ use App\Http\controllers\abm\SpecialChargeController;
         Route::post('/list-paginate',[InvoiceController::class,'getInvoiceListPaginate']);
         Route::post('/form-options',[InvoiceController::class,'getFormOptions']);
         Route::post('/delete',[InvoiceController::class,'deleteInvoice']);
+        Route::post('/Shipment-list-paginate', [InvoiceController::class, 'ListPaginate']);
+
     });
 
     

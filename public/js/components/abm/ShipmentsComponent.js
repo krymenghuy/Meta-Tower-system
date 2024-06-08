@@ -2,103 +2,6 @@
 'use strict';
 
 
-const FilterDialog_pickup = new function () {
-    let mThis = this;
-    this.base_url = main_view.base_url; //** || document.querySelector('meta[name="base_url"]').getAttribute('content');*/
-    this.self = main_view.appContent.find('#_pl_dlgFilter');
-    this.elTitle = this.self.find('#_pl_dlgFilterTitle');
-    this.elFilter_start_date = this.self.find('#_pl_filter_startdate');
-    this.elFilter_end_date = this.self.find('#_pl_filter_enddate');
-    this.elFilter_sender = this.self.find('#_pl_filter_sender');
-    this.elFilter_driver = this.self.find('#_pl_filter_driver');
-    this.elFilter_delivery_type = this.self.find('#_pl_filter_dtype');
-    this.elFilter_status = this.self.find('#_pl_filter_status');
-    this.elFilter_warehouse = this.self.find('#_pl_filter_warehouse');
-
-    this.form_data = {};
-    this.remembered_filter;
-    this.btnOK = this.self.find('#_pl_dlgFilter_btnOK');
-
-    this.self.find('.dl_filter_field').on('change', (e) => {
-        mThis.remembered_filter = mThis.getData();
-    });
-
-    this.btnOK.on('click', (e) => {
-        mThis.self.modal('hide');
-        let p = mThis.getData();
-        if (typeof mThis.onClose == 'function') mThis.onClose(p);
-    });
-
-    this.loadFilterData = (onFinish) => {
-        let def = mThis.remembered_filter ? mThis.remembered_filter : {};
-        if (!def.status_id) def.status_id = -1; // Use "All Statuses" As default status filter
-        if (!def.sender_id) def.sender_id = null;
-        if (!def.driver_id) def.driver_id = null;
-        if (!def.warehouse_id) def.warehouse_id = main_view.DEF_TO_WAREHOUSE_ID;
-
-        let data = ShipmentsComponent.form_data;
-        if (data) {
-            VSUtil.setComboItems(mThis.elFilter_warehouse, data.warehouses, 'id', 'warehouse_name', false, '(Select Warehouse)', def.warehouse_id);
-            VSUtil.setComboItems(mThis.elFilter_sender, data.senders, 'id', 'sender_name', false, null, def.sender_id);
-            // VSUtil.setComboItems(mThis.elFilter_driver, data.drivers, 'id', 'driver_name', false, null, def.driver_id);
-            VSUtil.setComboItems(mThis.elFilter_status, data.shipment_status, 'status_id', 'status_name', false, '(All Status)', def.status_id);
-            if (typeof onFinish == 'function') onFinish(data);
-            return;
-        }
-
-        vsapi.call([mThis.base_url, '/abm/oversea_shipments/form-options'].join(''), null).then(res => {
-            if (res.status_code === 200) {
-                let data = res.data;
-                // data.warehouses = StringSanitizer.sanitizeObject(data.warehouses);
-                data.senders = StringSanitizer.sanitizeObject(data.senders);
-                data.shipment_status = StringSanitizer.sanitizeObject(data.shipment_status);
-                // data.drivers = StringSanitizer.sanitizeObject(data.drivers);
-                // data.zones = StringSanitizer.sanitizeObject(data.zones);
-                (data.shipment_status || []).unshift({ "status_id": "-1", "status_name": "(All Statuses)" });
-                (data.senders || []).unshift({ "id": null, "sender_name": "(All Merchants)" });
-                // (data.drivers || []).unshift({ "id": null, "driver_name": "(All Drivers)" });
-                // VSUtil.setComboItems(mThis.elFilter_warehouse, data.warehouses, 'id', 'warehouse_name', false, '(Select Warehouse)', def.warehouse_id);
-                VSUtil.setComboItems(mThis.elFilter_sender, data.senders, 'id', 'sender_name', false, null, def.sender_id);
-                // VSUtil.setComboItems(mThis.elFilter_driver, data.drivers, 'id', 'driver_name', false, null, def.driver_id);
-                VSUtil.setComboItems(mThis.elFilter_status, data.shipment_status, 'status_id', 'status_name', false, null, def.status_id);
-                mThis.form_data = data;
-                if (typeof onFinish === 'function') onFinish(data);
-                ShipmentsComponent.form_data = data;
-            }
-        });
-    }
-
-    this.show = (option, onClose) => {
-        if (option) {
-            let title_text = LocaleManager.trans(option.title);
-            mThis.elTitle.text(title_text);
-        }
-        mThis.onClose = onClose;
-        mThis.loadFilterData(() => {
-            if (main_view.MULTI_WAREHOUSE_OP == 0) mThis.elFilter_warehouse.parent().hide();
-            mThis.self.modal({
-                backdrop: 'static'
-            });
-        });
-
-    }
-
-    this.getData = () => {
-        let p = {};
-        p.start_date = mThis.elFilter_start_date.val();
-        p.end_date = mThis.elFilter_end_date.val();
-        //if (!p.request_date) p.request_date =p.date;
-        p.sender_id = mThis.elFilter_sender.val();
-        p.driver_id = mThis.elFilter_driver.val();
-        p.delivery_type = mThis.elFilter_delivery_type.val();
-        p.status_id = mThis.elFilter_status.val();
-        p.warehouse_id = mThis.elFilter_warehouse.val(); //receiving warehouse
-        mThis.remembered_filter = p; //remember previous selection
-        return p;
-    }
-}
-//### end::FiterDialog_pickup
-
 var ShipmentsComponent = new function () {
     let mThis = this;
     this.title_prop = "Shipment";
@@ -2685,8 +2588,9 @@ const ShipmentStatusDialog = new function () {
                 id: def.shipment_id
             },null).then(res => {
                 let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
-                VSUtil.setComboItems(mThis.elStatus, d.shipment_status, 'status_id', 'status_name', false, '(Select status)', def.status_id);
-                onFinish(d.shipment.qr_code);
+                console.log(2,d);
+                VSUtil.setComboItems(mThis.elStatus, d.os_shipment_status, 'status_id', 'status_name', false, '(Select status)', def.status_id);
+                onFinish(d.os_shipment.qr_code);
             });
 
             // VSUtil.setComboItems(mThis.elDriver, mThis.form_data.drivers, 'id', 'driver_name', true, '(Select a driver)', def.driver_id);

@@ -1,10 +1,55 @@
 'use strict';
+
+const FilterDialog = new function () {
+    let mThis = this;
+    this.base_url = main_view.base_url; //** || document.querySelector('meta[name="base_url"]').getAttribute('content');*/
+    this.self = main_view.appContent.find('#_create_invoice_dlgFilter');
+    this.elTitle = this.self.find('#_create_invoice_dlgFilterTitle');
+    this.elFilter_start_date = this.self.find('#_pl_filter_startdate');
+    this.elFilter_end_date = this.self.find('#_pl_filter_enddate');
+   
+    this.form_data = {};
+    this.remembered_filter;
+    this.btnOK = this.self.find('#_invoice_create_dlgFilter_btnOK');
+
+    this.self.find('.dl_filter_field').on('change', (e) => {
+        mThis.remembered_filter = mThis.getData();
+    });
+
+    this.btnOK.on('click', (e) => {
+        mThis.self.modal('hide');
+        let p = mThis.getData();
+        if (typeof mThis.onClose == 'function') mThis.onClose(p);
+    });
+
+   
+
+    this.show = (option, onClose) => {
+        if (option) {
+            let title_text = LocaleManager.trans(option.title);
+            mThis.elTitle.text(title_text);
+        }
+        mThis.onClose = onClose;
+            mThis.self.modal({
+                backdrop: 'static'
+            });
+
+    }
+
+    this.getData = () => {
+        let p = {};
+        p.start_date = mThis.elFilter_start_date.val();
+        p.end_date = mThis.elFilter_end_date.val();
+        mThis.remembered_filter = p; //remember previous selection
+        return p;
+    }
+}
+
 var InvoicesComponent = new function(){
     const mThis = this;
     this.title_prop = "Invoices";
     this.self = main_view.appContent.children('#_main_invoicesComponent');
     this.base_url = main_view.base_url;
-    this.btnNewInvoice = this.self.find('#_new_invoice');
 
     this.elFilter_start_date = this.self.find('#_invoice_filter_start_date');
     this.elFilter_end_date = this.self.find('#_invoice_filter_end_date');
@@ -12,6 +57,7 @@ var InvoicesComponent = new function(){
     this.btnSearch = this.self.find('#_btnSearch');
     // this.tblInvoices_body = mThis.self.find('#_idl_invoice_body');
     this.div_filter_fields = mThis.self[0].querySelector('#_idl_filter_fields');
+    this.btnToggleFilter = this.self.find('#_pl_btnToggleFilter');
 
     this.btnPrint = this.self.find('#_invoice_btnPrint');
     this.btnPDF = this.self.find('#_invoice_btnPDF');
@@ -25,7 +71,7 @@ var InvoicesComponent = new function(){
             {
                 className: "invoice_no align-middle",
                 data: function (data,index,tr) {
-                    return ['<div><span class="rounded-3 text-warning">', data.code, '</span></div>'].join('');
+                    return ['<div><span class="rounded-3">', data.code, '</span></div>'].join('');
                 },
                 title: 'Invoice No'
             },
@@ -38,67 +84,58 @@ var InvoicesComponent = new function(){
                 title: 'Customer'
             },
             {
-                className: "send_to_country align-middle text-muted",
-                data:(data,index,tr)=>{
-                    return[`<div>`,data.country,`</div>`].join('');
-                },
-                title: 'Send To Country',
+                title: "Customer Contact",
+                className: "align-middle text-nowrap",
+                data: (data, index, tr) => {
+                    return ['<div class="d-flex p-1"><i class="fas text-danger  fa-phone p-2"></i><span class="  sender-name d-block p-1 ">', data.phone_number, '</span></div>','<div class="d-flex p-2" ><i class="fas p-2 text-success fa-envelope"></i><span class=" text-primary sender-name d-block p-1">', (data.email || 'គ្មាន'),
+                        '</span></div>'].join('');
+                }
             },
             {
-                className: "items_type align-middle",
-                title: 'Item Type',
-                data: (data,index,tr)=>{
-                    const cls_class =(data.item_type || '').toLowerCase() === 'doc' ? 'border-success text-center' : 'border-warning text-center text-primary';
-                    // const item_type = data.item_type ? VSUtil.properCase(data.item_type) : 'non_doc';
-                    const item_type = data.item_type ? data.item_type.toUpperCase() : 'NON_DOC';
-                    // return [`<div class="d-flex gap-2"><span class="text-nowrap">`,data.item_type,`</span></div>`].join('');
-                    return ['<a class="d-block" data-item_type="',item_type, '" data-id="', data.id, `" href="javascript:void(0)"><span style="display:block;width:80px;"  class="border rounded-5 p-2   ${cls_class} ">`,item_type, '</span></a>'].join('');
-
+                className: "invoice_type align-middle text-muted",
+                data:(data,index,tr)=>{
+                    return[`<div>`,data.invoice_type,`</div>`].join('');
                 },
+                title: 'InVoice TYpe',
             },
+        
+            // {
+            //     className: "items_type align-middle",
+            //     title: 'Item Type',
+            //     data: (data,index,tr)=>{
+            //         const cls_class =(data.item_type || '').toLowerCase() === 'doc' ? 'border-success text-center' : 'border-warning text-center text-primary';
+            //         // const item_type = data.item_type ? VSUtil.properCase(data.item_type) : 'non_doc';
+            //         const item_type = data.item_type ? data.item_type.toUpperCase() : 'NON_DOC';
+            //         // return [`<div class="d-flex gap-2"><span class="text-nowrap">`,data.item_type,`</span></div>`].join('');
+            //         return ['<a class="d-block" data-item_type="',item_type, '" data-id="', data.id, `" href="javascript:void(0)"><span style="display:block;width:80px;"  class="border rounded-5 p-2   ${cls_class} ">`,item_type, '</span></a>'].join('');
+
+            //     },
+            // },
        
           
-            {
-                className: "qty align-middle",
-                data: (data,index,tr)=>{
-                    return [`<span class="item-qty">`,data.package_qty,`</span>`].join('');
-                },
-                title:'Package QTY'
+            // {
+            //     className: "qty align-middle text-center",
+            //     data: (data,index,tr)=>{
+            //         return [`<span class="item-qty">`,data.package_qty,`</span>`].join('');
+            //     },
+            //     title:'Package QTY'
 
-            },
-            {
-                className: "total_weight align-middle",
-                data: (data, index, tr) => {
-                    const cur_symbol = data.currency_symbol || "kg";
-                    const weight = Number(data.total_weight).toLocaleString("en-US", {
-                        minimumFractionDigits: 2,
-                        maximumFractionDigits: 2,
-                    });
-                    return [
-                        "<span><span>",
-                         weight,
-                        ' </span><span class="amount">',
-                        cur_symbol,
-                        "</span></span>",
-                    ].join("");
-                },
-                title:'Total Weight'
+            // },
+           
+            // {
+            //     className: "special_charge align-middle",
+            //     data:(data,index,tr)=>{
+            //         return [`<span class="spacial_charge">`,data.total_special_charge,`</span>`].join('');
+            //     },
+            //     title:'Spacial Charge'
 
-            },
-            {
-                className: "special_charge align-middle",
-                data:(data,index,tr)=>{
-                    return [`<span class="spacial_charge">`,data.total_special_charge,`</span>`].join('');
-                },
-                title:'Spacial Charge'
-
-            },
+            // },
             {
                 title: "Total Amount",
                 className: "total_amount align-middle",
                 data: (data, index, tr) => {
                     const cur_symbol = data.currency_symbol || "$";
-                    const amount = Number(data.total_price).toLocaleString("en-US", {
+                    const amount = Number(data.amount).toLocaleString("en-US", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                     });
@@ -111,7 +148,68 @@ var InvoicesComponent = new function(){
                     ].join("");
                 },
             },
-        
+            {
+                className: "discount_percentage align-middle",
+                data: (data, index, tr) => {
+                    const cur_symbol = data.currency_symbol || "%";
+                    const percent = Number(data.discount_percent).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    });
+                    return [
+                        "<span><span>",
+                        percent,
+                        ' </span><span class="amount">',
+                        cur_symbol,
+                        "</span></span>",
+                    ].join("");
+                },
+                title:'Discount Percent'
+
+            },
+            {
+                title: "Discount Amount",
+                className: "discount_amount align-middle",
+                data: (data, index, tr) => {
+                    const cur_symbol = data.currency_symbol || "$";
+                    const dis_amount = Number(data.discount_amount).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    });
+                    return [
+                        "<span><span>",
+                        cur_symbol,
+                        ' </span><span class="amount">',
+                        dis_amount,
+                        "</span></span>",
+                    ].join("");
+                },
+            },
+            {
+                title: "Amount Due",
+                className: "due_amount align-middle",
+                data: (data, index, tr) => {
+                    const cur_symbol = data.currency_symbol || "$";
+                    const due_amount = Number(data.amount_due).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                    });
+                    return [
+                        "<span><span>",
+                        cur_symbol,
+                        ' </span><span class="amount">',
+                        due_amount,
+                        "</span></span>",
+                    ].join("");
+                },
+            },
+            {
+                className: "pmt_terms align-middle text-uppercase",
+                data:(data,index,tr)=>{
+                    return[`<div class="text-danger">`,data.pmt_terms  || 'គ្មាន',`</div>`].join('');
+                },
+                title: 'Payment Terms',
+            },
         
       
            
@@ -135,6 +233,7 @@ var InvoicesComponent = new function(){
 
                 },
             },
+          
             {
                 title: "Action",
                 className: 'align-middle text-capitalize',
@@ -149,6 +248,7 @@ var InvoicesComponent = new function(){
                 }
                 
             },
+            
            
      
          
@@ -172,16 +272,7 @@ var InvoicesComponent = new function(){
             },
             listContainerClass:null,
         });
-        mThis.btnNewInvoice.on('click', function (e) {
-            e.preventDefault();
-            let op = {
-                'id': null,
-                'onClose': (d) => {
-                    mThis.invoiceListView.showPage(mThis.getFilterData());
-                }
-            };
-            InvoiceDialog.show(op);
-        });
+       
         this.sh_container = mThis.invoiceListView.getListContainer();
         const sh_parent = mThis.sh_container.parentElement;
         sh_parent.style.height = (window.innerHeight - 190)+'px';
@@ -206,6 +297,11 @@ var InvoicesComponent = new function(){
     });
     mThis.btnSearch.on('click', function () {
         mThis.invoiceListView.showPage(mThis.getFilterData());
+    });
+    mThis.btnToggleFilter.on('click', () => {
+        FilterDialog.show(null, (d) => {
+            if (d) mThis.invoiceListView.showPage(mThis.getFilterData()); 
+        });
     });
 
 
@@ -251,151 +347,5 @@ var InvoicesComponent = new function(){
 
 
 }
-const InvoiceDialog = new function(){
-    const mThis = this;
-    this.self = main_view.appContent.find('#_idl_dlgInvoice');
-    this.base_url = main_view.base_url;
-    this.options = {};
-    
-    this.elTitle = this.self.find('#_idl_dlgInvoiceTitle');
-    this.btnSave =  this.self.find('#_idl_invoice_btn_ok');
-    // console.log(mThis.btnSave);
-    // this.elSalesAgent =  this.self.find('#_sdl_sales_agent');
 
-    // this.elPriceList =  this.self.find('#_sdl_price_list');
-    // this.elCOD =  this.self.find('#_sdl_cod');
-    // this.elCODFee =  this.self.find('#_sdl_cod_fee');
-    // console.log(mThis.divPhoto);
-    this.onClose = null;
-
-    this.body =  this.self.find('.modal-body')[0];
-    this.div_sender_info =  this.body.querySelector('#_idl_invoice_body');
-   
-    
-
-    // this.prepareData = (id,def, onFinish) => {
-    //     // console.log(id);
-    //     if(!def) def = {};
-    //     vsapi.call(`${mThis.base_url}/abm/os_suppliers/form-options`,{
-    //         id: id
-    //     },null).then(res => {
-    //         let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
-    //         // console.log(d);
-    //         // d.bank_accounts = d.bank_accounts || [];
-    //         // VSUtil.setComboItems(mThis.elSenderType, d.sender_types, 'id', 'sender_type', true, '(Select Merchant Type)', def.sender_type_id);
-    //         // VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
-    //         VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'name', true, '(Price List)', def.price_list_id);
-    //         VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', def.sales_agent_id);
-    //         onFinish(d);
-    //     });
-    // }
-
-    // this.btnSave.on('click', function(e){
-    //     e.preventDefault();
-    //     let p = mThis.getData();
-    //     vsapi.call(`${mThis.base_url}/abm/os_suppliers/save`, p).then(res => {
-    //         if(res.status_code === 200){
-    //             mThis.self.modal('hide');
-    //             if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
-    //         }
-    //         else
-    //             cv_interact.error(res.error_message);
-    //     });
-    // });
-
-    // this.show = (options) => {
-    //     // console.log(options);
-    //     if (!options) options = {};
-    //     mThis.options = options;
-         
-    //     mThis.prepareData(mThis.options.id,{},data => { 
-    //         if(data.supplier){
-    //             mThis.elTitle.text("Modify Supplier Information");
-    //         }
-    //         else{
-    //             mThis.elTitle.text("Create Supplier");
-    //         }
-    //         mThis.setData(data.supplier);
-    //         mThis.self.modal({
-    //             backdrop: 'static'
-    //         });
-    //     });
-    // }
-    this.show = (options)=>{
-        mThis.options = options || {};
-        mThis.elTitle.innerHTML = options.title;
-        console.log(mThis.options.id);
-        // if (mThis.options.id > 0) {
-        //     mThis.elTitle.innerHTML = "Suppliers Details";
-        //     let p = {'id':mThis.options.id};
-        //     vsapi.call([main_view.base_url,'/abm/os_suppliers/form-options'].join(''),p,null).then(res=>{
-                
-        //         if(res.status_code === 200){
-        //             let d = res.data.supplier;
-        //         console.log(d);
-
-        //             d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
-        //             mThis.prepareData(d, {}, data => {
-        //                 mThis.setData(d);
-        //                 mThis.self.modal({
-        //                     backdrop:'static'
-        //                 });
-        //             });
-        //         }
-        //     });
-        // }
-        // else{
-        //     mThis.elTitle.innerHTML =  "New Customers";
-        //     mThis.prepareData({'id':1},{},data =>{
-        //         mThis.setData(null);
-        //         mThis.self.modal({
-        //             backdrop:'static'
-        //         });       
-        //     });
-        // }
-        mThis.self.modal({
-            backdrop:'static'
-        });
-    }
-
-    // this.setData = (d) => {
-    //     // mThis.body.querySelectorAll('.data-input').forEach(el => {
-    //     //     el.value = null;
-    //     // });
-    //     // if (!d) return;
-    //     d = d || {};
-    //     mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
-    //         const data_member = el.dataset.field;
-    //         el.value = d[data_member] ?? '';
-    //         console.log(d[data_member]);
-
-    //         if (el.tagName.toLowerCase() === 'select') {
-    //             el.dispatchEvent(new Event('change'));
-    //         }else if(el.tagName ==='IMG'){
-    //             el.setAttribute('src',d[data_member] || '');
-    //         }
-                
-           
-    //     });
-    //     console.log(d);
-    // mThis.imgBox.setImage(d.photo || d.image_url);
-
-    // }
-    // this.getData = () => {
-    //     let p = {};
-    //     p.id = mThis.options.id;
-    //     mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
-    //         let data_member = el.dataset.field;
-            
-    //        if(el.tagName ==='IMG') 
-    //             p[data_member] = el.getAttribute('src');
-    //         else 
-    //             p[data_member] = el.value;
-    //     });
-    //     // p.banks = mThis.getBanks();
-    //     return p;
-    // }
-
-    
-}
 

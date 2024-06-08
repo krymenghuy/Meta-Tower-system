@@ -28,10 +28,9 @@ class Invoice //extends Model
         $v_rule = [
             'id'=>'0|identity=1',
             'sender_id' => '0|number|exists=sender.id',
-            'shipment_id'=>'1|number|exists=os_shipments',
-            'invoice_type'=>'1|choice|informal,commercial,tax,',
-            'amount'=>'1|number',
-            'status_id'=>'0|number|default =1',
+            'invoice_type'=>'0|choice|informal,commercial,tax',
+            'amount'=>'0|number',
+            'status_id'=>'1|number|default =1',
 
     ];
 
@@ -85,6 +84,121 @@ class Invoice //extends Model
         ->selectRaw('id,sender_id,shipment_id,invoice_type,amount,discount_percent,discount_amount,discount_type,amount_due,issue_date,due_date,pmt_terms,create_date')->get();
 
    }
+   
+   function ListPaginate($filter,$ss){
+    $branch_id = $ss->branch_id;
+    $d = (object)$filter;
+    // return JDV::result($filter->page);
+
+    $current_page = isset($d->current_page)?$d->current_page:1;
+    $per_page = isset($d->per_page)?$d->per_page:10;
+    $search_value = isset($d->search_value)?$d->search_value:null;
+    $end_date = isset($d->end_date) ? $d->end_date : null;
+    $start_date = isset($d->start_date) ? $d->start_date : null;
+    
+    $status_code = isset($d->status_code)?$d->status_code:null;
+    // $price_list_id = isset($d->price_list_id)?$d->price_list_id:null;
+    $str_srch = '1=1';
+    $str_where = '2=2';
+    $str_dates = '3=3';
+
+    if($search_value){
+        $skip_row = 0;
+        $str_srch = '(os.code LIKE \'%'.$search_value.'%\')';
+    }
+    if($status_code){
+        $str_where = 'os.status_id = \''.$status_code.'\'';
+    }else{
+        $end_date = convertDate($end_date);
+        $start_date = convertDate($start_date);
+        if ((bool)strtotime($start_date) && (bool)strtotime($end_date)) {
+            $str_dates = "DATE(os.create_date) >= '$start_date' AND DATE(os.create_date) <= '$end_date'";
+        // return $start_date;
+        }else if($end_date){
+           $start_date = date('Y-m-d', strtotime(date('Y-m-d') . ' -90 days'));
+           $str_dates = "DATE(os.create_date) >= '$start_date' AND DATE(os.create_date) <= '$end_date'";
+        // return $str_dates;
+
+        }
+    }
+    $skip_row = ($current_page - 1) * $per_page;
+    $price_list_id = ',(SELECT s.price_list_id FROM sender as s WHERE s.id = os.sender_id ) as price_list_id';
+    //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
+   // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
+    $query = DB::table('os_shipments as os')
+            ->join('os_affiliates as sa','os.primary_cp_id','=','sa.id') // Perform an inner join
+            ->join('loc_countries as lc', 'lc.id', '=', 'os.to_country_id')
+            // ->join('price_list_details as p', 'p.country_id', '=', 'os.to_country_id')
+            ->join('sender as sd', 'sd.id', '=', 'os.sender_id')
+            ->join('os_shipment_statuses as oss', 'oss.id', '=', 'os.status_id')
+            ->whereRaw($str_srch)
+            ->whereRaw($str_where)
+            ->whereRaw($str_dates)
+            
+            // ->whereRaw($str_srch)
+            // ->whereRaw($str_where)
+            // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
+            ->selectRaw('os.id,os.code, os.item_type ,sd.id as sender_id, sd.name, os.remarks ,  os.zone_code, os.status_id, os.to_country_id, os.from_country_id, lc.name as to_country , os.primary_cp_id ,sa.name as primary_cp_name , sa.phone_number as primary_cp_phone , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , oss.name as status , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time'.$price_list_id)
+            ->orderBy('os.id', 'DESC'); 
+    
+    $clone_query = clone $query;
+    
+    // $login_accounts = DB::table('um_users')->selectRaw('official_id')->get();
+    // return JDV::result($query->get());
+    $rows = $query->skip($skip_row)->take($per_page)->get();
+    // return $rows;
+
+    $count = $clone_query->count('os.id');
+
+    $unique_id = $this->getUnique_id($rows);
+    // return $rows;
+    $ret_rows = [];
+    foreach($unique_id as $id){
+        $m = $this->getShipmentList($id,$rows);  
+        $from_contry = DB::table('os_shipments as os')
+        ->join('loc_countries as lc', 'os.from_country_id', '=', 'lc.id')
+        ->where('os.id',$m->id)->select('lc.name')->first();
+        $m->from_country = $from_contry->name ?? ''; 
+        $ret_rows[] = $m;  
+    }   
+    // $count = count($ret_rows);
+    // return $count;
+
+    return new LengthAwarePaginator($ret_rows,$count,$per_page,$current_page);
+}
+function getShipmentList($id,$rows){
+    $i=0;
+    $c=0;
+
+    $data = [];
+    // return JDV::result($rows);
+     
+    do{
+       if(!isset($rows[$i])) break;
+       $c = $rows[$i];
+//     $item_type = strtolower($c->item_type); 
+        if($c->id == $id) {  
+            $data = $c;
+        } 
+       $i++;
+    }while($c);
+
+
+    // $data = (object)['data'=>$data];
+    // return JDV::result($data);
+
+    return $data;
+}
+function getUnique_id($rows){
+    // return $rows;
+    $unique_id = [];
+    foreach($rows as $row){
+        if(!in_array($row->id,$unique_id)){
+            $unique_id[] = $row->id;
+        }    
+    }
+    return $unique_id;
+}
    function getInvoiceListPaginate($filter,$ss){
     $branch_id = $ss->branch_id;
     $d = (object)$filter;
@@ -104,7 +218,8 @@ class Invoice //extends Model
 
     if($search_value){
         $skip_row = 0;
-        $str_srch = '(ci.code LIKE \'%'.$search_value.'%\')';
+        $str_srch = "(s.name LIKE '%".$search_value."%' OR ci.code ='" .$search_value. "' )";
+
     }
     if($status_code){
         $str_where = 'ci.status_id = \''.$status_code.'\'';
@@ -137,7 +252,7 @@ class Invoice //extends Model
             ->whereRaw($str_where)
             ->whereRaw($str_dates)
 
-            ->selectRaw('ci.id,ci.code,ci.update_user,formatDate(ci.create_date) as create_date,ci.update_date,ois.name as status,s.name,ci.amount,sh.item_type,sh.to_country_id,lc.name as country,sh.total_weight,sh.total_special_charge,sh.receiver_name,sh.receiver_address,sh.remarks,sh.package_qty,sh.status_id,sh.total_price')->orderBy('ci.id', 'DESC');;
+            ->selectRaw('ci.id,ci.code,ci.update_user,ci.discount_percent,ci.discount_amount,ci.amount_due,formatDate(ci.create_date) as create_date,ci.update_date,ci.invoice_type,ois.name as status,s.name,s.email,s.address,s.phone_number,ci.amount,discount_type,ci.pmt_terms')->orderBy('ci.id', 'DESC');;
    
     // return $query;
     $clone_query = clone $query;

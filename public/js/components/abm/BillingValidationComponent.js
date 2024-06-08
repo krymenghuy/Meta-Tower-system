@@ -35,6 +35,7 @@ var BillingValidationComponent = new function () {
             let fileData = event.target.result;
             console.log('file',btoa(fileData));
             let p = {'file':btoa(fileData)};
+            console.log(1,p);
             if(!p.file) return; 
             vsapi.call(`${main_view.base_url}/abm/oversea_shipments/import`,p,null,null,false).then(res =>{
                 console.log('data',res);
@@ -182,25 +183,7 @@ var BillingValidationComponent = new function () {
                             <div class='col-3 table-secondary p-2'>coun.</div>
                         </div> `
             },
-            // {
-            //     className: "",
-            //     data: (data,index,tr)=>{
-            //         const sender_info = ['<span class="sender-name d-block">',data.total_price||'NA',' USD </span>'].join('');
-            //         return sender_info;
-            //     },
-            //     // title: mThis.trans('Sender ID')
-            //     title: 'total price'
-            // },
-            // {
-            //     className: "",
-            //     data: (data,index,tr)=>{
-            //         const sender_info = ['<span class="sender-name d-block">',data.total_carrier_cost||'NA',' USD </span>'].join('');
-            //         return sender_info;
-            //     },
-            //     // title: mThis.trans('Sender ID')
-            //     title: `<div class='d-b'>total cc</div><div class='d-n'>total carrier cost</div>`
-            // }
-            
+       
         ];
 
         mThis.billValidationListView = new ListView("_billValidation_list", {
@@ -232,31 +215,7 @@ var BillingValidationComponent = new function () {
             listContainerClass: null,
         });
 
-        // this.btnNewSalesAgents.on('click',function(e){
-        //     let op = {
-        //         'id':null,
-        //         'as':'sa',
-        //         'onClose':(d)=>{
-        //             // mThis.salesAgentsListView.showPage(null);
-        //             mThis.initListView('view_sales_agent');
-        //         }
-        //     };
-        //     // console.log(op);
-        //     SalesAgentDialog.show(op);
-        // });
-
-        // this.btnNewContactPerson.on('click',function(e){
-        //     let op = {
-        //         'id':null,
-        //         'as':'', 
-        //         'onClose':(d)=>{
-        //             // mThis.salesAgentsListView.showPage(null);
-        //             mThis.initListView('view_contact_person');
-        //         }
-        //     };
-        //     // console.log(op);
-        //     SalesAgentDialog.show(op);
-        // });
+      
 
         
         mThis.initAlready = true;
