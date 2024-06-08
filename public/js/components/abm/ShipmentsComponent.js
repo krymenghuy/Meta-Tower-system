@@ -475,6 +475,13 @@ var ShipmentsComponent = new function () {
                  return [`<span class="d-flex fw-semibold  text-info">`,data.status||"NA",'</span>'].join('');
                }
             },
+            
+            {
+                title:"Paid Status",
+                data:(data,index,tr)=>{
+                  return [`<span class="d-flex fw-semibold  text-danger">`,data.paid_status||"Unpaid",'</span>'].join('');
+                }
+             },
         ];
 
         mThis.shipmentListView = new ListView("_shm_div_order_list", {

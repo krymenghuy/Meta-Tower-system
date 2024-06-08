@@ -18,6 +18,7 @@ use App\Http\controllers\abm\OsAffiliateController;
 use App\Http\controllers\abm\OsPriceController;
 use App\Http\controllers\abm\GeneralSettingsController;
 use App\Http\controllers\abm\SpecialChargeController;
+use App\Http\controllers\abm\PaymentController;
  
  //begin:: api without Authentication
     Route::middleware([CustomRateLimiter::class])->group(function(){
@@ -81,6 +82,7 @@ use App\Http\controllers\abm\SpecialChargeController;
         Route::post('/Shipment-list-paginate', [OsShipmentController::class, 'ListPaginate']);
         Route::post('/Shipment-list-BillValidate', [OsShipmentController::class, 'ListForBillValidate']);
         Route::post('/form-options', [OsShipmentController::class, 'getFormOptions']);
+        Route::post('/form-options-payment', [OsShipmentController::class, 'getFormOptionsForPayment']);
         Route::post('/item-details', [OsShipmentController::class, 'getItemDetails']);
         Route::post('/update-status', [OsShipmentController::class, 'updateStatus']);
         Route::post('/update-carrier-info', [OsShipmentController::class, 'updateCarrierInfo']);
@@ -92,6 +94,13 @@ use App\Http\controllers\abm\SpecialChargeController;
         Route::post('/import', [OsShipmentController::class, 'import']);
 
     });
+    Route::middleware([CustomRateLimiter::class])->prefix('payment')->group(function(){
+        Route::post('/save', [PaymentController::class, 'save']);
+        Route::post('/save-many', [PaymentController::class, 'saveMany']);
+        Route::post('/list-paginate', [PaymentController::class, 'ListPaginate']);
+        Route::post('/delete-special-charge', [PaymentController::class, 'deleteSpecileCharge']);
+    });
+
     Route::middleware([CustomRateLimiter::class])->prefix('special-charge')->group(function(){
         Route::post('/save', [SpecialChargeController::class, 'save']);
         Route::post('/list-paginate', [SpecialChargeController::class, 'ListPaginate']);

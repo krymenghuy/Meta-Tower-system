@@ -77,6 +77,7 @@ var BillingValidationComponent = new function () {
         if(mThis.initAlready) return;
         
         this.cols = [
+            
             {
                 className: "",
                 data: (data,index,tr)=>{
@@ -86,6 +87,7 @@ var BillingValidationComponent = new function () {
                 // title: mThis.trans('Sender ID')
                 title: 'Waybill No.'
             },
+
             {
                 className: "Shipment Date",
                 data: function (data, index, tr) {
@@ -182,6 +184,18 @@ var BillingValidationComponent = new function () {
                             <div class='col-3 table-secondary p-2'>coun.</div>
                         </div> `
             },
+
+            {
+                className: "",
+                data: (data,index,tr)=>{
+                    const sender_info = ['<div class="sender-name d-block" data-id="', data.id, '">',
+                        data.paid_status_id >= 2?'<img width="28" height="20" src="https://img.icons8.com/color/48/paid.png" alt="paid"/>':'<span href="javascript:void(0)" class ="btn-payment btn btn-sm pt-0 pb-0 ps-1 pe-1 btn-outline-danger" >UNPAID</span>',
+                    '</div>'].join('');
+                    return sender_info;
+                },
+                // title: mThis.trans('Sender ID')
+                title: 'payment'
+            },
             // {
             //     className: "",
             //     data: (data,index,tr)=>{
@@ -207,7 +221,7 @@ var BillingValidationComponent = new function () {
             // clientSidePagination: true,
             fetchApi: `${main_view.base_url}/abm/oversea_shipments/Shipment-list-BillValidate`,
             apiCluster: main_view.apiCluster,
-            tableClass: "table bill_Validate table-bordered header-uppercase bg-white",
+            tableClass: "table bill_Validate header-uppercase bg-white",
             perPage: 10,
             columns: mThis.cols,
             // processResponse: (res) => {
@@ -261,8 +275,8 @@ var BillingValidationComponent = new function () {
         
         mThis.initAlready = true;
 
-        // mThis.tblOrders = mThis.billValidationListView.getTable();
-    // mThis.tblShipments = $(mThis.tblOrders);
+    mThis.tblOrders = mThis.billValidationListView.getTable();
+    mThis.tblValidation = $(mThis.tblOrders);
 
     this.sh_container = mThis.billValidationListView.getListContainer();
     // mThis.setEvents($(mThis.container));
@@ -273,6 +287,15 @@ var BillingValidationComponent = new function () {
         window.onresize = () => {
             sh_parent.style.height = (window.innerHeight - 190)+'px';
     }
+
+    mThis.tblValidation.on('click', 'span.btn-payment', function (e) {
+        e.preventDefault();
+        let div = $(this).closest('div'); /** div.ps-fast or div.ps-normal **/
+        console.log(1,$(this),2,div);
+        let p ={'id' : div[0].dataset.id};
+        PaymentDialog.show(p);
+        // mThis.savePrices($(this), div); 
+    });
 
     this.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
         el.onchange = e => { 
@@ -313,7 +336,8 @@ var BillingValidationComponent = new function () {
             mThis.billValidationListView.showPage(mThis.getFilterData()); 
           }
         });
-      }
+    }
+
     this.show= (options)=>{
         mThis.init();
         if (!options) options = {};
@@ -354,7 +378,7 @@ const AlertMesageDialog = new function(){
     let alert = null;
 
 
-    this.header =  this.self.find('h.header')[0];
+    this.bodyHeader =  this.self.find('h.header')[0];
     this.body =  this.self.find('p.body')[0];
  
     this.btnOk.on('click', function(e){
@@ -370,7 +394,7 @@ const AlertMesageDialog = new function(){
         if(message == 'alert'){
             mThis.elTitle.innerHTML = `<i class="far fa-question-circle text-info" style="font-size: 80px;"></i>`;
             alert = message;
-            mThis.header.innerHTML = '<h5 class="ps-4 pe-4 text-center">Validate Now?</h5>';
+            mThis.bodyHeader.innerHTML = '<h5 class="ps-4 pe-4 text-center">Validate Now?</h5>';
             mThis.btnCancel[0].classList.add('d-block');
             mThis.btnCancel[0].classList.remove('d-none');
             mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
@@ -378,14 +402,14 @@ const AlertMesageDialog = new function(){
         }else if(message == 'saved'){
             mThis.elTitle.innerHTML = `<i class="far fa-check-circle text-success" style="font-size: 80px;"></i>`;
             alert = 0;
-            mThis.header.innerHTML = '<h5 class="ps-4 pe-4 text-center">File saved and Validated</h5>';
+            mThis.bodyHeader.innerHTML = '<h5 class="ps-4 pe-4 text-center">File saved and Validated</h5>';
             mThis.btnCancel[0].classList.add('d-none');
             mThis.btnCancel[0].classList.remove('d-block');
             mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
         }else {
             mThis.elTitle.innerHTML = `<i class="fa-regular fa-circle-xmark text-danger" style="font-size: 80px;"></i>`;
             alert = 0;
-            mThis.header.innerHTML = '<h6 class="ps-4 pe-4">' + message + '</h6>';
+            mThis.bodyHeader.innerHTML = '<h6 class="ps-4 pe-4">' + message + '</h6>';
             mThis.btnCancel[0].classList.add('d-none');
             mThis.btnCancel[0].classList.remove('d-block');
             // mThis.scrollable[0].classList.remove('modal-dialog-scrollable');
@@ -418,5 +442,128 @@ const AlertMesageDialog = new function(){
         mThis.self.modal({
             backdrop: 'static'
         });
+    }
+}
+
+const PaymentDialog = new function(){
+    const mThis = this;
+    this.self = main_view.appContent.find('#PaymentModalDialog');
+    this.base_url = main_view.base_url;
+    this.scrollable = this.self.find('#modal-dialog');
+    this.elTitle = this.self.find('#PaymentModalDialogTitle')[0];
+    this.btnPay =  this.self.find('#_sdl_btnPay');
+    this.btnCancel =  this.self.find('#_sdl_btnCancel');
+    // console.log(mThis.btnSave);
+    // this.elSelseAgentType =  this.self.find('#_plq_salse_agent_type');
+    this.elSupplier =  this.self.find('#_plq_supplier');
+    this.elCurrencyCode =  this.self.find('#_plq_currency_code');
+    this.elPmtMethod =  this.self.find('#_plq_pmt_method');
+    this.elCustomer =  this.self.find('#_plq_Customer');
+    
+    this.onClose = null;
+    let shipments_id = null;
+
+    this.bodyHeader =  this.self.find('h.header')[0];
+    this.body =  this.self.find('p.body')[0];
+
+    this.prepareFormOptions = ( id, onFinish) => {
+        vsapi.call(`${mThis.base_url}/abm/oversea_shipments/form-options-payment`, {id : id}, null).then(res => {
+            console.log('d2',res.data.to_country);
+            let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data , null, ['country_name','cp_name'] ) : {};
+            // VSUtil.setComboItems(mThis.el_from_country, d.from_country,'id', 'country_name', true, '(select )' , null);
+            // mThis.elWarehouse.val(d.warehouses[0].id).trigger('change'); 
+            // VSUtil.setComboItems(mThis.elSelseAgentType, d.agent_types, 'id', 'agent_type', false, '', null);
+            VSUtil.setComboItems(mThis.elSupplier, d.supplier, 'id', 'supplier_name', false, '', null);
+            VSUtil.setComboItems(mThis.elCurrencyCode, d.currency_code, 'id', 'currency_code', false, '', null);
+            VSUtil.setComboItems(mThis.elPmtMethod, d.payment_method, 'id', 'payment_method', false, '(select payment)', null);
+            VSUtil.setComboItems(mThis.elCustomer, d.senders, 'id', 'sender_name', false, '', null);
+            onFinish(d);
+        });
+    }
+ 
+    this.btnPay.on('click', function(e){
+        e.preventDefault();
+        // console.log(4,alert);
+        // if(alert)
+        //     // BillingValidationComponent.btnUploard.click();
+        //     ;
+        // else
+        //     mThis.self.modal('hide');
+        const p = mThis.getFormData(false);
+        p['shipment_id'] = shipments_id;
+        console.log('p',p);
+        if (!p) return;
+        vsapi.call(`${mThis.base_url}/abm/payment/save`, p, mThis.btnCreate).then(res => {
+            if (res.status_code === 200) {
+                cv_interact.success('Payment saved'); 
+                mThis.self.modal('hide');
+                if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
+            } else cv_interact.error(res.error_message);
+        });
+    });
+
+    this.show = (options) => {
+        options = options ? options : {};
+        mThis.options = options;
+        let p = options.id;
+        shipments_id = p;
+        console.log('p',p);
+        // mThis.checkAlert(message);
+        mThis.prepareFormOptions( 18 , d => {
+            console.log("d",d);
+            if(d.os_shipment){
+                mThis.setData(d.os_shipment);
+            }
+            mThis.self.modal({
+                'backdrop': 'static'
+            });
+        });
+        
+
+        // mThis.self.modal({
+        //     backdrop: 'static'
+        // });
+    }
+
+    this.getFormData = (silent = false) => {
+        let has_error = false;
+        let p = {};
+        mThis.self.find('.data-input').each(function () {
+            const el = $(this);
+            const f = el.data('field');
+            if (el.data('error') == 1) {
+                has_error = true;
+                return false;
+            }
+            p[f] = el.val();
+            console.log(12,p[f],13,f);
+        });
+        return has_error ? null : p;
+    }
+
+    this.setData = (d) => {
+        // mThis.body.querySelectorAll('.data-input').forEach(el => {
+        //     // el.value = null;
+        //     if (el.tagName.toLowerCase() === 'select') {
+        //         el.dispatchEvent(new Event('change'));
+        //     }
+        // });
+        if (!d) return;
+        // console.log(4,mThis.self);
+        d = d || {};
+        mThis.self[0].querySelectorAll('.data-input').forEach(el => {
+            const data_member = el.dataset.field;
+
+            el.value = d[data_member] ?? '';
+            // console.log(5,el);
+            if(el.dataset.field == 'currency_code')
+                el.value = 1;
+            if(el.dataset.field == 'pmt_method')
+                el.value = 1;
+            if (el.tagName.toLowerCase() === 'select') {
+                el.dispatchEvent(new Event('change'));
+            }
+        });
+
     }
 }
