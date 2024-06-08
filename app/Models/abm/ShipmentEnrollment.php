@@ -63,6 +63,8 @@ class ShipmentEnrollment
 
     static function import($d,$ss,$id=null){
         // return $d;
+        $branch_id = $ss->branch_id;
+    
         $v_rule = [
             'file' => '1|string',
         ];
@@ -142,7 +144,7 @@ class ShipmentEnrollment
                 // $error = ['error'=>$shipment_un_Waybill_no];
                 return (object)['status'=>'error','status_code'=>405,'error_message'=>$non.' Supplyer QR code don\'t have in System yet ! Please Enter Supplyer QR code in Shipment befor validation:','data'=>$data];
                 // return [ 'error'=>'System dont have Supplyer QR code yet : ('.$shipment_un_Waybill_no.')! Please Enter Supplyer QR code.'];
-                return DV::error($mesege);
+                return DV::error($message);
             }
 
             $arr = [
@@ -156,6 +158,7 @@ class ShipmentEnrollment
             ];
             DB::table('os_bill_validation_sessions')->insert($arr);
             $rowCount = DB::table('os_bill_validation_sessions AS s')->count('s.id');
+            DB::table('os_last_session_control')->where('branch_id',$branch_id)->update(['last_id'=>$rowCount]);
 
             $success_cnt =0;
             $unacceptable_count =0;
@@ -182,9 +185,11 @@ class ShipmentEnrollment
                         $info->item_type == 'non_doc'? $info->item_type = 'D' : $info->item_type = 'P';
                         $inputs['product'] == $info->item_type ? $inputs['wrong_type'] = 0 : $inputs['wrong_type'] = 1 ;
                     }
+                    if($inputs['jto_amount'] - $inputs['carrier_amount'] < 0.03 && $inputs['jto_amount'] - $inputs['carrier_amount'] > -0.03 )
+                        DB::table('os_shipments')->where('qr_code',$Waybill_no)->update(['status_id'=>3]);
+
                     $id = saveData($ss,'os_bill_validation',['id'=>null],$inputs,[],1,0);
                     // $inputs['jto_amount'] - $inputs['carrier_amount'] > 0.03 || $inputs['jto_amount'] - $inputs['carrier_amount'] < -0.03 ? $unacceptable_count++ : $unacceptable_count;
-                    
                     $success_cnt++;                    
 
                 }

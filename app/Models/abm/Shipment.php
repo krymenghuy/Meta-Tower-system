@@ -8,7 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 
-class OsShipment //extends Model
+class Shipment //extends Model
 {   
     protected $id = null;
     protected $userInfo = null;
@@ -180,37 +180,57 @@ class OsShipment //extends Model
         return DV::depends(1,['update'=>'Sucess']);
     }
 
+    function getLastSession($uss,$len =5){
+        $branch_id = $uss->branch_id;
+        $prefix ='HA';
+        $str_prefix = $prefix? 'prefix =\''.$prefix.'\'' : '2=2';
+        $row = DB::table('os_last_session_control AS c')->where('branch_id',$branch_id)->whereRaw($str_prefix)->selectRaw('c.last_id')->take(1)->first();
+       if($row) {
+            $num = $row->last_id;
+            // DB::table('os_agent_code_control')->where('branch_id',$branch_id)->whereRaw($str_prefix)->update(['last_id'=>$num]);
+        return ['last_session'=>$num];
+        // return $prefix.$branch_id.formatNumber($num,$len);
+        }
+        DB::table('os_agent_code_control')->insert(['branch_id'=>$branch_id,'last_id'=>1,'prefix'=>$prefix]);
+        return ['last_session'=>1];
+    }
+
     function ListForBillValidate($filter,$ss){
         $branch_id = $ss->branch_id;
         $d = (object)$filter;
-        // return JDV::result($filter->page);
-
+        // return JDV::result($filter);
+        $last_session  = self::getLastSession($ss,5);
+        $n = (object)$last_session;
         $current_page = isset($d->current_page)?$d->current_page:1;
         $per_page = isset($d->per_page)?$d->per_page:10;
         $shipment_no = isset($d->shipment_no)?$d->shipment_no:null;
         $end_date = isset($d->end_date) ? $d->end_date : null;
         $start_date = isset($d->start_date) ? $d->start_date : null;
-        $start_date = isset($d->start_date) ? $d->start_date : null;
-        $session_id  = isset($d->session_id) ? $d->session_id : null;
+        // $start_date = isset($d->start_date) ? $d->start_date : null;
+        $session_id  = isset($d->session_id) ? $d->session_id : $n->last_session;
+        // return $session_id;
         // $project_id = isset($d->project_id)?$d->project_id:null;
         $str_where = '1=1';
         $str_dates = '2=2';
         $str_session = '3=3';
         // return $session_id;
+        if ($session_id) {
+            $str_session = 'bv.session_id = '.$session_id;
+        }
         if($shipment_no){
             $str_where = 'os.id = '.$shipment_no;
-        }elseif ($session_id) {
-            $str_session = 'bv.session_id = '.$session_id;
-        }else{
+        }
+        // else 
+        else{
             $end_date = convertDate($end_date);
             $start_date = convertDate($start_date);
             if ((bool)strtotime($start_date) && (bool)strtotime($end_date)) {
                 $str_dates = "DATE(os.create_date) >= '$start_date' AND DATE(os.create_date) <= '$end_date'";
             // return $start_date;
-            }else if($end_date){
+            }elseif($end_date){
                $start_date = date('Y-m-d', strtotime(date('Y-m-d') . ' -90 days'));
                $str_dates = "DATE(os.create_date) >= '$start_date' AND DATE(os.create_date) <= '$end_date'";
-            // return $str_dates;
+                // return $str_dates;
 
             }
         }
@@ -228,7 +248,7 @@ class OsShipment //extends Model
                 ->whereRaw($str_where)
                 ->whereRaw($str_dates)
                 // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
-                ->selectRaw('os.id,os.code, os.item_type ,bv.session_id, bv.dest_country as to_country ,bv.unacceptable_weight ,bv.unacceptable_price ,bv.wrong_country ,bv.wrong_type , os.secondary_cp_id , os.total_weight , bv.carrier_weight as carrier_total_weight ,(bv.carrier_weight - os.total_weight) as weight_diff, os.total_price ,(bv.carrier_amount - os.total_price) as price_diff, bv.carrier_amount as total_carrier_cost , formatDate(os.create_date) as create_date')
+                ->selectRaw('os.id,os.code,os.paid_status_id, os.item_type ,bv.session_id, bv.dest_country as to_country ,bv.unacceptable_weight ,bv.unacceptable_price ,bv.wrong_country ,bv.wrong_type , os.secondary_cp_id , os.total_weight , bv.carrier_weight as carrier_total_weight ,(bv.carrier_weight - os.total_weight) as weight_diff, os.total_price ,(bv.carrier_amount - os.total_price) as price_diff, bv.carrier_amount as total_carrier_cost , formatDate(os.create_date) as create_date')
                 ->orderBy('os.id', 'DESC'); 
         
         $clone_query = clone $query;
@@ -255,6 +275,8 @@ class OsShipment //extends Model
 
         return new LengthAwarePaginator($ret_rows,$count,$per_page,$current_page);
     }
+
+
 
     function getShipmentList($id,$rows){
         $i=0;
@@ -297,6 +319,15 @@ class OsShipment //extends Model
 
         $row = DB::table('os_shipments as os')->where('os.id',$id)->where('os.branch_id',$branch_id)
         ->selectRaw('os.id,os.code,os.qr_code, os.item_type , os.remarks , os.sender_id, os.zone_code, os.status_id, os.to_country_id, os.from_country_id, os.primary_cp_id , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time')
+        ->take(1)->first();
+        return $row;
+    }
+    function detailsForPayment($id,$ss){
+        $id = $id ?? $this->id;
+        $branch_id = $ss->branch_id;
+
+        $row = DB::table('os_shipments as os')->join('os_suppliers as sp','sp.id','=','os.supplier_id')->where('os.id',$id)->where('os.branch_id',$branch_id)
+        ->selectRaw('os.id, os.code,os.supplier_id as payee_id ,os.qr_code, os.item_type , os.remarks , os.sender_id as payer_id, os.zone_code, os.status_id, os.to_country_id, os.from_country_id, os.primary_cp_id , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price as amount ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time')
         ->take(1)->first();
         return $row;
     }
@@ -353,6 +384,24 @@ class OsShipment //extends Model
             // 'sale_a'=>GeneralSettings::options_sales_affiliate($ss),
             'primary_cp'=>GeneralSettings::options_primary_cp($ss),
             'secondary_cp'=>GeneralSettings::options_secondary_cp($ss),
+            'os_shipment' => $shipment
+        ];
+    }
+    function getFormOptionsForPayment($id,$ss){  
+        $shipment = null;
+        if($id ){
+            $shipment = self::detailsForPayment($id,$ss);
+            // return $shipment;
+        }
+        return (object)[
+            'shipment_code'=>GeneralSettings::options_shipment_code($ss),
+            'senders'=>GeneralSettings::options_sender($ss),
+            'os_shipment_status'=> DB::table('os_shipment_statuses AS os')->selectRaw('os.id AS status_id,os.name as status_name')->get(),
+            'supplier'=>DB::table('os_suppliers')->selectRaw('id as id,name AS supplier_name')->get(),
+            // 'sale_agent'=>GeneralSettings::options_sales_affiliate($ss),
+            // 'agent_types'=> DB::table('os_agent_types')->selectRaw('name as id,name AS agent_type')->get(),
+            'payment_method'=> DB::table('os_payment_methods')->selectRaw('id as id,name AS payment_method')->get(),
+            'currency_code'=> DB::table('os_currencies')->selectRaw('id as id,CONCAT(code,\' (\',name,\')\') AS currency_code')->get(),
             'os_shipment' => $shipment
         ];
     }

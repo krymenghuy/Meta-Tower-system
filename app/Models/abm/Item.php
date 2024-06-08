@@ -9,7 +9,7 @@ use Sanitizer;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 
-class OsItem //extends Model
+class Item //extends Model
 {   
     protected $id = null;
     protected $userInfo = null;
@@ -245,6 +245,16 @@ class OsItem //extends Model
         // if($check) return DV::error('Requirement is already to save...');
         // return JDV::result($item);
         $is_insert = !$id;
+        if($id){
+            $array = [
+                'effective_weight'=>$item->billed_weight,
+                'actual_weight'=>$item->actual_weight,
+                'markup_weight'=>$item->allocated_kg,
+                'total_weight'=> $item->billed_weight,
+                'total_price'=>$item->item_total
+            ];
+            DB::table('os_shipments')->where('id',$shipment_id)->update($array);
+        }
         $id = saveData($ss,'os_items',['id'=>$id],(array)$item,[],1,0);   
         $pkg_count = $shipmentInfo->package_qty;
         // return JDV::result($is_insert);

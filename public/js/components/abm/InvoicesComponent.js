@@ -1,49 +1,6 @@
 'use strict';
 
-const FilterDialog = new function () {
-    let mThis = this;
-    this.base_url = main_view.base_url; //** || document.querySelector('meta[name="base_url"]').getAttribute('content');*/
-    this.self = main_view.appContent.find('#_create_invoice_dlgFilter');
-    this.elTitle = this.self.find('#_create_invoice_dlgFilterTitle');
-    this.elFilter_start_date = this.self.find('#_pl_filter_startdate');
-    this.elFilter_end_date = this.self.find('#_pl_filter_enddate');
-   
-    this.form_data = {};
-    this.remembered_filter;
-    this.btnOK = this.self.find('#_invoice_create_dlgFilter_btnOK');
 
-    this.self.find('.dl_filter_field').on('change', (e) => {
-        mThis.remembered_filter = mThis.getData();
-    });
-
-    this.btnOK.on('click', (e) => {
-        mThis.self.modal('hide');
-        let p = mThis.getData();
-        if (typeof mThis.onClose == 'function') mThis.onClose(p);
-    });
-
-   
-
-    this.show = (option, onClose) => {
-        if (option) {
-            let title_text = LocaleManager.trans(option.title);
-            mThis.elTitle.text(title_text);
-        }
-        mThis.onClose = onClose;
-            mThis.self.modal({
-                backdrop: 'static'
-            });
-
-    }
-
-    this.getData = () => {
-        let p = {};
-        p.start_date = mThis.elFilter_start_date.val();
-        p.end_date = mThis.elFilter_end_date.val();
-        mThis.remembered_filter = p; //remember previous selection
-        return p;
-    }
-}
 
 var InvoicesComponent = new function(){
     const mThis = this;
@@ -51,13 +8,11 @@ var InvoicesComponent = new function(){
     this.self = main_view.appContent.children('#_main_invoicesComponent');
     this.base_url = main_view.base_url;
 
-    this.elFilter_start_date = this.self.find('#_invoice_filter_start_date');
-    this.elFilter_end_date = this.self.find('#_invoice_filter_end_date');
     this.elSearch = this.self.find('#_invoice_search');
     this.btnSearch = this.self.find('#_btnSearch');
     // this.tblInvoices_body = mThis.self.find('#_idl_invoice_body');
     this.div_filter_fields = mThis.self[0].querySelector('#_idl_filter_fields');
-    this.btnToggleFilter = this.self.find('#_pl_btnToggleFilter');
+    this.btnCreateInvoice = this.self.find('#_create_invoice_btn');
 
     this.btnPrint = this.self.find('#_invoice_btnPrint');
     this.btnPDF = this.self.find('#_invoice_btnPDF');
@@ -298,8 +253,8 @@ var InvoicesComponent = new function(){
     mThis.btnSearch.on('click', function () {
         mThis.invoiceListView.showPage(mThis.getFilterData());
     });
-    mThis.btnToggleFilter.on('click', () => {
-        FilterDialog.show(null, (d) => {
+    mThis.btnCreateInvoice.on('click', () => {
+        CreateInvoiceDialog.show(null, (d) => {
             if (d) mThis.invoiceListView.showPage(mThis.getFilterData()); 
         });
     });
@@ -323,8 +278,6 @@ var InvoicesComponent = new function(){
         });
         console.log('p',p);
         p.search_value = mThis.elSearch.val();
-        p.start_date = mThis.elFilter_start_date.val();
-        p.end_date = mThis.elFilter_end_date.val();
 
         return p;
     }
@@ -346,6 +299,114 @@ var InvoicesComponent = new function(){
 
 
 
+}
+const CreateInvoiceDialog = new function () {
+    let mThis = this;
+    this.base_url = main_view.base_url; //** || document.querySelector('meta[name="base_url"]').getAttribute('content');*/
+    this.self = main_view.appContent.find('#_create_invoice_dlgFilter');
+    this.elTitle = this.self.find('#_create_invoice_dlgFilterTitle');
+    this.elStartDate = this.self.find('#_pl_filter_startdate');
+    this.elEndDate = this.self.find('#_pl_filter_enddate');
+    this.elInvoiceType =  this.self.find('#_invoice_type');
+    this.elCustomer =  this.self.find('#_name_customer');
+    this.form_data = {};
+    this.remembered_filter;
+    this.btnCreate = this.self.find('#_invoice_create_dlgFilter_btnOK');
+    let shipments_id = null;
+
+    this.self.find('.dl_filter_field').on('change', (e) => {
+        mThis.remembered_filter = mThis.getData();
+    });
+    this.prepareFormOptions = ( id, onFinish) => {
+        vsapi.call(`${mThis.base_url}/abm/invoice/form-options`, {id : id}, null).then(res => {
+            let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data) : {};
+            // VSUtil.setComboItems(mThis.el_from_country, d.from_country,'id', 'country_name', true, '(select )' , null);
+            // mThis.elWarehouse.val(d.warehouses[0].id).trigger('change'); 
+            // VSUtil.setComboItems(mThis.elSelseAgentType, d.agent_types, 'id', 'agent_type', false, '', null);
+            VSUtil.setComboItems(mThis.elCustomer, d.customer, 'id', 'sender', false, '(All Customer)', null);
+            VSUtil.setComboItems(mThis.elInvoiceType, d.invoice_type, 'id', 'invoice_type', false, 'Invoice Type', null);
+
+            onFinish(d);
+        });
+    }
+
+    this.btnCreate.on('click', (e) => {
+        e.preventDefault();
+        const p =mThis.getFormData(false);
+        p['id'] = shipments_id;
+
+        if(!p) return;
+        vsapi.call(`${mThis.base_url}/abm/invoice/save`, p, mThis.btnCreate).then(res => {
+            if (res.status_code === 200) {
+                cv_interact.success('Invoice is Created'); 
+                mThis.self.modal('hide');
+                if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
+            } else cv_interact.error(res.error_message);
+        });
+
+
+    });
+
+   
+
+    this.show = (options, onClose) => {
+        options = options ? options : {};
+        mThis.options = options;
+        let p = options.id;
+        shipments_id = p;
+        console.log('p',p);
+        // mThis.checkAlert(message);
+        mThis.prepareFormOptions( 18 , d => {
+            console.log("d",d);
+            if(d.os_shipment){
+                mThis.setData(d.os_shipment);
+            }
+            mThis.self.modal({
+                'backdrop': 'static'
+            });
+        });
+    }
+
+    this.getFormData = (silent = false) => {
+        let has_error = false;
+        let p = {};
+        p.start_date = mThis.elStartDate.val();
+        p.end_date = mThis.elEndDate.val();
+        mThis.self.find('.data-input').each(function () {
+            const el = $(this);
+            const f = el.data('field');
+            if (el.data('error') == 1) {
+                has_error = true;
+                return false;
+            }
+            p[f] = el.val();
+            console.log(12,p[f],13,f);
+        });
+        return has_error ? null : p;
+    }
+
+    this.setData = (d) => {
+        // mThis.body.querySelectorAll('.data-input').forEach(el => {
+        //     // el.value = null;
+        //     if (el.tagName.toLowerCase() === 'select') {
+        //         el.dispatchEvent(new Event('change'));
+        //     }
+        // });
+        if (!d) return;
+        // console.log(4,mThis.self);
+        d = d || {};
+        mThis.self[0].querySelectorAll('.data-input').forEach(el => {
+            const data_member = el.dataset.field;
+
+            el.value = d[data_member] ?? '';
+            // console.log(5,el);
+            
+            if (el.tagName.toLowerCase() === 'select') {
+                el.dispatchEvent(new Event('change'));
+            }
+        });
+
+    }
 }
 
 

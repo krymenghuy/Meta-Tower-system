@@ -4,7 +4,7 @@ namespace App\Http\Controllers\abm;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\abm\OsAffiliate;
+use App\Models\abm\Affiliate;
 use App\Models\UM;
 use App\Models\JDV;
 use App\Models\PendingTask;
@@ -12,7 +12,7 @@ use App\Models\MobileAppSettings;
 use Illuminate\Support\Facades\Cache;
 use Config;
 
-class OsAffiliateController extends Controller
+class AffiliateController extends Controller
 {
     protected $salesAgentModel;
     function saveProfilePicture(Request $req)
@@ -22,7 +22,7 @@ class OsAffiliateController extends Controller
             return JDV::raw($ss); //user not authenticated
         $id = $req->id ? $req->id : $req->sender_id;
         $photo = $req->photo;
-        $cus = new OsAffiliate($id, $ss);
+        $cus = new Affiliate($id, $ss);
         $res = $cus->saveProfilePicture($photo, $req->file_type);
 
         return JDV::raw($res);
@@ -33,7 +33,7 @@ class OsAffiliateController extends Controller
         if ($ss->status_code !== 200)
             return JDV::raw($ss); //user not authenticated
         $id = $req->id ? $req->id : $req->affiliate_id;
-        $cus = new OsAffiliate($id, $ss);
+        $cus = new Affiliate($id, $ss);
         $res = $cus->deleteProfilePicture();
         return JDV::raw($res);
     }
@@ -41,7 +41,7 @@ class OsAffiliateController extends Controller
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
       $id = strtolower($ss->user_class) =='sales_agent'? $ss->official_id : $req->id;
-      $agent = new OsAffiliate($id,$ss);
+      $agent = new Affiliate($id,$ss);
       $data = $agent->getCommissionSummary($req->all(),$id,$ss);
       return JDV::result($data);
     }
@@ -50,7 +50,7 @@ class OsAffiliateController extends Controller
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
       $id = strtolower($ss->user_class) =='sales_agent'? $ss->official_id : $req->id;
-      $data = OsAffiliate::getCommissionPolicyDetails($id);
+      $data = Affiliate::getCommissionPolicyDetails($id);
       return JDV::result($data);
     }
 
@@ -58,7 +58,7 @@ class OsAffiliateController extends Controller
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
       $id = $ss->official_id;
-      $agent = new OsAffiliate($id,$ss);
+      $agent = new Affiliate($id,$ss);
       $data =  $agent->getSummaryPackagesByMonth($req->all());
       return JDV::result($data);
     }
@@ -69,7 +69,7 @@ class OsAffiliateController extends Controller
       $id = $ss->official_id;
       /** if there is no $sale_gent_id provided then do not return any maarchant list */
       if (!$id) $id = -10;
-      $rows = OsAffiliate::merchantList($req->all(),$id,$ss);
+      $rows = Affiliate::merchantList($req->all(),$id,$ss);
       return JDV::result($rows);
     }
   
@@ -90,7 +90,7 @@ class OsAffiliateController extends Controller
     function updateStatus(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
-       $agent = new OsAffiliate();
+       $agent = new Affiliate();
        $status_code = $req->status_code;
        $id = $req->id ?? $req->agent_id;
        $res = $agent->updateStatus($status_code,$id);
@@ -103,7 +103,7 @@ class OsAffiliateController extends Controller
       $id = $ss->official_id;
       /** if there is no $sale_gent_id provided then do not return any maarchant list */
       if (!$id) $id = -10;
-      $rows = OsAffiliate::merchantList_all($req->all(),$id,$ss);
+      $rows = Affiliate::merchantList_all($req->all(),$id,$ss);
       return JDV::result($rows);
     }
 
@@ -111,7 +111,7 @@ class OsAffiliateController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !== 200) return JDV::raw($ss);
         $id = $req->id ?? $req->agent_id;
-        $agent = new OsAffiliate($id,$ss);
+        $agent = new Affiliate($id,$ss);
       return JDV::raw($agent->save($req->all(),$id,$ss));
    }
 
@@ -120,7 +120,7 @@ class OsAffiliateController extends Controller
       if($ss->status_code !== 200) return JDV::raw($ss);
       $id = $req->id ?? $req->agent_id;
       $as = $req->as;
-      $agent = new OsAffiliate($id,$ss);
+      $agent = new Affiliate($id,$ss);
       return JDV::raw($agent->delete($id,$as,$ss));
    }
 
@@ -140,7 +140,7 @@ class OsAffiliateController extends Controller
       $cache_key = $ss->user_class.'profile_'.$ss->user_id;
       $cache_data = Cache::get($cache_key);
       if($cache_data !== null) return JDV::result($cache_data);
-      $data = \App\Models\Abm\OsAffiliate::details($agent_id,$ss);  
+      $data = \App\Models\Abm\Affiliate::details($agent_id,$ss);  
       if(!$data) return JDV::error('It seems your profile information does not exist or is missing');
       $data->notif_topic_private= $ss->branch_id.topic_prefix($ss->user_class)."private".$ss->user_id;
       $data->notif_topic_general=$ss->branch_id.topic_prefix($ss->user_class)."general";
@@ -160,7 +160,7 @@ class OsAffiliateController extends Controller
       if($ss->status_code !==200) return JDV::raw($ss);
       if (strtolower($ss->user_class) !=='sales_agent') return DV::error('It seems you are not a sales agent');
       $id =  $ss->official_id;
-      $d = new OsAffiliate($id,$ss);
+      $d = new Affiliate($id,$ss);
       $res = $d->updateProfile_mobile($req->all(),$id);
       return JDV::raw($res); 
    }
@@ -184,14 +184,14 @@ class OsAffiliateController extends Controller
   }
  
    function send_otp_preregister(Request $req) {
-      $agent = new OsAffiliate();
+      $agent = new Affiliate();
       $req['user_class']='sales_agent';
       $res = $agent->send_otp_preregister($req->all());
       return JDV::raw($res);
    }
 
    function verify_otp_preregister(Request $req) {
-      $agent = new OsAffiliate();
+      $agent = new Affiliate();
       $req['user_class']='sales_agent';
       $res = $agent->verify_otp_preregister($req->all());
       return JDV::raw($res);
@@ -216,7 +216,7 @@ class OsAffiliateController extends Controller
    //Sel-register
    function register(Request $req) {
       $ss =(object)['branch_id'=>1];
-      $agent = new OsAffiliate(null,$ss);
+      $agent = new Affiliate(null,$ss);
       $res = $agent->register($req->all(),$ss);
       return JDV::raw($res); 
    }
@@ -225,33 +225,33 @@ class OsAffiliateController extends Controller
    function getSalesAgentList(Request $req) {
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
-      return JDV::result(OsAffiliate::getSalesAgentList($req->all(),$ss));
+      return JDV::result(Affiliate::getSalesAgentList($req->all(),$ss));
    }
 
    function getContactPersonList(Request $req) {
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
-      return JDV::result(OsAffiliate::getContactPersonList($req->all(),$ss));
+      return JDV::result(Affiliate::getContactPersonList($req->all(),$ss));
    }
    
      /** returns list of all Sales agent */
    function getListAll(Request $req) {
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
-      return JDV::result(OsAffiliate::listAll($req->all(),$ss));
+      return JDV::result(Affiliate::listAll($req->all(),$ss));
    }
 
    function getFormOptions(Request $req) {
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !== 200) return JDV::raw($ss);
     $id = $req->id;
-    return JDV::result(OsAffiliate::getFormOptions($id,$ss));
+    return JDV::result(Affiliate::getFormOptions($id,$ss));
    }
 
    function getPaymentFormOptions(Request $req) {
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !== 200) return JDV::raw($ss);
-      $agent = new OsAffiliate(null,$ss);
+      $agent = new Affiliate(null,$ss);
       $data = $agent->getPaymentFormOptions($ss);
       return JDV::result($data);
    }
@@ -260,7 +260,7 @@ class OsAffiliateController extends Controller
     $ss = UM::getUserInfoByToken($req,-1);
     if($ss->status_code !== 200) return JDV::raw($ss);
     $id = $req->id;
-    return JDV::result(OsAffiliate::details($id,$ss));
+    return JDV::result(Affiliate::details($id,$ss));
   }
 
   function getBrandImages_mobile(Request $request){
