@@ -16,7 +16,7 @@ class CreateOsBillValidationTable extends Migration
         Schema::create('os_bill_validation', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('session_id');
-            $table->integer('waybill_no')->nullable();
+            $table->bigInteger('waybill_no')->nullable();
             $table->date('shipment_date');
             $table->string('dest_country',50);
             $table->string('product',9);

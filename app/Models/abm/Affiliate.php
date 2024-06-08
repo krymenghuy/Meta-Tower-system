@@ -14,10 +14,10 @@ use App\Models\Sender;
 use Config;
 use Illuminate\Support\Facades\Cache;
 
-class OsAffiliate //extends Model
+class Affiliate //extends Model
 {
     protected $id = null, $userInfo = null;
-    protected static $photo_dir = 'os_affiliate';
+    protected static $photo_dir = 'affiliate';
     /** This is for Full-timer sales staff: the Threhold is set to 3000pcs in order to get $100 bonus, and each additional package, he gets 0.05 USD */
     protected static $ft_item_count_threhold = 500, $ft_amount_per_unit =0.05, $ft_bonus_amount =100;
     ///** This is the standard columns for commission summary. Some of these columns will be restructured or remaned according to whether the Summary is Closed or Real-time */
@@ -225,7 +225,7 @@ class OsAffiliate //extends Model
     if (!$affiliate)
       return DV::error('Affiliate identity is not correct!');
     if ($delete_image) {
-      PublicStorage::delete($ss->branch_id, 'os_affiliate', 'image', $affiliate->photo_file_name);
+      PublicStorage::delete($ss->branch_id, 'affiliate', 'image', $affiliate->photo_file_name);
       DB::table('os_affiliates')->where('id', $id)->update(['photo_file_name' => null]);
     }
     return PublicStorage::saveImage($ss->branch_id, self::$photo_dir, null, $photo_data, null, ['id' => $id, 'store' => 'os_affiliates.photo_file_name']);
@@ -241,7 +241,7 @@ class OsAffiliate //extends Model
     if (!$row) {
       return self::defaultImage(1);
     }
-    $url = PublicStorage::getUrl($row->branch_id, 'os_affiliate', 'image') . $row->photo_file_name;
+    $url = PublicStorage::getUrl($row->branch_id, 'affiliate', 'image') . $row->photo_file_name;
     return validateUrl($url, '');
   }
   function deleteProfilePicture($id = null, $ss = null)
@@ -251,7 +251,7 @@ class OsAffiliate //extends Model
     $affiliate = DB::table('os_affiliates as a ')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
     if (!$affiliate)
       return DV::error('Affiliate identity is not correct!');
-    PublicStorage::delete($ss->branch_id, 'os_affiliate', 'image', $affiliate->photo_file_name);
+    PublicStorage::delete($ss->branch_id, 'affiliate', 'image', $affiliate->photo_file_name);
     DB::table('os_affiliates as a')->where('id', $id)->update(['photo_file_name' => null]);
     return DV::depends($id,['Affiliate are ','update']);
   }

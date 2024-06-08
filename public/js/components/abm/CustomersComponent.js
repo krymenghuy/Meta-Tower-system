@@ -404,13 +404,6 @@
             window.onresize = () => {
                 sh_parent.style.height = (window.innerHeight - 190) + 'px';
             }
-
-            mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el => {
-                el.onchange = (e) => {
-                    e.preventDefault();
-                    mThis.customerListView.showPage(mThis.getFilterData());
-                }
-            });
             mThis.tblCustomers.addEventListener('click', e => {
                 e.preventDefault();
                 // Click on Pickup Action button | drop down action
@@ -439,6 +432,13 @@
                     return;
                 }
             });
+            mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el => {
+                el.onchange = (e) => {
+                    e.preventDefault();
+                    mThis.customerListView.showPage(mThis.getFilterData());
+                }
+            });
+            
             mThis.elSearch.on('keyup', function (e) {
                 e.preventDefault();
                 clearTimeout(mThis.search_timeout);

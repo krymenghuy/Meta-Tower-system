@@ -1,73 +1,50 @@
 <div id="_main_invoicesComponent" style="display:none; padding-right: 15px;">
     <div class="d-flex justify-content-between bg-white rounded-3 mt-3 p-2 border border-white">
+
+
+    </div>
+
+    <div id="_idl_filter_fields" style="background-color:#e6e6e6;"
+        class="d-flex justify-content-between  gap-2 p-3 mt-3">
+
+
+        <div class="d-flex-gap-2">
+            <button type="button" class="btn btn-primary height" id="_create_invoice_btn">
+                <label>CREATE INVOICE</label>
+            </button>
+
+        </div>
+
+
+
+
+
         <div class="d-flex gap-2">
 
             <div class="input-group flex-nowrap ">
                 <!-- <input id="_search_invoice" type="text" class="form-control  height" placeholder="search name or phone"> -->
-                <div><input type="text" id="_pl_search" class="form-control min-width-search height" placeholder="Search request"/></div>
+                <div><input type="text" id="_invoice_search" class="form-control min-width-search height"
+                        placeholder="Search invoice" /></div>
 
-                <div id="_btnSearch" class="input-group-text" role="button">
-                    <i class="fa fa-sync-alt fs-5 text-success"></i>
+                <div id="_btnSearch" class="btn btn-primary rounded-1 input-group-text ml-2" role="button">
+                    <i class="fa fa-search fs-5 text-white"></i>
+                    <span>FIND</span>
                 </div>
+                <!-- <button id="_btn_Search" class="btn btn-primary rounded-1 ml-2 mr-2" type="button"><i class="fa fa-search"></i></button> -->
             </div>
-            <div class="min-width-select">
-                <select id="_filter_invoice_type" class="modal-select2 _filter_invoice_type"></select>
-            </div>
+
 
         </div>
 
-        <div class="d-flex gap-2 ">
-                <button id="_invoice_btnPrint" type="button" class="btn btn-warning mr-3 text-nowrap text-white">
-                    <i class="fas fa-print fs-5"></i>
-                    <span>Print</span>
-                </button>
-                <button id="_invoice_btnPDF" type="button" class="btn btn-primary mr-3 text-nowrap">
-                    <i class="fas fa-file-pdf fs-5"></i>
-                    <span>PDF</span>
-                </button>
-                <button id="_invoice_btnExcel" type="button" class="btn btn-success mr-5 text-nowrap">
-                    <i class="fas fa-file-excel fs-5"></i>
-                    <span>Excel</span>
-                </button>
-        </div>
-    </div>
-
-    <div style="background-color:#e6e6e6;" class="d-flex align-items-center  gap-2 p-2 mt-3">
-        <button id="_new_invoice" data-toggle="modal" class="btn btn-primary text-nowrap">
-            <i class="fa fa-user-plus"></i>
-            <span class="kt-hidden-mobile text-nowrap">Add Invoice</span>
-        </button>
-
-        <div class="input-group flex-nowrap">
-            <div class="input-group-text">
-                <span class="trans-text" data-langprop="titles.Start Date">Start Date</span>
-            </div>
-            <div class="w-100">
-                <input data-select="datepicker" class="form-control" placeholder="Start Date"
-                    id="_invoice_filter_start_date" />
-            </div>
-        </div>
-        <div class="input-group flex-nowrap">
-            <div class="input-group-text">
-                <span class="trans-text" data-langprop="titles.End Date">End Date</span>
-            </div>
-            <div class="w-100">
-                <input data-select="datepicker" class="form-control" placeholder="End Date"
-                    id="_invoice_filter_end_date" />
-            </div>
-        </div>
-        <div class="min-width-select">
-            <select id="_filter_status_type" class="modal-select2 _filter_status_type"></select>
-        </div>
 
     </div>
 
 
     <div class="shadow rounded-3 bg-white mt-3 p-2 overflow-hidden">
         <div id="_invoice_list" class="p-2">
-           
 
-            <body>
+
+            <!-- <body>
                 <div class="">
                     <table id="invoiceTable" class="table table-hover">
                         <thead>
@@ -105,11 +82,10 @@
                            
                             
                             
-                            <!-- Additional rows can be added here -->
                         </tbody>
                     </table>
                 </div>
-            </body>
+            </body> -->
 
 
 
@@ -122,4 +98,49 @@
 
 
 
+
+</div>
+<div class="modal fade" id="_create_invoice_dlgFilter" tabindex="-1" role="dialog"
+    aria-labelledby="_create_invoice_dlgFilterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="_create_invoice_dlgFilterTitle">Create Invoices</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="_cul_dlgCustomer_body">
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label class="form-label trans-text">CUSTOMER NAME</label>
+                        <div>
+                            <select id="_name_customer" class="modal-select2 data-input" data-field="customer"></select>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="form-label trans-text">INVOICE TYPE</label>
+                        <div>
+                            <select id="_invoice_type" class="modal-select2 data-input" data-field="invoice_type"></select>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="form-label trans-text">FROM DATE</label>
+                        <div><input id="_pl_filter_startdate" class="form-control data-input dl_filter_field"
+                                data-select="datepicker" autocomplete="off"></div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label class="form-label   trans-text">START DATE</label>
+                        <div><input id="_pl_filter_enddate" class="form-control data-input dl_filter_field"
+                                data-select="datepicker" autocomplete="off"></div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary btn-default height" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary height" id="_invoice_create_dlgFilter_btnOK">OK</button>
+            </div>
+        </div>
+    </div>
 </div>

@@ -35,6 +35,7 @@ var BillingValidationComponent = new function () {
             let fileData = event.target.result;
             console.log('file',btoa(fileData));
             let p = {'file':btoa(fileData)};
+            console.log(1,p);
             if(!p.file) return; 
             vsapi.call(`${main_view.base_url}/abm/oversea_shipments/import`,p,null,null,false).then(res =>{
                 console.log('data',res);
@@ -246,31 +247,7 @@ var BillingValidationComponent = new function () {
             listContainerClass: null,
         });
 
-        // this.btnNewSalesAgents.on('click',function(e){
-        //     let op = {
-        //         'id':null,
-        //         'as':'sa',
-        //         'onClose':(d)=>{
-        //             // mThis.salesAgentsListView.showPage(null);
-        //             mThis.initListView('view_sales_agent');
-        //         }
-        //     };
-        //     // console.log(op);
-        //     SalesAgentDialog.show(op);
-        // });
-
-        // this.btnNewContactPerson.on('click',function(e){
-        //     let op = {
-        //         'id':null,
-        //         'as':'', 
-        //         'onClose':(d)=>{
-        //             // mThis.salesAgentsListView.showPage(null);
-        //             mThis.initListView('view_contact_person');
-        //         }
-        //     };
-        //     // console.log(op);
-        //     SalesAgentDialog.show(op);
-        // });
+      
 
         
         mThis.initAlready = true;
@@ -456,6 +433,7 @@ const PaymentDialog = new function(){
     // console.log(mThis.btnSave);
     // this.elSelseAgentType =  this.self.find('#_plq_salse_agent_type');
     this.elSupplier =  this.self.find('#_plq_supplier');
+    
     this.elCurrencyCode =  this.self.find('#_plq_currency_code');
     this.elPmtMethod =  this.self.find('#_plq_pmt_method');
     this.elCustomer =  this.self.find('#_plq_Customer');

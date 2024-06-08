@@ -96,7 +96,6 @@ class Payment //extends Model
                 // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
                 ->selectRaw('os.id,os.code, bv.session_id ,os.paid_status_id ,os.status_id, os.total_price as amount, bv.carrier_amount as carrier_amount , formatDate(os.create_date) as create_date')
                 ->get();
-        
         $unique_id = $this->getUnique_id($queryShipments);
         $ret_rows = [];
         $shipment_count = 0;
@@ -104,11 +103,13 @@ class Payment //extends Model
             $m = $this->getShipmentList($id,$queryShipments);  
             $ret_rows[] = $m;  
         }
+        $total_amount = 0;
         $paid = 0;
         $data = [];
         foreach ($ret_rows as $i=>$row){
             // return $row->status_id;
             $shipment_count++;
+            $total_amount += $row->amount;
             $check['paid_status_id'] = $row->paid_status_id;
             $check['status_id'] = $row->status_id;
             if($check['status_id'] == 3 && $check['paid_status_id'] == 2) {
