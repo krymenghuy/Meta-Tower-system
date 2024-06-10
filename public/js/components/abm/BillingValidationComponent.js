@@ -313,12 +313,12 @@ var BillingValidationComponent = new function () {
                 // type:"string",
                 displayType:"select",
                 required:true,
-                config:{
-                    data:'currency_code',
-                    valueField:'currency_code',
-                    textField:'currency_code',
-                    default:'USD',
-                }
+                // config:{
+                //     data:'currency_code',
+                //     valueField:'currency_code',
+                //     textField:'currency_code',
+                //     default:'USD',
+                // }
                }
             ],
             // createFields:() =>{
@@ -333,6 +333,16 @@ var BillingValidationComponent = new function () {
             //                 </div>
             //             </div></div>`;
             // },
+            configSelect:[
+                {
+                    name:"country_id",
+                    data:'currency_code',
+                    valueField:'currency_code',
+                    textField:'currency_code',
+                    default:'USD',
+                    onChange:(selectElement,value)=>{}
+                }
+            ],
             prepareFormOptions:{
                 createTitle:"Create Account",
                 modifyTitle:"Edit Account",
@@ -503,6 +513,8 @@ const AlertMesageDialog = new function(){
         });
     }
 }
+
+
 
 const PaymentDialog = new function(){
     const mThis = this;
