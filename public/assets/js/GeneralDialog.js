@@ -1,19 +1,15 @@
 "use strict";
+/** dependencies: vsapi.js, jqueryDatePicker2.js, VSUtil, LocaleManager */
 /**
  options = {
+   title:"Dialog Tile",
+   cssClass:"", NOTE: className also possible
    fields:[
      name:"account_type_id",
      label:"trans::titles.Account Type",
      dataType:"number",
-     type:"select",
-     config:{
-        account_type_id:{
-            data:"account_types", NOTE: if data is a string then it means we use statically defined data, not from api
-            valueField:"id",
-            textField:"account_type",
-            default:1 
-        }
-     }
+     displayType:"select", or inputType:"select"
+     
    ],
    buttons:[
      {
@@ -27,6 +23,18 @@
 
    ],
   createFields:()=>{}  NOTE: if use createFields() you must ensure that each field has class "data-input" and has attribute "data-field", do not use "fields"
+  configSelect:[
+   {
+      name:"country_id",
+      data:"countries",
+      valueField:"country_id",
+      textField:"country",
+      default:13,
+      onChange:(selectElement,value){...}
+   },
+
+  ],
+
   prepareFormOptions:{
      createTitle:"Create Account",
      modifyTitle:"Edit Account",
@@ -38,7 +46,7 @@
   },
   onInit:()=>{}
   onShow:(instance,fields, divModal)=>{},
-  onPrepareForm:(instance,fields,divModal)=>{}
+  onPrepareForm:(instance,data,fields,divModal)=>{}
 }
 */
 class GeneralDialog{
@@ -120,24 +128,25 @@ class GeneralDialog{
               this.divModal.tabIndex =-1;
               this.divModal.ariaLabel =`${this.dialog_id}_title`;
               this.divModal.ariaHidden = true;
-      
-               const html = `
-               <div class="modal-dialog vs-modal-dialog">
-               <div class="modal-content">
-                  <div class="modal-header">
-                     <h5 class="modal-title" id="${this.dialog_id}_title">Reset Password</h5>
-                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                     <span aria-hidden="true">&times;</span>
-                     </button>
-                  </div>
-                  <div class="modal-body">
+               let formClassName = this.options.cssClass || this.options.className;
+               formClassName = formClassName || 'vs-modal-dialog'; 
+               const html = [`
+               <div class="modal-dialog ${formClassName}">
+               <div class="modal-content">`,
+                  `<div class="modal-header">
+                     <h5 class="modal-title" id="${this.dialog_id}_title">Reset Password</h5>`,
+                     // `<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                     // <span aria-hidden="true">&times;</span>
+                     // </button>`,
+                  `</div>`,
+                  `<div class="modal-body">
                   </div>
                   <div class="modal-footer">
                      <button type="button" class="btn-cancel btn btn-secondary" data-dismiss="modal">Cancel</button>
                      <button type="button" class="btn-save btn btn-primary">Reset Now</button>
                   </div>
                </div>
-               </div>`;
+               </div>`].join('');
                this.divModal.innerHTML = html ;
             document.body.append(this.divModal);
         } 
@@ -182,12 +191,14 @@ class GeneralDialog{
           let required = (field.required ==true || field.required ==1)? 1:0;
           let xType = (field.dataType || "").toLowerCase();
           xType = xType || (field.type || "").toLowerCase();
-          let inputType = xType =="number"? "number":"text";
+          let inputType = field.inputType || field.displayType;
+          //inputType = xType =="number"? "number":"text";
           if (xType ==="password") inputType ="password";
           else if(xType =='date') inputType ='text';
-          if (field.displayType =='select') inputType = 'select';
+          else if (['number','integer','decimal'].indexOf(xType) >=0 && !inputType) inputType ='number';
+
           let selectClass = 'form-control';
-          if (inputType == 'select') selectClass ='modal-select2';
+          if (inputType === 'select') selectClass ='modal-select2';
           let inputHtml = [`<div><input type="`,inputType,`" data-type="${field.dataType || field.type}" class="${selectClass} data-input" data-field="${field.name}"  placeholder="`,(field.placeholder || ''),`" data-required="`,required,`">
          </div></div>`].join('');
          
@@ -198,20 +209,16 @@ class GeneralDialog{
        });
 
        this.modalBody.innerHTML =[`<form id="${this.dialog_id}_form">`,html,'</form>'].join('');
-
-       this.modalBody.querySelectorAll('.data-input').forEach(el =>{
-          let type = el.dataset.type;
-          if (type =='date') DateHelper.initDate($(el));
-       });
- 
+       this.initInputStyle(this.modalBody);
     }
 
     getFields(){
-       let fields = {}; 
+       let fields = {};
        this.modalBody.querySelectorAll('.data-input').forEach(el=>{
           let f = el.dataset.field;
-          fields[f] = el;
-         //  fields.push(field);
+          if(f){
+            fields[f] = el;
+          }
        });
        return fields;
     }
@@ -240,7 +247,7 @@ class GeneralDialog{
         });
     }
  
-    prepreForm(op,onFinish){
+    prepreForm(dataOptions, onFinish){
        const that = this;  
        let opx = this.options.prepareFormOptions;
        if(!opx || !opx.api){
@@ -255,23 +262,64 @@ class GeneralDialog{
        p = p || {};
 
        //NOTE: that this.show(options). The $options can have options.id field that is unique ID
-       p.id = that.dataOptions.id;
+       p.id = dataOptions.id;
        vsapi.call(opx.api.endpoint,p,null,null,false).then(res =>{
           let d = res.status_code ==200 ? res.data: {};
           let fieldElments = that.getFields();
-          that.options.fields.map(field =>{
-             let cfg = field.config;
-             let el =fieldElments[field.name];
-            if(el && cfg && field.displayType =='select'){
-                let items = ((typeof cfg.data ==='string' && cfg.data) ? d[cfg.data]: cfg.data);
-               VSUtil.setComboItems(el,items, cfg.valueField,cfg.textField,null,null,null );
-            }
-          })
+          let configSelect = that.options.configSelect;
+          if(configSelect){
+              configSelect.map(selectField =>{
+                 let el = selectField.name? fieldElments[selectField.name]:null;
+                 if(el && el.tagName ==='SELECT'){
+                   let items = ((typeof selectField.data ==='string' && selectField.data) ? d[selectField.data]: selectField.data);
+                   let firstOption = selectField.firstOption;
+                   if(firstOption){
+                     //error may occur when firstOption data structure is no same as each item in the array "items"
+                     items.unshift(firstOption);
+                   }
+                    let def = selectField.defaultValue || selectField.default;
+                    VSUtil.setComboItems(el,items, selectField.valueField,selectField.textField,false,null,def);
+                    if(selectField.onChange){
+                     el.onChange = e =>{
+                        e.preventDefault();
+                        selectField(el,el.value);
+                     }
+                    }
+                  }   
+              });   
+          }
+
           if (typeof that.options.onPrepareForm === 'function') that.options.onPrepareForm(that,d,that.getFields(), that.divModal);
           onFinish(d);
        });
     }
   
+   initInputStyle(modalMody){
+      modalMody.querySelectorAll('.data-input').forEach(el =>{
+         let type = el.dataset.type;
+         let inputType = el.tagName.toLowerCase();
+         //Use select2 for all SELECT field
+         if(inputType ==='select'){
+            $(el).select2({
+              width:'100%'
+            });
+         }
+         
+         //use jquery DatePicker2 for Date field
+         switch (type) {
+           case 'date':
+            DateTimePicker.init($(el));
+              break;
+           // case 'dateRange':
+           //       DateHelper.initDateRange($(el));
+           //       break;
+           default:
+              break;
+         }
+           
+      });
+   }
+
    show(options){
       const that = this;
       that.canceled = false;
@@ -280,10 +328,11 @@ class GeneralDialog{
       if(this.options.createFields){
          let html = this.options.createFields();
          this.modalBody.innerHTML = html;
+         this.initInputStyle(this.modalBody);
       }else that.renderFields(that.options.fields);
 
       if(typeof that.options.onShow === 'function') that.options.onShow(that.getFields()); 
-
+ 
       this.prepreForm(options,(d)=>{
         let title = that.options.title;
         let prepareOp = that.options.prepareFormOptions;
