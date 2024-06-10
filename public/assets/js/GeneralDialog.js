@@ -119,8 +119,11 @@ class GeneralDialog{
            },
            onClose:(isCanceled) =>{}
         };
-
+        const that = this;
         this.divModal = document.getElementById(this.dialog_id);
+        let formClassName = this.options.cssClass || this.options.className;
+        formClassName = formClassName || 'vs-modal-dialog'; 
+
         if(!this.divModal){
               this.divModal = document.createElement('div');
               this.divModal.className =`modal fade"`;
@@ -128,8 +131,6 @@ class GeneralDialog{
               this.divModal.tabIndex =-1;
               this.divModal.ariaLabel =`${this.dialog_id}_title`;
               this.divModal.ariaHidden = true;
-               let formClassName = this.options.cssClass || this.options.className;
-               formClassName = formClassName || 'vs-modal-dialog'; 
                const html = [`
                <div class="modal-dialog">
                <div class="modal-content">`,
@@ -150,7 +151,16 @@ class GeneralDialog{
                this.divModal.innerHTML = html ;
             document.body.append(this.divModal);
         }
-       if(!this.divModal.classList.contains(formClassName)) this.divModal.classList.add(formClassName);  
+       if(formClassName){
+         const cls = formClassName.split(' ');
+         const div = that.divModal.querySelector('div.modal-dialog'); 
+         cls.map(c =>{
+             if(c){
+               if(!div.classList.contains(c)) div.classList.add(c);  
+             }
+         }); 
+       } 
+      
        this.modalBody = this.divModal.querySelector('.modal-body'); 
        this.modalFooter = this.divModal.querySelector('.modal-footer'); 
        this.elTitle = this.divModal.querySelector('.modal-title');
