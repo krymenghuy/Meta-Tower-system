@@ -47,7 +47,6 @@ class Invoice //extends Model
             //    $start_date = date('Y-m-d', strtotime(date('Y-m-d') . ' -90 days'));
             //    $str_dates = "DATE(os.create_date) >= '$start_date' AND DATE(os.create_date) <= '$end_date'";
             //     // return $str_dates;
-
             // }
         } else
             return (object) ['status' => 'error', 'status_code' => 405, 'error_message' => 'Requier start date and end date! Please Enter start date and end date.'];
@@ -103,7 +102,7 @@ class Invoice //extends Model
 
         $arr = [
             'sender_id' =>$customer,
-            'invoice_type' => $invoice_type,
+            'invoice_type_id' => $invoice_type,
             'amount' => $total_amount,
             'amount_due' => $total_amount,
             'shipment_count'=>$shipment_count,
@@ -111,7 +110,7 @@ class Invoice //extends Model
         $v_rule = [
             'id' => '0|identity=1',
             'sender_id' => '0|number|exists=sender.id',
-            'invoice_type' => '0|choice|informal,commercial,tax',
+            'invoice_type_id' => '0|choice|informal,commercial,tax',
             'amount' => '0|number|default = 0.00',
             'discount_percent' => '0|number|default = 0',
             'discount_amount' => '0|number|default = 0.00',
@@ -147,7 +146,7 @@ class Invoice //extends Model
                 DB::table('os_customer_invoices')->where('id',$id)->update(['code'=>$new_code]);
             }
             foreach ($ret_rows as $i => $row) {
-                DB::table('os_shipments')->where('id', $row->id)->update(['status_id' => 4]);
+                DB::table('os_shipments')->where('id', $row->id)->update(['status_id' => 4,'customer_trx_id'=>$created_invoice]);
             }
 
         }
@@ -310,6 +309,7 @@ class Invoice //extends Model
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
         // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
         $query = DB::table('os_customer_invoices as ci')
+            ->join('os_invoice_types as oit','oit.id','=','ci.invoice_type_id')
             ->join('sender as s', 's.id', '=', 'ci.sender_id')
             ->join('os_invoice_statuses as ois', 'ois.id', '=', 'ci.status_id')
 
@@ -317,7 +317,7 @@ class Invoice //extends Model
             ->whereRaw($str_where)
             ->whereRaw($str_dates)
 
-            ->selectRaw('ci.id,ci.code,ci.update_user,ci.discount_percent,ci.discount_amount,ci.amount_due,formatDate(ci.create_date) as create_date,ci.update_date,ci.invoice_type,ois.name as status,s.name,s.email,s.address,s.phone_number,ci.amount,discount_type,ci.pmt_terms')->orderBy('ci.id', 'DESC');
+            ->selectRaw('ci.id,ci.code,ci.update_user,ci.discount_percent,ci.discount_amount,ci.amount_due,formatDate(ci.create_date) as create_date,ci.update_date,oit.name as invoice_type,ois.name as status,s.name,s.email,s.address,s.phone_number,ci.amount,discount_type,ci.pmt_terms')->orderBy('ci.id', 'DESC');
         ;
 
         // return $query;eeeee
@@ -345,7 +345,7 @@ class Invoice //extends Model
         // $data->sales_agents = DB::table('os_affiliates AS sa')->where('branch_id', $branch_id)->selectRaw('sa.id,sa.name AS agent_name')->get();
         // $data->price_list = DB::table('price_list_names AS l')->where('branch_id', $branch_id)->selectRaw('l.id,l.name')->get();
         $data->customer = DB::table('sender as s')->where('branch_id', $branch_id)->selectRaw('s.id,s.name as sender')->get();
-        $data-> invoice_type = DB::table('os_invoice_types as oi')->selectRaw('oi.id,oi.name as invoice_type')->get();
+        $data-> invoice_type = DB::table('os_invoice_types as oit')->selectRaw('oit.id,oit.name as invoice_type')->get();
 
 
         return $data;
@@ -354,7 +354,7 @@ class Invoice //extends Model
     static function details($id, $ss)
     {
         $branch_id = $ss->branch_id;
-        $row = DB::table('os_customer_invoices')->selectRaw('id,sender_id,invoice_type,amount,discount_percent,discount_amount,discount_type,amount_due,issue_date,due_date,pmt_terms,create_date')->where('branch_id', $branch_id)->where('id', $id)->take(1)->first();
+        $row = DB::table('os_customer_invoices')->selectRaw('id,sender_id,invoice_type_id,amount,discount_percent,discount_amount,discount_type,amount_due,issue_date,due_date,pmt_terms,create_date')->where('branch_id', $branch_id)->where('id', $id)->take(1)->first();
 
         return $row;
     }

@@ -47,7 +47,10 @@ class CreateOsShipmentsTable extends Migration
             $table->integer('update_uid')->nullable();
             $table->timestamp('update_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('create_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
-            //end 32 field---
+            $table->integer('paid_status_id')->default(1);
+            $table->integer('trx_id')->nullable();
+            
+                        //end 32 field---
 
 
         });

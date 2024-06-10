@@ -323,8 +323,8 @@ const CreateInvoiceDialog = new function () {
             // VSUtil.setComboItems(mThis.el_from_country, d.from_country,'id', 'country_name', true, '(select )' , null);
             // mThis.elWarehouse.val(d.warehouses[0].id).trigger('change'); 
             // VSUtil.setComboItems(mThis.elSelseAgentType, d.agent_types, 'id', 'agent_type', false, '', null);
-            VSUtil.setComboItems(mThis.elCustomer, d.customer, 'id', 'sender', false, '(All Customer)', null);
-            VSUtil.setComboItems(mThis.elInvoiceType, d.invoice_type, 'id', 'invoice_type', false, 'Invoice Type', null);
+            VSUtil.setComboItems(mThis.elCustomer, d.customer, 'id', 'sender', true, '(All Customer)', null);
+            VSUtil.setComboItems(mThis.elInvoiceType, d.invoice_type, 'id', 'invoice_type', true, 'Invoice Type', null);
 
             onFinish(d);
         });
