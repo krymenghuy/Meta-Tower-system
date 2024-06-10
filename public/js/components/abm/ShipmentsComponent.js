@@ -153,7 +153,7 @@ var ShipmentsComponent = new function () {
                 data: function (data, row, display) {
                     let html = ['<div class="dropdown">',
                         '<a href="javascript:void(0)" data-shipmentid="', data.shipment_id, '" data-senderid="', data.sender_id, '" data-statusid="', data.status_id, '" class="btn_shipment_action" aria-haspopup="true" aria-expanded="false">',
-                        '<i class="fa fa-chevron-down" style="color:#E9E7E7;font-size:1.5em"></i>',
+                        '<i class="fa fa-chevron-down " style="color:#E9E7E7;font-size:1.5em"></i>',
                         '</a>',
                         '</div>',].join('');
                     return html;
@@ -424,7 +424,52 @@ var ShipmentsComponent = new function () {
         /** NOTE: tblOrder is Vanila javascript object, whereas mThis.tblPickups is Jquery Object that represents the same table */
         mThis.tblOrders = mThis.shipmentListView.getTable();
         mThis.tblShipments = $(mThis.tblOrders);
+ 
+        // const userActionOptions = {
+        //     containerElement: mThis.tblOrders,
+        //     actionButtonClass:'btn_shipment_action',
+        //     menus:[
+        //         {
+        //             text:"Change Login Name",
+        //             icon:"<i class='fa fa-edit text-warning'></i>",
+        //             action:"change_login_name"
+        //         },
+        //         {
+        //             text:"Reset Password",
+        //             icon:"<i class='fa fa-key text-info'></i>",
+        //             action:"reset_password"
+        //         },
+        //         {
+        //             text:"Change Phone Number",
+        //             icon:"<i class='fa fa-phone text-info'></i>",
+        //             action:"change_phone"
+        //         },
+        //         {
+        //             text:"Delete user",
+        //             icon:"<i class='fa fa-trash-can text-danger'></i>",
+        //             action:"delete_user"
+        //         } 
+        //     ],
+        //     onClick:( (lnk, id, action) =>{
+        //         switch(action){
+        //             case 'change_login_name':{
+        //                 mThis.UserPanel.changeLoginName(id, lnk);
+        //                 break;
+        //             }
+        //            case 'reset_password':{
+        //                mThis.UserPanel.resetPassword(id, lnk);    
+        //              break;
+        //            }
+        //            case 'delete_user':{
+        //              mThis.UserPanel.deleteUser(id,lnk);
+        //              break;
+        //            } 
+        //         }
+        //         //alert(' is click on  ID '+ id + ' action: ' + action);
+        //     })
+        //  };
 
+        // new VSDropdownMenu(userActionOptions);
 
         this.sh_container = mThis.shipmentListView.getListContainer();
         // mThis.setEvents($(mThis.container));
@@ -584,7 +629,7 @@ var ShipmentsComponent = new function () {
                 }
                 return;
             }
-
+            // let btn = {};
             btn = VSUtil.closestLimited(e.target, '.btn_special_charge');
             if (btn) {
                 let p = btn.parentElement;
@@ -2455,39 +2500,39 @@ var ShipmentsComponent = new function () {
    }
 
     /** insert new tr when new order is created in real time */  
-    this.live_addOrderRow = (d) => {
-        if(!mThis.tblOrders) return;
-        if (!d.order_id) d.order_id = d.id;
-        if (!d.order_code) d.order_code = d.code;
-        if (!d.vehicle_type) d.vehicle_type = d.request_vehicle_type;
-        //let css_display_order = ['order_', d.order_id].join('');
-        const order_id = d.id?d.id:d.order_id;
-        //const pickup_address = mThis.transformPickupAddress(d.pickup_address,d.map_url,d.sender_phone);
-        let pickup_address = mThis.transformPickupAddress(d.pickup_address,d.map_url,d.sender_phone);
-        const pickup_address_span = [`<span class="long-text-wrap-250">`,(pickup_address?pickup_address:'No pickup address'),`</span>`].join('');
+    // this.live_addOrderRow = (d) => {
+    //     if(!mThis.tblOrders) return;
+    //     if (!d.order_id) d.order_id = d.id;
+    //     if (!d.order_code) d.order_code = d.code;
+    //     if (!d.vehicle_type) d.vehicle_type = d.request_vehicle_type;
+    //     //let css_display_order = ['order_', d.order_id].join('');
+    //     const order_id = d.id?d.id:d.order_id;
+    //     //const pickup_address = mThis.transformPickupAddress(d.pickup_address,d.map_url,d.sender_phone);
+    //     let pickup_address = mThis.transformPickupAddress(d.pickup_address,d.map_url,d.sender_phone);
+    //     const pickup_address_span = [`<span class="long-text-wrap-250">`,(pickup_address?pickup_address:'No pickup address'),`</span>`].join('');
  
-        const booking_channel = (d.booking_channel || '').toLowerCase();
-        let channel_bg = '';
-        if(booking_channel == 'merchant') channel_bg ='bg-success';
-        else if(booking_channel == 'driver') channel_bg ='bg-warning';
-        let is_from_mobile = (booking_channel == 'merchant' || booking_channel == 'driver') ? `<div class="d-flex flex-column"><span class="d-block p-2"><i style="color:green" class="fas fa-mobile-alt fs-4"></i></span><span class="d-block border ${channel_bg} shadow rounded-4 text-white p-1  text-center" style="min-width:70.5px">${VSUtil.properCase(booking_channel)}</span></div>` : ``;
-        let qty_html =  ['<div class="d-flex justify-content-between"><span class="fw-semibold package_count mt-1">', d.qty, '</span>', is_from_mobile, '</div>'].join('');
+    //     const booking_channel = (d.booking_channel || '').toLowerCase();
+    //     let channel_bg = '';
+    //     if(booking_channel == 'merchant') channel_bg ='bg-success';
+    //     else if(booking_channel == 'driver') channel_bg ='bg-warning';
+    //     let is_from_mobile = (booking_channel == 'merchant' || booking_channel == 'driver') ? `<div class="d-flex flex-column"><span class="d-block p-2"><i style="color:green" class="fas fa-mobile-alt fs-4"></i></span><span class="d-block border ${channel_bg} shadow rounded-4 text-white p-1  text-center" style="min-width:70.5px">${VSUtil.properCase(booking_channel)}</span></div>` : ``;
+    //     let qty_html =  ['<div class="d-flex justify-content-between"><span class="fw-semibold package_count mt-1">', d.qty, '</span>', is_from_mobile, '</div>'].join('');
         
-        let html_tr = [`<tr data-id="`,order_id,`" class="order" id="order_`,order_id,`" data-statusid="`,d.status_id,`" data-senderid="`,d.sender_id,`" data-driverid="`,d.driver_id,`">`,
-        `<td class="col_action"><div class="dropdown"><a href="javascript:void(0)" data-orderid="`,order_id,`" data-senderid="`,d.sender_id,`" data-statusid="`,d.status_id,`" class="btn_shipment_action" aria-haspopup="true" aria-expanded="false"><i class="fa fa-chevron-down" style="color:#E9E7E7;font-size:1.5em"></i></a></div></td>`,
-        `<td class="request_date Request-Date"><span class="pl-request_date">`,d.request_date,`</span><span class="pl-request_time">`,d.request_time,`</span></td>`,
-        `<td class="order_code Order-ID"><div><div class="pl-order-special-status"><span class="rounded-3 pl-order-special-status-text pl-order-status-1"></span></div><span class="rounded-3 order-code">`,d.code,`</span></div></td>`,
-        `<td class="sender_name Merchant"><span class="sender-name d-block">`,d.sender_name,`</span><span class="sender-code d-block text-center text-info">`,d.sender_code,`</span></td>`,
-        `<td class="col_vehicletype Vehicle"><div class="d-flex gap-2"><i class="fa fa-motobike"></i><span>`,d.vehicle_type,`</span></div></td>`,
-        `<td class="product_type Product-Type"><span class="product-type">`,d.product_type,`</span></td>`,
-        `<td class="qty Quantity">`,qty_html,`</td>`,
-        `<td class="pickup_address Pickup-Address">`,pickup_address_span,`</td>`,
-        `<td class="driver_name Collector"><div class="d-flex gap-1"><span class="driver-name text-nowrap">`,d.driver_name || `មិនទាន់មាន`,`</span><a href="javascript:void(0)" class="lnk-assign-driver"><span class="shadow-lg bg-white p-1"><i class="fa fa-pencil"></i></span></a></div></td>`,
-        `<td class=" Created-By"><span class="d-block fw-semibold">`,d.create_user,`</span><span class="d-block p-1">`,d.create_date,`</span></td>`,
-        `<td class="order_status status Status"><a class="change-order-status order-status" data-statusid="`,d.status_id,`" data-id="`,order_id,`" data-senderid="`,d.sender_id,`" href="javascript:void(0)"><span class="order_status text-danger">`,d.status,`</span></a></td>`,
-       `</tr>`].join('');
-        mThis.tblOrders.querySelector('tbody').insertAdjacentHTML('afterbegin',html_tr);
-    };
+    //     let html_tr = [`<tr data-id="`,order_id,`" class="order" id="order_`,order_id,`" data-statusid="`,d.status_id,`" data-senderid="`,d.sender_id,`" data-driverid="`,d.driver_id,`">`,
+    //     `<td class="col_action"><div class="dropdown"><a href="javascript:void(0)" data-orderid="`,order_id,`" data-senderid="`,d.sender_id,`" data-statusid="`,d.status_id,`" class="btn_shipment_action" aria-haspopup="true" aria-expanded="false"><i class="fa fa-chevron-down" style="color:#E9E7E7;font-size:1.5em"></i></a></div></td>`,
+    //     `<td class="request_date Request-Date"><span class="pl-request_date">`,d.request_date,`</span><span class="pl-request_time">`,d.request_time,`</span></td>`,
+    //     `<td class="order_code Order-ID"><div><div class="pl-order-special-status"><span class="rounded-3 pl-order-special-status-text pl-order-status-1"></span></div><span class="rounded-3 order-code">`,d.code,`</span></div></td>`,
+    //     `<td class="sender_name Merchant"><span class="sender-name d-block">`,d.sender_name,`</span><span class="sender-code d-block text-center text-info">`,d.sender_code,`</span></td>`,
+    //     `<td class="col_vehicletype Vehicle"><div class="d-flex gap-2"><i class="fa fa-motobike"></i><span>`,d.vehicle_type,`</span></div></td>`,
+    //     `<td class="product_type Product-Type"><span class="product-type">`,d.product_type,`</span></td>`,
+    //     `<td class="qty Quantity">`,qty_html,`</td>`,
+    //     `<td class="pickup_address Pickup-Address">`,pickup_address_span,`</td>`,
+    //     `<td class="driver_name Collector"><div class="d-flex gap-1"><span class="driver-name text-nowrap">`,d.driver_name || `មិនទាន់មាន`,`</span><a href="javascript:void(0)" class="lnk-assign-driver"><span class="shadow-lg bg-white p-1"><i class="fa fa-pencil"></i></span></a></div></td>`,
+    //     `<td class=" Created-By"><span class="d-block fw-semibold">`,d.create_user,`</span><span class="d-block p-1">`,d.create_date,`</span></td>`,
+    //     `<td class="order_status status Status"><a class="change-order-status order-status" data-statusid="`,d.status_id,`" data-id="`,order_id,`" data-senderid="`,d.sender_id,`" href="javascript:void(0)"><span class="order_status text-danger">`,d.status,`</span></a></td>`,
+    //    `</tr>`].join('');
+    //     mThis.tblOrders.querySelector('tbody').insertAdjacentHTML('afterbegin',html_tr);
+    // };
 
     this.getSpecialStatusClass = (status_id) => {
         let cls_completed = 'pl-order-pending';

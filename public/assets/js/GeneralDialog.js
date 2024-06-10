@@ -249,6 +249,7 @@ class GeneralDialog{
  
     prepreForm(dataOptions, onFinish){
        const that = this;  
+       dataOptions= dataOptions ||{};
        let opx = this.options.prepareFormOptions;
        if(!opx || !opx.api){
          if (typeof that.options.onPrepareForm === 'function') that.options.onPrepareForm(that,null,that.getFields(), that.divModal);
@@ -260,7 +261,7 @@ class GeneralDialog{
        if (typeof opx.api.params ==='function') p = opx.api.params(); 
        else p = opx.api.params || {};
        p = p || {};
-
+       console.log('p',p);
        //NOTE: that this.show(options). The $options can have options.id field that is unique ID
        p.id = dataOptions.id;
        vsapi.call(opx.api.endpoint,p,null,null,false).then(res =>{

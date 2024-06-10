@@ -248,9 +248,7 @@ var BillingValidationComponent = new function () {
             listContainerClass: null,
         });
 
-      
 
-        
         mThis.initAlready = true;
 
     mThis.tblOrders = mThis.billValidationListView.getTable();
@@ -335,7 +333,7 @@ var BillingValidationComponent = new function () {
             // },
             configSelect:[
                 {
-                    name:"country_id",
+                    name:"currency_code",
                     data:'currency_code',
                     valueField:'currency_code',
                     textField:'currency_code',
@@ -349,7 +347,7 @@ var BillingValidationComponent = new function () {
                 api:{
                    targetProp:"data.os_shipment",
                    endpoint:`${mThis.base_url}/abm/oversea_shipments/form-options-payment`,
-                   params:()=>{}
+                   params:(p)=>{}
                 }
              },
             buttons:[
@@ -378,7 +376,7 @@ var BillingValidationComponent = new function () {
                 // VSUtil.setComboItems(fields.currency_code, data.currency_code ,'currency_code','currency_code',false,null,null);
             },
             onClose:(canceled)=>{
-              alert(' Closing with cancel = ' + canceled);
+            //   alert(' Closing with cancel = ' + canceled);
             }
          });
  
