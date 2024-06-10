@@ -8,6 +8,7 @@ var BillingValidationComponent = new function () {
     this.elFilter_shipment_no = this.self.find('#_select_shipment_No');
     this.div_filter_fields = mThis.self.find('#_sdl_filter_fields')[0];
     this.btnRefress = this.self.find('#_pl_btnRefress');
+    this.btnPaymany = this.self.find('#_btn_pay_many');
     this.btnUploard = this.self[0].querySelector('#com_btn_uploard_file');
 
     let selectedFile;
@@ -291,7 +292,7 @@ var BillingValidationComponent = new function () {
     mThis.tblValidation.on('click', 'span.btn-payment', function (e) {
         e.preventDefault();
         let div = $(this).closest('div'); /** div.ps-fast or div.ps-normal **/
-        console.log(1,$(this),2,div);
+        // console.log(1,$(this),2,div);
         let p ={'id' : div[0].dataset.id};
         PaymentDialog.show(p);
         // mThis.savePrices($(this), div); 
@@ -314,6 +315,12 @@ var BillingValidationComponent = new function () {
         mThis.refreshPriceListOptions(null);
         mThis.billValidationListView.showPage(mThis.getFilterData()); 
         
+    });
+
+    mThis.btnPaymany.on('click', (e) => {
+        e.preventDefault();
+        let p = {'id': null}
+        PaymentDialog.show(p);
     });
 
     }
@@ -459,24 +466,70 @@ const PaymentDialog = new function(){
     this.elCurrencyCode =  this.self.find('#_plq_currency_code');
     this.elPmtMethod =  this.self.find('#_plq_pmt_method');
     this.elCustomer =  this.self.find('#_plq_Customer');
+    this.divFromDate =  this.self.find('div.from_date')[0];
+    this.divToDate =  this.self.find('div.to_date')[0];
+    this.elFromDate =  this.self.find('#_shm_filter_from_date')[0];
+    this.elToDate =  this.self.find('#_shm_filter_to_date')[0];
+    this.inputSupplier =  this.self.find('#_input_supplier');
+    this.elFromDate =  this.self.find('#_shm_filter_from_date')[0];
+    this.elToDate =  this.self.find('#_shm_filter_to_date')[0];
     
     this.onClose = null;
     let shipments_id = null;
 
     this.bodyHeader =  this.self.find('h.header')[0];
-    this.body =  this.self.find('p.body')[0];
+    this.body = this.self.find('p.body')[0];
 
-    this.prepareFormOptions = ( id, onFinish) => {
-        vsapi.call(`${mThis.base_url}/abm/oversea_shipments/form-options-payment`, {id : id}, null).then(res => {
+    this.div_filter_fields = this.self.find('div.filter-date')[0];
+    this.getFilterData = () => {
+        let p = {
+            // search_value: mThis.elSearch.val(),
+        };
+        mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
+            let f= el.dataset.field;
+            p[f] = el.value;
+        });
+        // console.log('p23',p);
+        return p;
+    }
+    this.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
+        // let p = mThis.getFilterData();
+        let p={};
+        let p2 = {};
+        el.onchange = e => { 
+            e.preventDefault();
+            mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
+                let f= el.dataset.field;
+                p[f] = el.value;
+            });
+
+            p2 = mThis.getFilterData();
+            console.log('pp',p);
+            mThis.prepareFormOptions( p , d => {
+                console.log("d2",d);
+                if(d.os_shipment != null){
+                    mThis.setData(d.os_shipment);
+                }
+                // mThis.self.modal({
+                //     'backdrop': 'static'
+                // });
+            });
+        };
+    });
+
+    this.prepareFormOptions = ( data, onFinish) => {
+        // let p={'id' : data.id }
+        vsapi.call(`${mThis.base_url}/abm/oversea_shipments/form-options-payment`, data , null).then(res => {
             console.log('d2',res.data.to_country);
             let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data , null, ['country_name','cp_name'] ) : {};
             // VSUtil.setComboItems(mThis.el_from_country, d.from_country,'id', 'country_name', true, '(select )' , null);
             // mThis.elWarehouse.val(d.warehouses[0].id).trigger('change'); 
             // VSUtil.setComboItems(mThis.elSelseAgentType, d.agent_types, 'id', 'agent_type', false, '', null);
-            VSUtil.setComboItems(mThis.elSupplier, d.supplier, 'id', 'supplier_name', false, '', null);
-            VSUtil.setComboItems(mThis.elCurrencyCode, d.currency_code, 'id', 'currency_code', false, '', null);
-            VSUtil.setComboItems(mThis.elPmtMethod, d.payment_method, 'id', 'payment_method', false, '(select payment)', null);
-            VSUtil.setComboItems(mThis.elCustomer, d.senders, 'id', 'sender_name', false, '', null);
+            // let payee_id = d.os_shipment.payee_id ? d.os_shipment.payee_id : null;
+            VSUtil.setComboItems(mThis.elSupplier, d.supplier, 'id', 'supplier_name', true, '(select Supplier)', null);
+            VSUtil.setComboItems(mThis.elCurrencyCode, d.currency_code, 'id', 'currency_code', true, '(select currency code)', 1);
+            VSUtil.setComboItems(mThis.elPmtMethod, d.payment_method, 'id', 'payment_method', true, '(select payment by)', null);
+            // VSUtil.setComboItems(mThis.elCustomer, d.senders, 'id', 'sender_name', true, '(select Customer)', null);
             onFinish(d);
         });
     }
@@ -489,29 +542,58 @@ const PaymentDialog = new function(){
         //     ;
         // else
         //     mThis.self.modal('hide');
-        const p = mThis.getFormData(false);
-        p['shipment_id'] = shipments_id;
+        let p = mThis.getFormData(false);
+        p.shipment_id = shipments_id;
         console.log('p',p);
         if (!p) return;
-        vsapi.call(`${mThis.base_url}/abm/payment/save`, p, mThis.btnCreate).then(res => {
-            if (res.status_code === 200) {
-                cv_interact.success('Payment saved'); 
-                mThis.self.modal('hide');
-                if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
-            } else cv_interact.error(res.error_message);
-        });
+        if(shipments_id == null){
+            vsapi.call(`${mThis.base_url}/abm/payment/save-many`, p, mThis.btnCreate).then(res => {
+                if (res.status_code === 200) {
+                    cv_interact.success('Payment saved'); 
+                    mThis.self.modal('hide');
+                    if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                } else cv_interact.error(res.error_message);
+            });
+        }else{
+            vsapi.call(`${mThis.base_url}/abm/payment/save`, p, mThis.btnCreate).then(res => {
+                if (res.status_code === 200) {
+                    cv_interact.success('Payment saved'); 
+                    mThis.self.modal('hide');
+                    if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                } else cv_interact.error(res.error_message);
+            });
+        }
+        
     });
 
     this.show = (options) => {
         options = options ? options : {};
         mThis.options = options;
+        console.log(123,mThis.div_filter_fields);
         let p = options.id;
+        if (p == null){
+            mThis.divFromDate.classList.remove('d-none');
+            mThis.divToDate.classList.remove('d-none');
+            mThis.divFromDate.classList.add('d-block');
+            mThis.divToDate.classList.add('d-block');
+            // console.log(1,mThis.divFromDate ,2,mThis.divToDate);
+            mThis.elFromDate.value = null;
+            mThis.elToDate.value = null;
+        }
+        else{
+            mThis.divFromDate.classList.remove('d-block');
+            mThis.divToDate.classList.remove('d-block');
+            mThis.divFromDate.classList.add('d-none');
+            mThis.divToDate.classList.add('d-none');
+            mThis.elFromDate.value = null;
+            mThis.elToDate.value = null;
+        }
         shipments_id = p;
         console.log('p',p);
         // mThis.checkAlert(message);
-        mThis.prepareFormOptions( 18 , d => {
+        mThis.prepareFormOptions( {'id': p} , d => {
             console.log("d",d);
-            if(d.os_shipment){
+            if(d.os_shipment != null){
                 mThis.setData(d.os_shipment);
             }
             mThis.self.modal({
@@ -528,6 +610,8 @@ const PaymentDialog = new function(){
     this.getFormData = (silent = false) => {
         let has_error = false;
         let p = {};
+        // const el = '';
+        const f = '';
         mThis.self.find('.data-input').each(function () {
             const el = $(this);
             const f = el.data('field');
@@ -536,20 +620,30 @@ const PaymentDialog = new function(){
                 return false;
             }
             p[f] = el.val();
-            console.log(12,p[f],13,f);
         });
+        // mThis.self.find('.filter-field').each(function () {
+        //     const el = $(this);
+        //     const f = el.data('field');
+        //     if (el.data('error') == 1) {
+        //         has_error = true;
+        //         return false;
+        //     }
+        //     p[f] = el.val();
+        //     // console.log(12,p[f],13,f);
+        // });
+        // // console.log(12,p[f],13,f);
         return has_error ? null : p;
     }
 
     this.setData = (d) => {
-        // mThis.body.querySelectorAll('.data-input').forEach(el => {
-        //     // el.value = null;
+        // mThis.self[0].querySelectorAll('.data-input').forEach(el => {
+        //     el.value = null;
         //     if (el.tagName.toLowerCase() === 'select') {
         //         el.dispatchEvent(new Event('change'));
         //     }
         // });
         if (!d) return;
-        // console.log(4,mThis.self);
+        console.log(4,d.amount);
         d = d || {};
         mThis.self[0].querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
@@ -564,6 +658,19 @@ const PaymentDialog = new function(){
                 el.dispatchEvent(new Event('change'));
             }
         });
+        // mThis.self[0].querySelectorAll('.filter-field').forEach(el => {
+        //     const data_member = el.dataset.field;
+
+        //     el.value = d[data_member] ?? '';
+        //     // console.log(5,el);
+        //     if(el.dataset.field == 'currency_code')
+        //         el.value = 1;
+        //     if(el.dataset.field == 'pmt_method')
+        //         el.value = 1;
+        //     if (el.tagName.toLowerCase() === 'select') {
+        //         el.dispatchEvent(new Event('change'));
+        //     }
+        // });
 
     }
 }

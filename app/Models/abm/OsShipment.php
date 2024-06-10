@@ -4,6 +4,7 @@ namespace App\Models\Abm;
 use DB;
 use App\Models\DV;
 use App\Models\JDV;
+use DateTime;
 use Illuminate\Pagination\LengthAwarePaginator;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
@@ -322,11 +323,61 @@ class OsShipment //extends Model
         ->take(1)->first();
         return $row;
     }
-    function detailsForPayment($id,$ss){
+    function detailsForPayment($id,$ss,$payee_id =null,$from_date = null,$to_date = null){
         $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
-
-        $row = DB::table('os_shipments as os')->join('os_suppliers as sp','sp.id','=','os.supplier_id')->where('os.id',$id)->where('os.branch_id',$branch_id)
+        $str_dates = '2=2';
+        $str_payee = '1=1';
+        
+        if($from_date && $to_date){
+            if($payee_id){
+                $str_payee = 'os.supplier_id = '.$payee_id;
+            }
+            $to_date = convertDate($to_date);
+            $from_date = convertDate($from_date);
+            if ((bool)strtotime($from_date) && (bool)strtotime($to_date)) {
+                $str_dates = "DATE(os.create_date) >= '$from_date' AND DATE(os.create_date) <= '$to_date'";
+            // return $start_date; 
+            }
+            $rows = DB::table('os_shipments as os')->join('os_suppliers as sp','sp.id','=','os.supplier_id')
+            ->where('os.branch_id',$branch_id)
+            ->whereRaw($str_dates)
+            ->whereRaw($str_payee)
+            ->selectRaw('os.id, os.code,os.supplier_id as payee_id ,os.qr_code, os.item_type , os.remarks , os.sender_id as payer_id, os.zone_code, os.status_id, os.to_country_id, os.from_country_id, os.primary_cp_id , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price as amount ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time')
+            ->get();
+            // $unique_id = $this->getUnique_id($rows);
+            // $ret_rows = [];
+            // $shipment_count = 0;
+            // foreach($unique_id as $id){
+            //     $m = $this->getShipmentList($id,$rows);  
+            //     $ret_rows[] = $m;  
+            // }
+            $total_amount = 0;
+            $shipment_count = 0;
+            foreach($rows as $row){
+                 $total_amount += $row->amount;
+                 $shipment_count++;
+            }
+            $from_date = new DateTime($from_date);
+            $to_date = new DateTime($to_date);
+            // return $total_amount;
+            return (object)[
+                'from_date'=>$from_date->format('d-M-Y'),
+                'to_date'=>$to_date->format('d-M-Y'),
+                'payee_id'=>$payee_id,
+                'payment_date'=>'',
+                'amount'=>$total_amount,        
+                'currency_code'=>'',
+                'pmt_method'=>'',
+                'reshape_number'=>'',
+                'shipment_count'=>$shipment_count,    
+                'remarks'=>''     
+            ];
+        }
+        $row = DB::table('os_shipments as os')->join('os_suppliers as sp','sp.id','=','os.supplier_id')
+        ->where('os.id',$id)
+        // ->whereRaw($str_payee)
+        ->where('os.branch_id',$branch_id)
         ->selectRaw('os.id, os.code,os.supplier_id as payee_id ,os.qr_code, os.item_type , os.remarks , os.sender_id as payer_id, os.zone_code, os.status_id, os.to_country_id, os.from_country_id, os.primary_cp_id , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price as amount ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time')
         ->take(1)->first();
         return $row;
@@ -387,10 +438,18 @@ class OsShipment //extends Model
             'os_shipment' => $shipment
         ];
     }
-    function getFormOptionsForPayment($id,$ss){  
+    function getFormOptionsForPayment($id,$arr,$ss){  
         $shipment = null;
-        if($id ){
+        $d = (object)$arr;
+        $to_date = isset($d->to_date) ? $d->to_date : null;
+        $from_date = isset($d->from_date) ? $d->from_date : null;
+        $payee_id = isset($d->payee_id) ? $d->payee_id : null;
+        if($id){
             $shipment = self::detailsForPayment($id,$ss);
+            // return $shipment;
+        }
+        else if($to_date != null && $from_date != null){
+            $shipment = self::detailsForPayment($id=null,$ss,$payee_id,$from_date,$to_date);
             // return $shipment;
         }
         return (object)[

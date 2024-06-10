@@ -156,7 +156,7 @@ class ShipmentEnrollment
             ];
             DB::table('os_bill_validation_sessions')->insert($arr);
             $rowCount = DB::table('os_bill_validation_sessions AS s')->count('s.id');
-            DB::table('os_last_session_control')->where('branch_id',$branch_id)->update(['last_id'=>$rowCount]);
+            DB::table('os_last_session_control')->where('branch_id',$ss->branch_id)->update(['last_id'=>$rowCount]);
 
             $success_cnt =0;
             $unacceptable_count =0;
