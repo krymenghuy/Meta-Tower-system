@@ -117,7 +117,7 @@ Route::get('/', function () {
 Route::get('logout',function(){
     return view('login.index');
 });
-Route::post('landing',function(){
+Route::get('landing',function(){
     return view('landing.landing');
 });
 
