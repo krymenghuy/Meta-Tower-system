@@ -97,7 +97,7 @@ use App\Http\controllers\abm\PaymentController;
     Route::middleware([CustomRateLimiter::class])->prefix('payment')->group(function(){
         Route::post('/save', [PaymentController::class, 'save']);
         Route::post('/save-many', [PaymentController::class, 'saveMany']);
-        Route::post('/list-paginate', [PaymentController::class, 'ListPaginate']);
+        Route::post('/details', [PaymentController::class, 'details']);
         Route::post('/delete-special-charge', [PaymentController::class, 'deleteSpecileCharge']);
     });
 

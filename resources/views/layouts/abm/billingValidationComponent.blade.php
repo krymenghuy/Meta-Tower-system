@@ -49,7 +49,7 @@
                             <span>Validate</span>
                         </label>
                         <!-- Button trigger modal -->
-                        <label type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
+                        <label type="button" id="_btn_pay_many" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
                             Payment
                         </label>
                         
@@ -151,22 +151,24 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="row">
+        <div class="row ">
             <!-- <div class="form-group col-md-6">
                 <span class="simple-label">Payment No.</span>
                 <input id="_plq_pikcup_address" class="form-control data-input" placeholder="AUTO" data-field="payment_no" readOnly />
             </div> -->
-            <div class="form-group col-md-6">
-                <span class="simple-label">Customer</span>
-                <div>
-                    <select id="_plq_Customer" class="modal-select2 data-input" data-field="payer_id"></select>
+
+            <div class="filter-date row pe-0">
+                <div class="form-group from_date col-md-6 d-none" >
+                    <span class="simple-label ">From Date</span>
+                    <input data-select="datepicker" class="form-control filter-field" data-field="from_date" placeholder="From Date" id="_shm_filter_from_date" />
+                    <!-- <input type="number" class="form-control data-input" data-field="to_country_id" />   -->
                 </div>
-            </div>
-            <div class="form-group col-md-6">
-                <span class="simple-label">Supplier</span>
-                <div>
-                    <select id="_plq_supplier" class="modal-select2 data-input" data-field="payee_id"></select>
+                <div class="form-group to_date col-md-6 pe-0 d-none" >
+                    <span class="simple-label ">To Date</span>
+                    <input data-select="datepicker" class="form-control filter-field" data-field="to_date" placeholder="To Date" id="_shm_filter_to_date" />
+                    <!-- <input type="number" class="form-control data-input" data-field="to_country_id" />   -->
                 </div>
+                
             </div>
             <!-- <div class="form-group col-md-6">
                 <span class="simple-label">Supplier Type</span>
@@ -174,7 +176,22 @@
                     <select id="_plq_supplier_type" class="modal-select2 data-input" data-field="from_country_id"></select>
                 </div>
             </div> -->
-            
+            <!-- <input type="hidden" id="_input_supplier" class="form-control data-input" data-field="payee_id" />   -->
+            <!-- <div class="form-group col-md-6">
+                <span class="simple-label">Customer</span>
+                <div>
+                    <select id="_plq_Customer" class="modal-select2 data-input" data-field="payer_id"></select>
+                </div>
+            </div> -->
+            <div class="form-group col-md-6 ">
+                <span class="simple-label">Supplier</span>
+                <select id="_plq_supplier" class="modal-select2 data-input" data-field="payee_id"></select>
+            </div>
+            <div class="form-group col-md-6">
+                <span class="simple-label ">Payment Date</span>
+                <input data-select="datepicker" class="form-control data-input" data-field="payment_date" placeholder="Payment Date" id="_shm_filter_payment_date" />
+                <!-- <input type="number" class="form-control data-input" data-field="to_country_id" />   -->
+            </div>
             <div class="form-group col-md-6">
                 <span class="simple-label">Amount</span>
                 <input type="" class="form-control data-input" data-field="amount" />  
@@ -191,11 +208,7 @@
                     <select id ="_plq_pmt_method" class="modal-select2 data-input" data-field="pmt_method"></select>
                 </div>
             </div>
-            <div class="form-group col-md-6">
-                <span class="simple-label ">Payment Date</span>
-                <input data-select="datepicker" class="form-control data-input" data-field="payment_date" placeholder="Payment Date" id="_shm_filter_payment_date" />
-                <!-- <input type="number" class="form-control data-input" data-field="to_country_id" />   -->
-            </div>
+            
             <div class="form-group col-md-6">
                 <span class="simple-label">Reshape Number</span>
                 <input type="text" class="form-control data-input" data-field="reshape_number" />

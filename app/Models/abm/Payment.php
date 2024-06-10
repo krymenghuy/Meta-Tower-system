@@ -6,6 +6,8 @@ use App\Models\DV;
 use App\Models\JDV;
 use App\Models\Dms\PublicStorage;
 use Illuminate\Pagination\LengthAwarePaginator;
+use DateTime;
+
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use Sanitizer;
@@ -22,10 +24,9 @@ class Payment //extends Model
         // $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
+        
         $v_rule = [
             'id'=>'0|identity=1',
-            'payer_id' => '1|number',
-            // 'shipment_id'=>'1|string|1-20',
             'payee_id'=>'1|string',
             'payee_type'=>'0|number',
             'payment_date'=>'1|date',
@@ -42,6 +43,7 @@ class Payment //extends Model
         $inputs = $res->values;
         $id = $res->id; 
         $d = (object)$arr;
+        
         // return $d->shipment_id;
         $check = DB::table('os_shipments as os')->where('os.id',$d->shipment_id)->select('os.code','paid_status_id','status_id')->first();
         // return $check;
@@ -49,12 +51,50 @@ class Payment //extends Model
             return (object)['status'=>'error','status_code'=>405,'error_message'=>'Shipment('.$check->code.') already paid!','data'=>$check->code];
         if($check->status_id == 2)
             return (object)['status'=>'error','status_code'=>405,'error_message'=>'Shipment('.$check->code.') Validate unacceptable!','data'=>$check->code];
-        $supplier_created = !$id;
+        $supplier_created = !$id; 
         // return JDV::result($inputs);
         $id = saveData($ss,'os_payments',['id'=>$id],$inputs,[],1,0);   
         $trx_id = DB::table('os_payments')->count('id');
         if($id > 0){
             DB::table('os_shipments')->where('id',$d->shipment_id)->update(['paid_status_id'=>2,'trx_id'=>$trx_id]);
+            $shipmentInfo = DB::table('os_shipments as os')->where('os.id',$d->shipment_id)->first();
+            $arr = [
+                'payment_id' => $trx_id,
+                'code'=>$shipmentInfo->code,
+                'qr_code'=>$shipmentInfo->qr_code,
+                'supplier_id'=>$shipmentInfo->supplier_id,
+                'item_type'=>$shipmentInfo->item_type,        
+                'total_weight'=>$shipmentInfo->total_weight,
+                'carrier_total_weight'=>$shipmentInfo->carrier_total_weight,
+                'total_price'=>$shipmentInfo->total_price,
+                'total_carrier_cost'=>$shipmentInfo->total_carrier_cost,    
+                'total_special_charge'=>$shipmentInfo->total_special_charge,    
+                'remarks'=>$shipmentInfo->remarks     
+            ]; 
+            $v_rule = [
+                'id'=>'0|identity=1',
+                'payment_id' => '1|number',
+                'code'=>'1|string',
+                'qr_code'=>'0|number',
+                'supplier_id'=>'1|number',
+                'item_type'=>'1|string',        
+                'total_weight'=>'1|number',
+                'carrier_total_weight'=>'1|number',
+                'total_price'=>'0|number',  
+                'total_carrier_cost'=>'0|number',    
+                'total_special_charge'=>'0|number',    
+                'remarks'=>'0|string|0-150'       
+            ];
+    
+            $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+            // return $res;
+            if($res->error) return DV::error($res->error);
+            $inputs = $res->values;
+            $id = $res->id; 
+            $supplier_created = !$id;
+            // return JDV::result($inputs);
+            $id = saveData($ss,'os_bill_payments',['id'=>$id],$inputs,[],1,0);  
+        // return $shipmentInfo;
         }
     //return DV::error('Something went wrong in saving sender profile');
         return DV::depends($id,['action'=>'saved']);
@@ -66,36 +106,41 @@ class Payment //extends Model
         $branch_id = $ss->branch_id;
         $d = (object)$filter;
         // return $d;
-        $end_date = isset($d->end_date) ? $d->end_date : null;
-        $start_date = isset($d->start_date) ? $d->start_date : null;
+        $payee_id = isset($d->payee_id) ? $d->payee_id : null;
+        $to_date = isset($d->to_date) ? $d->to_date : null;
+        $from_date = isset($d->from_date) ? $d->from_date : null;
         $str_dates = '2=2';
-        if($start_date && $end_date){
-            $end_date = convertDate($end_date);
-            $start_date = convertDate($start_date);
-            if ((bool)strtotime($start_date) && (bool)strtotime($end_date)) {
-                $str_dates = "DATE(os.create_date) >= '$start_date' AND DATE(os.create_date) <= '$end_date'";
+        $str_payee = '1=1';
+        if($payee_id){
+            $str_payee = 'os.sender_id = '.$payee_id;
+        }
+        if($from_date && $to_date){
+            $to_date = convertDate($to_date);
+            $from_date = convertDate($from_date);
+            if ((bool)strtotime($from_date) && (bool)strtotime($to_date)) {
+                $str_dates = "DATE(os.create_date) >= '$from_date' AND DATE(os.create_date) <= '$to_date'";
             // return $start_date;
             }
             // elseif($end_date){
             //    $start_date = date('Y-m-d', strtotime(date('Y-m-d') . ' -90 days'));
             //    $str_dates = "DATE(os.create_date) >= '$start_date' AND DATE(os.create_date) <= '$end_date'";
             //     // return $str_dates;
-
             // }
-        }else return (object)['status'=>'error','status_code'=>405,'error_message'=>'Requier start date and end date! Please Enter start date and end date.'];
-
+        }else return (object)['status'=>'error','status_code'=>405,'error_message'=>'Requier from date and to date! Please Enter from date and to date.'];
 
         $queryShipments = DB::table('os_shipments as os')
-                // ->join('affiliates as sa','os.primary_cp_id','=','sa.id') // Perform an inner join
-                // ->join('loc_countries as lc', 'lc.id', '=', 'os.to_country_id')
-                ->join('os_bill_validation as bv', 'bv.waybill_no', '=', 'os.qr_code')
-                // ->join('price_list_details as p', 'p.country_id', '=', 'os.to_country_id')
-                // ->join('os_package_statuses as st', 'st.id', '=', 'os.status_id')
-                // ->join('sender as sd', 'sd.id', '=', 'os.sender_id')
-                ->whereRaw($str_dates)
-                // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
-                ->selectRaw('os.id,os.code, bv.session_id ,os.paid_status_id ,os.status_id, os.total_price as amount, bv.carrier_amount as carrier_amount , formatDate(os.create_date) as create_date')
-                ->get();
+            // ->join('affiliates as sa','os.primary_cp_id','=','sa.id') // Perform an inner join
+            // ->join('loc_countries as lc', 'lc.id', '=', 'os.to_country_id')
+            ->join('os_bill_validation as bv', 'bv.waybill_no', '=', 'os.qr_code')
+            // ->join('price_list_details as p', 'p.country_id', '=', 'os.to_country_id')
+            // ->join('os_package_statuses as st', 'st.id', '=', 'os.status_id')
+            // ->join('sender as sd', 'sd.id', '=', 'os.sender_id')
+            ->whereRaw($str_dates)
+            ->whereRaw($str_payee)
+            // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
+            ->selectRaw('os.id,os.code, bv.session_id ,os.paid_status_id ,os.status_id, os.total_price as amount, bv.carrier_amount as carrier_amount , formatDate(os.create_date) as create_date')
+            ->get();
+        
         $unique_id = $this->getUnique_id($queryShipments);
         $ret_rows = [];
         $shipment_count = 0;
@@ -105,53 +150,60 @@ class Payment //extends Model
         }
         $total_amount = 0;
         $paid = 0;
+        $unValidate = 0;
         $data = [];
+        $amount = 0;
         foreach ($ret_rows as $i=>$row){
             // return $row->status_id;
-            $shipment_count++;
-            $total_amount += $row->amount;
             $check['paid_status_id'] = $row->paid_status_id;
             $check['status_id'] = $row->status_id;
             if($check['status_id'] == 3 && $check['paid_status_id'] == 2) {
                 $paid ++;
-                $data [] = $row->code;
+                $data ['paid '.$paid] = $row->code;
             }
-            // if(!$check) {
-            //     $shipment_un_Waybill_no [$i+3] = $Waybill_no;
-            //     $non ++;
-            // }
+            else if($check['status_id'] < 3 ) {
+                $unValidate ++;
+                $data ['unValidate '.$unValidate] = $row->code;
+            }
+            $shipment_count++;
+            $amount += $row->carrier_amount;
         }
-        if($paid > 0) return (object)['status'=>'error','status_code'=>405,'error_message'=>$paid.' Shipment already paid:','data'=>$data];   
-        return $data;
-        
+        // return $amount;
+        if($paid > 0 || $unValidate > 0) return (object)['status'=>'error','status_code'=>405,'error_message'=>'Shipment already paid: '.$paid.',and Shipment UnValidate: '.$unValidate,'data'=>$data];   
+        // if($paunValidateid > 0) return (object)['status'=>'error','status_code'=>405,'error_message'=>$paid.' Shipment already paid:','data'=>$data];   
+        // return $data;
+        $payment_date = isset($d->payment_date) ? $d->payment_date : null;
+        // $amount = isset($d->amount) ? $d->amount : null;
+        $currency_code = isset($d->currency_code) ? $d->currency_code : null;
+        $pmt_method = isset($d->pmt_method) ? $d->pmt_method : null;
+        $remarks = isset($d->remarks) ? $d->remarks : null;
+        $reshape_number = isset($d->reshape_number) ? $d->reshape_number : null;
         $arr = [
-            
-            'payer_id' => '1|number',
-            // 'shipment_id'=>'1|string|1-20',
-            'payee_id'=>'1|string',
-            'payee_type'=>'0|number',
-            'payment_date'=>'1|date',
-            'amount'=>'1|number|default =0.00',        
-            'currency_code'=>'1|string',
-            'pmt_method'=>'1|number',
-            'reshape_number'=>'0|number',       
-            'remarks'=>'0|string|0-150'      
+            'payee_id'=>$payee_id,
+            'payee_type'=>'',
+            'payment_date'=>$payment_date,
+            'amount'=>$amount,        
+            'currency_code'=>$currency_code,
+            'pmt_method'=>$pmt_method,
+            'reshape_number'=>$reshape_number,
+            'shipment_count'=>$shipment_count,    
+            'remarks'=>$remarks      
         ]; 
         $v_rule = [
             'id'=>'0|identity=1',
-            'payer_id' => '1|number',
-            // 'shipment_id'=>'1|string|1-20',
             'payee_id'=>'1|string',
             'payee_type'=>'0|number',
             'payment_date'=>'1|date',
             'amount'=>'1|number|default =0.00',        
             'currency_code'=>'1|string',
             'pmt_method'=>'1|number',
-            'reshape_number'=>'0|number',       
+            'reshape_number'=>'0|number',  
+            'shipment_count'=>'0|number',    
             'remarks'=>'0|string|0-150'       
         ];
 
         $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+        // return $res;
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $id = $res->id; 
@@ -160,11 +212,51 @@ class Payment //extends Model
         $id = saveData($ss,'os_payments',['id'=>$id],$inputs,[],1,0);   
         $trx_id = DB::table('os_payments')->count('id');
         if($id > 0){
-            DB::table('os_shipments')->where('id',$d->shipment_id)->update(['paid_status_id'=>2,'trx_id'=>$trx_id]);
+            foreach ($ret_rows as $row){
+                DB::table('os_shipments')->where('id',$row->id)->update(['paid_status_id'=>2,'trx_id'=>$trx_id]);
+                $shipmentInfo = DB::table('os_shipments as os')->where('os.id',$row->shipment_id)->first();
+                $arr = [
+                    'payment_id' => $trx_id,
+                    'code'=>$shipmentInfo->code,
+                    'qr_code'=>$shipmentInfo->qr_code,
+                    'supplier_id'=>$shipmentInfo->supplier_id,
+                    'item_type'=>$shipmentInfo->item_type,        
+                    'total_weight'=>$shipmentInfo->total_weight,
+                    'carrier_total_weight'=>$shipmentInfo->carrier_total_weight,
+                    'total_price'=>$shipmentInfo->total_price,
+                    'total_carrier_cost'=>$shipmentInfo->total_carrier_cost,    
+                    'total_special_charge'=>$shipmentInfo->total_special_charge,    
+                    'remarks'=>$shipmentInfo->remarks     
+                ]; 
+                $v_rule = [
+                    'id'=>'0|identity=1',
+                    'payment_id' => '1|number',
+                    'code'=>'1|string',
+                    'qr_code'=>'0|number',
+                    'supplier_id'=>'1|number',
+                    'item_type'=>'1|string',        
+                    'total_weight'=>'1|number',
+                    'carrier_total_weight'=>'1|number',
+                    'total_price'=>'0|number',  
+                    'total_carrier_cost'=>'0|number',    
+                    'total_special_charge'=>'0|number',    
+                    'remarks'=>'0|string|0-150'       
+                ];
+        
+                $res = validateObject($arr,$v_rule,1,[],$ss->lang,0,null);
+                // return $res;
+                if($res->error) return DV::error($res->error);
+                $inputs = $res->values;
+                $id = $res->id; 
+                $supplier_created = !$id;
+                // return JDV::result($inputs);
+                $id = saveData($ss,'os_bill_payments',['id'=>$id],$inputs,[],1,0); 
+            }
         }
     //return DV::error('Something went wrong in saving sender profile');
         return DV::depends($id,['action'=>'saved']);
     }
+
 
     function getUnique_id($rows){
         // return $rows;
@@ -206,9 +298,66 @@ class Payment //extends Model
         return null;
       }
 
-    function getOverseaItemList(){
-        // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());
-        return DB::table('oversea_items')->selectRaw('item_type, billed_weight, actual_weight, allocated_kg, heigth, weigth, length')->get();
+      function detailsForPayment($filter,$ss){
+        $branch_id = $ss->branch_id;
+        $d = (object)$filter;
+        $to_date = isset($d->to_date) ? $d->to_date : null;
+        $from_date = isset($d->from_date) ? $d->from_date : null;
+        $payee_id = isset($d->payee_id) ? $d->payee_id : null;
+        $str_dates = '2=2';
+        $str_payee = '1=1';
+        // return $filter;
+        if($from_date && $to_date){
+            if($payee_id){
+                $str_payee = 'os.supplier_id = '.$payee_id;
+            }
+            $to_date = convertDate($to_date);
+            $from_date = convertDate($from_date);
+            if ((bool)strtotime($from_date) && (bool)strtotime($to_date)) {
+                $str_dates = "DATE(os.create_date) >= '$from_date' AND DATE(os.create_date) <= '$to_date'";
+            // return $start_date; 
+            }
+            $rows = DB::table('os_shipments as os')->join('os_suppliers as sp','sp.id','=','os.supplier_id')
+            ->where('os.branch_id',$branch_id)
+            ->whereRaw($str_dates)
+            ->whereRaw($str_payee)
+            ->selectRaw('os.id, os.code,os.supplier_id as payee_id ,os.qr_code, os.item_type , os.remarks , os.sender_id as payer_id, os.zone_code, os.status_id, os.to_country_id, os.from_country_id, os.primary_cp_id , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price as amount ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time')
+            ->get();
+            // $unique_id = $this->getUnique_id($rows);
+            // $ret_rows = [];
+            // $shipment_count = 0;
+            // foreach($unique_id as $id){
+            //     $m = $this->getShipmentList($id,$rows);  
+            //     $ret_rows[] = $m;  
+            // }
+            $total_amount = 0;
+            $shipment_count = 0;
+            foreach($rows as $row){
+                 $total_amount += $row->amount;
+                 $shipment_count++;
+            }
+            $from_date = new DateTime($from_date);
+            $to_date = new DateTime($to_date);
+            // return $total_amount;
+            return (object)[
+                'from_date'=>$from_date->format('d-M-Y'),
+                'to_date'=>$to_date->format('d-M-Y'),
+                'payee_id'=>$payee_id,
+                'payment_date'=>'',
+                'amount'=>$total_amount,        
+                'currency_code'=>'',
+                'pmt_method'=>'',
+                'reshape_number'=>'',
+                'shipment_count'=>$shipment_count,    
+                'remarks'=>''     
+            ];
+        }
+        // $row = DB::table('os_shipments as os')->join('os_suppliers as sp','sp.id','=','os.supplier_id')
+        // ->where('os.id',$id)
+        // ->where('os.branch_id',$branch_id)
+        // ->selectRaw('os.id, os.code,os.supplier_id as payee_id ,os.qr_code, os.item_type , os.remarks , os.sender_id as payer_id, os.zone_code, os.status_id, os.to_country_id, os.from_country_id, os.primary_cp_id , os.secondary_cp_id , os.effective_weight , os.actual_weight , os.markup_weight , os.total_weight , os.carrier_total_weight , os.total_price as amount ,os.carrier_cost , os.carrier_special_charge , os.total_carrier_cost , os.total_special_charge , os.receiver_name , os.receiver_address , package_qty , formatDate(os.create_date) as create_date , DATE_FORMAT(os.create_date,\'%r\') AS request_time')
+        // ->take(1)->first();
+        return (object)[];
     }
 
     function getSuplierListPaginate($filter,$ss){
