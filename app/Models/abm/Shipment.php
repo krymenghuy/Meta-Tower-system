@@ -9,7 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 
-class OsShipment //extends Model
+class Shipment //extends Model
 {   
     protected $id = null;
     protected $userInfo = null;

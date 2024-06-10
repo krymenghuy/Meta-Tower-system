@@ -9,11 +9,11 @@ use Illuminate\Pagination\LengthAwarePaginator;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use Sanitizer;
-class OsSupplier //extends Model
+class Supplier //extends Model
 {   
     protected $id = null;
     protected $userInfo = null;
-    protected static $img_dir = 'os_supplier';
+    protected static $img_dir = 'Supplier';
     function __construct($id=null,$userInfo=null){
         $this->id=$id;
         $this->userInfo =$userInfo;
@@ -269,7 +269,7 @@ class OsSupplier //extends Model
     if (!$row) {
       return self::defaultImage(1);
     }
-    $url = PublicStorage::getUrl($row->branch_id, 'os_supplier', 'image') . $row->photo_file_name;
+    $url = PublicStorage::getUrl($row->branch_id, 'Supplier', 'image') . $row->photo_file_name;
     return validateUrl($url, '');
   }
 
@@ -280,7 +280,7 @@ class OsSupplier //extends Model
         $supplier = DB::table('os_suppliers')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
         if (!$supplier)
           return DV::error('Supplier identity is not correct!');
-        PublicStorage::delete($ss->branch_id, 'os_supplier', 'image', $supplier->photo_file_name);
+        PublicStorage::delete($ss->branch_id, 'Supplier', 'image', $supplier->photo_file_name);
         DB::table('os_suppliers')->where('id', $id)->update(['photo_file_name' => null]);
         return DV::depends($id,['Supplier are','update']);
       }

@@ -148,6 +148,7 @@ class Payment //extends Model
             $m = $this->getShipmentList($id,$queryShipments);  
             $ret_rows[] = $m;  
         }
+        $total_amount = 0;
         $paid = 0;
         $unValidate = 0;
         $data = [];

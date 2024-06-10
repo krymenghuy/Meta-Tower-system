@@ -3,15 +3,15 @@
 namespace App\Http\Controllers\Abm;
 
 use App\Http\Controllers\Controller;
-use App\Models\Abm\OsSupplier;
+use App\Models\Abm\Supplier;
 use Illuminate\Http\Request;
 use App\Models\UM;
 use App\Models\JDV;
-class OsSupplierController extends Controller
+class SupplierController extends Controller
 {
     protected $supplier = null;
     function __construct(){
-        $this->supplier = new OsSupplier();
+        $this->supplier = new Supplier();
     }
     function save(Request $req){
 
@@ -35,7 +35,7 @@ class OsSupplierController extends Controller
         if ($ss->status_code !== 200)
             return JDV::raw($ss);
         $id = $req->id;
-        $supplier = new OsSupplier();
+        $supplier = new Supplier();
         $delete = $supplier->delete($id);
         return JDV::raw($delete);
     }
@@ -52,7 +52,7 @@ class OsSupplierController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
         $id = $req->supplier_id? $req->supplier_id:$req->id;
-        $supplier = new OsSupplier($id,$ss);
+        $supplier = new Supplier($id,$ss);
         $res = $supplier->setPriceList($req->price_list_id);
         // return JDV::result($res );
         if ($res->status==='OK') return JDV::success(['list_name'=>$res->list_name,'list_id'=>$res->list_id]);
@@ -87,7 +87,7 @@ class OsSupplierController extends Controller
         $ss = UM::getUserInfoByToken($req,-1);
         if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
         $id = $req->id?$req->id:$req->sender_id;
-        $supplier = new OsSupplier($id,$ss);
+        $supplier = new Supplier($id,$ss);
         $res = $supplier->updateStatus($req->status_code,$id);
         return JDV::raw($res);
     }
@@ -97,7 +97,7 @@ class OsSupplierController extends Controller
         if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
         $id = $req->id?$req->id:$req->sender_id;
         $photo = $req->photo;
-        $supplier = new OsSupplier($id,$ss);
+        $supplier = new Supplier($id,$ss);
         $res = $supplier->saveProfilePicture($photo,$req->file_type);
         return JDV::raw($res);
      }
@@ -107,7 +107,7 @@ class OsSupplierController extends Controller
          if ($ss->status_code !== 200)
              return JDV::raw($ss); //user not authenticated
          $id = $req->id ? $req->id : $req->supplier_id;
-         $cus = new OsSupplier($id, $ss);
+         $cus = new Supplier($id, $ss);
          $res = $cus->deleteProfilePicture();
          return JDV::raw($res);
      }

@@ -36,6 +36,7 @@ var BillingValidationComponent = new function () {
             let fileData = event.target.result;
             console.log('file',btoa(fileData));
             let p = {'file':btoa(fileData)};
+            console.log(1,p);
             if(!p.file) return; 
             vsapi.call(`${main_view.base_url}/abm/oversea_shipments/import`,p,null,null,false).then(res =>{
                 console.log('data',res);
@@ -247,31 +248,7 @@ var BillingValidationComponent = new function () {
             listContainerClass: null,
         });
 
-        // this.btnNewSalesAgents.on('click',function(e){
-        //     let op = {
-        //         'id':null,
-        //         'as':'sa',
-        //         'onClose':(d)=>{
-        //             // mThis.salesAgentsListView.showPage(null);
-        //             mThis.initListView('view_sales_agent');
-        //         }
-        //     };
-        //     // console.log(op);
-        //     SalesAgentDialog.show(op);
-        // });
-
-        // this.btnNewContactPerson.on('click',function(e){
-        //     let op = {
-        //         'id':null,
-        //         'as':'', 
-        //         'onClose':(d)=>{
-        //             // mThis.salesAgentsListView.showPage(null);
-        //             mThis.initListView('view_contact_person');
-        //         }
-        //     };
-        //     // console.log(op);
-        //     SalesAgentDialog.show(op);
-        // });
+      
 
         
         mThis.initAlready = true;
@@ -320,7 +297,82 @@ var BillingValidationComponent = new function () {
     mThis.btnPaymany.on('click', (e) => {
         e.preventDefault();
         let p = {'id': null}
-        PaymentDialog.show(p);
+        // PaymentDialog.show(p);
+        const dlg = new GeneralDialog({
+            title:"Reset Password", 
+            fields:[
+               {
+                 name:"amount",
+                 label:"Amount",
+                 type:"number",
+                 required:true
+               },
+               {
+                name:"currency_code",
+                label:"Currency",
+                // type:"string",
+                displayType:"select",
+                required:true,
+                config:{
+                    data:'currency_code',
+                    valueField:'currency_code',
+                    textField:'currency_code',
+                    default:'USD',
+                }
+               }
+            ],
+            // createFields:() =>{
+            //     return `<div class="row"><div class="form-group col-md-6">
+            //                 <span class="simple-label">Amount</span>
+            //                 <input type="" class="form-control data-input" data-field="amount" />  
+            //             </div>
+            //             <div class="form-group col-md-6">
+            //                 <span class="simple-label">Currency Code</span>
+            //                 <div>
+            //                     <select id ="_plq_currency_code" class="modal-select2 data-input" data-field="currency_code"></select>
+            //                 </div>
+            //             </div></div>`;
+            // },
+            prepareFormOptions:{
+                createTitle:"Create Account",
+                modifyTitle:"Edit Account",
+                api:{
+                   targetProp:"data.os_shipment",
+                   endpoint:`${mThis.base_url}/abm/oversea_shipments/form-options-payment`,
+                   params:()=>{}
+                }
+             },
+            buttons:[
+             {
+                 label:"Cancel",
+                 cssClass:"btn btn-secondary",
+                 action:"cancel",
+                 dismissModal:true,
+                 icon:""
+             },
+             {
+                 label:"Ok",
+                 cssClass:"btn btn-info",
+                 icon:"",
+                 click:(me,btn,divModal)=>{
+                    // alert(dlg.getData())
+                    console.log(me.getData());
+                    // vsapi.call(${main_view,base_url}/api/service/set-password,p,false,false,false).then(res=>{
+                      
+                    // }); 
+                 }
+             }
+            ],
+            onPrepareForm:(instance,data,fields,divModal)=>{
+                console.log('fields',fields);
+                // VSUtil.setComboItems(fields.currency_code, data.currency_code ,'currency_code','currency_code',false,null,null);
+            },
+            onClose:(canceled)=>{
+              alert(' Closing with cancel = ' + canceled);
+            }
+         });
+ 
+         dlg.show(null);
     });
 
     }
@@ -463,6 +515,7 @@ const PaymentDialog = new function(){
     // console.log(mThis.btnSave);
     // this.elSelseAgentType =  this.self.find('#_plq_salse_agent_type');
     this.elSupplier =  this.self.find('#_plq_supplier');
+    
     this.elCurrencyCode =  this.self.find('#_plq_currency_code');
     this.elPmtMethod =  this.self.find('#_plq_pmt_method');
     this.elCustomer =  this.self.find('#_plq_Customer');

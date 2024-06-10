@@ -10,12 +10,12 @@ use App\Http\Controllers\UMController;
 
 use App\Http\Controllers\abm\PackageController;
 use App\Http\Controllers\abm\InvoiceController;
-use App\Http\Controllers\abm\OsShipmentController;
-use App\Http\Controllers\abm\OsSupplierController;
+use App\Http\Controllers\abm\ShipmentController;
+use App\Http\Controllers\abm\SupplierController;
 use App\Http\controllers\abm\CustomerController;
 use App\Http\Controllers\abm\CountryZoneController;
-use App\Http\controllers\abm\OsAffiliateController;
-use App\Http\controllers\abm\OsPriceController;
+use App\Http\controllers\abm\AffiliateController;
+use App\Http\controllers\abm\PriceController;
 use App\Http\controllers\abm\GeneralSettingsController;
 use App\Http\controllers\abm\SpecialChargeController;
 use App\Http\controllers\abm\PaymentController;
@@ -47,51 +47,51 @@ use App\Http\controllers\abm\PaymentController;
     });
 
      //begin::PriceController
-    Route::post('os_suppliers/set-price-list', [OsSupplierController::class, 'setSupplierPriceList']);
+    Route::post('os_suppliers/set-price-list', [SupplierController::class, 'setSupplierPriceList']);
     // Route::post('getComboItems_price_list', [PriceController::class, 'getComboItems_price_list']);
 
 
     Route::middleware([CustomRateLimiter::class])->prefix('os_suppliers')->group(function(){
-        Route::post('/save', [OsSupplierController::class, 'save']);
-        Route::post('/list', [OsSupplierController::class, 'getSuplierList']);
-        Route::post('/form-options', [OsSupplierController::class, 'getFormOptions']);
-        Route::post('/save-profile-picture', [OsSupplierController::class, 'saveProfilePicture']);
-        Route::post('/delete-profile-picture', [OsSupplierController::class, 'deleteProfilePicture']);
+        Route::post('/save', [SupplierController::class, 'save']);
+        Route::post('/list', [SupplierController::class, 'getSuplierList']);
+        Route::post('/form-options', [SupplierController::class, 'getFormOptions']);
+        Route::post('/save-profile-picture', [SupplierController::class, 'saveProfilePicture']);
+        Route::post('/delete-profile-picture', [SupplierController::class, 'deleteProfilePicture']);
 
-        Route::post('/update-status', [OsSupplierController::class, 'updateSupplierStatus']);
-        Route::post('/list-paginate', [OsSupplierController::class, 'getSuplierListPaginate']);
-        Route::post('/delete', [OsSupplierController::class, 'deleteOrderitem']);
-        Route::post('/delete',[OsSupplierController::class,'delete']);
+        Route::post('/update-status', [SupplierController::class, 'updateSupplierStatus']);
+        Route::post('/list-paginate', [SupplierController::class, 'getSuplierListPaginate']);
+        Route::post('/delete', [SupplierController::class, 'deleteOrderitem']);
+        Route::post('/delete',[SupplierController::class,'delete']);
 
     });
     Route::middleware([CustomRateLimiter::class])->prefix('os-sales-agents')->group(function(){
-        Route::post('/save', [OsAffiliateController::class, 'saveSalesAgent']);
-        Route::post('/sa-list', [OsAffiliateController::class, 'getSalesAgentList']);
-        Route::post('/cp-list', [OsAffiliateController::class, 'getContactPersonList']);
-        Route::post('/form-options', [OsAffiliateController::class, 'getFormOptions']);
-        Route::post('/save-profile-picture', [OsAffiliateController::class, 'saveProfilePicture']);
-        Route::post('/delete-profile-picture', [OsAffiliateController::class, 'deleteProfilePicture']);
+        Route::post('/save', [AffiliateController::class, 'saveSalesAgent']);
+        Route::post('/sa-list', [AffiliateController::class, 'getSalesAgentList']);
+        Route::post('/cp-list', [AffiliateController::class, 'getContactPersonList']);
+        Route::post('/form-options', [AffiliateController::class, 'getFormOptions']);
+        Route::post('/save-profile-picture', [AffiliateController::class, 'saveProfilePicture']);
+        Route::post('/delete-profile-picture', [AffiliateController::class, 'deleteProfilePicture']);
 
-        Route::post('/update-status', [OsAffiliateController::class, 'updateStatus']);
-        Route::post('/list-paginate', [OsAffiliateController::class, 'getListPaginate']);
-        Route::post('/delete', [OsAffiliateController::class, 'deleteSalesAgent']);
+        Route::post('/update-status', [AffiliateController::class, 'updateStatus']);
+        Route::post('/list-paginate', [AffiliateController::class, 'getListPaginate']);
+        Route::post('/delete', [AffiliateController::class, 'deleteSalesAgent']);
     });
     Route::middleware([CustomRateLimiter::class])->prefix('oversea_shipments')->group(function(){
-        Route::post('/save', [OsShipmentController::class, 'save']);
-        Route::post('/Shipment-list', [OsShipmentController::class, 'getOverseaShipmentList']);
-        Route::post('/Shipment-list-paginate', [OsShipmentController::class, 'ListPaginate']);
-        Route::post('/Shipment-list-BillValidate', [OsShipmentController::class, 'ListForBillValidate']);
-        Route::post('/form-options', [OsShipmentController::class, 'getFormOptions']);
-        Route::post('/form-options-payment', [OsShipmentController::class, 'getFormOptionsForPayment']);
-        Route::post('/item-details', [OsShipmentController::class, 'getItemDetails']);
-        Route::post('/update-status', [OsShipmentController::class, 'updateStatus']);
-        Route::post('/update-carrier-info', [OsShipmentController::class, 'updateCarrierInfo']);
+        Route::post('/save', [ShipmentController::class, 'save']);
+        Route::post('/Shipment-list', [ShipmentController::class, 'getOverseaShipmentList']);
+        Route::post('/Shipment-list-paginate', [ShipmentController::class, 'ListPaginate']);
+        Route::post('/Shipment-list-BillValidate', [ShipmentController::class, 'ListForBillValidate']);
+        Route::post('/form-options', [ShipmentController::class, 'getFormOptions']);
+        Route::post('/form-options-payment', [ShipmentController::class, 'getFormOptionsForPayment']);
+        Route::post('/item-details', [ShipmentController::class, 'getItemDetails']);
+        Route::post('/update-status', [ShipmentController::class, 'updateStatus']);
+        Route::post('/update-carrier-info', [ShipmentController::class, 'updateCarrierInfo']);
     
-        Route::post('/create-item', [OsShipmentController::class, 'createOverseaItem']);
-        Route::post('/item-list', [OsShipmentController::class, 'getOverseaItemList']);
-        Route::post('/delete-item', [OsShipmentController::class, 'deleteOrderitem']);
+        Route::post('/create-item', [ShipmentController::class, 'createOverseaItem']);
+        Route::post('/item-list', [ShipmentController::class, 'getOverseaItemList']);
+        Route::post('/delete-item', [ShipmentController::class, 'deleteOrderitem']);
 
-        Route::post('/import', [OsShipmentController::class, 'import']);
+        Route::post('/import', [ShipmentController::class, 'import']);
 
     });
     Route::middleware([CustomRateLimiter::class])->prefix('payment')->group(function(){
@@ -131,18 +131,20 @@ use App\Http\controllers\abm\PaymentController;
     });
     Route::prefix('invoice')->group(function(){
         Route::post('/save',[InvoiceController::class,'save']);
-        Route::post('/list',[InvoiceController::class,'list']);
-        Route::post('/list-paginate',[InvoiceController::class,'list-paginate']);
-        Route::post('/detail',[InvoiceController::class,'detailInvoice']);
+        Route::post('/list',[InvoiceController::class,'getInvoiceList']);
+        Route::post('/list-paginate',[InvoiceController::class,'getInvoiceListPaginate']);
+        Route::post('/form-options',[InvoiceController::class,'getFormOptions']);
         Route::post('/delete',[InvoiceController::class,'deleteInvoice']);
+        Route::post('/Shipment-list-paginate', [InvoiceController::class, 'ListPaginate']);
+
     });
 
     
-    Route::post('savePriceLineZones', [OsPriceController::class, 'savePriceLineZones']);
-    Route::post('getPriceList_data', [OsPriceController::class, 'getPriceList_data']);
-    Route::post('savePriceLineInfo', [OsPriceController::class, 'savePriceLineInfo']);
-    Route::post('updateZoneCodes', [OsPriceController::class, 'updateZoneCodes']);
-    Route::post('deletePriceZones', [OsPriceController::class, 'deletePriceZones']);
+    Route::post('savePriceLineZones', [PriceController::class, 'savePriceLineZones']);
+    Route::post('getPriceList_data', [PriceController::class, 'getPriceList_data']);
+    Route::post('savePriceLineInfo', [PriceController::class, 'savePriceLineInfo']);
+    Route::post('updateZoneCodes', [PriceController::class, 'updateZoneCodes']);
+    Route::post('deletePriceZones', [PriceController::class, 'deletePriceZones']);
 
     
    //begin:: Counties_Zone_Code

@@ -63,6 +63,8 @@ class ShipmentEnrollment
 
     static function import($d,$ss,$id=null){
         // return $d;
+        $branch_id = $ss->branch_id;
+    
         $v_rule = [
             'file' => '1|string',
         ];
@@ -142,7 +144,7 @@ class ShipmentEnrollment
                 // $error = ['error'=>$shipment_un_Waybill_no];
                 return (object)['status'=>'error','status_code'=>405,'error_message'=>$non.' Supplyer QR code don\'t have in System yet ! Please Enter Supplyer QR code in Shipment befor validation:','data'=>$data];
                 // return [ 'error'=>'System dont have Supplyer QR code yet : ('.$shipment_un_Waybill_no.')! Please Enter Supplyer QR code.'];
-                return DV::error($mesege);
+                return DV::error($message);
             }
 
             $arr = [

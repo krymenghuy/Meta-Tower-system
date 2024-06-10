@@ -206,9 +206,10 @@ const ZoneDialog = new function () {
   this.elCommune = this.self.find('#_sttn_zon_commune');
 
   this.options = {};
-  this.fields = [];
   this.btnOK = this.self.find('#_sttn_dlgZone_btnOK');
   this.elError = this.self.find('#_sttn_dlgZone_error');
+  this.fields = [];
+
   this.self.find('.data-input').each(function () {
     let el = { dataMember: $(this).data('field'), 'element': $(this) };
     mThis.fields.push(el);
