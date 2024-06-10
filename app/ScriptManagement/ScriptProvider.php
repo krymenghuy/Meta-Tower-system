@@ -56,7 +56,7 @@ namespace App\ScriptManagement;
                     '/assets/js/ExchangeManager.js',
                     '/assets/js/expandableTableRow.js',
                     '/assets/js/UMExpandItemView.js',
-                    '/assets/js/DropdownToggleMenu.js',
+                    '/assets/js/VSDropdownMenu.js',
                     '/assets/js/GeneralDialog.js',
                     '/assets/vendors/general/popper.js/dist/umd/popper.js',
                     '/assets/material-js/bootstrap.min.js',
