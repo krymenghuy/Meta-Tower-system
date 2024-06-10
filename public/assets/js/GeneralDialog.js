@@ -107,7 +107,7 @@ class GeneralDialog{
         //         textField:"emp_type",
         //         default:"full-time"
         //      }
-        //    },
+        //    }, 
            prepareFormOptions:{
               createTitle:"Create",
               modifyTitle:"Modify",
@@ -131,7 +131,7 @@ class GeneralDialog{
                let formClassName = this.options.cssClass || this.options.className;
                formClassName = formClassName || 'vs-modal-dialog'; 
                const html = [`
-               <div class="modal-dialog ${formClassName}">
+               <div class="modal-dialog">
                <div class="modal-content">`,
                   `<div class="modal-header">
                      <h5 class="modal-title" id="${this.dialog_id}_title">Reset Password</h5>`,
@@ -149,7 +149,8 @@ class GeneralDialog{
                </div>`].join('');
                this.divModal.innerHTML = html ;
             document.body.append(this.divModal);
-        } 
+        }
+       if(!this.divModal.classList.contains(formClassName)) this.divModal.classList.add(formClassName);  
        this.modalBody = this.divModal.querySelector('.modal-body'); 
        this.modalFooter = this.divModal.querySelector('.modal-footer'); 
        this.elTitle = this.divModal.querySelector('.modal-title');
@@ -165,7 +166,7 @@ class GeneralDialog{
           if(btn.dismissModal ==true || btn.dismissModal ==1) data_dismiss_modal = ` data-dismiss="modal"`;
           let className = btn.cssClass || btn.className;
           className = className || "btn btn-default";
-          html = [html, `<button type="button" class="${className}" data-action="${btn.action || ''}" data-index="${index}" ${data_dismiss_modal}>${btn.icon} ${btn.label || btn.text}</button>`].join('');
+          html = [html, `<button type="button" class="${className}" data-action="${btn.action || ''}" data-index="${index}" ${data_dismiss_modal}>${btn.icon || ""} ${btn.label || (btn.text || "")}</button>`].join('');
           index++;
         });
 
