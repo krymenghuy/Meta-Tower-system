@@ -185,6 +185,12 @@ class GeneralDialog{
        });
     }
 
+    //Close Dialog
+    hide(){
+      this.jm = this.jm || $(this.divModal);
+      this.jm.modal('hide');
+    }
+
     renderFields(fields){
        let html = ''; 
        fields.map(field =>{
@@ -224,7 +230,7 @@ class GeneralDialog{
     }
 
     getData(){
-       let p = {}; 
+       let p = {id: this.dataOptions? (this.dataOptions.id || ''): null}; 
        this.modalBody.querySelectorAll('.data-input').forEach(el =>{
            const f = el.dataset.field;
            p[f] = el.value;
