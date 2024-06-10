@@ -30,11 +30,10 @@ class PaymentController extends Controller
         return JDV::raw($save);
     }
 
-    function getSuplierList(Request $req){
+    function details(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $data = $this->payment->getSuplierList();
-        
+        $data = $this->payment->detailsForPayment($req->all(),$ss);
         return JDV::result($data);
     }
     function delete(Request $req)

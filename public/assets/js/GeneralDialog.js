@@ -163,7 +163,7 @@ class GeneralDialog{
        this.modalFooter.innerHTML = html;
        const that = this;
        this.modalFooter.addEventListener('click', e=>{
-          let btn = e.target.onClosest('button');
+          let btn = e.target.closest('button');
           if(btn){
             that.canceled = (( btn.dataset.action || "").toLowerCase() == "cancel" ) || (btn.dismissModal ==true);
             let idx = btn.dataset.index;
@@ -188,11 +188,13 @@ class GeneralDialog{
           if (field.displayType =='select') inputType = 'select';
           let selectClass = 'form-control';
           if (inputType == 'select') selectClass ='modal-select2';
-
+          let inputHtml = [`<div><input type="`,inputType,`" data-type="${field.dataType || field.type}" class="${selectClass} data-input" data-field="${field.name}"  placeholder="`,(field.placeholder || ''),`" data-required="`,required,`">
+         </div></div>`].join('');
+         
+         if(inputType == 'select')
+         inputHtml = [`<div><select data-type="${field.dataType || field.type}" class="${selectClass} data-input" data-field="${field.name}" placeholder="`,(field.placeholder || ''),`" data-required="`,required,`"> </select></div> `].join('');
           html = [html,` <div class="form-group">
-              <label for="`,field.name,`">`,field.label,`</label>
-              <input type="`,inputType,`" data-type="${field.dataType || field.type}" class="${selectClass} data-field="${field.name}" data-input" placeholder="`,(field.placeholder || ''),`" data-required="`,required,`">
-            </div>`].join('');
+              <label for="`,field.name,`">`,field.label,`</label>`,inputHtml].join('');
        });
 
        this.modalBody.innerHTML =[`<form id="${this.dialog_id}_form">`,html,'</form>'].join('');
@@ -209,7 +211,7 @@ class GeneralDialog{
        this.modalBody.querySelectorAll('.data-input').forEach(el=>{
           let f = el.dataset.field;
           fields[f] = el;
-          fields.push(field);
+         //  fields.push(field);
        });
        return fields;
     }
@@ -250,13 +252,23 @@ class GeneralDialog{
        let p = null;
        if (typeof opx.api.params ==='function') p = opx.api.params(); 
        else p = opx.api.params || {};
+       p = p || {};
 
        //NOTE: that this.show(options). The $options can have options.id field that is unique ID
        p.id = that.dataOptions.id;
        vsapi.call(opx.api.endpoint,p,null,null,false).then(res =>{
           let d = res.status_code ==200 ? res.data: {};
+          let fieldElments = that.getFields();
+          that.options.fields.map(field =>{
+             let cfg = field.config;
+             let el =fieldElments[field.name];
+            if(el && cfg && field.displayType =='select'){
+                let items = ((typeof cfg.data ==='string' && cfg.data) ? d[cfg.data]: cfg.data);
+               VSUtil.setComboItems(el,items, cfg.valueField,cfg.textField,null,null,null );
+            }
+          })
           if (typeof that.options.onPrepareForm === 'function') that.options.onPrepareForm(that,d,that.getFields(), that.divModal);
-          onFinish(data);
+          onFinish(d);
        });
     }
   

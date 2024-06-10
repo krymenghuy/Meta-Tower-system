@@ -111,9 +111,11 @@ class ShipmentController extends Controller
     function getFormOptionsForPayment(Request $req) {
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !== 200) return JDV::raw($ss);
-        $id = $req->id;
-        return JDV::result($this->shipment->getFormOptionsForPayment($id,$ss));
+        $id = isset($req->id) ? $req->id : null;
+        return JDV::result($this->shipment->getFormOptionsForPayment($id,$req->all(),$ss));
     }
+
+    
 
     function import(Request $req) {
         $ss = UM::getUserInfoByToken($req,-1);
