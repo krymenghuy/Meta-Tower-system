@@ -34,7 +34,24 @@
    },
 
   ],
-
+  override:{
+    getData:(me,fields,divModal)=>{
+        ...
+        return {new_prop:"111", newOne:"222"};
+    },
+    setData: ()=>{
+       
+    }
+  },
+  extendMethod:{
+     getData:(me,divModal)=>{
+       ...
+       return something more;
+     },
+     setData:(me,data,divModal)=>{
+        
+     }
+  }
   prepareFormOptions:{
      createTitle:"Create Account",
      modifyTitle:"Edit Account",
@@ -107,7 +124,7 @@ class GeneralDialog{
         //         textField:"emp_type",
         //         default:"full-time"
         //      }
-        //    },
+        //    }, 
            prepareFormOptions:{
               createTitle:"Create",
               modifyTitle:"Modify",
@@ -119,8 +136,11 @@ class GeneralDialog{
            },
            onClose:(isCanceled) =>{}
         };
-
+        const that = this;
         this.divModal = document.getElementById(this.dialog_id);
+        let formClassName = this.options.cssClass || this.options.className;
+        formClassName = formClassName || 'vs-modal-dialog'; 
+
         if(!this.divModal){
               this.divModal = document.createElement('div');
               this.divModal.className =`modal fade"`;
@@ -128,10 +148,8 @@ class GeneralDialog{
               this.divModal.tabIndex =-1;
               this.divModal.ariaLabel =`${this.dialog_id}_title`;
               this.divModal.ariaHidden = true;
-               let formClassName = this.options.cssClass || this.options.className;
-               formClassName = formClassName || 'vs-modal-dialog'; 
                const html = [`
-               <div class="modal-dialog ${formClassName}">
+               <div class="modal-dialog">
                <div class="modal-content">`,
                   `<div class="modal-header">
                      <h5 class="modal-title" id="${this.dialog_id}_title">Reset Password</h5>`,
@@ -149,12 +167,24 @@ class GeneralDialog{
                </div>`].join('');
                this.divModal.innerHTML = html ;
             document.body.append(this.divModal);
-        } 
+        }
+       if(formClassName){
+         const cls = formClassName.split(' ');
+         const div = that.divModal.querySelector('div.modal-dialog'); 
+         cls.map(c =>{
+             if(c){
+               if(!div.classList.contains(c)) div.classList.add(c);  
+             }
+         }); 
+       } 
+      
        this.modalBody = this.divModal.querySelector('.modal-body'); 
        this.modalFooter = this.divModal.querySelector('.modal-footer'); 
        this.elTitle = this.divModal.querySelector('.modal-title');
        this.renderButtons(this.options.buttons);
        if(typeof this.options.onInit ==='function') this.options.onInit(this,this.divModal);
+       this.override = this.options.override || {};
+       this.extendMethod = this.options.extendMethod || {};
     }
  
     renderButtons(buttons){
@@ -165,13 +195,13 @@ class GeneralDialog{
           if(btn.dismissModal ==true || btn.dismissModal ==1) data_dismiss_modal = ` data-dismiss="modal"`;
           let className = btn.cssClass || btn.className;
           className = className || "btn btn-default";
-          html = [html, `<button type="button" class="${className}" data-action="${btn.action || ''}" data-index="${index}" ${data_dismiss_modal}>${btn.icon} ${btn.label || btn.text}</button>`].join('');
+          html = [html, `<button type="button" class="${className}" data-action="${btn.action || ''}" data-index="${index}" ${data_dismiss_modal}>${btn.icon || ""} ${btn.label || (btn.text || "")}</button>`].join('');
           index++;
         });
 
        this.modalFooter.innerHTML = html;
        const that = this;
-       this.modalFooter.addEventListener('click', e=>{
+       this.modalFooter.onclick = e => {
           let btn = e.target.closest('button');
           if(btn){
             that.canceled = (( btn.dataset.action || "").toLowerCase() == "cancel" ) || (btn.dismissModal ==true);
@@ -182,7 +212,13 @@ class GeneralDialog{
             }
            
           }
-       });
+       };
+    }
+
+    //Close Dialog
+    hide(){
+      this.jm = this.jm || $(this.divModal);
+      this.jm.modal('hide');
     }
 
     renderFields(fields){
@@ -224,16 +260,26 @@ class GeneralDialog{
     }
 
     getData(){
-       let p = {}; 
-       this.modalBody.querySelectorAll('.data-input').forEach(el =>{
-           const f = el.dataset.field;
-           p[f] = el.value;
-       });
-       return p;
-    }
-
-    setData(d){
+      if (this.override.getData) return this.override.getData(this,this.divModal);
+      
+      let p = {id: this.dataOptions ? (this.dataOptions.id || '') : null}; 
+      
+      this.modalBody.querySelectorAll('.data-input').forEach(el => {
+          const f = el.dataset.field;
+          p[f] = el.value;
+      });
+      
+      if (this.extendMethod.getData){
+          const p1 = this.extendMethod.getData(this,this.divModal);
+          p = {...p, ...p1};  // Merge properties of p1 into p
+      } 
+      
+      return p;
+  }
+  
+  setData(d){
         d = d || {};
+        if (this.override.setData) return this.override.setData(this,d,this.divModal);
         this.modalBody.querySelectorAll('.data-input').forEach(el =>{
             const f = el.dataset.field;
             if(el.tagName =='SELECT'){
@@ -245,6 +291,9 @@ class GeneralDialog{
                 el.value = d[f] || "";
             }
         });
+
+        if (this.extendMethod.setData) this.extendMethod.setData(this,d,this.divModal); 
+     
     }
  
     prepreForm(dataOptions, onFinish){
