@@ -298,39 +298,66 @@ var BillingValidationComponent = new function () {
         // PaymentDialog.show(p);
         const dlg = new GeneralDialog({
             title:"Reset Password", 
-            fields:[
-               {
-                 name:"amount",
-                 label:"Amount",
-                 type:"number",
-                 required:true
-               },
-               {
-                name:"currency_code",
-                label:"Currency",
-                // type:"string",
-                displayType:"select",
-                required:true,
-                // config:{
-                //     data:'currency_code',
-                //     valueField:'currency_code',
-                //     textField:'currency_code',
-                //     default:'USD',
-                // }
-               }
-            ],
-            // createFields:() =>{
-            //     return `<div class="row"><div class="form-group col-md-6">
-            //                 <span class="simple-label">Amount</span>
-            //                 <input type="" class="form-control data-input" data-field="amount" />  
-            //             </div>
-            //             <div class="form-group col-md-6">
-            //                 <span class="simple-label">Currency Code</span>
-            //                 <div>
-            //                     <select id ="_plq_currency_code" class="modal-select2 data-input" data-field="currency_code"></select>
-            //                 </div>
-            //             </div></div>`;
-            // },
+            // fields:[
+            //     {
+            //         name:"from_date",
+            //         label:"From Date",
+            //         type:"string",
+            //         required:true
+            //     },
+            //     {
+            //         name:"to_date",
+            //         label:"To Date",
+            //         type:"string",
+            //         required:true
+            //     },
+            //    {
+            //      name:"amount",
+            //      label:"Amount",
+            //      type:"number",
+            //      required:true
+            //    },
+            //    {
+            //     name:"currency_code",
+            //     label:"Currency",
+            //     // type:"string",
+            //     displayType:"select",
+            //     required:true,
+            //     // config:{
+            //     //     data:'currency_code',
+            //     //     valueField:'currency_code',
+            //     //     textField:'currency_code',
+            //     //     default:'USD',
+            //     // }
+            //    }
+            // ],
+            createFields:() =>{
+                return `<div class="row">
+                            <div class="form-group col-md-6">
+                                <span class="simple-label">Amount</span>
+                                <input type="" class="form-control data-input" data-field="amount" />  
+                            </div>
+                            <div class="form-group col-md-6">
+                                <span class="simple-label">Currency Code</span>
+                                <div>
+                                    <select id ="_plq_currency_code" class="modal-select2 data-input" data-field="currency_code"></select>
+                                </div>
+                            </div>
+                            <div class="form-group from_date col-md-6 " >
+                                <span class="simple-label ">From Date</span>
+                                <div>
+                                <input data-type="date"  class="form-control data-input filter-field" data-field="from_date" placeholder="From Date" id="_shm_filter_from_date" />
+                                </div>
+                            </div>
+                            <div class="form-group to_date col-md-6 pe-0 " >
+                                <span class="simple-label ">To Date</span>
+                                <div>
+                                <input data-type="date" class="form-control data-input filter-field" data-field="to_date" placeholder="To Date" id="_shm_filter_to_date" />
+                                </div>
+                            </div>
+                        
+                        </div>`;
+            },
             configSelect:[
                 {
                     name:"currency_code",
@@ -347,7 +374,10 @@ var BillingValidationComponent = new function () {
                 api:{
                    targetProp:"data.os_shipment",
                    endpoint:`${mThis.base_url}/abm/oversea_shipments/form-options-payment`,
-                   params:(p)=>{}
+                //    params:()=>{
+                //         return {'id':1};
+                //     }
+                    // params: {id:1}
                 }
              },
             buttons:[
@@ -366,13 +396,16 @@ var BillingValidationComponent = new function () {
                     // alert(dlg.getData())
                     console.log(me.getData());
                     // vsapi.call(${main_view,base_url}/api/service/set-password,p,false,false,false).then(res=>{
-                      
+                      me.hide();
                     // }); 
                  }
              }
             ],
             onPrepareForm:(instance,data,fields,divModal)=>{
                 console.log('fields',fields);
+                fields.from_date.onchange = (e)=>{
+                    console.log('date chang');
+                }
                 // VSUtil.setComboItems(fields.currency_code, data.currency_code ,'currency_code','currency_code',false,null,null);
             },
             onClose:(canceled)=>{
@@ -380,7 +413,7 @@ var BillingValidationComponent = new function () {
             }
          });
  
-         dlg.show(null);
+         dlg.show({'id':1});
     });
 
     }
