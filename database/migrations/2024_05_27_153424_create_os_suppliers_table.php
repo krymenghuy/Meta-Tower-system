@@ -19,7 +19,7 @@ class CreateOsSuppliersTable extends Migration
             $table->string('phone_number',25);
             $table->string('email',50)->nullable();
             $table->string('address',255)->nullable();
-            $table->integer('sales_agent_id');
+            $table->integer('referrer_id');
             $table->integer('price_list_id');
             $table->string('code', 11)->nullable();
             $table->string('photo_file_name', 255)->nullable();

@@ -33,13 +33,13 @@ class Invoice //extends Model
         $end_date = isset($d->end_date) ? $d->end_date : null;
         $start_date = isset($d->start_date) ? $d->start_date : null;
         $customer = isset($d->customer) ? $d->customer : null;
-        $invoice_type = isset($d->invoice_type) ? $d->invoice_type : null;
+        $discount_percent = isset($d->discount_percent) ? $d->discount_percent : 0;
         $str_cus = '1=1';
-        $str_dates = '2=2';
-        if($customer){
-            $str_cus = 'os.sender_id='.$customer;
+        if ($customer) {
+            $str_cus = 'os.sender_id=' . $customer;
 
-        }
+        } else
+            return (object) ['status' => 'error', 'status_code' => 405, 'error_message' => 'For Customer can not be empty. Please Select Customer'];
         if ($start_date && $end_date) {
             $end_date = convertDate($end_date);
             $start_date = convertDate($start_date);
@@ -77,7 +77,7 @@ class Invoice //extends Model
             $m = $this->getShipmentList($id, $queryShipments);
             $ret_rows[] = $m;
         }
-        if($ret_rows == null)
+        if ($ret_rows == null)
             return (object) ['status' => 'error', 'status_code' => 405, 'error_message' => 'This Customer doesn`t have Shipment for Create Invoice'];
 
         $total_amount = 0;
@@ -93,8 +93,8 @@ class Invoice //extends Model
             if ($check['status_id'] < 3) {
                 $unvalidate++;
                 $data[] = $row->code;
-            } 
-            if($check['status_id']==4){
+            }
+            if ($check['status_id'] == 4) {
                 $created_invoice++;
                 $data[] = $row->code;
 
@@ -106,30 +106,35 @@ class Invoice //extends Model
             // }
         }
         if ($unvalidate > 0)
-            return (object) ['status' => 'error', 'status_code' => 405, 'error_message' => $unvalidate . ' Shipment Unvalidate:', 'data' => $data];
-        else if($created_invoice>0)
-            return (object) ['status' => 'error', 'status_code' => 405, 'error_message' => $created_invoice . ' Shipment is already Create Invoice:', 'data' => $data];
-
+                return (object) ['status' => 'error', 'status_code' => 405, 'error_message' =>  ' This Shipment Can`t Create Invoice. You must validate shipment', 'data' => $data];
+            else if ($created_invoice > 0)
+                return (object) ['status' => 'error', 'status_code' => 405, 'error_message' =>  ' This Shipment is already Create Invoice for Customer', 'data' => $data];
+        $discount_amount = 0;
+        if ($discount_percent) {
+                $discount_amount = ($total_amount * $discount_percent) / 100;
+        }
+        $amount_due = $total_amount - $discount_amount;
         $arr = [
-            'sender_id' =>$customer,
-            'invoice_type_id' => $invoice_type,
+            'sender_id' => $customer,
             'amount' => $total_amount,
-            'amount_due' => $total_amount,
-            'shipment_count'=>$shipment_count,
+            'amount_due'=>$amount_due,
+            'discount_percent'=>$discount_percent,
+            'discount_amount'=>$discount_amount,
+            'shipment_count' => $shipment_count,
         ];
         $v_rule = [
             'id' => '0|identity=1',
             'sender_id' => '0|number|exists=sender.id',
-            'invoice_type_id' => '0|choice|1,2,3',
-            'amount' => '0|number|default = 0.00',
+            'invoice_type_id' => '0|number|default = 2',
+            'amount' => '0|number|default = 0',
             'discount_percent' => '0|number|default = 0',
-            'discount_amount' => '0|number|default = 0.00',
-            'amount_due' => '0|number|default = 0.00',
+            'discount_amount' => '0|number|default = 0',
+            'amount_due' => '0|number|default = 0',
             'pmt_terms' => '0|string|35',
             'public_remarks' => '0|string|255',
             'private_remarks' => '0|string|255',
             'status_id' => '1|number|default =1',
-            'shipment_count'=>'0|number|default = 0',
+            'shipment_count' => '0|number|default = 0',
 
         ];
 
@@ -146,21 +151,20 @@ class Invoice //extends Model
         //     DB::table('os_shipments')->where('id', $d->shipment_id)->update(['paid_status_id' => 2, 'trx_id' => $trx_id]);
         // }
         // return DV::error('Something went wrong in saving sender profile');
-        if($id > 0)
-        {
+        if ($id > 0) {
             $new_code = null;
 
-            if ($supplier_created){
+            if ($supplier_created) {
                 $new_code = $this->getNextSenderCode($ss); // formatNumber($sender_id,5);
                 //$inputs['code'] = $new_code;
-                DB::table('os_customer_invoices')->where('id',$id)->update(['code'=>$new_code]);
+                DB::table('os_customer_invoices')->where('id', $id)->update(['code' => $new_code]);
             }
             foreach ($ret_rows as $i => $row) {
-                DB::table('os_shipments')->where('id', $row->id)->update(['status_id' => 4,'customer_trx_id'=>$created_invoice]);
+                DB::table('os_shipments')->where('id', $row->id)->update(['status_id' => 4, 'customer_trx_id' => $created_invoice]);
             }
 
         }
-            
+
 
         return DV::depends($id, ['action' => 'saved']);
     }
@@ -319,7 +323,7 @@ class Invoice //extends Model
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
         // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
         $query = DB::table('os_customer_invoices as ci')
-            ->join('os_invoice_types as oit','oit.id','=','ci.invoice_type_id')
+            ->join('os_invoice_types as oit', 'oit.id', '=', 'ci.invoice_type_id')
             ->join('sender as s', 's.id', '=', 'ci.sender_id')
             ->join('os_invoice_statuses as ois', 'ois.id', '=', 'ci.status_id')
 
@@ -327,7 +331,7 @@ class Invoice //extends Model
             ->whereRaw($str_where)
             ->whereRaw($str_dates)
 
-            ->selectRaw('ci.id,ci.code,ci.update_user,ci.discount_percent,ci.discount_amount,ci.amount_due,formatDate(ci.create_date) as create_date,ci.update_date,oit.name as invoice_type,ois.name as status,s.name,s.email,s.address,s.phone_number,ci.amount,discount_type,ci.pmt_terms')->orderBy('ci.id', 'DESC');
+            ->selectRaw('ci.id,ci.code,ci.shipment_count,ci.update_user,formatDate(ci.due_date) as due_date,ci.discount_percent,ci.amount_due,formatDate(ci.create_date) as create_date,ci.update_date,oit.name as invoice_type,ois.name as status,s.name,s.email,s.address,s.phone_number,ci.amount,discount_type,ci.pmt_terms')->orderBy('ci.id', 'DESC');
         ;
 
         // return $query;eeeee
@@ -351,11 +355,11 @@ class Invoice //extends Model
         // $data->branches = [(object)['id'=>1,'branch_name'=>'Head Quarter']];
         // $data->sender_types = DB::table('sender_type')->where('branch_id',$branch_id)->selectRaw('id,name AS sender_type')->get();
         // $data->business_types = DB::table('sender_business_types')->selectRaw('business_type AS code,business_type')->get();
-        // $data->sender_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name AS status_name')->get();
+        $data->invoice_statuses = DB::table('os_invoice_statuses')->selectRaw('code as status_code, name AS status_name')->get();
         // $data->sales_agents = DB::table('os_affiliates AS sa')->where('branch_id', $branch_id)->selectRaw('sa.id,sa.name AS agent_name')->get();
         // $data->price_list = DB::table('price_list_names AS l')->where('branch_id', $branch_id)->selectRaw('l.id,l.name')->get();
         $data->customer = DB::table('sender as s')->where('branch_id', $branch_id)->selectRaw('s.id,s.name as sender')->get();
-        $data-> invoice_type = DB::table('os_invoice_types as oit')->selectRaw('oit.id,oit.name as invoice_type')->get();
+        $data->invoice_type = DB::table('os_invoice_types as oit')->selectRaw('oit.id,oit.name as invoice_type')->get();
 
 
         return $data;

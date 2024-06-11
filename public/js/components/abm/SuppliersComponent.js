@@ -91,7 +91,7 @@ var SuppliersComponent = new function(){
         },
         {
             title: "Contact Info",
-            className: "align-middle text-capitalize",
+            className: "align-middle ",
             data: (data,index,tr)=>{
                 return ['<div class="d-flex p-1" ><i class="fas mt-2 text-success fa-envelope"></i><span class="d-block p-1">',(data.email || 'គ្មាន'),'</span></div>','<div class="d-flex p-1"><i class="fas text-warning fa-phone mt-2"></i><span class="d-block p-1 text-primary">',data.phone_number,'</span></div>'].join('');
             }

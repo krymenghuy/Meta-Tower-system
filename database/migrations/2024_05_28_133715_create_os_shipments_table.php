@@ -20,7 +20,7 @@ class CreateOsShipmentsTable extends Migration
             $table->string('code',50)->nullable();
             $table->bigInteger('qr_code')->nullable();
             $table->integer('sender_id');
-            $table->integer('supplier_id');
+            $table->integer('supplier_id')->nullable();
             $table->string('item_type',10)->default('doc');
             $table->integer('zone_code');
             $table->integer('to_country_id');
