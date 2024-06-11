@@ -253,10 +253,16 @@ var InvoicesComponent = new function(){
     mThis.btnSearch.on('click', function () {
         mThis.invoiceListView.showPage(mThis.getFilterData());
     });
-    mThis.btnCreateInvoice.on('click', () => {
-        CreateInvoiceDialog.show(null, (d) => {
-            if (d) mThis.invoiceListView.showPage(mThis.getFilterData()); 
-        });
+    mThis.btnCreateInvoice.on('click', function(e){
+        e.preventDefault();
+        let op = {
+            'id':null,
+            'onclose':(d)=>{
+                mThis.invoiceListView.showPage(mThis.getFilterData());
+
+            }
+        };
+        CreateInvoiceDialog.show(op);
     });
 
 
@@ -338,7 +344,7 @@ const CreateInvoiceDialog = new function () {
         if(!p) return;
         vsapi.call(`${mThis.base_url}/abm/invoice/save`, p, mThis.btnCreate).then(res => {
             if (res.status_code === 200) {
-                cv_interact.success('Invoice is Created'); 
+                // cv_interact.success('Invoice is Created'); 
                 mThis.self.modal('hide');
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
             } else cv_interact.error(res.error_message);

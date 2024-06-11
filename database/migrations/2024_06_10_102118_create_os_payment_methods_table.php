@@ -14,7 +14,7 @@ class CreateOsPaymentMethodsTable extends Migration
     public function up()
     {
         Schema::create('os_payment_methods', function (Blueprint $table) {
-            $table->integer('id')->nullable();
+            $table->increments('id');
             $table->string('name',150)->nullable();
             $table->string('category',50)->nullable();
         });

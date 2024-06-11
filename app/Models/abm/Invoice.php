@@ -34,8 +34,12 @@ class Invoice //extends Model
         $start_date = isset($d->start_date) ? $d->start_date : null;
         $customer = isset($d->customer) ? $d->customer : null;
         $invoice_type = isset($d->invoice_type) ? $d->invoice_type : null;
-
+        $str_cus = '1=1';
         $str_dates = '2=2';
+        if($customer){
+            $str_cus = 'os.sender_id='.$customer;
+
+        }
         if ($start_date && $end_date) {
             $end_date = convertDate($end_date);
             $start_date = convertDate($start_date);
@@ -60,6 +64,9 @@ class Invoice //extends Model
             // ->join('os_package_statuses as st', 'st.id', '=', 'os.status_id')
             // ->join('sender as sd', 'sd.id', '=', 'os.sender_id')
             ->whereRaw($str_dates)
+            ->whereRaw($str_cus)
+
+
             // ->select('r.id','r.name','r.project_id','p.name as project','s.name as status ' , 'r.description' );
             ->selectRaw('os.id,os.code, bv.session_id ,os.paid_status_id ,os.status_id, os.total_price as amount, bv.carrier_amount as carrier_amount , formatDate(os.create_date) as create_date')
             ->get();
@@ -70,6 +77,9 @@ class Invoice //extends Model
             $m = $this->getShipmentList($id, $queryShipments);
             $ret_rows[] = $m;
         }
+        if($ret_rows == null)
+            return (object) ['status' => 'error', 'status_code' => 405, 'error_message' => 'This Customer doesn`t have Shipment for Create Invoice'];
+
         $total_amount = 0;
         $unvalidate = 0;
         $created_invoice = 0;
@@ -110,7 +120,7 @@ class Invoice //extends Model
         $v_rule = [
             'id' => '0|identity=1',
             'sender_id' => '0|number|exists=sender.id',
-            'invoice_type_id' => '0|choice|informal,commercial,tax',
+            'invoice_type_id' => '0|choice|1,2,3',
             'amount' => '0|number|default = 0.00',
             'discount_percent' => '0|number|default = 0',
             'discount_amount' => '0|number|default = 0.00',
