@@ -31,7 +31,7 @@ class SalesAgents //extends Model
             'sex'=>'1|choice|M,F,O',
             'agent_type_id'=>'1|number|exists=os_agent_types.id',
             'phone_number'=>'1|phone',
-            'email'=>'0|email',
+            'email'=>'1|email',
             'address'=>'0|address',
             //'status_code'=>'0|choice|Active,Inactive|default=Active',
             'position_title'=>'0|string|0-300'

@@ -90,7 +90,7 @@ class Affiliate //extends Model
         'sex'=>'1|choice|M,F,O',
         'type_from_affilliate_type'=>'1|choice|client_affiliate,freelancer,full_time,primary,secondary',
         'phone_number'=>'1|phone',
-        'email'=>'0|email',
+        'email'=>'1|string|1-100',
         'address'=>'0|address',
         'status_code' => '0|choice|Active,Inactive|default=Active', //Add status_code to table os_sales_agents
         //  'agent_type_id'=>'1|number|exists=sales_agent_types.id',

@@ -9,11 +9,12 @@
 
 
         <div class="d-flex-gap-2">
-            <button type="button" class="btn btn-primary height" id="_create_invoice_btn">
-                <label>CREATE INVOICE</label>
+            <button type="button" class="btn btn-success" id="_create_invoice_btn">
+                <span>Create Invoice</span>
             </button>
 
         </div>
+   
 
 
 
@@ -26,9 +27,8 @@
                 <div><input type="text" id="_invoice_search" class="form-control min-width-search height"
                         placeholder="Search invoice" /></div>
 
-                <div id="_btnSearch" class="btn btn-primary rounded-1 input-group-text ml-2" role="button">
+                <div id="_btnSearch" class="btn btn-success rounded-1 input-group-text ml-2" role="button">
                     <i class="fa fa-search fs-5 text-white"></i>
-                    <span>FIND</span>
                 </div>
                 <!-- <button id="_btn_Search" class="btn btn-primary rounded-1 ml-2 mr-2" type="button"><i class="fa fa-search"></i></button> -->
             </div>
@@ -113,17 +113,15 @@
             <div class="modal-body" id="_cul_dlgCustomer_body">
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <label class="form-label trans-text">CUSTOMER NAME</label>
+                     <label class="form-label trans-text">CUSTOMER NAME</label>
                         <div>
                             <select id="_name_customer" class="modal-select2 data-input" data-field="customer"></select>
                         </div>
                     </div>
-                    <div class="form-group col-md-6">
-                        <label class="form-label trans-text">INVOICE TYPE</label>
-                        <div>
-                            <select id="_invoice_type" class="modal-select2 data-input" data-field="invoice_type"></select>
-                        </div>
-                    </div>
+                   <div class="form-group col-md-6">
+                    <label for="form-label trans-text">DISCOUNT PERCENT</label>
+                    <input type="number" name="" id="_discount_percent" class="form-control data-input" data-field="discount_percent" placeholder="% discount">
+                   </div>
                     <div class="form-group col-md-6">
                         <label class="form-label trans-text">FROM DATE</label>
                         <div><input id="_pl_filter_startdate" class="form-control data-input dl_filter_field"

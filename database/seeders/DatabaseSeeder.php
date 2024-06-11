@@ -67,6 +67,12 @@ class DatabaseSeeder extends Seeder
             LocCountriesSeeder::class,
 
         ]);
+        $this->call([
+            OSCurrencySeeder::class,
+        ]);
+        $this->call([
+            OSPaymentMethodsSeeder::class,
+        ]);
 
        
        
