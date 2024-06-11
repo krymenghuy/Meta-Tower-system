@@ -34,7 +34,24 @@
    },
 
   ],
-
+  override:{
+    getData:(me,fields,divModal)=>{
+        ...
+        return {new_prop:"111", newOne:"222"};
+    },
+    setData: ()=>{
+       
+    }
+  },
+  extendMethod:{
+     getData:(me,divModal)=>{
+       ...
+       return something more;
+     },
+     setData:(me,data,divModal)=>{
+        
+     }
+  }
   prepareFormOptions:{
      createTitle:"Create Account",
      modifyTitle:"Edit Account",
@@ -166,6 +183,8 @@ class GeneralDialog{
        this.elTitle = this.divModal.querySelector('.modal-title');
        this.renderButtons(this.options.buttons);
        if(typeof this.options.onInit ==='function') this.options.onInit(this,this.divModal);
+       this.override = this.options.override || {};
+       this.extendMethod = this.options.extendMethod || {};
     }
  
     renderButtons(buttons){
@@ -182,7 +201,7 @@ class GeneralDialog{
 
        this.modalFooter.innerHTML = html;
        const that = this;
-       this.modalFooter.addEventListener('click', e=>{
+       this.modalFooter.onclick = e => {
           let btn = e.target.closest('button');
           if(btn){
             that.canceled = (( btn.dataset.action || "").toLowerCase() == "cancel" ) || (btn.dismissModal ==true);
@@ -193,7 +212,7 @@ class GeneralDialog{
             }
            
           }
-       });
+       };
     }
 
     //Close Dialog
@@ -241,16 +260,26 @@ class GeneralDialog{
     }
 
     getData(){
-       let p = {id: this.dataOptions? (this.dataOptions.id || ''): null}; 
-       this.modalBody.querySelectorAll('.data-input').forEach(el =>{
-           const f = el.dataset.field;
-           p[f] = el.value;
-       });
-       return p;
-    }
-
-    setData(d){
+      if (this.override.getData) return this.override.getData(this,this.divModal);
+      
+      let p = {id: this.dataOptions ? (this.dataOptions.id || '') : null}; 
+      
+      this.modalBody.querySelectorAll('.data-input').forEach(el => {
+          const f = el.dataset.field;
+          p[f] = el.value;
+      });
+      
+      if (this.extendMethod.getData){
+          const p1 = this.extendMethod.getData(this,this.divModal);
+          p = {...p, ...p1};  // Merge properties of p1 into p
+      } 
+      
+      return p;
+  }
+  
+  setData(d){
         d = d || {};
+        if (this.override.setData) return this.override.setData(this,d,this.divModal);
         this.modalBody.querySelectorAll('.data-input').forEach(el =>{
             const f = el.dataset.field;
             if(el.tagName =='SELECT'){
@@ -262,6 +291,9 @@ class GeneralDialog{
                 el.value = d[f] || "";
             }
         });
+
+        if (this.extendMethod.setData) this.extendMethod.setData(this,d,this.divModal); 
+     
     }
  
     prepreForm(dataOptions, onFinish){
