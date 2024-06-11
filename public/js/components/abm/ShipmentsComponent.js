@@ -468,7 +468,6 @@ var ShipmentsComponent = new function () {
         //         //alert(' is click on  ID '+ id + ' action: ' + action);
         //     })
         //  };
-
         // new VSDropdownMenu(userActionOptions);
 
         this.sh_container = mThis.shipmentListView.getListContainer();
@@ -605,7 +604,7 @@ var ShipmentsComponent = new function () {
         //mThis.tblPickups.addEventlistener
         mThis.tblShipments[0].addEventListener('click', e => {
             e.preventDefault();
-            // Click on Pickup Action button | drop down action
+            //Click on Pickup Action button | drop down action
             let btn = VSUtil.closestLimited(e.target, '.btn_shipment_action');
             if (btn) {
                 let p = btn.parentElement;
@@ -670,19 +669,19 @@ var ShipmentsComponent = new function () {
             //Click on "Arrive" button, the shortcut button in shipment_tr
             btn = VSUtil.closestLimited(e.target,'.pkl_btn_receive');
             if(btn){
-                        if(!AuthManager.allowed(222)) return;
-                        const shipment_tr = btn.closest('tr');
-                        cv_interact.confirm('ទទួលទំនិញទាំងអស់ក្នុងបញ្ជាមួយនេះ?',{'context':"update"},e =>{
-                            if(e){
-                               if (mThis.shm_prev_editing_row) {
-                                   mThis.saveItem(mThis.shm_prev_editing_row, btn, success => {
-                                       if (success){
-                                          mThis.receiveItems_all(shipment_tr, null);
-                                       }
-                                   });
-                               }
-                               else mThis.receiveItems_all(shipment_tr, null);
-                            }
+                if(!AuthManager.allowed(222)) return;
+                const shipment_tr = btn.closest('tr');
+                cv_interact.confirm('ទទួលទំនិញទាំងអស់ក្នុងបញ្ជាមួយនេះ?',{'context':"update"},e =>{
+                    if(e){
+                        if (mThis.shm_prev_editing_row) {
+                            mThis.saveItem(mThis.shm_prev_editing_row, btn, success => {
+                                if (success){
+                                    mThis.receiveItems_all(shipment_tr, null);
+                                }
+                            });
+                        }
+                        else mThis.receiveItems_all(shipment_tr, null);
+                    }
                   });
                 return;
             }

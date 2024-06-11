@@ -112,7 +112,7 @@ class Payment //extends Model
         $str_dates = '2=2';
         $str_payee = '1=1';
         if($payee_id){
-            $str_payee = 'os.sender_id = '.$payee_id;
+            $str_payee = 'os.supplier_id = '.$payee_id;
         }
         if($from_date && $to_date){
             $to_date = convertDate($to_date);
@@ -148,6 +148,8 @@ class Payment //extends Model
             $m = $this->getShipmentList($id,$queryShipments);  
             $ret_rows[] = $m;  
         }
+        if($ret_rows == null) return (object)['status'=>'error','status_code'=>405,'error_message'=>'From '.$from_date.' to '.$to_date.' Don\'t have shipment to pay!'];
+        
         $total_amount = 0;
         $paid = 0;
         $unValidate = 0;
@@ -169,7 +171,7 @@ class Payment //extends Model
             $amount += $row->carrier_amount;
         }
         // return $amount;
-        if($paid > 0 || $unValidate > 0) return (object)['status'=>'error','status_code'=>405,'error_message'=>'Shipment already paid: '.$paid.',and Shipment UnValidate: '.$unValidate,'data'=>$data];   
+        if($paid > 0 || $unValidate > 0) return (object)['status'=>'error','status_code'=>405,'error_message'=>'Shipment already paid: '.$paid.' , <br>and Shipment UnValidate: '.$unValidate,'data'=>$data];   
         // if($paunValidateid > 0) return (object)['status'=>'error','status_code'=>405,'error_message'=>$paid.' Shipment already paid:','data'=>$data];   
         // return $data;
         $payment_date = isset($d->payment_date) ? $d->payment_date : null;
@@ -214,6 +216,7 @@ class Payment //extends Model
         if($id > 0){
             foreach ($ret_rows as $row){
                 DB::table('os_shipments')->where('id',$row->id)->update(['paid_status_id'=>2,'trx_id'=>$trx_id]);
+
                 $shipmentInfo = DB::table('os_shipments as os')->where('os.id',$row->shipment_id)->first();
                 $arr = [
                     'payment_id' => $trx_id,

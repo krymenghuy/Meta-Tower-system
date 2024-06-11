@@ -28,7 +28,7 @@ class Supplier //extends Model
             'phone_number'=>'1|string|1-20',
             'email'=>'0|string',
             'address'=>'0|number',
-            'sales_agent_id'=>'0|number',
+            'referrer_id'=>'0|number',
             'code'=>'0|string|0-25',         //Add new code column to table supplier
             'price_list_id'=>'0|number',
             'status_code'=>'0|string|default =Active',
@@ -124,10 +124,10 @@ class Supplier //extends Model
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
        // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
         $query = DB::table('os_suppliers as s')
-                ->join('os_affiliates as sa','sa.id','=','s.sales_agent_id')
+                ->join('os_affiliates as sa','sa.id','=','s.referrer_id')
                 ->whereRaw($str_srch)
                 ->whereRaw($str_where)
-                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.sales_agent_id,sa.type_from_affilliate_type,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
+                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.referrer_id,sa.type_from_affilliate_type,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
        
         // return $query;
         $clone_query = clone $query;
@@ -227,13 +227,13 @@ class Supplier //extends Model
         // $data->sender_types = DB::table('sender_type')->where('branch_id',$branch_id)->selectRaw('id,name AS sender_type')->get();
         $data->business_types = DB::table('sender_business_types')->selectRaw('business_type AS code,business_type')->get();
         $data->sender_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name AS status_name')->get();
-        $data->sales_agents = DB::table('os_affiliates AS sa')->where('branch_id',$branch_id)->selectRaw('sa.id,sa.name AS agent_name')->get();
+        $data->referrers = DB::table('os_affiliates AS af')->join('os_sales_agents as sa','af.id','=','sa.affiliate_id')->where('af.branch_id',$branch_id)->selectRaw('af.id,af.name AS referrer_name')->get();
         $data->price_list = DB::table('price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name')->get();
         return $data;
     }
     static function details($id,$ss,$includeProfilePicture=false,$includeBankAccount=true){
         $branch_id = $ss->branch_id;    
-        $row = DB::table('os_suppliers')->selectRaw('id,name,code, phone_number, email,sales_agent_id,photo_file_name, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
+        $row = DB::table('os_suppliers')->selectRaw('id, name, code, phone_number, email, referrer_id, photo_file_name, address, status_code, price_list_id, formatDate(create_date) as create_date, DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
         if (!$row) return null;
             //$accounts = self::bankAccounts($id,1);
             // if($row->loc_lat ==0) $row->loc_lat = null;

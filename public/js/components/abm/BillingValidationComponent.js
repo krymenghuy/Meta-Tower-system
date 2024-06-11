@@ -295,7 +295,7 @@ var BillingValidationComponent = new function () {
     mThis.btnPaymany.on('click', (e) => {
         e.preventDefault();
         let p = {'id': null}
-        // PaymentDialog.show(p);
+        PaymentDialog.show(p);
         const dlg = new GeneralDialog({
             title:"Reset Password", 
             // fields:[
@@ -413,7 +413,7 @@ var BillingValidationComponent = new function () {
             }
          });
  
-         dlg.show({'id':1});
+        //  dlg.show({'id':1});
     });
 
     }
@@ -591,7 +591,6 @@ const PaymentDialog = new function(){
     this.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
         // let p = mThis.getFilterData();
         let p={};
-        let p2 = {};
         el.onchange = e => { 
             e.preventDefault();
             mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
@@ -599,17 +598,24 @@ const PaymentDialog = new function(){
                 p[f] = el.value;
             });
 
-            p2 = mThis.getFilterData();
             console.log('pp',p);
-            mThis.prepareFormOptions( p , d => {
-                console.log("d2",d);
-                if(d.os_shipment != null){
-                    mThis.setData(d.os_shipment);
-                }
-                // mThis.self.modal({
-                //     'backdrop': 'static'
-                // });
+            vsapi.call(`${mThis.base_url}/abm/payment/details`, p , null).then(res => {
+                let d = (res.status_code === 200) ? res.data.amount : {};
+                if(shipments_id == null)
+                    mThis.self[0].querySelectorAll('.data-input').forEach(el => {
+                        if(el.dataset.field == 'amount')
+                            el.value = d || '0.00';
+                    });
             });
+            // mThis.prepareFormOptions( p , d => {
+            //     console.log("d2",d);
+            //     if(d.os_shipment != null){
+            //         mThis.setData(d.os_shipment);
+            //     }
+            //     // mThis.self.modal({
+            //     //     'backdrop': 'static'
+            //     // });
+            // });
         };
     });
 
@@ -623,8 +629,8 @@ const PaymentDialog = new function(){
             // VSUtil.setComboItems(mThis.elSelseAgentType, d.agent_types, 'id', 'agent_type', false, '', null);
             // let payee_id = d.os_shipment.payee_id ? d.os_shipment.payee_id : null;
             VSUtil.setComboItems(mThis.elSupplier, d.supplier, 'id', 'supplier_name', true, '(select Supplier)', null);
-            VSUtil.setComboItems(mThis.elCurrencyCode, d.currency_code, 'id', 'currency_code', true, '(select currency code)', 1);
-            VSUtil.setComboItems(mThis.elPmtMethod, d.payment_method, 'id', 'payment_method', true, '(select payment by)', null);
+            VSUtil.setComboItems(mThis.elCurrencyCode, d.currency_code, 'id', 'currency_code', true, '(select currency code)', 'USD');
+            VSUtil.setComboItems(mThis.elPmtMethod, d.payment_method, 'id', 'payment_method', true, '(select payment by)', 1);
             // VSUtil.setComboItems(mThis.elCustomer, d.senders, 'id', 'sender_name', true, '(select Customer)', null);
             onFinish(d);
         });
@@ -732,12 +738,23 @@ const PaymentDialog = new function(){
     }
 
     this.setData = (d) => {
-        // mThis.self[0].querySelectorAll('.data-input').forEach(el => {
-        //     el.value = null;
-        //     if (el.tagName.toLowerCase() === 'select') {
-        //         el.dispatchEvent(new Event('change'));
-        //     }
-        // });
+        if(shipments_id == null)
+        mThis.self[0].querySelectorAll('.data-input').forEach(el => {
+            if(el.dataset.field == 'amount')
+                el.value = '0.00';
+            if(el.dataset.field == 'payment_date'){
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth()).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                // console.log(formatDate(new Date(year, month, day)));
+                el.value = formatDate(new Date(year, month, day));
+            }
+            // console.log(getFormattedDate());
+            // if (el.tagName.toLowerCase() === 'select') {
+            //     el.dispatchEvent(new Event('change'));
+            // }
+        });
         if (!d) return;
         console.log(4,d.amount);
         d = d || {};
@@ -750,6 +767,14 @@ const PaymentDialog = new function(){
                 el.value = 1;
             if(el.dataset.field == 'pmt_method')
                 el.value = 1;
+            if(el.dataset.field == 'payment_date'){
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth()).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                console.log(formatDate(new Date(year, month, day)));
+                el.value = formatDate(new Date(year, month, day));
+            }
             if (el.tagName.toLowerCase() === 'select') {
                 el.dispatchEvent(new Event('change'));
             }
@@ -769,4 +794,14 @@ const PaymentDialog = new function(){
         // });
 
     }
+}
+
+function formatDate(date) {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    
+    return `${day}-${month}-${year}`;
 }
