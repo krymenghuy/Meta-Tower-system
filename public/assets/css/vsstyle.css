@@ -338,7 +338,7 @@ table.header-uppercase > thead > tr > th{
     transform: translateY(0);
   }
 }
-
+ 
 /* Define CSS classes for fade-in and fade-out animation */
 .fade-in {
   opacity: 1;
