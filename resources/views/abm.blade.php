@@ -30,7 +30,22 @@
         <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <?php StyleManager::render('abm-style',1); ?> 
+        <?php StyleManager::render('abm-style',1); ?>
+        <style>
+            /* Custom animations for the modal like Materialize css effect */
+            .modal.fade .modal-dialog {
+            transform: scale(0.7);
+            transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+            opacity: 0;
+            }
+            .modal.show .modal-dialog {
+            transform: scale(1);
+            opacity: 1;
+            }
+            .modal-content {
+            border-radius: 15px !important;
+            }
+        </style>
         <?php
             ScriptManager::render('priority-one',1);
             ScriptManager::render('primary',1);

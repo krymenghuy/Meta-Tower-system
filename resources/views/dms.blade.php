@@ -25,6 +25,21 @@
         <?php
             StyleManager::render('dms-style', 1);
         ?>
+        <style>
+            /* Custom animations for the modal like Materialize css effect */
+            .modal.fade .modal-dialog {
+            transform: scale(0.7);
+            transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+            opacity: 0;
+            }
+            .modal.show .modal-dialog {
+            transform: scale(1);
+            opacity: 1;
+            }
+            .modal-content {
+            border-radius: 15px !important;
+            }
+        </style>
         <?php
             ScriptManager::render('priority-one',1);
             ScriptManager::render('primary', 1);

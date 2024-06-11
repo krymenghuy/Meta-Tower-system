@@ -62,7 +62,7 @@
                 className: 'col_action align-middle',
                 data: function (data, row, display) {
                     let html = ['<div class="dropdown d-block ">',
-                        '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-name="', data.name, '"data-status="', data.status_code, '"     class="btn_pickup_action " aria-haspopup="true" aria-expanded="false">',
+                        '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-name="', data.name, '"data-status="', data.status_code, '" class="btn_customer_action" aria-haspopup="true" aria-expanded="false">',
                         '<i class="fa-solid fa-list" style="color:#8DC63F;font-size:1.5em"></i>',
                         '</a>',
                         '</div>'].join('');
@@ -213,6 +213,66 @@
                     return;
                 }
             }
+        }
+
+        this.editCustomer = (customer_id)=>{
+            alert('Edit customer'); 
+          //todo: Write code to show dialog to edit customer
+        }
+        
+        this.setPriceList = (customer_id)=>{
+           alert('set price list'); 
+          //write to show PriceListDialog, and user can choose price list to assign to customer
+        }
+
+        this.initDropdownMenus = (table)=>{
+            const menuOptopns = {
+                containerElement: table,
+                actionButtonClass:"btn_customer_action",
+                cssClass:"bg-white shadow",
+                //menuItemClass:"",
+                menus:[
+                   {
+                    //text:"",
+                    html:'<span class="ps-2 trans-text" data-langprop="titles.Set Price List">Set Price List</span>',
+                    icon:`<i class="fa-regular fa-list-alt fs-5"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"set_price_list"
+                   },
+                   {
+                    html:'<span class="ps-2 trans-text" data-langprop="titles.Modify Customer">Modify Customer</span>',
+                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"edit_customer"
+                   }    
+                ],
+                adjustPosition:{
+                     left:0,
+                     top:0 
+                },
+                onShow:(instance, menuContainer)=>{
+                    console.log('open: ', instance.getMenus());
+                },
+                // onClose:(instance, menus)=>{
+    
+                // },
+                onClick:(menuLink, id, name)=>{
+                   switch(name){
+                     case 'set_price_list':{
+                         mThis.setPriceList(id); // NOT yet defined
+                         break;
+                     }
+                     case 'edit_customer':{
+                        mThis.editCustomer(id); //Not yet defined
+                        break;
+                     }
+                     default:{
+                        break;
+                     }
+                   }
+                }
+            }
+            new VSDropdownMenu(menuOptopns);
         }
 
         this.setEvents = (container) => {
@@ -378,10 +438,7 @@
                 },
                 'beforeRender': () => { }
             });
-
-           
-
-
+              
             mThis.btnNewCustomer.on('click', function (e) {
                 e.preventDefault();
                 let op = {
@@ -392,10 +449,11 @@
                 };
                 CustomerDialog.show(op);
             });
+            
             mThis.tblCustomers = mThis.customerListView.getTable();
+            mThis.initDropdownMenus(mThis.tblCustomers);
             mThis.setEvents($(mThis.tblCustomers));
-            console.log(mThis.tblCustomers);
-
+             
             this.sh_container = mThis.customerListView.getListContainer();
 
             const sh_parent = mThis.sh_container.parentElement;
@@ -487,6 +545,7 @@
         this.changeSenderStatus = () => {
             return;
         }
+  
         this.createDropdownMenuHtml_pickup = function (id, pricelist_id, name, status) {
             let html = [
                 '<div class="dropdown-menu bg-white shadow"  data-id="', id, '" data-pricelistid="', pricelist_id, '" data-name="', name, '">',
