@@ -49,7 +49,6 @@
        return something more;
      },
      setData:(me,data,divModal)=>{
-        
      }
   }
   prepareFormOptions:{
@@ -58,7 +57,7 @@
      api:{
         targetProp:"account",
         endpoint:"",
-        params:()=>{}
+        params:(dataOptions)=>{} //NOTE: dataOption is the options that is passed from, for example RoleDialog.show(options);
      }
   },
   onInit:()=>{}
@@ -131,7 +130,7 @@ class GeneralDialog{
               api:{
                 targetProp:null,
                 endpoint: null,
-                params:()=>{}
+                params:(dataOptions)=>{}
               }
            },
            onClose:(isCanceled) =>{}
@@ -301,21 +300,22 @@ class GeneralDialog{
        let opx = this.options.prepareFormOptions;
        if(!opx || !opx.api){
          if (typeof that.options.onPrepareForm === 'function') that.options.onPrepareForm(that,null,that.getFields(), that.divModal);
-         onFinish(null);
+          onFinish(null);
          return;
        }
        //op.vsapi = op.vsapi || vsapi;
        let p = null;
-       if (typeof opx.api.params ==='function') p = opx.api.params(); 
+       if (typeof opx.api.params ==='function') p = opx.api.params(that.dataOptions); 
        else p = opx.api.params || {};
        p = p || {};
 
        //NOTE: that this.show(options). The $options can have options.id field that is unique ID
        p.id = dataOptions.id;
        vsapi.call(opx.api.endpoint,p,null,null,false).then(res =>{
+          if(opx.api.onResponse) opx.api.onResponse(res);
           let d = res.status_code ==200 ? res.data: {};
           let fieldElments = that.getFields();
-          let configSelect = that.options.configSelect;
+          let configSelect = that.options.configSelect || that.options.selectConfig;
           if(configSelect){
               configSelect.map(selectField =>{
                  let el = selectField.name? fieldElments[selectField.name]:null;
@@ -385,10 +385,12 @@ class GeneralDialog{
       this.prepreForm(options,(d)=>{
         let title = that.options.title;
         let prepareOp = that.options.prepareFormOptions;
+        let targetProp =null;
         if (prepareOp){
             if (prepareOp.api){
-                if(prepareOp.targetProp){
-                    title = d[prepareOp.targetProp]? prepareOp.modifyTitle: prepareOp.createTitle;
+                targetProp = prepareOp.targetProp || opx.api.targetProp;
+                if(targetProp){
+                    title = d[targetProp]? prepareOp.modifyTitle: prepareOp.createTitle;
                 }
             }else title = that.options.title || prepareOp.createTitle;
                   
@@ -396,12 +398,10 @@ class GeneralDialog{
         that.elTitle.innerHTML = title;
 
         that.jm = this.jm || $(that.divModal);
-        if(d){
-            this.setData(d);
-        }
+        this.setData(targetProp? d[targetProp]:null);
         
         that.jm.off('hide.bs.modal').on('hide.bs.modal',()=>{
-            that.options.onClose(that.canceled);
+            if(that.options.onClose) that.options.onClose(that.canceled);
         });
 
        that.jm.modal({
