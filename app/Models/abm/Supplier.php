@@ -42,17 +42,20 @@ class Supplier //extends Model
         $inputs = $res->values;
         $id = $res->id; 
         $d = (object)$inputs;
+       
         $photo = $d->photo;
         // return JDV::result($inputs);
         $phone_err = $this->checkUniquePerson($branch_id,$inputs['phone_number'],$id);
         if ($phone_err) return DV::error( $phone_err);  
+        $check = isExist('os_suppliers',$id,['name'=>$inputs['name']]);
         // $check = isExist('suppliers',$id,['phone_number'=>$inputs['phone_number']]);
-        // if($check) return DV::error('Phone number is already save...');
+        if($check) return DV::error('Phone number is already save...');
         unset($inputs['photo']);
         $supplier_created = !$id;
         // return JDV::result($inputs);
 
         $delete_prev_image =($id > 0 && (!$photo || isImage($photo)));
+        
         $id = saveData($ss,'os_suppliers',['id'=>$id],$inputs,[],1,0);   
         if($id > 0){
             $new_code = null;

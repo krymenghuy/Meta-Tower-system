@@ -60,10 +60,10 @@
         this.cols = [
             {
                 className: 'col_action align-middle',
-                data: function (data, row, display) {
-                    let html = ['<div class="dropdown d-block ">',
-                        '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-name="', data.name, '"data-status="', data.status_code, '" class="btn_customer_action" aria-haspopup="true" aria-expanded="false">',
-                        '<i class="fa-solid fa-list" style="color:#8DC63F;font-size:1.5em"></i>',
+                data:(data, index, tr)=> {
+                    let html = ['<div class="d-flex gap-2 flex-wrap">',
+                        '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-name="', data.name, '"data-status="', data.status_code, '" class="btn_customer_action">',
+                         '<i class="fa-solid fa-list" style="color:#8DC63F;font-size:1.5em"></i>',
                         '</a>',
                         '</div>'].join('');
                     return html;
@@ -72,14 +72,14 @@
             {
                 title: "Photo",
                 className: ' align-middle',
-                data: (data, a, b) => {
+                data: (data, index, tr) => {
                     let image = data.image_url ? data.image_url : '';
                     return [`<img class="image-student-tbl" src="${image}" alt=""/>`,'<p class="d-flex text-success p-1 ms-2 ">',(data.code || 'N/A'),'</p>',].join('');
                     //'<div class="d-flex p-1 ms-3 "><span class="d-block p-1  text-primary">',data.name,'</span></div>']
                 }
             },
             {
-                title: "NAME",
+                title: "Name",
                 className: "align-middle text-capitalize text-nowrap",
                 data: (data, index, tr) => {
                     return ['<div class="d-flex p-1" ><span class=" sender-name d-block p-1">', (data.name || 'គ្មាន'), '</span></div>',
@@ -247,8 +247,7 @@
                    }    
                 ],
                 adjustPosition:{
-                     left:0,
-                     top:0 
+                     top:20 
                 },
                 onShow:(instance, menuContainer)=>{
                     console.log('open: ', instance.getMenus());

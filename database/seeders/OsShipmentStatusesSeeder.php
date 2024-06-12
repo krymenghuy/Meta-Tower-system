@@ -23,6 +23,14 @@ class OsShipmentStatusesSeeder extends Seeder
             [
                 'name'=>'Shipping',
                 'code'=>'Shipping',
+            ],
+            [
+                'name'=>'Validated',
+                'code'=>'Validated'
+            ],
+            [
+                'name'=>'Create Invoice',
+                'code'=>'Create Invoice'
             ]
             
         ]);

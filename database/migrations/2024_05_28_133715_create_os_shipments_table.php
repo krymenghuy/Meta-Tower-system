@@ -15,10 +15,12 @@ class CreateOsShipmentsTable extends Migration
     {
         Schema::create('os_shipments', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('trx_id')->nullable();
+            $table->integer('customer_trx_id')->nullable();
             $table->string('code',50)->nullable();
             $table->bigInteger('qr_code')->nullable();
             $table->integer('sender_id');
-            $table->integer('supplier_id');
+            $table->integer('supplier_id')->nullable();
             $table->string('item_type',10)->default('doc');
             $table->integer('zone_code');
             $table->integer('to_country_id');
@@ -47,7 +49,9 @@ class CreateOsShipmentsTable extends Migration
             $table->integer('update_uid')->nullable();
             $table->timestamp('update_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('create_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
-            //end 32 field---
+            $table->integer('paid_status_id')->default(1);
+            
+                        //end 36 field---
 
 
         });

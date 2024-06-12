@@ -17,7 +17,8 @@ class CreateOsCustomerInvoicesTable extends Migration
             $table->increments('id');
             $table->string('code',15)->nullable();
             $table->integer('sender_id')->nullable();
-            $table->string('invoice_type',40)->default('commercial')->comment('	invoice_type = {informal, commercial, tax}');
+            $table->integer('shipment_count')->nullable()->default(0);
+            $table->integer('invoice_type_id',)->default(2)->comment('	invoice_type = {informal, commercial, tax}');
             $table->decimal('amount',10,2)->default(0.00);
             $table->decimal('discount_percent',10,2)->default(0.00);
             $table->decimal('discount_amount',10,2)->default(0.00);
