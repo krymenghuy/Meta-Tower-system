@@ -654,7 +654,7 @@ const PaymentDialog = new function(){
                     cv_interact.success('Payment saved'); 
                     mThis.self.modal('hide');
                     if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
-                } else cv_interact.error(res.error_message);
+                } else cv_interact.error('html:'+res.error_message);
             });
         }else{
             vsapi.call(`${mThis.base_url}/abm/payment/save`, p, mThis.btnCreate).then(res => {
