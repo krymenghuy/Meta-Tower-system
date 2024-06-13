@@ -77,7 +77,7 @@
     <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title trans-text" id="_sdl_dlgSupplierTitle" data-langprop="titles.New Merchant"></h4>
+                <h4 class="modal-title trans-text" id="_sdl_dlgSupplierTitle" data-langprop="titles.New Supplier"></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -110,13 +110,12 @@
                         </div>
                      </div>
                     
-                    
                     <div class="form-group col-lg-6">
                         <label for="price_list_id" class="form-label trans-text" data-langprop="titles.Price List"></label>
                         <select id="_sdl_price_list" class="modal-select2 data-input" data-field="price_list_id"></select>
                     </div>
                     <div class="col-lg-6">
-                        <label for="referrer_id" class="form-label trans-text" data-langprop="titles.Sale Agent"></label>
+                        <label for="sales_agent_id" class="form-label trans-text" data-langprop="titles.Referrer"></label>
                         <select id="_sdl_sales_agent" class="modal-select2 data-input" data-field="referrer_id"></select>
                     </div>
                     <div class="form-group col-lg-12">
@@ -124,9 +123,7 @@
                         <textarea class="form-control data-input" data-field="address"></textarea>
                     </div>
                     <input type="hidden" class="form-control data-input" data-field="status_code"  />
-
                 </div>
-                
             </div>
             <div class="modal-footer">
                 <span id="_sdl_sender_error" class="error_text"></span>

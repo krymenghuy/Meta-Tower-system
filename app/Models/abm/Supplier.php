@@ -29,17 +29,17 @@ class Supplier //extends Model
         $v_rule = [
             'id' => '0|identity=1',
             'name' => '1|string|1-150',
-            'phone_number' => '1|string|1-20',
-            'email' => '0|string',
-            'address' => '0|number',
-            'referrer_id' => '1|number|exists=os_sales_agents.id',
-            'code' => '0|string|0-25',         //Add new code column to table supplier
-            'price_list_id' => '1|number|exists=price_list_names.id',
-            'status_code' => '0|string|default =Active',
-            'photo' => '0|image'        //Add new photo_file_n33ame to table supplier
-        ];
-        $eml_char = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
-        $img_char = ['+', ':', ',', ';', '/', '\\', '=', '?'];
+            'phone_number'=>'1|string|1-20',
+            'email'=>'0|string',
+            'address'=>'0|number',
+            'sales_agent_id'=>'0|number',
+            'code'=>'0|string|0-25',         //Add new code column to table supplier
+            'price_list_id'=>'0|number',
+            'status_code'=>'0|string|default =Active',
+            'photo'=>'0|image'        //Add new photo_file_n33ame to table supplier
+    ];
+        $eml_char = ['$','#','@','!','.','-','_','=','?'];
+        $img_char = ['+',':',',',';','/','\\','=','?'];
 
         $res = validateObject($arr, $v_rule, 1, ['email' => $eml_char, 'photo' => $img_char], $ss->lang, 0, null);
         if ($res->error)
@@ -53,7 +53,7 @@ class Supplier //extends Model
         $phone_err = $this->checkUniquePerson($branch_id, $inputs['phone_number'], $id);
         if ($phone_err)
             return DV::error($phone_err);
-        $check_price = isExist('price_list_names', $id, ['id' => $inputs['price_list_id']]);
+        $check_price = isExist('os_supplier_price_list_names', $id, ['id' => $inputs['price_list_id']]);
         if (!$check_price)
             return DV::error('Invalid Price list...');
 
@@ -155,13 +155,11 @@ class Supplier //extends Model
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
         // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
         $query = DB::table('os_suppliers as s')
-            ->join('os_affiliates as sa', 'sa.id', '=', 's.referrer_id')
-            ->join('price_list_names as pl','pl.id','=','s.price_list_id')
-            ->whereRaw($str_srch)
-            ->whereRaw($str_where)
-            ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,(pl.name) AS price_list_name,s.referrer_id ,sa.type_from_affilliate_type,sa.name as referrer,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time')->orderBy('s.id', 'DESC');
-        ;
-
+                ->join('os_affiliates as sa','sa.id','=','s.referrer_id')
+                ->whereRaw($str_srch)
+                ->whereRaw($str_where)
+                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.referrer_id,sa.type_from_affilliate_type,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
+       
         // return $query;
         $clone_query = clone $query;
         $count = $clone_query->count('s.id');
@@ -190,9 +188,8 @@ class Supplier //extends Model
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
         $branch_id = Sanitizer::sanitize($ss->branch_id);
-        $p = getDataRow('price_list_names', ["id" => $price_list_id], "id,name");
-        if (!$p)
-            return DV::error("Price list ID is not valid");
+        $p = getDataRow('os_supplier_price_list_names',["id"=>$price_list_id],"id,name");
+        if(!$p) return DV::error("Price list ID is not valid");
         $p_name = $p->name;
         DB::table('os_suppliers')->where('id', $id)->update(
             array(
@@ -278,25 +275,23 @@ class Supplier //extends Model
         // $data->sender_types = DB::table('sender_type')->where('branch_id',$branch_id)->selectRaw('id,name AS sender_type')->get();
         $data->business_types = DB::table('sender_business_types')->selectRaw('business_type AS code,business_type')->get();
         $data->sender_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name AS status_name')->get();
-        $data->sales_agents = DB::table('os_affiliates AS sa')->join('os_sales_agents as osa','osa.affiliate_id','=','sa.id')->where('sa.branch_id', $branch_id)->selectRaw('sa.id,sa.name AS referrer')->get();
-        $data->price_list = DB::table('price_list_names AS l')->where('branch_id', $branch_id)->selectRaw('l.id,l.name')->get();
+        $data->sales_agents = DB::table('os_affiliates AS sa')->where('branch_id',$branch_id)->selectRaw('sa.id,sa.name AS agent_name')->get();
+        $data->price_list = DB::table('os_supplier_price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name')->get();
         return $data;
     }
-    static function details($id, $ss, $includeProfilePicture = false, $includeBankAccount = true)
-    {
-        $branch_id = $ss->branch_id;
-        $row = DB::table('os_suppliers')->selectRaw('id,name,code, phone_number, email,referrer_id,photo_file_name, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id', $branch_id)->where('id', $id)->take(1)->first();
-        if (!$row)
-            return null;
-        //$accounts = self::bankAccounts($id,1);
-        // if($row->loc_lat ==0) $row->loc_lat = null;
-        // if($row->loc_lng ==0) $row->loc_lng = null;
-        // if ($includeBankAccount) $row->bank_accounts = self::bankAccounts($id);
-        // if($includeProfilePicture) $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
-        $url = $row->photo_file_name ? PublicStorage::getUrl($branch_id, 'general', 'image') . $row->photo_file_name : null;
-        $url = validateUrl($url, self::defaultImage($branch_id));
-        $row->photo = $url;
-        $row->image_url = $url;
+    static function details($id,$ss,$includeProfilePicture=false,$includeBankAccount=true){
+        $branch_id = $ss->branch_id;    
+        $row = DB::table('os_suppliers')->selectRaw('id,name,code, phone_number, email,referrer_id,photo_file_name, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
+        if (!$row) return null;
+            //$accounts = self::bankAccounts($id,1);
+            // if($row->loc_lat ==0) $row->loc_lat = null;
+            // if($row->loc_lng ==0) $row->loc_lng = null;
+            // if ($includeBankAccount) $row->bank_accounts = self::bankAccounts($id);
+            // if($includeProfilePicture) $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
+            $url = $row->photo_file_name? PublicStorage::getUrl($branch_id,'general' ,'image').$row->photo_file_name: null;
+            $url = validateUrl($url,self::defaultImage($branch_id));
+            $row->photo = $url;
+            $row->image_url = $url;
 
         if ($includeProfilePicture)
             $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);

@@ -582,7 +582,7 @@
             return p;
         }
         this.getPriceListItems = (onFinish) => {
-            vsapi.call(`${mThis.base_url}/dms/getComboItems_price_list`, null, false).then(res => {
+            vsapi.call(`${mThis.base_url}/abm/getComboItems_price_list`, null, false).then(res => {
                 let items = res.status_code === 200 ? res.data : [];
                 onFinish(items);
             });

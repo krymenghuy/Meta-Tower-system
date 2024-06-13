@@ -264,7 +264,7 @@ var SuppliersComponent = new function(){
                 
                     let op = {
                         id: lnk.dataset.id,
-                        
+                        title : 'Modify Supplier',
                         onClose:()=>{
                             mThis.listView.showPage(mThis.getFilterData());
                         }
@@ -388,7 +388,7 @@ var SuppliersComponent = new function(){
     }
 
     this.getPriceListItems = (onFinish) => {
-        vsapi.call(`${mThis.base_url}/dms/getComboItems_price_list`,null,false).then(res => {
+        vsapi.call(`${mThis.base_url}/abm/getComboItems_supplier_price_list`,null,false).then(res => {
             let items = res.status_code ===200? res.data: [];
             onFinish(items); 
         });
@@ -643,8 +643,8 @@ const SupplierDialog = new function(){
             // d.bank_accounts = d.bank_accounts || [];
             // VSUtil.setComboItems(mThis.elSenderType, d.sender_types, 'id', 'sender_type', true, '(Select Merchant Type)', def.sender_type_id);
             // VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
-            VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'name', true, '(Price List)', def.price_list_id);
-            VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'referrer', true, '(No referral)', def.sales_agent_id);
+            VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'name', true, '(Price List)', null);
+            VSUtil.setComboItems(mThis.elSalesAgent, d.referrers, 'id', 'referrer_name', true, '(No referral)', null);
             onFinish(d);
         });
     }
@@ -682,10 +682,11 @@ const SupplierDialog = new function(){
     // }
     this.show = (options)=>{
         mThis.options = options || {};
-        mThis.elTitle.innerHTML = options.title;
+        mThis.elTitle[0].innerHTML = options.title;
+        console.log('title',mThis.elTitle[0]);
         console.log(mThis.options.id);
         if (mThis.options.id > 0) {
-            mThis.elTitle.innerHTML = "Suppliers Details";
+            // mThis.elTitle[0].innerHTML = "Suppliers Details";
             let p = {'id':mThis.options.id};
             vsapi.call([main_view.base_url,'/abm/os_suppliers/form-options'].join(''),p,null).then(res=>{
                 
@@ -704,9 +705,9 @@ const SupplierDialog = new function(){
             });
         }
         else{
-            mThis.elTitle.innerHTML =  "New Customers";
+            mThis.elTitle[0].innerHTML =  "New Supplier";
             mThis.prepareData({'id':1},{},data =>{
-                mThis.setData(null);
+                mThis.setData();
                 mThis.self.modal({
                     backdrop:'static'
                 });       
@@ -718,7 +719,7 @@ const SupplierDialog = new function(){
         // mThis.body.querySelectorAll('.data-input').forEach(el => {
         //     el.value = null;
         // });
-        // if (!d) return;
+        if (!d) return;
         d = d || {};
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
@@ -742,7 +743,6 @@ const SupplierDialog = new function(){
         p.id = mThis.options.id;
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
             let data_member = el.dataset.field;
-            
            if(el.tagName ==='IMG') 
                 p[data_member] = el.getAttribute('src');
             else 

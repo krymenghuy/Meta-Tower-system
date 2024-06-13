@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class PriceListNameSeeder extends Seeder
+class OSSupplierPriceListNameSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,15 +14,15 @@ class PriceListNameSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('price_list_names')->insert([
+        DB::table('os_supplier_price_list_names')->insert([
             [
-                'name'=>'C001',
+                'name'=>'S001',
                 'branch_id'=>1,
                 'kg_marker'=>'5',
                                                                             
             ],
             [
-                'name'=>'C002',
+                'name'=>'S002',
                 'branch_id'=>1,
                 'kg_marker'=>'5'
             ]

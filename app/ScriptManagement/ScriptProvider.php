@@ -118,6 +118,7 @@ namespace App\ScriptManagement;
                         //'/js/components/abm/CustomersComponent.js',
                         '/js/components/abm/ShipmentsComponent.js',
                         'js/components/abm/PriceSettingsComponent.js',
+                        'js/components/abm/SupplierPriceSettingsComponent.js',
                         'js/components/abm/InvoicesComponent.js',
 
 

@@ -307,7 +307,15 @@
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/zone_price.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Zone Prices"></span>
+                                <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Customer Zone Prices"></span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(230); ?>>
+                            <a href="SupplierPriceSettingsComponent" modid="220" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/zone_price.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Supplier Zone Prices"></span>
                             </a>
                         </li>
                     </ul>

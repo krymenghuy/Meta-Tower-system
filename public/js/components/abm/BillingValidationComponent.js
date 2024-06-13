@@ -248,9 +248,7 @@ var BillingValidationComponent = new function () {
             listContainerClass: null,
         });
 
-      
 
-        
         mThis.initAlready = true;
 
     mThis.tblOrders = mThis.billValidationListView.getTable();
@@ -297,49 +295,90 @@ var BillingValidationComponent = new function () {
     mThis.btnPaymany.on('click', (e) => {
         e.preventDefault();
         let p = {'id': null}
-        // PaymentDialog.show(p);
+        PaymentDialog.show(p);
         const dlg = new GeneralDialog({
             title:"Reset Password", 
-            fields:[
-               {
-                 name:"amount",
-                 label:"Amount",
-                 type:"number",
-                 required:true
-               },
-               {
-                name:"currency_code",
-                label:"Currency",
-                // type:"string",
-                displayType:"select",
-                required:true,
-                config:{
+            cssClass:"modal-lg",
+            // fields:[
+            //     {
+            //         name:"from_date",
+            //         label:"From Date",
+            //         type:"string",
+            //         required:true
+            //     },
+            //     {
+            //         name:"to_date",
+            //         label:"To Date",
+            //         type:"string",
+            //         required:true
+            //     },
+            //    {
+            //      name:"amount",
+            //      label:"Amount",
+            //      type:"number",
+            //      required:true
+            //    },
+            //    {
+            //     name:"currency_code",
+            //     label:"Currency",
+            //     // type:"string",
+            //     displayType:"select",
+            //     required:true,
+            //     // config:{
+            //     //     data:'currency_code',
+            //     //     valueField:'currency_code',
+            //     //     textField:'currency_code',
+            //     //     default:'USD',
+            //     // }
+            //    }
+            // ],
+            createFields:() =>{
+                return `<div class="row">
+                            <div class="form-group col-md-6">
+                                <span class="simple-label">Amount</span>
+                                <input type="" class="form-control data-input" data-field="amount" />  
+                            </div>
+                            <div class="form-group col-md-6">
+                                <span class="simple-label">Currency Code</span>
+                                <div>
+                                    <select id ="_plq_currency_code" class="modal-select2 data-input" data-field="currency_code"></select>
+                                </div>
+                            </div>
+                            <div class="form-group from_date col-md-6 " >
+                                <span class="simple-label ">From Date</span>
+                                <div>
+                                <input data-type="date"  class="form-control data-input filter-field" data-field="from_date" placeholder="From Date" id="_shm_filter_from_date" />
+                                </div>
+                            </div>
+                            <div class="form-group to_date col-md-6 pe-0 " >
+                                <span class="simple-label ">To Date</span>
+                                <div>
+                                <input data-type="date" class="form-control data-input filter-field" data-field="to_date" placeholder="To Date" id="_shm_filter_to_date" />
+                                </div>
+                            </div>
+                        
+                        </div>`;
+            },
+            configSelect:[
+                {
+                    name:"currency_code",
                     data:'currency_code',
                     valueField:'currency_code',
                     textField:'currency_code',
                     default:'USD',
+                    onChange:(selectElement,value)=>{}
                 }
-               }
             ],
-            // createFields:() =>{
-            //     return `<div class="row"><div class="form-group col-md-6">
-            //                 <span class="simple-label">Amount</span>
-            //                 <input type="" class="form-control data-input" data-field="amount" />  
-            //             </div>
-            //             <div class="form-group col-md-6">
-            //                 <span class="simple-label">Currency Code</span>
-            //                 <div>
-            //                     <select id ="_plq_currency_code" class="modal-select2 data-input" data-field="currency_code"></select>
-            //                 </div>
-            //             </div></div>`;
-            // },
             prepareFormOptions:{
                 createTitle:"Create Account",
                 modifyTitle:"Edit Account",
                 api:{
                    targetProp:"data.os_shipment",
                    endpoint:`${mThis.base_url}/abm/oversea_shipments/form-options-payment`,
-                   params:()=>{}
+                //    params:()=>{
+                //         return {'id':1};
+                //     }
+                    // params: {id:1}
                 }
              },
             buttons:[
@@ -358,21 +397,24 @@ var BillingValidationComponent = new function () {
                     // alert(dlg.getData())
                     console.log(me.getData());
                     // vsapi.call(${main_view,base_url}/api/service/set-password,p,false,false,false).then(res=>{
-                      
+                      me.hide();
                     // }); 
                  }
              }
             ],
             onPrepareForm:(instance,data,fields,divModal)=>{
                 console.log('fields',fields);
+                fields.from_date.onchange = (e)=>{
+                    console.log('date chang');
+                }
                 // VSUtil.setComboItems(fields.currency_code, data.currency_code ,'currency_code','currency_code',false,null,null);
             },
             onClose:(canceled)=>{
-              alert(' Closing with cancel = ' + canceled);
+            //   alert(' Closing with cancel = ' + canceled);
             }
          });
  
-         dlg.show(null);
+        //  dlg.show({'id':1}); 
     });
 
     }
@@ -504,6 +546,8 @@ const AlertMesageDialog = new function(){
     }
 }
 
+
+
 const PaymentDialog = new function(){
     const mThis = this;
     this.self = main_view.appContent.find('#PaymentModalDialog');
@@ -548,7 +592,6 @@ const PaymentDialog = new function(){
     this.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
         // let p = mThis.getFilterData();
         let p={};
-        let p2 = {};
         el.onchange = e => { 
             e.preventDefault();
             mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el=>{
@@ -556,17 +599,24 @@ const PaymentDialog = new function(){
                 p[f] = el.value;
             });
 
-            p2 = mThis.getFilterData();
             console.log('pp',p);
-            mThis.prepareFormOptions( p , d => {
-                console.log("d2",d);
-                if(d.os_shipment != null){
-                    mThis.setData(d.os_shipment);
-                }
-                // mThis.self.modal({
-                //     'backdrop': 'static'
-                // });
+            vsapi.call(`${mThis.base_url}/abm/payment/details`, p , null).then(res => {
+                let d = (res.status_code === 200) ? res.data.amount : {};
+                if(shipments_id == null)
+                    mThis.self[0].querySelectorAll('.data-input').forEach(el => {
+                        if(el.dataset.field == 'amount')
+                            el.value = d || '0.00';
+                    });
             });
+            // mThis.prepareFormOptions( p , d => {
+            //     console.log("d2",d);
+            //     if(d.os_shipment != null){
+            //         mThis.setData(d.os_shipment);
+            //     }
+            //     // mThis.self.modal({
+            //     //     'backdrop': 'static'
+            //     // });
+            // });
         };
     });
 
@@ -580,8 +630,8 @@ const PaymentDialog = new function(){
             // VSUtil.setComboItems(mThis.elSelseAgentType, d.agent_types, 'id', 'agent_type', false, '', null);
             // let payee_id = d.os_shipment.payee_id ? d.os_shipment.payee_id : null;
             VSUtil.setComboItems(mThis.elSupplier, d.supplier, 'id', 'supplier_name', true, '(select Supplier)', null);
-            VSUtil.setComboItems(mThis.elCurrencyCode, d.currency_code, 'id', 'currency_code', true, '(select currency code)', 1);
-            VSUtil.setComboItems(mThis.elPmtMethod, d.payment_method, 'id', 'payment_method', true, '(select payment by)', null);
+            VSUtil.setComboItems(mThis.elCurrencyCode, d.currency_code, 'id', 'currency_code', true, '(select currency code)', 'USD');
+            VSUtil.setComboItems(mThis.elPmtMethod, d.payment_method, 'id', 'payment_method', true, '(select payment by)', 1);
             // VSUtil.setComboItems(mThis.elCustomer, d.senders, 'id', 'sender_name', true, '(select Customer)', null);
             onFinish(d);
         });
@@ -605,7 +655,7 @@ const PaymentDialog = new function(){
                     cv_interact.success('Payment saved'); 
                     mThis.self.modal('hide');
                     if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
-                } else cv_interact.error(res.error_message);
+                } else cv_interact.error('html:'+res.error_message);
             });
         }else{
             vsapi.call(`${mThis.base_url}/abm/payment/save`, p, mThis.btnCreate).then(res => {
@@ -689,12 +739,23 @@ const PaymentDialog = new function(){
     }
 
     this.setData = (d) => {
-        // mThis.self[0].querySelectorAll('.data-input').forEach(el => {
-        //     el.value = null;
-        //     if (el.tagName.toLowerCase() === 'select') {
-        //         el.dispatchEvent(new Event('change'));
-        //     }
-        // });
+        if(shipments_id == null)
+        mThis.self[0].querySelectorAll('.data-input').forEach(el => {
+            if(el.dataset.field == 'amount')
+                el.value = '0.00';
+            if(el.dataset.field == 'payment_date'){
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth()).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                // console.log(formatDate(new Date(year, month, day)));
+                el.value = formatDate(new Date(year, month, day));
+            }
+            // console.log(getFormattedDate());
+            // if (el.tagName.toLowerCase() === 'select') {
+            //     el.dispatchEvent(new Event('change'));
+            // }
+        });
         if (!d) return;
         console.log(4,d.amount);
         d = d || {};
@@ -707,6 +768,14 @@ const PaymentDialog = new function(){
                 el.value = 1;
             if(el.dataset.field == 'pmt_method')
                 el.value = 1;
+            if(el.dataset.field == 'payment_date'){
+                const now = new Date();
+                const year = now.getFullYear();
+                const month = String(now.getMonth()).padStart(2, '0');
+                const day = String(now.getDate()).padStart(2, '0');
+                console.log(formatDate(new Date(year, month, day)));
+                el.value = formatDate(new Date(year, month, day));
+            }
             if (el.tagName.toLowerCase() === 'select') {
                 el.dispatchEvent(new Event('change'));
             }
@@ -726,4 +795,14 @@ const PaymentDialog = new function(){
         // });
 
     }
+}
+
+function formatDate(date) {
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+    
+    return `${day}-${month}-${year}`;
 }

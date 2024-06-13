@@ -653,10 +653,10 @@ const CustomerDialog1 = new function(){
         if(!def) def = {};
         vsapi.call(`${mThis.base_url}/api/customer/form-options`,{id: id },null).then(res => {
             let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
-            VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No Sales Agent)', def.sales_agent_id);
-            VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
-            VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'price_list', true, '(Price List)', def.price_list_id);
-            VSUtil.setComboItems(mThis.elCustomerType,d.sender_types,'id','sender_type',true,'(Customer Type)',def.sender_type_id);
+            VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No Sales Agent)', null);
+            VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', null);
+            VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'price_list', true, '(Price List)', null);
+            VSUtil.setComboItems(mThis.elCustomerType,d.sender_types,'id','sender_type',true,'(Customer Type)',null);
             console.log(d);
 
             mThis.form_data = d;
@@ -684,6 +684,7 @@ const CustomerDialog1 = new function(){
         // mThis.body.querySelectorAll('.data-input').forEach(el =>{
         //     el.value = null;
         // });
+        if (!d) return;
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el =>{ 
             const data_member = el.dataset.field;
             if(el.tagName.toLowerCase() === 'select'){

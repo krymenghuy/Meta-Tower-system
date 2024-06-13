@@ -210,21 +210,21 @@ var InvoicesComponent = new function () {
 
     }
 
-    this.editInvoice = (lnk,invoice_id)=>{
-        // alert('Edit customer'); 
-        if (lnk) {
-            console.log(lnk);
-            let op = {
-                id: lnk.dataset.id,
-                onClose: () => {
-                    mThis.invoiceListView.showPage(mThis.getFilterData());
-                }
-            };
-            CreateInvoiceDialog.show(op);
-            return;
-        }
-      //todo: Write code to show dialog to edit customer
-    }
+    // this.editInvoice = (lnk,invoice_id)=>{
+    //     // alert('Edit customer'); 
+    //     if (lnk) {
+    //         console.log(lnk);
+    //         let op = {
+    //             id: lnk.dataset.id,
+    //             onClose: () => {
+    //                 mThis.invoiceListView.showPage(mThis.getFilterData());
+    //             }
+    //         };
+    //         CreateInvoiceDialog.show(op);
+    //         return;
+    //     }
+    //   //todo: Write code to show dialog to edit customer
+    // }
     this.deleteInvoice = (lnk,invoice_id)=>{
         if(lnk){
             const id = lnk.dataset.id;
@@ -257,16 +257,16 @@ var InvoicesComponent = new function () {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass:"btn_invoice_action",
-            cssClass:"bg-white shadow",
+            cssClass:"bg-gray",
             //menuItemClass:"",
             menus:[
             
               
                {
                 //text:"",
-                html:'<span class="ps-2 trans-text" data-langprop="titles.Delete Invoice">Delete</span>',
-                icon:`<i class="fa-regular fa-list-alt fs-5"></i>`,
-                cssClass:"border-bottom pb-2",
+                html:'<span class=" trans-text text-danger" data-langprop="titles.DELETE INVOICE">Delete</span>',
+                icon:`<i class="text-danger fa-regular fa-trash-can fs-5"></i>`,
+                cssClass:"border  rounded-3",
                 name:"delete-invoice"
                },
             ],

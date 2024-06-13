@@ -460,7 +460,7 @@ class Shipment //extends Model
             // 'sale_agent'=>GeneralSettings::options_sales_affiliate($ss),
             // 'agent_types'=> DB::table('os_agent_types')->selectRaw('name as id,name AS agent_type')->get(),
             'payment_method'=> DB::table('os_payment_methods')->selectRaw('id as id,name AS payment_method')->get(),
-            'currency_code'=> DB::table('os_currencies')->selectRaw('id as id,CONCAT(code,\' (\',name,\')\') AS currency_code')->get(),
+            'currency_code'=> DB::table('os_currencies')->selectRaw('code as id,CONCAT(code,\' (\',name,\')\') AS currency_code')->get(),
             'os_shipment' => $shipment
         ];
     }
