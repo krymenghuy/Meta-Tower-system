@@ -253,7 +253,7 @@ class SupplierPrice //extends Model
         $price_list_id = $this->format_sender_ids($price_list_id);
         if (!(bool)strtotime($d->start_date)) $start_date = date('Y-m-d'); 
         //if (!(bool)strtotime($d->end_date)) $end_date = date('Y-m-d');
-        $table ='os_price_list_details';
+        $table ='os_supplier_price_list_details';
         //if ($sender_id >0) $table ='sender_price_list'; //This is reason why table "price_list" has sender_id column that is always empty
         //NOTE that start_kg = -1; is open ended on LOWER BOUND. and $end_kg =-1 is open_ended on UPPER BOUND
         // if ($start_kg ==0 && $end_kg ==0) {
@@ -583,7 +583,7 @@ class SupplierPrice //extends Model
         // $more_wheres ="1=1 ".$str_zones;
     
         /** $rows query conditions are, for example => assuming x = price_list('A').kg_marker, then (start_kg =x OR end_kg =x) **/
-          $rows = DB::table('os_price_list_details AS l')
+          $rows = DB::table('os_supplier_price_list_details AS l')
           ->join('loc_countries AS c','c.id','=','l.country_id')
           ->where('l.branch_id',$branch_id)
           ->where('l.price_list_id',$price_list_id)
@@ -773,10 +773,10 @@ class SupplierPrice //extends Model
         // else if (strtolower($price_option) =='per_kg' || strtolower($price_option) =='per kg')
            $price_per_kg = $price;
  
-        $rows = DB::table('os_price_list_details AS l')->where('branch_id',$branch_id)->where('zone_code',$zone_codes)->where('item_type',$item_type)->selectRaw("l.id")->get();
+        $rows = DB::table('os_supplier_price_list_details AS l')->where('branch_id',$branch_id)->where('zone_code',$zone_codes)->where('item_type',$item_type)->selectRaw("l.id")->get();
         //if the pricing condition already exist => then UPDATE (base_fee, delivery_fee, price_option) of the existing one
         foreach($rows as $row) {
-          $qres = DB::table('os_price_list_details')->where('branch_id',$branch_id)->where('zone_code',$zone_codes)->where('item_type',$item_type)->where('price_list_id',$price_list_id)
+          $qres = DB::table('os_supplier_price_list_details')->where('branch_id',$branch_id)->where('zone_code',$zone_codes)->where('item_type',$item_type)->where('price_list_id',$price_list_id)
           ->update([
             //   'base_price'=>$base_fee,
               'price_per_kg'=>$price_per_kg,
@@ -790,7 +790,7 @@ class SupplierPrice //extends Model
         } 
 
         //Create or insert new price line or (price condition) if it odes not exist yet
-        DB::table('os_price_list_details')->insert([
+        DB::table('os_supplier_price_list_details')->insert([
             'branch_id'=>$branch_id,
             'price_list_id'=>$price_list_id,
             'item_type'=>$item_type,
@@ -835,7 +835,7 @@ class SupplierPrice //extends Model
         $max_zone_len = 1000; 
         if (strlen($zone_codes) >$max_zone_len) return DV::error("zone codes input is too long. Maximum $max_zone_len characters allowed!");
 
-        $res = DB::table('os_price_list_details')->where('branch_id',$branch_id)->where('zone_code',$org_zone_codes)->where('country_id',$country_id)->where('item_type','doc')->where('price_list_id',$price_list_id)->update(array(
+        $res = DB::table('os_supplier_price_list_details')->where('branch_id',$branch_id)->where('zone_code',$org_zone_codes)->where('country_id',$country_id)->where('item_type','doc')->where('price_list_id',$price_list_id)->update(array(
             'zone_code'=>$zone_codes,
             'country_id'=>$country_id,
             'price_per_kg'=>$doc_price,
@@ -843,7 +843,7 @@ class SupplierPrice //extends Model
             'create_date'=>getNowTime()
         ));
 
-        $res = DB::table('os_price_list_details')->where('branch_id',$branch_id)->where('zone_code',$org_zone_codes)->where('item_type','non_doc')->where('country_id',$country_id)->where('price_list_id',$price_list_id)->update(array(
+        $res = DB::table('os_supplier_price_list_details')->where('branch_id',$branch_id)->where('zone_code',$org_zone_codes)->where('item_type','non_doc')->where('country_id',$country_id)->where('price_list_id',$price_list_id)->update(array(
             'zone_code'=>$zone_codes,
             'country_id'=>$country_id,
             'price_per_kg'=>$non_doc_price,
@@ -927,7 +927,7 @@ class SupplierPrice //extends Model
         // $section ='below';
         // $end_kg = $kg_marker;
         // $start_kg = -1;
-        DB::table('os_price_list_details')->insert(array(
+        DB::table('os_supplier_price_list_details')->insert(array(
             'branch_id'=>$branch_id,
             'price_list_id'=>$price_list_id,
             'zone_code'=>$zone_codes,
@@ -950,7 +950,7 @@ class SupplierPrice //extends Model
         // $section ='below';
         // $end_kg = $kg_marker;
         // $start_kg = -1;
-        DB::table('os_price_list_details')->insert(array(
+        DB::table('os_supplier_price_list_details')->insert(array(
             'branch_id'=>$branch_id,
             'price_list_id'=>$price_list_id,
             'zone_code'=>$zone_codes,
@@ -979,7 +979,7 @@ class SupplierPrice //extends Model
         //need permission to do this task
         $branch_id = $ss->branch_id;
         $zone_codes = isset($d->zone_codes)?$d->zone_codes:null;
-        DB::table('price_list_details')->where('branch_id',$branch_id)->where('zone_code',$zone_codes)->delete();
+        DB::table('os_supplier_price_list_details')->where('branch_id',$branch_id)->where('zone_code',$zone_codes)->delete();
         return null;
     }
 
