@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOsPriceListNamesTable extends Migration
+class CreateOsCustomerPriceListNamesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateOsPriceListNamesTable extends Migration
      */
     public function up()
     {
-        Schema::create('os_price_list_names', function (Blueprint $table) {
+        Schema::create('os_customer_price_list_names', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name',150);
             $table->integer('branch_id');
@@ -31,6 +31,6 @@ class CreateOsPriceListNamesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('os_price_list_names');
+        Schema::dropIfExists('os_customer_price_list_names');
     }
 }

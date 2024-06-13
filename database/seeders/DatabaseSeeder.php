@@ -32,7 +32,7 @@ class DatabaseSeeder extends Seeder
         ]);
       
         $this->call([
-            PriceListNameSeeder::class,
+            OsCustomerPriceListNameSeeder::class,
         ]);
         $this->call([
             OsShipmentStatusesSeeder::class,
@@ -64,7 +64,7 @@ class DatabaseSeeder extends Seeder
             OsAgentTypeSeeder::class,
         ]);
       
-        
+
         $this->call([
             OSCurrencySeeder::class,
         ]);
@@ -72,7 +72,7 @@ class DatabaseSeeder extends Seeder
             OSPaymentMethodsSeeder::class,
         ]);
         $this->call([
-            OSSupplierPriceListNameSeeder::class,
+            OsSupplierPriceListNameSeeder::class,
         ]);
 
        

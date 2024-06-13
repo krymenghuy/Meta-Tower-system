@@ -32,7 +32,7 @@ class Supplier //extends Model
             'phone_number'=>'1|string|1-20',
             'email'=>'0|string',
             'address'=>'0|number',
-            'sales_agent_id'=>'0|number',
+            'referrer_id'=>'0|number',
             'code'=>'0|string|0-25',         //Add new code column to table supplier
             'price_list_id'=>'0|number',
             'status_code'=>'0|string|default =Active',

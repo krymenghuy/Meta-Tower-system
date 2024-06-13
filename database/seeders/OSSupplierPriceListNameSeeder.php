@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
-class OSSupplierPriceListNameSeeder extends Seeder
+class OsSupplierPriceListNameSeeder extends Seeder
 {
     /**
      * Run the database seeds.
