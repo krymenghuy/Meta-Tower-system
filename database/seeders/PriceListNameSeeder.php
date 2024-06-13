@@ -18,9 +18,13 @@ class PriceListNameSeeder extends Seeder
             [
                 'name'=>'C001',
                 'branch_id'=>1,
-                'kg_marker'=>'2',
-                
-
+                'kg_marker'=>'5',
+                                                                            
+            ],
+            [
+                'name'=>'J002',
+                'branch_id'=>1,
+                'kg_marker'=>'5'
             ]
             ]);
     }

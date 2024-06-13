@@ -116,8 +116,8 @@
                         <select id="_sdl_price_list" class="modal-select2 data-input" data-field="price_list_id"></select>
                     </div>
                     <div class="col-lg-6">
-                        <label for="sales_agent_id" class="form-label trans-text" data-langprop="titles.Sale Agent"></label>
-                        <select id="_sdl_sales_agent" class="modal-select2 data-input" data-field="sales_agent_id"></select>
+                        <label for="referrer_id" class="form-label trans-text" data-langprop="titles.Sale Agent"></label>
+                        <select id="_sdl_sales_agent" class="modal-select2 data-input" data-field="referrer_id"></select>
                     </div>
                     <div class="form-group col-lg-12">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Address"></label>

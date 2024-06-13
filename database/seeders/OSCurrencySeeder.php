@@ -15,7 +15,7 @@ class OSCurrencySeeder extends Seeder
     public function run()
     {
         $adminUserId = DB::table('um_users')->where('login_name', 'admin@example.com')->value('id');
-        DB::table('os_currency')->insert([
+        DB::table('os_currencies')->insert([
             [
                 'branch_id' => 1,
                 'code' => 'USD',

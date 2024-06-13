@@ -12,93 +12,26 @@
             <button type="button" class="btn btn-success" id="_create_invoice_btn">
                 <span>Create Invoice</span>
             </button>
-
         </div>
-   
-
-
-
-
 
         <div class="d-flex gap-2">
-
             <div class="input-group flex-nowrap ">
                 <!-- <input id="_search_invoice" type="text" class="form-control  height" placeholder="search name or phone"> -->
                 <div><input type="text" id="_invoice_search" class="form-control min-width-search height"
                         placeholder="Search invoice" /></div>
-
                 <div id="_btnSearch" class="btn btn-success rounded-1 input-group-text ml-2" role="button">
                     <i class="fa fa-search fs-5 text-white"></i>
                 </div>
-                <!-- <button id="_btn_Search" class="btn btn-primary rounded-1 ml-2 mr-2" type="button"><i class="fa fa-search"></i></button> -->
             </div>
-
-
         </div>
-
-
     </div>
-
-
     <div class="shadow rounded-3 bg-white mt-3 p-2 overflow-hidden">
         <div id="_invoice_list" class="p-2">
 
 
-            <!-- <body>
-                <div class="">
-                    <table id="invoiceTable" class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col">Invoice No</th>
-                                <th scope="col">Customer Name</th>
-                                <th scope="col">Send To Country</th>
-                                <th scope="col">Item Type</th>
-                                <th scope="col">Qty</th>
-                                <th scope="col">Total Weight</th>
-                                <th scope="col">Amount</th>
-                                <th scope="col">Discount</th>
-                                <th scope="col">Special Charge</th>
-                                <th scope="col">Total Amount</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="text-success">No100001</td>
-                                <td>John Doe</td>
-                                <td class="text-muted">England<p class="text-success">tax</p></td>
-                                <td>5</td>
-                                <td>100 kg</td>
-                                <td>$1000</td>
-                                <td>10%</td>
-                                <td>$50</td>
-                                <td class="amount-cell">$950</td>
-                                <td class="text-danger">Unpaid</td>
-                                <td>
-                                    <button class="btn btn-success">Actions</button>
-                                </td>
-                            </tr>
-                           
-                            
-                            
-                        </tbody>
-                    </table>
-                </div>
-            </body> -->
-
-
 
         </div>
     </div>
-
-
-
-
-
-
-
-
 </div>
 <div class="modal fade" id="_create_invoice_dlgFilter" tabindex="-1" role="dialog"
     aria-labelledby="_create_invoice_dlgFilterTitle" aria-hidden="true">
@@ -113,15 +46,17 @@
             <div class="modal-body" id="_cul_dlgCustomer_body">
                 <div class="row">
                     <div class="form-group col-md-6">
-                     <label class="form-label trans-text">CUSTOMER NAME</label>
+                        <label class="form-label trans-text">CUSTOMER NAME</label>
                         <div>
-                            <select id="_name_customer" class="modal-select2 data-input" data-field="customer"></select>
+                            <select id="_name_customer" class="modal-select2 data-input"
+                                data-field="sender_id"></select>
                         </div>
                     </div>
-                   <div class="form-group col-md-6">
-                    <label for="form-label trans-text">DISCOUNT PERCENT</label>
-                    <input type="number" name="" id="_discount_percent" class="form-control data-input" data-field="discount_percent" placeholder="% discount">
-                   </div>
+                    <div class="form-group col-md-6">
+                        <label for="form-label trans-text">DISCOUNT PERCENT</label>
+                        <input type="number" name="" id="_discount_percent" class="form-control data-input"
+                            data-field="discount_percent" placeholder="% discount">
+                    </div>
                     <div class="form-group col-md-6">
                         <label class="form-label trans-text">FROM DATE</label>
                         <div><input id="_pl_filter_startdate" class="form-control data-input dl_filter_field"

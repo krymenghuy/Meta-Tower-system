@@ -131,6 +131,17 @@ var InvoicesComponent = new function () {
 
             },
         },
+        {
+            className: 'col_action align-middle',
+            data:(data, index, tr)=> {
+                let html = ['<div class="d-flex gap-2 flex-wrap">',
+                    '<a href="javascript:void(0)" data-pricelistid="', data.price_list_id, '" data-id="', data.id, '" data-name="', data.name, '"data-status="', data.status_code, '" class="btn_invoice_action">',
+                     '<i style="color:#8DC63F;font-size:1.5em" class="fa-sharp fa-solid fa-caret-down"></i>',
+                    '</a>',
+                    '</div>'].join('');
+                return html;
+            },
+        },
     ];
   
 
@@ -161,7 +172,11 @@ var InvoicesComponent = new function () {
             };
             CreateInvoiceDialog.show(op);
         });
+       
+       
+        mThis.tblInvoices = mThis.invoiceListView.getTable();
 
+        mThis.initDropdownMenus(mThis.tblInvoices);
 
         this.sh_container = mThis.invoiceListView.getListContainer();
 
@@ -195,6 +210,92 @@ var InvoicesComponent = new function () {
 
     }
 
+    this.editInvoice = (lnk,invoice_id)=>{
+        // alert('Edit customer'); 
+        if (lnk) {
+            console.log(lnk);
+            let op = {
+                id: lnk.dataset.id,
+                onClose: () => {
+                    mThis.invoiceListView.showPage(mThis.getFilterData());
+                }
+            };
+            CreateInvoiceDialog.show(op);
+            return;
+        }
+      //todo: Write code to show dialog to edit customer
+    }
+    this.deleteInvoice = (lnk,invoice_id)=>{
+        if(lnk){
+            const id = lnk.dataset.id;
+            let status_code = lnk.dataset.status;
+            let p ={
+                id:id,
+                status_code : status_code
+            };
+            cv_interact.confirm('Delete this invoice?', {
+                title: 'Delete Invoice',
+                context: 'delete'
+            }, function (e) {
+                if (e) {
+                    vsapi.call(`${mThis.base_url}/abm/invoice/delete`, {
+                        id: id
+                    }, null).then(res => {
+                        if (res.status_code === 200) {
+                            mThis.invoiceListView.showPage(mThis.getFilterData());
+                        }
+                        else
+                            cv_interact.error(res.error_message);
+                    });
+                }
+            });
+            return;
+        }
+
+    }
+    this.initDropdownMenus = (table)=>{
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass:"btn_invoice_action",
+            cssClass:"bg-white shadow",
+            //menuItemClass:"",
+            menus:[
+            
+              
+               {
+                //text:"",
+                html:'<span class="ps-2 trans-text" data-langprop="titles.Delete Invoice">Delete</span>',
+                icon:`<i class="fa-regular fa-list-alt fs-5"></i>`,
+                cssClass:"border-bottom pb-2",
+                name:"delete-invoice"
+               },
+            ],
+            adjustPosition:{
+                 top:20 ,
+                 left:-300
+            },
+            onShow:(instance, menuContainer)=>{
+                console.log('open: ', instance.getMenus());
+            },
+            // onClose:(instance, menus)=>{
+
+            // },
+            onClick:(menuLink, id, name)=>{
+               switch(name){
+                
+                 case 'delete-invoice':{
+                    mThis.deleteInvoice(menuLink,id); //Not yet defined
+                    break;
+                 }
+                 default:{
+                    break;
+                 }
+               }
+            }
+        }
+        new VSDropdownMenu(menuOptopns);
+    
+    }
     this.getFilterData = () => {
         let p = {
             // search_value: mThis.elSearch.val(),
@@ -241,9 +342,10 @@ const CreateInvoiceDialog = new function () {
     let shipments_id = null;
 
     this.self.find('.dl_filter_field').on('change', (e) => {
-        mThis.remembered_filter = mThis.getData();
+        mThis.remembered_filter = mThis.getFormData();
     });
     this.prepareFormOptions = (id, onFinish) => {
+
         vsapi.call(`${mThis.base_url}/abm/invoice/form-options`, { id: id }, null).then(res => {
             let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data) : {};
             // VSUtil.setComboItems(mThis.el_from_country, d.from_country,'id', 'country_name', true, '(select )' , null);
@@ -308,7 +410,6 @@ const CreateInvoiceDialog = new function () {
                 return false;
             }
             p[f] = el.val();
-            console.log(12, p[f], 13, f);
         });
         return has_error ? null : p;
     }
