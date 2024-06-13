@@ -1,9 +1,10 @@
 "use strict";
 /** dependencies: vsapi.js, jqueryDatePicker2.js, VSUtil, LocaleManager */
 /**
- options = {
+ GeneraDialogOptions = {
    title:"Dialog Tile",
    cssClass:"", NOTE: className also possible
+   showCancelButton:true,
    fields:[
      name:"account_type_id",
      label:"trans::titles.Account Type",
@@ -54,10 +55,11 @@
   prepareFormOptions:{
      createTitle:"Create Account",
      modifyTitle:"Edit Account",
+     targetProp:"account",
      api:{
-        targetProp:"account",
         endpoint:"",
-        params:(dataOptions)=>{} //NOTE: dataOption is the options that is passed from, for example RoleDialog.show(options);
+        params:(dataOptions)=>{...} //NOTE: the parameter "dataOption" is the options that is passed from, for example RoleDialog.show(options);
+        onResponse:(res)=>{ ...}
      }
   },
   onInit:()=>{}
@@ -66,8 +68,16 @@
 }
 */
 class GeneralDialog{
+    static container_id  = "_xdialog_container1107";
+    static container = null;
     constructor(options){
         this.dialog_id = "_vs_generalDialog";
+        if (!GeneralDialog.container){
+          let xdiv = document.createElement('div');
+          xdiv.setAttribute('id',GeneralDialog.container_id);
+          GeneralDialog.container = document.body.appendChild(xdiv);
+        }
+
         this.options = options || {
            fields:[
                {
@@ -89,17 +99,16 @@ class GeneralDialog{
                 // }
                },
            ],
-        //    createFields:()=>{
+        //    createFields:(dataOptionss)=>{
         //      return '<div> ... </div>';
         //    },
            buttons:[
              {
-                cssClass:"btn-cancel",
+                cssClass:"btn-cancel btn btn-secondary",
                 icon:"",
                 dismissModal:true,
                 action:"cancel",
-                label:"Cancel",
-                click:(btn, divModal)=>{}
+                label:"Cancel"
               },
               {
                 cssClass:"btn-save", // or className
@@ -125,18 +134,20 @@ class GeneralDialog{
         //      }
         //    }, 
            prepareFormOptions:{
-              createTitle:"Create",
-              modifyTitle:"Modify",
+              createTitle:"Create It",
+              modifyTitle:"Modify It",
+              targetProp:null,
               api:{
-                targetProp:null,
                 endpoint: null,
-                params:(dataOptions)=>{}
+                params:(dataOptions)=>{},
+                //onResponse:(res)=>{}
               }
            },
            onClose:(isCanceled) =>{}
         };
         const that = this;
-        this.divModal = document.getElementById(this.dialog_id);
+        this.dialog_id = [this.dialog_id,options.dialogId].join('');
+        this.divModal =  GeneralDialog.container.querySelector (`#${this.dialog_id}`);
         let formClassName = this.options.cssClass || this.options.className;
         formClassName = formClassName || 'vs-modal-dialog'; 
 
@@ -152,9 +163,10 @@ class GeneralDialog{
                <div class="modal-content">`,
                   `<div class="modal-header">
                      <h5 class="modal-title" id="${this.dialog_id}_title">Reset Password</h5>`,
-                     // `<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                     // <span aria-hidden="true">&times;</span>
-                     // </button>`,
+                    (this.options.showCancelButton? '': `<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>`) 
+                     ,
                   `</div>`,
                   `<div class="modal-body">
                   </div>
@@ -165,7 +177,7 @@ class GeneralDialog{
                </div>
                </div>`].join('');
                this.divModal.innerHTML = html ;
-            document.body.append(this.divModal);
+               GeneralDialog.container.append(this.divModal);
         }
        if(formClassName){
          const cls = formClassName.split(' ');
@@ -177,6 +189,17 @@ class GeneralDialog{
          }); 
        } 
       
+       if(this.options.showCancelButton){
+          this.options.buttons = this.options.buttons || {};
+          this.options.buttons.unshift({ 
+            cssClass:"btn-cancel btn btn-secondary",
+            icon:"",
+            dismissModal:true,
+            action:"cancel",
+            label:"Cancel"
+          });
+       }
+
        this.modalBody = this.divModal.querySelector('.modal-body'); 
        this.modalFooter = this.divModal.querySelector('.modal-footer'); 
        this.elTitle = this.divModal.querySelector('.modal-title');
@@ -184,6 +207,13 @@ class GeneralDialog{
        if(typeof this.options.onInit ==='function') this.options.onInit(this,this.divModal);
        this.override = this.options.override || {};
        this.extendMethod = this.options.extendMethod || {};
+       this.lnkClose = this.divModal.querySelector('div.modal-header').querySelector('.close');
+       if(this.lnkClose){
+         this.lnkClose.onclick = e =>{
+             this.canceled = true;
+             this.hide();
+         };
+       }
     }
  
     renderButtons(buttons){
