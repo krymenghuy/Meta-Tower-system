@@ -298,6 +298,7 @@ var BillingValidationComponent = new function () {
         PaymentDialog.show(p);
         const dlg = new GeneralDialog({
             title:"Reset Password", 
+            cssClass:"modal-lg",
             // fields:[
             //     {
             //         name:"from_date",
@@ -413,7 +414,7 @@ var BillingValidationComponent = new function () {
             }
          });
  
-        //  dlg.show({'id':1});
+        //  dlg.show({'id':1}); 
     });
 
     }

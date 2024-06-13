@@ -156,7 +156,7 @@ class Supplier //extends Model
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
         $branch_id = Sanitizer::sanitize($ss->branch_id);
-        $p = getDataRow('price_list_names',["id"=>$price_list_id],"id,name");
+        $p = getDataRow('os_supplier_price_list_names',["id"=>$price_list_id],"id,name");
         if(!$p) return DV::error("Price list ID is not valid");
         $p_name = $p->name;
         DB::table('os_suppliers')->where('id',$id)->update(array(
@@ -231,7 +231,7 @@ class Supplier //extends Model
         $data->business_types = DB::table('sender_business_types')->selectRaw('business_type AS code,business_type')->get();
         $data->sender_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name AS status_name')->get();
         $data->referrers = DB::table('os_affiliates AS af')->join('os_sales_agents as sa','af.id','=','sa.affiliate_id')->where('af.branch_id',$branch_id)->selectRaw('af.id,af.name AS referrer_name')->get();
-        $data->price_list = DB::table('price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name')->get();
+        $data->price_list = DB::table('os_supplier_price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name')->get();
         return $data;
     }
     static function details($id,$ss,$includeProfilePicture=false,$includeBankAccount=true){

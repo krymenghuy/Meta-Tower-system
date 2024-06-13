@@ -74,7 +74,7 @@ var SupplierPriceSettingsComponent = new function () {
       let p = { 'price_list_id': id };
       cv_interact.confirm('Delete this price list?', { title: 'Delete Price List', context: "delete" }, function (e) {
         if (e) {
-          vsapi.call(`${mThis.base_url}/dms/deletePriceList`, p).then(res => {
+          vsapi.call(`${mThis.base_url}/dms/deleteSupplierPriceList`, p).then(res => {
             if (res.status_code === 200) {
               mThis.loadFilterData(null);
               mThis.elFilter_price_list.val(null);
@@ -127,7 +127,7 @@ var SupplierPriceSettingsComponent = new function () {
         //Add org zone_codes for updating only zone_codes
         p.org_zone_codes = zone_codes;
         console.log(p);
-        vsapi.call(`${mThis.base_url}/abm/updateZoneCodes`, p, null, false).then(res => {
+        vsapi.call(`${mThis.base_url}/abm/updateSupplierZoneCodes`, p, null, false).then(res => {
           if (res.status_code === 200) {
             mThis.displayZoneCodes(btnViewZone, p.zone_codes);
             SupplierPriceLineDialog.hide();
@@ -146,7 +146,7 @@ var SupplierPriceSettingsComponent = new function () {
       cv_interact.confirm('Delete this pricing zones?', { title: 'Delete Pricing Zones', context: "delete" }, function (e) {
         // console.log(p);
         if (e) {
-          vsapi.call(`${mThis.base_url}/abm/deletePriceZones`, p).then(res => {
+          vsapi.call(`${mThis.base_url}/abm/deleteSupplierPriceZones`, p).then(res => {
             if (res.status_code === 200) {
               mThis.displayPrices();
             } else cv_interact.error(res.error_message);
@@ -179,7 +179,7 @@ var SupplierPriceSettingsComponent = new function () {
       SupplierPriceLineDialog.show(op, (p) => {
         //alert(JSON.stringify(p.zone_codes));
         console.log(p);
-        vsapi.call(`${mThis.base_url}/abm/savePriceLineZones`, p).then(res => {
+        vsapi.call(`${mThis.base_url}/abm/saveSupplierPriceLineZones`, p).then(res => {
           if (res.status_code === 200) {
             mThis.displayPrices();
             SupplierPriceLineDialog.hide();
@@ -191,7 +191,7 @@ var SupplierPriceSettingsComponent = new function () {
   } //end::PriceSettingsCompoent.init()
 
   this.refreshSupplierPriceListOptions = (def_list_id = null) => {
-    vsapi.call(`${mThis.base_url}/dms/getComboItems_price_list`, null).then(res => {
+    vsapi.call(`${mThis.base_url}/abm/getComboItems_supplier_price_list`, null).then(res => {
       if (res.status_code === 200) {
         let items = StringSanitizer.sanitizeObject(res.data);
         let b = def_list_id;
@@ -265,7 +265,7 @@ var SupplierPriceSettingsComponent = new function () {
       // p.section = section;
       p.item_type = item_type;
       console.log(p);
-      vsapi.call(`${mThis.base_url}/abm/savePriceLineInfo`, p).then(res => {
+      vsapi.call(`${mThis.base_url}/abm/saveSupplierPriceLineInfo`, p).then(res => {
         if (res.status_code === 200) {
           that.data('id', res.id);
         } else cv_interact.error(res.error_message);
@@ -530,7 +530,7 @@ var SupplierPriceSettingsComponent = new function () {
     }
     console.log(p);
 
-    vsapi.call(`${mThis.base_url}/abm/getPriceList_data`, p).then(res => {
+    vsapi.call(`${mThis.base_url}/abm/getSupplierPriceList_data`, p).then(res => {
       tbody.empty();
       mThis.tblPrices.find('.ps-below-kg').text('5kg and Below');
       mThis.tblPrices.find('.ps-above-kg').text('Above 5 kg');
@@ -695,7 +695,7 @@ const SupplierPriceListDialog = new function () {
       return;
     }
 
-    vsapi.call([mThis.base_url, '/dms/createPriceList'].join(''), p).then(res => {
+    vsapi.call([mThis.base_url, '/abm/createSupplierPriceList'].join(''), p).then(res => {
       if (res.status_code === 200) {
         let d = res.data;
         if (typeof mThis.onClose === 'function') mThis.onClose(d.id);

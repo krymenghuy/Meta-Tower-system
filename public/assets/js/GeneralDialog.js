@@ -389,7 +389,7 @@ class GeneralDialog{
         let targetProp =null;
         if (prepareOp){
             if (prepareOp.api){
-                targetProp = prepareOp.targetProp || opx.api.targetProp;
+                targetProp = prepareOp.targetProp || prepareOp.api.targetProp;
                 if(targetProp){
                     title = d[targetProp]? prepareOp.modifyTitle: prepareOp.createTitle;
                 }

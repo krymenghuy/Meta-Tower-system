@@ -191,7 +191,7 @@ var PriceSettingsComponent = new function () {
   } //end::PriceSettingsCompoent.init()
 
   this.refreshPriceListOptions = (def_list_id = null) => {
-    vsapi.call(`${mThis.base_url}/dms/getComboItems_price_list`, null).then(res => {
+    vsapi.call(`${mThis.base_url}/abm/getComboItems_price_list`, null).then(res => {
       if (res.status_code === 200) {
         let items = StringSanitizer.sanitizeObject(res.data);
         let b = def_list_id;
@@ -684,6 +684,7 @@ const PriceListDialog = new function () {
 
   this.btnOK.on('click', (e) => {
     let p = mThis.getData();
+    console.log('data p:',p);
     if (!p.name) {
       mThis.elError.html('Name cannot be empty');
       return;
@@ -694,13 +695,13 @@ const PriceListDialog = new function () {
       return;
     }
 
-    vsapi.call([mThis.base_url, '/dms/createPriceList'].join(''), p).then(res => {
-      if (res.status_code === 200) {
-        let d = res.data;
-        if (typeof mThis.onClose === 'function') mThis.onClose(d.id);
-        mThis.self.modal('hide');
-      } else mThis.elError.text(res.error_message);
-    });
+    // vsapi.call([mThis.base_url, '/abm/createPriceList'].join(''), p).then(res => {
+    //   if (res.status_code === 200) {
+    //     let d = res.data;
+    //     if (typeof mThis.onClose === 'function') mThis.onClose(d.id);
+    //     mThis.self.modal('hide');
+    //   } else mThis.elError.text(res.error_message);
+    // });
 
   });
 
