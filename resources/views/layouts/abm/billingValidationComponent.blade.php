@@ -80,11 +80,11 @@
             <div class="d-flex flex-row w-100 gap- ">
                 <div class="col-lg-5" id="">
                     <label class="form-label trans-text" data-langprop="titles.Start Date">Start Date</label>
-                    <input data-select="datepicker" class="form-control filter-field" data-field="start_date" placeholder="Start Date" id="_shm_filter_start_date" />
+                    <div> <input data-select="datepicker" class="form-control filter-field" data-field="start_date" placeholder="Start Date" id="_shm_filter_start_date" /></div>
                 </div>
                 <div class="col-lg-5" id="">
                     <label class="form-label trans-text" data-langprop="titles.End Date">End Date</label>
-                    <input data-select="datepicker" class="form-control filter-field" data-field="end_date" placeholder="End Date" id="_shm_fliter_end_date" />
+                    <div> <input data-select="datepicker" class="form-control filter-field" data-field="end_date" placeholder="End Date" id="_shm_fliter_end_date" /></div>
                 </div>
                 <div class="col-lg-2">
                     <label class="form-label text-white" >Refress</label>
