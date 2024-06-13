@@ -16,6 +16,7 @@ use App\Http\controllers\abm\CustomerController;
 use App\Http\Controllers\abm\CountryZoneController;
 use App\Http\controllers\abm\AffiliateController;
 use App\Http\controllers\abm\PriceController;
+use App\Http\controllers\abm\SupplierPriceController;
 use App\Http\controllers\abm\GeneralSettingsController;
 use App\Http\controllers\abm\SpecialChargeController;
 use App\Http\controllers\abm\PaymentController;
@@ -49,7 +50,6 @@ use App\Http\controllers\abm\PaymentController;
      //begin::PriceController
     Route::post('os_suppliers/set-price-list', [SupplierController::class, 'setSupplierPriceList']);
     // Route::post('getComboItems_price_list', [PriceController::class, 'getComboItems_price_list']);
-
 
     Route::middleware([CustomRateLimiter::class])->prefix('os_suppliers')->group(function(){
         Route::post('/save', [SupplierController::class, 'save']);
@@ -109,7 +109,7 @@ use App\Http\controllers\abm\PaymentController;
     //begin:: PackageController
     Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('package')->group(function(){
         // Route::post('/receiver-info', [PackageController::class, 'getReceiverInfo']);
-        // Route::post('/details', [PackageController::class, 'getPackageDetails']);
+        // Route::post('/details',[PackageController::class, 'getPackageDetails']);
         // Route::post('/details-with-options', [PackageController::class, 'getPackageDetailsWithOptions']);
         // Route::post('/details-by-barcode', [PackageController::class, 'getPackageDetailsByBarcode']);
         // Route::post('/info', [PackageController::class, 'getPackageInfo']);
@@ -139,13 +139,29 @@ use App\Http\controllers\abm\PaymentController;
 
     });
 
-    
+    //CustomerPrice
     Route::post('savePriceLineZones', [PriceController::class, 'savePriceLineZones']);
     Route::post('getPriceList_data', [PriceController::class, 'getPriceList_data']);
     Route::post('savePriceLineInfo', [PriceController::class, 'savePriceLineInfo']);
     Route::post('updateZoneCodes', [PriceController::class, 'updateZoneCodes']);
     Route::post('deletePriceZones', [PriceController::class, 'deletePriceZones']);
 
+    Route::post('deletePriceList', [PriceController::class, 'deletePriceList']);
+    Route::post('createPriceList', [PriceController::class, 'createPriceList']);
+    Route::post('updatePriceList_kg_marker', [PriceController::class, 'updatePriceList_kg_marker']);
+    Route::post('getComboItems_price_list', [PriceController::class, 'getComboItems_price_list']);
+
+    //SupplierPrice
+    Route::post('saveSupplierPriceLineZones', [SupplierPriceController::class, 'savePriceLineZones']);
+    Route::post('getSupplierPriceList_data', [SupplierPriceController::class, 'getPriceList_data']);
+    Route::post('saveSupplierPriceLineInfo', [SupplierPriceController::class, 'savePriceLineInfo']);
+    Route::post('updateSupplierZoneCodes', [SupplierPriceController::class, 'updateZoneCodes']);
+    Route::post('deleteSupplierPriceZones', [SupplierPriceController::class, 'deletePriceZones']);
+
+    Route::post('deleteSupplierPriceList', [SupplierPriceController::class, 'deletePriceList']);
+    Route::post('createSupplierPriceList', [SupplierPriceController::class, 'createPriceList']);
+    Route::post('updateSupplierPriceList_kg_marker', [SupplierPriceController::class, 'updatePriceList_kg_marker']);
+    Route::post('getComboItems_supplier_price_list', [SupplierPriceController    ::class, 'getComboItems_price_list']);
     
    //begin:: Counties_Zone_Code
 

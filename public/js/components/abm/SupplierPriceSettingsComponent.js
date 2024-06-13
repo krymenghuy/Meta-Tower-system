@@ -1,30 +1,30 @@
 'use strict';
-var PriceSettingsComponent = new function () {
+var SupplierPriceSettingsComponent = new function () {
   let mThis = this;
-  this.title_prop = "Price Setttings";
+  this.title_prop = "Supplier Price Setttings";
   this.base_url = main_view.base_url;
-  this.self = main_view.appContent.children('#_sttn_priceSettingsComponent');
+  this.self = main_view.appContent.children('#_sttn_supplierPriceSettingsComponent');
 
-  this.elSearch_pl = this.self.find('#ps_pl_search_merchant');
+  this.elSearch_pl = this.self.find('#ps_pl_search_Supplier');
 
-  this.elFilter_price_list = this.self.find('#ps_filter_price_list');
+  this.elFilter_price_list = this.self.find('#ps_filter_supplier_price_list');
   this.elZones = this.self.find('#ps-filter_zones');
-  this.tblPrices = this.self.find('#ps-tbl-prices');
+  this.tblPrices = this.self.find('#ps-tbl-supplier-prices');
 
   this.btnNewPriceZones = this.self.find('#ps-btnNewPriceZones');
-  this.lnkAddPriceList = this.self.find('#ps-lnk_add_price_list');
-  this.lnkDeletePriceList = this.self.find('#ps-lnk_delete_price_list');
-  this.lnkRenamePriceList = this.self.find('#ps-lnk_rename_price_list');
-  this.lnkViewMerchantList = this.self.find('#ps-lnk_merchant_list');
+  this.lnkAddSupplierPriceList = this.self.find('#ps-lnk_add_supplier_price_list');
+  this.lnkDeleteSupplierPriceList = this.self.find('#ps-lnk_delete_supplier_price_list');
+  this.lnkRenameSupplierPriceList = this.self.find('#ps-lnk_rename_supplier_price_list');
+  this.lnkViewSupplierList = this.self.find('#ps-lnk_Supplier_list');
 
   this.init = function () {
-    mThis.lnkViewMerchantList.on('click', (e) => {
+    mThis.lnkViewSupplierList.on('click', (e) => {
       e.preventDefault();
       let id = mThis.elFilter_price_list.val();
       let price_list_name = mThis.elFilter_price_list.find('option:selected').text();
       let title = ['Customer who use price list "', price_list_name, '"'].join('');
       let op = { 'title': title, 'price_list_id': id, 'price_list_name': price_list_name };
-      MerchantListDialog.show(op);
+      SupplierListDialog.show(op);
     });
 
     mThis.elSearch_pl.on('keyup', function (e) {
@@ -41,17 +41,17 @@ var PriceSettingsComponent = new function () {
       }
     });
 
-    mThis.lnkAddPriceList.on('click', function (e) {
+    mThis.lnkAddSupplierPriceList.on('click', function (e) {
       e.preventDefault();
       let op = { 'title': 'New Price List' };
-      PriceListDialog.show(op, (new_id) => {
+      SupplierPriceListDialog.show(op, (new_id) => {
         if (new_id) {
           mThis.loadFilterData(new_id);
         }
       });
     });
 
-    mThis.lnkRenamePriceList.on('click', function (e) {
+    mThis.lnkRenameSupplierPriceList.on('click', function (e) {
       let id = mThis.elFilter_price_list.val();
       let def_name = mThis.elFilter_price_list.find('option:selected').text();
       if (!id || id === 0) return;
@@ -61,20 +61,20 @@ var PriceSettingsComponent = new function () {
           vsapi.call(`${mThis.base_url}/dms/renamePriceList`, p, null, false).then(res => {
             if (res.status_code === 200) {
               //refresh price list options //here
-              mThis.refreshPriceListOptions(id);
+              mThis.refreshSupplierPriceListOptions(id);
             } else cv_interact.error(res.error_message);
           });
         }
       });
     });
 
-    mThis.lnkDeletePriceList.on('click', function (e) {
+    mThis.lnkDeleteSupplierPriceList.on('click', function (e) {
       e.preventDefault();
       let id = mThis.elFilter_price_list.val();
       let p = { 'price_list_id': id };
       cv_interact.confirm('Delete this price list?', { title: 'Delete Price List', context: "delete" }, function (e) {
         if (e) {
-          vsapi.call(`${mThis.base_url}/dms/deletePriceList`, p).then(res => {
+          vsapi.call(`${mThis.base_url}/dms/deleteSupplierPriceList`, p).then(res => {
             if (res.status_code === 200) {
               mThis.loadFilterData(null);
               mThis.elFilter_price_list.val(null);
@@ -85,17 +85,17 @@ var PriceSettingsComponent = new function () {
       });
     });
 
-    if (!mThis.elFilter_price_list.val()) mThis.lnkViewMerchantList.hide();
+    if (!mThis.elFilter_price_list.val()) mThis.lnkViewSupplierList.hide();
     mThis.elFilter_price_list.on('change', function () {
 
       if (mThis.elFilter_price_list.val() > 0) {
-        mThis.lnkViewMerchantList.show();
-        mThis.lnkDeletePriceList.show();
-        mThis.lnkRenamePriceList.show();
+        mThis.lnkViewSupplierList.show();
+        mThis.lnkDeleteSupplierPriceList.show();
+        mThis.lnkRenameSupplierPriceList.show();
       } else {
-        mThis.lnkViewMerchantList.hide();
-        mThis.lnkDeletePriceList.hide();
-        mThis.lnkRenamePriceList.hide();
+        mThis.lnkViewSupplierList.hide();
+        mThis.lnkDeleteSupplierPriceList.hide();
+        mThis.lnkRenameSupplierPriceList.hide();
       }
       mThis.displayPrices();
     });
@@ -122,15 +122,15 @@ var PriceSettingsComponent = new function () {
 
       // disp_zones = codes.join(',');
       let op = { 'title': 'Modify Price Zones', 'zone_codes': zone_codes, 'country_id': country_id,'doc_price': doc_price,'non_doc_price': non_doc_price,'price_list_id': mThis.elFilter_price_list.val(), 'closeDialog': false };
-      PriceLineDialog.show(op, (p) => {
+      SupplierPriceLineDialog.show(op, (p) => {
         //p = {price_list_id,zone_codes}
         //Add org zone_codes for updating only zone_codes
         p.org_zone_codes = zone_codes;
         console.log(p);
-        vsapi.call(`${mThis.base_url}/abm/updateZoneCodes`, p, null, false).then(res => {
+        vsapi.call(`${mThis.base_url}/abm/updateSupplierZoneCodes`, p, null, false).then(res => {
           if (res.status_code === 200) {
             mThis.displayZoneCodes(btnViewZone, p.zone_codes);
-            PriceLineDialog.hide();
+            SupplierPriceLineDialog.hide();
             cv_interact.success('Price Line has been updated!');
           } else cv_interact.warning(res.error_message);
         });
@@ -146,7 +146,7 @@ var PriceSettingsComponent = new function () {
       cv_interact.confirm('Delete this pricing zones?', { title: 'Delete Pricing Zones', context: "delete" }, function (e) {
         // console.log(p);
         if (e) {
-          vsapi.call(`${mThis.base_url}/abm/deletePriceZones`, p).then(res => {
+          vsapi.call(`${mThis.base_url}/abm/deleteSupplierPriceZones`, p).then(res => {
             if (res.status_code === 200) {
               mThis.displayPrices();
             } else cv_interact.error(res.error_message);
@@ -176,13 +176,13 @@ var PriceSettingsComponent = new function () {
       //closeDialog:false => Do not close dialog when user has clicked OK or Save button.
       let op = { 'title': 'New Zones', 'price_list_id': mThis.elFilter_price_list.val(), 'closeDialog': false };
 
-      PriceLineDialog.show(op, (p) => {
+      SupplierPriceLineDialog.show(op, (p) => {
         //alert(JSON.stringify(p.zone_codes));
         console.log(p);
-        vsapi.call(`${mThis.base_url}/abm/savePriceLineZones`, p).then(res => {
+        vsapi.call(`${mThis.base_url}/abm/saveSupplierPriceLineZones`, p).then(res => {
           if (res.status_code === 200) {
             mThis.displayPrices();
-            PriceLineDialog.hide();
+            SupplierPriceLineDialog.hide();
             cv_interact.success("New price line has been added!");
           } else cv_interact.warning(res.error_message);
         });
@@ -190,11 +190,12 @@ var PriceSettingsComponent = new function () {
     });
   } //end::PriceSettingsCompoent.init()
 
-  this.refreshPriceListOptions = (def_list_id = null) => {
-    vsapi.call(`${mThis.base_url}/abm/getComboItems_price_list`, null).then(res => {
+  this.refreshSupplierPriceListOptions = (def_list_id = null) => {
+    vsapi.call(`${mThis.base_url}/abm/getComboItems_supplier_price_list`, null).then(res => {
       if (res.status_code === 200) {
         let items = StringSanitizer.sanitizeObject(res.data);
         let b = def_list_id;
+        console.log('d',b);
         if (!b) b = mThis.elFilter_price_list.val();
         VSUtil.setComboItems(mThis.elFilter_price_list, items,   'id', 'name', false, null, b);
         if (mThis.elFilter_price_list.val() > 0) mThis.displayPrices();
@@ -203,7 +204,7 @@ var PriceSettingsComponent = new function () {
   }
 
   this.loadFilterData = (def_list_id) => {
-    mThis.refreshPriceListOptions(def_list_id);
+    mThis.refreshSupplierPriceListOptions(def_list_id);
   };
 
   /** savePrices() save edited prices (i.e: base_fee, additional, price_option)  and then make div.ps-fast or div.ps-normal container to be in View mode **/
@@ -264,7 +265,7 @@ var PriceSettingsComponent = new function () {
       // p.section = section;
       p.item_type = item_type;
       console.log(p);
-      vsapi.call(`${mThis.base_url}/abm/savePriceLineInfo`, p).then(res => {
+      vsapi.call(`${mThis.base_url}/abm/saveSupplierPriceLineInfo`, p).then(res => {
         if (res.status_code === 200) {
           that.data('id', res.id);
         } else cv_interact.error(res.error_message);
@@ -529,7 +530,7 @@ var PriceSettingsComponent = new function () {
     }
     console.log(p);
 
-    vsapi.call(`${mThis.base_url}/abm/getPriceList_data`, p).then(res => {
+    vsapi.call(`${mThis.base_url}/abm/getSupplierPriceList_data`, p).then(res => {
       tbody.empty();
       mThis.tblPrices.find('.ps-below-kg').text('5kg and Below');
       mThis.tblPrices.find('.ps-above-kg').text('Above 5 kg');
@@ -555,19 +556,19 @@ var PriceSettingsComponent = new function () {
 //end::PriceSettingsComponent
 
 //begin::PriceLineDialog
-var PriceLineDialog = new function () {
+var SupplierPriceLineDialog = new function () {
   let mThis = this;
-  this.self = main_view.appContent.children('#_ps_dlgPriceLine');
+  this.self = main_view.appContent.children('#_ps_dlgSupplierPriceLine');
   this.base_url = main_view.base_url;
-  this.elTitle = this.self.find('#_ps_dlgPriceLineTitle');
+  this.elTitle = this.self.find('#_ps_dlgSupplierPriceLineTitle');
   this.elZone = this.self.find('#_ps_newzone_zone');
   this.elZones = this.self.find('#_ps_newzone_zone_codes');
   //btnAddZone adds each selected zone to the list of zone_codes
   this.btnAddZone = this.self.find('#_ps_btnAddZone');
   this.options = {};
 
-  this.btnOK = this.self.find('#_ps_dlgPriceLine_btnOK');
-  this.elError = this.self.find('#_ps_dlgPriceLine_error');
+  this.btnOK = this.self.find('#_ps_dlgSupplierPriceLine_btnOK');
+  this.elError = this.self.find('#_ps_dlgSupplierPriceLine_error');
 
   this.loadZones = () => {
     vsapi.call(`${mThis.base_url}/abm/settings/options-country-zone`, null).then(res => {
@@ -668,23 +669,22 @@ var PriceLineDialog = new function () {
     return p;
   }
 }
-//end::PriceLineDialog
+//end::SupplierPriceLineDialog
 
-//begin::PriceListDialog
-const PriceListDialog = new function () {
+//begin::SupplierPriceListDialog
+const SupplierPriceListDialog = new function () {
   let mThis = this;
   this.base_url = main_view.base_url;
-  this.self = main_view.appContent.children('#ps_dlgPriceList');
-  this.btnOK = this.self.find('#ps_dlgPriceList_btnOK');
-  this.elError = this.self.find('#ps_dlgPriceList_error');
-  this.elTitle = this.self.find('#ps_dlgPriceListTitle');
+  this.self = main_view.appContent.children('#ps_dlgSupplierPriceList');
+  this.btnOK = this.self.find('#ps_dlgSupplierPriceList_btnOK');
+  this.elError = this.self.find('#ps_dlgSupplierPriceList_error');
+  this.elTitle = this.self.find('#ps_dlgSupplierPriceListTitle');
 
   this.elName = this.self.find('#ps-newpl_name');
   this.elWeightMarker = this.self.find('#ps-newpl_kg_marker');
 
   this.btnOK.on('click', (e) => {
     let p = mThis.getData();
-    console.log('data p:',p);
     if (!p.name) {
       mThis.elError.html('Name cannot be empty');
       return;
@@ -695,13 +695,13 @@ const PriceListDialog = new function () {
       return;
     }
 
-    // vsapi.call([mThis.base_url, '/abm/createPriceList'].join(''), p).then(res => {
-    //   if (res.status_code === 200) {
-    //     let d = res.data;
-    //     if (typeof mThis.onClose === 'function') mThis.onClose(d.id);
-    //     mThis.self.modal('hide');
-    //   } else mThis.elError.text(res.error_message);
-    // });
+    vsapi.call([mThis.base_url, '/abm/createSupplierPriceList'].join(''), p).then(res => {
+      if (res.status_code === 200) {
+        let d = res.data;
+        if (typeof mThis.onClose === 'function') mThis.onClose(d.id);
+        mThis.self.modal('hide');
+      } else mThis.elError.text(res.error_message);
+    });
 
   });
 
@@ -725,47 +725,47 @@ const PriceListDialog = new function () {
     });
   }
 }
-//end::PriceListDialog
+//end::SupplierPriceListDialog
 
-//begin::MerchantListDialog
-const MerchantListDialog = new function () {
+//begin::SupplierListDialog
+const SupplierListDialog = new function () {
   let mThis = this;
-  this.self = main_view.appContent.children('#ps_dlgMerchantList');
-  this.btnOK = this.self.find('#ps_dlgMerchantList_btnOK');
-  this.elTitle = this.self.find('#ps_dlgMerchantListTitle');
+  this.self = main_view.appContent.children('#ps_dlgSupplierList');
+  this.btnOK = this.self.find('#ps_dlgSupplierList_btnOK');
+  this.elTitle = this.self.find('#ps_dlgSupplierListTitle');
   this.base_url = main_view.base_url;
-  this.elError = this.self.find('#ps_dlgMerchantList_error');
-  this.tblMerchants = this.self.find('#ps-tblMerchants');
-  this.tblMerchants_body = this.self.find('#ps-tblMerchants_body');
+  this.elError = this.self.find('#ps_dlgSupplierList_error');
+  this.tblSuppliers = this.self.find('#ps-tblSuppliers');
+  this.tblSuppliers_body = this.self.find('#ps-tblSuppliers_body');
 
-  this.lnkAddMerchant = this.self.find('#ps-lnkAddMerchant');
+  this.lnkAddSupplier = this.self.find('#ps-lnkAddSupplier');
 
-  this.btnSearchMerchant = this.self.find('#ps-btnSearchMerchant');
-  this.elSearch = this.self.find('#ps-search_merchant');
+  this.btnSearchSupplier = this.self.find('#ps-btnSearchSupplier');
+  this.elSearch = this.self.find('#ps-search_Supplier');
 
   this.elSearch.on('keyup', e => {
     e.preventDefault();
     clearTimeout(mThis.search_timeout);
     mThis.search_timeout = setTimeout(() => {
-      mThis.showMerchantList();
+      mThis.showSupplierList();
     }, 250);
   });
 
-  this.btnSearchMerchant.on('click', function (e) {
-    mThis.showMerchantList();
+  this.btnSearchSupplier.on('click', function (e) {
+    mThis.showSupplierList();
   });
 
-  this.lnkAddMerchant.on('click', (e) => {
+  this.lnkAddSupplier.on('click', (e) => {
     e.preventDefault();
 
-    let option = { 'title': "Find Merchant", "role": "sender", "singleSelect": true, "previousDialog": mThis.self };
+    let option = { 'title': "Find Supplier", "role": "sender", "singleSelect": true, "previousDialog": mThis.self };
     FindPersonDialog.show(option, (persons) => {
       if (persons[0]) {
         let p = persons[0];
         let m = { 'sender_id': p.id, 'price_list_id': mThis.price_list_id };
         vsapi.call([mThis.base_url, '/dms/setMerchantPriceList'].join(''), m).then(res => {
           if (res.status_code === 200)
-            mThis.showMerchantList();
+            mThis.showSupplierList();
           else cv_interact.error(res.error_message);
         });
 
@@ -774,7 +774,7 @@ const MerchantListDialog = new function () {
 
   });
 
-  this.tblMerchants_body.on('click', 'a.ps-btn_add_merchant', function (e) {
+  this.tblSuppliers_body.on('click', 'a.ps-btn_add_Supplier', function (e) {
     e.preventDefault();
     let p = {};
     let x = $(this);
@@ -787,39 +787,39 @@ const MerchantListDialog = new function () {
 
     vsapi.call([mThis.base_url, '/dms/setMerchantPriceList'].join(''), p).then(res => {
       if (res.status_code === 200)
-        mThis.showMerchantList();
+        mThis.showSupplierList();
       //x.hide();
       else cv_interact.error(res.error_message);
     });
   });
 
-  this.tblMerchants_body.on('click', 'a.ps-btn_remove_merchant', function (e) {
+  this.tblSuppliers_body.on('click', 'a.ps-btn_remove_Supplier', function (e) {
     e.preventDefault();
     let sender_id = $(this).data('senderid');
-    cv_interact.confirm('Remove this merchant from the Price List?', { title: 'Remove Merchant', 'context': 'delete' }, (e) => {
+    cv_interact.confirm('Remove this Supplier from the Price List?', { title: 'Remove Supplier', 'context': 'delete' }, (e) => {
       if (e) {
         let p = { 'price_list_id': mThis.price_list_id, 'sender_id': sender_id };
         vsapi.call([mThis.base_url, '/dms/removeMerchantFromPriceList'].join(''), p).then(res => {
           if (res.status_code === 200) {
-            mThis.showMerchantList();
+            mThis.showSupplierList();
           } else cv_interact.error(res.error_message);
         });
       }
     }, 'Remove', 'Cancel', 'remove');
   });
 
-  this.showMerchantList = (onFinish) => {
+  this.showSupplierList = (onFinish) => {
     let p = { 'price_list_id': mThis.price_list_id, 'search_value': mThis.elSearch.val() };
     vsapi.call([mThis.base_url, '/dms/getMerchantsByPriceList'].join(''), p).then(res => {
       if (res.status_code === 200) {
         let items = StringSanitizer.sanitizeObject(res.data);
         let i = 0, c;
-        mThis.tblMerchants_body.empty();
+        mThis.tblSuppliers_body.empty();
         do {
           c = items[i];
           if (!c) break;
-          let htm_button = ['<a data-senderid="', c.id, '" href="javascript:void(0)" class="ps-btn_add_merchant"><span style="color:blue">Add Now</span></a>'].join('');
-          if (c.is_member == 1) htm_button = ['<a data-senderid="', c.id, '" href="javascript:void(0)" class="ps-btn_remove_merchant"><span style="color:red">Remove</span></a>'].join('');
+          let htm_button = ['<a data-senderid="', c.id, '" href="javascript:void(0)" class="ps-btn_add_Supplier"><span style="color:blue">Add Now</span></a>'].join('');
+          if (c.is_member == 1) htm_button = ['<a data-senderid="', c.id, '" href="javascript:void(0)" class="ps-btn_remove_Supplier"><span style="color:red">Remove</span></a>'].join('');
           let css_class = 'ps-is-member';
           if (c.is_member != 1) css_class = null;
           if (!c.price_list_name) c.price_list_name = '<span style="color:red">No Price List</span>';
@@ -830,7 +830,7 @@ const MerchantListDialog = new function () {
             '<td>', c.phone_number, '</td>',
             '<td>', htm_button, '</td>',
             '</tr>'].join('');
-          mThis.tblMerchants_body.append(html);
+          mThis.tblSuppliers_body.append(html);
           i++;
         } while (c);
         if (typeof onFinish === 'function') onFinish();
@@ -852,7 +852,7 @@ const MerchantListDialog = new function () {
       return;
     }
     mThis.price_list_id = option.price_list_id;
-    mThis.showMerchantList(() => {
+    mThis.showSupplierList(() => {
       mThis.self.modal({
         backdrop: 'static'
       });
@@ -863,5 +863,5 @@ const MerchantListDialog = new function () {
 //end::MerchantListDialog
 
 window.addEventListener('DOMContentLoaded', e => {
-  PriceSettingsComponent.init();
+  SupplierPriceSettingsComponent.init();
 });

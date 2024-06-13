@@ -226,6 +226,7 @@
                                 @include('layouts.abm.invoicesComponent')
 
                                 @include('layouts.abm.priceSettingsComponent')
+                                @include('layouts.abm.supplierPriceSettingsComponent')
                                 @include('layouts.abm.locationComponent')
                                 
                             </div>
