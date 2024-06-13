@@ -112,7 +112,7 @@ var SuppliersComponent = new function(){
         {
             className: "sales_agent_id align-middle",
             data: function (data, index, tr) {
-                return ['<span class="pl-request_date text-capitalize d-block">',data.sales_agent||"NA", '</span>','<span class="text-muted">',data.agent_type,'</span>'].join('');
+                return ['<span class="pl-request_date text-capitalize d-block">',data.referrer||"NA", '</span>','<span class="text-muted">',data.agent_type,'</span>'].join('');
             },
             title: 'Sales Agent'
             // title: mThis.trans('Created Date')
@@ -253,21 +253,7 @@ var SuppliersComponent = new function(){
          });
 
         if(div.length !== 0){
-            // let prev_div = null;
-            // prev_div = div.find('.dropdown-menu');
-            // console.log(prev_div);
-            // $(document).off('click').on('mouseup',function(e){
-            //     e.preventDefault();
-            //     if((!div.is(e.target) && div.has(e.target).length === 0) && prev_div){
-            //         prev_div.hide('fast');
-            //     }
-            //     else{
-            //         if((!div.is(e.target) && div.has(e.target).length === 0) && (!btn.is(e.target) && btn.has(e.target).length === 0)){
-            //             prev_div = div;
-            //             div.hide('fast');
-            //         }
-            //     }
-            // });
+            
 
             div.off('click').on('click',(e) => {
                 e.preventDefault();
@@ -402,7 +388,7 @@ var SuppliersComponent = new function(){
     }
 
     this.getPriceListItems = (onFinish) => {
-        vsapi.call(`${mThis.base_url}/dms/getComboItems_price_list`,null,false).then(res => {
+        vsapi.call(`${mThis.base_url}/abm/getComboItems_supplier_price_list`,null,false).then(res => {
             let items = res.status_code ===200? res.data: [];
             onFinish(items); 
         });

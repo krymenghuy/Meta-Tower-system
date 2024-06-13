@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOsCurrencyTable extends Migration
+class CreateOsCurrenciesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateOsCurrencyTable extends Migration
      */
     public function up()
     {
-        Schema::create('os_currency', function (Blueprint $table) {
+        Schema::create('os_currencies', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('branch_id');
             $table->string('code');
@@ -38,6 +38,6 @@ class CreateOsCurrencyTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('os_currency');
+        Schema::dropIfExists('os_currencies');
     }
 }

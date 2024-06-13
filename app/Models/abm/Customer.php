@@ -39,7 +39,7 @@ class Customer //extends Model
 
   static function getDefaultPriceList()
   {
-    $row = DB::table('os_price_list_names AS l')->where('is_default', 1)->take(1)->selectRaw('id,name')->first();
+    $row = DB::table('os_customer_price_list_names AS l')->where('is_default', 1)->take(1)->selectRaw('id,name')->first();
     if ($row)
       return $row;
     return (object) ['id' => null, 'name' => ''];
@@ -414,7 +414,7 @@ class Customer //extends Model
     $data->business_types = DB::table('sender_business_types')->selectRaw('business_type')->get();
     $data->customer_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name as status_name')->get();
     //$data->closing_statuses = DB::table('closing_statuses AS cs')->selectRaw('scs.id,cs.name AS closing_status')->get();
-    $data->price_list = DB::table('os_price_list_names AS l')->where('branch_id', $branch_id)->selectRaw('l.id,l.name as price_list')->get();
+    $data->price_list = DB::table('os_customer_price_list_names AS l')->where('branch_id', $branch_id)->selectRaw('l.id,l.name as price_list')->get();
     $data->sender_types = DB::table('sender_type')->selectRaw('id,name as sender_type')->get();
     $data->os_agent_types = DB::table('os_agent_types')->selectRaw('id, name as os_agent_type')->get();
 
@@ -433,7 +433,7 @@ class Customer //extends Model
     $ss = $ss ?? $this->userInfo;
     $id = $id ?? $this->id;
     $branch_id = Sanitizer::sanitize($ss->branch_id);
-    $p = getDataRow('os_price_list_names', ["id" => $price_list_id], "id,name");
+    $p = getDataRow('os_customer_price_list_names', ["id" => $price_list_id], "id,name");
     if (!$p)
       return DV::error("Price list ID is not valid");
     $p_name = $p->name;
