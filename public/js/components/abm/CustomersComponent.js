@@ -218,6 +218,7 @@
         }
 
         this.editCustomer = (lnk,customer_id)=>{
+            
             // alert('Edit customer'); 
             if (lnk) {
                 console.log(lnk);
@@ -273,7 +274,7 @@
                 });
                 return;
             }
-            }
+        }
 
         this.initDropdownMenus = (table)=>{
             const menuOptopns = {
@@ -282,28 +283,29 @@
                 cssClass:"bg-white shadow",
                 //menuItemClass:"",
                 menus:[
-                   {
+                    {
                     //text:"",
                     html:'<span class="ps-2 trans-text" data-langprop="titles.Set Price List">Set Price List</span>',
                     icon:`<i class="fa-regular fa-list-alt fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"set_price_list"
-                   },
-                   {
+                    },
+                    {
                     html:'<span class="ps-2 trans-text" data-langprop="titles.Modify Customer">Modify Customer</span>',
                     icon:`<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"edit_customer"
-                   },  
-                   {
-                    html:'<span class="ps-2 trans-text" data-langprop="titles.Delete Customer">Delete Customer</span>',
-                    icon:`<i class="fa-regular fa-trash fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"delete_customer"
-                   } 
+                    },
+                    {
+                        html:'<span class="ps-2 trans-text" data-langprop="titles.Delete Customer">Delete Customer</span>',
+                        icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
+                        cssClass:"border-bottom pb-2",
+                        name:"delete_customer"
+                    }
+                        
                 ],
                 adjustPosition:{
-                     top:20 
+                        top:200
                 },
                 onShow:(instance, menuContainer)=>{
                     console.log('open: ', instance.getMenus());
@@ -312,154 +314,151 @@
     
                 // },
                 onClick:(menuLink, id, name)=>{
-                   switch(name){
-                     case 'set_price_list':{
-                         mThis.setPriceList(menuLink,id); // NOT yet defined
-                         break;
-                     }
-                     case 'edit_customer':{
-                        mThis.editCustomer(menuLink,id); //Not yet defined
+                    switch(name){
+                        case 'set_price_list':{
+                            mThis.setPriceList(id); // NOT yet defined
+                            break;
+                        }
+                        case 'edit_customer':{
+                        mThis.editCustomer(id); //Not yet defined
                         break;
-                     }
-                     case 'delete_customer':{
-                        mThis.deleteCustomer(menuLink,id); //Not yet defined
+                        }
+                        default:{
                         break;
-                     }
-                     default:{
-                        break;
-                     }
-                   }
+                        }
+                    }
                 }
             }
             new VSDropdownMenu(menuOptopns);
         }
+    
 
-        // this.setEvents = (container) => {
+        this.setEvents = (container) => {
 
-        //     const div = container.find('.table');
-        //     const btn = container.find('.btn-options');
+            const div = container.find('.table');
+            const btn = container.find('.btn-options');
 
-        //     btn.off('click').on('click', function (e) {
-        //         e.preventDefault();
-        //         $(this).find('.w-options').toggle('fast');
-        //     });
+            btn.off('click').on('click', function (e) {
+                e.preventDefault();
+                $(this).find('.w-options').toggle('fast');
+            });
 
-        //     container.off('click').on('click', e => {
-        //         e.preventDefault();
-        //     });
+            container.off('click').on('click', e => {
+                e.preventDefault();
+            });
 
-        //     if (container.length !== 0) {
-        //         container.off('click').on('click', (e) => {
-        //             e.preventDefault();
-        //             let lnk = VSUtil.getElementByClass(e.target, 'btn-customer-edit');
-        //             if (lnk) {
-        //                 console.log(lnk);
-        //                 let op = {
-        //                     id: lnk.dataset.id,
-        //                     onClose: () => {
-        //                         mThis.customerListView.showPage(mThis.getFilterData());
-        //                     }
-        //                 };
-        //                 CustomerDialog.show(op);
-        //                 return;
-        //             }
-        //             // Click on Set Price List
-        //             lnk = VSUtil.getElementByClass(e.target, 'btn-set-price-list');
-        //             console.log("hello");
-        //             if (lnk) {
-        //                 const id = lnk.dataset.id;
-        //                 let pl_id = lnk.dataset.pricelistid;
-        //                 let name = lnk.dataset.name;
-        //                 let span = container.find('.customer-price-list')[0];
-        //                 mThis.setCustomerPriceList(id, name, span ? span.parentElement : null, pl_id);
-        //                 return;
-        //             }
-        //             //Click on Delete Merchant
-        //             lnk = VSUtil.getElementByClass(e.target, 'btn-customer-delete');
-        //             if (lnk) {
-        //                 const id = lnk.dataset.id;
-        //                 let status_code = lnk.dataset.status;
-        //                 let p = {
-        //                     id: id,
-        //                     status_code: status_code
-        //                 };
-        //                 cv_interact.confirm('Delete this customer?', {
-        //                     title: 'Delete Customer',
-        //                     context: 'delete'
-        //                 }, function (e) {
-        //                     if (e) {
-        //                         vsapi.call(`${mThis.base_url}/abm/customers/delete`, {
-        //                             id: id
-        //                         }, null).then(res => {
-        //                             if (res.status_code === 200) {
-        //                                 mThis.customerListView.showPage(mThis.getFilterData());
-        //                             }
-        //                             else
-        //                                 cv_interact.error(res.error_message);
-        //                         });
-        //                     }
-        //                 });
-        //                 return;
-        //             }
+            if (container.length !== 0) {
+                container.off('click').on('click', (e) => {
+                    e.preventDefault();
+                    let lnk = VSUtil.getElementByClass(e.target, 'btn-customer-edit');
+                    if (lnk) {
+                        console.log(lnk);
+                        let op = {
+                            id: lnk.dataset.id,
+                            onClose: () => {
+                                mThis.customerListView.showPage(mThis.getFilterData());
+                            }
+                        };
+                        CustomerDialog.show(op);
+                        return;
+                    }
+                    // Click on Set Price List
+                    lnk = VSUtil.getElementByClass(e.target, 'btn-set-price-list');
+                    console.log("hello");
+                    if (lnk) {
+                        const id = lnk.dataset.id;
+                        let pl_id = lnk.dataset.pricelistid;
+                        let name = lnk.dataset.name;
+                        let span = container.find('.customer-price-list')[0];
+                        mThis.setCustomerPriceList(id, name, span ? span.parentElement : null, pl_id);
+                        return;
+                    }
+                    //Click on Delete Merchant
+                    lnk = VSUtil.getElementByClass(e.target, 'btn-customer-delete');
+                    if (lnk) {
+                        const id = lnk.dataset.id;
+                        let status_code = lnk.dataset.status;
+                        let p = {
+                            id: id,
+                            status_code: status_code
+                        };
+                        cv_interact.confirm('Delete this customer?', {
+                            title: 'Delete Customer',
+                            context: 'delete'
+                        }, function (e) {
+                            if (e) {
+                                vsapi.call(`${mThis.base_url}/abm/customers/delete`, {
+                                    id: id
+                                }, null).then(res => {
+                                    if (res.status_code === 200) {
+                                        mThis.customerListView.showPage(mThis.getFilterData());
+                                    }
+                                    else
+                                        cv_interact.error(res.error_message);
+                                });
+                            }
+                        });
+                        return;
+                    }
 
-        //             //Click on Set Price List
-        //             lnk = VSUtil.getElementByClass(e.target, 'set-price-list');
-        //             if (lnk) {
-        //                 const id = lnk.dataset.id;
-        //                 let pl_id = lnk.dataset.pricelistid;
-        //                 let name = lnk.dataset.name;
-        //                 let span = container.find('.customer-price-list')[0];
-        //                 mThis.setCustomerPriceList(id, name, span ? span.parentElement : null, pl_id);
-        //                 return;
-        //             }
-        //             //Click on Change Status
-        //             lnk = VSUtil.getElementByClass(e.target, 'btn-customer-status');
-        //             if (lnk) {
-        //                 let id = lnk.dataset.id;
-        //                 let status_code = Validator.properCase(lnk.dataset.status);
-        //                 console.log(status_code);
-        //                 let option = {
-        //                     title: 'Set Customer Status',
-        //                     dataLabel: "Customer status",
-        //                     valueMember: "status_code",
-        //                     textMember: "name",
-        //                     blankErrorMessage: "Please select a correct Status",
-        //                     data: [{
-        //                         status_code: "Active",
-        //                         name: "Active"
-        //                     },
-        //                     {
-        //                         status_code: "Inactive",
-        //                         name: "Inactive"
-        //                     }],
-        //                     defaultValue: status_code
+                    //Click on Set Price List
+                    lnk = VSUtil.getElementByClass(e.target, 'set-price-list');
+                    if (lnk) {
+                        const id = lnk.dataset.id;
+                        let pl_id = lnk.dataset.pricelistid;
+                        let name = lnk.dataset.name;
+                        let span = container.find('.customer-price-list')[0];
+                        mThis.setCustomerPriceList(id, name, span ? span.parentElement : null, pl_id);
+                        return;
+                    }
+                    //Click on Change Status
+                    lnk = VSUtil.getElementByClass(e.target, 'btn-customer-status');
+                    if (lnk) {
+                        let id = lnk.dataset.id;
+                        let status_code = Validator.properCase(lnk.dataset.status);
+                        console.log(status_code);
+                        let option = {
+                            title: 'Set Customer Status',
+                            dataLabel: "Customer status",
+                            valueMember: "status_code",
+                            textMember: "name",
+                            blankErrorMessage: "Please select a correct Status",
+                            data: [{
+                                status_code: "Active",
+                                name: "Active"
+                            },
+                            {
+                                status_code: "Inactive",
+                                name: "Inactive"
+                            }],
+                            defaultValue: status_code
                             
-        //                 };
+                        };
 
-        //                 InputBox2.show(option, (d) => {
-        //                     if (d) {
-        //                         let p = {
-        //                             id: id,
-        //                             status_code: d.value
-        //                         };
+                        InputBox2.show(option, (d) => {
+                            if (d) {
+                                let p = {
+                                    id: id,
+                                    status_code: d.value
+                                };
 
-        //                         vsapi.call(`${mThis.base_url}/dms/merchant/update-status`, p).then(res => {
-        //                             if (res.status_code === 200) {
-        //                                 //mThis.elFilter_customer_status.val(d.value).trigger('change');
-        //                                 mThis.customerListView.showPage(mThis.getFilterData());
-        //                                 cv_interact.success('The status has been updated');
+                                vsapi.call(`${mThis.base_url}/dms/merchant/update-status`, p).then(res => {
+                                    if (res.status_code === 200) {
+                                        //mThis.elFilter_customer_status.val(d.value).trigger('change');
+                                        mThis.customerListView.showPage(mThis.getFilterData());
+                                        cv_interact.success('The status has been updated');
 
-        //                             }
-        //                             else
-        //                                 cv_interact.error(res.error_message);
-        //                         });
-        //                     }
-        //                 });
-        //                 return;
-        //             }
-        //         });
-        //     }
-        // }
+                                    }
+                                    else
+                                        cv_interact.error(res.error_message);
+                                });
+                            }
+                        });
+                        return;
+                    }
+                });
+            }
+        }
 
         this.loadFilterData = (onFinish) => {
             mThis.def_filter = mThis.def_filter || {};
@@ -477,7 +476,6 @@
             });
         }
       
-        
 
         this.init = () => {
             if (mThis.initAlready) return;
@@ -510,6 +508,7 @@
             });
             
             mThis.tblCustomers = mThis.customerListView.getTable();
+            console.log(mThis.tblCustomers);
             mThis.initDropdownMenus(mThis.tblCustomers);
             // mThis.setEvents($(mThis.tblCustomers));
              

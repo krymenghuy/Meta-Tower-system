@@ -49,7 +49,7 @@
                         <label class="form-label trans-text">CUSTOMER NAME</label>
                         <div>
                             <select id="_name_customer" class="modal-select2 data-input"
-                                data-field="sender_id"></select>
+                                data-field="customer"></select>
                         </div>
                     </div>
                     <div class="form-group col-md-6">
