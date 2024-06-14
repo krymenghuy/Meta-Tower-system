@@ -115,7 +115,7 @@ class Customer //extends Model
     $img_char = ['+',':',',',';','/','\\','=','?'];
 
 
-    $checkUnque = ["$branch_id|sender|name,phone_number,code|id=id|text=Sender or Customer already exists by name,phone number, or email"];
+    $checkUnque = ["$branch_id|sender|name,phone_number|id=id|text=Sender or Customer already exists by name,phone number, or email"];
 
     $res = validateObject($arr, $v_rule, true, ['email' => ['-', '.', ',', '@', '_'],'photo'=>$img_char], $ss->lang, false, $checkUnque);
     if ($res->error)
@@ -192,7 +192,7 @@ class Customer //extends Model
 
 
     }
-    return DV::error('Something went wrong in saving sender profile');
+    return DV::error('Something went wrong in saving customer profile');
 
 
   }
