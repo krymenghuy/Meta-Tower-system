@@ -55,14 +55,12 @@ class Supplier //extends Model
             return DV::error($phone_err);
         $check_price = isExist('os_supplier_price_list_names', $id, ['id' => $inputs['price_list_id']]);
         if (!$check_price)
-            return DV::error('Invalid Price list...');
+            return DV::error('Invalid Price list');
 
-        $check_referrer = isExist('os_sales_agents', $id, ['id' => $inputs['referrer_id']]);
-        if (!$check_referrer)
-            return DV::error('Invalid Referrer...');
-
-
-
+        // $check_referrer = isExist('os_sales_agents', $id, ['id' => $inputs['referrer_id']]);
+        // if (!$check_referrer)
+        //     return DV::error('Invalid Referrer');
+  
         $check = isExist('os_suppliers', $id, ['name' => $inputs['name']]);
 
 

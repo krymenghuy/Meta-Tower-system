@@ -80,7 +80,7 @@ class Shipment //extends Model
     public function getZoneCode($country_id,$sender_id){
         $pid = DB::table('sender')->where('id',$sender_id)->select('price_list_id')->first();
         $price_list_id = $pid->price_list_id;
-        $zone_code = DB::table('os_price_list_details')->where('price_list_id',$price_list_id)->where('country_id','=',$country_id)->select('zone_code')->first();
+        $zone_code = DB::table('os_customer_price_list_details')->where('price_list_id',$price_list_id)->where('country_id','=',$country_id)->select('zone_code')->first();
         // return JDV::result($zone_code);
         if($zone_code == null){
             $country = DB::table('loc_countries')->where('id',$country_id)->select('name')->first();

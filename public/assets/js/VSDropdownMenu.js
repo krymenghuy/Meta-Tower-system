@@ -1,1 +1,198 @@
-'use strict';const _0x508f7b=_0x2c7f;(function(_0x25eb51,_0x5b9a34){const _0x140c8b=_0x2c7f,_0x5de611=_0x25eb51();while(!![]){try{const _0x2d9db4=parseInt(_0x140c8b(0x137))/0x1*(-parseInt(_0x140c8b(0x14d))/0x2)+-parseInt(_0x140c8b(0x12f))/0x3+parseInt(_0x140c8b(0x141))/0x4*(parseInt(_0x140c8b(0x129))/0x5)+-parseInt(_0x140c8b(0x110))/0x6*(-parseInt(_0x140c8b(0x154))/0x7)+-parseInt(_0x140c8b(0x10e))/0x8*(-parseInt(_0x140c8b(0x12d))/0x9)+-parseInt(_0x140c8b(0x11f))/0xa+parseInt(_0x140c8b(0x133))/0xb;if(_0x2d9db4===_0x5b9a34)break;else _0x5de611['push'](_0x5de611['shift']());}catch(_0x2921b8){_0x5de611['push'](_0x5de611['shift']());}}}(_0x59aa,0x6156e));function _0x59aa(){const _0x1607d2=['6745024sdJeyN','remove','\x20data-mnuaction=\x22','insertAdjacentHTML','23HPMkoH','data-id=\x22','icon','add','right','parentElement','preventDefault','setClickEvent','getMenuItems','adjustPosition','4MfdMDt','text','<div\x20class=\x22dropdown-menu\x20','dataset','closest','push','addEventListener','onClick','onShow','containerElement','querySelector','bottom','59258KaNwLa','hasOwnProperty','show','contains','getBoundingClientRect','prev_dropdownMenu','html','3353VsGouq','menus','getMenuData','128UxRziZ','data-','7482Qbcgro','top','translateZone','classList','</a>','join','createUserActionMenus','width','click','className','forEach','length','actionButtonClass','style','clickClass','4699020IjSLkj','mnuaction','minWidth','name','querySelectorAll','beforeend','init','wrapperClass','target','getMenus','2007385HlrfyO','.dropdown-menu','undefined','left','217773IJTIRI','cssClass','1347165vJdMcy','options','onClose','table'];_0x59aa=function(){return _0x1607d2;};return _0x59aa();}function _0x2c7f(_0x36f06a,_0xdc8181){const _0x59aa72=_0x59aa();return _0x2c7f=function(_0x2c7f85,_0xb310ed){_0x2c7f85=_0x2c7f85-0x10e;let _0x17a5c3=_0x59aa72[_0x2c7f85];return _0x17a5c3;},_0x2c7f(_0x36f06a,_0xdc8181);}class VSDropdownMenu{constructor(_0x4e4116={}){const _0xcd069d=_0x2c7f;this[_0xcd069d(0x130)]=_0x4e4116,this['options']['containerElement']=this[_0xcd069d(0x130)][_0xcd069d(0x14a)]||this[_0xcd069d(0x130)][_0xcd069d(0x132)],this[_0xcd069d(0x125)]();}[_0x508f7b(0x116)](_0x4f3e6f,_0x345f70,_0x55f52f){const _0xd77d74=_0x508f7b;let _0x3539b2=_0x4f3e6f[_0xd77d74(0x144)]['id'];const _0x399ef3=this;let _0x2f1e9e=_0x3539b2?_0xd77d74(0x138)+_0x3539b2+'\x22\x20':'';for(let _0x463cfd in _0x55f52f){_0x55f52f[_0xd77d74(0x14e)](_0x463cfd)&&(_0x2f1e9e+=_0xd77d74(0x10f)+_0x463cfd+'=\x22'+(_0x55f52f[_0x463cfd]||'')+'\x22\x20');}let _0x409ff2=[];_0x345f70[_0xd77d74(0x11a)](_0xa4ec21=>{const _0x210e30=_0xd77d74;let _0x8709a8=_0xa4ec21[_0x210e30(0x12e)]||_0xa4ec21[_0x210e30(0x119)]||'',_0x18f264=_0xa4ec21[_0x210e30(0x153)]?_0xa4ec21[_0x210e30(0x153)]:_0xa4ec21[_0x210e30(0x142)],_0x1f6ab0=_0xa4ec21[_0x210e30(0x122)]||_0xa4ec21['action'];_0x409ff2[_0x210e30(0x146)]('<a\x20class=\x22dropdown-item\x20'+(_0x399ef3[_0x210e30(0x130)]['menuItemClass']||'')+'\x20'+_0x8709a8+'\x22\x20'+_0x2f1e9e+_0x210e30(0x135)+_0x1f6ab0+'\x22\x20href=\x22javascript:void(0)\x22>'+_0xa4ec21[_0x210e30(0x139)]+'\x20'+_0x18f264+_0x210e30(0x114));});let _0x23f409=this[_0xd77d74(0x130)][_0xd77d74(0x126)]||this[_0xd77d74(0x130)]['cssClass']||_0x399ef3[_0xd77d74(0x130)]['className'],_0x1a8ad7=_0x23f409||'bg-white\x20shadow';return[_0xd77d74(0x143)+_0x1a8ad7+'\x22\x20'+_0x2f1e9e+'>',..._0x409ff2,'</div>'][_0xd77d74(0x115)]('');}[_0x508f7b(0x125)](){const _0x534058=_0x508f7b,_0x349c35=this,_0x2d8c30=this[_0x534058(0x130)]['actionButton'];if(_0x2d8c30)_0x349c35[_0x534058(0x13e)](_0x2d8c30);else{const _0x21eacf=_0x349c35[_0x534058(0x130)][_0x534058(0x14a)];let _0x41bd09=_0x349c35[_0x534058(0x130)][_0x534058(0x11c)]||_0x349c35[_0x534058(0x130)][_0x534058(0x11e)];_0x21eacf&&_0x21eacf[_0x534058(0x147)]('click',_0x553dfa=>{const _0x3b7c52=_0x534058;_0x553dfa[_0x3b7c52(0x13d)]();let _0x3a51fd=_0x553dfa[_0x3b7c52(0x127)][_0x3b7c52(0x145)]('.'+_0x41bd09);_0x3a51fd&&_0x349c35['setClickEvent'](_0x3a51fd,_0x553dfa);});}document[_0x534058(0x147)](_0x534058(0x118),function(_0x35182b){const _0x11b4ff=_0x534058,_0x5a8fad=_0x349c35['options']['containerElement'];_0x5a8fad['querySelectorAll']('div.dropdown-menu')[_0x11b4ff(0x11a)](_0x1ad675=>{const _0x476446=_0x11b4ff;!_0x1ad675['parentElement'][_0x476446(0x150)](_0x35182b[_0x476446(0x127)])&&_0x1ad675[_0x476446(0x113)][_0x476446(0x134)](_0x476446(0x14f));});});}[_0x508f7b(0x128)](){const _0x512aba=_0x508f7b;let _0x42d383=this['options'][_0x512aba(0x14a)][_0x512aba(0x14b)](_0x512aba(0x12a));if(!_0x42d383)return{};let _0x2a9d6f={};return _0x42d383[_0x512aba(0x123)]('.dropdown-item')['forEach'](_0x46d103=>{const _0x54dde5=_0x512aba;let _0x4b86e7=_0x46d103[_0x54dde5(0x144)][_0x54dde5(0x120)];_0x2a9d6f[_0x4b86e7]=_0x46d103;}),_0x2a9d6f;}[_0x508f7b(0x13f)](){const _0x3cf81c=_0x508f7b;return this[_0x3cf81c(0x128)]();}[_0x508f7b(0x156)](){const _0x49c78c=_0x508f7b;let _0x130f8a=this[_0x49c78c(0x130)][_0x49c78c(0x14a)][_0x49c78c(0x14b)](_0x49c78c(0x12a));if(!_0x130f8a)return{};return _0x130f8a[_0x49c78c(0x144)];}['setClickEvent'](_0x14face,_0x18f058=null){const _0x251fe3=_0x508f7b,_0x57b156=this;let _0x3a3ebe=_0x14face[_0x251fe3(0x13c)],_0x87a6cf=_0x3a3ebe[_0x251fe3(0x14b)](_0x251fe3(0x12a));if(!_0x87a6cf||_0x87a6cf[_0x251fe3(0x11b)]<=0x0){let _0x5b8967=_0x14face[_0x251fe3(0x144)];const _0x3eec6d=this[_0x251fe3(0x116)](_0x14face,this['options'][_0x251fe3(0x155)],_0x5b8967);_0x3a3ebe[_0x251fe3(0x136)](_0x251fe3(0x124),_0x3eec6d);if(typeof LocaleManager!==_0x251fe3(0x12b))LocaleManager[_0x251fe3(0x112)](_0x3a3ebe);_0x87a6cf=_0x3a3ebe[_0x251fe3(0x14b)](_0x251fe3(0x12a)),_0x87a6cf[_0x251fe3(0x123)]('a')['forEach'](_0x390794=>{_0x390794['onclick']=_0x28fd0f=>{const _0xdc5060=_0x2c7f;_0x28fd0f[_0xdc5060(0x13d)]();let _0x2c62a3=_0x390794[_0xdc5060(0x144)]['id'],_0x41a1e5=_0x390794[_0xdc5060(0x144)],_0x533fb1=_0x41a1e5[_0xdc5060(0x120)];_0x57b156['options'][_0xdc5060(0x148)](_0x390794,_0x2c62a3,_0x533fb1);};});}const _0x54c42c=_0x14face[_0x251fe3(0x151)](),_0x4ab200=_0x54c42c[_0x251fe3(0x117)];if(!_0x87a6cf['classList'][_0x251fe3(0x150)]('show')){if(_0x57b156[_0x251fe3(0x130)][_0x251fe3(0x149)])_0x57b156[_0x251fe3(0x130)][_0x251fe3(0x149)](_0x57b156,_0x87a6cf);_0x87a6cf[_0x251fe3(0x113)][_0x251fe3(0x13a)]('show'),this['prev_dropdownMenu']=_0x87a6cf;}else{if(_0x57b156[_0x251fe3(0x130)]['onClose'])_0x57b156[_0x251fe3(0x130)][_0x251fe3(0x131)](_0x57b156,_0x87a6cf);_0x87a6cf[_0x251fe3(0x113)][_0x251fe3(0x134)](_0x251fe3(0x14f));}const _0x47baaa=_0x87a6cf[_0x251fe3(0x151)](),_0x51d32d=_0x47baaa[_0x251fe3(0x117)],_0x443529=this[_0x251fe3(0x130)]['containerElement'][_0x251fe3(0x151)](),_0x3208f0=_0x54c42c[_0x251fe3(0x12c)]-_0x443529[_0x251fe3(0x12c)],_0x3d9b5b=_0x443529[_0x251fe3(0x13b)]-_0x54c42c['right'],_0x9b52bc=_0x57b156[_0x251fe3(0x130)][_0x251fe3(0x140)]||{'left':0x0,'top':0x0};_0x9b52bc[_0x251fe3(0x12c)]=isNaN(_0x9b52bc[_0x251fe3(0x12c)])?0x0:_0x9b52bc[_0x251fe3(0x12c)],_0x9b52bc[_0x251fe3(0x111)]=isNaN(_0x9b52bc[_0x251fe3(0x111)])?0x0:_0x9b52bc[_0x251fe3(0x111)],_0x87a6cf['style']['position']='absolute',_0x87a6cf[_0x251fe3(0x11d)][_0x251fe3(0x111)]=_0x54c42c[_0x251fe3(0x14c)]+_0x9b52bc[_0x251fe3(0x111)]+'px';_0x3d9b5b<_0x51d32d&&_0x3208f0>=_0x51d32d?_0x87a6cf['style'][_0x251fe3(0x12c)]=_0x54c42c[_0x251fe3(0x12c)]-_0x51d32d+_0x54c42c['width']+_0x9b52bc[_0x251fe3(0x12c)]-0xf+'px':(_0x87a6cf[_0x251fe3(0x11d)][_0x251fe3(0x111)]=_0x54c42c[_0x251fe3(0x14c)]-_0x54c42c['top']+_0x9b52bc[_0x251fe3(0x111)]+'px',_0x87a6cf[_0x251fe3(0x11d)]['left']=_0x54c42c['right']+_0x9b52bc['left']+'px',_0x87a6cf[_0x251fe3(0x11d)][_0x251fe3(0x12c)]=0xf+_0x54c42c[_0x251fe3(0x117)]+_0x54c42c[_0x251fe3(0x13b)]-_0x443529['left']+_0x9b52bc['left']+'px');_0x87a6cf[_0x251fe3(0x11d)][_0x251fe3(0x121)]=_0x4ab200+'px';if(this[_0x251fe3(0x152)]&&this[_0x251fe3(0x152)]!==_0x87a6cf){if(_0x57b156[_0x251fe3(0x130)]['onClose'])_0x57b156['options'][_0x251fe3(0x131)](_0x57b156,prev_dropdownMenu);this[_0x251fe3(0x152)][_0x251fe3(0x113)][_0x251fe3(0x134)](_0x251fe3(0x14f));}}}
+"use strict";
+
+/**
+  options = {
+     wrapperClass: "", // NOTE cssClass also works
+     menuItemClass: "",
+     actionButtonClass: "", // NOTE: clickClass also works 
+     menus: [
+         {
+            text: "",
+            action: "",
+            icon: "",
+         },
+     ],
+     adjustPosition:{
+        left:50,
+        top:20
+     }
+     menuCreated: (menuLink, actionButton) => {},
+     onShow: (data, menus) => { .. },
+     onClose: (data, menus) => { ... },
+     onClick: (lnk, id, action) => {
+       // Write code to handle click event
+     }
+  }
+*/
+
+class VSDropdownMenu {
+  constructor(options = {}) {
+    this.options = options;
+    this.options.containerElement = this.options.containerElement || this.options.table;
+    this.init();
+  }
+
+  createUserActionMenus(link, menus, datasets) {
+    let id = link.dataset.id;
+    const that = this;
+    let str_data = id ? `data-id="${id}" ` : "";
+    
+    // Loop through datasets object and append key-value pairs to str_data
+    for (let key in datasets) {
+      if (datasets.hasOwnProperty(key)) {
+        str_data += `data-${key}="${datasets[key] || ''}" `;
+      }
+    }
+    
+    let menu_html = [];
+    menus.forEach(m => {
+      let menuClass = (m.cssClass || m.className) || '';
+      let menuText = m.html ? m.html : m.text;
+      let mnu_name = m.name || m.action;
+      menu_html.push(`<a class="dropdown-item ${that.options.menuItemClass || ""} ${menuClass}" ${str_data} data-mnuaction="${mnu_name}" href="javascript:void(0)">${m.icon} ${menuText}</a>`);
+    });
+
+    let wrapperClass = (this.options.wrapperClass || this.options.cssClass) || that.options.className;
+    let cssClass = wrapperClass || "bg-white shadow";
+    return [`<div class="dropdown-menu ${cssClass}" ${str_data}>`, ...menu_html, '</div>'].join('');
+  }
+
+  init() {
+    const that = this;
+    const lnk = this.options.actionButton;
+    if (lnk) {
+      that.setClickEvent(lnk);
+    } else {
+      const container = that.options.containerElement;
+      let actionButtonClass = that.options.actionButtonClass || that.options.clickClass;
+      if (container) {
+        container.addEventListener('click', e => {
+          e.preventDefault();
+          let btn = e.target.closest(`.${actionButtonClass}`);
+          if (btn) {
+            that.setClickEvent(btn, e);
+          }
+        });
+      }
+    }
+
+    document.addEventListener('click', function (e) {
+      const container = that.options.containerElement;
+      container.querySelectorAll('div.dropdown-menu').forEach(dropdownMenu => {
+        if (!dropdownMenu.parentElement.contains(e.target)) {
+          dropdownMenu.classList.remove('show');
+        }
+      });
+    });
+  }
+
+  getMenus(){
+    let div = this.options.containerElement.querySelector('.dropdown-menu');
+    if(!div) return {};
+    let menus = {};
+    div.querySelectorAll('.dropdown-item').forEach(m =>{
+       let action_name = m.dataset.mnuaction;
+        menus[action_name] = m;
+    });
+    return menus;
+  }
+  
+  getMenuItems(){
+    return this.getMenus();
+  }
+
+  getMenuData(){
+    let div = this.options.containerElement.querySelector('.dropdown-menu');
+    if(!div) return {};
+    return div.dataset; 
+  }
+
+  setClickEvent(lnk, event = null) {
+    const that = this;
+    let p = lnk.parentElement;
+    let dropdownMenu = p.querySelector('.dropdown-menu');
+    
+    if (!dropdownMenu || dropdownMenu.length <= 0) {
+      let datasets = lnk.dataset;
+      const dropdownMenuHtml = this.createUserActionMenus(lnk, this.options.menus, datasets);
+      p.insertAdjacentHTML('beforeend', dropdownMenuHtml);
+      if (typeof LocaleManager !== 'undefined') LocaleManager.translateZone(p);
+      dropdownMenu = p.querySelector('.dropdown-menu');
+
+      // Set menu's click event
+      dropdownMenu.querySelectorAll('a').forEach(menuItemLnk => {
+        menuItemLnk.onclick = e => {
+          e.preventDefault();
+          let id = menuItemLnk.dataset.id;
+          let d = menuItemLnk.dataset;
+          let name = d.mnuaction;
+          that.options.onClick(menuItemLnk, id, name);
+        };
+      });
+    }
+
+    // Calculate the position of the dropdown menu relative to the viewport
+    const rect = lnk.getBoundingClientRect();
+    const lnkWidth = rect.width;
+
+    if (!dropdownMenu.classList.contains('show')) {
+      if(that.options.onShow) that.options.onShow(that,dropdownMenu);
+      dropdownMenu.classList.add('show');
+      this.prev_dropdownMenu = dropdownMenu;
+    }else{
+       if(that.options.onClose) that.options.onClose(that,dropdownMenu);
+       dropdownMenu.classList.remove('show');
+    }
+
+    // // Style for "dropdown-menu" class
+    // dropdownMenu.classList.toggle('show');
+
+    const dropdownRect = dropdownMenu.getBoundingClientRect();
+    const dropdownWidth = dropdownRect.width;
+    
+    // Calculate the remaining space to the left and right of the action button within the container
+    const containerRect = this.options.containerElement.getBoundingClientRect();
+    const spaceToLeft = rect.left - containerRect.left;
+    const spaceToRight = containerRect.right - rect.right;
+    const adjustPosition = that.options.adjustPosition || {left:0,top:0};
+
+    adjustPosition.left = isNaN(adjustPosition.left)? 0: adjustPosition.left; 
+    adjustPosition.top = isNaN(adjustPosition.top)? 0: adjustPosition.top; 
+
+    // Set the position of the dropdown menu
+    dropdownMenu.style.position = 'absolute';
+    //dropdownMenu.style.top = `${rect.bottom  + adjustPosition.top}px`;
+    dropdownMenu.style.top = `${rect.bottom + adjustPosition.top}px`;
+
+    // const computedStyle = window.getComputedStyle(this.options.containerElement);
+    // const marginRight =  computedStyle.getPropertyValue('padding');
+    // const marginRightValue = parseInt(marginRight, 10);
+    // console.log('margin right = ',marginRightValue);
+   
+    // Determine whether to position the dropdown to the left or right based on available space
+    if (spaceToRight < dropdownWidth && spaceToLeft >= dropdownWidth) {
+      // Position to the left if not enough space on the right and enough space on the left
+      dropdownMenu.style.left = `${rect.left - dropdownWidth + rect.width + adjustPosition.left -15}px`;
+    } else {
+        dropdownMenu.style.top = `${rect.bottom - rect.top + adjustPosition.top}px`;
+        dropdownMenu.style.left = `${rect.right + adjustPosition.left}px`;
+        // Position to the right if there is enough space
+        dropdownMenu.style.left = `${15 + rect.width +  rect.right - containerRect.left + adjustPosition.left}px`; // `${rect.left - dropdownWidth - rect.width}px`;
+    }
+
+    // Set the width of the dropdown menu to match the action button
+    dropdownMenu.style.minWidth = `${lnkWidth}px`;
+    // Remove 'show' class from the previous dropdown menu if it exists
+    if (this.prev_dropdownMenu && this.prev_dropdownMenu !== dropdownMenu) {
+      if(that.options.onClose) that.options.onClose(that,prev_dropdownMenu);
+      this.prev_dropdownMenu.classList.remove('show');
+    }
+
+    // // Store the current dropdown menu as the previous one
+    // if (dropdownMenu.classList.contains('show')) {
+    //    this.prev_dropdownMenu = dropdownMenu;
+    // }else{
+    //   if(that.options.onClose) that.options.onClose(that,dropdownMenu);
+    // }
+  }
+}
