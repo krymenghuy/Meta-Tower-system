@@ -11,7 +11,7 @@ use Sanitizer;
 use DB;
   
 /** delivery price model PriceModel **/
-class Price //extends Model
+class CustomerPrice //extends Model
 {
     //use HasFactory;
     protected $id = null;
