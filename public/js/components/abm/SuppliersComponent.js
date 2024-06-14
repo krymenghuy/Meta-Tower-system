@@ -655,11 +655,6 @@ const SupplierDialog = new function(){
             // VSUtil.setComboItems(mThis.elSenderType, d.sender_types, 'id', 'sender_type', true, '(Select Merchant Type)', def.sender_type_id);
             // VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
             VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'name', true, '(Price List)', null);
-<<<<<<< Updated upstream
-            VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
-=======
-            //VSUtil.setComboItems(mThis.elSalesAgent, d.referrers, 'id', 'referrer_name', true, '(No referral)', null);
->>>>>>> Stashed changes
             onFinish(d);
         });
     }
