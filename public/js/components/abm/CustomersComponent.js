@@ -239,11 +239,11 @@
         console.log("hello",lnk);
         console.log("hello2",customer_id);
         if (lnk) {
-            const id = lnk.dataset.id;
+            const customer_id = lnk.dataset.id;
             let pl_id = lnk.dataset.pricelistid;
             let name = lnk.dataset.name;
             // let span = lnk.find('.customer-price-list')[0];
-            mThis.setCustomerPriceList(id, name, null, pl_id);
+            mThis.setCustomerPriceList(customer_id, name, null, pl_id);
             return;
         }
           //write to show PriceListDialog, and user can choose price list to assign to customer
