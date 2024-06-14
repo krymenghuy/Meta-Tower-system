@@ -109,6 +109,7 @@ var SuppliersComponent = new function(){
             title: 'Price List '
         },
 
+<<<<<<< Updated upstream
         {
             className: "sales_agent_id align-middle",
             data: function (data, index, tr) {
@@ -117,6 +118,16 @@ var SuppliersComponent = new function(){
             title: 'Sales Agent'
             // title: mThis.trans('Created Date')
         },
+=======
+        // {
+        //     className: "sales_agent_id align-middle",
+        //     data: function (data, index, tr) {
+        //         return ['<span class="pl-request_date text-capitalize d-block">',data.referrer||"NA", '</span>','<span class="text-muted">',data.agent_type,'</span>'].join('');
+        //     },
+        //     title: 'Sales Agent'
+        //     // title: mThis.trans('Created Date')
+        // },
+>>>>>>> Stashed changes
         
         {
             className: "created_by align-middle",
@@ -644,7 +655,11 @@ const SupplierDialog = new function(){
             // VSUtil.setComboItems(mThis.elSenderType, d.sender_types, 'id', 'sender_type', true, '(Select Merchant Type)', def.sender_type_id);
             // VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
             VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'name', true, '(Price List)', null);
+<<<<<<< Updated upstream
             VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
+=======
+            //VSUtil.setComboItems(mThis.elSalesAgent, d.referrers, 'id', 'referrer_name', true, '(No referral)', null);
+>>>>>>> Stashed changes
             onFinish(d);
         });
     }

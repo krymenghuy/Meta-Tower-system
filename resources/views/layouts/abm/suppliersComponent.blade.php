@@ -101,7 +101,7 @@
                             
                             <div class="form-group col-lg-6">
                                 <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
-                                <input class="form-control data-input" type="number" placeholder=" accept only number" data-field="phone_number"/>
+                                <input class="form-control data-input" type="number" placeholder="" data-field="phone_number"/>
                             </div>
                             <div class="form-group col-lg-6">
                                 <label for="email" class="form-label trans-text" data-langprop="titles.Email"></label>
@@ -114,10 +114,10 @@
                         <label for="price_list_id" class="form-label trans-text" data-langprop="titles.Price List"></label>
                         <select id="_sdl_price_list" class="modal-select2 data-input" data-field="price_list_id"></select>
                     </div>
-                    <div class="col-lg-6">
+                    <!-- <div class="col-lg-6">
                         <label for="sales_agent_id" class="form-label trans-text" data-langprop="titles.Referrer"></label>
                         <select id="_sdl_sales_agent" class="modal-select2 data-input" data-field="referrer_id"></select>
-                    </div>
+                    </div> -->
                     <div class="form-group col-lg-12">
                         <label for="address" class="form-label trans-text" data-langprop="titles.Address"></label>
                         <textarea class="form-control data-input" data-field="address"></textarea>

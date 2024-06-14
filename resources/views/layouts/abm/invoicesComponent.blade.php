@@ -55,7 +55,7 @@
                     <div class="form-group col-md-6">
                         <label for="form-label trans-text">DISCOUNT PERCENT</label>
                         <input type="number" name="" id="_discount_percent" class="form-control data-input"
-                            data-field="discount_percent" placeholder="% discount">
+                            data-field="discount_percent" placeholder="">
                     </div>
                     <div class="form-group col-md-6">
                         <label class="form-label trans-text">FROM DATE</label>

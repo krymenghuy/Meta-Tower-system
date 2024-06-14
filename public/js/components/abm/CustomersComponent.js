@@ -235,9 +235,6 @@
         }
         
         this.setPriceList = (lnk,customer_id)=>{
-        //    alert('set price list'); 
-        console.log("hello",lnk);
-        console.log("hello2",customer_id);
         if (lnk) {
             const id = lnk.dataset.id;
             let pl_id = lnk.dataset.pricelistid;
