@@ -182,7 +182,7 @@
         <div class="row">
           <div class="form-group col-lg-6">
             <label for="" class="control-label">Country</label>
-            <select id="_ps_newzone_zone" class="modal-select2 data-input" data-field="country_id"></select>
+            <select id="_sp_newzone_zone" class="modal-select2 data-input" data-field="country_id"></select>
           </div>
           <!-- <div class="form-group col-lg-6">
             <a href="javascript:void(0)" id="_ps_btnAddZone">

@@ -271,7 +271,7 @@ var InvoicesComponent = new function () {
                },
             ],
             adjustPosition:{
-                 top:20 ,
+                 top:-200 ,
                  left:-300
             },
             onShow:(instance, menuContainer)=>{
@@ -361,6 +361,7 @@ const CreateInvoiceDialog = new function () {
         e.preventDefault();
         const p = mThis.getFormData();
         p['id'] = shipments_id;
+        console.log(p);
 
         if (!p) return;
         vsapi.call(`${mThis.base_url}/abm/invoice/save`, p, mThis.btnCreate).then(res => {

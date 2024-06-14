@@ -560,7 +560,7 @@ var PriceLineDialog = new function () {
   this.self = main_view.appContent.children('#_ps_dlgPriceLine');
   this.base_url = main_view.base_url;
   this.elTitle = this.self.find('#_ps_dlgPriceLineTitle');
-  this.elZone = this.self.find('#_ps_newzone_zone');
+  this.elZone = this.self.find('#_sp_newzone_zone');
   this.elZones = this.self.find('#_ps_newzone_zone_codes');
   //btnAddZone adds each selected zone to the list of zone_codes
   this.btnAddZone = this.self.find('#_ps_btnAddZone');

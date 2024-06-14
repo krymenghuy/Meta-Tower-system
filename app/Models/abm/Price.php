@@ -41,7 +41,7 @@ class Price //extends Model
     static function price_list_name_exists($name,$id=null){
         $str_id ="1=1";
         if($id>0) $str_id ="id <> $id";
-        $rows = DB::table('os_price_list_names')->where('name',$name)->whereRaw($str_id)->select("id")->take(1)->get();
+        $rows = DB::table('os_customer_price_list_names')->where('name',$name)->whereRaw($str_id)->select("id")->take(1)->get();
         return isset($rows[0]);
     }
 
@@ -51,7 +51,7 @@ class Price //extends Model
        $branch_id =$ss->branch_id;
        if(self::price_list_name_exists($new_name,$id)) return DV::error("Price list name $new_name already exists");
 
-       DB::table('os_price_list_names')->where('id',$id)->where('branch_id',$branch_id)->update(['name'=>$new_name]);
+       DB::table('os_customer_price_list_names')->where('id',$id)->where('branch_id',$branch_id)->update(['name'=>$new_name]);
        return DV::success();
     }
 
@@ -122,7 +122,7 @@ class Price //extends Model
         $sender_id = isset($d->sender_id)?$d->sender_id:null;
         $price_list_id = isset($d->price_list_id)?$d->price_list_id:null;
         
-        $list_exists = DB::table('os_price_list_names')->where('id',$price_list_id)->exists();
+        $list_exists = DB::table('os_customer_price_list_names')->where('id',$price_list_id)->exists();
         if(!$list_exists){
             return "Price List $price_list_id does not exist";
         }
@@ -575,7 +575,7 @@ class Price //extends Model
         // return JDV::result($country_id);
         $rows =[];
         $kg_marker =0;
-        $rows = DB::table('os_price_list_names')->where('branch_id',$branch_id)->where('id',$price_list_id)->selectRaw("id,kg_marker")->get();
+        $rows = DB::table('os_customer_price_list_names')->where('branch_id',$branch_id)->where('id',$price_list_id)->selectRaw("id,kg_marker")->get();
         foreach($rows as $row) $kg_marker = $row->kg_marker;
 
         $str_kg_marker = null;
@@ -745,7 +745,7 @@ class Price //extends Model
 
         // $kg_marker =0;
         //get kg_marker based on the given @price_list_id
-        // $rows = DB::table('os_price_list_names AS n')->where('n.branch_id',$branch_id)->where('id',$price_list_id)->selectRaw('kg_marker')->limit(1)->get();
+        // $rows = DB::table('os_customer_price_list_names AS n')->where('n.branch_id',$branch_id)->where('id',$price_list_id)->selectRaw('kg_marker')->limit(1)->get();
         // foreach($rows as $row) $kg_marker = $row->kg_marker;
 
         //determine $more_wheres clause, depending on whether the given @section is "below" or "above" the kg_marker
@@ -913,7 +913,7 @@ class Price //extends Model
 
         $result = (object)array('status'=>'OK','error_message'=>null);
         // $kg_marker =-1;
-        // $rows = DB::table('os_price_list_names AS l')->where('branch_id',$branch_id)->where('id',$price_list_id)->selectRaw("l.id,l.kg_marker")->limit(1)->get();
+        // $rows = DB::table('os_customer_price_list_names AS l')->where('branch_id',$branch_id)->where('id',$price_list_id)->selectRaw("l.id,l.kg_marker")->limit(1)->get();
         // foreach($rows as $row){
         //    $kg_marker = $row->kg_marker;
 
@@ -1072,7 +1072,7 @@ class Price //extends Model
         $kg_marker = isset($d->kg_marker)?$d->kg_marker:0; 
         $result = (object)[];
         
-        $exists = DB::table('os_price_list_names')->where('branch_id',$branch_id)->where('name',$name)->limit(1)->exists();
+        $exists = DB::table('os_customer_price_list_names')->where('branch_id',$branch_id)->where('name',$name)->limit(1)->exists();
         if($exists) {
             $result->error_message = "The provided Price List name already in use";
             $result->status = 'Error';
@@ -1085,7 +1085,7 @@ class Price //extends Model
             return $result;
         }
 
-        DB::table('os_price_list_names')->insert(array(
+        DB::table('os_customer_price_list_names')->insert(array(
             'branch_id'=>$branch_id,
             'name'=>$name,
             'kg_marker'=>$kg_marker,
@@ -1108,7 +1108,7 @@ class Price //extends Model
         $id = isset($d->id)?$d->id:null;
         if(!$id) $id = isset($d->price_list_id)?$d->price_list_id:0;
 
-        DB::table('os_price_list_names')->where('branch_id',$branch_id)->where('id',$id)->delete();
+        DB::table('os_customer_price_list_names')->where('branch_id',$branch_id)->where('id',$id)->delete();
         DB::table('price_list')->where('branch_id',$branch_id)->where('price_list_id',$id)->delete();
         return null;
     }
@@ -1138,7 +1138,7 @@ class Price //extends Model
         if ($ss->status_code !==200) return $ss; //user not authenticated
         //need permission to do this task
         $branch_id = $ss->branch_id;
-        $rows = DB::table('os_price_list_names AS ps')->where('ps.branch_id',$branch_id)->selectRaw("id,name,kg_marker")->get();
+        $rows = DB::table('os_customer_price_list_names AS ps')->where('ps.branch_id',$branch_id)->selectRaw("id,name,kg_marker")->get();
         return $rows;
     }
 

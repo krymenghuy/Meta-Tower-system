@@ -773,7 +773,7 @@ class SupplierPrice //extends Model
         // else if (strtolower($price_option) =='per_kg' || strtolower($price_option) =='per kg')
            $price_per_kg = $price;
  
-        $rows = DB::table('os_supplier_price_list_details AS l')->where('branch_id',$branch_id)->where('zone_code',$zone_codes)->where('item_type',$item_type)->selectRaw("l.id")->get();
+        $rows = DB::table('os_supplier_price_list_details AS l')->where('branch_id',$branch_id)->where('zone_code',$zone_codes)->where('item_type',$item_type)->get();
         //if the pricing condition already exist => then UPDATE (base_fee, delivery_fee, price_option) of the existing one
         foreach($rows as $row) {
           $qres = DB::table('os_supplier_price_list_details')->where('branch_id',$branch_id)->where('zone_code',$zone_codes)->where('item_type',$item_type)->where('price_list_id',$price_list_id)

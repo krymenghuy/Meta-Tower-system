@@ -277,6 +277,7 @@ class Supplier //extends Model
         $data->sender_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name AS status_name')->get();
         $data->sales_agents = DB::table('os_affiliates AS sa')->where('branch_id',$branch_id)->selectRaw('sa.id,sa.name AS agent_name')->get();
         $data->price_list = DB::table('os_supplier_price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name')->get();
+        
         return $data;
     }
     static function details($id,$ss,$includeProfilePicture=false,$includeBankAccount=true){

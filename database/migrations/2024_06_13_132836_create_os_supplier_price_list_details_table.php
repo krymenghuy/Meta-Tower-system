@@ -14,6 +14,7 @@ class CreateOsSupplierPriceListDetailsTable extends Migration
     public function up()
     {
         Schema::create('os_supplier_price_list_details', function (Blueprint $table) {
+            $table->increments('id');
             $table->integer('price_list_id');
             $table->integer('country_id')->nullable();
             $table->integer('zone_code');
