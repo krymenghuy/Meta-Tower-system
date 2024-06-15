@@ -151,7 +151,7 @@ namespace App\ScriptManagement;
                         'js/components/dms/DriverBalancesCompoment.js',
                         'js/components/dms/ExchangeRatesComponent.js',
                         'js/components/dms/GeneralSettingsComponent.js',
-                        '/assets/js/InputBoxes.js',
+                        '/assets/js/InputBoxes.bs5.js',
                         'js/components/dms/LocationComponent.js?v=1',
                         'js/components/dms/MobileBrandImagesComponent.js',
                         // 'js/components/dms/MobileTCComponent.js',
