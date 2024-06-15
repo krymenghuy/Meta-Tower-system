@@ -149,7 +149,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="_pl_dlgPickupStatusTitle">Set shipment Status</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -189,7 +189,7 @@
             </div>
             <div class="modal-footer">
                 <span class="error_text" id="_pl_ps_error"></span>
-                <button type="button" class="btn btn-secondary height" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary height" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary height" id="_pl_ps_btnOK"><span class="trans-text"
                         data-langprop="buttons.OK"></span< /button>
             </div>
@@ -211,7 +211,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title trans-text" id="_pl_dlgEmptyOrderTitle" data-langprop="titles.New Shipment"></h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -294,7 +294,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-default height" data-dismiss="modal"><span
+                <button type="button" class="btn btn-secondary btn-default height" data-bs-dismiss="modal"><span
                         class="trans-text" data-langprop="buttons.Cancel"></span></button>
                 <button type="button" class="btn btn-primary height" id="_pl_dlgEmptyOrder_btnOK"><span
                         class="trans-text" data-langprop="buttons.Create"></span></button>
@@ -309,7 +309,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="ps_dlgSpecialChargeTitle">Add Special Charge</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -337,7 +337,7 @@
             </div>
             <div class="modal-footer">
 
-                <button type="button" class="btn btn-warning height" data-dismiss="modal">
+                <button type="button" class="btn btn-warning height" data-bs-dismiss="modal">
                     <i class="fa fa-times fs-5 text-danger"></i>
                     <span>Cancel</span>
                 </button>

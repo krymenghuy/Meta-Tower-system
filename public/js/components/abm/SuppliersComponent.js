@@ -584,7 +584,8 @@ var SuppliersComponent = new function(){
 
 const SupplierDialog = new function(){
     const mThis = this;
-    this.self = main_view.appContent.find('#_sdl_dlgSupplier');
+    this.self = main_view.appContent.find('#_sdl_dlgSupplier')[0];
+    this.modal = new bootstrap.Modal(this.self);
     this.base_url = main_view.base_url;
     this.options = {};
     
@@ -697,9 +698,7 @@ const SupplierDialog = new function(){
                     d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
                     mThis.prepareData(d, {}, data => {
                         mThis.setData(d);
-                        mThis.self.modal({
-                            backdrop:'static'
-                        });
+                      mThis.modal.show();
                     });
                 }
             });
@@ -708,9 +707,7 @@ const SupplierDialog = new function(){
             mThis.elTitle[0].innerHTML =  "New Supplier";
             mThis.prepareData({'id':1},{},data =>{
                 mThis.setData();
-                mThis.self.modal({
-                    backdrop:'static'
-                });       
+               mThis.modal.show(); 
             });
         }
     }

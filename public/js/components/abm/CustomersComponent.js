@@ -736,9 +736,7 @@
                         d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
                         mThis.prepareData(d, {}, data => {
                             mThis.setData(d);
-                            mThis.self.modal({
-                                backdrop:'static'
-                            });
+                           mThis.modal.show();
                         });
                     }
                 });
