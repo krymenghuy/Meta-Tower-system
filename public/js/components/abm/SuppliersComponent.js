@@ -732,7 +732,7 @@ const SupplierDialog = new function(){
     this.setData = (d) => {
         // mThis.body.querySelectorAll('.data-input').forEach(el => {
         //     el.value = null;
-        // });
+        // }); 
         if (!d) return;
         d = d || {};
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {

@@ -73,7 +73,8 @@
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(200); ?>>
                 <a href="DashboardComponent" modid="200" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/dashboard/dashboard-statistics-5499.svg') }}" />
+                        <i class="fas fa-chart-line icons opacity-icons"></i>
+                        <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/dashboard/dashboard-statistics-5499.svg') }}" /> -->
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Dashboard"></span>
                 </a>
@@ -93,7 +94,8 @@
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
                 <a href="SuppliersComponent" modid="202" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/package_trail.svg') }}" />
+                        <i class="fas fa-truck-plane icons opacity-icons"></i>
+                        <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/package_trail.svg') }}" /> -->
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Suppliers"></span>
                 </a>
@@ -102,7 +104,8 @@
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(214); ?>>
                 <a href="SalesAffiliatesComponent" modid="214" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/order_image.svg') }}" />
+                        <i class="fa fa-users icons opacity-icons"></i>
+                        <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/order_image.svg') }}" /> -->
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Sales Affiliates"></span>
                 </a>
@@ -111,7 +114,8 @@
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(203); ?>>
                 <a href="ShipmentsComponent" modid="203" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_fleet.svg') }}" />
+                        <i class="fas fa-shipping-fast icons opacity-icons"></i>
+                        <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_fleet.svg') }}" /> -->
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Shipments"></span>
                 </a>
@@ -123,11 +127,14 @@
             <li class="kt-menu__section" <?php v_display(null,[205,206,223,219,213]);?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Billings & Payments"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
+                
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(205); ?>>
                 <a href="BillingValidationComponent" modid="205" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/driver_transaction.svg') }}" />
+                        <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/driver_transaction.svg') }}" /> -->
+                        <i class="fas fa-tasks icons opacity-icons"></i>
+                        <!-- <svg class="icons opacity-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.<path d="M139.6 35.5a12 12 0 0 0 -17 0L58.9 98.8l-22.7-22.1a12 12 0 0 0 -17 0L3.5 92.4a12 12 0 0 0 0 17l47.6 47.4a12.8 12.8 0 0 0 17.6 0l15.6-15.6L156.5 69a12.1 12.1 0 0 0 .1-17zm0 159.2a12 12 0 0 0 -17 0l-63.7 63.7-22.7-22.1a12 12 0 0 0 -17 0L3.5 252a12 12 0 0 0 0 17L51 316.5a12.8 12.8 0 0 0 17.6 0l15.7-15.7 72.2-72.2a12 12 0 0 0 .1-16.9zM64 368c-26.5 0-48.6 21.5-48.6 48S37.5 464 64 464a48 48 0 0 0 0-96zm432 16H208a16 16 0 0 0 -16 16v32a16 16 0 0 0 16 16h288a16 16 0 0 0 16-16v-32a16 16 0 0 0 -16-16zm0-320H208a16 16 0 0 0 -16 16v32a16 16 0 0 0 16 16h288a16 16 0 0 0 16-16V80a16 16 0 0 0 -16-16zm0 160H208a16 16 0 0 0 -16 16v32a16 16 0 0 0 16 16h288a16 16 0 0 0 16-16v-32a16 16 0 0 0 -16-16z"/></svg> -->
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Billing Validation"></span>
                 </a>
@@ -139,7 +146,8 @@
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(206); ?>>
                 <a href="InvoicesComponent" modid="206" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/marchant_transactions.svg') }}" />
+                        <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/marchant_transactions.svg') }}" /> -->
+                        <i class="fas fa-receipt icons opacity-icons"></i>
                     </span>
                     <span class="kt-menu__link-text font-color text-nowrap trans-text" data-langprop="menus.Invoices"></span>
                 </a>
