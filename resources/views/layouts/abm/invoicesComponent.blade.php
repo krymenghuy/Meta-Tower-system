@@ -52,7 +52,7 @@
                     </div>
 
                     <div class="form-group col-lg-6">
-                        <label for="discount_percent" class="form-label trans-text" data-langprop="Discount Percent">DISCOUNT PERCENT</label>
+                        <label for="discount_percent" class="form-label trans-text" data-langprop="titles.Discount Percent">DISCOUNT PERCENT</label>
                         <input type="number" name="" id="_discount_percent" class="form-control data-input"
                             data-field="discount_percent" placeholder="">
                     </div>

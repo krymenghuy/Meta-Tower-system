@@ -235,11 +235,11 @@ class Supplier //extends Model
     {
         $ss = $ss ? $ss : $this->userInfo;
         $id = $id ? $id : $this->id;
-        if (in_array(strtolower($status_code), ['inactive', 'locked', 'disabled'])) {
-            $err = self::getOutstandingBalanceError($id);
-            if ($err)
-                return DV::error($err);
-        }
+        // if (in_array(strtolower($status_code), ['inactive', 'locked', 'disabled'])) {
+        //     $err = self::getOutstandingBalanceError($id);
+        //     if ($err)
+        //         return DV::error($err);
+        // }
         $x = DB::table('os_suppliers')->where('id', $id)->update([
             'status_code' => $status_code
         ]);

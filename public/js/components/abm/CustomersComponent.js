@@ -507,6 +507,7 @@
                 };
                 CustomerDialog.show(op);
             });
+           
             
             mThis.tblCustomers = mThis.customerListView.getTable();
             mThis.initDropdownMenus(mThis.tblCustomers);

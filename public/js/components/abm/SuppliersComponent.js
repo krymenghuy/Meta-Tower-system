@@ -554,6 +554,7 @@ var SuppliersComponent = new function(){
     this.changeSenderStatus = () => {
         return;
     }
+    
     this.createDropdownMenuHtml_pickup = function (supplier_id, pricelist_id, name ,status) {
         let html = [
             '<div class="dropdown-menu bg-white shadow" data-id="', supplier_id, '" data-pricelistid="', pricelist_id, '" data-name="', name, '">',

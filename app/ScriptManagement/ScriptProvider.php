@@ -82,8 +82,8 @@ namespace App\ScriptManagement;
                     'single_file'=>1,
                     'output_file'=>'/dist/js/abm.components.js',
                     'files'=>[
-                        'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
-                        'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
+                        // 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
+                        // 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                         '/assets/js/VSRoute.js',
                         '/js/layout/abm/main.js',
                         '/assets/js/formUtils.js',
