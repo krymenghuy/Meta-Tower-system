@@ -180,7 +180,7 @@ class Dashboard //extends Model
            $founds = $rows->filter(function($x) use($status_id){
                return $x->status_id == $status_id; 
            });
-           $row = isset($founds[0])? $founds[0]:null;
+           $row =  $founds? $founds->first():null;
            $item = null; 
            if($row){
                 $total += $row->cnt;
