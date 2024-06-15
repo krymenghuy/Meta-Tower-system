@@ -532,9 +532,7 @@
                 global.initial();
 
                 // update global example when change range
-                document.querySelectorAll("pre code").forEach((el) => {
-                    hljs.highlightElement(el);
-                });
+                // t
 
                 const infoCode = document.querySelectorAll(".info-code");
                 infoCode.forEach((info) => {
