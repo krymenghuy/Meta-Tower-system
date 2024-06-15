@@ -45,27 +45,26 @@
             </div>
             <div class="modal-body" id="_cul_dlgCustomer_body">
                 <div class="row">
-                    <div class="form-group col-md-6">
-                        <label class="form-label trans-text">CUSTOMER NAME</label>
-                        <div>
+                    <div class="form-group col-lg-6">
+                        <label for="name" class="form-label trans-text" data-langprop="titles.Customer Name">CUSTOMER NAME</label>
                             <select id="_name_customer" class="modal-select2 data-input"
                                 data-field="customer"></select>
-                        </div>
                     </div>
-                    <div class="form-group col-md-6">
-                        <label for="form-label trans-text">DISCOUNT PERCENT</label>
+
+                    <div class="form-group col-lg-6">
+                        <label for="discount_percent" class="form-label trans-text" data-langprop="Discount Percent">DISCOUNT PERCENT</label>
                         <input type="number" name="" id="_discount_percent" class="form-control data-input"
                             data-field="discount_percent" placeholder="">
                     </div>
-                    <div class="form-group col-md-6">
-                        <label class="form-label trans-text">FROM DATE</label>
-                        <div><input id="_pl_filter_startdate" class="form-control data-input dl_filter_field"
-                                data-select="datepicker" autocomplete="off"></div>
+                    <div class="form-group col-lg-6">
+                        <label for="from_date" class="form-label trans-text" data-langprop="Form Date">FROM DATE</label>
+                        <input id="_pl_filter_startdate" class="form-control data-input dl_filter_field"
+                                data-select="datepicker" autocomplete="off">
                     </div>
-                    <div class="form-group col-md-6">
-                        <label class="form-label   trans-text">START DATE</label>
-                        <div><input id="_pl_filter_enddate" class="form-control data-input dl_filter_field"
-                                data-select="datepicker" autocomplete="off"></div>
+                    <div class="form-group col-lg-6">
+                        <label for="to_date" class="form-label trans-text" data-langprop="To Date">START DATE</label>
+                        <input id="_pl_filter_enddate" class="form-control data-input dl_filter_field"
+                                data-select="datepicker" autocomplete="off">
                     </div>
                 </div>
 

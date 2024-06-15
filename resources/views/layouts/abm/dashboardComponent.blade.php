@@ -269,7 +269,7 @@
                                     <section class="d-flex justify-content-center">
                                         <!-- <div class="flex info">
                                             <div class="info-name">July</div>
-                                            <div class="info-code">
+                    z                        <div class="info-code">
                                                 <select class="form-select form-select-sm" aria-label="Small select example">
                                                     <option selected>July</option>
                                                     <option value="1">One</option>

@@ -294,7 +294,7 @@
                     name:"edit_customer"
                     },
                     {
-                    html:'<span class="ps-2 trans-text" data-langprop="titles.Modify Delete">Modify Customer</span>',
+                    html:'<span class="ps-2 trans-text" data-langprop="titles.Delete Customer">Delete Customer</span>',
                     icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"delete_customer"

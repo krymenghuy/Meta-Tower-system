@@ -72,9 +72,9 @@ var SuppliersComponent = new function(){
         },
         {
             title:'Supplier ID',
-            className:"code align-middle",
+            className:" align-middle",
             data:(data,index,tr)=>{
-                return `<span class="code">${data.code ? data.code: 'N/A'}</span>`;
+                return `<span class="">${data.code ? data.code: 'N/A'}</span>`;
             }
            
         },

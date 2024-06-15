@@ -672,7 +672,7 @@ var SalesAffiliatesComponent = new function () {
             title: "ID",
             className: "align-middle text-capitalize text-nowrap",
             data:(data,index,tr)=>{
-                return `<span class="code text-success">${data.code ? data.code:'N/A'}</span>`;
+                return `<span class="text-success">${data.code ? data.code:'N/A'}</span>`;
             }
         },
         {
@@ -765,7 +765,7 @@ var SalesAffiliatesComponent = new function () {
             title: "ID",
             className: "align-middle text-capitalize text-nowrap",
             data:(data,index,tr)=>{
-                return `<span class="code text-info">${data.code ? data.code:'N/A'}</span>`;
+                return `<span class="" text-info">${data.code ? data.code:'N/A'}</span>`;
             }
         },
         {
