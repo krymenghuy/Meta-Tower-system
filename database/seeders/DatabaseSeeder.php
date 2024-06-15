@@ -74,6 +74,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
             OsSupplierPriceListNameSeeder::class,
         ]);
+        $this->call([
+            LastGcTimeSeeder::class,
+        ]);
+        $this->call([
+            LocCountriesSeeder::class,
+        ]);
 
        
        

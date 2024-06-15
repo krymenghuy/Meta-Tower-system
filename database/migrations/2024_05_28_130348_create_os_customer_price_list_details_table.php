@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOsPriceListDetailsTable extends Migration
+class CreateOsCustomerPriceListDetailsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateOsPriceListDetailsTable extends Migration
      */
     public function up()
     {
-        Schema::create('os_price_list_details', function (Blueprint $table) {
+        Schema::create('os_customer_price_list_details', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('price_list_id');
             $table->integer('country_id')->nullable();
@@ -40,6 +40,6 @@ class CreateOsPriceListDetailsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('os_price_list_details');
+        Schema::dropIfExists('os_customer_price_list_details');
     }
 }
