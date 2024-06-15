@@ -30,6 +30,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Moul&display=swap" rel="stylesheet">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        
         <?php StyleManager::render('abm-style',1); ?>
         <style>
             /* Custom animations for the modal like Materialize css effect */
@@ -238,5 +239,7 @@
         <div id="kt_scrolltop" class="kt-scrolltop">
             <i class="fa fa-arrow-up"></i>
         </div>
+
+        
     </body>
 </html>

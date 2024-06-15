@@ -20,6 +20,7 @@ use App\Http\controllers\abm\SupplierPriceController;
 use App\Http\controllers\abm\GeneralSettingsController;
 use App\Http\controllers\abm\SpecialChargeController;
 use App\Http\controllers\abm\PaymentController;
+use App\Http\controllers\abm\DashboardController;
  
  //begin:: api without Authentication
     Route::middleware([CustomRateLimiter::class])->group(function(){
@@ -163,8 +164,12 @@ use App\Http\controllers\abm\PaymentController;
     Route::post('updateSupplierPriceList_kg_marker', [SupplierPriceController::class, 'updatePriceList_kg_marker']);
     Route::post('getComboItems_supplier_price_list', [SupplierPriceController    ::class, 'getComboItems_price_list']);
     
+    
+    Route::prefix('dashboard')->group(function(){
+        Route::post('get-data-card', [DashboardController::class, 'getDataCard']);
+        Route::post('get-data-table', [DashboardController::class, 'getDataTable']);
+    });
    //begin:: Counties_Zone_Code
-
     Route::prefix('country')->group(function(){
         Route::post('/save',[CountryZoneController::class,'save']);
         Route::post('/delete',[CountryZoneController::class,'delete']);
@@ -172,6 +177,7 @@ use App\Http\controllers\abm\PaymentController;
         Route::post('/details',[CountryZoneController::class,'details']);
         
     });
+
 
     Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('settings')->group(function(){
         Route::post('/options-country-zone', [GeneralSettingsController::class, 'getComboItems_country_zone']);
