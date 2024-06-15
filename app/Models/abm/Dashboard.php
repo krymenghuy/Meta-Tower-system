@@ -159,18 +159,90 @@ class Dashboard //extends Model
      if(!$row) return null;
      if ($row->item_count > 0 ) return 'មិន​អាច​លុប ឬ​បិទ​គណនី​នេះ​បាន​ទេ ព្រោះ​មាន​កញ្ចប់ '.$row->item_count.' ដែល​មិន​ទាន់​បាន​ទូទាត់​ប្រាក់';
      return null;
-  }
-    static function getDataCard($ss){   
+    }
+    static function getSliceCircle($status_id){
+        $colors = [1=>'#E3EA00',2=>'#6200EA',3=>'#33EA00'];
+        return $colors[$status_id];
+    }
+    static function getCards($ss){   
 
         $branch_id = $ss->branch_id;
-        $data= (object)[];
-        // $data->branches = [(object)['id'=>1,'branch_name'=>'Head Quarter']];
-        // $data->sender_types = DB::table('sender_type')->where('branch_id',$branch_id)->selectRaw('id,name AS sender_type')->get();
-        $data->business_types = DB::table('sender_business_types')->selectRaw('business_type AS code,business_type')->get();
-        $data->sender_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name AS status_name')->get();
-        $data->referrers = DB::table('os_affiliates AS af')->join('os_sales_agents as sa','af.id','=','sa.affiliate_id')->where('af.branch_id',$branch_id)->selectRaw('af.id,af.name AS referrer_name')->get();
-        $data->price_list = DB::table('os_supplier_price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name')->get();
-        return $data;
+        $circle_cards=[];
+        $normal_cards =[];
+        $status_ids = [1,2,3];
+        $str_dates = '1=1';
+        $rows = DB::table('os_shipments as s')->join('os_shipment_statuses as n', 'n.id','=','s.status_id')->whereIn('s.status_id',$status_ids)->whereRaw($str_dates)->selectRaw('COUNT(s.id) as cnt, s.status_id, n.name as `status`')->groupByRaw('s.status_id, n.name')->get();
+        $total = 0; 
+        foreach($rows as $row){
+            $total += $row->cnt;
+            $circle_cards[] = (object)[
+                'value'=>$row->cnt,
+                'status'=>$row->status,
+                'colorSlice'=> self::getSliceCircle($row->status_id)
+
+            ];
+
+         } 
+        foreach($circle_cards as $card){
+            if($total==0)$total=1;
+            $card->percentage= number_format($card->value *100 / $total,2);
+            $card->total = $total;
+        }
+
+        $rows = DB::table('sender as s')->whereRaw($str_dates)->selectRaw('COUNT(s.id) as cnt,s.status_code as `status`')->groupByRaw('s.status_code')->get();
+        $active_cnt =0;
+        $customer_cnt = 0;
+        foreach($rows as $row){
+            if(strtolower($row->status) == 'active')
+            $active_cnt = $row->cnt;
+            $customer_cnt += $row->cnt;
+           
+        }
+        $normal_cards [] = (object)[
+            'title'=>'Total Customer',
+            'value'=>$customer_cnt,
+            'icon'=> '<i class="fas fa-user-plus text-info" style="font-size: 3rem;width: 100px;"></i>',
+            'color'=>'#0000'
+
+        ];
+        $normal_cards [] = (object)[
+            'title'=>'Active Customer',
+            'value'=>$active_cnt,
+            'icon'=> ' <i class="fas fa-user text-success"  style="font-size: 3rem;width: 100px;"></i>',
+            'color'=>'#0000'
+
+        ];
+        
+        $active_agent = DB::table('os_affiliates as f')->join('os_sales_agents as a','a.affiliate_id','=','f.id')->where('f.status_code','Active')->count('f.id');
+        $normal_cards [] = (object)[
+            'title'=>'Active Sales Agent',
+            'value'=>$active_agent,
+            'icon'=> ' <i class="fa fa-users text-success"  style="font-size: 3rem;width: 100px;"></i>',
+            'color'=>'#0000'
+
+        ];
+        
+
+        return (object)[
+            'circle_cards' => $circle_cards,
+            'normal_cards' => $normal_cards
+        ];
+        
+        
+        // $total_customer = DB::table('sender as s')->join('sender_classes as sc','sc.sender_id','=','s.id')->where('sc.sender_class','oversea')->count('s.id');
+        // $active_customer = DB::table('sender as s')->join('sender_classes as sc','sc.sender_id','=','s.id')->where('sc.sender_class','oversea')->where('s.status_code','active')->count('s.id');
+        // $active_seles_agent = DB::table('os_affiliates as a')->join('os_sales_agents as sa','sa.affiliate_id','=','a.id')->where('a.status_code','Active')->count('a.id');
+        // // return [$total_customer , $active_customer ,$active_seles_agent];
+        
+        // $data->shipments_panding = (object)[$panding, number_format(($panding/$total)*100, 2)];
+        // $data->shipments_shipping = (object)[$shipping, number_format(($shipping/$total)*100, 2)];
+        // $data->shipments_validated = (object)[$validated, number_format(($validated/$total)*100, 2)];
+        // $data->shipments_total = $total;
+
+        $data->total_customer = $total_customer;
+        $data->active_customer = $active_customer;
+        $data->active_seles_agent = $active_seles_agent;
+        // return $data;
     }
 
 
