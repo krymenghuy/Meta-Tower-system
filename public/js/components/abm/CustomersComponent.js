@@ -301,14 +301,13 @@
                     },
                         
                 ],
-                adjustPosition:{
-                        top:-90
-                },
+                // adjustPosition:{
+                //         top:-90
+                // },
                 //onShow:(instance, menuContainer)=>{
                 //     console.log('open: ', instance.getMenus());
                 // },
                 // onClose:(instance, menus)=>{
-    
                 // },
                 onClick:(menuLink, id, name)=>{
                     switch(name){
@@ -635,21 +634,22 @@
    
     const CustomerDialog = new function () {
         const mThis = this;
-        this.self = main_view.appContent.find('#CustomerDialog');
+        this.self = main_view.appContent.find('#_cul_dlgCustomer')[0];
+        this.modal = new bootstrap.Modal(this.self);
         this.base_url = main_view.base_url;
         this.options = {};
+        
+        this.elTitle = this.self.querySelector('#_cul_dlgCustomerTitle');
+        this.btnSave = this.self.querySelector('#_cul_dlgCustomer_btnSave');
     
-        this.elTitle = this.self.find('#_cul_dlgCustomerTitle');
-        this.btnSave = this.self.find('#_cul_dlgCustomer_btnSave');
-    
-        this.elBusinessType = this.self.find('#_cul_business_type');
+        this.elBusinessType = this.self.querySelector('#_cul_business_type');
         //this.elSalesAgent = this.self.find('#_cul_sales_agent');
-        this.elPriceList = this.self.find('#_cul_price_list');
-        this.elCustomerType = this.self.find('#_cul_sender_type');
+        this.elPriceList = this.self.querySelector('#_cul_price_list');
+        this.elCustomerType = this.self.querySelector('#_cul_sender_type');
     
         this.onClose = null;
-        this.body = this.self.find('.modal-body')[0];
-        this.divPhoto = this.self[0].querySelector('#_customer_profile_photo');
+        this.body = this.self.querySelector('.modal-body');
+        this.divPhoto = this.self.querySelector('#_customer_profile_photo');
     
         this.div_sender_info = this.body.querySelector('#_cul_dlgCustomer_body');
     
@@ -663,7 +663,6 @@
             // },
             "onLoadImage":(photo) =>{
                 let p = {"id":mThis.options.id,"id":mThis.options.id,"photo":photo};
-                console.log('photo',photo);
                 if(!p.id) return; 
                 vsapi.call(`${main_view.base_url}/abm/customers/save-profile-picture`,p,null,null,false).then(res =>{
                     if(res.status_code ===200){
@@ -683,7 +682,6 @@
         this.prepareData = (id, def, onFinish) => {
             if (!def) def = {};
             vsapi.call(`${mThis.base_url}/abm/customers/form-options`, { id: id }, null).then(res => {
-                console.log(res);
                 let d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
                 //VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No Sales Agent)', def.sales_agent_id);
                 VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
@@ -693,19 +691,18 @@
                 onFinish(d);
             });
         }
-        this.btnSave.on('click', function (e) {
+        this.btnSave.onclick = e => {
             e.preventDefault();
             let p = mThis.getData();
-            console.log(p);
             vsapi.call(`${mThis.base_url}/abm/customers/save`, p).then(res => {
                 if (res.status_code === 200) {
-                    mThis.self.modal('hide');
+                    mThis.modal.hide();
                     if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
                 }
                 else
                     cv_interact.error(res.error_message);
             });
-        });
+        };
       
        
         // this.show = (options) => {
@@ -735,8 +732,7 @@
                     
                     if(res.status_code === 200){
                         let d = res.data.sender;
-                    console.log(d);
-
+                     
                         d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
                         mThis.prepareData(d, {}, data => {
                             mThis.setData(d);
@@ -751,9 +747,7 @@
                 mThis.elTitle.innerHTML =  "New Customers";
                 mThis.prepareData({'id':1},{},data =>{
                     mThis.setData(null);
-                    mThis.self.modal({
-                        backdrop:'static'
-                    });       
+                    mThis.modal.show();    
                 });
             }
         }
