@@ -39,7 +39,7 @@ class Customer //extends Model
 
   static function getDefaultPriceList()
   {
-    $row = DB::table('os_price_list_names AS l')->where('is_default', 1)->take(1)->selectRaw('id,name')->first();
+    $row = DB::table('os_customer_price_list_names AS l')->where('is_default', 1)->take(1)->selectRaw('id,name')->first();
     if ($row)
       return $row;
     return (object) ['id' => null, 'name' => ''];
@@ -115,7 +115,7 @@ class Customer //extends Model
     $img_char = ['+',':',',',';','/','\\','=','?'];
 
 
-    $checkUnque = ["$branch_id|sender|name,phone_number,code|id=id|text=Sender or Customer already exists by name,phone number, or email"];
+    $checkUnque = ["$branch_id|sender|name,phone_number|id=id|text=Sender or Customer already exists by name,phone number, or email"];
 
     $res = validateObject($arr, $v_rule, true, ['email' => ['-', '.', ',', '@', '_'],'photo'=>$img_char], $ss->lang, false, $checkUnque);
     if ($res->error)
@@ -192,7 +192,7 @@ class Customer //extends Model
 
 
     }
-    return DV::error('Something went wrong in saving sender profile');
+    return DV::error('Something went wrong in saving customer profile');
 
 
   }
@@ -358,6 +358,7 @@ class Customer //extends Model
     }
     $select_referrer_name = ',(SELECT r.`name` FROM os_affiliates as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name';
     $query = DB::table('sender as s')
+    
     ->join('sender_classes as sc', 'sc.sender_id', '=', 's.id')
   
     ->selectRaw(' sc.sender_class ,s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.create_date,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,s.sales_agent_id AS referrer_id ' . $select_referrer_name . ',s.create_user,formatDate(s.create_date) AS created_at')
@@ -414,7 +415,7 @@ class Customer //extends Model
     $data->business_types = DB::table('sender_business_types')->selectRaw('business_type')->get();
     $data->customer_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name as status_name')->get();
     //$data->closing_statuses = DB::table('closing_statuses AS cs')->selectRaw('scs.id,cs.name AS closing_status')->get();
-    $data->price_list = DB::table('os_price_list_names AS l')->where('branch_id', $branch_id)->selectRaw('l.id,l.name as price_list')->get();
+    $data->price_list = DB::table('os_customer_price_list_names AS l')->where('branch_id', $branch_id)->selectRaw('l.id,l.name as price_list')->get();
     $data->sender_types = DB::table('sender_type')->selectRaw('id,name as sender_type')->get();
     $data->os_agent_types = DB::table('os_agent_types')->selectRaw('id, name as os_agent_type')->get();
 
@@ -433,7 +434,7 @@ class Customer //extends Model
     $ss = $ss ?? $this->userInfo;
     $id = $id ?? $this->id;
     $branch_id = Sanitizer::sanitize($ss->branch_id);
-    $p = getDataRow('os_price_list_names', ["id" => $price_list_id], "id,name");
+    $p = getDataRow('os_customer_price_list_names', ["id" => $price_list_id], "id,name");
     if (!$p)
       return DV::error("Price list ID is not valid");
     $p_name = $p->name;

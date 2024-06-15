@@ -108,7 +108,7 @@ class Invoice //extends Model
         if ($unvalidate > 0)
                 return (object) ['status' => 'error', 'status_code' => 405, 'error_message' =>  ' This Shipment Can`t Create Invoice. You must validate shipment', 'data' => $data];
             else if ($created_invoice > 0)
-                return (object) ['status' => 'error', 'status_code' => 405, 'error_message' =>  ' This Shipment is already Create Invoice for Customer', 'data' => $data];
+                return (object) ['status' => 'error', 'status_code' => 405, 'error_message' =>  ' This ('.$customer.') is already Create Invoice for Customer', 'data' => $data];
         $discount_amount = 0;
         if ($discount_percent) {
                 $discount_amount = ($total_amount * $discount_percent) / 100;
@@ -217,10 +217,10 @@ class Invoice //extends Model
     //     return DV::depends($id,['action'=>'saved']);
 
     // }
-    function getNextSenderCode($uss, $len = 4)
+    function getNextSenderCode($uss, $len = 5)
     {
         $branch_id = $uss->branch_id;
-        $prefix = 'No';
+        $prefix = 'IVN-';
         $str_prefix = $prefix ? 'prefix =\'' . $prefix . '\'' : '2=2';
         $row = DB::table('sender_code_control AS c')->where('branch_id', $branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
         if ($row) {

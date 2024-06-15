@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Abm;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Abm\Price;
+use App\Models\Abm\CustomerPrice;
 use App\Models\UM;
 use App\Models\JDV;
 
@@ -12,14 +12,14 @@ class PriceController extends Controller
     protected $priceModel;
 
     public function __construct(){
-        $this->priceModel = new Price();
+        $this->priceModel = new CustomerPrice();
     }
 
     function renamePriceList(Request $req){
        $ss = UM::getUserInfoBytoken($req,-1);
        if($ss->status_code !==200) return JDV::raw($ss);
        $id = $req->price_list_id?$req->price_list_id:$req->id;
-       $OsPrice = new Price($id,$ss);
+       $OsPrice = new CustomerPrice($id,$ss);
        $res = $OsPrice->renamePriceList($req->name);
        return JDV::raw($res);
     }
@@ -118,7 +118,7 @@ class PriceController extends Controller
     function savePriceLineInfo(Request $req){
       $ss = UM::getUserInfoByToken($req,-1);
       if($ss->status_code !==200) return JDV::raw($ss);
-      $p = new Price($req->id,$ss);
+      $p = new CustomerPrice($req->id,$ss);
       $res = $p->savePriceLineInfo($req->all());
      return JDV::raw($res);
     }

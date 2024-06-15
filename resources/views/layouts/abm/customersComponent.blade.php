@@ -76,8 +76,8 @@
                     </div>
                     <div class="form-group col-lg-6 mt-3">
                         <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
-                        <span class="text-danger" > *(accept only number)</span>
-                        <input class="form-control text-primary data-input" type="number" placeholder="phone number" data-field="phone_number"/>
+                        <span class="text-danger" >*</span>
+                        <div><input class="form-control text-primary data-input" type="number" placeholder="" data-required="1" data-field="phone_number"/></div>
                     </div>
 
                     <div class="form-group col-lg-6">

@@ -105,12 +105,10 @@ namespace App\ScriptManagement;
 
                         // '/assets/js/InputBoxes.js',
                         //start Components abm
-
                         // '/js/components/abm/CustomersComponent.js',
                         '/js/components/abm/CountryZonesComponent.js',
                         '/js/components/abm/SalesAffiliatesComponent.js',
                         '/js/components/abm/BillingValidationComponent.js',
-                        '/js/components/abm/AccountingComponent.js',
                         '/js/components/abm/CustomersComponent.js',
                         
                         '/js/components/abm/DashboardComponent.js',
