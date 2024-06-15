@@ -45,14 +45,11 @@ class Shipment //extends Model
     }
 
     function getFormOptions($id,$ss){
-        $requirement = null;
-        if($id ){
-            $requirement = self::details($id,$ss);
-        }
+        //$requirement = null;
         return (object)[
             // 'project_types' => GeneralSettings::options_project_type($ss),
-            'project'=>GeneralSettings::options_project($ss),
-            'requirement' => $requirement
+            //'project'=>GeneralSettings::options_project($ss),
+            //'requirement' => $requirement
         ];
     }
     

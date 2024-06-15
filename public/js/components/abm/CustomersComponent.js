@@ -245,33 +245,33 @@
         }
           //write to show PriceListDialog, and user can choose price list to assign to customer
         }
-        // this.deleteCustomer = (lnk,customer_id)=>{
-        //     if (lnk) {
-        //         const id = lnk.dataset.id;
-        //         let status_code = lnk.dataset.status;
-        //         let p = {
-        //             id: id,
-        //             status_code: status_code
-        //         };
-        //         cv_interact.confirm('Delete this customer?', {
-        //             title: 'Delete Customer',
-        //             context: 'delete'
-        //         }, function (e) {
-        //             if (e) {
-        //                 vsapi.call(`${mThis.base_url}/abm/customers/delete`, {
-        //                     id: id
-        //                 }, null).then(res => {
-        //                     if (res.status_code === 200) {
-        //                         mThis.customerListView.showPage(mThis.getFilterData());
-        //                     }
-        //                     else
-        //                         cv_interact.error(res.error_message);
-        //                 });
-        //             }
-        //         });
-        //         return;
-        //     }
-        // }
+        this.deleteCustomer = (lnk,customer_id)=>{
+            if (lnk) {
+                const id = lnk.dataset.id;
+                let status_code = lnk.dataset.status;
+                let p = {
+                    id: id,
+                    status_code: status_code
+                };
+                cv_interact.confirm('Delete this customer?', {
+                    title: 'Delete Customer',
+                    context: 'delete'
+                }, function (e) {
+                    if (e) {
+                        vsapi.call(`${mThis.base_url}/abm/customers/delete`, {
+                            id: id
+                        }, null).then(res => {
+                            if (res.status_code === 200) {
+                                mThis.customerListView.showPage(mThis.getFilterData());
+                            }
+                            else
+                                cv_interact.error(res.error_message);
+                        });
+                    }
+                });
+                return;
+            }
+        }
 
         this.initDropdownMenus = (table)=>{
             const menuOptopns = {
@@ -293,15 +293,20 @@
                     cssClass:"border-bottom pb-2",
                     name:"edit_customer"
                     },
-                   
+                    {
+                    html:'<span class="ps-2 trans-text" data-langprop="titles.Modify Delete">Modify Customer</span>',
+                    icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"delete_customer"
+                    },
                         
                 ],
                 adjustPosition:{
-                        top:200
+                        top:-90
                 },
-                onShow:(instance, menuContainer)=>{
-                    console.log('open: ', instance.getMenus());
-                },
+                //onShow:(instance, menuContainer)=>{
+                //     console.log('open: ', instance.getMenus());
+                // },
                 // onClose:(instance, menus)=>{
     
                 // },
@@ -315,6 +320,10 @@
                         mThis.editCustomer(id); //Not yet defined
                         break;
                         }
+                        case 'delete_customer':{
+                            mThis.deleteCustomer(id); //Not yet defined
+                            break;
+                            }
                         default:{
                         break;
                         }
@@ -500,7 +509,6 @@
             });
             
             mThis.tblCustomers = mThis.customerListView.getTable();
-            console.log(mThis.tblCustomers);
             mThis.initDropdownMenus(mThis.tblCustomers);
             // mThis.setEvents($(mThis.tblCustomers));
              
