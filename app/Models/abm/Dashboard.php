@@ -164,39 +164,57 @@ class Dashboard //extends Model
         $colors = [1=>'#E3EA00',2=>'#6200EA',3=>'#33EA00'];
         return $colors[$status_id];
     }
-    static function getCards($ss){   
 
+    static function getCards($ss){   
         $branch_id = $ss->branch_id;
         $circle_cards=[];
         $normal_cards =[];
         $status_ids = [1,2,3];
+        $statuses = [1=>'Pending',2=>'Shipping',3=>'Validated'];
+
         $str_dates = '1=1';
         $rows = DB::table('os_shipments as s')->join('os_shipment_statuses as n', 'n.id','=','s.status_id')->whereIn('s.status_id',$status_ids)->whereRaw($str_dates)->selectRaw('COUNT(s.id) as cnt, s.status_id, n.name as `status`')->groupByRaw('s.status_id, n.name')->get();
-        $total = 0; 
-        foreach($rows as $row){
-            $total += $row->cnt;
-            $circle_cards[] = (object)[
-                'value'=>$row->cnt,
-                'status'=>$row->status,
-                'colorSlice'=> self::getSliceCircle($row->status_id)
+        $total = 0;
+        
+        foreach($statuses as $status_id => $value){
+           $founds = $rows->filter(function($x) use($status_id){
+               return $x->status_id == $status_id; 
+           });
+           $row = isset($founds[0])? $founds[0]:null;
+           $item = null; 
+           if($row){
+                $total += $row->cnt;
+                $item= (object)[
+                    'value'=>$row->cnt,
+                    'status'=>$row->status,
+                    'colorSlice'=> self::getSliceCircle($row->status_id)
 
+                ];
+           }else{
+            $item= (object)[
+                'value'=>0,
+                'status'=> $statuses[$status_id],
+                'colorSlice'=> self::getSliceCircle($status_id)
             ];
+           }
 
-         } 
+           $circle_cards[] = $item; 
+
+        }
+ 
         foreach($circle_cards as $card){
             if($total==0)$total=1;
             $card->percentage= number_format($card->value *100 / $total,2);
             $card->total = $total;
         }
-
+ 
         $rows = DB::table('sender as s')->whereRaw($str_dates)->selectRaw('COUNT(s.id) as cnt,s.status_code as `status`')->groupByRaw('s.status_code')->get();
         $active_cnt =0;
         $customer_cnt = 0;
         foreach($rows as $row){
-            if(strtolower($row->status) == 'active')
+            if(strtolower($row->status) === 'active')
             $active_cnt = $row->cnt;
             $customer_cnt += $row->cnt;
-           
         }
         $normal_cards [] = (object)[
             'title'=>'Total Customer',
@@ -222,8 +240,7 @@ class Dashboard //extends Model
             'color'=>'#0000'
 
         ];
-        
-
+         
         return (object)[
             'circle_cards' => $circle_cards,
             'normal_cards' => $normal_cards

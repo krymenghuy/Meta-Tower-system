@@ -297,7 +297,7 @@ var BillingValidationComponent = new function () {
         let p = {'id': null}
         PaymentDialog.show(p);
         const dlg = new GeneralDialog({
-            title:"Reset Password", 
+            title:"Bill Payments", 
             cssClass:"modal-lg",
             // fields:[
             //     {
