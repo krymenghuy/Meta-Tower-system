@@ -302,11 +302,11 @@
                         
                 ],
                 adjustPosition:{
-                        top:200
+                        top:-90
                 },
-                onShow:(instance, menuContainer)=>{
-                    console.log('open: ', instance.getMenus());
-                },
+                //onShow:(instance, menuContainer)=>{
+                //     console.log('open: ', instance.getMenus());
+                // },
                 // onClose:(instance, menus)=>{
     
                 // },
@@ -505,7 +505,6 @@
             });
             
             mThis.tblCustomers = mThis.customerListView.getTable();
-            console.log(mThis.tblCustomers);
             mThis.initDropdownMenus(mThis.tblCustomers);
             // mThis.setEvents($(mThis.tblCustomers));
              

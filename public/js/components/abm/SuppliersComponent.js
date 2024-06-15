@@ -109,16 +109,6 @@ var SuppliersComponent = new function(){
             title: 'Price List '
         },
 
-<<<<<<< Updated upstream
-        {
-            className: "sales_agent_id align-middle",
-            data: function (data, index, tr) {
-                return ['<span class="pl-request_date text-capitalize d-block">',data.sales_agent||"NA", '</span>','<span class="text-muted">',data.agent_type,'</span>'].join('');
-            },
-            title: 'Sales Agent'
-            // title: mThis.trans('Created Date')
-        },
-=======
         // {
         //     className: "sales_agent_id align-middle",
         //     data: function (data, index, tr) {
@@ -127,7 +117,6 @@ var SuppliersComponent = new function(){
         //     title: 'Sales Agent'
         //     // title: mThis.trans('Created Date')
         // },
->>>>>>> Stashed changes
         
         {
             className: "created_by align-middle",
