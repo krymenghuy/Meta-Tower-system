@@ -62,7 +62,7 @@ const InputBox1 = new function(){
             }
         }
        if (typeof mThis.onClose =='function') mThis.onClose(d);
-       if (!mThis.manualClosing) mThis.self.modal('hide');
+       if (!mThis.manualClosing) mThis.modal.hide();
     };   
     
     mThis.self.addEventListener('show.bs.modal',function(){
@@ -74,7 +74,7 @@ const InputBox1 = new function(){
       mThis.elData.select();
     });
     mThis.self.addEventListener('hide.bs.modal',function(){
-      if(mThis.previousDialog) mThis.previousDialog.modal('show');
+      if(mThis.previousDialog) mThis.previousDialog.modal.show();
    });
 
    mThis.initAlready = true;
@@ -120,7 +120,7 @@ const InputBox1 = new function(){
       mThis.elData.value = mThis.def_value;
 
       if(mThis.previousDialog) mThis.previousDialog.hide();
-      this.modal.show();
+      mThis.modal.show();
   }
 }
 
@@ -187,7 +187,7 @@ const InputBox2 = new function(){
             }
         }
        if (typeof mThis.onClose ==='function') mThis.onClose(retData, mThis.btnOK);
-       if(mThis.options.autoClose) mThis.self.modal('hide');
+       if(mThis.options.autoClose) mThis.modal.hide();
     };
 
     mThis.self.addEventListener('show.bs.modal',function(){
@@ -200,7 +200,7 @@ const InputBox2 = new function(){
     });
 
     mThis.self.addEventListener('hide.bs.modal',function(){
-       if(mThis.previousDialog) mThis.previousDialog.modal('show');
+       if(mThis.previousDialog) mThis.previousDialog.modal.show();
     });
     
     mThis.initAlready =true;
@@ -253,7 +253,7 @@ const InputBox2 = new function(){
           $(mThis.elData).select2();
       }
 
-      if(mThis.previousDialog) mThis.previousDialog.modal('hide');
+      if(mThis.previousDialog) mThis.previousDialog.modal.hide();
       mThis.modal.show();
       
   }
