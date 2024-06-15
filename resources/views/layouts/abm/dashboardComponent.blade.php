@@ -7,7 +7,7 @@
         }
         .card {
             border: none;
-            border-radius: 10px;s
+            border-radius: 10px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         .card-header {
@@ -185,17 +185,35 @@
             border-bottom: 1px solid salmon;
         }
 
-        /* [data-pie-index="2"] {
+        [data-pie-index="0"] {
             position: relative;
             border-radius: 50%;
             box-shadow: inset 0 0 25px 10px #a2caff;
-        } */
+        } 
 
-        /* [data-pie-index="16"] {
+        [data-pie-index="1"] {
+            position: relative;
+            border-radius: 50%;
+            box-shadow: inset 0 0 25px 10px #a2caff;
+        } 
+
+        [data-pie-index="2"] {
+            position: relative;
+            border-radius: 50%;
+            box-shadow: inset 0 0 25px 10px #a2caff;
+        } 
+
+         [data-pie-index="16"] {
             position: relative;
             border-radius: 50%;
             box-shadow: inset 0 0 25px 10px #f50057;
-        } */
+        }
+        [data-pie-index="17"] {
+            position: relative;
+            border-radius: 50%;
+            box-shadow: inset 0 0 25px 10px #f50057;
+        }
+
         .pie{
             width: 100px !important;
             height: 100px !important;

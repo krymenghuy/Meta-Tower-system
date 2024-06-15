@@ -163,7 +163,7 @@ class GeneralDialog{
                <div class="modal-content">`,
                   `<div class="modal-header">
                      <h5 class="modal-title" id="${this.dialog_id}_title">Reset Password</h5>`,
-                    (this.options.showCancelButton? '': `<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    (this.options.showCancelButton? '': `<button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                     </button>`) 
                      ,
@@ -171,7 +171,7 @@ class GeneralDialog{
                   `<div class="modal-body">
                   </div>
                   <div class="modal-footer">
-                     <button type="button" class="btn-cancel btn btn-secondary" data-dismiss="modal">Cancel</button>
+                     <button type="button" class="btn-cancel btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                      <button type="button" class="btn-save btn btn-primary">Reset Now</button>
                   </div>
                </div>
@@ -200,6 +200,7 @@ class GeneralDialog{
           });
        }
 
+       this.modal = new bootstrap.Modal(this.divModal);
        this.modalBody = this.divModal.querySelector('.modal-body'); 
        this.modalFooter = this.divModal.querySelector('.modal-footer'); 
        this.elTitle = this.divModal.querySelector('.modal-title');
@@ -246,8 +247,9 @@ class GeneralDialog{
 
     //Close Dialog
     hide(){
-      this.jm = this.jm || $(this.divModal);
-      this.jm.modal('hide');
+      // this.jm = this.jm || $(this.divModal);
+      // this.jm.modal('hide');
+      this.divModal.show();
     }
 
     renderFields(fields){
@@ -431,13 +433,15 @@ class GeneralDialog{
         that.jm = this.jm || $(that.divModal);
         this.setData(targetProp? d[targetProp]:null);
         
-        that.jm.off('hide.bs.modal').on('hide.bs.modal',()=>{
-            if(that.options.onClose) that.options.onClose(that.canceled);
-        });
-
-       that.jm.modal({
-           backdrop:'static'
-        });
+        const handleClose = () => {
+         if (that.options.onClose) {
+            that.options.onClose(that.canceled);
+         }
+       };
+   
+        that.divModal.removeEventListener('hide.bs.modal', handleClose);
+        this.divModal.addEventListener('hide.bs.modal', handleClose);
+        that.modal.show();
       });
    } 
  

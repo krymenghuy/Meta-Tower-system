@@ -30,12 +30,12 @@
     
 </div> 
 
- <div class="modal fade" id="CustomerDialog" tabindex="-1" role="dialog" aria-labelledby="_cul_dlgCustomerTitle" aria-hidden="true">
+ <div class="modal fade" id="_cul_dlgCustomer" tabindex="-1" role="dialog" aria-labelledby="_cul_dlgCustomerTitle" aria-hidden="true">
     <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="_cul_dlgCustomerTitle">New Customer</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -94,16 +94,11 @@
                         <label for="address" class="form-label trans-text" data-langprop="titles.Address"></label>
                         <textarea class="form-control data-input text-primary" placeholder="input address" data-field="address"></textarea>
                     </div>
-
-                    
-
                 </div>
-
-
                 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-default btn-secondary height" data-dismiss="modal"><span class="trans-text" data-langprop="buttons.Cancel"></span></button>
+                <button type="button" class="btn btn-default btn-secondary height" data-bs-dismiss="modal"><span class="trans-text" data-langprop="buttons.Cancel"></span></button>
                 <button type="button" class="btn btn-success height" id="_cul_dlgCustomer_btnSave"><span class="trans-text" data-langprop="buttons.Save"></span></button>
             </div>
         </div>
