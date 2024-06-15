@@ -125,7 +125,7 @@
             width: 200px;
         }
 
-        section {
+        div.card-content {
             position: relative;
             background-color: #fff;
             /* border-radius: 7px; */
@@ -135,7 +135,7 @@
             height: 100px;
         }
 
-        .code {
+        div .code {
             visibility: hidden;
             opacity: 0;
             position: absolute;
@@ -147,12 +147,12 @@
             transition: visibility 0s, opacity 0.5s linear;
         }
 
-        .show-code .code {
+        /* .show-code .code {
             visibility: visible;
             opacity: 1;
             height: 100%;
             top: 45px;
-        }
+        } */
 
         pre {
             margin: 0;
@@ -229,56 +229,13 @@
                 <div class="col-md-12 ps-0 pe-2">
                     <div class="card" style="background-color: whitesmoke;">
                         <div class="card-header" style="background-color: whitesmoke;">
-                            <div class="row">
-                                <!-- <div class="col-3">
-                                    <h4>JTO-EXPRESS | Overview</h4>
-                                    <p>www.JTO.EXPRESS.to</p>
-                                </div> -->
-                                <div class="col-4">
+                            <div id="db_circle_card" class="row">   
+                               
+                                
+                                <div class="col-4 overview-section">
                                     <section class="d-flex justify-content-center">
-                                        <!-- <div class="flex info">
-                                            <div class="info-name">July</div>
-                                            <div class="info-code">
-                                                <select class="form-select form-select-sm" aria-label="Small select example">
-                                                    <option selected>July</option>
-                                                    <option value="1">One</option>
-                                                    <option value="2">Two</option>
-                                                    <option value="3">Three</option>
-                                                </select>
-                                            </div>
-                                        </div> -->
-                                        <div class="section-title mb-0 fs-5 text-center w-100 d-flex align-items-center"><div class="w-100">Shipments <p style="color: #6200EA;">Panding</p></div>  </div>
-                                        <div class="pie"
-                                            data-pie='{ "animationSmooth": "1s ease-out", "percent": 35, "colorSlice": "#AB47BC", "colorCircle": "#f1f1f1" }'>
-                                        </div>
-                                        <div class="code">
-                                            <pre>
-                                                <code class="language-json">data-pie='{ 
-                                                    "animationSmooth": "1s ease-out",
-                                                    "percent": 35,
-                                                    "colorSlice": "#AB47BC",
-                                                    "colorCircle": "#f1f1f1",
-                                                    "fontWeight": 50
-                                                    }'
-                                                </code>
-                                            </pre>
-                                        </div>
-                                    </section>
-                                </div>
-                                <div class="col-4">
-                                    <section class="d-flex justify-content-center">
-                                        <!-- <div class="flex info">
-                                            <div class="info-name">July</div>
-                                            <div class="info-code">
-                                                <select class="form-select form-select-sm" aria-label="Small select example">
-                                                    <option selected>July</option>
-                                                    <option value="1">One</option>
-                                                    <option value="2">Two</option>
-                                                    <option value="3">Three</option>
-                                                </select>
-                                            </div>
-                                        </div> -->
-                                        <div class="section-title mb-0 fs-5 text-center w-100 d-flex align-items-center"><div class="w-100">Shipments <p style="color: #6200EA;">Shipping</p></div>  </div>
+                                        
+                                        <div class="section-title mb-0 fs-5 text-center w-100 d-flex align-items-center"><div class="w-100 text-secondary">Shipment <p style="color: #6200EA;">Shipping</p></div>  </div>
                                         <div class="pie"
                                             data-pie='{ "animationSmooth": "1s ease-out", "percent": 70, "colorSlice": "#6200EA", "colorCircle": "#f1f1f1" }'>
                                         </div>
@@ -295,20 +252,10 @@
                                         </div>
                                     </section>
                                 </div>
-                                <div class="col-4">
+                                <div class="col-4 overview-section">
                                     <section class="d-flex justify-content-center">
-                                        <!-- <div class="flex info">
-                                            <div class="info-name">July</div>
-                                            <div class="info-code">
-                                                <select class="form-select form-select-sm" aria-label="Small select example">
-                                                    <option selected>July</option>
-                                                    <option value="1">One</option>
-                                                    <option value="2">Two</option>
-                                                    <option value="3">Three</option>
-                                                </select>
-                                            </div>
-                                        </div> -->
-                                        <div class="section-title mb-0 fs-5 text-center w-100 d-flex align-items-center"><div class="w-100">Shipments <p style="color: #6200EA;">Validated</p></div>  </div>
+                                        
+                                        <div class="section-title mb-0 fs-5 text-center w-100 d-flex align-items-center"><div class="w-100 text-secondary">Shipment <p style="color: #6200EA;">Validated</p></div>  </div>
                                         <div class="pie"
                                             data-pie='{ "animationSmooth": "1s ease-out", "percent": 30, "colorSlice": "#AB47BC", "colorCircle": "#f1f1f1" }'>
                                         </div>
@@ -327,11 +274,8 @@
                                 </div>
                             </div>
                             
-                            
-                        </div>
-                        <div class="card-body">
-                            <div class="row">
-                                <div class="col-md-4 overview-section">
+                            <div id="db_normal_cards" class="row">
+                                <div class="col-md-4 ">
                                     <div class="overview-card card">
                                         <div class="w-100 d-flex justify-content-between ">
                                             <p class="section-title mb-2 fs-5">Total Customers</p>
@@ -343,7 +287,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4 overview-section">
+                                <div class="col-md-4 ">
                                     <div class="overview-card card">
                                         <div class="w-100 d-flex justify-content-between ">
                                             <p class="section-title mb-2 fs-5">Active Customers</p>
@@ -355,7 +299,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-4 overview-section">
+                                <div class="col-md-4 ">
                                     <div class="overview-card card">
                                         <div class="w-100 d-flex justify-content-between ">
                                             <p class="section-title mb-2 fs-5">Active Sales Agents</p>
@@ -368,8 +312,10 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="card-body">
 
-                            <div class="row">
+                            <div class="row row-1">
                                 <div class="col-md-6 overview-section">
                                     <div class="card">
                                         <div class="card-header">
@@ -392,26 +338,30 @@
                                         <div class="card-header">
                                             <p class="section-title mb-0 fs-5">Links</p>
                                         </div>
-                                        <div class="card-body row">
-                                            <p class="col-6">Total Links: 100</p>
-                                            <p class="col-6">Links Type: 3</p>
-                                            <div class="links-overview d-block text-start col-6">
-                                                <div class="w-100 d-flex justify-content-between"><p>Nofollow:</p> <p>23</p></div>
-                                                <div class="w-100 d-flex justify-content-between"><p>Dofollow: </p> <p></p>663</div>
-                                                <div class="w-100 d-flex justify-content-between"><p>Noreferrer: </p> <p>45</p></div>
-                                                <div class="w-100 d-flex justify-content-between"><p>Noopener: </p> <p>102</p></div>
-                                            </div>
-                                            <div class="links-overview d-block col-6 ">
-                                                <div class="w-100 d-flex justify-content-between"><p>Internal: </p> <p>154</p></div>
-                                                <div class="w-100 d-flex justify-content-between"><p>External: </p> <p>35</p></div>
-                                                <div class="w-100 d-flex justify-content-between"><p>Anchor: </p> <p>19</p></div>
+                                            
+                                        <div class="card-body ">
+                                            <div class=" gap-3 d-flex">
+                                                <div class="links-overview d-block text-start w-50 p-0">
+                                                    <p class="w-50 p-0">Total Links: 100</p>
+                                                    <div class="w-100 d-flex justify-content-between"><p>Nofollow:</p> <p>23</p></div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>Dofollow: </p> <p></p>663</div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>Noreferrer: </p> <p>45</p></div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>Noopener: </p> <p>102</p></div>
+                                                </div>
+                                                <div class="links-overview d-block w-50 p-0">
+                                                    <p class="w-50 p-0">Links Type: 3</p>
+                                                    <div class="w-100 d-flex justify-content-between"><p>Internal: </p> <p>154</p></div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>External: </p> <p>35</p></div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>Anchor: </p> <p>19</p></div>
+                                                </div>
                                             </div>
                                         </div>
+                                        
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="row">
+                            <div class="row row-2">
                                 <div class="col-md-12 overview-section">
                                     <div class="card">
                                         <div class="card-header">
