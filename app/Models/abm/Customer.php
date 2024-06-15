@@ -434,7 +434,7 @@ class Customer //extends Model
     $ss = $ss ?? $this->userInfo;
     $id = $id ?? $this->id;
     $branch_id = Sanitizer::sanitize($ss->branch_id);
-    $p = getDataRow('os_customer_price_list_names', ["id" => $price_list_id], "id,name");
+    $p = getDataRow('os_customer_price_list_names', ['id' => $price_list_id], 'id,name');
     if (!$p)
       return DV::error("Price list ID is not valid");
     $p_name = $p->name;
