@@ -314,9 +314,8 @@
                             </div>
                         </div>
                         <div class="card-body">
-
-                            <div class="row row-1">
-                                <div class="col-md-6 overview-section">
+                            <div class="row ">
+                                <div id="ds_progress_card" class="col-md-6 overview-section">
                                     <div class="card">
                                         <div class="card-header">
                                             <p class="section-title mb-0 fs-5">Accountings</p>
@@ -333,7 +332,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6 overview-section">
+                                <div id="ds_Country_card" class="col-md-6 overview-section">
                                     <div class="card">
                                         <div class="card-header">
                                             <p class="section-title mb-0 fs-5">Links</p>
@@ -361,7 +360,7 @@
                                 </div>
                             </div>
 
-                            <div class="row row-2">
+                            <div class="row ">
                                 <div class="col-md-12 overview-section">
                                     <div class="card">
                                         <div class="card-header">
@@ -416,7 +415,7 @@
             </div>
         </div>
 
-        <script>
+        <!-- <script>
             window.addEventListener("DOMContentLoaded", () => {
                 // update circle when range change
                 const pie = document.querySelectorAll(".pie");
@@ -492,7 +491,7 @@
                 });
             });
 
-        </script>
+        </script> -->
         
     </body>
 </div>

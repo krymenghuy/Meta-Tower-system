@@ -763,7 +763,7 @@
             mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
                 const data_member = el.dataset.field;
                 el.value = d[data_member] ?? '';
-                console.log(d[data_member]);
+                // console.log(d[]);
 
                 if (el.tagName.toLowerCase() === 'select') {
                     el.dispatchEvent(new Event('change'));

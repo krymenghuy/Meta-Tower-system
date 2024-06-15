@@ -65,31 +65,8 @@ var DashboardComponent = new function () {
                         fontSize: `${Math.floor(Math.random() * (1.4 - 1 + 1) + 1)}rem`,
                         fontWeight: typeFont[Math.floor(Math.random() * typeFont.length)]
                     };
-                    circle.animationTo(options);
+                    // circle.animationTo(options);
                 }, 3000);
-
-                // global configuration
-                const globalConfig = {
-                    speed: 30,
-                    animationSmooth: "1s ease-out",
-                    strokeBottom: 5,
-                    colorSlice: "#FF6D00",
-                    colorCircle: "#f1f1f1",
-                    round: true
-                };
-
-                const global = new CircularProgressBar("global", globalConfig);
-                global.initial();
-
-                // update global example when change range
-                // t
-
-                const infoCode = div.querySelectorAll(".info-code");
-                infoCode.forEach((info) => {
-                    info.addEventListener("click", (e) => {
-                        e.target.closest("section").classList.toggle("show-code");
-                    });
-                });
     }
     this.renderCircleCards = (d) => {
         let html = '';
@@ -141,6 +118,86 @@ var DashboardComponent = new function () {
         this.normal_card_row.innerHTML = html;
                                 
     }
+    this.renderProgressCards = (d) => {
+        let html = '';
+             html += `<div class="card">
+             <div class="card-header">
+                 <p class="section-title mb-0 fs-5">Accountings</p>
+             </div>
+             <div class="card-body">
+                 <p>Overview the Invoice Amount (%)</p>
+                 <div class="progress">
+                     <div class="progress-bar progress-bar-interactive" role="progressbar" style="width: ${d.invoce_percent}%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100">95% - Invoice</div>
+                 </div><br>
+                 <p>Overview the Payment Amount (%)</p>
+                 <div class="progress mt-2">
+                     <div class="progress-bar progress-bar-page" role="progressbar" style="width: ${d.pay_percent}%;" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100">67% - Payment</div>
+                 </div><br><br><br>
+             </div>
+         </div>`;
+        this.circle_card_row.innerHTML = html;
+        this.initCircleCards(this.circle_card_row);
+    }
+    this.renderCountryCards = (d) => {
+        let html = '';
+             html += `<div class="card">
+             <div class="card-header">
+                 <p class="section-title mb-0 fs-5">Links</p>
+             </div>
+                 
+             <div class="card-body ">
+                 <div class=" gap-3 d-flex">
+                     <div class="links-overview d-block text-start w-100 p-0">
+                         <p class="w-50 p-0">Total Links: 100</p>`,
+                         d.map(c =>{
+                            html+=`<div class="w-100 d-flex justify-content-between"><p>${c.country_name}:</p> <p>${c.toCountry_cnt}</p></div>`;
+                        //  <div class="w-100 d-flex justify-content-between"><p>Dofollow: </p> <p></p>663</div>
+                        //  <div class="w-100 d-flex justify-content-between"><p>Noreferrer: </p> <p>45</p></div>
+                        //  <div class="w-100 d-flex justify-content-between"><p>Noopener: </p> <p>102</p></div>
+                         });
+        html += `</div>
+                 </div>
+             </div>
+             
+         </div>`;
+        this.circle_card_row.innerHTML = html;
+    }
+
+    this.renderSupplierCards = (d) => {
+        let html = '';
+             html += `<div class="card">
+             <div class="card-header">
+                 <p class="section-title mb-0 fs-5">Links</p>
+             </div>
+                 
+             <div class="card-body ">
+                 <div class=" gap-3 d-flex">
+                     <div class="links-overview d-block text-start w-100 p-0">
+                         <p class="w-50 p-0">Total Links: 100</p>`,
+                         d.map(c =>{
+                            html+=`<div class="w-100 d-flex justify-content-between"><p>${c.country_name}:</p> <p>${c.toCountry_cnt}</p></div>`;
+                        //  <div class="w-100 d-flex justify-content-between"><p>Dofollow: </p> <p></p>663</div>
+                        //  <div class="w-100 d-flex justify-content-between"><p>Noreferrer: </p> <p>45</p></div>
+                        //  <div class="w-100 d-flex justify-content-between"><p>Noopener: </p> <p>102</p></div>
+                         });
+        html += `</div>
+                 </div>
+             </div>
+             
+         </div>`;
+        this.circle_card_row.innerHTML = html;
+    }
+
+    this.loadCards = (onFinish)=>{
+        let p={};
+        vsapi.call(`${mThis.base_url}/abm/dashboard/cards`, p , null,false,false).then(res => {
+            console.log('d2',res.data);
+            let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,['icon']) : {};
+            mThis.renderCircleCards(d.circle_cards);
+            mThis.rederNormalCards(d.normal_cards);
+            onFinish();
+        });
+    }
 
     this.loadCards = (onFinish)=>{
         let p={};
@@ -156,6 +213,7 @@ var DashboardComponent = new function () {
     this.prepareFormOptions = ( data, onFinish) => {
         // let p={'id' : data.id }
         mThis.loadCards(onFinish);
+        // mThis.loadBodyCards(onFinish);
     }
 
     this.show= (options)=>{
