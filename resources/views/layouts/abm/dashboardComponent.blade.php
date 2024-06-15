@@ -229,7 +229,7 @@
                 <div class="col-md-12 ps-0 pe-2">
                     <div class="card" style="background-color: whitesmoke;">
                         <div class="card-header" style="background-color: whitesmoke;">
-                            <div class="row">
+                            <div id="db_circle_card" class="row">
                                 <!-- <div class="col-3">
                                     <h4>JTO-EXPRESS | Overview</h4>
                                     <p>www.JTO.EXPRESS.to</p>
@@ -269,7 +269,7 @@
                                     <section class="d-flex justify-content-center">
                                         <!-- <div class="flex info">
                                             <div class="info-name">July</div>
-                    z                        <div class="info-code">
+                                            <div class="info-code">
                                                 <select class="form-select form-select-sm" aria-label="Small select example">
                                                     <option selected>July</option>
                                                     <option value="1">One</option>
@@ -330,7 +330,7 @@
                             
                         </div>
                         <div class="card-body">
-                            <div class="row">
+                            <div  class="row">
                                 <div class="col-md-4 overview-section">
                                     <div class="overview-card card">
                                         <div class="w-100 d-flex justify-content-between ">
