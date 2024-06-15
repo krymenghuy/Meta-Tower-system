@@ -101,7 +101,9 @@
                             
                             <div class="form-group col-lg-6">
                                 <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
-                                <input class="form-control data-input" type="number" placeholder="" data-field="phone_number"/>
+                                <span class="text-danger" >*</span>
+                                <div><input class="form-control text-primary data-input" type="number" placeholder="" data-required="1" data-field="phone_number"/></div>
+
                             </div>
                             <div class="form-group col-lg-6">
                                 <label for="email" class="form-label trans-text" data-langprop="titles.Email"></label>

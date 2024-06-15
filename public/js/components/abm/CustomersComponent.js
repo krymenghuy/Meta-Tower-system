@@ -217,11 +217,10 @@
             }
         }
 
-        this.editCustomer = (lnk,customer_id)=>{
+        this.editCustomer = (lnk,id)=>{
             
             // alert('Edit customer'); 
             if (lnk) {
-                console.log(lnk);
                 let op = {
                     id: lnk.dataset.id,
                     onClose: () => {
@@ -234,44 +233,45 @@
           //todo: Write code to show dialog to edit customer
         }
         
-        this.setPriceList = (lnk,customer_id)=>{
+        this.setPriceList = (lnk,id)=>{
         if (lnk) {
-            const customer_id = lnk.dataset.id;
+
+            const id = lnk.dataset.id;
             let pl_id = lnk.dataset.pricelistid;
             let name = lnk.dataset.name;
             // let span = lnk.find('.customer-price-list')[0];
-            mThis.setCustomerPriceList(customer_id, name, null, pl_id);
+            mThis.setCustomerPriceList(id, name, null, pl_id);
             return;
         }
           //write to show PriceListDialog, and user can choose price list to assign to customer
         }
-        this.deleteCustomer = (lnk,customer_id)=>{
-            if (lnk) {
-                const id = lnk.dataset.id;
-                let status_code = lnk.dataset.status;
-                let p = {
-                    id: id,
-                    status_code: status_code
-                };
-                cv_interact.confirm('Delete this customer?', {
-                    title: 'Delete Customer',
-                    context: 'delete'
-                }, function (e) {
-                    if (e) {
-                        vsapi.call(`${mThis.base_url}/abm/customers/delete`, {
-                            id: id
-                        }, null).then(res => {
-                            if (res.status_code === 200) {
-                                mThis.customerListView.showPage(mThis.getFilterData());
-                            }
-                            else
-                                cv_interact.error(res.error_message);
-                        });
-                    }
-                });
-                return;
-            }
-        }
+        // this.deleteCustomer = (lnk,customer_id)=>{
+        //     if (lnk) {
+        //         const id = lnk.dataset.id;
+        //         let status_code = lnk.dataset.status;
+        //         let p = {
+        //             id: id,
+        //             status_code: status_code
+        //         };
+        //         cv_interact.confirm('Delete this customer?', {
+        //             title: 'Delete Customer',
+        //             context: 'delete'
+        //         }, function (e) {
+        //             if (e) {
+        //                 vsapi.call(`${mThis.base_url}/abm/customers/delete`, {
+        //                     id: id
+        //                 }, null).then(res => {
+        //                     if (res.status_code === 200) {
+        //                         mThis.customerListView.showPage(mThis.getFilterData());
+        //                     }
+        //                     else
+        //                         cv_interact.error(res.error_message);
+        //                 });
+        //             }
+        //         });
+        //         return;
+        //     }
+        // }
 
         this.initDropdownMenus = (table)=>{
             const menuOptopns = {
@@ -293,12 +293,7 @@
                     cssClass:"border-bottom pb-2",
                     name:"edit_customer"
                     },
-                    {
-                        html:'<span class="ps-2 trans-text" data-langprop="titles.Delete Customer">Delete Customer</span>',
-                        icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
-                        cssClass:"border-bottom pb-2",
-                        name:"delete_customer"
-                    }
+                   
                         
                 ],
                 adjustPosition:{

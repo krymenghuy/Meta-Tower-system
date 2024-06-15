@@ -4518,7 +4518,7 @@ const ShipmentDialog = new function () {
             let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data , null, ['country_name','cp_name'] ) : {};
             // VSUtil.setComboItems(mThis.el_from_country, d.from_country, 'id', 'country_name', true, '(select )' , null);
             // mThis.elWarehouse.val(d.warehouses[0].id).trigger('change'); 
-            VSUtil.setComboItems(mThis.elSender, d.senders, 'id', 'sender_name', true, '(select )', null);
+            VSUtil.setComboItems(mThis.elSender, d.senders, 'id', 'sender_name', true, 'name', null);
             VSUtil.setComboItems(mThis.el_to_country, d.to_country, 'id', 'country_name', true, '(select country)', null);
             VSUtil.setComboItems(mThis.el_primary_cp, d.primary_cp, 'id', 'cp_name', true, '(select primary cp)', null);
             VSUtil.setComboItems(mThis.el_secondary_cp, d.secondary_cp, 'id', 'cp_name', true, '(select secondary cp)', null);
@@ -4599,216 +4599,216 @@ const ShipmentDialog = new function () {
     }
 }
  
-const ItemEntryDialog = new function(){
-    this.self = main_view.appContent.children('#pkl_dlgPackage');
-    const mThis = this;
-    this.elTitle = this.self[0].querySelector('.modal-title');
-    this.btnSave = this.self[0].querySelector('#pkl_dlgPackage_btnSave');
-    this.btnClose = this.self[0].querySelector('#pkl_dlgPackage_btnClose');
-    this.btnSaveAndNext = this.self[0].querySelector('#pkl_dlgPackage_btnSaveAndNext');
-    this.btnPrev = this.self[0].querySelector('#pkl_dlgPackage_btnPrev');
+// const ItemEntryDialog = new function(){
+//     this.self = main_view.appContent.children('#pkl_dlgPackage');
+//     const mThis = this;
+//     // this.elTitle = this.self[0].querySelector('.modal-title');
+//     this.btnSave = this.self[0].querySelector('#pkl_dlgPackage_btnSave');
+//     this.btnClose = this.self[0].querySelector('#pkl_dlgPackage_btnClose');
+//     this.btnSaveAndNext = this.self[0].querySelector('#pkl_dlgPackage_btnSaveAndNext');
+//     this.btnPrev = this.self[0].querySelector('#pkl_dlgPackage_btnPrev');
 
-    this.modalBody = this.self[0].querySelector('div.modal-body');
-    this.inputPanel = this.modalBody.querySelector('.div-item-details');
-    this.photoview = this.modalBody.querySelector('#pkl_dlgPackage_item_photo');
-    this.elZone = this.modalBody.querySelector('#pkl_dlgPackage_zone');
-    this.span_nav_info = this.modalBody.querySelector('#nav_info_text');
+//     this.modalBody = this.self[0].querySelector('div.modal-body');
+//     this.inputPanel = this.modalBody.querySelector('.div-item-details');
+//     this.photoview = this.modalBody.querySelector('#pkl_dlgPackage_item_photo');
+//     this.elZone = this.modalBody.querySelector('#pkl_dlgPackage_zone');
+//     this.span_nav_info = this.modalBody.querySelector('#nav_info_text');
 
-    this.form_data = {};
-    this.options = {};
+//     this.form_data = {};
+//     this.options = {};
  
-    this.api_details_in_progress = false;
+//     this.api_details_in_progress = false;
 
-    /** Click on Modal's body modal body click */
-    this.modalBody.addEventListener('click',e=>{
-       e.preventDefault();
-       let btn = VSUtil.closestLimited(e.target,'.btn-move');
-       if(btn){
-         const moveType = btn.dataset.movetype;
-         mThis.navigateImage(moveType,null);    
-         return;
-       }
-    });
+//     /** Click on Modal's body modal body click */
+//     this.modalBody.addEventListener('click',e=>{
+//        e.preventDefault();
+//        let btn = VSUtil.closestLimited(e.target,'.btn-move');
+//        if(btn){
+//          const moveType = btn.dataset.movetype;
+//          mThis.navigateImage(moveType,null);    
+//          return;
+//        }
+//     });
 
-    this.btnPrev.addEventListener('click',e=>{
-        e.preventDefault();
-        mThis.navigateImage('prev',this.btnPrev);
-    });
+//     this.btnPrev.addEventListener('click',e=>{
+//         e.preventDefault();
+//         mThis.navigateImage('prev',this.btnPrev);
+//     });
 
-    this.btnSave.addEventListener('click',e=>{
-        e.preventDefault();
-        mThis.savePackage(mThis.btnSave,mThis.options.onClose,true);
-    });
+//     this.btnSave.addEventListener('click',e=>{
+//         e.preventDefault();
+//         mThis.savePackage(mThis.btnSave,mThis.options.onClose,true);
+//     });
 
-    this.btnClose.addEventListener('click',e=>{
-       e.preventDefault();
-       if (typeof mThis.options.onClose ==='function') mThis.options.onClose();
-       mThis.self.modal('hide');  
-    });
+//     this.btnClose.addEventListener('click',e=>{
+//        e.preventDefault();
+//        if (typeof mThis.options.onClose ==='function') mThis.options.onClose();
+//        mThis.self.modal('hide');  
+//     });
 
-    this.btnSaveAndNext.addEventListener('click',e=>{
-        e.preventDefault();
-        mThis.savePackage(mThis.btnSaveAndNext,()=>{
-            mThis.navigateImage('next');
-        },false);
+//     this.btnSaveAndNext.addEventListener('click',e=>{
+//         e.preventDefault();
+//         mThis.savePackage(mThis.btnSaveAndNext,()=>{
+//             mThis.navigateImage('next');
+//         },false);
         
-        // let p = mThis.getInput();
-        // vsapi.call(`${main_view.base_url}/api/order/save-package`,p,mThis.btnSaveAndNext,null).then(res =>{
-        //      if(res.status_code ===200){
-        //         const d = res.data;
-        //         if(mThis.current_index >=0){
-        //             let x = mThis.options.items[mThis.current_index];
-        //             if(x){
-        //                 x.package_id = d.package_id;
-        //                 x.barcode = d.barcode;
-        //             }
-        //        }
-        //        mThis.navigateImage('next');     
-        //      }else cv_interact.warning(res.error_message);
-        // });
-        // //alert('Save and move next to item details'); 
-    });
+//         // let p = mThis.getInput();
+//         // vsapi.call(`${main_view.base_url}/api/order/save-package`,p,mThis.btnSaveAndNext,null).then(res =>{
+//         //      if(res.status_code ===200){
+//         //         const d = res.data;
+//         //         if(mThis.current_index >=0){
+//         //             let x = mThis.options.items[mThis.current_index];
+//         //             if(x){
+//         //                 x.package_id = d.package_id;
+//         //                 x.barcode = d.barcode;
+//         //             }
+//         //        }
+//         //        mThis.navigateImage('next');     
+//         //      }else cv_interact.warning(res.error_message);
+//         // });
+//         // //alert('Save and move next to item details'); 
+//     });
   
-    this.savePackage =(btn,onFinish = null,closeDialog=true)=>{
-        let p = mThis.getInput();
-        vsapi.call(`${main_view.base_url}/dms/order/save-package`,p,btn,null).then(res =>{
-            if(res.status_code ===200){
-                const d = res.data;
-                if(mThis.current_index >=0){
-                    let item = mThis.options.items[mThis.current_index];
-                    if(item){
-                        item.package_id = d.package_id;
-                        item.barcode = d.barcode;
-                        console.log('image_id = ',item.id,'save success barcode = ' + mThis.options.items[mThis.current_index].barcode);
-                    }
-                }
-                if (closeDialog){
-                    if (typeof onFinish ==='function') onFinish();
-                    mThis.self.modal('hide');
-                }else{
-                    if (mThis.current_index >= mThis.img_count-1){
-                        cv_interact.warning('This is the last item');
-                        return;
-                    }  
-                     //If not close Dialog, then move to next image
-                     mThis.navigateImage('next'); 
+//     this.savePackage =(btn,onFinish = null,closeDialog=true)=>{
+//         let p = mThis.getInput();
+//         vsapi.call(`${main_view.base_url}/dms/order/save-package`,p,btn,null).then(res =>{
+//             if(res.status_code ===200){
+//                 const d = res.data;
+//                 if(mThis.current_index >=0){
+//                     let item = mThis.options.items[mThis.current_index];
+//                     if(item){
+//                         item.package_id = d.package_id;
+//                         item.barcode = d.barcode;
+//                         console.log('image_id = ',item.id,'save success barcode = ' + mThis.options.items[mThis.current_index].barcode);
+//                     }
+//                 }
+//                 if (closeDialog){
+//                     if (typeof onFinish ==='function') onFinish();
+//                     mThis.self.modal('hide');
+//                 }else{
+//                     if (mThis.current_index >= mThis.img_count-1){
+//                         cv_interact.warning('This is the last item');
+//                         return;
+//                     }  
+//                      //If not close Dialog, then move to next image
+//                      mThis.navigateImage('next'); 
                    
-                }
-            }else cv_interact.warning(res.error_message);
-       });
-    }
+//                 }
+//             }else cv_interact.warning(res.error_message);
+//        });
+//     }
 
-    /** getData() | getFormData() */
-    this.getInput = ()=>{
-        const item = mThis.options.items[mThis.current_index];
-        const current_package_id = item? item.package_id : null;
-        const current_barcode = item? item.barcode : null;
-        let p = {
-            "order_id":mThis.options.order_id,
-            "package_id": current_package_id,
-            "barcode":current_barcode,
-            "image_id":item.id
-        };
-        this.modalBody.querySelectorAll('.data-input').forEach(el =>{
-            const f = el.dataset.field;
-            p[f] = el.value;  
-        });
-        return p;
-    }
+//     /** getData() | getFormData() */
+//     this.getInput = ()=>{
+//         const item = mThis.options.items[mThis.current_index];
+//         const current_package_id = item? item.package_id : null;
+//         const current_barcode = item? item.barcode : null;
+//         let p = {
+//             "order_id":mThis.options.order_id,
+//             "package_id": current_package_id,
+//             "barcode":current_barcode,
+//             "image_id":item.id
+//         };
+//         this.modalBody.querySelectorAll('.data-input').forEach(el =>{
+//             const f = el.dataset.field;
+//             p[f] = el.value;  
+//         });
+//         return p;
+//     }
 
-    /** direction = "prev|next"*/
-    this.navigateImage = (direction,btn=null)=>{
-        if(!mThis.current_index) mThis.current_index = 0;
+//     /** direction = "prev|next"*/
+//     this.navigateImage = (direction,btn=null)=>{
+//         if(!mThis.current_index) mThis.current_index = 0;
          
-        if(direction ==='prev'){
-             mThis.current_index--;
-          }else{
-             mThis.current_index++;
-          }
-          if(mThis.current_index <0 ) mThis.current_index = 0;
-          else if(mThis.current_index > mThis.img_count-1) mThis.current_index = mThis.img_count-1;
-          //mThis.span_nav_info.textContent = [(mThis.current_index +1),' of ',mThis.img_count].join('');
-       mThis.displayItemDetails(mThis.current_index,btn);
-    }
+//         if(direction ==='prev'){
+//              mThis.current_index--;
+//           }else{
+//              mThis.current_index++;
+//           }
+//           if(mThis.current_index <0 ) mThis.current_index = 0;
+//           else if(mThis.current_index > mThis.img_count-1) mThis.current_index = mThis.img_count-1;
+//           //mThis.span_nav_info.textContent = [(mThis.current_index +1),' of ',mThis.img_count].join('');
+//        mThis.displayItemDetails(mThis.current_index,btn);
+//     }
 
-    this.displayItemDetails = (index,btn)=>{
-       const item = mThis.options.items[index];
-       if(item){
-         mThis.photoview.setAttribute('src',item.image_url);
-         if (item.package_id){
-             let x = {"order_id":mThis.options.order_id,"package_id": item.package_id};
-             if (mThis.api_details_in_progress){
-                setTimeout(()=>{
-                    mThis.displayItemDetails(index);
-                },350);
-                return;
-             }
-             mThis.api_details_in_progress = true;
-             vsapi.call(`${main_view.base_url}/dms/order/package-details`,x,btn,false).then(res=>{
-                 if(res.status_code ===200){
-                    const d = res.data;
-                    mThis.setPackageDetails(d);
-                 }else cv_interact.error(res.error_message);
-                 mThis.api_details_in_progress = false;
-             });  
-         }else{
-            //No package_id => clear form
-            mThis.setPackageDetails(null);
-         }
-         mThis.span_nav_info.textContent = [(mThis.current_index +1),' of ',mThis.img_count].join('');
-       } 
-    }
+//     this.displayItemDetails = (index,btn)=>{
+//        const item = mThis.options.items[index];
+//        if(item){
+//          mThis.photoview.setAttribute('src',item.image_url);
+//          if (item.package_id){
+//              let x = {"order_id":mThis.options.order_id,"package_id": item.package_id};
+//              if (mThis.api_details_in_progress){
+//                 setTimeout(()=>{
+//                     mThis.displayItemDetails(index);
+//                 },350);
+//                 return;
+//              }
+//              mThis.api_details_in_progress = true;
+//              vsapi.call(`${main_view.base_url}/dms/order/package-details`,x,btn,false).then(res=>{
+//                  if(res.status_code ===200){
+//                     const d = res.data;
+//                     mThis.setPackageDetails(d);
+//                  }else cv_interact.error(res.error_message);
+//                  mThis.api_details_in_progress = false;
+//              });  
+//          }else{
+//             //No package_id => clear form
+//             mThis.setPackageDetails(null);
+//          }
+//          mThis.span_nav_info.textContent = [(mThis.current_index +1),' of ',mThis.img_count].join('');
+//        } 
+//     }
 
-    //set package details
-    this.setPackageDetails =(d)=>{
-       /** Set default values for item */ 
-       d = d || {
-         "delivery_type":"normal",
-         "df_payer":"sender"
-       };
-       mThis.inputPanel.querySelectorAll('.data-input').forEach(el =>{
-          const f = el.dataset.field;
-          if(el.tagName ==='SELECT'){
-            el.value = d[f] || '';
-            el.dispatchEvent(new Event('change'));
-          }else{
-            el.value = d[f] || '';
-          }
-       });
-       Validator.clearErrors(mThis.inputPanel);
-    }
+//     //set package details
+//     this.setPackageDetails =(d)=>{
+//        /** Set default values for item */ 
+//        d = d || {
+//          "delivery_type":"normal",
+//          "df_payer":"sender"
+//        };
+//        mThis.inputPanel.querySelectorAll('.data-input').forEach(el =>{
+//           const f = el.dataset.field;
+//           if(el.tagName ==='SELECT'){
+//             el.value = d[f] || '';
+//             el.dispatchEvent(new Event('change'));
+//           }else{
+//             el.value = d[f] || '';
+//           }
+//        });
+//        Validator.clearErrors(mThis.inputPanel);
+//     }
 
-    this.prepareFormOptions = (def,onFinish)=>{
-       def = def || {};
-       if(mThis.form_data.delivery_zones){
-         onFinish();
-       }else{
-           vsapi.call(`${main_view.base_url}/dms/settings/options-delivery-zone`,null,null,false).then(res=>{
-            if(res.status_code ==200){
-                mThis.form_data.delivery_zones = res.data;
-                VSUtil.setComboItems(mThis.elZone,mThis.form_data.delivery_zones,'zone_code','zone_name',null,'Select Zone',null);
-                onFinish();
-             }else cv_interact.error('Failed to get form options or zone list');
-           });
-       }
-    }
+//     this.prepareFormOptions = (def,onFinish)=>{
+//        def = def || {};
+//        if(mThis.form_data.delivery_zones){
+//          onFinish();
+//        }else{
+//            vsapi.call(`${main_view.base_url}/dms/settings/options-delivery-zone`,null,null,false).then(res=>{
+//             if(res.status_code ==200){
+//                 mThis.form_data.delivery_zones = res.data;
+//                 VSUtil.setComboItems(mThis.elZone,mThis.form_data.delivery_zones,'zone_code','zone_name',null,'Select Zone',null);
+//                 onFinish();
+//              }else cv_interact.error('Failed to get form options or zone list');
+//            });
+//        }
+//     }
 
-    this.show = (options =null)=>{
-        mThis.options = options;
-        if(options.title) mThis.elTitle.textContent = options.title;
-        mThis.prepareFormOptions(null,() => {
-            mThis.img_count = options.items.length;
-            mThis.current_img_id = options.id || options.image_id;
-            const index = options.items.findIndex(item => item.id == mThis.current_img_id);
-            mThis.current_index = index;
-            mThis.displayItemDetails(index);
-            mThis.self.modal({
-                'backdrop':'static'
-            });  
-        });
+//     this.show = (options =null)=>{
+//         mThis.options = options;
+//         if(options.title) mThis.elTitle.textContent = options.title;
+//         mThis.prepareFormOptions(null,() => {
+//             mThis.img_count = options.items.length;
+//             mThis.current_img_id = options.id || options.image_id;
+//             const index = options.items.findIndex(item => item.id == mThis.current_img_id);
+//             mThis.current_index = index;
+//             mThis.displayItemDetails(index);
+//             mThis.self.modal({
+//                 'backdrop':'static'
+//             });  
+//         });
 
-    }
-}
+//     }
+// }
 
 const SpecialChargeDialog = new function () {
     let mThis = this;
