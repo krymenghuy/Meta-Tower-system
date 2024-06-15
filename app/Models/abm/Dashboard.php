@@ -205,6 +205,7 @@ class Dashboard //extends Model
             'color'=>'#0000'
 
         ];
+        
         $normal_cards [] = (object)[
             'title'=>'Active Customer',
             'value'=>$active_cnt,
