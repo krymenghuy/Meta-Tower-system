@@ -18,7 +18,7 @@
     this.form_data = {};
     this.store_agents = {};
  
-        this.setCustomerPriceList = (id,name=null,span=null,def_price_list_id=null) => {
+        this.setCustomerPriceList = (id,name=null,span=null,def_price_list_id=null, lnk = null) => {
             mThis.getPriceListItems((items) => {
                 items.unshift({
                     id: null,
@@ -39,12 +39,17 @@
                             id: id,
                             price_list_id: d.value
                         };
-                        vsapi.call(`${mThis.base_url}/dms/merchant/set-price-list`, p, null).then(res => {
+                        vsapi.call(`${mThis.base_url}/abm/customers/set-price-list`, p, null).then(res => {
                             if (res.status_code == 200) {
                                 let d = StringSanitizer.sanitizeObject(res.data);
                                 // span.textContent = d.list_name;
                                 mThis.customerListView.showPage(mThis.getFilterData());
-
+                                if (lnk){
+                                     const tr = lnk.closest('tr');
+                                     if(tr) tr.dataset.pricelistid = d.price_list_id;
+                                     lnk.dataset.pricelistid = d.price_list_id;
+                                }
+                                InputBox2.close();
                                 cv_interact.success('Price list ' + d.list_name + ' has been assigned to the customer successfully');
                             }
                             else
@@ -91,7 +96,7 @@
                 title: "Contact",
                 className: "align-middle text-nowrap",
                 data: (data, index, tr) => {
-                    return ['<div class="d-flex p-1"><i class="fas text-danger  fa-phone p-2"></i><span class="  sender-name d-block p-1 ">', data.phone_number, '</span></div>','<div class="d-flex p-2" ><i class="fas p-2 text-success fa-envelope"></i><span class=" text-primary sender-name d-block p-1">', (data.email || 'គ្មាន'),
+                    return ['<div class="d-flex p-1"><i class="fas text-danger  fa-phone p-2"></i><span class="  sender-name d-block p-1 ">', data.phone_number, '</span></div>','<div class="d-flex p-2" ><i class="fas p-2 fa-envelope"></i><span class=" sender-name d-block p-1">', (data.email || 'គ្មាន'),
                         '</span></div>'].join('');
                 }
             },
@@ -122,7 +127,7 @@
                 title: "Create By",
                 className: 'align-middle text-capitalize',
                 data: (data, index, tr) => {
-                    return ['<span class=" sender-name d-block p-1 " >', data.create_user, '</span>', '<span class="d-block p-1 text-success">', data.created_at, '</span>'].join('');
+                    return ['<span class=" sender-name d-block p-1 " >', data.create_user, '</span>', '<span class="d-block p-1 text-muted"><small>', data.created_at, '</small></span>'].join('');
                 }
             },
             {
@@ -214,13 +219,12 @@
             }
         }
 
-        this.editCustomer = (lnk,customer_id)=>{
+        this.editCustomer = (customer_id, lnk)=>{
             
             // alert('Edit customer'); 
             if (lnk) {
-                console.log(lnk);
                 let op = {
-                    id: lnk.dataset.id,
+                    id: customer_id,
                     onClose: () => {
                         mThis.customerListView.showPage(mThis.getFilterData());
                     }
@@ -238,7 +242,8 @@
             // let span = lnk.find('.customer-price-list')[0];
             mThis.setCustomerPriceList(customer_id, name, null, default_price_list_id);
         }
-        this.deleteCustomer = (lnk,customer_id)=>{
+
+        this.deleteCustomer = (customer_id, lnk)=>{
             if (lnk) {
                 const id = lnk.dataset.id;
                 let status_code = lnk.dataset.status;
@@ -311,11 +316,15 @@
                             break;
                         }
                         case 'edit_customer':{
-                        mThis.editCustomer(id); //Not yet defined
-                        break;
+                          mThis.editCustomer(id, menuLink); //Not yet defined
+                          break;
                         }
+                        case 'delete_customer':{
+                            mThis.deleteCustomer(id, menuLink); //Not yet defined
+                            break;
+                          }
                         default:{
-                        break;
+                          break;
                         }
                     }
                 }
@@ -477,6 +486,7 @@
                 'tableClass': "table header-light-blue header-uppercase",
                 'rowCreated': (data, index, tr) => {
                     tr.dataset.id = data.id;
+                    tr.dataset.pricelistid = data.price_list_id;
                     mThis.store_agents[data.id] = {
                         code: data.code,
                         name: data.name,
@@ -507,7 +517,8 @@
                 if(lnk){
                      let id = lnk.dataset.id;
                      let cust_name = lnk.dataset.customername;
-                     mThis.setPriceList(id,cust_name,lnk);
+                     let def_price_list_id = lnk.closest('tr').dataset.pricelistid;
+                     mThis.setPriceList(id,cust_name,def_price_list_id,lnk);
                      return;
                 }
             } 
@@ -736,9 +747,7 @@
                         d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
                         mThis.prepareData(d, {}, data => {
                             mThis.setData(d);
-                            mThis.self.modal({
-                                backdrop:'static'
-                            });
+                            mThis.modal.show();
                         });
                     }
                 });
