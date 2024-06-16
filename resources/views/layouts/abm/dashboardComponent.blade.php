@@ -336,7 +336,7 @@
                                 <div id="db_progress_cards" class="col-md-6 overview-section">
                                     <div class="card">
                                         <div class="card-header">
-                                            <p class="section-title mb-0 fs-5">Accountings</p>
+                                            <p class="section-title mb-0 fs-5">Accounting</p>
                                         </div>
                                         <div class="card-body">
                                             <p>Overview the Invoice Amount (%)</p>
@@ -357,20 +357,20 @@
                                 <div id="db_country_cards" class="col-md-6 overview-section">
                                     <div class="card">
                                         <div class="card-header">
-                                            <p class="section-title mb-0 fs-5">Links</p>
+                                            <p class="section-title mb-0 fs-5">Shipments by country</p>
                                         </div>
                                             
                                         <div class="card-body ">
                                             <div class=" gap-3 d-flex">
                                                 <div class="links-overview d-block text-start w-50 p-0">
-                                                    <p class="w-50 p-0">Total Links: 100</p>
+                                                    <p class="w-50 p-0">Country</p>
                                                     <div class="w-100 d-flex justify-content-between"><p>Nofollow:</p> <p>23</p></div>
                                                     <div class="w-100 d-flex justify-content-between"><p>Dofollow: </p> <p></p>663</div>
                                                     <div class="w-100 d-flex justify-content-between"><p>Noreferrer: </p> <p>45</p></div>
                                                     <div class="w-100 d-flex justify-content-between"><p>Noopener: </p> <p>102</p></div>
                                                 </div>
                                                 <div class="links-overview d-block w-50 p-0">
-                                                    <p class="w-50 p-0">Links Type: 3</p>
+                                                    <p class="w-50 p-0">Shippments</p>
                                                     <div class="w-100 d-flex justify-content-between"><p>Internal: </p> <p>154</p></div>
                                                     <div class="w-100 d-flex justify-content-between"><p>External: </p> <p>35</p></div>
                                                     <div class="w-100 d-flex justify-content-between"><p>Anchor: </p> <p>19</p></div>
@@ -386,7 +386,7 @@
                                 <div id="db_supplier_cards" class="col-md-12 overview-section">
                                     <div class="card">
                                         <div class="card-header">
-                                            <p class="section-title mb-0 fs-5">Backlinks Overview</p>
+                                            <p class="section-title mb-0 fs-5">Shippments by carrier</p>
                                         </div>
                                         <div class="card-body">
                                             <table class="table table-striped">

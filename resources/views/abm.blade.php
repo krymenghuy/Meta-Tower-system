@@ -51,7 +51,7 @@
             ScriptManager::render('priority-one',1);
             ScriptManager::render('primary',1);
             ScriptManager::render('primary-async',1);
-            ScriptManager::render('primary-defer',1);
+            ScriptManager::render('abm-primary-defer',1);
             ScriptManager::render('abm-components',1);
         ?>
     </head>

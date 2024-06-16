@@ -78,13 +78,15 @@ class CustomerController extends Controller
     function getFormOptions(Request $req)
     {
         $ss = UM::getUserInfoByToken($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+
         $id = $req->id;
         $customer = new Customer($id, $ss);
-        if ($ss->status_code !== 200)
-            return JDV::raw($ss);
+     
         $data = $customer->getFormOptions($id, $ss, true);
         return JDV::result($data);
     }
+    
     function getList(Request $req)
     {
         $ss = UM::getUserInfoByToken($req, -1);

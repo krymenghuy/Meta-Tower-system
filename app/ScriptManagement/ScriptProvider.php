@@ -44,7 +44,7 @@ namespace App\ScriptManagement;
                     '/assets/js/vfs_fonts.js'
                 ]
            ],
-           'primary-defer'=>[
+           'dms-primary-defer'=>[
                 'attr'=>'defer',
                 'single_file'=>1,
                 'output_file'=>'/dist/js/dms.primary-defer.js?v=53',
@@ -57,9 +57,10 @@ namespace App\ScriptManagement;
                     '/assets/js/expandableTableRow.js',
                     '/assets/js/UMExpandItemView.js',
                     '/assets/js/VSDropdownMenu.js',
-                    '/assets/js/GeneralDialog.js',
+                    '/assets/js/GeneralDialog.bs5.js',
                     '/assets/vendors/general/popper.js/dist/umd/popper.js',
                     '/assets/material-js/bootstrap.min.js',
+                    //'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
                     '/assets/js/validator.js',
                     '/assets/js/cv_interact.js',
                     '/assets/js/datehelper.js',
@@ -77,6 +78,42 @@ namespace App\ScriptManagement;
                     '/assets/js/crypto-js.js', 
                 ]
                 ],
+
+                'abm-primary-defer'=>[
+                    'attr'=>'defer',
+                    'single_file'=>1,
+                    'output_file'=>'/dist/js/dms.primary-defer.js?v=53',
+                    'files'=>[
+                        '/assets/js/string_san.js',
+                        '/assets/js/vsutil.js',
+                        '/assets/js/sweetalert2.all.min.js',
+                        '/assets/js/sweetalert2.toast.js',
+                        '/assets/js/ExchangeManager.js',
+                        '/assets/js/expandableTableRow.js',
+                        '/assets/js/UMExpandItemView.js',
+                        '/assets/js/VSDropdownMenu.js',
+                        '/assets/js/GeneralDialog.bs5.js',
+                        '/assets/vendors/general/popper.js/dist/umd/popper.js',
+                        //'/assets/material-js/bootstrap.min.js',
+                        'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
+                        '/assets/js/validator.js',
+                        '/assets/js/cv_interact.js',
+                        '/assets/js/datehelper.js',
+                        '/assets/js/date.js',
+                        '/assets/js/jquery.datepicker2.js',
+                        '/assets/js/select2.min.js',
+                        '/assets/js/initializeSelect2.js',
+                        '/assets/js/toastr.min.js',
+                        '/assets/js/init.toastr.js',
+                        '/assets/js/scripts.bundle.js',
+                        '/assets/js/datatables.bundle.min.js',/** to be removed soon */
+                        '/assets/js/browsercontrol.js'
+                    ]
+                    ,'no-minify'=>[
+                        '/assets/js/crypto-js.js', 
+                    ]
+                ],
+
                 'abm-components'=>[
                     'attr'=>'defer',
                     'single_file'=>1,
@@ -130,6 +167,7 @@ namespace App\ScriptManagement;
                     'single_file'=>1,
                     'output_file'=>'/dist/js/dms.components.js?v=204',
                     'files'=>[
+                        //'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
                         '/assets/js/VSRoute.js',
                         '/js/layout/dms/main.js?v=1',
                         '/assets/js/formUtils.js',
