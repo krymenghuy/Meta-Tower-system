@@ -4,59 +4,53 @@ var CountryZonesComponent  = new function () {
   let mThis = this;
   this.title_prop = "Country Zones";
   this.base_url = main_view.base_url;
-  this.self = main_view.appContent.children('#_sttn_deliveryZoneComponent');
-  this.tblZones = this.self.find('#_sttn_zon_tblZones');
-  this.tblZones_body = this.self.find('#_sttn_zon_tblZones_body');
-  this.lnkNewZone = this.self.find('#_sttn_zon_lnkNewZone');
-  this.elSearch = this.self.find('#_sttn_zone_search');
-  this.btnSearch = this.self.find('#_sttn_btnSearch');
+  this.self = main_view.appContent.children('#_sttn_zoneCountryComponent')[0];
 
-  this.btnPrint = this.self.find('#_zone_btnPrint');
-  this.elFilter_country = this.self.find('#_sttn_zon_filter_country');
+  this.btnAddCountry = this.self.querySelector('#_sttn_btnAddCountry');
+  this.elSearch = this.self.querySelector('#_sttn_zone_search');
+  this.btnSearch = this.self.querySelector('#_sttn_btnSearch');
+
+  this.btnPrint = this.self.querySelector('#_zone_btnPrint');
+  this.elFilter_country = this.self.querySelector('#_sttn_zon_filter_country');
 
   this.cols = [
-
-    {
-      title: "Zone Code",
-      className: "align-middle  text-capitalize text-nowrap",
-      data: (data, index, tr) => {
-        return ['<div class="ms-5">',data.standard_zone,'</div>'].join('');
-      }
-    },
     {
       title: "Country",
-      className: "align-middle text-success text-nowrap",
+      className: "country_name align-middle text-nowrap",
 
       data: (data, index, tr) => {
-        return ['<div class="text-uppercase"><span class="d-block p-1">',data.name,'</span></div>','<div class="d-flex"><span class="d-block p-1 text-warning">',(data.name_kh ?? 'គ្មាន'),'</span></div>'].join('');
-
+        return ['<div class="d-flex flex-row gap-2"><span class="d-block p-1">',data.country_name,'</span>','<a href="javascript:void(0)" style="visibility:hidden" class="lnk_edit_country"><i class="fa fa-pencil"></i></a>','</span></div>'].join('');
       }
     },
     {
       title: "Country Code",
       className: "align-middle ",
       data: (data, index, tr) => {
-        return ['<div class="ms-5 text-uppercase">',data.code,'</div>'].join('');
+        return ['<div class="ms-5 text-uppercase">',(data.country_code || "មិនទាន់មាន"),'</div>'].join('');
       }
     },
-   
     {
-      title:"Create By",
+      title: "Zone Code",
+      className: "zone_code align-middle  text-capitalize text-nowrap",
+      data: (data, index, tr) => {
+        let lnkEditZone = '<a href="javascript:void(0)" style="visibility:hidden" class="lnk_zone"><i class="fa fa-pencil"></i></a>';
+        return ['<div class="ms-5 d-flex flex-row gap-2">','<span class="zone_code_text">',(data.zone_code || "(មិនទាន់មាន)"),'</span>',lnkEditZone,'</div>'].join('');
+      }
+    },
+    {
+      title:"Last Updated",
       data:(data,index,tr)=>{
-        return ['<div class="d-flex align-item-center " ><span class="d-block p-1">',(data.create_user ?? 'គ្មាន'),
-        '</span></div>','<div class="d-flex"><i class="bi bi-balloon-fill"></i><span class="d-block p-1 text-muted">',data.create_date,'</span></div>'].join('');
+        return ['<div class="d-flex align-item-center " ><span class="d-block p-1">',(data.update_user || 'NA'),
+        '</span></div>','<div class="d-flex"><i class="bi bi-balloon-fill"></i><span class="d-block p-1 text-muted">',(data.update_date || ""),'</span></div>'].join('');
         
       }
     },
-  
-   
     {
       title: "Action",
       className:"align-middle",
       data: (data, index, tr) => {
         return [`<div class="d-flex align-item-center gap-2">
-          
-          <a href="javascript:void(0)" data-id ="${data.id}" class="_sttn_zon_delete btn  text-danger align-item-center rounded-5">
+          <a href="javascript:void(0)" data-id ="${data.id}" class="lnk_delete_country btn text-danger align-item-center rounded-5">
           <i class="fa-solid fa-trash ms-1"></i>
           </a>
         </div>`].join('');
@@ -64,36 +58,63 @@ var CountryZonesComponent  = new function () {
     }
 
   ];
+ 
+  /** Show or hide element with class $target_class when user puts mouse over tr or td with class $td_class */
+  function setInstanceVisible(tr, td_class, target_class) {
+    if (!tr) return;
 
+    const td = td_class ? tr.querySelector(`td.${td_class}`) : null;
+    const target = tr.querySelector(`.${target_class}`);
 
+    if (!target) return;
 
+    const showTarget = () => {
+        target.style.visibility = 'visible';
+    };
+
+    const hideTarget = () => {
+        target.style.visibility = 'hidden';
+    };
+
+    if (td) {
+        td.addEventListener('mouseenter', showTarget);
+        td.addEventListener('mouseleave', hideTarget);
+    } else {
+        tr.addEventListener('mouseenter', showTarget);
+        tr.addEventListener('mouseleave', hideTarget);
+    }
+ }
+    
   this.init = function () {
     if(mThis.initAlready) return;
-    mThis.listView = new ListView('_sttn_delivery_zones', {
-      fetchApi: `${main_view.base_url}/api/location/countries`,
+
+    mThis.listView = new ListView('_sttn_zone_country_list', {
+      fetchApi: `${main_view.base_url}/abm/country/list`,
       apiCluster: main_view.apiCluster,
       tableClass: 'table header-uppercase',
       processResponse: (res)=>{
-        console.log(res.data);
-
         return res.data;
       },
-      
+      rowCreated:(data,index,tr)=>{
+          tr.dataset.id = data.id;
+          tr.dataset.countryid = data.country_id;
+          setInstanceVisible(tr,'country_name',['lnk_edit_country']);
+          setInstanceVisible(tr,'zone_code',['lnk_zone']);
+      },
       clientSidePagination: true,
       perPage: 10,
       columns: mThis.cols,
-   
       'listContainerClass': null
     });
 
     mThis.tblZones = mThis.listView.getTable();
-    //console.log(mThis.tblZones);
-    mThis.btnSearch.on('click', e => {
-      e.preventDefault();
-      mThis.listView.showPage(mThis.getFilterData());
-    });
+    
+    // mThis.btnSearch.on('click', e => {
+    //   e.preventDefault();
+    //   mThis.listView.showPage(mThis.getFilterData());
+    // });
 
-    mThis.elSearch.on('keyup', e => {
+    mThis.elSearch.addEventListener('keyup', e => {
       e.preventDefault();
       clearTimeout(mThis.search_timeout);
       mThis.search_timeout = setTimeout(() => {
@@ -101,28 +122,25 @@ var CountryZonesComponent  = new function () {
       }, 250);
     });
 
-    this.s_container = mThis.listView.getListContainer();
-    // mThis.setEvents($(mThis.container));
-    // console.log(mThis.container.parentElement); 
-    const s_parent = mThis.s_container.parentElement;
-        s_parent.style.height = (window.innerHeight - 190)+'px';
-        s_parent.classList.add('overflow-y-auto');
-        window.onresize = () => {
-            s_parent.style.height = (window.innerHeight - 190)+'px';
-        }
-
-
+    //this.s_container = mThis.listView.getListContainer();
+    
+    // const s_parent = mThis.s_container.parentElement;
+    //     s_parent.style.height = (window.innerHeight - 190)+'px';
+    //     s_parent.classList.add('overflow-y-auto');
+    //     window.onresize = () => {
+    //         s_parent.style.height = (window.innerHeight - 190)+'px';
+    //  }
   
-
-    mThis.lnkNewZone.on('click', function (e) {
+    mThis.btnAddCountry.addEventListener('click', e => {
       e.preventDefault();
-      let options = {
-        title: 'New Delivery Zone', 'def': null, 'zone_id': null, 'onClose': () => {
-          mThis.listView.showPage(mThis.getFilterData());
+      let op = {
+        id:null,
+        onClose:(data)=>{
+           mThis.listView.showPage(mThis.getFilterData());
         }
-      };
+      }
 
-      ZoneDialog1.show(options);
+      CountryDialog.show(op);
     });
    
 
@@ -130,10 +148,10 @@ var CountryZonesComponent  = new function () {
       e.preventDefault();
 
       //Click on Delete Button
-      let btn = VSUtil.getElementByClass(e.target, '_sttn_zon_delete');
+      let btn = VSUtil.closestLimited(e.target, '.lnk_delete_country');
       if (btn) {
         let p = { 'id': btn.dataset.id };
-        cv_interact.confirm('Delete this country zone?', { title: 'Delete Country Zone', 'context': 'delete' }, e => {
+        cv_interact.confirm('Delete this country?', { title: 'Delete Country', 'context': 'delete' }, e => {
           if (e) {
             vsapi.call(`${mThis.base_url}/api/location/country/delete`, p, null).then(res => {
               if (res.status_code === 200) {
@@ -145,131 +163,194 @@ var CountryZonesComponent  = new function () {
         return;
       }
 
-   
+      //Click on Edit Zone Code / and save zone code
+      btn = VSUtil.closestLimited(e.target,'.lnk_zone');
+      if(btn){
+        let tr = VSUtil.closestLimited(e.target,'tr');
+        let id = tr.dataset.id;
+        let span = btn.parentElement.querySelector('.zone_code_text');
+        let orgValue = span.textContent;
+        const editing = btn.dataset.editing;
+        if(editing ==1){
+          let val = span.querySelector('input').value;
+          if(isNaN(val)){
+             cv_interact.warning('Please enter a valid number for zone code');
+             return;
+          }
+          if(val !== orgValue && !isNaN(val)){
+             let p = {"id":tr.dataset.id,"country_id":tr.dataset.countryid, "zone_code":val};
+             vsapi.call(`${mThis.base_url}/abm/country/save`, p,false,false,false).then(res =>{
+                if(res.status_code ==200){
+                  span.textContent = val || "(មិនទាន់មាន)";
+                  btn.innerHTML = '<i class="fa fa-pencil"></i>';
+                  btn.dataset.editing ="0";
+                }else cv_interact.warning(res.error_message);
+             });
+          }else{
+            span.textContent = val || "(មិនទាន់មាន)";
+            btn.innerHTML = '<i class="fa fa-pencil"></i>';
+            btn.dataset.editing ="0";
+          }
+        
+        }else{
+          let val = span.textContent;
+          span.dataset.value = val;
+          let html = ['<input type="number" style="max-width:100px" class="form-control" value="',(isNaN(val)? "":val),'" />'].join('');
+          span.innerHTML = html;
+          btn.innerHTML = '<i class="fa fa-save fs-5"></i>';
+          btn.dataset.editing ="1";
+        }
+      
+        return;
+      }
+ 
+        //Click on Edit Country / and save country
+        btn = VSUtil.closestLimited(e.target,'.lnk_edit_country');
+        if(btn){
+           let tr = VSUtil.closestLimited(e.target,'tr');
+           let op = {
+            id:tr.dataset.id, 
+            country_id:tr.dataset.countryid,  
+            onClose:(data)=>{
+               mThis.listView.showPage(mThis.getFilterData());
+            }};
+           CountryDialog.show(op);
+           return;
+        }
     });
 
     mThis.initAlready = true;
   }
+
   this.getFilterData = () => {
-    return { 'search_value': mThis.elSearch.val() };
+    return { 'search_value': mThis.elSearch.value };
   }
-
-
   
-
   this.show = function (options = null) {
     mThis.init();
     mThis.listView.showPage(mThis.getFilterData());
-    mThis.self.siblings().hide();
-    mThis.self.fadeIn(250);
     main_view.setTitle(mThis.title_prop);
+    mThis.jm = mThis.jm || $(mThis.self);
+    mThis.jm.siblings().hide();
+    mThis.jm.fadeIn(250);
+   
   }
 
   this.hide = function () {
-    mThis.self.hide();
+    if(mThis.jm.length > 0) mThis.jm.hide();
   }
 }
 
-//begin::ZoneDialog1
-const ZoneDialog1 = new function () {
-  let mThis = this;
-  this.self = main_view.appContent.children('#_sttn_dlgZon1');
-  this.base_url = main_view.base_url;
-  this.elTitle = this.self.find('#_sttn_dlgZoneTitle');
- 
-  this.options = {};
-  this.fields = [];
-  this.btnOK = this.self.find('#_sttn_dlgZone_btnOK');
-  this.elError = this.self.find('#_sttn_dlgZone_error');
-  this.self.find('.data-input').each(function () {
-    let el = { dataMember: $(this).data('field'), 'element': $(this) };
-    mThis.fields.push(el);
-  });
-
-  this.getData = () => {
-    let p = {};
-    let i = 0, c;
-    do {
-      c = mThis.fields[i];
-      if (!c) break;
-      p[c.dataMember] = c.element.val();
-      i++;
-    } while (c);
-
-    //ee 
-    p.id = mThis.options.id;
-    return p;
-  }
-
-  this.setData = (d) => {
-    let i = 0, c;
-    if (!d) {
-
-      do {
-        c = mThis.fields[i];
-        if (!c) break;
-        c.element.val(null);
-        i++;
-      } while (c);
-      return;
-    }
-
-    i = 0;
-    do {
-      c = mThis.fields[i];
-      if (!c) break;
-      c.element.val(d[c.dataMember]);
-      i++;
-    } while (c);
-
-    mThis.city_id = d.city_id;
-    mThis.district_id = d.district_id;
-    mThis.commune_id = d.commune_id;
-    mThis.elCountry.trigger('change');
-  }
-
- 
-
-  this.btnOK.on('click', function (e) {
-    let p = mThis.getData();
-  
-    vsapi.call(`${mThis.base_url}/api/location/country/save`, p, null).then(res => {
-      if (res.status_code === 200) {
-        mThis.self.modal('hide');
-        if (typeof mThis.options.onClose === 'function') mThis.options.onClose(true);
-      } else cv_interact.warning(res.error_message);
-    });
-  });
-
-  this.show = (options = {}) => {
-    mThis.elError.html(null);
-    options = options || {};
-    options.id = options.id || options.zone_id;
-    mThis.options = options;
-
-    mThis.prepareFormData(options.id, options.def, (d) => {
-      if (d.zone) {
-        mThis.elTitle.text('Modify Zone Details');
-      } else {
-        mThis.elTitle.text('New Delivery Zone');
+const CountryDialog = new GeneralDialog({
+    title:"Edit Country",
+    //cssClass:"",
+    fields:[
+      { 
+        name:"name",
+        label:"Country Name"
+      },
+      {
+        name:"code",
+        label:"Country Code"
       }
+    ],
+    showCancelButton:true,
+    buttons:[
+      {
+        text:"Save",
+        click:(me,btn,divModal)=>{
+           
+        }
+      }
+    ],
+  //  onclose:(canceled)=>{
+  //     return;
+  //  } 
+});
 
-      mThis.setData(d.zone);
-      mThis.self.modal({
-        backdrop: 'static'
-      });
-    });
-  }
-  //close::this.show()
+// //begin::ZoneDialog1
+// const ZoneCountryDialog = new function () {
+//   let mThis = this;
+//   this.self = main_view.appContent.children('#_sttn_dlgZoneCountry')[0];
+//   this,modal = new bootstrap.Modal(this.self);
+//   this.base_url = main_view.base_url;
+//   this.elTitle = this.self.querySelector('.modal-title');
+ 
+//   this.options = {};
+//   this.fields = [];
+//   this.btnOK = this.self.querySelector('.btn-save');
 
-  this.prepareFormData = (id, def, onFinish) => {
+//   this.self.querySelectorAll('.data-input').forEach( el => {
+//     let f = { dataMember: el.dataset.field, 'element': el };
+//     mThis.fields.push(f);
+//   });
+
+//   this.getData = () => {
+//     let p = {};
+//     let i = 0, c;
+//     do {
+//       c = mThis.fields[i];
+//       if (!c) break;
+//       p[c.dataMember] = c.element.value;
+//       i++;
+//     } while (c);
+//     p.id = mThis.options.id;
+//     return p;
+//   }
+
+//   this.setData = (d) => {
+//     d = d || {};
+//     let i = 0, c = null;
+ 
+//       do {
+//         c = mThis.fields[i];
+//         if (!c) break;
+//         c.element.value = d[c.dataMember] || "";
+//         if(c.element.tagName ==='SELECT') c.trigger(new Event('change'));
+//         i++;
+//       } while (c);
+//   }
+ 
+//   this.btnOK.onclick =   e =>{
+//     let p = mThis.getData();
+//     vsapi.call(`${mThis.base_url}/api/location/country/save`, p, mThis.btnOK, false,false).then(res => {
+//       if (res.status_code === 200) {
+//         mThis.self.modal.hide();
+//         if (typeof mThis.options.onClose === 'function') mThis.options.onClose(true);
+//       } else cv_interact.warning(res.error_message);
+//     });
+//   };
+
+//   this.show = (options = {}) => {
+//     mThis.elError.html(null);
+//     options = options || {};
+//     options.id = options.id || options.zone_id;
+//     mThis.options = options;
+
+//     mThis.prepareFormData(options.id, (d) => {
+//       let title = 'New Zone Country';
+//       if (d.zone) {
+//         mThis.elTitle.text('Modify Zone Details');
+//       } else {
+//         mThis.elTitle.text('');
+//       }
+
+//       mThis.setData(d.zone);
+//       mThis.self.modal({
+//         backdrop: 'static'
+//       });
+//     });
+//   }
+//   //close::this.show()
+
+//   this.prepareFormData = (id, def, onFinish) => {
     
-    vsapi.call(`${main_view.base_url}/api/country/details`, { 'id': id }, null).then(res => {
-      let d = res.status_code === 200 ? res.data : {};
-      // VSUtil.setComboItems(mThis.elCountry, d.countries, 'id', 'country', true, '(Select country)', null);
-      // VSUtil.setComboItems(mThis.elZoneType, d.zone_types, 'zone_type', 'zone_type', true, '(Select zone type)', null);
-      onFinish(d);
-    });
-  };
+//     vsapi.call(`${main_view.base_url}/api/country/details`, { 'id': id }, null).then(res => {
+//       let d = res.status_code === 200 ? res.data : {};
+//       // VSUtil.setComboItems(mThis.elCountry, d.countries, 'id', 'country', true, '(Select country)', null);
+//       // VSUtil.setComboItems(mThis.elZoneType, d.zone_types, 'zone_type', 'zone_type', true, '(Select zone type)', null);
+//       onFinish(d);
+//     });
+//   };
 
-}
+// }
