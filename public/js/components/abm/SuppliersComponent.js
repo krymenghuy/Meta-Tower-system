@@ -699,6 +699,9 @@ const SupplierDialog = new function(){
                         mThis.self.modal({
                             backdrop:'static'
                         });
+                        // mThis.self = new bootstrap.Modal(modalElement, {
+                        //     backdrop: 'static'
+                        // });
                     });
                 }
             });

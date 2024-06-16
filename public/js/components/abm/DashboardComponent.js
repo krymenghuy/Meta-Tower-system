@@ -7,8 +7,9 @@ var DashboardComponent = new function () {
     this.self = main_view.appContent.children('#_main_dashboardComponent');
     this.circle_card_row = mThis.self[0].querySelector('#db_circle_card');
     this.normal_card_row = mThis.self[0].querySelector('#db_normal_cards');
-    this.card_header = mThis.self[0].querySelector('#card-header');
-    this.card_body = mThis.self[0].querySelector('#card-body');
+    this.progress_card_row = mThis.self[0].querySelector('#db_progress_cards');
+    this.country_card_row = mThis.self[0].querySelector('#db_country_card');
+    this.supplier_card_row = mThis.self[0].querySelector('#db_supplier_card');
     
 
     this.init= () => {
@@ -65,31 +66,8 @@ var DashboardComponent = new function () {
                         fontSize: `${Math.floor(Math.random() * (1.4 - 1 + 1) + 1)}rem`,
                         fontWeight: typeFont[Math.floor(Math.random() * typeFont.length)]
                     };
-                    circle.animationTo(options);
+                    // circle.animationTo(options);
                 }, 3000);
-
-                // global configuration
-                const globalConfig = {
-                    speed: 30,
-                    animationSmooth: "1s ease-out",
-                    strokeBottom: 5,
-                    colorSlice: "#FF6D00",
-                    colorCircle: "#f1f1f1",
-                    round: true
-                };
-
-                const global = new CircularProgressBar("global", globalConfig);
-                global.initial();
-
-                // update global example when change range
-                // t
-
-                const infoCode = div.querySelectorAll(".info-code");
-                infoCode.forEach((info) => {
-                    info.addEventListener("click", (e) => {
-                        e.target.closest("section").classList.toggle("show-code");
-                    });
-                });
     }
     this.renderCircleCards = (d) => {
         let html = '';
@@ -141,6 +119,75 @@ var DashboardComponent = new function () {
         this.normal_card_row.innerHTML = html;
                                 
     }
+    this.renderProgressBar = (d) => {
+        console.log(1,d);
+        let html = '';
+             html += `<div class="card">
+             <div class="card-header">
+                 <p class="section-title mb-0 fs-5">Accountings</p>
+             </div>
+             <div class="card-body">
+                 <p>Overview the Invoice Amount (%)</p>
+                 <div class="progress">
+                     <div class="progress-bar progress-bar-interactive" role="progressbar" style="width: ${d.invoce_percent||0}%;" aria-valuenow="${d.invoce_percent||0}" aria-valuemin="0" aria-valuemax="100">${d.invoce_percent||0}$ - Invoice</div>
+                 </div><br>
+                 <p>Overview the Customer Payment Amount (%)</p>
+                 <div class="progress mt-2">
+                     <div class="progress-bar progress-bar-page" role="progressbar" style="width: ${d.customer_pay_percent||0}%;" aria-valuenow="${d.customer_pay_percent||0}" aria-valuemin="0" aria-valuemax="100">${d.customer_pay_percent||0}% - Payment</div>
+                 </div>
+             </div>
+         </div>`;
+        this.progress_card_row.innerHTML = html;
+    }
+    this.renderCountryCards = (d) => {
+        let html = '';
+             html += `<div class="card">
+             <div class="card-header">
+                 <p class="section-title mb-0 fs-5">Links</p>
+             </div>
+                 
+             <div class="card-body ">
+                 <div class=" gap-3 d-flex">
+                     <div class="links-overview d-block text-start w-100 p-0">
+                         <p class="w-50 p-0">Total Links: 100</p>`,
+                         d.map(c =>{
+                            html+=`<div class="w-100 d-flex justify-content-between"><p>${c.country_name}:</p> <p>${c.toCountry_cnt}</p></div>`;
+                        //  <div class="w-100 d-flex justify-content-between"><p>Dofollow: </p> <p></p>663</div>
+                        //  <div class="w-100 d-flex justify-content-between"><p>Noreferrer: </p> <p>45</p></div>
+                        //  <div class="w-100 d-flex justify-content-between"><p>Noopener: </p> <p>102</p></div>
+                         });
+        html += `</div>
+                 </div>
+             </div>
+             
+         </div>`;
+        this.circle_card_row.innerHTML = html;
+    }
+
+    this.renderSupplierCards = (d) => {
+        let html = '';
+             html += `<div class="card">
+             <div class="card-header">
+                 <p class="section-title mb-0 fs-5">Links</p>
+             </div>
+                 
+             <div class="card-body ">
+                 <div class=" gap-3 d-flex">
+                     <div class="links-overview d-block text-start w-100 p-0">
+                         <p class="w-50 p-0">Total Links: 100</p>`,
+                         d.map(c =>{
+                            html+=`<div class="w-100 d-flex justify-content-between"><p>${c.country_name}:</p> <p>${c.toCountry_cnt}</p></div>`;
+                        //  <div class="w-100 d-flex justify-content-between"><p>Dofollow: </p> <p></p>663</div>
+                        //  <div class="w-100 d-flex justify-content-between"><p>Noreferrer: </p> <p>45</p></div>
+                        //  <div class="w-100 d-flex justify-content-between"><p>Noopener: </p> <p>102</p></div>
+                         });
+        html += `</div>
+                 </div>
+             </div>
+             
+         </div>`;
+        this.circle_card_row.innerHTML = html;
+    }
 
     this.loadCards = (onFinish)=>{
         let p={};
@@ -149,6 +196,19 @@ var DashboardComponent = new function () {
             let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,['icon']) : {};
             mThis.renderCircleCards(d.circle_cards);
             mThis.rederNormalCards(d.normal_cards);
+            
+            onFinish();
+        });
+    }
+
+    this.loadBodyCards = (onFinish)=>{
+        let p={};
+        vsapi.call(`${mThis.base_url}/abm/dashboard/body-cards`, p , null,false,false).then(res => {
+            console.log('d3',res.data);
+            let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,['icon']) : {};
+            mThis.renderProgressBar(d.progress_cards[0]);
+            // mThis.renderCountryCards(d.normal_cards);
+            // mThis.renderSupplierCards(d.normal_cards);
             onFinish();
         });
     }
@@ -156,6 +216,7 @@ var DashboardComponent = new function () {
     this.prepareFormOptions = ( data, onFinish) => {
         // let p={'id' : data.id }
         mThis.loadCards(onFinish);
+        mThis.loadBodyCards(onFinish);
     }
 
     this.show= (options)=>{

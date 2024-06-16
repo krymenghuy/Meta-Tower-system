@@ -135,7 +135,7 @@
             height: 100px;
         }
 
-        div .code {
+        .card-content .code {
             visibility: hidden;
             opacity: 0;
             position: absolute;
@@ -332,9 +332,8 @@
                             </div>
                         </div>
                         <div class="card-body">
-
-                            <div class="row row-1">
-                                <div class="col-md-6 overview-section">
+                            <div class="row ">
+                                <div id="db_progress_cards" class="col-md-6 overview-section">
                                     <div class="card">
                                         <div class="card-header">
                                             <p class="section-title mb-0 fs-5">Accountings</p>
@@ -347,11 +346,15 @@
                                             <p>Overview the Payment Amount (%)</p>
                                             <div class="progress mt-2">
                                                 <div class="progress-bar progress-bar-page" role="progressbar" style="width: 67%;" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100">67% - Payment</div>
-                                            </div><br><br><br>
+                                            </div>
+                                            <p>Overview the Payment Amount (%)</p>
+                                            <div class="progress mt-2">
+                                                <div class="progress-bar progress-bar-page" role="progressbar" style="width: 67%;" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100">67% - Payment</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6 overview-section">
+                                <div id="db_country_cards" class="col-md-6 overview-section">
                                     <div class="card">
                                         <div class="card-header">
                                             <p class="section-title mb-0 fs-5">Links</p>
@@ -379,8 +382,8 @@
                                 </div>
                             </div>
 
-                            <div class="row row-2">
-                                <div class="col-md-12 overview-section">
+                            <div class="row ">
+                                <div id="db_supplier_cards" class="col-md-12 overview-section">
                                     <div class="card">
                                         <div class="card-header">
                                             <p class="section-title mb-0 fs-5">Backlinks Overview</p>
@@ -434,7 +437,7 @@
             </div>
         </div>
 
-        <script>
+        <!-- <script>
             window.addEventListener("DOMContentLoaded", () => {
                 // update circle when range change
                 const pie = document.querySelectorAll(".pie");
@@ -510,7 +513,7 @@
                 });
             });
 
-        </script>
+        </script> -->
         
     </body>
 </div>
