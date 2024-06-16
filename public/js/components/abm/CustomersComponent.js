@@ -6,21 +6,19 @@
     this.title_prop = "Customers";
 
     this.base_url = main_view.base_url;
-    this.self = main_view.appContent.children('#_main_customersComponent');
+    this.self = main_view.appContent.children('#_main_customersComponent')[0];
 
-    this.elFilter_customer_type = this.self[0].querySelector('#_cul_filter_customer_type');
-    this.elFilter_customer_status = this.self[0].querySelector('#_cul_filter_customer_status');
-    this.btnNewCustomer = this.self.find('#_cul_btnNew');
-    this.elSearch = this.self.find('#_cul_search_customer');
-    this.btnSearch = this.self.find('#_cul_btnSearch');
-    this.btnPrint = this.self.find('#_cul_btnPrint');
-    this.div_filter_fields = this.self[0].querySelector('#_cus_filter_fields');
+    this.elFilter_customer_type = this.self.querySelector('#_cul_filter_customer_type');
+    this.elFilter_customer_status = this.self.querySelector('#_cul_filter_customer_status');
+    this.btnNewCustomer = this.self.querySelector('#_cul_btnNew');
+    this.elSearch = this.self.querySelector('#_cul_search_customer');
+    this.btnSearch = this.self.querySelector('#_cul_btnSearch');
+    this.btnPrint = this.self.querySelector('#_cul_btnPrint');
+    this.div_filter_fields = this.self.querySelector('#_cus_filter_fields');
     this.form_data = {};
     this.store_agents = {};
-
-    this.sender_dropdown_menu = this.self.find('div.dropdown');
-    
-        this.setCustomerPriceList = (id,name=null,span=null,def_price_list_id=null) => {
+ 
+        this.setCustomerPriceList = (id,name=null,span=null,def_price_list_id=null, lnk = null) => {
             mThis.getPriceListItems((items) => {
                 items.unshift({
                     id: null,
@@ -35,19 +33,23 @@
                     data: items,
                     defaultValue: def_price_list_id
                 };
-
                 InputBox2.show(option, (d) => {
                     if (d) {
                         let p = {
                             id: id,
                             price_list_id: d.value
                         };
-                        vsapi.call(`${mThis.base_url}/dms/merchant/set-price-list`, p, null).then(res => {
+                        vsapi.call(`${mThis.base_url}/abm/customers/set-price-list`, p, null).then(res => {
                             if (res.status_code == 200) {
                                 let d = StringSanitizer.sanitizeObject(res.data);
                                 // span.textContent = d.list_name;
                                 mThis.customerListView.showPage(mThis.getFilterData());
-
+                                if (lnk){
+                                     const tr = lnk.closest('tr');
+                                     if(tr) tr.dataset.pricelistid = d.price_list_id;
+                                     lnk.dataset.pricelistid = d.price_list_id;
+                                }
+                                InputBox2.close();
                                 cv_interact.success('Price list ' + d.list_name + ' has been assigned to the customer successfully');
                             }
                             else
@@ -94,7 +96,7 @@
                 title: "Contact",
                 className: "align-middle text-nowrap",
                 data: (data, index, tr) => {
-                    return ['<div class="d-flex p-1"><i class="fas text-danger  fa-phone p-2"></i><span class="  sender-name d-block p-1 ">', data.phone_number, '</span></div>','<div class="d-flex p-2" ><i class="fas p-2 text-success fa-envelope"></i><span class=" text-primary sender-name d-block p-1">', (data.email || 'គ្មាន'),
+                    return ['<div class="d-flex p-1"><i class="fas text-danger  fa-phone p-2"></i><span class="  sender-name d-block p-1 ">', data.phone_number, '</span></div>','<div class="d-flex p-2" ><i class="fas p-2 fa-envelope"></i><span class=" sender-name d-block p-1">', (data.email || 'គ្មាន'),
                         '</span></div>'].join('');
                 }
             },
@@ -115,7 +117,7 @@
             {
                 className: "price_list_name align-middle",
                 data: (data, index, tr) => {
-                    let price_list_html = data.price_list_name ? `<span class="customer-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="set-price-list text-danger"><i class="fa-solid fa-pencil"></i></a>`;
+                    let price_list_html = data.price_list_name ? `<span class="customer-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="lnk_set_price_list text-danger"><i class="fa-solid fa-pencil"></i></a>`;
                     const sender_info = ['<span class="sender- text-primary d-block">', price_list_html, '</span>'].join('');
                     return sender_info;
                 },
@@ -125,7 +127,7 @@
                 title: "Create By",
                 className: 'align-middle text-capitalize',
                 data: (data, index, tr) => {
-                    return ['<span class=" sender-name d-block p-1 " >', data.create_user, '</span>', '<span class="d-block p-1 text-success">', data.created_at, '</span>'].join('');
+                    return ['<span class=" sender-name d-block p-1 " >', data.create_user, '</span>', '<span class="d-block p-1 text-muted"><small>', data.created_at, '</small></span>'].join('');
                 }
             },
             {
@@ -217,13 +219,12 @@
             }
         }
 
-        this.editCustomer = (lnk,customer_id)=>{
+        this.editCustomer = (customer_id, lnk)=>{
             
             // alert('Edit customer'); 
             if (lnk) {
-                console.log(lnk);
                 let op = {
-                    id: lnk.dataset.id,
+                    id: customer_id,
                     onClose: () => {
                         mThis.customerListView.showPage(mThis.getFilterData());
                     }
@@ -234,18 +235,15 @@
           //todo: Write code to show dialog to edit customer
         }
         
-        this.setPriceList = (lnk,customer_id)=>{
-        if (lnk) {
-            const id = lnk.dataset.id;
-            let pl_id = lnk.dataset.pricelistid;
-            let name = lnk.dataset.name;
+        this.setPriceList = (customer_id, customer_name,  default_price_list_id, lnk = null)=>{
+            // const id = lnk.dataset.id;
+            // let pl_id = lnk.dataset.pricelistid;
+            customer_name = customer_name || (lnk? lnk.dataset.name: null);
             // let span = lnk.find('.customer-price-list')[0];
-            mThis.setCustomerPriceList(id, name, null, pl_id);
-            return;
+            mThis.setCustomerPriceList(customer_id, name, null, default_price_list_id);
         }
-          //write to show PriceListDialog, and user can choose price list to assign to customer
-        }
-        this.deleteCustomer = (lnk,customer_id)=>{
+
+        this.deleteCustomer = (customer_id, lnk)=>{
             if (lnk) {
                 const id = lnk.dataset.id;
                 let status_code = lnk.dataset.status;
@@ -312,15 +310,21 @@
                 onClick:(menuLink, id, name)=>{
                     switch(name){
                         case 'set_price_list':{
-                            mThis.setPriceList(id); // NOT yet defined
+                            let customer_name = menuLink.dataset.customername;
+                            let def_price_list_id = menuLink.dataset.pricelistid;
+                            mThis.setPriceList(id, customer_name,def_price_list_id, menuLink); // NOT yet defined
                             break;
                         }
                         case 'edit_customer':{
-                        mThis.editCustomer(id); //Not yet defined
-                        break;
+                          mThis.editCustomer(id, menuLink); //Not yet defined
+                          break;
                         }
+                        case 'delete_customer':{
+                            mThis.deleteCustomer(id, menuLink); //Not yet defined
+                            break;
+                          }
                         default:{
-                        break;
+                          break;
                         }
                     }
                 }
@@ -482,6 +486,7 @@
                 'tableClass': "table header-light-blue header-uppercase",
                 'rowCreated': (data, index, tr) => {
                     tr.dataset.id = data.id;
+                    tr.dataset.pricelistid = data.price_list_id;
                     mThis.store_agents[data.id] = {
                         code: data.code,
                         name: data.name,
@@ -492,7 +497,7 @@
                 'beforeRender': () => { }
             });
               
-            mThis.btnNewCustomer.on('click', function (e) {
+            mThis.btnNewCustomer.addEventListener('click', function (e) {
                 e.preventDefault();
                 let op = {
                     'id': null,
@@ -506,7 +511,17 @@
             mThis.tblCustomers = mThis.customerListView.getTable();
             mThis.initDropdownMenus(mThis.tblCustomers);
             // mThis.setEvents($(mThis.tblCustomers));
-             
+            mThis.tblCustomers.onclick = e=>{
+                e.preventDefault();
+                let lnk = VSUtil.closestLimited(e.target,'.lnk_set_price_list');
+                if(lnk){
+                     let id = lnk.dataset.id;
+                     let cust_name = lnk.dataset.customername;
+                     let def_price_list_id = lnk.closest('tr').dataset.pricelistid;
+                     mThis.setPriceList(id,cust_name,def_price_list_id,lnk);
+                     return;
+                }
+            } 
             this.sh_container = mThis.customerListView.getListContainer();
 
             const sh_parent = mThis.sh_container.parentElement;
@@ -550,14 +565,15 @@
                 }
             });
             
-            mThis.elSearch.on('keyup', function (e) {
+            mThis.elSearch.addEventListener('keyup',  (e) => {
                 e.preventDefault();
                 clearTimeout(mThis.search_timeout);
                 mThis.search_timeout = setTimeout(() => {
                     mThis.customerListView.showPage(mThis.getFilterData());
                 }, 250);
             });
-            mThis.btnSearch.on('click', function () {
+            mThis.btnSearch.addEventListener('click', function (e) {
+                e.preventDefault();
                 mThis.customerListView.showPage(mThis.getFilterData());
             });
 
@@ -572,7 +588,7 @@
                 let f = el.dataset.field;
                 p[f] = el.value;
             });
-            p.search_value = mThis.elSearch.val();
+            p.search_value = mThis.elSearch.value;
             return p;
         }
         this.getPriceListItems = (onFinish) => {
@@ -587,8 +603,9 @@
             main_view.setTitle(mThis.title_prop);
             mThis.loadFilterData(() => {
                 mThis.customerListView.showPage(mThis.getFilterData(), null, () => {
-                    mThis.self.siblings().hide();
-                    mThis.self.hide().fadeIn(250);
+                    mThis.jm = mThis.jm || $(mThis.self);
+                    mThis.jm.siblings().hide();
+                    mThis.jm.hide().fadeIn(250);
                 });
             });
         }
@@ -625,8 +642,7 @@
         // };
 
     };
-
-   
+    
     const CustomerDialog = new function () {
         const mThis = this;
         this.self = main_view.appContent.find('#_cul_dlgCustomer')[0];
