@@ -5,7 +5,7 @@ namespace App\Models\Abm;
 use App\Models\DV;
 use App\Models\Location\Country;
 //use Sanitizer;
-use Illuminate\Pagination\LengthAwarePaginator; 
+//use Illuminate\Pagination\LengthAwarePaginator; 
 use DB;
 
 class CountryZone //extends Model
@@ -18,12 +18,15 @@ class CountryZone //extends Model
         $this->userInfo= $userInfo;
     }
   
+    static function zoneCountryExistsByName($country_name){
+       return DB::table('os_zone_countries as z')->join('loc_countries as c','c.id','=','z.country_id')->where('c.name',$country_name)->selectRaw('id')->first();
+    }
     function save($arr,$id=null,$ss=null){
         $ss = $ss?$ss:$this->userInfo;
         $id = $id?$id:$this->id;
 
         $v_rule = [
-            'country_id'=>'1|int|exists=loc_countries.id',
+            'country_id'=>'1|number|exists=loc_countries.id',
             'zone_code'=>'1|number',
             'country_name'=>'0|string|0-250',
             'country_code'=>'0|string|0-35'
@@ -34,22 +37,54 @@ class CountryZone //extends Model
         $inputs = $res->values;
         $d = (object)$inputs;
 
-        $country_name = $inputs['country_name'];
-        $country_code = $inputs['country_code'];
+        $country_name = $d->country_name;
+        $country_code = $d->country_code;
+        $country_id = $d->country_id;
         unset($inputs['country_name'],$inputs['country_code']);
 
-        $country_id = $inputs['country_id'];  
         //$create_country = false;
-        if($country_name && $country_code){
-            $res= Country::save(['name'=>$country_name, 'code'=>$country_code,'name_kh'=>$country_name,'nationality'=>$country_name],$ss);
-            if(!$res->status =='OK'){
-                $country_id = $res->id;
-                //$create_country = true;
-            }else return DV::error( $res->error_message);
-          
-        }else if(!$country_code  || !$country_name){
-             return DV::error('country name and country code are required for standard zone assignment');
+        if($id > 0){
+            if($country_name && $country_code){
+                //user wants to unpdate country name and country code for existing zone                 
+                $res= Country::save(['id'=>$id,'name'=> $country_name, 'code'=> $country_code,'name_kh'=> $country_name,'nationality'=> $country_name],$ss);
+                if(!$res->status =='OK'){
+                    $country_id = $res->id;
+                    //$create_country = true;
+                }else return DV::error( $res->error_message);
+              
+            }else if(!$country_code  || !$country_name){
+                //Just update zone_code only
+                 DB::table('os_zone_countries')->where('id',$id)->update([
+                    'country_id'=>$country_id, 
+                    'zone_code'=>$d->zone_code
+                 ]);
+            }
+        }else{
+            if(!$country_id && $country_name && $country_code){
+                //user wants to create new zone_country by entering country name and country code
+                if(self::zoneCountryExistsByName($country_name)) return DV::error('Zone code for ? has been assigned already::'.$country_name);
+                $res= Country::save(['name'=> $country_name, 'code'=> $country_code,'name_kh'=> $country_name,'nationality'=> $country_name],$ss);
+                if(!$res->status =='OK'){
+                    $country_id = $res->id;
+                    //$create_country = true;
+                }else return DV::error( $res->error_message);
+              
+            }else if($country_id > 0){
+                // $res= Country::save(['id'=>null,'name'=> $country_name, 'code'=> $country_code,'name_kh'=> $country_name,'nationality'=> $country_name],$ss);
+                // if(!$res->status =='OK'){
+                    $inputs = [
+                        'country_id'=>$country_id,
+                        'zone_code'=>$d->zone_code
+                    ];
+                    saveData($ss,'os_zone_countries',['id'=>null],$inputs,[],1,false);
+                //}else return DV::error( $res->error_message);
+                 
+            }
+            else{
+                 return DV::error('Country name and country code are required for standard zone assignment');
+            }
         }
+ 
         $inputs = [
             'country_id'=>$country_id,
             'zone_code'=>$d->zone_code
@@ -64,49 +99,54 @@ class CountryZone //extends Model
         return null;
     }
 
-    static function list_all($arr,$ss){
-        $branch_id = $ss->branch_id;
-        $d = (object)$arr;
-        $search_value =isset($d->search_value)?$d->search_value:null;
+    // static function list_all($arr,$ss){
+    //     $branch_id = $ss->branch_id;
+    //     $d = (object)$arr;
+    //     $search_value =isset($d->search_value)?$d->search_value:null;
  
-        $str_search = '2=2';
-        if($search_value){
-            $search_value = escape_like_str($search_value);
-            $str_search = '(z.country_code LIKE \'%'.$search_value.'%\' OR z.country_name LIKE \'%'.$search_value.'%\')';
-        }
-        $str_active ='IFNULL(z.inactive,0)=0';
-        return DB::table('loc_countries AS z')->where('z.branch_id',$branch_id)->whereRaw($str_search)->selectRaw('z.name')->get();
-    }
+    //     $str_search = '2=2';
+    //     if($search_value){
+    //         $search_value = escape_like_str($search_value);
+    //         $str_search = '(z.country_code LIKE \'%'.$search_value.'%\' OR z.country_name LIKE \'%'.$search_value.'%\')';
+    //     }
+    //     $str_active ='IFNULL(z.inactive,0)=0';
+    //     return DB::table('loc_countries AS z')->where('z.branch_id',$branch_id)->whereRaw($str_search)->selectRaw('z.name')->get();
+    // }
 
     static function list($arr,$ss){
         $branch_id = $ss->branch_id;
         $d = (object)$arr;
-        
-        $current_page = isset($d->current_page) ? $d->current_page : 1;
-        $per_page = isset($d->per_page) ? $d->per_page : 10;
-        if (!is_numeric($current_page)) $current_page = 1;
-        $skip_rows = ($current_page - 1) * $per_page;
-
         $search_value =isset($d->search_value)?$d->search_value:null;
  
         $str_search = '2=2';
+        $str_search_zone = '3=3';
         if($search_value){
             $search_value = escape_like_str($search_value);
-            $str_search = '(c.code LIKE \'%'.$search_value.'%\' OR c.country_name LIKE \'%'.$search_value.'%\')';
+            $str_search = '(c.code LIKE \'%'.$search_value.'%\' OR c.name LIKE \'%'.$search_value.'%\')';
+            $str_search_zone = $search_value > 0 ?'z.zone_code ='.$search_value : '2=2';
         }
-
-        $query = DB::table('zone_countries AS z')->join('loc_countries as c','c.id','=','z.country_id')->where('z.branch_id',$branch_id)->whereRaw($str_search)->selectRaw('z.name');
-        $count_query = clone $query;
-        $count = $count_query->count('z.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        $zones = DB::table('os_zone_countries AS z')->join('loc_countries as c','c.id','=','z.country_id')->whereRaw($str_search_zone)->whereRaw($str_search)->where('z.branch_id',$branch_id)->selectRaw('z.id,z.zone_code,z.country_id, z.update_user, formatTime(z.update_date) AS update_date')->get();
+        $rows = DB::table('loc_countries as c')->whereRaw($str_search)->selectRaw('c.id as country_id,c.name as country_name,c.code as country_code')->get();
+        foreach($rows as $row){
+            $country_id = $row->country_id;
+            $founds = $zones->filter(function($x) use($country_id){
+                return $x->country_id == $country_id;
+            });
+            $zone = '';
+            if($founds) $zone = $founds->first();
+            $row->id = $zone? $zone->id : null;
+            $row->zone_code = $zone? $zone->zone_code: '';
+            $row->update_user = $zone?  $zone->update_user: '';
+            $row->update_date = $zone?  $zone->update_date: '';
+        }
+        return $rows;
     }
      
     function details($id,$ss){
         $branch_id = $ss->branch_id;
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-       return  DB::table('os_zone_countries as z')->join('loc_countries as c','z.country_id','=','c.country_id')->where('z.id',$id)->where('z.branch_id',$branch_id)->selectRaw('z.id,z.zone_code,c.name AS country_name, c.code as country_code, z.create_user, formatTime(z.create_date)')->first();
+       return  DB::table('os_zone_countries as z')->join('loc_countries as c','z.country_id','=','c.country_id')->where('z.id',$id)->where('z.branch_id',$branch_id)->selectRaw('z.id,z.zone_code,c.name AS country_name, c.code as country_code, z.create_user,z.update_user, formatTime(z.update_date) AS create_date')->first();
  
     }
 

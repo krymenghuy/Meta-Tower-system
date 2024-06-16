@@ -11,7 +11,7 @@ use App\Models\JDV;
 
 class CountryZoneController extends Controller
 {
-    function save(Request $req) {
+    function saveZoneCountry(Request $req) {
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
          $id = $req->id;
@@ -19,14 +19,8 @@ class CountryZoneController extends Controller
          $save = $zone->save($req->all());
          return JDV::raw($save); 
     }
-    function getCountryZoneList_all(Request $req) {
-        $ss = UM::getUserInfoByToken($req,-1);
-        if($ss->status_code !==200) return JDV::raw($ss);
-        $data = CountryZone::list_all($req->all(),$ss);
-        return JDV::result($data); 
-    }
-
-    function getCountryZoneList_paginate(Request $req) {
+     
+    function getCountryZoneList(Request $req) {
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $data = CountryZone::list($req->all(),$ss);
@@ -43,7 +37,7 @@ class CountryZoneController extends Controller
         return JDV::raw($detail);
 
     }
-    function delete(Request $req){
+    function deleteZoneCountry(Request $req){
         $ss = UM::getUserInfoByToken($req, -1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $id=$req->id;
