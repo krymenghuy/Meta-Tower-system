@@ -25,6 +25,14 @@ class CountryZoneController extends Controller
         $data = CountryZone::list_all($req->all(),$ss);
         return JDV::result($data); 
     }
+
+    function getCountryZoneList_paginate(Request $req) {
+        $ss = UM::getUserInfoByToken($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $data = CountryZone::list($req->all(),$ss);
+        return JDV::result($data); 
+    }
+
     function details(Request $req ){
 
         $ss = UM::getUserInfoByToken($req,-1);
