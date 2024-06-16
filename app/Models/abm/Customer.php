@@ -220,6 +220,7 @@ class Customer //extends Model
 
 
   }
+
   static function list($arr, $ss)
   {
     $d = (object) $arr;
@@ -227,8 +228,7 @@ class Customer //extends Model
 
     $current_page = isset($d->current_page) ? $d->current_page : 1;
     $per_page = isset($d->per_page) ? $d->per_page : 10;
-    if (!is_numeric($current_page))
-      $current_page = 1;
+    if (!is_numeric($current_page)) $current_page = 1;
     $skip_rows = ($current_page - 1) * $per_page;
 
     $status = isset($d->status_code) ? $d->status_code : 'active';
