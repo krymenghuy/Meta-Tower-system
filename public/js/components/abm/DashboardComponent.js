@@ -7,8 +7,9 @@ var DashboardComponent = new function () {
     this.self = main_view.appContent.children('#_main_dashboardComponent');
     this.circle_card_row = mThis.self[0].querySelector('#db_circle_card');
     this.normal_card_row = mThis.self[0].querySelector('#db_normal_cards');
-    this.card_header = mThis.self[0].querySelector('#card-header');
-    this.card_body = mThis.self[0].querySelector('#card-body');
+    this.progress_card_row = mThis.self[0].querySelector('#db_progress_cards');
+    this.country_card_row = mThis.self[0].querySelector('#db_country_card');
+    this.supplier_card_row = mThis.self[0].querySelector('#db_supplier_card');
     
 
     this.init= () => {
@@ -118,7 +119,8 @@ var DashboardComponent = new function () {
         this.normal_card_row.innerHTML = html;
                                 
     }
-    this.renderProgressCards = (d) => {
+    this.renderProgressBar = (d) => {
+        console.log(1,d);
         let html = '';
              html += `<div class="card">
              <div class="card-header">
@@ -127,16 +129,15 @@ var DashboardComponent = new function () {
              <div class="card-body">
                  <p>Overview the Invoice Amount (%)</p>
                  <div class="progress">
-                     <div class="progress-bar progress-bar-interactive" role="progressbar" style="width: ${d.invoce_percent}%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100">95% - Invoice</div>
+                     <div class="progress-bar progress-bar-interactive" role="progressbar" style="width: ${d.invoce_percent||0}%;" aria-valuenow="${d.invoce_percent||0}" aria-valuemin="0" aria-valuemax="100">${d.invoce_percent||0}$ - Invoice</div>
                  </div><br>
-                 <p>Overview the Payment Amount (%)</p>
+                 <p>Overview the Customer Payment Amount (%)</p>
                  <div class="progress mt-2">
-                     <div class="progress-bar progress-bar-page" role="progressbar" style="width: ${d.pay_percent}%;" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100">67% - Payment</div>
-                 </div><br><br><br>
+                     <div class="progress-bar progress-bar-page" role="progressbar" style="width: ${d.customer_pay_percent||0}%;" aria-valuenow="${d.customer_pay_percent||0}" aria-valuemin="0" aria-valuemax="100">${d.customer_pay_percent||0}% - Payment</div>
+                 </div>
              </div>
          </div>`;
-        this.circle_card_row.innerHTML = html;
-        this.initCircleCards(this.circle_card_row);
+        this.progress_card_row.innerHTML = html;
     }
     this.renderCountryCards = (d) => {
         let html = '';
@@ -195,17 +196,19 @@ var DashboardComponent = new function () {
             let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,['icon']) : {};
             mThis.renderCircleCards(d.circle_cards);
             mThis.rederNormalCards(d.normal_cards);
+            
             onFinish();
         });
     }
 
-    this.loadCards = (onFinish)=>{
+    this.loadBodyCards = (onFinish)=>{
         let p={};
-        vsapi.call(`${mThis.base_url}/abm/dashboard/cards`, p , null,false,false).then(res => {
-            console.log('d2',res.data);
+        vsapi.call(`${mThis.base_url}/abm/dashboard/body-cards`, p , null,false,false).then(res => {
+            console.log('d3',res.data);
             let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,['icon']) : {};
-            mThis.renderCircleCards(d.circle_cards);
-            mThis.rederNormalCards(d.normal_cards);
+            mThis.renderProgressBar(d.progress_cards[0]);
+            // mThis.renderCountryCards(d.normal_cards);
+            // mThis.renderSupplierCards(d.normal_cards);
             onFinish();
         });
     }
@@ -213,7 +216,7 @@ var DashboardComponent = new function () {
     this.prepareFormOptions = ( data, onFinish) => {
         // let p={'id' : data.id }
         mThis.loadCards(onFinish);
-        // mThis.loadBodyCards(onFinish);
+        mThis.loadBodyCards(onFinish);
     }
 
     this.show= (options)=>{

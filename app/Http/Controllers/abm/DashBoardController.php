@@ -35,17 +35,17 @@ class DashBoardController extends Controller
         return JDV::error($res->error_message);
      }
     
-    function getCards(Request $req){
+    function getHeaderCards(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if ($ss->status_code !==200) return JDV::raw($ss);
-         $data = $this->dashboard->getCards($ss); 
+         $data = $this->dashboard->getHeaderCards($ss); 
          return JDV::result($data);
      }
 
-     function getDataTable(Request $req){
+     function getBodyCards(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if ($ss->status_code !==200) return JDV::raw($ss);
-         $data = $this->dashboard->getDataTable($ss); 
+         $data = $this->dashboard->getBodyCards($ss); 
          return JDV::result($data);
      }
 

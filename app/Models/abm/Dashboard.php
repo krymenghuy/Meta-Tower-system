@@ -6,6 +6,7 @@ use App\Models\DV;
 use App\Models\JDV;
 use App\Models\Dms\PublicStorage;
 use Illuminate\Pagination\LengthAwarePaginator;
+use DateTime;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use Sanitizer;
@@ -165,7 +166,7 @@ class Dashboard //extends Model
         return $colors[$status_id];
     }
 
-    static function getCards($ss){   
+    static function getHeaderCards($ss){   
         $branch_id = $ss->branch_id;
         $circle_cards=[];
         $normal_cards =[];
@@ -180,7 +181,7 @@ class Dashboard //extends Model
            $founds = $rows->filter(function($x) use($status_id){
                return $x->status_id == $status_id; 
            });
-           $row = isset($founds[0])? $founds[0]:null;
+           $row = $founds ? $founds->first():null;
            $item = null; 
            if($row){
                 $total += $row->cnt;
@@ -264,30 +265,57 @@ class Dashboard //extends Model
         // return $data;
     }
 
-    static function getTableCards($ss){   
+    static function getBodyCards($ss){   
 
         $branch_id = $ss->branch_id;
-        $circle_cards=[];
-        $normal_cards =[];
-        $status_ids = [1,2,3];
+        $progress_cards=[];
+        $country_cards =[];
+        $supplier_cards =[];
+
         $str_dates = '1=1';
-        $rows = DB::table('os_shipments as s')->join('os_shipment_statuses as n', 'n.id','=','s.status_id')->whereIn('s.status_id',$status_ids)->whereRaw($str_dates)->selectRaw('COUNT(s.id) as cnt, s.status_id, n.name as `status`')->groupByRaw('s.status_id, n.name')->get();
+        $start_date = date('Y-m-d', strtotime('-90 days'));
+        $end_date = new DateTime();
+        $end_date = $end_date->format('Y-m-d'); 
+        $str_dates = "DATE(i.create_date) >= '$start_date' AND DATE(i.create_date) <= '$end_date'";
+        $total_shipment = DB::table('os_shipments as i')->where('i.status_id',3)->whereRaw($str_dates)->count('i.id');
+        $cnt_invoice = DB::table('os_customer_invoices as i')->whereRaw($str_dates)->count('i.id');
+        $cnt_invoice_paid =  DB::table('os_customer_invoices as i')->where('i.status_id',2)->count('i.id');
         $total = 0; 
-        foreach($rows as $row){
-            $total += $row->cnt;
-            $circle_cards[] = (object)[
-                'value'=>$row->cnt,
-                'status'=>$row->status,
-                'colorSlice'=> self::getSliceCircle($row->status_id)
 
-            ];
+        $progress_cards [] = (object)[
+            'total_invoive'=> $cnt_invoice,
+            'invoce_percent'=> number_format($cnt_invoice *100 / $total_shipment,2),
+            'total_shipment'=> $total_shipment,
+            'color'=> '',
+        ];
+        return (object)[
+            'progress_cards' => $progress_cards,
+            'country_cards' => $country_cards,
+            'supplier_cards' => $supplier_cards
+        ];
+        
+        $normal_cards [] = (object)[
+            'title'=>'Active Customer',
+            'value'=>$active_cnt,
+            'icon'=> ' <i class="fas fa-user text-success"  style="font-size: 3rem;width: 100px;"></i>',
+            'color'=>'#0000'
 
-         } 
-        foreach($circle_cards as $card){
-            if($total==0)$total=1;
-            $card->percentage= number_format($card->value *100 / $total,2);
-            $card->total = $total;
-        }
+        ];
+        // foreach($rows as $row){
+        //     $total += $row->cnt;
+        //     $circle_cards[] = (object)[
+        //         'value'=>$row->cnt,
+        //         'status'=>$row->status,
+        //         'colorSlice'=> self::getSliceCircle($row->status_id)
+
+        //     ];
+
+        //  } 
+        // foreach($circle_cards as $card){
+        //     if($total==0)$total=1;
+        //     $card->percentage= number_format($card->value *100 / $total,2);
+        //     $card->total = $total;
+        // }
 
         $rows = DB::table('sender as s')->whereRaw($str_dates)->selectRaw('COUNT(s.id) as cnt,s.status_code as `status`')->groupByRaw('s.status_code')->get();
         $active_cnt =0;
@@ -344,26 +372,6 @@ class Dashboard //extends Model
         $data->active_seles_agent = $active_seles_agent;
         // return $data;
     }
-
-
-    static function getDataTable($ss){
-        $branch_id = $ss->branch_id;    
-        $row = DB::table('os_suppliers')->selectRaw('id, name, code, phone_number, email, referrer_id, photo_file_name, address, status_code, price_list_id, formatDate(create_date) as create_date, DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
-        if (!$row) return null;
-            //$accounts = self::bankAccounts($id,1);
-            // if($row->loc_lat ==0) $row->loc_lat = null;
-            // if($row->loc_lng ==0) $row->loc_lng = null;
-            // if ($includeBankAccount) $row->bank_accounts = self::bankAccounts($id);
-            // if($includeProfilePicture) $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
-            $url = $row->photo_file_name? PublicStorage::getUrl($branch_id,'general' ,'image').$row->photo_file_name: null;
-            $url = validateUrl($url,self::defaultImage($branch_id));
-            $row->photo = $url;
-            $row->image_url = $url;
-
-            if ($includeProfilePicture)
-            $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
-        return $row;
-     }
 
      function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
         $id = $id?$id:$this->id;

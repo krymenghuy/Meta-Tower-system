@@ -166,8 +166,8 @@ use App\Http\controllers\abm\DashboardController;
     
     
     Route::prefix('dashboard')->group(function(){
-        Route::post('/cards', [DashboardController::class, 'getCards']);
-        Route::post('tables', [DashboardController::class, 'getTable']);
+        Route::post('/cards', [DashboardController::class, 'getHeaderCards']);
+        Route::post('/body-cards', [DashboardController::class, 'getBodyCards']);
     });
    //begin:: Counties_Zone_Code
     Route::prefix('country')->group(function(){
