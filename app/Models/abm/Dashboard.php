@@ -10,6 +10,7 @@ use DateTime;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use Sanitizer;
+use Localization;
 class Dashboard //extends Model
 {   
     protected $id = null;
@@ -189,7 +190,6 @@ class Dashboard //extends Model
                     'value'=>$row->cnt,
                     'status'=>$row->status,
                     'colorSlice'=> self::getSliceCircle($row->status_id)
-
                 ];
            }else{
             $item= (object)[
@@ -209,7 +209,7 @@ class Dashboard //extends Model
             $card->total = $total;
         }
  
-        $rows = DB::table('sender as s')->whereRaw($str_dates)->selectRaw('COUNT(s.id) as cnt,s.status_code as `status`')->groupByRaw('s.status_code')->get();
+        $rows = DB::table('sender as s')->join('sender_classes as c','c.sender_id','=','s.id')->where('c.sender_class','oversea')->whereRaw($str_dates)->selectRaw('COUNT(s.id) as cnt,s.status_code as `status`')->groupByRaw('s.status_code')->get();
         $active_cnt =0;
         $customer_cnt = 0;
         foreach($rows as $row){
@@ -218,7 +218,7 @@ class Dashboard //extends Model
             $customer_cnt += $row->cnt;
         }
         $normal_cards [] = (object)[
-            'title'=>'Total Customer',
+            'title'=>Localization::translate('titles','Total Customer',$ss->lang),
             'value'=>$customer_cnt,
             'icon'=> '<i class="fas fa-user-plus text-info" style="font-size: 3rem;width: 100px;"></i>',
             'color'=>'#0000'
@@ -335,7 +335,7 @@ class Dashboard //extends Model
         ];
         
         $normal_cards [] = (object)[
-            'title'=>'Active Customer',
+            'title'=>Localization::translate('titles','Active Customer',$ss->lang),
             'value'=>$active_cnt,
             'icon'=> ' <i class="fas fa-user text-success"  style="font-size: 3rem;width: 100px;"></i>',
             'color'=>'#0000'
@@ -344,7 +344,7 @@ class Dashboard //extends Model
         
         $active_agent = DB::table('os_affiliates as f')->join('os_sales_agents as a','a.affiliate_id','=','f.id')->where('f.status_code','Active')->count('f.id');
         $normal_cards [] = (object)[
-            'title'=>'Active Sales Agent',
+            'title'=>Localization::translate('titles','Active Sales Agent',$ss->lang),
             'value'=>$active_agent,
             'icon'=> ' <i class="fa fa-users text-success"  style="font-size: 3rem;width: 100px;"></i>',
             'color'=>'#0000'

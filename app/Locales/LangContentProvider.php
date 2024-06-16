@@ -26,7 +26,12 @@ class LangContentProvider {
                  "Contact channel is not valid"=>"Contact channel is not valid",
                  "Department name is required"=>"Department name is required",
                  'Please enter the details of each item'=>'សូមបញ្ចូលព័ត៌មានលំអិតនៃកញ្ចប់ទំនិញនីមួយៗ'  
-                 ]
+            ],
+            'titles'=>[
+                'Active Customers'=>'Active Customers',
+                'Total Customers'=>'Total Customers',
+                'Active Sales Agent'=>'Active Sales Agents'
+            ]
             ];
     }
     
@@ -47,7 +52,12 @@ class LangContentProvider {
                 'text length must be between'=>'text length must be between ? and ?',
                 'Start date should be earlier than first payment date'=>'Start date should be earlier than first payment date',
                 'Please enter the details of each item'=>'Please enter the details of each item' 
-              ]
+            ],
+            'titles'=>[
+                'Active Customers'=>'Active Customers',
+                'Total Customers'=>'Total Customers',
+                'Active Sales Agent'=>'Active Sales Agents'
+            ]
            ];
     }
 

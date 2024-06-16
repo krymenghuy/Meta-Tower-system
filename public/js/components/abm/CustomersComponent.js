@@ -84,11 +84,15 @@
             },
             {
                 title: "Name",
-                className: "align-middle text-capitalize text-nowrap",
+                className: "align-middle text-capitalize",
                 data: (data, index, tr) => {
-                    return ['<div class="d-flex p-1" ><span class=" sender-name d-block p-1">', (data.name || 'គ្មាន'), '</span></div>',
-                        '<div class="d-flex p-1"><i class="fa-solid p-2 text-warning fa-user"></i><span class=" sender-name d-block p-1 text-success">', data.sender_type || 'Normal', '</span></div>'].join('');
-
+                    return ['<div class="d-flex flex-column" >',
+                                '<span class="sender-name d-block">', (data.name || 'គ្មាន'), '</span>',
+                                '<div class="d-flex flex-row gap-2">',
+                                    '<i class="fa-solid text-warning fa-user"></i>',
+                                    '<span class="text-success">', data.sender_type || 'Normal', '</span>',
+                                '</div>',
+                            '</div>'].join('');
                 }
 
             },
@@ -96,7 +100,7 @@
                 title: "Contact",
                 className: "align-middle text-nowrap",
                 data: (data, index, tr) => {
-                    return ['<div class="d-flex p-1"><i class="fas text-danger  fa-phone p-2"></i><span class="  sender-name d-block p-1 ">', data.phone_number, '</span></div>','<div class="d-flex p-2" ><i class="fas p-2 fa-envelope"></i><span class=" sender-name d-block p-1">', (data.email || 'គ្មាន'),
+                    return ['<div class="d-flex flex-row gap-2"><i class="fas fa-phone mt-1"></i><span class="">', data.phone_number, '</span></div>','<div class="d-flex p-2" ><i class="fas p-2 fa-envelope"></i><span class=" sender-name d-block p-1">', (data.email || 'គ្មាន'),
                         '</span></div>'].join('');
                 }
             },
@@ -690,22 +694,22 @@
             }
         });
         
-        this.prepareData = (id, def, onFinish) => {
-            if (!def) def = {};
-            vsapi.call(`${mThis.base_url}/abm/customers/form-options`, { id: id }, null).then(res => {
-                let d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
-                //VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No Sales Agent)', def.sales_agent_id);
-                VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
-                VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'price_list', true, '(Price List)', def.price_list_id);
-                VSUtil.setComboItems(mThis.elCustomerType, d.sender_types, 'id', 'sender_type', true, '(Customer Type)', def.sender_type_id);
-                mThis.form_data = d;
-                onFinish(d);
-            });
-        }
+        // this.prepareData = (id, def, onFinish) => {
+        //     if (!def) def = {};
+        //     vsapi.call(`${mThis.base_url}/abm/customers/form-options`, { id: id }, null).then(res => {
+        //         let d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
+        //         //VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No Sales Agent)', def.sales_agent_id);
+        //         VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
+        //         VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'price_list', true, '(Price List)', def.price_list_id);
+        //         VSUtil.setComboItems(mThis.elCustomerType, d.sender_types, 'id', 'sender_type', true, '(Customer Type)', def.sender_type_id);
+        //         mThis.form_data = d;
+        //         onFinish(d);
+        //     });
+        // }
         this.btnSave.onclick = e => {
             e.preventDefault();
             let p = mThis.getData();
-            vsapi.call(`${mThis.base_url}/abm/customers/save`, p).then(res => {
+            vsapi.call(`${mThis.base_url}/abm/customers/save`, p,mThis.btnSave,false,false).then(res => {
                 if (res.status_code === 200) {
                     mThis.modal.hide();
                     if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
@@ -714,79 +718,49 @@
                     cv_interact.error(res.error_message);
             });
         };
-      
        
-        // this.show = (options) => {
-        //     if (!options) options = {};
-        //     mThis.options = options;
-        //     mThis.prepareData(mThis.options.id, {}, data => {
-        //         if (data.sender) {
-    
-        //             mThis.elTitle.text("Modify Customer");
-        //         }
-        //         else {
-        //             mThis.elTitle.text("Create Customer");
-        //         }
-        //         mThis.setData(data.sender);
-        //         mThis.self.modal({
-        //             backdrop: 'static'
-        //         });
-        //     });
-        // }
+        this.prepreFormOptions = (op,onFinish)=>{
+            let p = {'id': op.id || op.customer_id};
+            vsapi.call([main_view.base_url,'/abm/customers/form-options'].join(''),p,false,false,false).then(res=>{
+                let d = res.status_code ==200? res.data :{};
+                let customer = StringSanitizer.sanitizeObject(d.customer,null,['email','address','image_url','photo']);
+                VSUtil.setComboItems(mThis.elBusinessType,d.business_types,'business_type','business_type',null,null,null);
+                VSUtil.setComboItems(mThis.elCustomerType,d.customer_types,'id','customer_type',null,null,null);
+                VSUtil.setComboItems(mThis.elPriceList,d.price_list,'id','price_list_name',null,null,null);
+                d.customer = customer;
+                onFinish(d);
+            });
+        }
+
         this.show = (options)=>{
             mThis.options = options || {};
-            mThis.elTitle.innerHTML = options.title;
-            if (mThis.options.id > 0) {
-                mThis.elTitle.innerHTML = "Customers Details";
-                let p = {'id':mThis.options.id};
-                vsapi.call([main_view.base_url,'/abm/customers/form-options'].join(''),p,null).then(res=>{
-                    
-                    if(res.status_code === 200){
-                        let d = res.data.sender;
-                     
-                        d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
-                        mThis.prepareData(d, {}, data => {
-                            mThis.setData(d);
-                            mThis.modal.show();
-                        });
-                    }
-                });
-            }
-            else{
-                mThis.elTitle.innerHTML =  "New Customers";
-                mThis.prepareData({'id':1},{},data =>{
-                    mThis.setData(null);
-                    mThis.modal.show();    
-                });
-            }
+            mThis.prepreFormOptions(options, (d)=>{
+                let title = LocaleManager? LocaleManager.trans('New Customer','titles'): 'New Customer';
+                if(d.customer) title = LocaleManager? LocaleManager.trans('Modidy Customer','titles'): 'Modify Customer';
+                mThis.elTitle.innerHTML = title;
+                mThis.setData(d.customer);
+                mThis.modal.show();
+            }); 
         }
     
 
         this.setData = (d) => {
-            // mThis.body.querySelectorAll('.data-input').forEach(el => {
-            //     el.value = null;
-            // });
-            // if (!d) return;
             d = d || {};
             mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
                 const data_member = el.dataset.field;
                 el.value = d[data_member] ?? '';
-                // console.log(d[]);
-
                 if (el.tagName.toLowerCase() === 'select') {
                     el.dispatchEvent(new Event('change'));
                 }else if(el.tagName ==='IMG'){
                     el.setAttribute('src',d[data_member] || '');
                 }
-                    
-               
-            });
-        mThis.imgBox.setImage(d.photo || d.image_url);
-
+           });
+           mThis.imgBox.setImage(d.photo || d.image_url);
         }
+
         this.getData = () => {
             let p = {};
-            p.id = mThis.options.id;
+            p.id = mThis.options.id || mThis.options.customer_id;
             mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
                 let data_member = el.dataset.field;
                 if (el.tagName === 'IMG')
