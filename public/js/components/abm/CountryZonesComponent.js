@@ -140,7 +140,6 @@ var CountryZonesComponent  = new function () {
            mThis.listView.showPage(mThis.getFilterData());
         }
       }
-
       CountryDialog.show(op);
     });
    
@@ -151,10 +150,11 @@ var CountryZonesComponent  = new function () {
       //Click on Delete Button
       let btn = VSUtil.closestLimited(e.target, '.lnk_delete_country');
       if (btn) {
-        let p = { 'id': btn.dataset.id };
+        let tr = VSUtil.closestLimited(btn, 'tr');
+        let p = {'country_id': (tr? tr.dataset.countryid: 0)};
         cv_interact.confirm('Delete this country?', { title: 'Delete Country', 'context': 'delete' }, e => {
           if (e) {
-            vsapi.call(`${mThis.base_url}/api/location/country/delete`, p, null).then(res => {
+            vsapi.call(`${mThis.base_url}/abm/country/delete`, p, null).then(res => {
               if (res.status_code === 200) {
                 mThis.listView.showPage(mThis.getFilterData());
               } else cv_interact.error(res.error_message);
@@ -249,12 +249,12 @@ const CountryDialog = new GeneralDialog({
       { 
         name:"country_name",
         label:"Country Name",
-        require: true
+        required: true
       },
       {
         name:"country_code",
         label:"Country Code",
-        require: true
+        required: true
       },
       {
         name:"zone_code",
@@ -268,7 +268,7 @@ const CountryDialog = new GeneralDialog({
         text:"<span>Save</span>",
         click:(me,btn,divModal)=>{
            let p = me.getData();
-           console.log(p);
+           if(me.hasError()) return; 
            vsapi.call(`${main_view.base_url}/abm/country/save`,p,btn,false,false).then(res =>{
                if(res.status_code ==200){
                  me.hide();

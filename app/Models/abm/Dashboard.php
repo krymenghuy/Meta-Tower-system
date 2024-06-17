@@ -281,7 +281,9 @@ class Dashboard //extends Model
         $cnt_invoice = DB::table('os_customer_invoices as i')->whereRaw($str_dates)->count('i.id');
         $cnt_invoice_paid =  DB::table('os_customer_invoices as i')->where('i.status_id',2)->count('i.id');
         $total = 0; 
+        $active_cnt = 0;
 
+        if($total_shipment ==0) $total_shipment =1;
         $progress_cards [] = (object)[
             'total_invoive'=> $cnt_invoice,
             'invoce_percent'=> number_format($cnt_invoice *100 / $total_shipment,2),
@@ -289,6 +291,7 @@ class Dashboard //extends Model
             'color'=> '',
         ];
         return (object)[
+            'period'=>'Over last 90 days',
             'progress_cards' => $progress_cards,
             'country_cards' => $country_cards,
             'supplier_cards' => $supplier_cards
