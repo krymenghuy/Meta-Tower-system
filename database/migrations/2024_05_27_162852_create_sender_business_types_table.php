@@ -17,6 +17,7 @@ class CreateSenderBusinessTypesTable extends Migration
             $table->increments('id');
             $table->string('business_type',150);
             $table->tinyInteger('allow_register')->nullable()->default(1);
+            $table->string('applyTo',25)->nullable();
     });
 }
     

@@ -78,7 +78,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h4 class="modal-title trans-text" id="_sdl_dlgSupplierTitle" data-langprop="titles.New Supplier"></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -101,7 +101,9 @@
                             
                             <div class="form-group col-lg-6">
                                 <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
-                                <input class="form-control data-input" type="number" placeholder="" data-field="phone_number"/>
+                                <span class="text-danger" >*</span>
+                                <div><input class="form-control text-primary data-input" type="number" placeholder="" data-required="1" data-field="phone_number"/></div>
+
                             </div>
                             <div class="form-group col-lg-6">
                                 <label for="email" class="form-label trans-text" data-langprop="titles.Email"></label>
@@ -127,7 +129,7 @@
             </div>
             <div class="modal-footer">
                 <span id="_sdl_sender_error" class="error_text"></span>
-                <button type="button" class="btn btn-default btn-secondary" data-dismiss="modal">
+                <button type="button" class="btn btn-default btn-secondary" data-bs-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
                 <button type="button" class="btn btn-success" id="_sdl_supplier_btnSave">
@@ -143,11 +145,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title trans-text" data-langprop="titles.Create Merchant Login"></h5>
-                <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body"></div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
                 <button id="dlg_sdl_add_user_btn_save" type="button" class="btn btn-sm btn-primary">

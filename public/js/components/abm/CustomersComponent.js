@@ -6,15 +6,15 @@
     this.title_prop = "Customers";
 
     this.base_url = main_view.base_url;
-    this.self = main_view.appContent.children('#_main_customersComponent')[0];
+    this.self = main_view.appContent.children('#_main_customersComponent');
 
-    this.elFilter_customer_type = this.self.querySelector('#_cul_filter_customer_type');
-    this.elFilter_customer_status = this.self.querySelector('#_cul_filter_customer_status');
-    this.btnNewCustomer = this.self.querySelector('#_cul_btnNew');
-    this.elSearch = this.self.querySelector('#_cul_search_customer');
-    this.btnSearch = this.self.querySelector('#_cul_btnSearch');
-    this.btnPrint = this.self.querySelector('#_cul_btnPrint');
-    this.div_filter_fields = this.self.querySelector('#_cus_filter_fields');
+    this.elFilter_customer_type = this.self[0].querySelector('#_cul_filter_customer_type');
+    this.elFilter_customer_status = this.self[0].querySelector('#_cul_filter_customer_status');
+    this.btnNewCustomer = this.self.find('#_cul_btnNew');
+    this.elSearch = this.self.find('#_cul_search_customer');
+    this.btnSearch = this.self.find('#_cul_btnSearch');
+    this.btnPrint = this.self.find('#_cul_btnPrint');
+    this.div_filter_fields = this.self[0].querySelector('#_cus_filter_fields');
     this.form_data = {};
     this.store_agents = {};
  
@@ -33,6 +33,7 @@
                     data: items,
                     defaultValue: def_price_list_id
                 };
+
                 InputBox2.show(option, (d) => {
                     if (d) {
                         let p = {
@@ -121,7 +122,7 @@
             {
                 className: "price_list_name align-middle",
                 data: (data, index, tr) => {
-                    let price_list_html = data.price_list_name ? `<span class="customer-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="lnk_set_price_list text-danger"><i class="fa-solid fa-pencil"></i></a>`;
+                    let price_list_html = data.price_list_name ? `<span class="customer-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="set-price-list text-danger"><i class="fa-solid fa-pencil"></i></a>`;
                     const sender_info = ['<span class="sender- text-primary d-block">', price_list_html, '</span>'].join('');
                     return sender_info;
                 },
@@ -296,11 +297,11 @@
                     name:"edit_customer"
                     },
                     {
-                        html:'<span class="ps-2 trans-text" data-langprop="titles.Delete Customer">Delete Customer</span>',
-                        icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
-                        cssClass:"border-bottom pb-2",
-                        name:"delete_customer"
-                    }
+                    html:'<span class="ps-2 trans-text" data-langprop="titles.Delete Customer">Delete Customer</span>',
+                    icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"delete_customer"
+                    },
                         
                 ],
                 // adjustPosition:{
@@ -314,9 +315,7 @@
                 onClick:(menuLink, id, name)=>{
                     switch(name){
                         case 'set_price_list':{
-                            let customer_name = menuLink.dataset.customername;
-                            let def_price_list_id = menuLink.dataset.pricelistid;
-                            mThis.setPriceList(id, customer_name,def_price_list_id, menuLink); // NOT yet defined
+                            mThis.setPriceList(id); // NOT yet defined
                             break;
                         }
                         case 'edit_customer':{
@@ -501,7 +500,7 @@
                 'beforeRender': () => { }
             });
               
-            mThis.btnNewCustomer.addEventListener('click', function (e) {
+            mThis.btnNewCustomer.on('click', function (e) {
                 e.preventDefault();
                 let op = {
                     'id': null,
@@ -511,6 +510,7 @@
                 };
                 CustomerDialog.show(op);
             });
+           
             
             mThis.tblCustomers = mThis.customerListView.getTable();
             mThis.initDropdownMenus(mThis.tblCustomers);
@@ -569,15 +569,14 @@
                 }
             });
             
-            mThis.elSearch.addEventListener('keyup',  (e) => {
+            mThis.elSearch.on('keyup', function (e) {
                 e.preventDefault();
                 clearTimeout(mThis.search_timeout);
                 mThis.search_timeout = setTimeout(() => {
                     mThis.customerListView.showPage(mThis.getFilterData());
                 }, 250);
             });
-            mThis.btnSearch.addEventListener('click', function (e) {
-                e.preventDefault();
+            mThis.btnSearch.on('click', function () {
                 mThis.customerListView.showPage(mThis.getFilterData());
             });
 
@@ -592,7 +591,7 @@
                 let f = el.dataset.field;
                 p[f] = el.value;
             });
-            p.search_value = mThis.elSearch.value;
+            p.search_value = mThis.elSearch.val();
             return p;
         }
         this.getPriceListItems = (onFinish) => {
@@ -607,9 +606,8 @@
             main_view.setTitle(mThis.title_prop);
             mThis.loadFilterData(() => {
                 mThis.customerListView.showPage(mThis.getFilterData(), null, () => {
-                    mThis.jm = mThis.jm || $(mThis.self);
-                    mThis.jm.siblings().hide();
-                    mThis.jm.hide().fadeIn(250);
+                    mThis.self.siblings().hide();
+                    mThis.self.hide().fadeIn(250);
                 });
             });
         }
@@ -646,7 +644,8 @@
         // };
 
     };
-    
+
+   
     const CustomerDialog = new function () {
         const mThis = this;
         this.self = main_view.appContent.find('#_cul_dlgCustomer')[0];

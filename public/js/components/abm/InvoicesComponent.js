@@ -331,19 +331,27 @@ var InvoicesComponent = new function () {
 const CreateInvoiceDialog = new function () {
     let mThis = this;
     this.base_url = main_view.base_url; //** || document.querySelector('meta[name="base_url"]').getAttribute('content');*/
-    this.self = main_view.appContent.find('#_create_invoice_dlgFilter');
-    this.elTitle = this.self.find('#_create_invoice_dlgFilterTitle');
-    this.elStartDate = this.self.find('#_pl_filter_startdate');
-    this.elEndDate = this.self.find('#_pl_filter_enddate');
-    this.elCustomer = this.self.find('#_name_customer');
+    this.self = main_view.appContent.find('#_create_invoice_dlgFilter')[0];
+    this.modal = new bootstrap.Modal(this.self);
+    this.options = {};
+
+    this.elTitle = this.self.querySelector('#_create_invoice_dlgFilterTitle');
+    this.btnCreate = this.self.querySelector('#_invoice_create_dlgFilter_btnOK');
+
+    this.elStartDate = this.self.querySelector('#_pl_filter_startdate');
+    this.elEndDate = this.self.querySelector('#_pl_filter_enddate');
+    this.elCustomer = this.self.querySelector('#_name_customer');
+    this.body = this.self.querySelector('.modal-body');
+
+    this.div_invoice_info = this.body.querySelector('#_invoice_dlg_body');
+    this.onClose = null;
     this.form_data = {};
     this.remembered_filter;
-    this.btnCreate = this.self.find('#_invoice_create_dlgFilter_btnOK');
     let shipments_id = null;
 
-    this.self.find('.dl_filter_field').on('change', (e) => {
+    this.self.querySelector('.dl_filter_field').onchange= e => {
         mThis.remembered_filter = mThis.getFormData();
-    });
+    };
     this.prepareFormOptions = (id, onFinish) => {
 
         vsapi.call(`${mThis.base_url}/abm/invoice/form-options`, { id: id }, null).then(res => {
@@ -357,7 +365,7 @@ const CreateInvoiceDialog = new function () {
         });
     }
 
-    this.btnCreate.on('click', (e) => {
+    this.btnCreate.onclick = e => {
         e.preventDefault();
         const p = mThis.getFormData();
         p['id'] = shipments_id;
@@ -367,7 +375,7 @@ const CreateInvoiceDialog = new function () {
         vsapi.call(`${mThis.base_url}/abm/invoice/save`, p, mThis.btnCreate).then(res => {
             if (res.status_code === 200) {
                 // cv_interact.success('Invoice is Created'); 
-                mThis.self.modal('hide');
+                mThis.modal.hide();
                 // InvoicesComponent.invoiceListView.showPage();
 
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
@@ -376,7 +384,7 @@ const CreateInvoiceDialog = new function () {
         });
 
 
-    });
+    };
 
 
 
@@ -392,27 +400,21 @@ const CreateInvoiceDialog = new function () {
             if (d.os_shipment) {
                 mThis.setData(d.os_shipment);
             }
-            mThis.self.modal({
-                'backdrop': 'static'
-            });
+          mThis.modal.show();
         });
     }
 
-    this.getFormData = (silent = false) => {
-        let has_error = false;
+    this.getFormData = () => {
         let p = {};
-        p.start_date = mThis.elStartDate.val();
-        p.end_date = mThis.elEndDate.val();
-        mThis.self.find('.data-input').each(function () {
-            const el = $(this);
-            const f = el.data('field');
-            if (el.data('error') == 1) {
-                has_error = true;
-                return false;
-            }
-            p[f] = el.val();
+        p.start_date = mThis.elStartDate.value;
+        p.end_date = mThis.elEndDate.value;
+        mThis.div_invoice_info.querySelectorAll('.data-input').forEach(el => {
+            // const el = $(this);
+            let data_member = el.dataset.field;
+           
+            p[data_member] = el.value;
         });
-        return has_error ? null : p;
+        return p;
     }
 
     this.setData = (d) => {
@@ -425,7 +427,7 @@ const CreateInvoiceDialog = new function () {
         if (!d) return;
         // console.log(4,mThis.self);
         d = d || {};
-        mThis.self[0].querySelectorAll('.data-input').forEach(el => {
+        mThis.div_invoice_info.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
 
             el.value = d[data_member] ?? '';

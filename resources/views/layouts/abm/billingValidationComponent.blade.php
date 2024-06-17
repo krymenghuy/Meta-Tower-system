@@ -62,7 +62,7 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex flex-row w-50 gap- ">
+            <div class="d-flex flex-row w-50 gap-2 ">
                 <div class="col-lg-12" id="">
                     <label class="form-label trans-text">JTO Shipment</label>
                     <!-- <select id="_sal_agent_type" class="modal-select2 data-input" data-field="agent_types_id"></select> -->
@@ -77,7 +77,7 @@
             </div>
         </div>
         <div class="d-flex gap- w-50" id="_sdl_filter_fields_date">
-            <div class="d-flex flex-row w-100 gap- ">
+            <div class="d-flex flex-row w-100 gap-2 ">
                 <div class="col-lg-5" id="">
                     <label class="form-label trans-text" data-langprop="titles.Start Date">Start Date</label>
                     <div> <input data-select="datepicker" class="form-control filter-field" data-field="start_date" placeholder="Start Date" id="_shm_filter_start_date" /></div>
@@ -86,12 +86,13 @@
                     <label class="form-label trans-text" data-langprop="titles.End Date">End Date</label>
                     <div> <input data-select="datepicker" class="form-control filter-field" data-field="end_date" placeholder="End Date" id="_shm_fliter_end_date" /></div>
                 </div>
-                <div class="col-lg-2">
-                    <label class="form-label text-white" >Refress</label>
-                    <label type="button" id="_pl_btnRefress" class="btn btn-primary height ">
+                
+                   <div class="col-lg-2 mt-4 p-1">
+                   <label type="button" id="_pl_btnRefress" class="btn btn-primary ">
                         <i class="fa fa-sync-alt"></i>
                     </label> 
-                </div>
+                   </div>
+                
             </div>
             <!-- <div class="d-flex flex-row w-50 gap-2 ">
                 
@@ -122,7 +123,7 @@
         <div class="" id="AlertModalLongTitle"> 
             
         </div>
-        <!-- <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <!-- <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button> -->
       </div>
@@ -131,7 +132,7 @@
         <p class="body ps-5 pe-4"></p>
       </div>
       <div class="modal-footer d-flex justify-content-center border-0">
-        <button type="button" id="_sdl_btnCancel"class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" id="_sdl_btnCancel"class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <button type="button" id="_sdl_btnOk" class="btn btn-primary">Ok</button>
       </div>
     </div>
@@ -142,86 +143,76 @@
 
 <!-- Modal -->
 <div class="modal fade" id="PaymentModalDialog" data-backdrop="static" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-scrollable modal-lg">
+  <div class="modal-dialog vs-modal-dialog modal-lg">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="PaymentModalDialogTitle">Payment</h5>   
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
       <div class="modal-body">
-        <div class="row ">
+        <div class="row" id="_payment_dlg_body">
             <!-- <div class="form-group col-md-6">
                 <span class="simple-label">Payment No.</span>
                 <input id="_plq_pikcup_address" class="form-control data-input" placeholder="AUTO" data-field="payment_no" readOnly />
             </div> -->
 
             <div class="filter-date row pe-0">
-                <div class="form-group from_date col-md-6 d-none" >
-                    <span class="simple-label ">From Date</span>
+                <div class="form-group from_date col-lg-6 d-none" >
+                    <label for="from_date" class="form-label trans-text" data-langprop="titles.From Date"></label>
                     <input data-select="datepicker" class="form-control data-input filter-field" data-field="from_date" placeholder="From Date" id="_shm_filter_from_date" />
                     <!-- <input type="number" class="form-control data-input" data-field="to_country_id" />   -->
                 </div>
-                <div class="form-group to_date col-md-6 pe-0 d-none" >
-                    <span class="simple-label ">To Date</span>
+                
+                <div class="form-group to_date col-lg-6 pe-0 d-none" >
+                    <label for="to_date" class="form-label trans-text" data-langprop="titles.To Date"></label>
                     <input data-select="datepicker" class="form-control data-input filter-field" data-field="to_date" placeholder="To Date" id="_shm_filter_to_date" />
-                    <!-- <input type="number" class="form-control data-input" data-field="to_country_id" />   -->
                 </div>
-                <div class="form-group col-md-6 ">
-                    <span class="simple-label">Supplier</span>
+            
+                <div class="form-group col-lg-6 ">
+                    <label for="payee_id" class="form-label trans-text" data-langprop="titles.Supplier"></label>
                     <select id="_plq_supplier" class="modal-select2 data-input filter-field" data-field="payee_id"></select>
                 </div>
-                <div class="form-group col-md-6">
-                    <span class="simple-label ">Payment Date</span>
+
+                <div class="form-group col-lg-6">
+                    <label for="payment_date" class="form-label trans-text" data-langprop="titles.Payment Date"></label>
+                    
                     <input data-select="datepicker" class="form-control data-input" data-field="payment_date" placeholder="Payment Date" id="_shm_filter_payment_date" />
                     <!-- <input type="number" class="form-control data-input" data-field="to_country_id" />   -->
                 </div>
             </div>
-            <!-- <div class="form-group col-md-6">
-                <span class="simple-label">Supplier Type</span>
-                <div>
-                    <select id="_plq_supplier_type" class="modal-select2 data-input" data-field="from_country_id"></select>
-                </div>
-            </div> -->
-            <!-- <input type="hidden" id="_input_supplier" class="form-control data-input" data-field="payee_id" />   -->
-            <!-- <div class="form-group col-md-6">
-                <span class="simple-label">Customer</span>
-                <div>
-                    <select id="_plq_Customer" class="modal-select2 data-input" data-field="payer_id"></select>
-                </div>
-            </div> -->
+           
             <div class=" row pe-0">
-            <div class="form-group col-md-6">
-                <span class="simple-label">Amount</span>
-                <input type="" class="form-control data-input " data-field="amount" />  
-            </div>
-            <div class="form-group col-md-6">
-                <span class="simple-label">Currency Code</span>
-                <div>
+
+                <div class="form-group col-lg-6">
+                    <label for="amount" class="form-label trans-text" data-langprop="titles.Amount"></label>
+                    <input type="number" class="form-control data-input " data-field="amount" />  
+                </div>
+
+                <div class="form-group col-lg-6">
+                    <label for="currency_code" class="form-label trans-text" data-langprop="titles.Currency Code"></label>
                     <select id ="_plq_currency_code" class="modal-select2 data-input" data-field="currency_code"></select>
                 </div>
-            </div>
-            <div class="form-group col-md-6">
-                <span class="simple-label">Payment Method</span>
-                <div>
+
+                <div class="form-group col-lg-6">
+                    <label for="pmt_method" class="form-label trans-text" data-langprop="titles.pmt Method"></label>
                     <select id ="_plq_pmt_method" class="modal-select2 data-input" data-field="pmt_method"></select>
                 </div>
-            </div>
-            
-            <div class="form-group col-md-6">
-                <span class="simple-label">Reshape Number</span>
-                <input type="text" class="form-control data-input" data-field="reshape_number" />
-            </div>
-            <div class="form-group col-md-12">
-                <span class="simple-label">Remarks</span>
-                <input id="_plq_pikcup_address" class="form-control data-input" data-field="remarks" />
-            </div>
+                
+                <div class="form-group col-lg-6">
+                    <label for="reshape_number" class="form-label trans-text" data-langprop="titles.Reshape Number"></label>
+                    <input type="text" class="form-control data-input" data-field="reshape_number" />
+                </div>
+                <div class="form-group col-lg-12">
+                    <label for="Remarks" class="form-label trans-text" data-langprop="titles.Remarks"></label>
+                    <textarea id="_plq_pikcup_address" class="form-control data-input" data-field="remarks"></textarea> </textarea>
+                </div>
             </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
         <button type="button" id="_sdl_btnPay" class="btn btn-primary">Pay</button>
       </div>
     </div>

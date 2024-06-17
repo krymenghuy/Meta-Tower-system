@@ -146,7 +146,7 @@ class Invoice //extends Model
         $supplier_created = !$id;
         // return JDV::result($inputs);
         $id = saveData($ss, 'os_customer_invoices', ['id' => $id], $inputs, [], 1, 0);
-        $created_invoice = DB::table('os_payments')->count('id');
+        $created_invoice = DB::table('os_supplier_payments')->count('id');
         // if ($id > 0) {
         //     DB::table('os_shipments')->where('id', $d->shipment_id)->update(['paid_status_id' => 2, 'trx_id' => $trx_id]);
         // }

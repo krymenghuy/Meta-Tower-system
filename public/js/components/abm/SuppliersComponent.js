@@ -72,9 +72,9 @@ var SuppliersComponent = new function(){
         },
         {
             title:'Supplier ID',
-            className:"code align-middle",
+            className:" align-middle",
             data:(data,index,tr)=>{
-                return `<span class="code">${data.code ? data.code: 'N/A'}</span>`;
+                return `<span class="">${data.code ? data.code: 'N/A'}</span>`;
             }
            
         },
@@ -448,7 +448,7 @@ var SuppliersComponent = new function(){
                 onClose: (d) =>{
                     mThis.listView.showPage(mThis.getFilterData());  
                 }
-            } 
+            } ;
             SupplierDialog.show(op);
         });
 
@@ -554,6 +554,7 @@ var SuppliersComponent = new function(){
     this.changeSenderStatus = () => {
         return;
     }
+    
     this.createDropdownMenuHtml_pickup = function (supplier_id, pricelist_id, name ,status) {
         let html = [
             '<div class="dropdown-menu bg-white shadow" data-id="', supplier_id, '" data-pricelistid="', pricelist_id, '" data-name="', name, '">',
@@ -583,26 +584,27 @@ var SuppliersComponent = new function(){
 
 const SupplierDialog = new function(){
     const mThis = this;
-    this.self = main_view.appContent.find('#_sdl_dlgSupplier');
+    this.self = main_view.appContent.find('#_sdl_dlgSupplier')[0];
+    this.modal = new bootstrap.Modal(this.self);
     this.base_url = main_view.base_url;
     this.options = {};
     
-    this.elTitle = this.self.find('#_sdl_dlgSupplierTitle');
-    this.btnSave =  this.self.find('#_sdl_supplier_btnSave');
-    // console.log(mThis.btnSave);
+    this.elTitle = this.self.querySelector('#_sdl_dlgSupplierTitle');
+    this.btnSave =  this.self.querySelector('#_sdl_supplier_btnSave');
     // this.elSenderType =  this.self.find('#_sdl_sender_sendertype');
     // this.elBusinessType =  this.self.find('#_sdl_sender_businesstype');
-    this.elSalesAgent =  this.self.find('#_sdl_sales_agent');
+    this.elSalesAgent =  this.self.querySelector('#_sdl_sales_agent');
 
-    this.elPriceList =  this.self.find('#_sdl_price_list');
+    this.elPriceList =  this.self.querySelector('#_sdl_price_list');
     // this.elCOD =  this.self.find('#_sdl_cod');
     // this.elCODFee =  this.self.find('#_sdl_cod_fee');
-    this.divPhoto = this.self[0].querySelector('#_supplier_profile_photo');
     // console.log(mThis.divPhoto);
     this.onClose = null;
-    this.elError =  this.self.find('#_sdl_sender_error');
+    this.elError =  this.self.querySelector('#_sdl_sender_error');
 
-    this.body =  this.self.find('.modal-body')[0];
+    this.body =  this.self.querySelector('.modal-body');
+    this.divPhoto = this.self.querySelector('#_supplier_profile_photo');
+
     this.div_sender_info =  this.body.querySelector('#_sdl_supplier_body');
     // this.div_bank_account = this.body.querySelector('#div_bank_account');
     mThis.imgBox = new ImageBox(mThis.divPhoto,{
@@ -648,18 +650,19 @@ const SupplierDialog = new function(){
         });
     }
 
-    this.btnSave.on('click', function(e){
+    this.btnSave.onclick = e =>{
         e.preventDefault();
         let p = mThis.getData();
         vsapi.call(`${mThis.base_url}/abm/os_suppliers/save`, p).then(res => {
             if(res.status_code === 200){
-                mThis.self.modal('hide');
+                mThis.modal.hide();
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
             }
             else
                 cv_interact.error(res.error_message);
         });
-    });
+    }
+    
 
     // this.show = (options) => {
     //     // console.log(options);
@@ -681,9 +684,7 @@ const SupplierDialog = new function(){
     // }
     this.show = (options)=>{
         mThis.options = options || {};
-        mThis.elTitle[0].innerHTML = options.title;
-        console.log('title',mThis.elTitle[0]);
-        console.log(mThis.options.id);
+        mThis.elTitle.innerHTML = options.title;
         if (mThis.options.id > 0) {
             // mThis.elTitle[0].innerHTML = "Suppliers Details";
             let p = {'id':mThis.options.id};
@@ -696,23 +697,16 @@ const SupplierDialog = new function(){
                     d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
                     mThis.prepareData(d, {}, data => {
                         mThis.setData(d);
-                        mThis.self.modal({
-                            backdrop:'static'
-                        });
-                        // mThis.self = new bootstrap.Modal(modalElement, {
-                        //     backdrop: 'static'
-                        // });
+                        mThis.modal.show();
                     });
                 }
             });
         }
         else{
-            mThis.elTitle[0].innerHTML =  "New Supplier";
+            mThis.elTitle.innerHTML =  "New Supplier";
             mThis.prepareData({'id':1},{},data =>{
                 mThis.setData();
-                mThis.self.modal({
-                    backdrop:'static'
-                });       
+               mThis.modal.show(); 
             });
         }
     }
@@ -721,7 +715,6 @@ const SupplierDialog = new function(){
         // mThis.body.querySelectorAll('.data-input').forEach(el => {
         //     el.value = null;
         // }); 
-        if (!d) return;
         d = d || {};
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
@@ -756,3 +749,4 @@ const SupplierDialog = new function(){
 
     
 }
+

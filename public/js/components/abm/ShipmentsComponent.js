@@ -6,7 +6,6 @@ var ShipmentsComponent = new function () {
     let mThis = this;
     this.title_prop = "Shipment";
     /** NOTE: PickupListComponent.form_data must be initially NULL, so that this prop will be loaded properly by api fetch on Component start */
-    this.form_data = null;
     this.self = main_view.appContent.find('#_main_shipmentsComponent');
     this.base_url = main_view.base_url;
 
@@ -24,6 +23,7 @@ var ShipmentsComponent = new function () {
     this.btnPrint = this.self.find('#_pl_btnPrint');
     this.btnPDF = this.self.find('#_pl_btnPDF');
     this.lnkDailyPackages = this.self.find('#_pl_lnkDailyPackages');
+    this.form_data = null;
  
     this.resizeItemListPanel = () => {
         mThis.tblShipments.find('.package_list_wrapper').each(function () {
@@ -928,7 +928,7 @@ var ShipmentsComponent = new function () {
             });
         });
  
-        mThis.btnNewShipment.on('click', (e) => {
+        mThis.btnNewShipment.on('click',function (e){
             if(!AuthManager.allowed(220)) return;
             const options = {
                 'title': 'Booking',
@@ -2544,1973 +2544,24 @@ var ShipmentsComponent = new function () {
     }
 }
 
-const ShipmentStatusDialog = new function () {
-    let mThis = this;
-    this.self = main_view.appContent.children('#_pl_dlgPickupStatus');
-    this.base_url = main_view.base_url;
-    this.btnOK = this.self.find('#_pl_ps_btnOK');
 
-    this.elSenderName = this.self.find('#_pl_ps_sender_name');
-    this.elShipmentCode = this.self.find('#_pl_ps_shipment_code');
-    this.elShipment = this.self.find('#_pl_ps_shipment_id');
-
-    this.div_select_fields = this.self[0].querySelector('#div_select_fields');
-    this.elQrCode = this.self.find('#_pl_ps_qr_code');
-    this.elStatus = this.self.find('#_pl_ps_status');
-    this.elNotes = this.self.find('#_pl_ps_notes');
-    this.elError = this.self.find('#_pl_ps_error');
-
-    this.div_select_fields.querySelectorAll('.status-field').forEach(el =>{
-        el.onchange = e => {
-            e.preventDefault();
-            let status_id = mThis.elStatus.val();
-            // mThis.body.querySelectorAll('.data-input').forEach(el => {
-        //     el.value = null;
-        // });
-            if (status_id == 1) {
-                mThis.div_select_fields.querySelector('.qr_code').classList.remove('d-block');    
-                mThis.div_select_fields.querySelector('.qr_code').classList.add('d-none');     
-            }
-            else{
-                // mThis.div_select_fields.querySelector('#_pl_ps_qr_code').value = null;   
-                mThis.div_select_fields.querySelector('.qr_code').classList.remove('d-none');    
-                mThis.div_select_fields.querySelector('.qr_code').classList.add('d-block');    
-            }
-        };
-    });
-
-    this.btnOK.on('click', function (e) {
-        e.preventDefault();
-        let status_id = mThis.elStatus.val();
-        let qr_code = mThis.elQrCode.val();
-
-        if (status_id == 1) {
-            qr_code = null;
-        }
-
-        let p = { 'shipment_id': mThis.shipment_id, 'qr_code': qr_code, 'status_id': status_id };
-        console.log('p',p);
-        vsapi.call([mThis.base_url, '/abm/oversea_shipments/update-status'].join(''), p, mThis.btnOK).then(res => {
-            if (res.status_code === 200) {
-                let result = StringSanitizer.sanitizeObject(res.data);
-                if (typeof mThis.onClose === 'function') mThis.onClose();
-                ShipmentsComponent.shipmentListView.showPage(); 
-                mThis.self.modal('hide');
-                // console.log(1,ShipmentsComponent.shipmentListView);
-            }
-            else cv_interact.warning(res.error_message);
-        });
-    });
-
-    this.show = (shipment, onClose) => {
-        shipment = shipment || {};
-        console.log('shipment',shipment);
-        mThis.elError.html(null);
-        mThis.onClose = onClose;
-        mThis.shipment_id = shipment.shipment_id;
-        mThis.shipment = shipment;
-        mThis.form_data = ShipmentsComponent.form_data;
-        console.log('form_data',mThis.form_data);
-        mThis.elShipment.val(shipment.id || shipment.shipment_id);
-        mThis.elSenderName.val(shipment.sender_name);
-        mThis.elShipmentCode.val(shipment.shipment_code);
-        mThis.prepreData(shipment, (d) => {
-            mThis.elQrCode.val(d);
-            mThis.self.modal({
-                backdrop: 'static'
-            });
-        });
-    }
-
-    this.prepreData = (def, onFinish) => {
-        if (!def) def = {};
-        if (!mThis.form_data) {
-            FilterDialog_pickup.loadFilterData((d) => {
-                mThis.form_data = d;
-                if (!mThis.form_data) mThis.form_data = {};
-                VSUtil.setComboItems(mThis.elStatus, mThis.form_data.shipment_status, 'status_id', 'status_name', false, '(Select status)', def.status_id);
-                // VSUtil.setComboItems(mThis.elDriver, mThis.form_data.drivers, 'id', 'driver_name', true, '(Select a driver)', def.driver_id);
-
-                if (typeof onFinish == 'function') onFinish();
-            });
-        }
-        else {
-            vsapi.call(`${mThis.base_url}/abm/oversea_shipments/form-options`,{
-                id: def.shipment_id
-            },null).then(res => {
-                let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
-                console.log(2,d);
-                VSUtil.setComboItems(mThis.elStatus, d.os_shipment_status, 'status_id', 'status_name', false, '(Select status)', def.status_id);
-                onFinish(d.os_shipment.qr_code);
-            });
-
-            // VSUtil.setComboItems(mThis.elDriver, mThis.form_data.drivers, 'id', 'driver_name', true, '(Select a driver)', def.driver_id);
-            // if (typeof onFinish == 'function') onFinish();
-        }
-    }
-}
-
-let PickupRequestDialog = new function () {
-    let mThis = this;
-    this.self = main_view.appContent.children('#_pl_dlgPickupRequest');
-    this.model_body = this.self.find('#_pl_dlgPickupRequest');
-    this.base_url = main_view.base_url;
-    this.elTitle = this.self.find('#_pl_dlgPickupRequestTitle');
-
-    this.btnAddPackage = this.self.find('#_pl_pr_add_package');
-    this.btnSaveRequest = this.self.find('#_pl_pr_btnSaveRequest');
-
-    this.elShipment = this.self.find('#_pl_pr_order_id');
-    this.elShipmentCode = this.self.find('#_pl_pr_order_code');
-
-    this.elSender = this.self.find('#_pl_pr_sender');
-
-    this.elSenderId = this.self.find('#_pl_pr_sender_id');
-    this.elSenderName = this.self.find('#_pl_pr_sender_name');
-    this.elSenderCode = this.self.find('#_pl_pr_sender_code');
-    this.elSenderId = this.self.find('#_pl_pr_sender_id');
-
-    this.elRequestDate = this.self.find('#_pl_pr_request_date');
-    this.elPickupDate = this.self.find('#_pl_pr_pickup_date');
-
-    this.elVechicleType = this.self.find('#_pl_pr_vehicle_type');
-    this.elCondition = this.self.find('#_pl_pr_delivery_condition');
-    this.elDeliveryType = this.self.find('#_pl_pr_delivery_type');
-    this.elProductType = this.self.find('#_pl_pr_product_type');
-    this.elPickupAddress = this.self.find('#_pl_pr_pickup_address');
-    this.elQty = this.self.find('#_pl_pr_qty');
-    this.lnkFindSender = this.self.find('#_pl_pr_lnkFindSender');
-    this.tblPackages = this.self.find('#_pl_pr_tblPackages');
-
-    this.package_columns = [
-        {
-            className: "col_action",
-            data: function (data,index,tr) {
-                return ['<div class="d-flex align-items-center gap-3">',
-                    '<a href="javascript:void(0)" class="_pl_pr_print_barcode disabled" data-barcode="', data.barcode, '" data-pid="', data.package_id, '" data-senderid="', data.sender_id, '"><i class="fa fa-list-alt fs-5 text-success"></i></a>',
-                    '<a href="javascript:void(0)" class="_pl_remove_package" data-barcode="', data.barcode, '" data-pid="', data.package_id, '"><i class="fa fa-times fs-5 text-warning"></i></a>',
-                    '</div>'].join('');
-            },
-            title: ''
-        },
-        {
-            className: "zone_name",
-            data: function (data,index,tr) {
-                let d = { "inputType": "select2", "data": data, "columnName": "zone_name", "cssClass": "modal-select2", "combo_items": mThis.form_options.zones, "valueMember": "zone_code", "textMember": "zone_name" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Zone', 'titles')
-        },
-        {
-            className: "receiver_phone",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "receiver_phone", "cssClass": "phone", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Receiver Phone', 'titles')
-        },
-        {
-            className: "price",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "price", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Price', 'titles')
-        },
-        {
-            className: "cod",
-            data: function (data,index,tr) {
-                let items = [{ "id": "0", "name": "No" }, { "id": "1", "name": "Yes" }];
-                let d = { "inputType": "select2", "data": data, "columnName": "cod", "readOnly": false, "combo_items": items, "valueMember": "id", "textMamber": "name", "defaultValue": 1 };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('COD', 'titles')
-        },
-        {
-            className: "df_payer",
-            data: function (data,index,tr) {
-                let items = [{ "name": "Sender" }, { "name": "Receiver" }];
-                let d = { "inputType": "select2", "data": data, "columnName": "df_payer", "readOnly": false, "combo_items": items, "valueMember": "name", "textMamber": "name", "defaultValue": "Sender" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Fee Payer', 'titles')
-        },
-        {
-            className: "fees",
-            data: function (data,index,tr) {
-                if (!data.fees) data.fees = parseFloat(data.base_fee) + parseFloat(data.delivery_fee);
-                data.fees = Number(data.fees).toFixed(2);
-                let d = { "inputType": "number", "data": data, "columnName": "fees", "readOnly": true, "defaultValue": 0 };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Fees', 'titles')
-        },
-        {
-            className: 'receiver_address',
-            data: function (data,index,tr) {
-                let d = { "inputType": "input", "data": data, "columnName": "receiver_address", "cssClass": "address", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Receiver Address', 'titles')
-        },
-        {
-            className: "base_fee",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "base_fee", "readOnly": true };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Base Fee', 'titles')
-        },
-        {
-            className: "delivery_fee",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "delivery_fee", "readOnly": true };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Additional', 'titles')
-        },
-        {
-            className: "size",
-            data: function (data,index,tr) {
-                if (data.size instanceof Object && data.size) {
-                    data.size = [data.size.length, ' ', data.size.width, ' ', data.size.height].join('');
-                }
-                let d = { "inputType": "input", "data": data, "columnName": "size", "readOnly": false, "placeholder": "eg: 10 9.5 11" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Size', 'titles')
-        },
-        {
-            className: "actual_kg",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "actual_kg", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Actual KG', 'titles')
-        },
-        {
-            className: "billed_kg",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "billed_kg", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Billed KG', 'titles')
-        },
-        {
-            className: 'total',
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "total", "readOnly": true };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: LocaleManager.trans('Total', 'titles')
-        }
-    ];
-
-    this.elSender.on('change', (e) => {
-        let m = { 'sender_id': mThis.elSender.val() };
-        vsapi.call([mThis.base_url, '/api/getVendorAddress'].join(''), m).then(res => {
-            let address = "";
-            if (res.status_code === 200) address = StringSanitizer.sanitizeOut(address);
-            mThis.elPickupAddress.val(address);
-        });
-    });
-
-    mThis.btnSaveRequest.off('click').on('click', function (e) {
-        $(this).prop('disabled', true);
-
-        let p = mThis.getData();
-        if (!p) {
-            cv_interact.error("It seems data input is not correct!");
-            mThis.btnSaveRequest.prop('disabled', false);
-            return;
-        }
-
-        if (!p.request_date) p.request_date = '';
-        if (!p.pickup_date) p.pickup_date = '';
-
-        if (!p) {
-            mThis.btnSaveRequest.prop('disabled', false);
-            return;
-        }
-
-        vsapi.call([mThis.base_url, '/api/savePickupRequest'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                mThis.self.modal('hide');
-                mThis.btnSaveRequest.prop('disabled', false);
-
-                if (typeof mThis.onClose === 'function') mThis.onClose(true);
-            }
-            else {
-                mThis.btnSaveRequest.prop('disabled', false);
-                cv_interact.error(res.error_message);
-            }
-        });
-    });
-
-    mThis.tblPackages.on('blur', 'td.size>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-    });
-
-    mThis.tblPackages.on('blur', 'td.actual_kg>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-    });
-
-    this.setBilledKg = (tr, size_string) => {
-        if (!size_string) size_string = EditableTable.getCellValue(tr, 'size', false);
-        if (!size_string) return;
-        if (!size.length) return;
-
-        let size = DUtil.processPackageSize(size_string);
-        let kg = 0;
-        let b = size.length * size.width * size.height;
-        b = Number(b / 6015);
-        let actual_kg = EditableTable.getCellValue(tr, 'actual_kg',true);
-        if (b > actual_kg)
-            kg = b;
-        else
-            kg = actual_kg;
-        EditableTable.setCellValue(tr, 'billed_kg', kg);
-    }
-
-    mThis.btnAddPackage.off('click').on('click', function (e) {
-        e.preventDefault();
-        mThis.addPackageRow();
-    });
-
-    mThis.tblPackages.on('click', 'td.col_action a._pl_remove_package', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.packages = mThis.removePackageRow(tr);
-        tr.remove();
-    });
-
-    mThis.tblPackages.on('change', 'td.delivery_type>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'delivery_type');
-    });
-
-    mThis.tblPackages.on('change', 'td.zone_name>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'zone_name');
-    });
-
-    mThis.tblPackages.on('change', 'td.billed_kg>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'billed_kg');
-    });
-
-    mThis.tblPackages.on('keyup', 'td.actual_kg>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-        mThis.setDeliveryPrices(tr, 'actual_kg');
-    });
-
-    mThis.tblPackages.on('blur', 'td.size>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-        mThis.setDeliveryPrices(tr, 'size');
-    });
-
-    //Change Price td.price on "Create Order" form
-    mThis.tblPackages.on('change', 'td.price>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'price');
-    });
-
-    mThis.tblPackages.on('keyup', 'td.price>.col-input', function (e) {
-        setTimeout(() => {
-            let tr = $(this).closest('tr');
-            mThis.setDeliveryPrices(tr, 'price');
-        }, 300);
-
-    });
-
-    mThis.tblPackages.on('change', 'td.cod>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'cod');
-    });
-
-    mThis.tblPackages.on('change', 'td.df_payer>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'cod');
-    });
-
-    this.setDeliveryPrices = (tr, change_agent, error_span = null) => {
-        let sender_id = mThis.elSender.val();
-        let zone_code, billed_kg = 0, price = 0, cod;
-        let delivery_type = EditableTable.getCellValue(tr, 'delivery_type',false);
-        zone_code = EditableTable.getCellValue(tr, 'zone_name',false);
-        billed_kg = EditableTable.getCellValue(tr, 'billed_kg', true);
-
-        price = EditableTable.getCellValue(tr, 'price',true);
-        if (price > 0) {
-            cod = 1;
-        } else cod = 0; //EditableTable.getCellValue(tr, 'cod');
-
-        EditableTable.setCellValue(tr, 'cod', cod);
-
-        if (!delivery_type) delivery_type = mThis.elDeliveryType.val();
-        let p = { 'sender_id': sender_id, 'delivery_type': delivery_type, 'zone_code': zone_code, 'billed_kg': billed_kg, 'cod': cod };
-
-        vsapi.call([mThis.base_url, '/api/package/price-info'].join(''), p, null, false).then(res => {
-            if (res.status_code === 200) {
-                let d = StringSanitizer.sanitizeObject(res.data);
-                let base_fee = 0;
-                let delivery_fee = 0;
-                let cod_fee = 0;
-                EditableTable.setCellValue(tr, 'base_fee', d.base_fee);
-                EditableTable.setCellValue(tr, 'delivery_fee', Number(d.delivery_fee).toFixed(2));
-                price = EditableTable.getCellValue(tr, 'price', true);
-
-                base_fee = EditableTable.getCellValue(tr, 'base_fee', true);
-                delivery_fee = EditableTable.getCellValue(tr, 'delivery_fee', true);
-                let df_payer = (EditableTable.getCellValue(tr, 'df_payer', false) + '').toLowerCase();
-
-                if (cod == 0) {
-                    cod_fee = 0;
-                    price = 0;
-                }
-                else
-                    cod_fee = (price + base_fee + delivery_fee) * d.cod_fee_percent / 100;
-
-                EditableTable.setCellValue(tr, 'cod_fee', Number(cod_fee).toFixed(2));
-                let fees = base_fee + delivery_fee;
-                EditableTable.setCellValue(tr, 'fees', Number(fees).toFixed(2));
-                if (df_payer === 'sender') fees = 0;
-                let total = fees + price;
-                EditableTable.setCellValue(tr, 'total', total);
-                if (d.status === 'Error') {
-                    EditableTable.handlePriceError(tr, d, error_span);
-                }
-            }
-        });
-    }
-
-    this.validatePackage = (p) => {
-        if (Validator.isNullOrEmpty(p.receiver_phone)) {
-            return 'Some packages does not have receiver`s phone number';
-        }
-
-        if (Validator.isNullOrEmpty(p.zone_code)) {
-            return 'Some packages does not have destination zone name';
-        }
-
-        if (p.cod == 1) {
-            if (p.price <= 0 || !p.price) {
-                return 'In case of Cash On Delivery (COD), the package`s price cannot be zero';
-            }
-        }
-
-        if (p.base_fee > 0 || p.delivery_fee > 0) {
-            let dfp = (p.df_payer + '').toLowerCase();
-            if (dfp != 'sender' && dfp != 'receiver') {
-                return 'Delivery Fee Payer (DFP) must be Sender or Receiver';
-            }
-        }
-        return null;
-    }
-
-    this.setBilledKg = (tr, size_string = null) => {
-        if (!size_string) size_string = EditableTable.getCellValue(tr, 'size',false);
-        if (!size_string) return;
-        let size = DUtil.processPackageSize(size_string);
-        if (!size) {
-            return;
-        }
-        if (!size.length) return;
-        let kg = 0;
-        let b = size.length * size.width * size.height;
-        b = Number(b / 6015);
-        let actual_kg = EditableTable.getCellValue(tr, 'actual_kg',true);
-        if (b > actual_kg) kg = b; else kg = actual_kg;
-        EditableTable.setCellValue(tr, 'billed_kg', Number(kg).toFixed(2));
-    }
-
-    this.show = (option, onClose) => {
-        if (!option) option = {};
-        mThis.onClose = onClose;
-        mThis.sender_id = option.sender_id;
-        mThis.btnSaveRequest.prop('disabled', false);
-
-        let title_text = LocaleManager.trans('New Pickup Request');
-        mThis.elTitle.html(option.title ? option.title : title_text);
-        mThis.prepareFormData(null, () => {
-            mThis.elRequestDate.val(DateHelper.getTodayDate());
-            mThis.elDeliveryType.val('normal');
-            mThis.elVechicleType.val('moto bike');
-            mThis.displayPackages(null);
-            mThis.self.modal({
-                backdrop: 'static'
-            });
-        });
-
-    }
-
-    this.prepareFormData = (def, onFinish) => {
-        if (!def) def = {};
-        if (!def.delivery_condition) def.delivery_condition = 'None';
-        if (mThis.form_options) {
-            VSUtil.setComboItems(mThis.elSender, mThis.form_options.senders, 'id', 'name', true, '(Select a merchant)', def.sender_id);
-            VSUtil.setComboItems(mThis.elVechicleType, mThis.form_options.vehicle_types, 'code', 'vehicle_type', true, '(Select Vehicle Type)', def.request_vehicle_type);
-            VSUtil.setComboItems(mThis.elCondition, mThis.form_options.conditions, 'name', 'name', true, '(Select Condition)', def.delivery_condition);
-            VSUtil.setComboItems(mThis.elProductType, mThis.form_options.product_types, 'product_type', 'product_type', true, '(Select Product Type)', def.product_type);
-            onFinish();
-            return;
-        }
-        vsapi.call([mThis.base_url, '/api/getFormData_pickup_request'].join(''), null, null).then(res => {
-            if (res.status_code === 200) {
-                let data = res.data;
-                data.vehicle_types = StringSanitizer.sanitizeObject(data.vehicle_types);
-                data.conditions = StringSanitizer.sanitizeObject(data.conditions);
-                data.zones = StringSanitizer.sanitizeObject(data.zones);
-                data.senders = StringSanitizer.sanitizeObject(data.senders);
-                VSUtil.setComboItems(mThis.elSender, data.senders, 'id', 'name', true, '(Select a merchant)', def.sender_id);
-                VSUtil.setComboItems(mThis.elVechicleType, data.vehicle_types, 'code', 'vehicle_type', true, '(Select Vehicle Type)', def.request_vehicle_type);
-                VSUtil.setComboItems(mThis.elCondition, data.conditions, 'name', 'name', true, '(Select Condition)', def.delivery_condition);
-                VSUtil.setComboItems(mThis.elProductType, data.product_types, 'product_type', 'product_type', true, '(Select Product Type)', def.product_type);
-                mThis.form_options = data;
-                onFinish();
-            }
-        });
-    }
-
-    this.addPackageRow = () => {
-        let def_base_fee = 0;
-        if (mThis.senderInfo) def_base_fee = mThis.senderInfo.base_fee;
-        let row_data_blank = { 'barcode': null, 'zone_name': null, 'receiver_phone': null, 'price': 0, 'df_payer': 'sender', 'fees': 0, 'receiver_address': null, 'cod': 1, 'base_fee': 0, 'delivery_fee': 0, 'size': null, 'actual_kg': 0, 'billed_kg': 0, 'total': 0 };
-        let rows = mThis.getPackages();
-        rows.splice(0, 0, row_data_blank);
-        mThis.displayPackages(rows);
-    }
-
-    this.removePackageRow = (tr) => {
-        let rows = mThis.getPackages();
-        let index = tr.data('index');
-        rows.splice(index, 1);
-        mThis.elQty.val(rows.length);
-        return rows;
-    }
-
-    this.getData = function () {
-        let p = {};
-        p.order_id = mThis.order_id;
-        p.order_code = mThis.elShipmentCode.val();
-        p.sender_id = mThis.elSender.val();
-        p.pickup_date = mThis.elPickupDate.val();
-        p.request_date = mThis.elRequestDate.val();
-        p.delivery_type = mThis.elDeliveryType.val();
-        p.delivery_condition = mThis.elCondition.val();
-        p.qty = mThis.elQty.val();
-        p.product_type = mThis.elProductType.val();
-        p.pickup_address = mThis.elPickupAddress.val();
-        p.request_vehicle_type = mThis.elVechicleType.val();
-
-        p.packages = mThis.getPackages(p.delivery_type);
-
-        let i = 0, c;
-        do {
-            c = p.packages[i];
-            if (!c) break;
-            let error = mThis.validatePackage(c);
-            if (error) {
-                cv_interact.error(error);
-                return null;
-            }
-            i++;
-        } while (c);
-        return p;
-    }
-
-    this.getPackages = (delivery_type) => {
-        let data = [];
-        mThis.tblPackages.find('>tbody>tr').each(function () {
-            let row = {};
-            let tr = $(this);
-            let btn_barcode = tr.find('td.col_action button._pl_print_barcode');
-            row.barcode = btn_barcode.data('barcode');
-            tr.find('td>.col-input').each(function () {
-                let x = $(this);
-                let col_name = x.data('field');
-
-                if (col_name == 'size') {
-                    row.size = DUtil.processPackageSize(x.val());
-                }
-                else {
-                    row[col_name] = x.val();
-                }
-            });
-            row.delivery_type = delivery_type;
-            if (!row.zone_code) row.zone_code = row.zone_name;
-            data.push(row);
-        });
-        return data;
-    }
-
-  
-}
-
-let PerformPickupDialog = new function () {
-    let mThis = this;
-    this.self = main_view.appContent.children('#_pl_dlgPerformPickup');
-    this.base_url = main_view.base_url;
-    this.elTitle = this.self.find('#_pl_dlgPerformPickupTitle');
-    this.lnkFindDriver = this.self.find('#_pl_pp_lnkFindDriver');
-    this.btnAddPackage = this.self.find('#_pl_pp_add_package');
-    this.btnPickup = this.self.find('#_pl_pp_btnPickup');
-    this.btnPickupOnArrival = this.self.find('#_pl_pp_btnPickOnArrival');
-
-    this.elDriver = this.self.find('#_pl_dd_driver');
-    this.elDriverCode = this.self.find('#_pl_dd_driver_code');
-
-    this.elShipment = this.self.find('#_pl_dd_order_id');
-    this.elShipmentCode = this.self.find('#_pl_dd_order_code');
-    this.elSenderId = this.self.find('#_pl_dd_sender_id');
-    this.elSenderName = this.self.find('#_pl_dd_sender_name');
-    this.elSenderCode = this.self.find('#_pl_dd_sender_code');
-    this.elPickupDate = this.self.find('#_pl_dd_pickup_date');
-    this.elDeliveryType = this.self.find('#_pl_dd_delivery_type');
-    this.elToWarehouse = this.self.find('#_pl_dd_to_warehouse');
-
-    this.elPickupContext = this.self.find('#_pl_dd_pickup_context');
-    this.elPickupType = this.self.find('#_pl_dd_pickup_type');
-    this.tblPackages = this.self.find('#_pl_dd_tblPackages');
-
-    this.package_columns = [
-        {
-            className: "col_action",
-            data: function (data,index,tr) {
-                return ['<div class="form-inline">',
-                    '<button type="button" class="_pl_print_barcode btn btn-sm btn-outline-primary disabled" data-barcode="', data.barcode, '" data-pid="', data.package_id, '" data-senderid="', data.sender_id, '"><i class="fa fa-list-alt" style="color:green"></i></button>&nbsp;',
-                    '<button type="button" class="_pl_remove_package btn btn-sm btn-outline-danger" data-barcode="', data.barcode, '" data-pid="', data.package_id, '"><i class="fa fa-times" style="color:orange"></i></button>',
-                    '</div>'].join('');
-            },
-            title: ''
-        },
-        {
-            className: "item_type",
-            data: function (data,index,tr) {
-                let items = [{ 'item_type': 'doc' }, { 'delivery_type': 'non-doc' }];
-                data.item_type = (data.item_type + '').toLowerCase();
-                let d = { "inputType": "select2", "data": data, "cssClass": "", "columnName": "item_type", "combo_items": items, "valueMember": "item_type", "textMember": "item_type" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Item Type'
-        },
-        {
-            className: "zone_name",
-            data: function (data,index,tr) {
-                let d = { "inputType": "select2", "data": data, "cssClass": "modal-select2", "columnName": "zone_name", "combo_items": ShipmentsComponent.form_data.zones, "valueMember": "zone_code", "textMember": "zone_name" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Destination'
-        },
-        {
-            className: "receiver_phone",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "receiver_phone", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Receiver Phone'
-        },
-        {
-            className: "price",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "price", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Price'
-        },
-        {
-            className: "df_payer",
-            data: function (data,index,tr) {
-                let items = [{ "name": "Sender" }, { "name": "Receiver" }];
-                let d = { "inputType": "select2", "data": data, "columnName": "df_payer", "readOnly": false, "combo_items": items, "valueMember": "name", "textMamber": "name", "defaultValue": "Sender" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'DFP'
-        },
-        {
-            className: "fees",
-            data: function (data,index,tr) {
-                if (!data.fees) data.fees = parseFloat(data.base_fees) + parseFloat(data.delivery_fee);
-                data.fees = Number(data.fees).toFixed(2);
-                let d = { "inputType": "number", "data": data, "columnName": "fees", "readOnly": true, "defaultValue": 0 };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Fees'
-        },
-        {
-            className: "receiver_address",
-            data: function (data,index,tr) {
-                let d = { "inputType": "input", "data": data, "columnName": "receiver_address", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Receiver Address'
-        },
-        {
-            className: "cod",
-            data: function (data,index,tr) {
-                let items = [{ "id": "0", "name": "No" }, { "id": "1", "name": "Yes" }];
-                let d = { "inputType": "select2", "data": data, "columnName": "cod", "readOnly": false, "combo_items": items, "valueMember": "id", "textMamber": "name", "defaultValue": 1 };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'COD'
-        },
-        {
-            className: "base_fee",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "base_fee", "defaultValue": 0, "readOnly": true };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Base Fee'
-        },
-        {
-            className: "delivery_fee",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "delivery_fee", "defaultValue": 0, "readOnly": true };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Additional'
-        },
-        {
-            className: "size",
-            data: function (data,index,tr) {
-                if (data.size instanceof Object && data.size) {
-                    data.size = [data.size.length, ' ', data.size.width, ' ', data.size.height].join('');
-                }
-                let d = { "inputType": "input", "data": data, "columnName": "size", "readOnly": false, "defaultValue": null, "placeholder": "eg: 10 9.5 11" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Size'
-        },
-        {
-            className: "actual_kg",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "actual_kg", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Actual KG'
-        },
-        {
-            className: "billed_kg",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "billed_kg", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Billed KG'
-        }
-    ];
-
-    mThis.btnPickup.on('click', function (e) {
-        let pick_on_arrival = 0;
-        mThis.performPickup(pick_on_arrival, mThis.tr_row);
-    });
-
-    mThis.btnPickupOnArrival.on('click', function (e) {
-        let pick_on_arrival = 1;
-        mThis.performPickup(pick_on_arrival, mThis.tr_row);
-    });
-
-    mThis.btnPickup.on('mouseover', (e) => {
-        mThis.elPickupType.html('You are about to book pickup on behalf of a driver and goods not yet Arrive At Warehouse');
-        mThis.elPickupType.css('color', 'orange');
-    }).on('mouseleave', () => {
-        mThis.elPickupType.html(null);
-    });
-
-    mThis.btnPickupOnArrival.on('mouseover', (e) => {
-        mThis.elPickupType.html('You are about to book packages on Arrival At Warehouse');
-        mThis.elPickupType.css('color', 'green');
-    }).on('mouseleave', () => {
-        mThis.elPickupType.html(null);
-    });
-
-    mThis.elDriver.on('change', function (e) {
-        let driver_id = $(this).val();
-        mThis.btnPickup.prop('disabled', (driver_id <= 0 || !driver_id) ? true : false);
-
-        if (driver_id <= 0 || !driver_id) {
-            mThis.elPickupContext.html('The following packages are NOT picked up by an agent or driver');
-            mThis.elPickupContext.css('color', 'orange');
-        }
-        else {
-            let driver_name = mThis.elDriver.find('option:selected').text();
-            mThis.elPickupContext.html(['The following packages are picked up by an agent named ', driver_name].join(''));
-            mThis.elPickupContext.css('color', 'green');
-        }
-    });
-
-    mThis.lnkFindDriver.on('click', function (e) {
-        e.preventDefault();
-        let onClose = (ds) => {
-            if (ds[0]) {
-                let d = ds[0];
-                mThis.elDriver.val(d.id);
-                if (!mThis.elDriver.val()) {
-                    mThis.elDriver.append($('<option/>').val(d.id).text(d.name)).val(d.id);
-                }
-                mThis.elDriverCode.val(d.code);
-                mThis.elDriver.trigger('change');
-            }
-        };
-
-        let option = { 'title': 'Find Driver', 'role': 'driver', 'singleSelect': true, 'previousDialog': mThis.self };
-        FindPersonDialog.show(option, onClose);
-    });
-
-    mThis.btnAddPackage.on('click', function (e) {
-        e.preventDefault();
-        mThis.addPackageRow();
-    });
-
-    mThis.tblPackages.on('click', 'td.col_action button._pl_remove_package', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.packages = mThis.removePackageRow(tr);
-        tr.remove();
-    });
-
-    mThis.tblPackages.on('click', 'td.col_action a._pl_print_barcode', function (e) {
-        let barcode = $(this).data('barcode');
-        if (!barcode)
-            cv_interact.warning('Bar code is not yet created');
-        else
-            window.open([mThis.base_url, '/package_barcode/', barcode].join(''), '_blank');
-    });
-
-    mThis.tblPackages.on('change', 'td.delivery_type>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'delivery_type', mThis.elError);
-    });
-
-    mThis.tblPackages.on('change', 'td.zone_name>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'zone_name', mThis.elError);
-    });
-
-    mThis.tblPackages.on('change', 'td.billed_kg>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'billed_kg', mThis.elError);
-    });
-
-    mThis.tblPackages.on('keyup', 'td.actual_kg>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-        mThis.setDeliveryPrices(tr, 'actual_kg', mThis.elError);
-    });
-
-    mThis.tblPackages.on('blur', 'td.size>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-        mThis.setDeliveryPrices(tr, 'size', mThis.elError);
-    });
-
-    mThis.tblPackages.on('change', 'td.price>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'price', mThis.elError);
-    });
-
-    mThis.tblPackages.on('change', 'td.cod>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'cod', mThis.elError);
-    });
-
-    this.setDeliveryPrices = (tr, change_agent) => {
-        let sender_id = mThis.elSender.val();
-        let zone_code, billed_kg = 0, price = 0, cod;
-        zone_code = EditableTable.getCellValue(tr, 'zone_name',false);
-        let delivery_type = EditableTable.getCellValue(tr, 'delivery_type',false);
-        billed_kg = EditableTable.getCellValue(tr, 'billed_kg', true);
-        cod = EditableTable.getCellValue(tr, 'cod',true);
-
-        if (!sender_id) {
-            mThis.elError.html('សូមជ្រើសរើសអ្នកលក់ដើម្បីកំណត់តំលៃសេវា');
-            return;
-        }
-
-        if (!zone_code) {
-            mThis.elError.html('សូមជ្រើសរើសតំបន់ដើម្បីកំណត់តំលៃសេវា');
-            return;
-        }
-        if (!delivery_type) {
-            mThis.elError.html('សូមជ្រើសរើសប្រភេទសេវាដើម្បីកំណត់តំលៃសេវា');
-            return;
-        }
-        let p = { 'sender_id': sender_id, 'delivery_type': delivery_type, 'zone_code': zone_code, 'billed_kg': billed_kg, 'cod': cod };
-        vsapi.call([mThis.base_url, '/api/package/price-info'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                let d = StringSanitizer.sanitizeObject(res.data);
-                EditableTable.setCellValue(tr, 'base_fee', d.base_fee);
-                EditableTable.setCellValue(tr, 'delivery_fee', Number(d.delivery_fee).toFixed(2));
-                price = EditableTable.getCellValue(tr, 'price', true);
-
-                if (cod == 0)
-                    EditableTable.setCellValue(tr, 'cod_fee', 0);
-                else {
-                    let base_fee = EditableTable.getCellValue(tr, 'base_fee', true);
-                    let delivery_fee = EditableTable.getCellValue(tr, 'delivery_fee', true);
-                    let cod_fee = (price + base_fee + delivery_fee) * d.cod_fee_percent / 100;
-                    EditableTable.setCellValue(tr, 'cod_fee', Number(cod_fee).toFixed(2));
-                    let fees = base_fee + delivery_fee;
-                    EditableTable.setCellValue(tr, 'fees', Number(fees).toFixed(2));
-                }
-
-                if (d.status == 'Error') {
-                    EditableTable.handlePriceError(tr, d, mThis.elError);
-                }
-            } else cv_interact.warning(res.error_message);
-        });
-    }
-
-    this.validatePackage = (p) => {
-        let error = {};
-        if (Validator.isNullOrEmpty(p.receiver_phone)) {
-            error.message = 'Some packages does not have receiver`s phone number';
-            return error;
-        }
-        if (Validator.isNullOrEmpty(p.zone_code)) {
-            error.message = 'Some packages does not have a correct destination Zone';
-            return error;
-        }
-
-        if (p.cod == 1) {
-            if (p.price <= 0 || !p.price) {
-                error.message = 'In case of Cash On Delivery (COD), the package`s price cannot be zero';
-                return error;
-            }
-        }
-        if (p.delivery_fee > 0) {
-            let dfp = (p.df_payer + '').toLowerCase();
-            if (dfp != 'sender' && dfp != 'receiver') {
-                error.message = 'Delivery Fee Payer (DFP) must be Sender or Receiver';
-                return error;
-            }
-        }
-        return null;
-    }
-
-    this.setBilledKg = (tr, size_string) => {
-        if (!size_string) size_string = EditableTable.getCellValue(tr, 'size',false);
-        if (!size_string) return;
-        let size = DUtil.processPackageSize(size_string);
-        if (!size.length) return;
-        let kg = 0;
-        let b = size.length * size.width * size.height;
-        b = Number(b / 6015);
-        let actual_kg = EditableTable.getCellValue(tr, 'actual_kg',true);
-        if (b > actual_kg)
-            kg = b;
-        else
-            kg = actual_kg;
-        EditableTable.setCellValue(tr, 'billed_kg', kg);
-    }
-
-    this.show = (option, onClose) => {
-        if (!option) option = {};
-        mThis.onClose = onClose;
-        mThis.order_id = option.order_id;
-        mThis.sender_id = option.sender_id;
-        mThis.tr_row = option.tr_row;
-        mThis.elTitle.html(option.title ? option.title : ' Perform Pickup');
-
-        mThis.prepareFormData({ 'driver_id': 0 });
-        mThis.elPickupContext.html(null);
-        if (mThis.order_id > 0) {
-            mThis.loadOrderInfo(mThis.order_id, function (e) {
-                mThis.self.modal({
-                    backdrop: 'static'
-                });
-            });
-        }
-    }
-
-    this.prepareFormData = (def, onFinish) => {
-        if (!def) def = {};
-        def.warehouse_id = main_view.DEF_TO_WAREHOUSE_ID;
-        VSUtil.setComboItems(mThis.elToWarehouse, ShipmentsComponent.form_data.warehouses, 'id', 'warehouse_name', false, null, def.warehouse_id);
-        vsapi.call([mThis.base_url, '/api/getComboItems_driver'].join(''), null).then(res => {
-            if (res.status_code === 200) {
-                let rows = StringSanitizer.sanitizeObject(res.data);
-                let text1 = LocaleManager.trans('Not picked by driver');
-                VSUtil.setComboItems(mThis.elDriver, rows, 'id', 'driver_name', true, `(${text1})`, def.driver_id);
-                if (typeof onFinish === 'function') onFinish();
-            }
-        });
-    }
-
-    this.loadOrderInfo = (order_id, onFinish) => {
-        let p = { 'order_id': order_id ? order_id : 0, "context": "0" };
-        vsapi.call([mThis.base_url, '/api/order/info'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                let d = StringSanitizer.sanitizeObject(res.data);
-                let packages = d.packages ? d.packages : [];
-                packages = StringSanitizer.sanitizeObject(packages);
-
-                mThis.order_id = d.order_id;
-                mThis.elShipmentCode.val(d.order_code);
-                mThis.elSenderName.val(d.sender_name);
-                mThis.elSenderId.val(d.sender_id);
-                mThis.elSenderCode.val(d.sender_code);
-                mThis.displayPackages(packages, null);
-                if (typeof onFinish == 'function') onFinish();
-            }
-        });
-    }
-
-    this.performPickup = (pick_on_arrival = false, tr = null) => {
-        let p = mThis.getData();
-        if (!p) return;
-        if (!p.pickup_date) p.pickup_date = '';
-        if (!p.driver_id) p.driver_id = 0;
-        p.pick_on_arrival = (pick_on_arrival == true) ? 1 : 0;
-
-        vsapi.call([mThis.base_url, '/api/performPickup'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-
-                let d = StringSanitizer.sanitizeObject(res.data);
-
-                mThis.self.modal('hide');
-                if (typeof mThis.onClose == 'function') mThis.onClose(true);
-                if (d.error_count > 0) {
-                    let i = 0, c;
-                    let html = null;
-                    do {
-                        c = d.errors[i];
-                        if (!c) break;
-                        html = [html, '<li><span style="color:red;">', c, '</span></li>'].join('');
-                        i++;
-                    } while (c);
-                    if (d.success_count > 0) {
-                        if (html) html = ['<span style="color:red;font-weight:bold">There are ', (i + 1), ' problems as follows:</span><br><ul>', html, '</ul>'].join('');
-                        cv_interact.warning(html);
-                    }
-                    else {
-                        if (html) html = ['<span style="color:red;font-weight:bold">No packages are picked up. See the following problems:</span><br><ul>', html, '</ul>'].join('');
-                        cv_interact.warning(html);
-                    }
-                } else if (d.success_count > 0) {
-                    if (pick_on_arrival == 1) {
-                        tr.remove();
-                    }
-                    cv_interact.success(['<span style="font-weight:bold;color:green">Pickup action succeeded!'].join(''));
-                }
-                else cv_interact.warning(['<span style="font-weight:bold;color:red">', d.success_count ? d.success_count : 0, ' packages received'].join(''));
-                if (d.success_count > 0) ShipmentsComponent.updateShipmentStatus(tr, { 'status_id': d.status_id, 'status': d.status, 'completed': d.completed });
-            }
-        });
-    }
-
-    this.addPackageRow = () => {
-        let row_data_blank = { 'barcode': null, 'zone_name': null, 'receiver_phone': null, 'price': 0, 'df_payer': 'sender', 'fees': 0, 'receiver_address': null, 'cod': 1, 'base_fee': 0, 'delivery_fee': 0, 'size': null, 'actual_kg': 0, 'billed_kg': 0 };
-        let rows = mThis.getPackages();
-        rows.splice(0, 0, row_data_blank);
-        mThis.displayPackages(rows);
-    }
-
-    this.removePackageRow = (tr) => {
-        let rows = mThis.getPackages();
-        let index = tr.data('index');
-        rows.splice(index, 1);
-        return rows;
-    }
-
-    this.getData = function () {
-        let p = {};
-        p.order_id = mThis.order_id;
-        p.order_code = mThis.elShipmentCode.val();
-        p.sender_id = mThis.elSenderId.val();
-        p.sender_code = mThis.elSenderCode.val();
-        p.pickup_date = mThis.elPickupDate.val();
-        p.to_warehouse_id = mThis.elToWarehouse.val();
-        p.packages = mThis.getPackages(p.to_warehouse_id, p.delivery_type);
-
-        let i = 0, c;
-        do {
-            c = p.packages[i];
-            if (!c) break;
-            let error = mThis.validatePackage(c);
-            if (error) {
-                cv_interact.error(error.message);
-                return null;
-            }
-            i++;
-        } while (c);
-        p.size = DUtil.processPackageSize(p.size);
-        return p;
-    }
-
-    this.getPackages = (to_warehouse_id) => {
-        let data = [];
-        mThis.tblPackages.find('tbody>tr').each(function () {
-            let row = {};
-            let tr = $(this);
-            let btn_barcode = tr.find('td.col_action a._pl_print_barcode');
-            row.barcode = btn_barcode.data('barcode');
-            row.to_warehouse_id = to_warehouse_id;
-            tr.find('td>.col-input').each(function () {
-                let x = $(this);
-                let col_name = x.data('field');
-                if (col_name == 'size') {
-                    row['size'] = DUtil.processPackageSize(x.val());
-                }
-                else {
-                    row[col_name] = x.val();
-                }
-            });
-
-            if (!row.zone_code) row.zone_code = row.zone_name;
-            data.push(row);
-        });
-        return data;
-    }
-
-    this.displayPackages = function (data, onFinish, d) {
-        if (!data || !data[0]) {
-            data = [{ 'barcode': null, 'delivery_type': 'normal', 'zone_name': null, 'receiver_phone': null, 'price': 0, 'df_payer': 'sender', 'fees': 0, 'receiver_address': null, 'cod': 1, 'size': null, 'actual_kg': 0, 'billed_kg': 0, 'delivery_fee': 0, 'cod_fee': 0, 'forwarding_cost': '0' }];
-        }
-
-        if (mThis.table) {
-            mThis.tblPackages.DataTable().clear().destroy();
-            mThis.tblPackages.empty();
-            mThis.table = null;
-        }
-
-        if (!mThis.table)
-            mThis.table = mThis.tblPackages.DataTable({
-                searching: false,
-                destroy: true,
-                'ordering': false,
-                scrollCollapse: true,
-                paging: false,
-                bLengthChange: false,
-                saveState: true,
-                'processing': true,
-                'language': {
-                    'loadingRecords': '&nbsp;',
-                    'processing': 'Loading...',
-                    "emptyTable": "No pacakges found"
-                },
-                data: data,
-                columns: mThis.package_columns,
-                "createdRow": function (row, data, dataIndex) {
-                    let tr = $(row);
-                    tr.data('pid', data.package_id);
-                    tr.data('senderid', data.sender_id);
-                    tr.data('barcode', data.barcode);
-                    let i = 0;
-                    tr.find('td').each(function () {
-                        let td = $(this);
-                        if (i == 1 || i == 2) {
-                            td.find('select.modal-select2').select2({ width: '100%' });
-                        }
-
-                        if (i == 0) td.css('min-width', '75px');
-                        else if (i == 1) td.css('min-width', '180px');
-                        else if (i == 2) td.css('min-width', '180px');
-                        else if (i == 3) td.css('min-width', '180px');
-                        else if (i > 0) td.css('min-width', '130px');
-                        i++;
-                    });
-                }
-            });
-
-        mThis.packages = data;
-        if (typeof onFinish == 'function') onFinish();
-    };
-}
-
-let VerifyPackageDialog = new function () {
-    let mThis = this;
-    this.self = main_view.appContent.children('#_pl_dlgReceivePackages');
-    this.base_url = main_view.base_url;
-    this.elTitle = this.self.find('#_pl_dlgReceivePackagesTitle');
-    this.lnkFindDriver = this.self.find('#_pl_rps_lnkFindDriver');
-    this.btnAddPackage = this.self.find('#_pl_rps_add_package');
-    this.btnVerifyPackages = this.self.find('#_pl_rps_btnVerify');
-
-    this.elDriver = this.self.find('#_pl_rps_driver');
-    this.elDriverCode = this.self.find('#_pl_rps_driver_code');
-
-    this.elShipment = this.self.find('#_pl_rps_order_id');
-    this.elShipmentCode = this.self.find('#_pl_rps_order_code');
-    this.elSenderId = this.self.find('#_pl_rps_sender_id');
-    this.elSenderName = this.self.find('#_pl_rps_sender_name');
-    this.elSenderCode = this.self.find('#_pl_rps_sender_code');
-    this.elDeliveryDate = this.self.find('#_pl_rps_delivery_date');
-    this.elDeliveryType = this.self.find('#_pl_rps_delivery_type');
-    this.elToWarehouse = this.self.find('#_pl_rps_to_warehouse');
-
-    this.tblPackages = this.self.find('#_pl_rps_tblPackages');
-    this.elError = this.self.find('#_pl_rps_error');
-
-    this.lnkFindSender = this.self.find('#_pl_rps_lnkFindSender');
-
-    this.lnkFindSender.on('click', function (e) {
-        e.preventDefault();
-        let option = { 'title': "Find Merchant", "role": "sender", "singleSelect": true, "previousDialog": mThis.self };
-        FindPersonDialog.show(option, (persons) => {
-            if (persons[0]) {
-                let p = persons[0];
-                mThis.elSenderName.val(p.name);
-                mThis.elSenderCode.val(p.code);
-                mThis.elSenderId.val(p.id);
-            }
-        });
-    });
-
-    this.package_columns = [
-        {
-            className: "col_action",
-            data: function (data,index,tr) {
-                return ['<div style="width:65px">',
-                    '<button type="button" class="_pl_print_barcode btn btn-sm btn-outline-primary" data-barcode="', data.barcode, '" data-pid="', data.package_id, '" data-senderid="', data.sender_id, '"><i class="fa fa-list-alt" style="color:green"></i></button>&nbsp;',
-                    '<button type="button" class="_pl_remove_package btn btn-sm btn-outline-danger" data-barcode="', data.barcode, '" data-pid="', data.package_id, '"><i class="fa fa-times" style="color:orange"></i></button>',
-                    '</div>'].join('');
-            },
-            title: ''
-        },
-        {
-            className: "item_type",
-            data: function (data,index,tr) {
-                let items = [{ 'item_type': 'doc' }, { 'item_type': 'non-doc' }];
-                data.item_type = (data.item_type + '').toLowerCase();
-                let d = { "inputType": "select2", "data": data, "cssClass": "form-control", "columnName": "item_type", "combo_items": items, "valueMember": "item_type", "textMember": "item_type" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Item Type'
-        },
-        {
-            className: "zone_name",
-            data: function (data,index,tr) {
-                let d = { "inputType": "select2", "data": data, "cssClass": "modal-select2", "columnName": "zone_name", "combo_items": ShipmentsComponent.form_data.zones, "valueMember": "zone_code", "textMember": "zone_name" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Destination'
-        },
-        {
-            className: "receiver_phone",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "receiver_phone", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Receiver Phone'
-        },
-        {
-            className: "price",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "price", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Price'
-        },
-        {
-            className: "df_payer",
-            data: function (data,index,tr) {
-                let items = [{ "name": "Sender" }, { "name": "Receiver" }];
-                let d = { "inputType": "select2", "data": data, "columnName": "df_payer", "readOnly": false, "combo_items": items, "valueMember": "name", "textMamber": "name", "defaultValue": "Sender" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'DFP'
-        },
-        {
-            className: "fees",
-            data: function (data,index,tr) {
-                if (!data.fees) data.fees = parseFloat(data.base_fees) + parseFloat(data.delivery_fee);
-                data.fees = Number(data.fees).toFixed(2);
-                let d = { "inputType": "number", "data": data, "columnName": "fees", "readOnly": false, "defaultValue": 0 };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Fees'
-        },
-        {
-            className: "receiver_address",
-            data: function (data,index,tr) {
-                let d = { "inputType": "input", "data": data, "columnName": "receiver_address", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Receiver Address'
-        },
-        {
-            className: "cod",
-            data: function (data,index,tr) {
-                let items = [{ "id": "0", "name": "No" }, { "id": "1", "name": "Yes" }];
-                let d = { "inputType": "select2", "data": data, "columnName": "cod", "readOnly": false, "combo_items": items, "valueMember": "id", "textMamber": "name", "defaultValue": 1 };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'COD'
-        },
-        {
-            className: "size",
-            data: function (data,index,tr) {
-                if (data.size instanceof Object && data.size) {
-                    data.size = [data.size.length, ' ', data.size.width, ' ', data.size.height].join('');
-                }
-                let d = { "inputType": "input", "data": data, "columnName": "size", "readOnly": false, "defaultValue": null, "placeholder": "eg: 10 9.5 11" };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Size'
-        },
-        {
-            className: "actual_kg",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "actual_kg", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Actual KG'
-        },
-        {
-            className: "billed_kg",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "billed_kg", "readOnly": false };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'Billed KG'
-        },
-        {
-            className: "cod_fee",
-            data: function (data,index,tr) {
-                let d = { "inputType": "number", "data": data, "columnName": "cod_fee", "readOnly": true };
-                return EditableTable.makeTableCellEditor(d);
-            },
-            title: 'COD Fee'
-        },
-    ];
-
-    mThis.btnVerifyPackages.on('click', function (e) {
-        mThis.receivePackages(null);
-    });
-
-    mThis.lnkFindDriver.on('click', function (e) {
-        e.preventDefault();
-        let onClose = (ds) => {
-            if (ds[0]) {
-                let d = ds[0];
-                mThis.elDriver.val(d.id);
-                if (!mThis.elDriver.val()) {
-                    mThis.elDriver.append($('<option/>').val(d.id).text(d.name)).val(d.id);
-                }
-                mThis.elDriverCode.val(d.code);
-                mThis.elDriver.trigger('change');
-            }
-        };
-
-        let option = { 'title': 'Find Driver', 'role': 'driver', 'singleSelect': true, 'previousDialog': mThis.self };
-        FindPersonDialog.show(option, onClose);
-    });
-
-    mThis.btnAddPackage.on('click', function (e) {
-        e.preventDefault();
-        mThis.addPackageRow();
-
-    });
-
-    mThis.tblPackages.on('click', 'td.col_action button._pl_remove_package', function (e) {
-        let x = $(this);
-        let tr = x.closest('tr');
-        let barcode = x.data('barcode');
-        let package_id = x.data('pid');
-
-        if (barcode) {
-            cv_interact.confirm('Are you sure to delete this package?', { title: 'Delete Package', confirmButtonText: 'Delete', cancelButtonText: 'Close', context: 'delete' }, function (e) {
-                if (e) {
-                    let p = { 'barcode': barcode, 'package_id': package_id };
-                    vsapi.call([mThis.base_url, '/dms/deletePackage'].join(''), p).then(res => {
-                        if (res.status_code === 200) {
-                            mThis.packages = mThis.removePackageRow(tr);
-                            tr.remove();
-                        } else cv_interact.error(res.error_message);
-                    });
-                }
-            });
-            return;
-        }
-
-        mThis.packages = mThis.removePackageRow(tr);
-        tr.remove();
-    });
-
-    mThis.tblPackages.on('click', 'td.col_action button._pl_print_barcode', function (e) {
-        e.preventDefault();
-        let tr = $(this).closest('tr');
-        let btn_print_barcode = $(this);
-        let barcode = $(this).data('barcode');
-        if (!barcode)
-            cv_interact.confirm('No barcode yet! Do you want to save this package?', { title: 'Print Barcode', context: 'view', confirmButtonText: 'Print', cancelButtonText: 'Close' }, function (e) {
-                if (e) {
-                    let onDone = (result) => {
-                        if (result.success_count > 0) {
-                            barcode = result.last_new_barcode;
-                            btn_print_barcode.data('barcode', barcode);
-                            tr.find('td.col_action button._pl_remove_package').data('barcode', barcode);
-                            window.open([mThis.base_url, '/package_barcode/', barcode ? barcode : 'unknown'].join(''), '_blank');
-                        }
-                        else {
-                            if (result.errors) {
-                                if (result.errors[0]) {
-                                    mThis.elError.text(result.errors[0]);
-                                }
-                            }
-                        }
-                    };
-
-                    mThis.receivePackages(tr, onDone);
-                }
-            });
-        else
-            window.open([mThis.base_url, '/package_barcode/', barcode ? barcode : 'unknown'].join(''), '_blank');
-    });
-
-    mThis.tblPackages.on('change', 'td.zone_name>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'zone_name');
-    });
-
-    mThis.tblPackages.on('change', 'td.billed_kg>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'billed_kg');
-    });
-
-    mThis.tblPackages.on('keyup', 'td.actual_kg>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-        mThis.setDeliveryPrices(tr, 'actual_kg');
-    });
-
-    mThis.tblPackages.on('blur', 'td.size>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setBilledKg(tr);
-        mThis.setDeliveryPrices(tr, 'size');
-    });
-
-    mThis.tblPackages.on('change', 'td.price>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'price');
-    });
-
-    mThis.tblPackages.on('change', 'td.cod>.col-input', function (e) {
-        let tr = $(this).closest('tr');
-        mThis.setDeliveryPrices(tr, 'cod');
-    });
-
-    this.setDeliveryPrices = (tr, change_agent) => {
-        let sender_id = mThis.elSenderId.val();
-        let delivery_type = mThis.elDeliveryType.val();
-        let zone_code, billed_kg = 0, price = 0, cod;
-        zone_code = EditableTable.getCellValue(tr, 'zone_name',false);
-        billed_kg = EditableTable.getCellValue(tr, 'billed_kg', true);
-        cod = EditableTable.getCellValue(tr, 'cod',true);
-
-        if (!sender_id) {
-            mThis.elError.html('សូមជ្រើសរើសអ្នកលក់ដើម្បីកំណត់តំលៃសេវា');
-            return;
-        }
-
-        if (!zone_code) {
-            mThis.elError.html('សូមជ្រើសរើសតំបន់ដើម្បីកំណត់តំលៃសេវា');
-            return;
-        }
-        if (!delivery_type) {
-            mThis.elError.html('សូមជ្រើសរើសប្រភេទសេវាដើម្បីកំណត់តំលៃសេវា');
-            return;
-        }
-
-        let p = { 'sender_id': sender_id, 'delivery_type': delivery_type, 'zone_code': zone_code, 'billed_kg': billed_kg, 'cod': cod };
-        vsapi.call([mThis.base_url, '/dms/package/price-info'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                let d = StringSanitizer.sanitizeObject(res.data);
-                EditableTable.setCellValue(tr, 'base_fee', d.base_fee);
-                EditableTable.setCellValue(tr, 'delivery_fee', Number(d.delivery_fee).toFixed(2));
-                price = EditableTable.getCellValue(tr, 'price', true);
-                if (cod == 0)
-                    EditableTable.setCellValue(tr, 'cod_fee', 0);
-                else {
-                    let base_fee = EditableTable.getCellValue(tr, 'base_fee', true);
-                    let delivery_fee = EditableTable.getCellValue(tr, 'delivery_fee', true);
-                    let cod_fee = (price + base_fee + delivery_fee) * d.cod_fee_percent / 100;
-                    EditableTable.setCellValue(tr, 'cod_fee', Number(cod_fee).toFixed(2));
-                }
-
-                if (d.status === 'Error') {
-                    EditableTable.handlePriceError(tr, d);
-                }
-            }
-        });
-    }
-
-    this.setBilledKg = (tr, size_string) => {
-        if (!size_string) size_string = EditableTable.getCellValue(tr, 'size',false);
-        if (!size_string) return;
-
-        let size = DUtil.processPackageSize(size_string);
-        if (!size.length) return;
-
-        let kg = 0;
-        let b = size.length * size.width * size.height;
-        b = Number(b / 6015);
-        let actual_kg = EditableTable.getCellValue(tr, 'actual_kg',true);
-        if (b > actual_kg)
-            kg = b;
-        else
-            kg = actual_kg;
-        EditableTable.setCellValue(tr, 'billed_kg',Number(kg).toFixed(2));
-    }
-
-    this.show = (option, onClose) => {
-        if (!option) option = {};
-        mThis.elError.html(null);
-        mThis.onClose = onClose;
-        mThis.order_id = option.order_id;
-        mThis.sender_id = option.sender_id;
-        mThis.tr_row = option.tr_row;
-        mThis.elTitle.html(option.title ? option.title : 'Verify Packages');
-
-        mThis.prepareFormData({ 'driver_id': 0 });
-
-        if (mThis.order_id > 0) {
-            mThis.lnkFindSender.hide();
-            mThis.loadOrderInfo(mThis.order_id, function (e) {
-                mThis.self.modal({
-                    backdrop: 'static'
-                });
-            });
-        }
-        else {
-            if (!option.allow_find_sender)
-                return;
-            else {
-                mThis.lnkFindSender.show();
-                mThis.elSenderName.val(null);
-                mThis.elSenderId.val(null);
-                mThis.elSenderCode.val(null);
-                mThis.elShipmentCode.val(null);
-                mThis.elShipment.val(null);
-                mThis.tblPackages.find('tbody').empty();
-                mThis.addPackageRow();
-                mThis.self.modal({
-                    backdrop: 'static'
-                });
-            }
-        }
-    }
-
-    this.prepareFormData = (def, onFinish) => {
-        if (!def) def = {};
-        def.warehouse_id = main_view.DEF_TO_WAREHOUSE_ID;
-        VSUtil.setComboItems(mThis.elToWarehouse, ShipmentsComponent.form_data.warehouses, 'id', 'warehouse_name', false, 0, def.warehouse_id);
-        vsapi.call([mThis.base_url, '/dms/getComboItems_driver'].join(''), null).then(res => {
-            if (res.status_code === 200) {
-                let items = StringSanitizer.sanitizeObject(res.data);
-                let text1 = LocaleManager.trans('To Be Assigned');
-                VSUtil.setComboItems(mThis.elDriver, items, 'id', 'driver_name', true, `(${text1})`, def.driver_id);
-                if (typeof onFinish === 'function') onFinish();
-            }
-        });
-    }
-
-    this.loadOrderInfo = (order_id, onFinish) => {
-        let p = { 'order_id': order_id ? order_id : 0, "context": 1 };
-        vsapi.call([mThis.base_url, '/dms/getOrderInfo'].join(''), p).then(res => {
-            if (res.status_code === 200) {
-                let d = StringSanitizer.sanitizeObject(res.data);
-                let packages = d.packages ? d.packages : [];
-                packages = StringSanitizer.sanitizeObject(packages, null, ['size']);
-                mThis.order_id = d.order_id;
-                mThis.elShipmentCode.val(d.order_code);
-                mThis.elSenderName.val(d.sender_name);
-                mThis.elSenderId.val(d.sender_id);
-                mThis.elSenderCode.val(d.sender_code);
-
-                mThis.displayPackages(packages, null);
-                if (typeof onFinish === 'function') onFinish();
-            }
-        });
-    }
-
-    this.receivePackages = (tr_package = null, onDone = null) => {
-        mThis.elError.html(null);
-        let p = mThis.getData(tr_package);
-        if (!p) return;
-        if (!p.pickup_date) p.pickup_date = '';
-        if (!p.driver_id) p.driver_id = 0;
-        //p.id = order_id;
-        p.allow_create_order = 1;
-        vsapi.call([mThis.base_url, '/dms/delivery-order/receive'].join(''), p,null).then(res => {
-            if (res.status_code === 200) {
-                if (typeof onDone === 'function')
-                    onDone(res.data);
-                else {
-                    let d = res.data;
-
-                    if (d) {
-                        if (d.error_message) {
-                            cv_interact.error(d.error_message);
-                            return;
-                        }
-                        if (d.error_count > 0) {
-                            let i = 0, c;
-                            let html = null;
-                            do {
-                                c = d.errors[i];
-                                if (!c) break;
-                                html = [html, '<li><span style="color:green;font-weight:bold">', c, '</span></li>'].join('');
-                                i++;
-                            } while (c);
-                            if (html) html = ['<ul>', html, '</ul>'].join('');
-                            cv_interact.warning(html);
-                        }
-                        else if (result.success_count > 0) {
-                            mThis.self.modal('hide');
-                            if (typeof mThis.onClose == 'function') mThis.onClose(true);
-                            cv_interact.info(['<span style="font-weight:bold;color:green">', d.success_count, ' packages received!'].join(''));
-                        }
-                        else cv_interact.warning(['<span style="font-weight:bold;color:red">', d.success_count, ' packages received'].join(''));
-
-                    }
-                }
-            }
-        });
-    }
-
-    this.addPackageRow = () => {
-        let def_base_fee = 0;
-        if (mThis.senderInfo) def_base_fee = mThis.senderInfo.base_fee;
-        let row_data_blank = { 'barcode': null, 'zone_name': null, 'receiver_phone': null, 'price': 0, 'df_payer': 'sender', 'fees': 0, 'receiver_address': null, 'cod': 1, 'base_fee': 0, 'delivery_fee': 0, 'size': null, 'actual_kg': 0, 'billed_kg': 0 };
-        let rows = mThis.getPackages();
-        rows.splice(0, 0, row_data_blank);
-        mThis.displayPackages(rows);
-    }
-
-    this.removePackageRow = (tr) => {
-        let rows = mThis.getPackages();
-        let index = tr.data('index');
-        rows.splice(index, 1);
-        return rows;
-    }
-
-    this.getData = function (package_tr = null) {
-        let p = {};
-        p.warehouse_id = mThis.elToWarehouse.val();
-        p.delivery_type = mThis.elDeliveryType.val();
-        p.id = mThis.order_id;
-        //p.order_id = mThis.order_id;
-        p.order_code = mThis.elShipmentCode.val();
-        p.sender_id = mThis.elSenderId.val();
-        p.sender_code = mThis.elSenderCode.val();
-        p.delivery_date = mThis.elDeliveryDate.val();
-        p.packages = mThis.getPackages(package_tr, p.delivery_type);
-        if (!p.warehouse_id) {
-            cv_interact.error('Warehouse identity is not correct');
-            return null;
-        }
-
-        if (!p.packages) return null;
-        return p;
-    }
-
-    this.getPackages = (tr, delivery_type) => {
-        let ps = [];
-        if (tr) {
-            let p = mThis.getPackageObject(tr);
-            let err = mThis.validatePackage(p);
-            if (err) {
-                mThis.elError.text(err);
-                return null;
-            }
-            else {
-                p.delivery_type = delivery_type;
-                p.size = DUtil.processPackageSize(p.size);
-                ps.push(p);
-            }
-            return ps;
-        }
-
-        mThis.tblPackages.find('tbody>tr').each(function () {
-            let p = mThis.getPackageObject($(this));
-            let err = mThis.validatePackage(p);
-            if (err) {
-                mThis.elError.text(err);
-                return null;
-            }
-            else {
-                p.size = DUtil.processPackageSize(p.size);
-                ps.push(p);
-            }
-
-        });
-        return ps;
-    }
-
-    this.getPackageObject = function (tr) {
-        let row = {};
-        let to_warehouse_id = mThis.elToWarehouse.val();
-        let btn_barcode = tr.find('td.col_action button._pl_print_barcode');
-        row.barcode = btn_barcode.data('barcode');
-        tr.find('td>.col-input').each(function () {
-            let x = $(this);
-            let col_name = x.data('field');
-
-            if (col_name == 'size') {
-                let size = DUtil.processPackageSize(x.val());
-                if (size) {
-                    if (size.width > 0) {
-                        row[col_name] = [size.length, ' ', size.width, ' ', size.height].join('');
-                    } else row[col_name] = null;
-
-                } else row[col_name] = null;
-            } else {
-                row[col_name] = x.val();
-            }
-        });
-        if (!row.zone_code) row.zone_code = row.zone_name;
-        row.to_warehouse_id = to_warehouse_id;
-        row.warehouse_id = to_warehouse_id;
-        row.delivery_type = mThis.elDeliveryType.val();
-        return row;
-    }
-
-    this.validatePackage = (p) => {
-        if (Validator.isNullOrEmpty(p.to_warehouse_id)) {
-            return 'Receiving warehouse information is not correct';
-        }
-        if (!p.to_warehouse_id || p.to_warehouse_id <= 0) {
-            return 'Receiving warehouse information is not correct';
-        }
-        if (Validator.isNullOrEmpty(p.receiver_phone)) {
-            return 'Some packages does not have receiver`s phone number';
-        }
-
-        if (Validator.isNullOrEmpty(p.zone_code)) {
-            return 'Some packages does not have destination zone';
-        }
-        if (p.cod == 1) {
-            if (p.price <= 0 || !p.price) {
-                return 'In case of Cash On Delivery (COD), the package`s price cannot be zero';
-            }
-        }
-        if (p.base_fee > 0 || p.delivery_fee > 0) {
-            let dfp = (p.df_payer + '').toLowerCase();
-            if (dfp != 'sender' && dfp != 'receiver') {
-                return 'Delivery Fee Payer (DFP) must be Sender or Receiver';
-            }
-        }
-        return null;
-    }
-
-    this.processPackageSize = (size_str) => {
-        size_str = (size_str + '').trim();
-        if (size_str == '') return { 'length': 0, 'width': 0, 'height': 0 };
-        let parts = size_str.split(' ');
-        if (!parts[0])
-            return false;
-        else if (parts[0] && !parts[2]) {
-            return false;
-        } else if (!$.isNumeric(parts[2]) || !$.isNumeric(parts[1]) || !$.isNumeric(parts[0]))
-            return false;
-        else {
-            let length = parseFloat(parts[0]);
-            let width = parseFloat(parts[1]);
-            let height = parseFloat(parts[2]);
-            return { 'length': length, 'width': width, 'height': height };
-        }
-        return null;
-    }
-
-    this.displayPackages = function (data, onFinish, d) {
-        if (!data || !data[0]) {
-            data = [{ 'barcode': null, 'zone_name': null, 'receiver_phone': null, 'price': 0, 'df_payer': 'sender', 'fees': 0, 'receiver_address': null, 'cod': 1, 'size': null, 'actual_kg': 0, 'billed_kg': 0, 'delivery_fee': 0, 'cod_fee': 0, 'forwarding_cost': '0' }];
-        }
-
-        if (mThis.table) {
-
-            mThis.tblPackages.DataTable().clear().destroy();
-            mThis.tblPackages.empty();
-            mThis.table = null;
-        }
-
-        if (!mThis.table)
-            mThis.table = mThis.tblPackages.DataTable({
-                searching: false,
-                destroy: true,
-                paging: true,
-                pageLength: 5,
-                'ordering': false,
-                scrollCollapse: true,
-                paging: false,
-                bLengthChange: false,
-                saveState: true,
-                'processing': true,
-                'language': {
-                    'loadingRecords': '&nbsp;',
-                    'processing': 'Loading...',
-                    "emptyTable": "No pacakges found"
-                },
-                data: data,
-                columns: mThis.package_columns,
-                "createdRow": function (row, data, dataIndex) {
-                    let tr = $(row);
-                    tr.data('pid', data.package_id);
-                    tr.data('senderid', data.sender_id);
-                    tr.data('barcode', data.barcode);
-                    let i = 0;
-                    tr.find('td').each(function () {
-                        let td = $(this);
-                        if (i > 0 && i <= 3) {
-                            td.css('min-width', '180px');
-                            td.find('select.modal-select2').select2({ width: '100%' });
-                        }
-                        else if (i > 0)
-                            td.css('min-width', '100px');
-                        else if (i == 9)
-                            td.css('min-width', '100px');
-                        i++;
-                    });
-                }
-            });
-        mThis.packages = data;
-        if (typeof onFinish == 'function') onFinish();
-    };
-}
-
-
-
-const EditableTable = new function () {
-    this.handlePriceError = (tr, d, display_span = null) => {
-        if (display_span)
-            display_span.text(d.error_message);
-        else cv_interact.error(d.error_message);
-    }
-
-    this.getCellValue = (tr, col_name, is_numeric =true) => {
-        if (!tr){
-             if(is_numeric) return 0; else return null;
-        };
-        const td = tr.querySelector(`td.${col_name}`);
-        if(!td){
-            if(is_numeric) return 0; else return null;
-        }
-        const cell_editor = td.querySelector('.col-input');
-        if(!cell_editor) {
-            return td.textContent;
-        }else{
-            let value = cell_editor.value;
-            if (is_numeric) {
-                return isNaN(value) ? 0 :Number(value);
-            }
-            else return value;
-        }
-    };
- 
-    //set cell value in sub table in tblPickups
-    this.setCellValue = (tr, col_name, value) => {
-        if (!tr) return;
-        const td = tr.querySelector(`td.${col_name}`);
-        if(!td) return;
-        const cell_editor = td.querySelector('.col-input');
-        if (cell_editor) {
-            td.dataset.value = value;
-            if (cell_editor.tagName === 'SELECT') {
-                cell_editor.value = value;
-                cell_editor.dispatchEvent(new Event('change'));
-            } else {
-                cell_editor.value = value;
-            }
-        }
-    };
- 
-    // this.setAutoComplete = function (tr, col_name, option) {
-    //     if (!tr) return;
-    //     let selector = ['td.', col_name, ' .col-input'].join('');
-    //     let textbox = tr.find(selector);
-    //     if (textbox.length === 0 || !textbox) return;
-    //     if (!option) option = {};
-    //     let new_id = col_name + "_1";
-
-    //     textbox.attr('id', new_id);
-    //     let config =
-    //     {
-    //         selector: "#" + new_id,
-    //         placeHolder: "Search for Food...",
-    //         data: {
-    //             src: ["Sauce - Thousand Island", "Wild Boar - Tenderloin", "Goat - Whole Cut"],
-    //             cache: true,
-    //         },
-    //         resultsList: {
-    //             element: (list, data) => {
-    //                 if (!data.results.length) {
-    //                     const message = document.createElement("div");
-    //                     message.setAttribute("class", "no_result");
-    //                     message.innerHTML = `<span>Found No Results for "${data.query}"</span>`;
-    //                     list.prepend(message);
-    //                 }
-    //             },
-    //             noResults: true,
-    //         },
-    //         resultItem: {
-    //             highlight: {
-    //                 render: true
-    //             }
-    //         }
-    //     }
-
-    //     const ttt = new autoComplete(config);
-    // };
-
-    this.makeTableCellEditor = (option) => {
-
-        if (option.inputType == 'date' || option.inputType == 'input' || option.inputType == 'number') {
-            let input_readOnly = '', data_select = null;
-            if (option.readOnly == true) input_readOnly = ' readOnly';
-            let input_type = ' type="text"';
-            if (option.inputType == 'number') input_type = ' type ="number"';
-            if (option.input_type == 'date') {
-                data_select = ' data-select="datepicker" autocomplete="off"';
-                input_type = null;
-            }
-
-            let el_style = null;
-            if (option.width) el_style = [' style = "width:', option.width, '" '].join('');
-            let el_placeholder = null;
-            if (option.placeholder) el_placeholder = [' placeholder="', option.placeholder, '"'].join('');
-            return ['<td data-field="', option.columnName, '" class="', option.columnName, '"><input data-field="', option.columnName, '"', input_type, '" class="form-control col-input ', option.cssClass, '"', el_style, ' value="', option.data[option.columnName], '"', input_readOnly, el_placeholder, data_select, '></td>',].join('');
-        }
-        else if (option.inputType == 'select') {
-            let input_readOnly = '', html_options = '';
-            if (option.readOnly == true) input_readOnly = ' disabled';
-            if (option.combo_items) {
-                let i = 0, c;
-                do {
-                    c = option.combo_items[i];
-                    if (!c) break;
-                    let value_m = option.valueMember ? option.valueMember : 'id';
-                    let text_m = option.textMember ? option.textMember : 'name';
-                    let cell_value = option.data[option.columnName];
-                    let selected = '';
-                    if ((cell_value + '').toLowerCase() == (c[value_m] + '').toLowerCase()) selected = " selected";
-                    let o_html = ['<option value="', c[value_m], '" ', selected, '>', c[text_m], '</option>'].join('');
-                    html_options = [html_options, o_html].join('');
-
-                    i++;
-                } while (c);
-            }
-            let el_style = null;
-            if (option.width) el_style = [' style = "width:', option.width, '" '].join('');
-            let el_placeholder = null;
-            if (option.placeholder) el_placeholder = [' placeholder="', option.placeholder, '"'].join('');
-            return ['<td data-field="', option.columnName, '" class="', option.columnName, '"><select data-field="', option.columnName, '" class="form-control col-input ', option.cssClass, '" ', el_style, input_readOnly, el_placeholder, '>', html_options, '</select></td>',].join('');
-        }
-    };
-}
 
 const ShipmentDialog = new function () {
     let mThis = this;
     this.base_url = main_view.base_url;
-    this.self = main_view.appContent.children('#_pl_dlgEmptyOrder');
-    this.btnCreate = this.self.find('#_pl_dlgEmptyOrder_btnOK');
-    this.el_from_country = this.self.find('#_plq_from_country');
-    this.elSender = this.self.find('#_plq_sender');
-    this.el_to_country = this.self.find('#_plq_to_country');
-    this.el_primary_cp = this.self.find('#_plq_primary_cp');
-    this.el_secondary_cp = this.self.find('#_plq_secondary_cp');
+    this.self = main_view.appContent.find('#_pl_dlgEmptyOrder')[0];
+    this.modal = new bootstrap.Modal(this.self);
+    this.options = {};
+
+    this.btnCreate = this.self.querySelector('#_pl_dlgEmptyOrder_btnOK');
+    this.el_from_country = this.self.querySelector('#_plq_from_country');
+    this.elSender = this.self.querySelector('#_plq_sender');
+    this.el_to_country = this.self.querySelector('#_plq_to_country');
+    this.el_primary_cp = this.self.querySelector('#_plq_primary_cp');
+    this.el_secondary_cp = this.self.querySelector('#_plq_secondary_cp');
+    
+    this.body = this.self.querySelector('.modal-body');
+    this.div_shipment_info = this.body.querySelector('#_ship_dlg_shipments_body');
 
     this.prepareFormOptions = ( id, onFinish) => {
         vsapi.call(`${mThis.base_url}/abm/oversea_shipments/form-options`, {id : id}, null).then(res => {
@@ -4518,7 +2569,7 @@ const ShipmentDialog = new function () {
             let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data , null, ['country_name','cp_name'] ) : {};
             // VSUtil.setComboItems(mThis.el_from_country, d.from_country, 'id', 'country_name', true, '(select )' , null);
             // mThis.elWarehouse.val(d.warehouses[0].id).trigger('change'); 
-            VSUtil.setComboItems(mThis.elSender, d.senders, 'id', 'sender_name', true, '(select )', null);
+            VSUtil.setComboItems(mThis.elSender, d.senders, 'id', 'sender_name', true, 'name', null);
             VSUtil.setComboItems(mThis.el_to_country, d.to_country, 'id', 'country_name', true, '(select country)', null);
             VSUtil.setComboItems(mThis.el_primary_cp, d.primary_cp, 'id', 'cp_name', true, '(select primary cp)', null);
             VSUtil.setComboItems(mThis.el_secondary_cp, d.secondary_cp, 'id', 'cp_name', true, '(select secondary cp)', null);
@@ -4526,60 +2577,18 @@ const ShipmentDialog = new function () {
             onFinish(d);
         });
     }
-
-    this.getFormData = (silent = false) => {
-        let has_error = false;
-        let p = {};
-        mThis.self.find('.data-input').each(function () {
-            const el = $(this);
-            const f = el.data('field');
-            if (el.data('error') == 1) {
-                has_error = true;
-                return false;
-            }
-            p[f] = el.val();
-        });
-        return has_error ? null : p;
-    }
-
-    this.setData = (d) => {
-        // mThis.body.querySelectorAll('.data-input').forEach(el => {
-        //     el.value = null;
-        // });
-        // if (!d) return;
-        d = d || {};
-        mThis.self[0].querySelectorAll('.data-input').forEach(el => {
-            const data_member = el.dataset.field;
-            el.value = d[data_member] ?? '';
-            console.log(d[data_member]);
-
-            if (el.tagName.toLowerCase() === 'select') {
-                el.dispatchEvent(new Event('change'));
-            }
-        });
-
-    }
-
-    // this.elSender.on('change', (e) => {
-    //     let m = { 'sender_id': mThis.elSender.val() };
-    //     vsapi.call([mThis.base_url, '/dms/merchant/address'].join(''), m).then(res => {
-    //         let address = (res.status_code === 200) ? res.data : '';
-    //         mThis.elPickupAddress.val(address);
-    //     });
-    // });
-
-    this.btnCreate.on('click', (e) => {
-        const p = mThis.getFormData(false);
-        //console.log('p',p);
-        if (!p) return;
-        vsapi.call(`${mThis.base_url}/abm/oversea_shipments/save`, p, mThis.btnCreate).then(res => {
+    this.btnCreate.onclick = e => {
+        e.preventDefault();
+        const p = mThis.getFormData();
+        console.log('p',p);
+        vsapi.call(`${mThis.base_url}/abm/oversea_shipments/save`, p).then(res => {
             if (res.status_code === 200) {
                 cv_interact.success('New shipment created');
-                mThis.self.modal('hide');
-                if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                mThis.modal.hide();
+                if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
             } else cv_interact.error(res.error_message);
         });
-    });
+    };
 
     this.show = (options) => {
         options = options ? options : {};
@@ -4591,298 +2600,411 @@ const ShipmentDialog = new function () {
             if(d.shipment){
                 mThis.setData(d.shipment);
             }
-            mThis.self.modal({
-                'backdrop': 'static'
-            });
+          mThis.modal.show();
         });
 
     }
-}
- 
-const ItemEntryDialog = new function(){
-    this.self = main_view.appContent.children('#pkl_dlgPackage');
-    const mThis = this;
-    this.elTitle = this.self[0].querySelector('.modal-title');
-    this.btnSave = this.self[0].querySelector('#pkl_dlgPackage_btnSave');
-    this.btnClose = this.self[0].querySelector('#pkl_dlgPackage_btnClose');
-    this.btnSaveAndNext = this.self[0].querySelector('#pkl_dlgPackage_btnSaveAndNext');
-    this.btnPrev = this.self[0].querySelector('#pkl_dlgPackage_btnPrev');
 
-    this.modalBody = this.self[0].querySelector('div.modal-body');
-    this.inputPanel = this.modalBody.querySelector('.div-item-details');
-    this.photoview = this.modalBody.querySelector('#pkl_dlgPackage_item_photo');
-    this.elZone = this.modalBody.querySelector('#pkl_dlgPackage_zone');
-    this.span_nav_info = this.modalBody.querySelector('#nav_info_text');
+   
 
-    this.form_data = {};
-    this.options = {};
- 
-    this.api_details_in_progress = false;
-
-    /** Click on Modal's body modal body click */
-    this.modalBody.addEventListener('click',e=>{
-       e.preventDefault();
-       let btn = VSUtil.closestLimited(e.target,'.btn-move');
-       if(btn){
-         const moveType = btn.dataset.movetype;
-         mThis.navigateImage(moveType,null);    
-         return;
-       }
-    });
-
-    this.btnPrev.addEventListener('click',e=>{
-        e.preventDefault();
-        mThis.navigateImage('prev',this.btnPrev);
-    });
-
-    this.btnSave.addEventListener('click',e=>{
-        e.preventDefault();
-        mThis.savePackage(mThis.btnSave,mThis.options.onClose,true);
-    });
-
-    this.btnClose.addEventListener('click',e=>{
-       e.preventDefault();
-       if (typeof mThis.options.onClose ==='function') mThis.options.onClose();
-       mThis.self.modal('hide');  
-    });
-
-    this.btnSaveAndNext.addEventListener('click',e=>{
-        e.preventDefault();
-        mThis.savePackage(mThis.btnSaveAndNext,()=>{
-            mThis.navigateImage('next');
-        },false);
-        
-        // let p = mThis.getInput();
-        // vsapi.call(`${main_view.base_url}/api/order/save-package`,p,mThis.btnSaveAndNext,null).then(res =>{
-        //      if(res.status_code ===200){
-        //         const d = res.data;
-        //         if(mThis.current_index >=0){
-        //             let x = mThis.options.items[mThis.current_index];
-        //             if(x){
-        //                 x.package_id = d.package_id;
-        //                 x.barcode = d.barcode;
-        //             }
-        //        }
-        //        mThis.navigateImage('next');     
-        //      }else cv_interact.warning(res.error_message);
+    this.setData = (d) => {
+        // mThis.body.querySelectorAll('.data-input').forEach(el => {
+        //     el.value = null;
         // });
-        // //alert('Save and move next to item details'); 
-    });
-  
-    this.savePackage =(btn,onFinish = null,closeDialog=true)=>{
-        let p = mThis.getInput();
-        vsapi.call(`${main_view.base_url}/dms/order/save-package`,p,btn,null).then(res =>{
-            if(res.status_code ===200){
-                const d = res.data;
-                if(mThis.current_index >=0){
-                    let item = mThis.options.items[mThis.current_index];
-                    if(item){
-                        item.package_id = d.package_id;
-                        item.barcode = d.barcode;
-                        console.log('image_id = ',item.id,'save success barcode = ' + mThis.options.items[mThis.current_index].barcode);
-                    }
-                }
-                if (closeDialog){
-                    if (typeof onFinish ==='function') onFinish();
-                    mThis.self.modal('hide');
-                }else{
-                    if (mThis.current_index >= mThis.img_count-1){
-                        cv_interact.warning('This is the last item');
-                        return;
-                    }  
-                     //If not close Dialog, then move to next image
-                     mThis.navigateImage('next'); 
-                   
-                }
-            }else cv_interact.warning(res.error_message);
-       });
-    }
+        // if (!d) return;
+        d = d || {};
+        mThis.div_shipment_info.querySelectorAll('.data-input').forEach(el => {
+            const data_member = el.dataset.field;
+            el.value = d[data_member] ?? '';
+            console.log(d[data_member]);
 
-    /** getData() | getFormData() */
-    this.getInput = ()=>{
-        const item = mThis.options.items[mThis.current_index];
-        const current_package_id = item? item.package_id : null;
-        const current_barcode = item? item.barcode : null;
-        let p = {
-            "order_id":mThis.options.order_id,
-            "package_id": current_package_id,
-            "barcode":current_barcode,
-            "image_id":item.id
-        };
-        this.modalBody.querySelectorAll('.data-input').forEach(el =>{
-            const f = el.dataset.field;
-            p[f] = el.value;  
-        });
-        return p;
-    }
-
-    /** direction = "prev|next"*/
-    this.navigateImage = (direction,btn=null)=>{
-        if(!mThis.current_index) mThis.current_index = 0;
-         
-        if(direction ==='prev'){
-             mThis.current_index--;
-          }else{
-             mThis.current_index++;
-          }
-          if(mThis.current_index <0 ) mThis.current_index = 0;
-          else if(mThis.current_index > mThis.img_count-1) mThis.current_index = mThis.img_count-1;
-          //mThis.span_nav_info.textContent = [(mThis.current_index +1),' of ',mThis.img_count].join('');
-       mThis.displayItemDetails(mThis.current_index,btn);
-    }
-
-    this.displayItemDetails = (index,btn)=>{
-       const item = mThis.options.items[index];
-       if(item){
-         mThis.photoview.setAttribute('src',item.image_url);
-         if (item.package_id){
-             let x = {"order_id":mThis.options.order_id,"package_id": item.package_id};
-             if (mThis.api_details_in_progress){
-                setTimeout(()=>{
-                    mThis.displayItemDetails(index);
-                },350);
-                return;
-             }
-             mThis.api_details_in_progress = true;
-             vsapi.call(`${main_view.base_url}/dms/order/package-details`,x,btn,false).then(res=>{
-                 if(res.status_code ===200){
-                    const d = res.data;
-                    mThis.setPackageDetails(d);
-                 }else cv_interact.error(res.error_message);
-                 mThis.api_details_in_progress = false;
-             });  
-         }else{
-            //No package_id => clear form
-            mThis.setPackageDetails(null);
-         }
-         mThis.span_nav_info.textContent = [(mThis.current_index +1),' of ',mThis.img_count].join('');
-       } 
-    }
-
-    //set package details
-    this.setPackageDetails =(d)=>{
-       /** Set default values for item */ 
-       d = d || {
-         "delivery_type":"normal",
-         "df_payer":"sender"
-       };
-       mThis.inputPanel.querySelectorAll('.data-input').forEach(el =>{
-          const f = el.dataset.field;
-          if(el.tagName ==='SELECT'){
-            el.value = d[f] || '';
-            el.dispatchEvent(new Event('change'));
-          }else{
-            el.value = d[f] || '';
-          }
-       });
-       Validator.clearErrors(mThis.inputPanel);
-    }
-
-    this.prepareFormOptions = (def,onFinish)=>{
-       def = def || {};
-       if(mThis.form_data.delivery_zones){
-         onFinish();
-       }else{
-           vsapi.call(`${main_view.base_url}/dms/settings/options-delivery-zone`,null,null,false).then(res=>{
-            if(res.status_code ==200){
-                mThis.form_data.delivery_zones = res.data;
-                VSUtil.setComboItems(mThis.elZone,mThis.form_data.delivery_zones,'zone_code','zone_name',null,'Select Zone',null);
-                onFinish();
-             }else cv_interact.error('Failed to get form options or zone list');
-           });
-       }
-    }
-
-    this.show = (options =null)=>{
-        mThis.options = options;
-        if(options.title) mThis.elTitle.textContent = options.title;
-        mThis.prepareFormOptions(null,() => {
-            mThis.img_count = options.items.length;
-            mThis.current_img_id = options.id || options.image_id;
-            const index = options.items.findIndex(item => item.id == mThis.current_img_id);
-            mThis.current_index = index;
-            mThis.displayItemDetails(index);
-            mThis.self.modal({
-                'backdrop':'static'
-            });  
+            if (el.tagName.toLowerCase() === 'select') {
+                el.dispatchEvent(new Event('change'));
+            }
         });
 
     }
+    this.getFormData = () => {
+        
+        let p = {};
+
+        mThis.div_shipment_info.querySelectorAll('.data-input').forEach(el => {
+            let data_member = el.dataset.field;
+            
+            p[data_member] = el.value;
+        });
+        return  p;
+    }
+
+    // this.elSender.on('change', (e) => {
+    //     let m = { 'sender_id': mThis.elSender.val() };
+    //     vsapi.call([mThis.base_url, '/dms/merchant/address'].join(''), m).then(res => {
+    //         let address = (res.status_code === 200) ? res.data : '';
+    //         mThis.elPickupAddress.val(address);
+    //     });
+    // });
+
+ 
 }
-
 const SpecialChargeDialog = new function () {
     let mThis = this;
     this.base_url = main_view.base_url;
-    this.self = main_view.appContent.children('#ps_dlgSpecialCharge');
-    this.btnOK = this.self.find('#ps_dlgSpecialCharge_btnOK');
-    this.elError = this.self.find('#ps_dlgSpecialCharge_error');
-    this.elTitle = this.self.find('#ps_dlgSpecialChargeTitle');
-  
-    this.elCategory = this.self.find('#ps-newsc_category');
-    this.elCharge = this.self.find('#ps-newsc_charge');
-    this.elShipmentID = this.self.find('#ps-shipment_id');
-    this.elScID = this.self.find('#ps-sc_id');
-    this.elRemarks = this.self.find('#ps-remarks');
-  
-    this.btnOK.on('click', (e) => {
-      let p = mThis.getData();
-      if (!p.category) {
-        mThis.elError.html('Category cannot be empty');
-        return;
-      }
-  
-      if (!$.isNumeric(p.charge)) {
-        mThis.elError.html('Charge is not valid');
-        return;
-      }
-      //console.log('p',p);
-      vsapi.call([mThis.base_url, '/abm/special-charge/save'].join(''), p).then(res => {
-        if (res.status_code === 200) {
-            //console.log('me');
-          let d = res.data;
-          if (typeof mThis.onClose === 'function') {
-            mThis.onClose(d.id);
+    this.self = main_view.appContent.children('#ps_dlgSpecialCharge')[0];
+    this.modal = new bootstrap.Modal(this.self);
+
+    this.btnOK = this.self.querySelector('#ps_dlgSpecialCharge_btnOK');
+    this.elError = this.self.querySelector('#ps_dlgSpecialCharge_error');
+    this.elTitle = this.self.querySelector('#ps_dlgSpecialChargeTitle');
+
+    this.elCategory = this.self.querySelector('#ps-newsc_category');
+    this.elCharge = this.self.querySelector('#ps-newsc_charge');
+    this.elShipmentID = this.self.querySelector('#ps-shipment_id');
+    this.elScID = this.self.querySelector('#ps-sc_id');
+    this.elRemarks = this.self.querySelector('#ps-remarks');
+
+    this.btnOK.onclick = e => {
+        let p = mThis.getData();
+        if (!p.category) {
+            mThis.elError.innerHTML = 'Category cannot be empty';
+            return;
         }
-        ShipmentsComponent.shipmentListView.showPage();
-        mThis.self.modal('hide');
-        } else mThis.elError.text(res.error_message);
-      });
-  
-    });
-  
+
+        if (isNaN(p.charge)) {
+            mThis.elError.innerHTML = 'Charge is not valid';
+            return;
+        }
+
+        vsapi.call([mThis.base_url, '/abm/special-charge/save'].join(''), p).then(res => {
+            if (res.status_code === 200) {
+                let d = res.data;
+                if (typeof mThis.onClose === 'function') {
+                    mThis.onClose(d.id);
+                }
+                ShipmentsComponent.shipmentListView.showPage();
+                mThis.modal.hide();
+            } else {
+                mThis.elError.innerText = res.error_message;
+            }
+        });
+    };
+
     this.getData = () => {
-      let p = {};
-      p.category = mThis.elCategory.val();
-      p.charge = mThis.elCharge.val();
-      p.shipment_id = mThis.elShipmentID.val();
-      p.id = mThis.elScID.val();
-      p.remarks = mThis.elRemarks.val();
-    
-      return p;
-    }
-  
+        let p = {};
+        p.category = mThis.elCategory.value;
+        p.charge = mThis.elCharge.value;
+        p.shipment_id = mThis.elShipmentID.value;
+        p.id = mThis.elScID.value;
+        p.remarks = mThis.elRemarks.value;
+
+        return p;
+    };
+
     this.show = (option, onClose) => {
-    // console.log('option.shipment_id',option.shipment_id);
-    mThis.elShipmentID.val(option.shipment_id);
-    mThis.elScID.val('');
-    mThis.elRemarks.val('');
-    mThis.elCategory.val('');
-    mThis.elCharge.val('');
-    //console.log('this is me',option);
-    if(option.id){
-    mThis.elScID.val(option.id);
-    mThis.elRemarks.val(option.remarks);
-    mThis.elCategory.val(option.category);
-    mThis.elCharge.val(option.charge);
-    } 
-    //   console.log(mThis.elCharge.val());
-      mThis.elError.html(null);
-      mThis.elTitle.html(option.title)
-      mThis.onClose = onClose;
-  
-      mThis.self.modal({
-        backdrop: 'static'
-      });
+        mThis.elShipmentID.value = option.shipment_id;
+        mThis.elScID.value = '';
+        mThis.elRemarks.value = '';
+        mThis.elCategory.value = '';
+        mThis.elCharge.value = '';
+
+        if (option.id) {
+            mThis.elScID.value = option.id;
+            mThis.elRemarks.value = option.remarks;
+            mThis.elCategory.value = option.category;
+            mThis.elCharge.value = option.charge;
+        }
+        
+        mThis.elError.innerHTML = null;
+        mThis.elTitle.innerHTML = option.title;
+        mThis.onClose = onClose;
+
+        mThis.modal.show();
     }
 }
+ 
+// const ItemEntryDialog = new function(){
+//     this.self = main_view.appContent.children('#pkl_dlgPackage');
+//     const mThis = this;
+//     // this.elTitle = this.self[0].querySelector('.modal-title');
+//     this.btnSave = this.self[0].querySelector('#pkl_dlgPackage_btnSave');
+//     this.btnClose = this.self[0].querySelector('#pkl_dlgPackage_btnClose');
+//     this.btnSaveAndNext = this.self[0].querySelector('#pkl_dlgPackage_btnSaveAndNext');
+//     this.btnPrev = this.self[0].querySelector('#pkl_dlgPackage_btnPrev');
+
+//     this.modalBody = this.self[0].querySelector('div.modal-body');
+//     this.inputPanel = this.modalBody.querySelector('.div-item-details');
+//     this.photoview = this.modalBody.querySelector('#pkl_dlgPackage_item_photo');
+//     this.elZone = this.modalBody.querySelector('#pkl_dlgPackage_zone');
+//     this.span_nav_info = this.modalBody.querySelector('#nav_info_text');
+
+//     this.form_data = {};
+//     this.options = {};
+ 
+//     this.api_details_in_progress = false;
+
+//     /** Click on Modal's body modal body click */
+//     this.modalBody.addEventListener('click',e=>{
+//        e.preventDefault();
+//        let btn = VSUtil.closestLimited(e.target,'.btn-move');
+//        if(btn){
+//          const moveType = btn.dataset.movetype;
+//          mThis.navigateImage(moveType,null);    
+//          return;
+//        }
+//     });
+
+//     this.btnPrev.addEventListener('click',e=>{
+//         e.preventDefault();
+//         mThis.navigateImage('prev',this.btnPrev);
+//     });
+
+//     this.btnSave.addEventListener('click',e=>{
+//         e.preventDefault();
+//         mThis.savePackage(mThis.btnSave,mThis.options.onClose,true);
+//     });
+
+//     this.btnClose.addEventListener('click',e=>{
+//        e.preventDefault();
+//        if (typeof mThis.options.onClose ==='function') mThis.options.onClose();
+//        mThis.self.modal('hide');  
+//     });
+
+//     this.btnSaveAndNext.addEventListener('click',e=>{
+//         e.preventDefault();
+//         mThis.savePackage(mThis.btnSaveAndNext,()=>{
+//             mThis.navigateImage('next');
+//         },false);
+        
+//         // let p = mThis.getInput();
+//         // vsapi.call(`${main_view.base_url}/api/order/save-package`,p,mThis.btnSaveAndNext,null).then(res =>{
+//         //      if(res.status_code ===200){
+//         //         const d = res.data;
+//         //         if(mThis.current_index >=0){
+//         //             let x = mThis.options.items[mThis.current_index];
+//         //             if(x){
+//         //                 x.package_id = d.package_id;
+//         //                 x.barcode = d.barcode;
+//         //             }
+//         //        }
+//         //        mThis.navigateImage('next');     
+//         //      }else cv_interact.warning(res.error_message);
+//         // });
+//         // //alert('Save and move next to item details'); 
+//     });
+  
+//     this.savePackage =(btn,onFinish = null,closeDialog=true)=>{
+//         let p = mThis.getInput();
+//         vsapi.call(`${main_view.base_url}/dms/order/save-package`,p,btn,null).then(res =>{
+//             if(res.status_code ===200){
+//                 const d = res.data;
+//                 if(mThis.current_index >=0){
+//                     let item = mThis.options.items[mThis.current_index];
+//                     if(item){
+//                         item.package_id = d.package_id;
+//                         item.barcode = d.barcode;
+//                         console.log('image_id = ',item.id,'save success barcode = ' + mThis.options.items[mThis.current_index].barcode);
+//                     }
+//                 }
+//                 if (closeDialog){
+//                     if (typeof onFinish ==='function') onFinish();
+//                     mThis.self.modal('hide');
+//                 }else{
+//                     if (mThis.current_index >= mThis.img_count-1){
+//                         cv_interact.warning('This is the last item');
+//                         return;
+//                     }  
+//                      //If not close Dialog, then move to next image
+//                      mThis.navigateImage('next'); 
+                   
+//                 }
+//             }else cv_interact.warning(res.error_message);
+//        });
+//     }
+
+//     /** getData() | getFormData() */
+//     this.getInput = ()=>{
+//         const item = mThis.options.items[mThis.current_index];
+//         const current_package_id = item? item.package_id : null;
+//         const current_barcode = item? item.barcode : null;
+//         let p = {
+//             "order_id":mThis.options.order_id,
+//             "package_id": current_package_id,
+//             "barcode":current_barcode,
+//             "image_id":item.id
+//         };
+//         this.modalBody.querySelectorAll('.data-input').forEach(el =>{
+//             const f = el.dataset.field;
+//             p[f] = el.value;  
+//         });
+//         return p;
+//     }
+
+//     /** direction = "prev|next"*/
+//     this.navigateImage = (direction,btn=null)=>{
+//         if(!mThis.current_index) mThis.current_index = 0;
+         
+//         if(direction ==='prev'){
+//              mThis.current_index--;
+//           }else{
+//              mThis.current_index++;
+//           }
+//           if(mThis.current_index <0 ) mThis.current_index = 0;
+//           else if(mThis.current_index > mThis.img_count-1) mThis.current_index = mThis.img_count-1;
+//           //mThis.span_nav_info.textContent = [(mThis.current_index +1),' of ',mThis.img_count].join('');
+//        mThis.displayItemDetails(mThis.current_index,btn);
+//     }
+
+//     this.displayItemDetails = (index,btn)=>{
+//        const item = mThis.options.items[index];
+//        if(item){
+//          mThis.photoview.setAttribute('src',item.image_url);
+//          if (item.package_id){
+//              let x = {"order_id":mThis.options.order_id,"package_id": item.package_id};
+//              if (mThis.api_details_in_progress){
+//                 setTimeout(()=>{
+//                     mThis.displayItemDetails(index);
+//                 },350);
+//                 return;
+//              }
+//              mThis.api_details_in_progress = true;
+//              vsapi.call(`${main_view.base_url}/dms/order/package-details`,x,btn,false).then(res=>{
+//                  if(res.status_code ===200){
+//                     const d = res.data;
+//                     mThis.setPackageDetails(d);
+//                  }else cv_interact.error(res.error_message);
+//                  mThis.api_details_in_progress = false;
+//              });  
+//          }else{
+//             //No package_id => clear form
+//             mThis.setPackageDetails(null);
+//          }
+//          mThis.span_nav_info.textContent = [(mThis.current_index +1),' of ',mThis.img_count].join('');
+//        } 
+//     }
+
+//     //set package details
+//     this.setPackageDetails =(d)=>{
+//        /** Set default values for item */ 
+//        d = d || {
+//          "delivery_type":"normal",
+//          "df_payer":"sender"
+//        };
+//        mThis.inputPanel.querySelectorAll('.data-input').forEach(el =>{
+//           const f = el.dataset.field;
+//           if(el.tagName ==='SELECT'){
+//             el.value = d[f] || '';
+//             el.dispatchEvent(new Event('change'));
+//           }else{
+//             el.value = d[f] || '';
+//           }
+//        });
+//        Validator.clearErrors(mThis.inputPanel);
+//     }
+
+//     this.prepareFormOptions = (def,onFinish)=>{
+//        def = def || {};
+//        if(mThis.form_data.delivery_zones){
+//          onFinish();
+//        }else{
+//            vsapi.call(`${main_view.base_url}/dms/settings/options-delivery-zone`,null,null,false).then(res=>{
+//             if(res.status_code ==200){
+//                 mThis.form_data.delivery_zones = res.data;
+//                 VSUtil.setComboItems(mThis.elZone,mThis.form_data.delivery_zones,'zone_code','zone_name',null,'Select Zone',null);
+//                 onFinish();
+//              }else cv_interact.error('Failed to get form options or zone list');
+//            });
+//        }
+//     }
+
+//     this.show = (options =null)=>{
+//         mThis.options = options;
+//         if(options.title) mThis.elTitle.textContent = options.title;
+//         mThis.prepareFormOptions(null,() => {
+//             mThis.img_count = options.items.length;
+//             mThis.current_img_id = options.id || options.image_id;
+//             const index = options.items.findIndex(item => item.id == mThis.current_img_id);
+//             mThis.current_index = index;
+//             mThis.displayItemDetails(index);
+//             mThis.self.modal({
+//                 'backdrop':'static'
+//             });  
+//         });
+
+//     }
+// }
+
+// const SpecialChargeDialog = new function () {
+//     let mThis = this;
+//     this.base_url = main_view.base_url;
+//     this.self = main_view.appContent.children('#ps_dlgSpecialCharge')[0];
+//     this.modal = new bootstrap.Modal(this.self);
+
+//     this.btnOK = this.self.querySelector('#ps_dlgSpecialCharge_btnOK');
+//     this.elError = this.self.querySelector('#ps_dlgSpecialCharge_error');
+//     this.elTitle = this.self.querySelector('#ps_dlgSpecialChargeTitle');
+  
+//     this.elCategory = this.self.querySelector('#ps-newsc_category');
+//     this.elCharge = this.self.querySelector('#ps-newsc_charge');
+//     this.elShipmentID = this.self.querySelector('#ps-shipment_id');
+//     this.elScID = this.self.querySelector('#ps-sc_id');
+//     this.elRemarks = this.self.querySelector('#ps-remarks');
+  
+//     this.btnOK.onclick = e => {
+//       let p = mThis.getData();
+//       if (!p.category) {
+//         mThis.elError.html('Category cannot be empty');
+//         return;
+//       }
+  
+//       if (!$.isNumeric(p.charge)) {
+//         mThis.elError.html('Charge is not valid');
+//         return;
+//       }
+//       //console.log('p',p);
+//       vsapi.call([mThis.base_url, '/abm/special-charge/save'].join(''), p).then(res => {
+//         if (res.status_code === 200) {
+//             //console.log('me');
+//           let d = res.data;
+//           if (typeof mThis.onClose === 'function') {
+//             mThis.onClose(d.id);
+//         }
+//         ShipmentsComponent.shipmentListView.showPage();
+//         mThis.self.modal('hide');
+//         } else mThis.elError.text(res.error_message);
+//       });
+  
+//     };
+  
+//     this.getData = () => {
+//       let p = {};
+//       p.category = mThis.elCategory.val();
+//       p.charge = mThis.elCharge.val();
+//       p.shipment_id = mThis.elShipmentID.val();
+//       p.id = mThis.elScID.val();
+//       p.remarks = mThis.elRemarks.val();
+    
+//       return p;
+//     }
+  
+//     this.show = (option, onClose) => {
+//     // console.log('option.shipment_id',option.shipment_id);
+//     mThis.elShipmentID.val(option.shipment_id);
+//     mThis.elScID.val('');
+//     mThis.elRemarks.val('');
+//     mThis.elCategory.val('');
+//     mThis.elCharge.val('');
+//     //console.log('this is me',option);
+//     if(option.id){
+//     mThis.elScID.val(option.id);
+//     mThis.elRemarks.val(option.remarks);
+//     mThis.elCategory.val(option.category);
+//     mThis.elCharge.val(option.charge);
+//     } 
+//     //   console.log(mThis.elCharge.val());
+//       mThis.elError.html(null);
+//       mThis.elTitle.html(option.title)
+//       mThis.onClose = onClose;
+  
+//     mThis.modal.show();
+//     }
+// }
 

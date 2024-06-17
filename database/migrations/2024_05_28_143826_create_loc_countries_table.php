@@ -18,7 +18,7 @@ class CreateLocCountriesTable extends Migration
             $table->string('name',100);
             $table->string('name_kh',100);
             $table->string('code',5)->nullable();
-            $table->integer('standard_zone')->nullable();
+            //$table->integer('standard_zone')->nullable();
             $table->decimal('lat',10,2)->nullable();
             $table->decimal('lng',10,2)->nullable();
             $table->string('nationality',100)->nullable();

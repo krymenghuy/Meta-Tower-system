@@ -37,6 +37,7 @@ class CreateOsCustomerInvoicesTable extends Migration
             $table->timestamp('create_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->string('create_user',50)->nullable();;
             $table->string('update_user',50)->nullable();
+            $table->decimal('amount_paid',10,2)->default(0);
 
             
 

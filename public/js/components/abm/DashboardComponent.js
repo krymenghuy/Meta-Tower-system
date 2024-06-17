@@ -96,6 +96,7 @@ var DashboardComponent = new function () {
             </div>
         </div>`;
         });
+        console.log(mThis.circle_card_row);
         this.circle_card_row.innerHTML = html;
         this.initCircleCards(this.circle_card_row);
     }

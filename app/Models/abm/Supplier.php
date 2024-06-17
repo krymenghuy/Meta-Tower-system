@@ -153,10 +153,9 @@ class Supplier //extends Model
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
         // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
         $query = DB::table('os_suppliers as s')
-                ->join('os_affiliates as sa','sa.id','=','s.referrer_id')
                 ->whereRaw($str_srch)
                 ->whereRaw($str_where)
-                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.referrer_id,sa.type_from_affilliate_type,sa.name as sales_agent,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
+                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
        
         // return $query;
         $clone_query = clone $query;
@@ -236,11 +235,11 @@ class Supplier //extends Model
     {
         $ss = $ss ? $ss : $this->userInfo;
         $id = $id ? $id : $this->id;
-        if (in_array(strtolower($status_code), ['inactive', 'locked', 'disabled'])) {
-            $err = self::getOutstandingBalanceError($id);
-            if ($err)
-                return DV::error($err);
-        }
+        // if (in_array(strtolower($status_code), ['inactive', 'locked', 'disabled'])) {
+        //     $err = self::getOutstandingBalanceError($id);
+        //     if ($err)
+        //         return DV::error($err);
+        // }
         $x = DB::table('os_suppliers')->where('id', $id)->update([
             'status_code' => $status_code
         ]);

@@ -15,7 +15,7 @@ class CreateLastGcTimeTable extends Migration
     {
         Schema::create('last_gc_time', function (Blueprint $table) {
             $table->integer('id');
-            $table->timestamp('last_cg_time')->default(\DB::raw('CURRENT_TIMESTAMP'));
+            $table->timestamp('last_gc_time')->default(\DB::raw('CURRENT_TIMESTAMP'));
         });
     }
 
