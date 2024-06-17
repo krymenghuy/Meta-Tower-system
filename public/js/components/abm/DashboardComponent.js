@@ -8,8 +8,8 @@ var DashboardComponent = new function () {
     this.circle_card_row = mThis.self[0].querySelector('#db_circle_card');
     this.normal_card_row = mThis.self[0].querySelector('#db_normal_cards');
     this.progress_card_row = mThis.self[0].querySelector('#db_progress_cards');
-    this.country_card_row = mThis.self[0].querySelector('#db_country_card');
-    this.supplier_card_row = mThis.self[0].querySelector('#db_supplier_card');
+    this.country_card_row = mThis.self[0].querySelector('#db_country_cards');
+    this.supplier_card_row = mThis.self[0].querySelector('#db_supplier_cards');
     
 
     this.init= () => {
@@ -124,17 +124,17 @@ var DashboardComponent = new function () {
         let html = '';
              html += `<div class="card">
              <div class="card-header">
-                 <p class="section-title mb-0 fs-5">Accountings</p>
+                 <p class="section-title mb-0 fs-5">Accounting</p>
              </div>
              <div class="card-body">
-                 <p>Overview the Invoice Amount (%)</p>
+                 <p>Overview the Invoice Amount (${d.invoce_paid_percent||0}%)</p>
                  <div class="progress">
-                     <div class="progress-bar progress-bar-interactive" role="progressbar" style="width: ${d.invoce_percent||0}%;" aria-valuenow="${d.invoce_percent||0}" aria-valuemin="0" aria-valuemax="100">${d.invoce_percent||0}$ - Invoice</div>
+                     <div class="progress-bar progress-bar-interactive" role="progressbar" style="width: ${d.invoce_paid_percent||0}%;" aria-valuenow="${d.invoce_paid_percent||0}" aria-valuemin="0" aria-valuemax="100"><div style=" position: absolute; width: 94%; color: #000;" >${d.invoce_amount_paid||0}$ of ${d.total_invoce_amount||0}$</div></div>
                  </div><br>
-                 <p>Overview the Customer Payment Amount (%)</p>
+                 <p>Overview the Customer Payment Amount (${d.bill_payment_paid_percent||0}%)</p>
                  <div class="progress mt-2">
-                     <div class="progress-bar progress-bar-page" role="progressbar" style="width: ${d.customer_pay_percent||0}%;" aria-valuenow="${d.customer_pay_percent||0}" aria-valuemin="0" aria-valuemax="100">${d.customer_pay_percent||0}% - Payment</div>
-                 </div>
+                     <div class="progress-bar progress-bar-page" role="progressbar" style="width: ${d.bill_payment_paid_percent||0}%;" aria-valuenow="${d.bill_payment_paid_percent||0}" aria-valuemin="0" aria-valuemax="100"><div style=" position: absolute; width: 94%; color: #000;" >${d.total_bill_payment_amount_paid||0}$ of ${d.total_bill_payment_amount||0}$</div></div>
+                 </div><br><br><br>
              </div>
          </div>`;
         this.progress_card_row.innerHTML = html;
@@ -143,50 +143,72 @@ var DashboardComponent = new function () {
         let html = '';
              html += `<div class="card">
              <div class="card-header">
-                 <p class="section-title mb-0 fs-5">Links</p>
+                 <p class="section-title mb-0 fs-5">Shipments by country</p>
              </div>
                  
              <div class="card-body ">
                  <div class=" gap-3 d-flex">
-                     <div class="links-overview d-block text-start w-100 p-0">
-                         <p class="w-50 p-0">Total Links: 100</p>`,
+                     <div class="links-overview d-block text-start w-50 p-0">
+                        <div class="w-100 d-flex justify-content-between">
+                            <p class="fs-6 p-0">Country</p>
+                            <p class="fs-6 p-0">Shippments</p>
+                        </div>`,
                          d.map(c =>{
-                            html+=`<div class="w-100 d-flex justify-content-between"><p>${c.country_name}:</p> <p>${c.toCountry_cnt}</p></div>`;
-                        //  <div class="w-100 d-flex justify-content-between"><p>Dofollow: </p> <p></p>663</div>
-                        //  <div class="w-100 d-flex justify-content-between"><p>Noreferrer: </p> <p>45</p></div>
-                        //  <div class="w-100 d-flex justify-content-between"><p>Noopener: </p> <p>102</p></div>
+                            html+=`<div class="w-100 d-flex justify-content-between"><p>${c.country_name} :</p> <p >${c.shipment_by_country}</p></div>`;
+                        
                          });
-        html += `</div>
+        html += `   </div>
+                    <div class="links-overview d-block text-start w-50 p-0">
+                        <div class="w-100 d-flex justify-content-between">
+                            <p class="fs-6 p-0">status</p>
+                            <p class="fs-6 p-0">Number</p>
+                        </div>`,
+                        d.map(c =>{
+                            html+=`<div class="w-100 d-flex justify-content-between"><p>${c.country_name} :</p> <p >${c.shipment_by_country}</p></div>`;
+                        
+                        }); 
+        html += `   </div>   
                  </div>
              </div>
              
          </div>`;
-        this.circle_card_row.innerHTML = html;
+        this.country_card_row.innerHTML = html;
     }
 
     this.renderSupplierCards = (d) => {
         let html = '';
-             html += `<div class="card">
-             <div class="card-header">
-                 <p class="section-title mb-0 fs-5">Links</p>
-             </div>
-                 
-             <div class="card-body ">
-                 <div class=" gap-3 d-flex">
-                     <div class="links-overview d-block text-start w-100 p-0">
-                         <p class="w-50 p-0">Total Links: 100</p>`,
-                         d.map(c =>{
-                            html+=`<div class="w-100 d-flex justify-content-between"><p>${c.country_name}:</p> <p>${c.toCountry_cnt}</p></div>`;
-                        //  <div class="w-100 d-flex justify-content-between"><p>Dofollow: </p> <p></p>663</div>
-                        //  <div class="w-100 d-flex justify-content-between"><p>Noreferrer: </p> <p>45</p></div>
-                        //  <div class="w-100 d-flex justify-content-between"><p>Noopener: </p> <p>102</p></div>
-                         });
-        html += `</div>
-                 </div>
-             </div>
-             
-         </div>`;
-        this.circle_card_row.innerHTML = html;
+            html = `<div class="card">
+            <div class="card-header">
+                <p class="section-title mb-0 fs-5">Shippments by carrier</p>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">Supplier</th>
+                            <th scope="col">Pending</th>
+                            <th scope="col">Shipping</th>
+                            <th scope="col">Validated</th>
+                            <th scope="col">Paid</th>
+                            <th scope="col">Unpaid</th>
+                        </tr>
+                    </thead>
+                    <tbody>`
+                d.map(c =>{
+                html+=` <tr>
+                            <td class="w-50">${c.supplier_name||'NA'}</td>
+                            <td>${c.pending||'0'}</td>
+                            <td>${c.shipping||'0'}</td>
+                            <td>${c.validated||'0'}</td>
+                            <td>${c.paid||'0'}</td>
+                            <td>${c.un_paid||'0'}</td>
+                        </tr>`;
+                }); 
+            html += `</tbody>
+                </table>
+            </div>
+        </div>`;
+        this.supplier_card_row.innerHTML = html;
     }
 
     this.loadCards = (onFinish)=>{
@@ -206,8 +228,8 @@ var DashboardComponent = new function () {
         vsapi.call(`${mThis.base_url}/abm/dashboard/body-cards`, p , null,false,false).then(res => {
             console.log('d3',res.data);
             let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,['icon']) : {};
-            mThis.renderProgressBar(d.progress_cards[0]);
-            // mThis.renderCountryCards(d.normal_cards);
+            mThis.renderProgressBar(d.progress_cards[0]); 
+            mThis.renderCountryCards(d.country_cards);
             // mThis.renderSupplierCards(d.normal_cards);
             onFinish();
         });

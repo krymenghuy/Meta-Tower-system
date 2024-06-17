@@ -250,7 +250,7 @@
                             <div id="db_circle_card" class="row">   
                                
                                 
-                                <div class="col-4 overview-section">
+                                <!-- <div class="col-4 overview-section">
                                     <section class="d-flex justify-content-center">
                                         
                                         <div class="section-title mb-0 fs-5 text-center w-100 d-flex align-items-center"><div class="w-100 text-secondary">Shipment <p style="color: #6200EA;">Shipping</p></div>  </div>
@@ -289,7 +289,7 @@
                                             </pre>
                                         </div>
                                     </section>
-                                </div>
+                                </div> -->
                             </div>
                             
                             <div id="db_normal_cards" class="row">
