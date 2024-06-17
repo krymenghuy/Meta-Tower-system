@@ -182,8 +182,10 @@ class CountryZone //extends Model
  
     }
 
-    function delete($id){
-        $delete = DB::table('os_zone_countries')->where('id',$id)->delete();
+    function deleteZone($country_id,$ss=null){
+        $ss = $ss ?? $this->userInfo;
+        Country::delete($country_id,$ss);
+        $delete = DB::table('os_zone_countries')->where('country_id',$country_id)->delete();
         return DV::depends($delete,['action','deleted']);
     }
  

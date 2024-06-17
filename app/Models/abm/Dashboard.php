@@ -168,6 +168,7 @@ class Dashboard //extends Model
             $total_bill_payment_amount_paid += $payment_paid->total_price; 
         }
 
+        // if($total_shipment ==0) $total_shipment =1;
         $progress_cards [] = (object)[
             'cnt_invoice'=> $cnt_invoice,
             'invoce_paid_percent'=> number_format($cnt_invoice_paid *100 / $cnt_invoice,2),
@@ -195,9 +196,9 @@ class Dashboard //extends Model
             $country_cards [] = $shipment_by_country;
         }
 
-        //supplier card
+        // supplier card
         $statuses = [1=>'Pending',2=>'Shipping',3=>'Validated'];
-        $rows = DB::table('os_shipments as s')->join('os_suppliers as sp', 'sp.id','=','s.supplier_id')->whereIn('s.status_id',$status_ids)->selectRaw('COUNT(c.id) as count_shipment_by_country_id ,c.name as country_name ,c.id as country_id')->groupByRaw('c.id,c.name')->get();
+        return $rows = DB::table('os_shipments as s')->join('os_suppliers as sp', 'sp.id','=','s.supplier_id')->whereIn('s.status_id',$status_ids)->selectRaw('COUNT(sp.id) as count_by_status ,sp.name as supplier_name')->groupByRaw('sp.id,sp.name')->get();
 
         foreach($rows as $row){
             $shipment_by_country = null;
@@ -209,6 +210,7 @@ class Dashboard //extends Model
         }
         
         return (object)[
+            'period'=>'Over last 90 days',
             'progress_cards' => $progress_cards,
             'country_cards' => $country_cards,
             'supplier_cards' => $supplier_cards
