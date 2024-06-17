@@ -127,8 +127,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body" id="_sale_agent_dlg_body">
-                <div class="row">
+            <div class="modal-body" >
+                <div class="row" id="_sale_agent_dlg_body">
                     <div class="form-group col-lg-6">
                         <label for="code" class="form-label trans-text" data-langprop="titles.ID"></label>
                         <input type="text" class="form-control data-input" data-field="code" placeholder="AUTO"
