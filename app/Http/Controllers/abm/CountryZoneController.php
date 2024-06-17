@@ -40,9 +40,10 @@ class CountryZoneController extends Controller
     function deleteZoneCountry(Request $req){
         $ss = UM::getUserInfoByToken($req, -1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $id=$req->id;
-        $country = new CountryZone();
-        $delete = $country->delete($id);
+        $id= $req->id;
+        $country_id = $req->country_id;
+        $zone = new CountryZone(null,null);
+        $delete = $zone->deleteZone($country_id,$ss);
         return JDV::raw($delete);
     }
 

@@ -187,8 +187,9 @@ class GeneralDialog{
                if(!div.classList.contains(c)) div.classList.add(c);  
              }
          }); 
-       } 
-      
+       }
+
+       this.options.createFields = this.options.createFields || this.options.createContent;
        if(this.options.showCancelButton){
           this.options.buttons = this.options.buttons || {};
           this.options.buttons.unshift({ 
@@ -211,8 +212,9 @@ class GeneralDialog{
        this.lnkClose = this.divModal.querySelector('div.modal-header').querySelector('.close');
        if(this.lnkClose){
          this.lnkClose.onclick = e =>{
+            e.preventDefault();
              this.canceled = true;
-             this.hide();
+             this.modal.hide();
          };
        }
     }
@@ -404,11 +406,33 @@ class GeneralDialog{
          }
            
       });
+      if (typeof Validator !== 'undefined') Validator.validatePanel(modalMody);
    }
+
+   hasError() {
+      const elements = this.modalBody.querySelectorAll('.data-input[data-required="1"]');
+      for (let el of elements) {
+          if (el.dataset.error === '1' || el.dataset.error === 'true') {
+              return true;
+          }
+      }
+      return false;
+  }
+
+  errorCount() {
+   const elements = this.modalBody.querySelectorAll('.data-input[data-required="1"]');
+   let errCount = 0;
+   for (let el of elements) {
+       if (el.dataset.error === '1' || el.dataset.error === 'true') {
+          errCount++;
+       }
+   }
+   return errCount;
+ }
 
    show(options){
       const that = this;
-      that.canceled = false;
+      that.canceled = true;
 
       this.dataOptions = options || {};
       if(this.options.createFields){
