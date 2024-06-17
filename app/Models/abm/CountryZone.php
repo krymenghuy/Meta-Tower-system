@@ -21,77 +21,109 @@ class CountryZone //extends Model
     static function zoneCountryExistsByName($country_name){
        return DB::table('os_zone_countries as z')->join('loc_countries as c','c.id','=','z.country_id')->where('c.name',$country_name)->selectRaw('id')->first();
     }
-    function save($arr,$id=null,$ss=null){
-        $ss = $ss?$ss:$this->userInfo;
-        $id = $id?$id:$this->id;
 
-        $v_rule = [
-            'country_id'=>'1|number|exists=loc_countries.id',
-            'zone_code'=>'1|number',
-            'country_name'=>'0|string|0-250',
-            'country_code'=>'0|string|0-35'
-        ];
+    function saveZone($country_id, $zone_code, $country_code, $country_name, $ss)
+    {
+       if(!$zone_code) return DV::error('zone code is required, and it must be a number');
+       if (!$country_id){
+         if(!$country_name && !$country_code) return DV::error('Country name and country code are required');
+         $res = Country::create([
+            'name'=>$country_name,
+            'code'=>$country_code,
+            'name_kh'=>$country_name,
+            'nationality'=>$country_name
+         ],$ss);
+         if($res->status !='OK') return DV::error($res->error_message);
+         $country_id = $res->id;
+           
+         if($country_id > 0){
+            $inputs = [
+                'country_id'=>$country_id,
+                'zone_code'=>$zone_code
+            ];
+             
+            $new_id = saveData($ss,'os_zone_countries',['id'=>null],$inputs,[],1,false);
+            return DV::depends($new_id,null,'Failed to create standard zone');
+         }
+      }
 
-        $res = validateObject($arr,$v_rule,true, null,$ss->lang,false,null);
-        if($res->error) return DV::error($res->error);
-        $inputs = $res->values;
-        $d = (object)$inputs;
+       if(!$country_id) return DV::error('Failed to identify the country');
 
-        $country_name = $d->country_name;
-        $country_code = $d->country_code;
-        $country_id = $d->country_id;
-        unset($inputs['country_name'],$inputs['country_code']);
+       DB::table('os_zone_countries')->where('country_id',$country_id)->update([
+        'zone_code'=>$zone_code,
+        'update_date'=>getNowTime(),
+        'update_user'=>$ss->full_name,
+        'update_uid'=>$ss->user_id
+       ]);
+       if($country_name && $country_code){
+         DB::table('loc_countries')->where('id',$country_id)->update([
+            'name'=>$country_name,
+            'code'=>$country_code,
+            'update_date'=>getNowTime(),
+            'update_user'=>$ss->full_name,
+            'update_uid'=>$ss->user_id
+         ]);
+       }
+       return DV::depends(1);  
+    } 
 
-        //$create_country = false;
-        if($id > 0){
-            if($country_name && $country_code){
-                //user wants to unpdate country name and country code for existing zone                 
-                $res= Country::save(['id'=>$id,'name'=> $country_name, 'code'=> $country_code,'name_kh'=> $country_name,'nationality'=> $country_name],$ss);
-                if(!$res->status =='OK'){
-                    $country_id = $res->id;
-                    //$create_country = true;
-                }else return DV::error( $res->error_message);
+    // function save($arr,$id=null,$ss=null){
+    //     $ss = $ss?$ss:$this->userInfo;
+    //     $id = $id?$id:$this->id;
+    //     $v_rule = [
+    //         'country_id'=>'0|number|exists=loc_countries.id',
+    //         'zone_code'=>'1|number',
+    //         'country_name'=>'0|string|0-250',
+    //         'country_code'=>'0|string|0-35'
+    //     ];
+
+    //     $res = validateObject($arr,$v_rule,true, null,$ss->lang,false,null);
+    //     if($res->error) return DV::error($res->error);
+    //     $inputs = $res->values;
+    //     $d = (object)$inputs;
+
+    //     $country_name = $d->country_name;
+    //     $country_code = $d->country_code;
+    //     $country_id = $d->country_id;
+    //     unset($inputs['country_name'],$inputs['country_code']);
+
+    //     //$create_country = false;
+    //     if($id > 0){
+    //         if($country_name && $country_code){
+    //             //user wants to unpdate country name and country code for existing zone                 
+    //             $res= Country::update(['name'=> $country_name, 'code'=> $country_code,'name_kh'=> $country_name,'nationality'=> $country_name],$country_id, $ss);
+    //             if(!$res->status =='OK'){
+    //                 $country_id = $res->id;
+    //                 //$create_country = true;
+    //             }else return DV::error( $res->error_message);
               
-            }else if(!$country_code  || !$country_name){
-                //Just update zone_code only
-                 DB::table('os_zone_countries')->where('id',$id)->update([
-                    'country_id'=>$country_id, 
-                    'zone_code'=>$d->zone_code
-                 ]);
-            }
-        }else{
-            if(!$country_id && $country_name && $country_code){
-                //user wants to create new zone_country by entering country name and country code
-                if(self::zoneCountryExistsByName($country_name)) return DV::error('Zone code for ? has been assigned already::'.$country_name);
-                $res= Country::save(['name'=> $country_name, 'code'=> $country_code,'name_kh'=> $country_name,'nationality'=> $country_name],$ss);
-                if(!$res->status =='OK'){
-                    $country_id = $res->id;
-                    //$create_country = true;
-                }else return DV::error( $res->error_message);
-              
-            }else if($country_id > 0){
-                // $res= Country::save(['id'=>null,'name'=> $country_name, 'code'=> $country_code,'name_kh'=> $country_name,'nationality'=> $country_name],$ss);
-                // if(!$res->status =='OK'){
-                    $inputs = [
-                        'country_id'=>$country_id,
-                        'zone_code'=>$d->zone_code
-                    ];
-                    saveData($ss,'os_zone_countries',['id'=>null],$inputs,[],1,false);
-                //}else return DV::error( $res->error_message);
-                 
-            }
-            else{
-                 return DV::error('Country name and country code are required for standard zone assignment');
-            }
-        }
+    //         }
+    //         // else if(!$country_code  || !$country_name){
+    //         //     //Just update zone_code only
+    //         //      DB::table('os_zone_countries')->where('id',$id)->update([
+    //         //         'country_id'=>$country_id, 
+    //         //         'zone_code'=>$d->zone_code
+    //         //      ]);
+    //         // }
+    //     }else
+    //     {
+    //         if($country_id > 0){
+    //             $inputs = [
+    //                 'country_id'=>$country_id,
+    //                 'zone_code'=>$d->zone_code
+    //             ];
+    //             $id = saveData($ss,'os_zone_countries',['id'=>null],$inputs,[],1,false);
+
+    //         } else return DV::error('Country name and country code are required to assign standard zone');  
+    //     }
  
-        $inputs = [
-            'country_id'=>$country_id,
-            'zone_code'=>$d->zone_code
-        ];
-        $id = saveData($ss,'os_zone_countries',['id'=>$id],$inputs,[],1,false);
-        return DV::depends($id,[],'Faled to save country zone');
-    }
+    //     // $inputs = [
+    //     //     'country_id'=>$country_id,
+    //     //     'zone_code'=>$d->zone_code
+    //     // ];
+    //     // $id = saveData($ss,'os_zone_countries',['id'=>$id],$inputs,[],1,false);
+    //     // return DV::depends($id,[],'Faled to save country zone');
+    // }
 
     static function getDeleteError($id){
         $country = DB::table('zone_countries')->where('id',$id)->selectRaw('id')->first();
@@ -155,4 +187,15 @@ class CountryZone //extends Model
         return DV::depends($delete,['action','deleted']);
     }
  
+    static function getFormOptions($id, $country_id,$ss){
+        $zone_country = null;
+        if($id > 0){
+           $zone_country = DB::table('os_zone_countries as z')->join('loc_countries as c','c.id','=','z.country_id')->where('z.id',$id)->selectRaw('z.id,z.country_id,z.zone_code,c.name as country_name, c.code as country_code')->first();
+        }else if($country_id >0){
+           $zone_country = DB::table('loc_countries as c')->where('c.id',$country_id)->selectRaw('\'\' AS id, c.id AS country_id, c.name as country_name, c.code as country_code')->first(); 
+        }
+        return (object)[
+            'country'=>$zone_country
+        ];
+    }
 }
