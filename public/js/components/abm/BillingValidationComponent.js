@@ -292,7 +292,7 @@ var BillingValidationComponent = new function () {
         
     });
 
-    mThis.btnPaymany.on('click', (e) => {
+    mThis.btnPaymany.on('click', function (e) {
         e.preventDefault();
         let p = {'id': null}
         PaymentDialog.show(p);
@@ -550,34 +550,39 @@ const AlertMesageDialog = new function(){
 
 const PaymentDialog = new function(){
     const mThis = this;
-    this.self = main_view.appContent.find('#PaymentModalDialog');
+    this.self = main_view.appContent.find('#PaymentModalDialog')[0];
     this.base_url = main_view.base_url;
-    this.scrollable = this.self.find('#modal-dialog');
-    this.elTitle = this.self.find('#PaymentModalDialogTitle')[0];
-    this.btnPay =  this.self.find('#_sdl_btnPay');
-    this.btnCancel =  this.self.find('#_sdl_btnCancel');
-    // console.log(mThis.btnSave);
-    // this.elSelseAgentType =  this.self.find('#_plq_salse_agent_type');
-    this.elSupplier =  this.self.find('#_plq_supplier');
+    this.modal = new bootstrap.Modal(this.self);
+    this.options ={};
+
     
-    this.elCurrencyCode =  this.self.find('#_plq_currency_code');
-    this.elPmtMethod =  this.self.find('#_plq_pmt_method');
-    this.elCustomer =  this.self.find('#_plq_Customer');
-    this.divFromDate =  this.self.find('div.from_date')[0];
-    this.divToDate =  this.self.find('div.to_date')[0];
-    this.elFromDate =  this.self.find('#_shm_filter_from_date')[0];
-    this.elToDate =  this.self.find('#_shm_filter_to_date')[0];
-    this.inputSupplier =  this.self.find('#_input_supplier');
-    this.elFromDate =  this.self.find('#_shm_filter_from_date')[0];
-    this.elToDate =  this.self.find('#_shm_filter_to_date')[0];
+
+    this.scrollable = this.self.querySelector('#modal-dialog');
+    this.elTitle = this.self.querySelector('#PaymentModalDialogTitle');
+    this.btnPay =  this.self.querySelector('#_sdl_btnPay');
+    this.btnCancel =  this.self.querySelector('#_sdl_btnCancel');
+    // console.log(mThis.btnSave);
+    // this.elSelseAgentType =  this.self.querySelector('#_plq_salse_agent_type');
+    this.elSupplier =  this.self.querySelector('#_plq_supplier');
+    
+    this.elCurrencyCode =  this.self.querySelector('#_plq_currency_code');
+    this.elPmtMethod =  this.self.querySelector('#_plq_pmt_method');
+    this.elCustomer =  this.self.querySelector('#_plq_Customer');
+    this.divFromDate =  this.self.querySelector('div.from_date');
+    this.divToDate =  this.self.querySelector('div.to_date');
+    this.elFromDate =  this.self.querySelector('#_shm_filter_from_date');
+    this.elToDate =  this.self.querySelector('#_shm_filter_to_date');
+    this.inputSupplier =  this.self.querySelector('#_input_supplier');
+    this.elFromDate =  this.self.querySelector('#_shm_filter_from_date');
+    this.elToDate =  this.self.querySelector('#_shm_filter_to_date');
     
     this.onClose = null;
     let shipments_id = null;
 
-    this.bodyHeader =  this.self.find('h.header')[0];
-    this.body = this.self.find('p.body')[0];
+    this.bodyHeader =  this.self.querySelector('h.header');
+    this.body = this.self.querySelector('p.body');
 
-    this.div_filter_fields = this.self.find('div.filter-date')[0];
+    this.div_filter_fields = this.self.querySelector('div.filter-date');
     this.getFilterData = () => {
         let p = {
             // search_value: mThis.elSearch.val(),
@@ -637,7 +642,7 @@ const PaymentDialog = new function(){
         });
     }
  
-    this.btnPay.on('click', function(e){
+    this.btnPay.onclick = e => {
         e.preventDefault();
         // console.log(4,alert);
         // if(alert)
@@ -667,7 +672,7 @@ const PaymentDialog = new function(){
             });
         }
         
-    });
+    };
 
     this.show = (options) => {
         options = options ? options : {};
@@ -699,9 +704,7 @@ const PaymentDialog = new function(){
             if(d.os_shipment != null){
                 mThis.setData(d.os_shipment);
             }
-            mThis.self.modal({
-                'backdrop': 'static'
-            });
+            mThis.modal.show();
         });
         
 
@@ -715,7 +718,7 @@ const PaymentDialog = new function(){
         let p = {};
         // const el = '';
         const f = '';
-        mThis.self.find('.data-input').each(function () {
+        mThis.self.querySelector('.data-input').each(function () {
             const el = $(this);
             const f = el.data('field');
             if (el.data('error') == 1) {
@@ -724,7 +727,7 @@ const PaymentDialog = new function(){
             }
             p[f] = el.val();
         });
-        // mThis.self.find('.filter-field').each(function () {
+        // mThis.self.querySelector('.filter-field').each(function () {
         //     const el = $(this);
         //     const f = el.data('field');
         //     if (el.data('error') == 1) {
@@ -740,7 +743,7 @@ const PaymentDialog = new function(){
 
     this.setData = (d) => {
         if(shipments_id == null)
-        mThis.self[0].querySelectorAll('.data-input').forEach(el => {
+        mThis.self.querySelectorAll('.data-input').forEach(el => {
             if(el.dataset.field == 'amount')
                 el.value = '0.00';
             if(el.dataset.field == 'payment_date'){
@@ -796,6 +799,8 @@ const PaymentDialog = new function(){
 
     }
 }
+
+
 
 function formatDate(date) {
     const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];

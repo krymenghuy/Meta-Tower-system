@@ -840,18 +840,18 @@ var SalesAffiliatesComponent = new function () {
 
 const SalesAgentDialog = new function(){
     const mThis = this;
-    this.self = main_view.appContent.find('#_sale_agent_dlg');
-    // console.log(mThis.self);
+    this.self = main_view.appContent.find('#_sale_agent_dlg')[0];
+    this.modal = new bootstrap.Modal(this.self);
     this.base_url =main_view.base_url;
     this.options = {};
-    this.elTitle = this.self.find('#_sale_agent_dlgTitle');
-    this.btnSave =  this.self.find('#_sale_agent_dlg_btnSave');
+    this.elTitle = this.self.querySelector('#_sale_agent_dlgTitle');
+    this.btnSave =  this.self.querySelector('#_sale_agent_dlg_btnSave');
     this.elType = {};
 
     // this.elAgentType =  this.self.find('#_sal_agent_type');
     this.onClose = null;
-    this.body =  this.self.find('.modal-body')[0];
-    this.divPhoto = this.self[0].querySelector('#_saleAffiliate_profile_photo');
+    this.body =  this.self.querySelector('.modal-body');
+    this.divPhoto = this.self.querySelector('#_saleAffiliate_profile_photo');
 
 
     mThis.imgBox = new ImageBox(mThis.divPhoto,{
@@ -900,7 +900,7 @@ const SalesAgentDialog = new function(){
         });
     }
 
-    mThis.btnSave.on('click', function(e){
+    mThis.btnSave.onclick = e =>{
         e.preventDefault();
         let p = mThis.getData();
         // console.log(1,p);
@@ -914,17 +914,17 @@ const SalesAgentDialog = new function(){
                 cv_interact.error(res.error_message);
         });
         
-     });
+     };
 
     this.el_Type = (agent=null)=>{
         let type ='';
         agent == 'sa'? type = '#el_cp_type' : type = '#el_agent_type';
-        mThis.elType = mThis.self[0].querySelector(type);
+        mThis.elType = mThis.self.querySelector(type);
         mThis.elType.classList.add("d-none");
         // console.log(2,mThis.elType,3,type);
 
         agent == 'sa'? type = '#el_agent_type' : type = '#el_cp_type';
-        mThis.elType = mThis.self[0].querySelector(type);
+        mThis.elType = mThis.self.querySelector(type);
         mThis.elType.classList.remove("d-none");
         // console.log(4,mThis.elType,5,type);
         return ;
@@ -941,51 +941,17 @@ const SalesAgentDialog = new function(){
         
         mThis.prepareData(mThis.options.id,{},data => { 
             if(data.details){
-                mThis.elTitle.text(`Modify ${title} Information`);
+                mThis.elTitle.innerHTML=(`Modify ${title} Information`);
             }
             else{
-                mThis.elTitle.text(`Create ${title}`);
+                mThis.elTitle.innerHTML=(`Create ${title}`);
             }
             mThis.setData(data.details);
-            mThis.self.modal({
-                backdrop: 'static'
-            });
+           mThis.modal.show();
         });
  
     }
-    // this.show = (options)=>{
-    //     mThis.options = options || {};
-    //     mThis.elTitle.innerHTML = options.title;
-    //     console.log(mThis.options.id);
-    //     if (mThis.options.id > 0) {
-    //         mThis.elTitle.innerHTML = "Affiliate Details";
-    //         let p = {'id':mThis.options.id};
-    //         vsapi.call([main_view.base_url,'/abm/os-sales-agents/form-options'].join(''),p,null).then(res=>{
-                
-    //             if(res.status_code === 200){
-    //                 let d = res.data.affiliate;
-    //             console.log(d);
-
-    //                 d = StringSanitizer.sanitizeObject(d,null,['email','address','image_url','photo']);
-    //                 mThis.prepareData(d, {}, data => {
-    //                     mThis.setData(d);
-    //                     mThis.self.modal({
-    //                         backdrop:'static'
-    //                     });
-    //                 });
-    //             }
-    //         });
-    //     }
-    //     else{
-    //         mThis.elTitle.innerHTML =  "New Customers";
-    //         mThis.prepareData({'id':1},{},data =>{
-    //             mThis.setData(null);
-    //             mThis.self.modal({
-    //                 backdrop:'static'
-    //             });       
-    //         });
-    //     }
-    // }
+ 
 
     this.setData = (d)=>{
         d = d || {};
@@ -1018,7 +984,7 @@ const SalesAgentDialog = new function(){
     this.getData = ()=>{
         let p = {};
         p.id = mThis.options.id;
-        mThis.self[0].querySelectorAll('.data-input').forEach(el =>{
+        mThis.self.querySelectorAll('.data-input').forEach(el =>{
             const f = el.dataset.field;
             if(el.tagName ==='IMG') 
                 p[f] = el.getAttribute('src');

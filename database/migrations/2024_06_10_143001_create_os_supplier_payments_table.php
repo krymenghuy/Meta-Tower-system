@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateOsPaymentsTable extends Migration
+class CreateOsSupplierPaymentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateOsPaymentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('os_payments', function (Blueprint $table) {
+        Schema::create('os_supplier_payments', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('payer_id')->nullable();
             $table->integer('shipment_id')->nullable();
@@ -43,6 +43,6 @@ class CreateOsPaymentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('os_payments');
+        Schema::dropIfExists('os_supplier_payments');
     }
 }

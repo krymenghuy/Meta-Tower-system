@@ -123,7 +123,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="_sale_agent_dlgTitle">Sales Agents</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -207,7 +207,7 @@
             </div>
             <div class="modal-footer">
                 <span id="_sal_agent_error" class="error_text"></span>
-                <button type="button" class="btn btn-default btn-secondary" data-dismiss="modal">
+                <button type="button" class="btn btn-default btn-secondary" data-bs-dismiss="modal">
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
                 <button type="button" class="btn btn-success" id="_sale_agent_dlg_btnSave">

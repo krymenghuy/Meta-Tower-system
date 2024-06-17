@@ -39,7 +39,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="_create_invoice_dlgFilterTitle">Create Invoices</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -57,12 +57,12 @@
                             data-field="discount_percent" placeholder="">
                     </div>
                     <div class="form-group col-lg-6">
-                        <label for="from_date" class="form-label trans-text" data-langprop="Form Date">FROM DATE</label>
+                        <label for="from_date" class="form-label trans-text" data-langprop="titles.Form Date">FROM DATE</label>
                         <input id="_pl_filter_startdate" class="form-control data-input dl_filter_field"
                                 data-select="datepicker" autocomplete="off">
                     </div>
                     <div class="form-group col-lg-6">
-                        <label for="to_date" class="form-label trans-text" data-langprop="To Date">START DATE</label>
+                        <label for="to_date" class="form-label trans-text" data-langprop="titles.To Date">START DATE</label>
                         <input id="_pl_filter_enddate" class="form-control data-input dl_filter_field"
                                 data-select="datepicker" autocomplete="off">
                     </div>
@@ -70,7 +70,7 @@
 
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-default height" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-secondary btn-default height" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-primary height" id="_invoice_create_dlgFilter_btnOK">OK</button>
             </div>
         </div>

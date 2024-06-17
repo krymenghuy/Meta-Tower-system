@@ -6,7 +6,6 @@ var ShipmentsComponent = new function () {
     let mThis = this;
     this.title_prop = "Shipment";
     /** NOTE: PickupListComponent.form_data must be initially NULL, so that this prop will be loaded properly by api fetch on Component start */
-    this.form_data = null;
     this.self = main_view.appContent.find('#_main_shipmentsComponent');
     this.base_url = main_view.base_url;
 
@@ -24,6 +23,7 @@ var ShipmentsComponent = new function () {
     this.btnPrint = this.self.find('#_pl_btnPrint');
     this.btnPDF = this.self.find('#_pl_btnPDF');
     this.lnkDailyPackages = this.self.find('#_pl_lnkDailyPackages');
+    this.form_data = null;
  
     this.resizeItemListPanel = () => {
         mThis.tblShipments.find('.package_list_wrapper').each(function () {
@@ -928,7 +928,7 @@ var ShipmentsComponent = new function () {
             });
         });
  
-        mThis.btnNewShipment.on('click', (e) => {
+        mThis.btnNewShipment.on('click',function (e){
             if(!AuthManager.allowed(220)) return;
             const options = {
                 'title': 'Booking',
@@ -2549,13 +2549,19 @@ var ShipmentsComponent = new function () {
 const ShipmentDialog = new function () {
     let mThis = this;
     this.base_url = main_view.base_url;
-    this.self = main_view.appContent.children('#_pl_dlgEmptyOrder');
-    this.btnCreate = this.self.find('#_pl_dlgEmptyOrder_btnOK');
-    this.el_from_country = this.self.find('#_plq_from_country');
-    this.elSender = this.self.find('#_plq_sender');
-    this.el_to_country = this.self.find('#_plq_to_country');
-    this.el_primary_cp = this.self.find('#_plq_primary_cp');
-    this.el_secondary_cp = this.self.find('#_plq_secondary_cp');
+    this.self = main_view.appContent.children('#_pl_dlgEmptyOrder')[0];
+    this.modal = new bootstrap.Modal(this.self);
+    this.options = {};
+
+    this.btnCreate = this.self.querySelector('#_pl_dlgEmptyOrder_btnOK');
+    this.el_from_country = this.self.querySelector('#_plq_from_country');
+    this.elSender = this.self.querySelector('#_plq_sender');
+    this.el_to_country = this.self.querySelector('#_plq_to_country');
+    this.el_primary_cp = this.self.querySelector('#_plq_primary_cp');
+    this.el_secondary_cp = this.self.querySelector('#_plq_secondary_cp');
+    
+    this.body = this.self.querySelector('.modal-body');
+    this.div_sender_info = this.body.querySelector('#_ship_dlg_shipments_body');
 
     this.prepareFormOptions = ( id, onFinish) => {
         vsapi.call(`${mThis.base_url}/abm/oversea_shipments/form-options`, {id : id}, null).then(res => {
@@ -2575,7 +2581,7 @@ const ShipmentDialog = new function () {
     this.getFormData = (silent = false) => {
         let has_error = false;
         let p = {};
-        mThis.self.find('.data-input').each(function () {
+        mThis.div_sender_info.querySelectorAll('.data-input').each(function () {
             const el = $(this);
             const f = el.data('field');
             if (el.data('error') == 1) {
@@ -2593,7 +2599,7 @@ const ShipmentDialog = new function () {
         // });
         // if (!d) return;
         d = d || {};
-        mThis.self[0].querySelectorAll('.data-input').forEach(el => {
+        mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
             el.value = d[data_member] ?? '';
             console.log(d[data_member]);
@@ -2613,8 +2619,8 @@ const ShipmentDialog = new function () {
     //     });
     // });
 
-    this.btnCreate.on('click', (e) => {
-        const p = mThis.getFormData(false);
+    this.btnCreate.onclick = e => {
+        const p = mThis.getFormData();
         //console.log('p',p);
         if (!p) return;
         vsapi.call(`${mThis.base_url}/abm/oversea_shipments/save`, p, mThis.btnCreate).then(res => {
@@ -2624,7 +2630,7 @@ const ShipmentDialog = new function () {
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
             } else cv_interact.error(res.error_message);
         });
-    });
+    };
 
     this.show = (options) => {
         options = options ? options : {};
@@ -2636,11 +2642,83 @@ const ShipmentDialog = new function () {
             if(d.shipment){
                 mThis.setData(d.shipment);
             }
-            mThis.self.modal({
-                'backdrop': 'static'
-            });
+          mThis.modal.show();
         });
 
+    }
+}
+const SpecialChargeDialog = new function () {
+    let mThis = this;
+    this.base_url = main_view.base_url;
+    this.self = main_view.appContent.children('#ps_dlgSpecialCharge')[0];
+    this.modal = new bootstrap.Modal(this.self);
+
+    this.btnOK = this.self.querySelector('#ps_dlgSpecialCharge_btnOK');
+    this.elError = this.self.querySelector('#ps_dlgSpecialCharge_error');
+    this.elTitle = this.self.querySelector('#ps_dlgSpecialChargeTitle');
+
+    this.elCategory = this.self.querySelector('#ps-newsc_category');
+    this.elCharge = this.self.querySelector('#ps-newsc_charge');
+    this.elShipmentID = this.self.querySelector('#ps-shipment_id');
+    this.elScID = this.self.querySelector('#ps-sc_id');
+    this.elRemarks = this.self.querySelector('#ps-remarks');
+
+    this.btnOK.onclick = e => {
+        let p = mThis.getData();
+        if (!p.category) {
+            mThis.elError.innerHTML = 'Category cannot be empty';
+            return;
+        }
+
+        if (isNaN(p.charge)) {
+            mThis.elError.innerHTML = 'Charge is not valid';
+            return;
+        }
+
+        vsapi.call([mThis.base_url, '/abm/special-charge/save'].join(''), p).then(res => {
+            if (res.status_code === 200) {
+                let d = res.data;
+                if (typeof mThis.onClose === 'function') {
+                    mThis.onClose(d.id);
+                }
+                ShipmentsComponent.shipmentListView.showPage();
+                mThis.modal.hide();
+            } else {
+                mThis.elError.innerText = res.error_message;
+            }
+        });
+    };
+
+    this.getData = () => {
+        let p = {};
+        p.category = mThis.elCategory.value;
+        p.charge = mThis.elCharge.value;
+        p.shipment_id = mThis.elShipmentID.value;
+        p.id = mThis.elScID.value;
+        p.remarks = mThis.elRemarks.value;
+
+        return p;
+    };
+
+    this.show = (option, onClose) => {
+        mThis.elShipmentID.value = option.shipment_id;
+        mThis.elScID.value = '';
+        mThis.elRemarks.value = '';
+        mThis.elCategory.value = '';
+        mThis.elCharge.value = '';
+
+        if (option.id) {
+            mThis.elScID.value = option.id;
+            mThis.elRemarks.value = option.remarks;
+            mThis.elCategory.value = option.category;
+            mThis.elCharge.value = option.charge;
+        }
+        
+        mThis.elError.innerHTML = null;
+        mThis.elTitle.innerHTML = option.title;
+        mThis.onClose = onClose;
+
+        mThis.modal.show();
     }
 }
  
@@ -2855,79 +2933,79 @@ const ShipmentDialog = new function () {
 //     }
 // }
 
-const SpecialChargeDialog = new function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.self = main_view.appContent.children('#ps_dlgSpecialCharge');
-    this.btnOK = this.self.find('#ps_dlgSpecialCharge_btnOK');
-    this.elError = this.self.find('#ps_dlgSpecialCharge_error');
-    this.elTitle = this.self.find('#ps_dlgSpecialChargeTitle');
+// const SpecialChargeDialog = new function () {
+//     let mThis = this;
+//     this.base_url = main_view.base_url;
+//     this.self = main_view.appContent.children('#ps_dlgSpecialCharge')[0];
+//     this.modal = new bootstrap.Modal(this.self);
+
+//     this.btnOK = this.self.querySelector('#ps_dlgSpecialCharge_btnOK');
+//     this.elError = this.self.querySelector('#ps_dlgSpecialCharge_error');
+//     this.elTitle = this.self.querySelector('#ps_dlgSpecialChargeTitle');
   
-    this.elCategory = this.self.find('#ps-newsc_category');
-    this.elCharge = this.self.find('#ps-newsc_charge');
-    this.elShipmentID = this.self.find('#ps-shipment_id');
-    this.elScID = this.self.find('#ps-sc_id');
-    this.elRemarks = this.self.find('#ps-remarks');
+//     this.elCategory = this.self.querySelector('#ps-newsc_category');
+//     this.elCharge = this.self.querySelector('#ps-newsc_charge');
+//     this.elShipmentID = this.self.querySelector('#ps-shipment_id');
+//     this.elScID = this.self.querySelector('#ps-sc_id');
+//     this.elRemarks = this.self.querySelector('#ps-remarks');
   
-    this.btnOK.on('click', (e) => {
-      let p = mThis.getData();
-      if (!p.category) {
-        mThis.elError.html('Category cannot be empty');
-        return;
-      }
+//     this.btnOK.onclick = e => {
+//       let p = mThis.getData();
+//       if (!p.category) {
+//         mThis.elError.html('Category cannot be empty');
+//         return;
+//       }
   
-      if (!$.isNumeric(p.charge)) {
-        mThis.elError.html('Charge is not valid');
-        return;
-      }
-      //console.log('p',p);
-      vsapi.call([mThis.base_url, '/abm/special-charge/save'].join(''), p).then(res => {
-        if (res.status_code === 200) {
-            //console.log('me');
-          let d = res.data;
-          if (typeof mThis.onClose === 'function') {
-            mThis.onClose(d.id);
-        }
-        ShipmentsComponent.shipmentListView.showPage();
-        mThis.self.modal('hide');
-        } else mThis.elError.text(res.error_message);
-      });
+//       if (!$.isNumeric(p.charge)) {
+//         mThis.elError.html('Charge is not valid');
+//         return;
+//       }
+//       //console.log('p',p);
+//       vsapi.call([mThis.base_url, '/abm/special-charge/save'].join(''), p).then(res => {
+//         if (res.status_code === 200) {
+//             //console.log('me');
+//           let d = res.data;
+//           if (typeof mThis.onClose === 'function') {
+//             mThis.onClose(d.id);
+//         }
+//         ShipmentsComponent.shipmentListView.showPage();
+//         mThis.self.modal('hide');
+//         } else mThis.elError.text(res.error_message);
+//       });
   
-    });
+//     };
   
-    this.getData = () => {
-      let p = {};
-      p.category = mThis.elCategory.val();
-      p.charge = mThis.elCharge.val();
-      p.shipment_id = mThis.elShipmentID.val();
-      p.id = mThis.elScID.val();
-      p.remarks = mThis.elRemarks.val();
+//     this.getData = () => {
+//       let p = {};
+//       p.category = mThis.elCategory.val();
+//       p.charge = mThis.elCharge.val();
+//       p.shipment_id = mThis.elShipmentID.val();
+//       p.id = mThis.elScID.val();
+//       p.remarks = mThis.elRemarks.val();
     
-      return p;
-    }
+//       return p;
+//     }
   
-    this.show = (option, onClose) => {
-    // console.log('option.shipment_id',option.shipment_id);
-    mThis.elShipmentID.val(option.shipment_id);
-    mThis.elScID.val('');
-    mThis.elRemarks.val('');
-    mThis.elCategory.val('');
-    mThis.elCharge.val('');
-    //console.log('this is me',option);
-    if(option.id){
-    mThis.elScID.val(option.id);
-    mThis.elRemarks.val(option.remarks);
-    mThis.elCategory.val(option.category);
-    mThis.elCharge.val(option.charge);
-    } 
-    //   console.log(mThis.elCharge.val());
-      mThis.elError.html(null);
-      mThis.elTitle.html(option.title)
-      mThis.onClose = onClose;
+//     this.show = (option, onClose) => {
+//     // console.log('option.shipment_id',option.shipment_id);
+//     mThis.elShipmentID.val(option.shipment_id);
+//     mThis.elScID.val('');
+//     mThis.elRemarks.val('');
+//     mThis.elCategory.val('');
+//     mThis.elCharge.val('');
+//     //console.log('this is me',option);
+//     if(option.id){
+//     mThis.elScID.val(option.id);
+//     mThis.elRemarks.val(option.remarks);
+//     mThis.elCategory.val(option.category);
+//     mThis.elCharge.val(option.charge);
+//     } 
+//     //   console.log(mThis.elCharge.val());
+//       mThis.elError.html(null);
+//       mThis.elTitle.html(option.title)
+//       mThis.onClose = onClose;
   
-      mThis.self.modal({
-        backdrop: 'static'
-      });
-    }
-}
+//     mThis.modal.show();
+//     }
+// }
 

@@ -217,61 +217,7 @@
             }
         }
 
-        this.editCustomer = (lnk,id)=>{
-            
-            // alert('Edit customer'); 
-            if (lnk) {
-                let op = {
-                    id: lnk.dataset.id,
-                    onClose: () => {
-                        mThis.customerListView.showPage(mThis.getFilterData());
-                    }
-                };
-                CustomerDialog.show(op);
-                return;
-            }
-          //todo: Write code to show dialog to edit customer
-        }
-        
-        this.setPriceList = (lnk,id)=>{
-        if (lnk) {
-
-            const id = lnk.dataset.id;
-            let pl_id = lnk.dataset.pricelistid;
-            let name = lnk.dataset.name;
-            // let span = lnk.find('.customer-price-list')[0];
-            mThis.setCustomerPriceList(id, name, null, pl_id);
-            return;
-        }
-          //write to show PriceListDialog, and user can choose price list to assign to customer
-        }
-        this.deleteCustomer = (lnk,customer_id)=>{
-            if (lnk) {
-                const id = lnk.dataset.id;
-                let status_code = lnk.dataset.status;
-                let p = {
-                    id: id,
-                    status_code: status_code
-                };
-                cv_interact.confirm('Delete this customer?', {
-                    title: 'Delete Customer',
-                    context: 'delete'
-                }, function (e) {
-                    if (e) {
-                        vsapi.call(`${mThis.base_url}/abm/customers/delete`, {
-                            id: id
-                        }, null).then(res => {
-                            if (res.status_code === 200) {
-                                mThis.customerListView.showPage(mThis.getFilterData());
-                            }
-                            else
-                                cv_interact.error(res.error_message);
-                        });
-                    }
-                });
-                return;
-            }
-        }
+  
 
         this.initDropdownMenus = (table)=>{
             const menuOptopns = {
