@@ -16,7 +16,7 @@ class CountryZoneController extends Controller
         if($ss->status_code !==200) return JDV::raw($ss);
          $id = $req->id;
          $zone = new CountryZone($id,$ss); 
-         $save = $zone->save($req->all());
+         $save = $zone->saveZone($req->country_id,$req->zone_code,$req->country_code,$req->country_name,$ss);
          return JDV::raw($save); 
     }
      
@@ -46,14 +46,19 @@ class CountryZoneController extends Controller
         return JDV::raw($delete);
     }
 
-    function getComboItems_country_zone(Request $req){
+    // function getComboItems_country_zone(Request $req){
+    //     $ss = UM::getUserInfoByToken($req,-1);
+    //     if($ss->status_code !== 200) return JDV::raw($ss); 
+    //     $country = new CountryZone();
+    //     $rows = $country->options_country_zone($ss);
+    //     return JDV::result($rows);
+    // }
+
+    function getFormOptions(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !== 200) return JDV::raw($ss); 
-        $country = new CountryZone();
-        $rows = $country->options_country_zone($ss);
-        return JDV::result($rows);
+        $data = CountryZone::getFormOptions($req->id, $req->country_id, $ss);
+        return JDV::result($data);
     }
-
-
 
 }

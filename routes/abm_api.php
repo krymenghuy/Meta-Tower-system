@@ -175,7 +175,7 @@ use App\Http\controllers\abm\DashboardController;
         Route::post('/delete',[CountryZoneController::class,'deleteZoneCountry']);
         Route::post('/list',[CountryZoneController::class,'getCountryZoneList']);
         Route::post('/details',[CountryZoneController::class,'details']);
-        
+        Route::post('/form-options',[CountryZoneController::class,'getFormOptions']);
     });
 
 

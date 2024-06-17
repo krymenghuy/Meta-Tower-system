@@ -247,9 +247,13 @@ class GeneralDialog{
 
     //Close Dialog
     hide(){
+      //if(this.options.onClose) this.options.onClose(this.canceled);
+      if (this.dataOptions){
+          if(this.dataOptions.onClose) this.dataOptions.onClose(this.getData());
+      } 
+      this.modal.hide();
       // this.jm = this.jm || $(this.divModal);
       // this.jm.modal('hide');
-      this.divModal.show();
     }
 
     renderFields(fields){

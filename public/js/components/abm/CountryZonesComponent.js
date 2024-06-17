@@ -135,6 +135,7 @@ var CountryZonesComponent  = new function () {
       e.preventDefault();
       let op = {
         id:null,
+        country: null,
         onClose:(data)=>{
            mThis.listView.showPage(mThis.getFilterData());
         }
@@ -209,8 +210,8 @@ var CountryZonesComponent  = new function () {
         if(btn){
            let tr = VSUtil.closestLimited(e.target,'tr');
            let op = {
-            id:tr.dataset.id, 
-            country_id:tr.dataset.countryid,  
+            id: tr.dataset.id, 
+            country_id: tr.dataset.countryid,  
             onClose:(data)=>{
                mThis.listView.showPage(mThis.getFilterData());
             }};
@@ -246,111 +247,51 @@ const CountryDialog = new GeneralDialog({
     //cssClass:"",
     fields:[
       { 
-        name:"name",
-        label:"Country Name"
+        name:"country_name",
+        label:"Country Name",
+        require: true
       },
       {
-        name:"code",
-        label:"Country Code"
+        name:"country_code",
+        label:"Country Code",
+        require: true
+      },
+      {
+        name:"zone_code",
+        label:"Zone Code",
+        require: true
       }
     ],
-    showCancelButton:true,
+    //showCancelButton:true,
     buttons:[
       {
-        text:"Save",
+        text:"<span>Save</span>",
         click:(me,btn,divModal)=>{
-           
+           let p = me.getData();
+           console.log(p);
+           vsapi.call(`${main_view.base_url}/abm/country/save`,p,btn,false,false).then(res =>{
+               if(res.status_code ==200){
+                 me.hide();
+               } else cv_interact.warning(res.error_message);  
+           })
         }
       }
     ],
-  //  onclose:(canceled)=>{
-  //     return;
-  //  } 
+    prepareFormOptions:{
+      createTitle:"Add Country",
+      modifyTitle:"Edit Country",
+      targetProp:"country",
+      api:{
+        endpoint:`${main_view.base_url}/abm/country/form-options`,
+        params:(dataOptions)=>{
+           return {"id":dataOptions.id, "country_id": dataOptions.country_id};
+        }
+      }
+    },
+    extendMethod:{
+      getData:(instance, divModal)=>{
+         return {"country_id": instance.dataOptions.country_id};
+      }
+    }
 });
-
-// //begin::ZoneDialog1
-// const ZoneCountryDialog = new function () {
-//   let mThis = this;
-//   this.self = main_view.appContent.children('#_sttn_dlgZoneCountry')[0];
-//   this,modal = new bootstrap.Modal(this.self);
-//   this.base_url = main_view.base_url;
-//   this.elTitle = this.self.querySelector('.modal-title');
  
-//   this.options = {};
-//   this.fields = [];
-//   this.btnOK = this.self.querySelector('.btn-save');
-
-//   this.self.querySelectorAll('.data-input').forEach( el => {
-//     let f = { dataMember: el.dataset.field, 'element': el };
-//     mThis.fields.push(f);
-//   });
-
-//   this.getData = () => {
-//     let p = {};
-//     let i = 0, c;
-//     do {
-//       c = mThis.fields[i];
-//       if (!c) break;
-//       p[c.dataMember] = c.element.value;
-//       i++;
-//     } while (c);
-//     p.id = mThis.options.id;
-//     return p;
-//   }
-
-//   this.setData = (d) => {
-//     d = d || {};
-//     let i = 0, c = null;
- 
-//       do {
-//         c = mThis.fields[i];
-//         if (!c) break;
-//         c.element.value = d[c.dataMember] || "";
-//         if(c.element.tagName ==='SELECT') c.trigger(new Event('change'));
-//         i++;
-//       } while (c);
-//   }
- 
-//   this.btnOK.onclick =   e =>{
-//     let p = mThis.getData();
-//     vsapi.call(`${mThis.base_url}/api/location/country/save`, p, mThis.btnOK, false,false).then(res => {
-//       if (res.status_code === 200) {
-//         mThis.self.modal.hide();
-//         if (typeof mThis.options.onClose === 'function') mThis.options.onClose(true);
-//       } else cv_interact.warning(res.error_message);
-//     });
-//   };
-
-//   this.show = (options = {}) => {
-//     mThis.elError.html(null);
-//     options = options || {};
-//     options.id = options.id || options.zone_id;
-//     mThis.options = options;
-
-//     mThis.prepareFormData(options.id, (d) => {
-//       let title = 'New Zone Country';
-//       if (d.zone) {
-//         mThis.elTitle.text('Modify Zone Details');
-//       } else {
-//         mThis.elTitle.text('');
-//       }
-
-//       mThis.setData(d.zone);
-//       mThis.self.modal({
-//         backdrop: 'static'
-//       });
-//     });
-//   }
-//   //close::this.show()
-
-//   this.prepareFormData = (id, def, onFinish) => {
-    
-//     vsapi.call(`${main_view.base_url}/api/country/details`, { 'id': id }, null).then(res => {
-//       let d = res.status_code === 200 ? res.data : {};
-//       // VSUtil.setComboItems(mThis.elCountry, d.countries, 'id', 'country', true, '(Select country)', null);
-//       // VSUtil.setComboItems(mThis.elZoneType, d.zone_types, 'zone_type', 'zone_type', true, '(Select zone type)', null);
-//       onFinish(d);
-//     });
-//   };
-
-// }
