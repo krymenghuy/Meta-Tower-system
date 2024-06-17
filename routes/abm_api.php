@@ -166,16 +166,16 @@ use App\Http\controllers\abm\DashboardController;
     
     
     Route::prefix('dashboard')->group(function(){
-        Route::post('/cards', [DashboardController::class, 'getCards']);
-        Route::post('tables', [DashboardController::class, 'getTable']);
+        Route::post('/cards', [DashboardController::class, 'getHeaderCards']);
+        Route::post('/body-cards', [DashboardController::class, 'getBodyCards']);
     });
    //begin:: Counties_Zone_Code
     Route::prefix('country')->group(function(){
-        Route::post('/save',[CountryZoneController::class,'save']);
-        Route::post('/delete',[CountryZoneController::class,'delete']);
-        Route::post('/list-all',[CountryZoneController::class,'getCountryZoneList_all']);
+        Route::post('/save',[CountryZoneController::class,'saveZoneCountry']);
+        Route::post('/delete',[CountryZoneController::class,'deleteZoneCountry']);
+        Route::post('/list',[CountryZoneController::class,'getCountryZoneList']);
         Route::post('/details',[CountryZoneController::class,'details']);
-        
+        Route::post('/form-options',[CountryZoneController::class,'getFormOptions']);
     });
 
 

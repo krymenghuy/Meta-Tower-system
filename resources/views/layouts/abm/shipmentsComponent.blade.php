@@ -154,7 +154,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row" id="_ship_dlg_shipments_body">
+                <div class="row" >
                     <div class="col-md-6">
                         <label for="" class="col-form-label">Shipment ID</label>
                         <input type="text" id="_pl_ps_shipment_code" class="form-control" readonly>
@@ -216,7 +216,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div class="row">
+                <div class="row" id="_ship_dlg_shipments_body">
                     <div class="form-group col-lg-12">
                         <label for="id" class="form-label trans-text" data-langprop="titles.Shipment ID"></label>
                         <input type="text" class="form-control data-input" data-field="id" placeholder="AUTO"

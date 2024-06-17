@@ -655,7 +655,7 @@ const SupplierDialog = new function(){
         let p = mThis.getData();
         vsapi.call(`${mThis.base_url}/abm/os_suppliers/save`, p).then(res => {
             if(res.status_code === 200){
-                mThis.self.modal('hide');
+                mThis.modal.hide();
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
             }
             else
@@ -715,7 +715,6 @@ const SupplierDialog = new function(){
         // mThis.body.querySelectorAll('.data-input').forEach(el => {
         //     el.value = null;
         // }); 
-        if (!d) return;
         d = d || {};
         mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;

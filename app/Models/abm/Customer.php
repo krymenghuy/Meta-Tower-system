@@ -4,13 +4,9 @@ namespace App\Models\Abm;
 
 use App\Models\UM;
 use App\Models\Dms\PublicStorage;
-use App\Models\Dms\GeneralSettings;
 use App\Models\DV;
-use App\Models\JDV;
 use DB;
 use Sanitizer;
-use Carbon\Carbon;
-use Config;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class Customer //extends Model
@@ -101,14 +97,14 @@ class Customer //extends Model
       'address' => '0|string|0-250',
       'phone_number' => '1|phone|0-50',
       'sales_agent_id' => '0|number|default=1',
-      'os_agent_types_id' => '0|number',
+      'os_agent_type_id' => '0|number',
       'adr_country_id' => '0|number',
       'adr_city_id' => '0|number',
       'adr_district_id' => '0|number',
       'cod' => '0|choice|0,1|default=0',
       'cod_fee' => '0|number|default=0',
       'price_list_id' => '0|number',
-      'code' => '0|string|0-25',
+      'os_agent_type_id'=>'0|number|default=1',
       'photo'=>'0|image'        
     ];
 
@@ -122,8 +118,7 @@ class Customer //extends Model
       return DV::error($res->error);
     // $id = $id ?? $res->id;
     $inputs = $res->values;
-
-
+ 
     $d = (object) $inputs;
     $photo = $d->photo;
     unset($inputs['photo']);
@@ -138,63 +133,33 @@ class Customer //extends Model
     $sender_created = !$id;
 
     $id = saveData($ss, 'sender', ['id' => $id], $inputs, [], 1, false);
-      // return JDV::result($id);
-
-    if($sender_created){
-
-      $prefix = 'HM';
-      $num=1;
-      $str_prefix = $prefix ? 'prefix =\'' . $prefix . '\'' : '2=2';
-      $row = DB::table('sender_code_control AS c')->where('branch_id', $branch_id)->whereRaw($str_prefix)->selectRaw('TRIM(c.prefix) AS prefix,c.last_id')->take(1)->first();
-      
-      if ($row) {
-        $num = $row->last_id+1;
-      }
-
-      $s=null;
-      $data =(object)$s;
-
-      $data->sender_id= $num;
-      
-      $v_rule = [
-        'id'=>'0|identify=1',
-        'sender_id'=>'1|number|exists=sender.id',
-        'sender_class'=>'0|string|default=oversea'
-      ];
-
-
-      $res_c = validateObject(['sender_id'=>$num],$v_rule,true,[],$ss->lang,false);
-
-      if($res_c->error) return DV::error($res_c->error);
-      
-      $inp= $res_c->values;
-      $da = saveData($ss,'sender_classes',[],$inp,[],1,false);
-
+    $new_code = null; // $this->getNextSenderCode($ss);
+    if($id && $sender_created){
+      $prefix = 'C';
+      $res = setOfficialCode($branch_id,'sender_code_control','sender',['id'=>$id],$prefix,5,null);       
+      $new_code = $res->code;
+      self::setOverseaCustomer($id,$ss);
     }
 
     if ($id > 0) {
-      $new_code = null;
-
       if($delete_prev_image){
         $file_name = DB::table('sender as s')->where('s.id',$id)->take(1)->value('s.photo_file_name');
         if($file_name) PublicStorage::delete($branch_id,self::$img_dir,'image',$file_name);
         DB::table('sender as s')->where('s.id',$id)->update(['photo_file_name'=>null]);
       }
       PublicStorage::saveImage($branch_id,self::$img_dir,null,$photo,null,['id'=>$id,'store'=>'sender.photo_file_name']);  
+ 
+      return DV::depends(1, ['customer' => $inputs, 'id' => $id, 'code'=>$new_code, 'action' => $sender_created? 'create':'update']);
+     }
+     return DV::error('Something went wrong in saving customer profile');
+  }
 
-      
-      if ($sender_created) {
-        $new_code = $this->getNextSenderCode($ss); // formatNumber($sender_id,5); 
-        //$inputs['code'] = $new_code;
-        DB::table('sender')->where('id', $id)->update(['code' => $new_code]);
-      }
-      return DV::depends(1, ['sender' => $inputs, 'id' => $id, 'action' => 'saved']);
-
-
-    }
-    return DV::error('Something went wrong in saving customer profile');
-
-
+  static function setOverseaCustomer($id,$ss){
+    DB::table('sender_classes')->where('sender_id',$id)->delete();
+    DB::table('sender_classes')->insert([
+      'sender_id'=>$id,
+      'sender_class'=>'oversea'
+    ]);
   }
 
   function saveProfilePicture($photo_data, $file_type = null, $id = null, $ss = null)
@@ -255,6 +220,7 @@ class Customer //extends Model
 
 
   }
+
   static function list($arr, $ss)
   {
     $d = (object) $arr;
@@ -262,8 +228,7 @@ class Customer //extends Model
 
     $current_page = isset($d->current_page) ? $d->current_page : 1;
     $per_page = isset($d->per_page) ? $d->per_page : 10;
-    if (!is_numeric($current_page))
-      $current_page = 1;
+    if (!is_numeric($current_page)) $current_page = 1;
     $skip_rows = ($current_page - 1) * $per_page;
 
     $status = isset($d->status_code) ? $d->status_code : 'active';
@@ -306,11 +271,11 @@ class Customer //extends Model
         $str_status = 's.status_code =\'' . $status . '\'';
     }
     $select_referrer_name = ',(SELECT r.`name` FROM os_affiliates as r WHERE r.id = s.sales_agent_id LIMIT 1) AS referrer_name';
-    //$query = DB::table('sender_classes as sc')->join('sender as s ','s.id','sc.sender_id')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_types_id LIMIT 1) AS agent_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at, sc.sender_class')->where('s.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
-    //  $query = DB::table('sender as s')->join('sender_classes as sc ','sc.id','s.id')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_types_id LIMIT 1) AS agent_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at, sc.sender_class')->where('s.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
+    //$query = DB::table('sender_classes as sc')->join('sender as s ','s.id','sc.sender_id')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_type_id LIMIT 1) AS agent_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at, sc.sender_class')->where('s.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
+    //  $query = DB::table('sender as s')->join('sender_classes as sc ','sc.id','s.id')->selectRaw('s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_type_id LIMIT 1) AS agent_type,s.sales_agent_id AS referrer_id '.$select_referrer_name.',s.create_user,formatTime(s.create_date) AS created_at, sc.sender_class')->where('s.branch_id',$branch_id)->whereRaw($str_agent)->whereRaw($str_search)->whereRaw($str_status)->whereRaw($str_business_type)->orderBy('s.id','DESC');
     $query = DB::table('sender as s')
       ->join('sender_classes as sc', 'sc.sender_id', '=', 's.id')
-      ->selectRaw(' sc.sender_class,  s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_types_id LIMIT 1) AS os_agent_type,s.sales_agent_id AS referrer_id ' . $select_referrer_name . ',s.create_user,formatDate(s.create_date) AS created_at')
+      ->selectRaw(' sc.sender_class,  s.branch_id,s.id,s.code,s.status_code,s.photo_file_name,s.name,s.name_kh,s.address,s.phone_number,s.price_list_id, getPriceListName(s.price_list_id) AS price_list_name,s.cod,s.cod_fee,s.email,s.business_type,s.address,s.sender_type_id, (SELECT t.name FROM sender_type AS t WHERE t.id = s.sender_type_id LIMIT 1) AS sender_type,(SELECT os.name FROM os_agent_types AS os WHERE os.id = s.os_agent_type_id LIMIT 1) AS os_agent_type,s.sales_agent_id AS referrer_id ' . $select_referrer_name . ',s.create_user,formatDate(s.create_date) AS created_at')
       ->where('s.branch_id', $branch_id)
       //->where('sender_class','oversea')
       ->whereRaw($str_agent)
@@ -398,33 +363,32 @@ class Customer //extends Model
       $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
     return $row;
   }
-
-
-
+ 
   static function getFormOptions($id, $ss)
   {
+    $str_filter_type = 't.applyTo is null or t.applyTo =\'abm\'';
     $branch_id = $ss->branch_id;
     $customer_details = null;
     if ($id > 0)
       $customer_details = self::details($id, $ss);
     $data = (object) [];
-    $data->sender = $customer_details;
+    $data->customer = $customer_details;
     $data->branches = [(object) ['id' => 1, 'branch_name' => 'Head Quarter']];
-    $data->sales_agents = DB::table('os_affiliates as a')->where('a.branch_id', $branch_id)->selectRaw('id,name AS agent_name')->get();
+    //$data->sales_agents = DB::table('os_affiliates as a')->where('a.branch_id', $branch_id)->selectRaw('id,name AS agent_name')->get();
     //$data->categories = DB::table('lead_categories as c')->selectRaw('id,name AS category')->get();
-    $data->business_types = DB::table('sender_business_types')->selectRaw('business_type')->get();
+    $data->business_types = DB::table('sender_business_types as t')->whereRaw($str_filter_type)->selectRaw('t.business_type')->get();
     $data->customer_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name as status_name')->get();
     //$data->closing_statuses = DB::table('closing_statuses AS cs')->selectRaw('scs.id,cs.name AS closing_status')->get();
-    $data->price_list = DB::table('os_customer_price_list_names AS l')->where('branch_id', $branch_id)->selectRaw('l.id,l.name as price_list')->get();
-    $data->sender_types = DB::table('sender_type')->selectRaw('id,name as sender_type')->get();
-    $data->os_agent_types = DB::table('os_agent_types')->selectRaw('id, name as os_agent_type')->get();
+    $data->price_list = DB::table('os_customer_price_list_names AS l')->where('branch_id', $branch_id)->selectRaw('l.id,l.name as price_list_name')->get();
+    $data->customer_types = DB::table('sender_type')->selectRaw('id,name as customer_type')->get();
+    //$data->os_agent_types = DB::table('os_agent_types')->selectRaw('id, name as os_agent_type')->get();
 
     return $data;
   }
+
   function delete($id)
   {
     $id = $id ? $id : $this->id;
-
     $delete = DB::table('sender')->where('id', $id)->delete();
     return DV::depends($delete, ['action', 'deleted']);
   }
@@ -434,7 +398,7 @@ class Customer //extends Model
     $ss = $ss ?? $this->userInfo;
     $id = $id ?? $this->id;
     $branch_id = Sanitizer::sanitize($ss->branch_id);
-    $p = getDataRow('os_customer_price_list_names', ["id" => $price_list_id], "id,name");
+    $p = getDataRow('os_customer_price_list_names', ['id' => $price_list_id], 'id,name');
     if (!$p)
       return DV::error("Price list ID is not valid");
     $p_name = $p->name;

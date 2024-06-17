@@ -6,9 +6,11 @@ use App\Models\DV;
 use App\Models\JDV;
 use App\Models\Dms\PublicStorage;
 use Illuminate\Pagination\LengthAwarePaginator;
+use DateTime;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use Sanitizer;
+use Localization;
 class Dashboard //extends Model
 {   
     protected $id = null;
@@ -165,7 +167,7 @@ class Dashboard //extends Model
         return $colors[$status_id];
     }
 
-    static function getCards($ss){   
+    static function getHeaderCards($ss){   
         $branch_id = $ss->branch_id;
         $circle_cards=[];
         $normal_cards =[];
@@ -180,7 +182,7 @@ class Dashboard //extends Model
            $founds = $rows->filter(function($x) use($status_id){
                return $x->status_id == $status_id; 
            });
-           $row = isset($founds[0])? $founds[0]:null;
+           $row = $founds ? $founds->first():null;
            $item = null; 
            if($row){
                 $total += $row->cnt;
@@ -188,7 +190,6 @@ class Dashboard //extends Model
                     'value'=>$row->cnt,
                     'status'=>$row->status,
                     'colorSlice'=> self::getSliceCircle($row->status_id)
-
                 ];
            }else{
             $item= (object)[
@@ -208,7 +209,7 @@ class Dashboard //extends Model
             $card->total = $total;
         }
  
-        $rows = DB::table('sender as s')->whereRaw($str_dates)->selectRaw('COUNT(s.id) as cnt,s.status_code as `status`')->groupByRaw('s.status_code')->get();
+        $rows = DB::table('sender as s')->join('sender_classes as c','c.sender_id','=','s.id')->where('c.sender_class','oversea')->whereRaw($str_dates)->selectRaw('COUNT(s.id) as cnt,s.status_code as `status`')->groupByRaw('s.status_code')->get();
         $active_cnt =0;
         $customer_cnt = 0;
         foreach($rows as $row){
@@ -217,13 +218,13 @@ class Dashboard //extends Model
             $customer_cnt += $row->cnt;
         }
         $normal_cards [] = (object)[
-            'title'=>'Total Customer',
+            'title'=>Localization::translate('titles','Total Customer',$ss->lang),
             'value'=>$customer_cnt,
             'icon'=> '<i class="fas fa-user-plus text-info" style="font-size: 3rem;width: 100px;"></i>',
             'color'=>'#0000'
 
         ];
-        
+
         $normal_cards [] = (object)[
             'title'=>'Active Customer',
             'value'=>$active_cnt,
@@ -235,6 +236,115 @@ class Dashboard //extends Model
         $active_agent = DB::table('os_affiliates as f')->join('os_sales_agents as a','a.affiliate_id','=','f.id')->where('f.status_code','Active')->count('f.id');
         $normal_cards [] = (object)[
             'title'=>'Active Sales Agent',
+            'value'=>$active_agent,
+            'icon'=> ' <i class="fa fa-users text-success"  style="font-size: 3rem;width: 100px;"></i>',
+            'color'=>'#0000'
+
+        ];
+        
+
+        return (object)[
+            'circle_cards' => $circle_cards,
+            'normal_cards' => $normal_cards
+        ];
+        
+        
+        // $total_customer = DB::table('sender as s')->join('sender_classes as sc','sc.sender_id','=','s.id')->where('sc.sender_class','oversea')->count('s.id');
+        // $active_customer = DB::table('sender as s')->join('sender_classes as sc','sc.sender_id','=','s.id')->where('sc.sender_class','oversea')->where('s.status_code','active')->count('s.id');
+        // $active_seles_agent = DB::table('os_affiliates as a')->join('os_sales_agents as sa','sa.affiliate_id','=','a.id')->where('a.status_code','Active')->count('a.id');
+        // // return [$total_customer , $active_customer ,$active_seles_agent];
+        
+        // $data->shipments_panding = (object)[$panding, number_format(($panding/$total)*100, 2)];
+        // $data->shipments_shipping = (object)[$shipping, number_format(($shipping/$total)*100, 2)];
+        // $data->shipments_validated = (object)[$validated, number_format(($validated/$total)*100, 2)];
+        // $data->shipments_total = $total;
+
+        $data->total_customer = $total_customer;
+        $data->active_customer = $active_customer;
+        $data->active_seles_agent = $active_seles_agent;
+        // return $data;
+    }
+
+    static function getBodyCards($ss){   
+
+        $branch_id = $ss->branch_id;
+        $progress_cards=[];
+        $country_cards =[];
+        $supplier_cards =[];
+
+        $str_dates = '1=1';
+        $start_date = date('Y-m-d', strtotime('-90 days'));
+        $end_date = new DateTime();
+        $end_date = $end_date->format('Y-m-d'); 
+        $str_dates = "DATE(i.create_date) >= '$start_date' AND DATE(i.create_date) <= '$end_date'";
+        $total_shipment = DB::table('os_shipments as i')->where('i.status_id',3)->whereRaw($str_dates)->count('i.id');
+        $cnt_invoice = DB::table('os_customer_invoices as i')->whereRaw($str_dates)->count('i.id');
+        $cnt_invoice_paid =  DB::table('os_customer_invoices as i')->where('i.status_id',2)->count('i.id');
+        $total = 0; 
+
+        $progress_cards [] = (object)[
+            'total_invoive'=> $cnt_invoice,
+            'invoce_percent'=> number_format($cnt_invoice *100 / $total_shipment,2),
+            'total_shipment'=> $total_shipment,
+            'color'=> '',
+        ];
+        return (object)[
+            'progress_cards' => $progress_cards,
+            'country_cards' => $country_cards,
+            'supplier_cards' => $supplier_cards
+        ];
+        
+        $normal_cards [] = (object)[
+            'title'=>'Active Customer',
+            'value'=>$active_cnt,
+            'icon'=> ' <i class="fas fa-user text-success"  style="font-size: 3rem;width: 100px;"></i>',
+            'color'=>'#0000'
+
+        ];
+        // foreach($rows as $row){
+        //     $total += $row->cnt;
+        //     $circle_cards[] = (object)[
+        //         'value'=>$row->cnt,
+        //         'status'=>$row->status,
+        //         'colorSlice'=> self::getSliceCircle($row->status_id)
+
+        //     ];
+
+        //  } 
+        // foreach($circle_cards as $card){
+        //     if($total==0)$total=1;
+        //     $card->percentage= number_format($card->value *100 / $total,2);
+        //     $card->total = $total;
+        // }
+
+        $rows = DB::table('sender as s')->whereRaw($str_dates)->selectRaw('COUNT(s.id) as cnt,s.status_code as `status`')->groupByRaw('s.status_code')->get();
+        $active_cnt =0;
+        $customer_cnt = 0;
+        foreach($rows as $row){
+            if(strtolower($row->status) == 'active')
+            $active_cnt = $row->cnt;
+            $customer_cnt += $row->cnt;
+           
+        }
+        $normal_cards [] = (object)[
+            'title'=>'Total Customer',
+            'value'=>$customer_cnt,
+            'icon'=> '<i class="fas fa-user-plus text-info" style="font-size: 3rem;width: 100px;"></i>',
+            'color'=>'#0000'
+
+        ];
+        
+        $normal_cards [] = (object)[
+            'title'=>Localization::translate('titles','Active Customer',$ss->lang),
+            'value'=>$active_cnt,
+            'icon'=> ' <i class="fas fa-user text-success"  style="font-size: 3rem;width: 100px;"></i>',
+            'color'=>'#0000'
+
+        ];
+        
+        $active_agent = DB::table('os_affiliates as f')->join('os_sales_agents as a','a.affiliate_id','=','f.id')->where('f.status_code','Active')->count('f.id');
+        $normal_cards [] = (object)[
+            'title'=>Localization::translate('titles','Active Sales Agent',$ss->lang),
             'value'=>$active_agent,
             'icon'=> ' <i class="fa fa-users text-success"  style="font-size: 3rem;width: 100px;"></i>',
             'color'=>'#0000'
@@ -262,26 +372,6 @@ class Dashboard //extends Model
         $data->active_seles_agent = $active_seles_agent;
         // return $data;
     }
-
-
-    static function getDataTable($ss){
-        $branch_id = $ss->branch_id;    
-        $row = DB::table('os_suppliers')->selectRaw('id, name, code, phone_number, email, referrer_id, photo_file_name, address, status_code, price_list_id, formatDate(create_date) as create_date, DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
-        if (!$row) return null;
-            //$accounts = self::bankAccounts($id,1);
-            // if($row->loc_lat ==0) $row->loc_lat = null;
-            // if($row->loc_lng ==0) $row->loc_lng = null;
-            // if ($includeBankAccount) $row->bank_accounts = self::bankAccounts($id);
-            // if($includeProfilePicture) $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
-            $url = $row->photo_file_name? PublicStorage::getUrl($branch_id,'general' ,'image').$row->photo_file_name: null;
-            $url = validateUrl($url,self::defaultImage($branch_id));
-            $row->photo = $url;
-            $row->image_url = $url;
-
-            if ($includeProfilePicture)
-            $row->image_url = PublicStorage::getProfilePhoto_url($ss->user_id);
-        return $row;
-     }
 
      function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
         $id = $id?$id:$this->id;

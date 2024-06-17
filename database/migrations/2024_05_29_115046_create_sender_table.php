@@ -40,7 +40,7 @@ class CreateSenderTable extends Migration
             $table->string('photo_file_name',255)->nullable();
             $table->string('photo_file_type',10)->nullable();
             $table->integer('price_list_id')->nullable();
-            $table->integer('os_agent_types_id')->nullable();
+            $table->integer('os_agent_type_id')->nullable()->default(1);
             $table->tinyInteger('cod')->nullable()->default(0);
             $table->decimal('cod_fee',10,2)->nullable()->default(0.00);
             $table->decimal('loc_lat',17,14)->nullable();

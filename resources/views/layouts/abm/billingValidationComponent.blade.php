@@ -152,7 +152,7 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="row ">
+        <div class="row" id="_payment_dlg_body">
             <!-- <div class="form-group col-md-6">
                 <span class="simple-label">Payment No.</span>
                 <input id="_plq_pikcup_address" class="form-control data-input" placeholder="AUTO" data-field="payment_no" readOnly />

@@ -2549,7 +2549,7 @@ var ShipmentsComponent = new function () {
 const ShipmentDialog = new function () {
     let mThis = this;
     this.base_url = main_view.base_url;
-    this.self = main_view.appContent.children('#_pl_dlgEmptyOrder')[0];
+    this.self = main_view.appContent.find('#_pl_dlgEmptyOrder')[0];
     this.modal = new bootstrap.Modal(this.self);
     this.options = {};
 
@@ -2561,7 +2561,7 @@ const ShipmentDialog = new function () {
     this.el_secondary_cp = this.self.querySelector('#_plq_secondary_cp');
     
     this.body = this.self.querySelector('.modal-body');
-    this.div_sender_info = this.body.querySelector('#_ship_dlg_shipments_body');
+    this.div_shipment_info = this.body.querySelector('#_ship_dlg_shipments_body');
 
     this.prepareFormOptions = ( id, onFinish) => {
         vsapi.call(`${mThis.base_url}/abm/oversea_shipments/form-options`, {id : id}, null).then(res => {
@@ -2577,57 +2577,15 @@ const ShipmentDialog = new function () {
             onFinish(d);
         });
     }
-
-    this.getFormData = (silent = false) => {
-        let has_error = false;
-        let p = {};
-        mThis.div_sender_info.querySelectorAll('.data-input').each(function () {
-            const el = $(this);
-            const f = el.data('field');
-            if (el.data('error') == 1) {
-                has_error = true;
-                return false;
-            }
-            p[f] = el.val();
-        });
-        return has_error ? null : p;
-    }
-
-    this.setData = (d) => {
-        // mThis.body.querySelectorAll('.data-input').forEach(el => {
-        //     el.value = null;
-        // });
-        // if (!d) return;
-        d = d || {};
-        mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
-            const data_member = el.dataset.field;
-            el.value = d[data_member] ?? '';
-            console.log(d[data_member]);
-
-            if (el.tagName.toLowerCase() === 'select') {
-                el.dispatchEvent(new Event('change'));
-            }
-        });
-
-    }
-
-    // this.elSender.on('change', (e) => {
-    //     let m = { 'sender_id': mThis.elSender.val() };
-    //     vsapi.call([mThis.base_url, '/dms/merchant/address'].join(''), m).then(res => {
-    //         let address = (res.status_code === 200) ? res.data : '';
-    //         mThis.elPickupAddress.val(address);
-    //     });
-    // });
-
     this.btnCreate.onclick = e => {
+        e.preventDefault();
         const p = mThis.getFormData();
-        //console.log('p',p);
-        if (!p) return;
-        vsapi.call(`${mThis.base_url}/abm/oversea_shipments/save`, p, mThis.btnCreate).then(res => {
+        console.log('p',p);
+        vsapi.call(`${mThis.base_url}/abm/oversea_shipments/save`, p).then(res => {
             if (res.status_code === 200) {
                 cv_interact.success('New shipment created');
-                mThis.self.modal('hide');
-                if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
+                mThis.modal.hide();
+                if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
             } else cv_interact.error(res.error_message);
         });
     };
@@ -2646,6 +2604,47 @@ const ShipmentDialog = new function () {
         });
 
     }
+
+   
+
+    this.setData = (d) => {
+        // mThis.body.querySelectorAll('.data-input').forEach(el => {
+        //     el.value = null;
+        // });
+        // if (!d) return;
+        d = d || {};
+        mThis.div_shipment_info.querySelectorAll('.data-input').forEach(el => {
+            const data_member = el.dataset.field;
+            el.value = d[data_member] ?? '';
+            console.log(d[data_member]);
+
+            if (el.tagName.toLowerCase() === 'select') {
+                el.dispatchEvent(new Event('change'));
+            }
+        });
+
+    }
+    this.getFormData = () => {
+        
+        let p = {};
+
+        mThis.div_shipment_info.querySelectorAll('.data-input').forEach(el => {
+            let data_member = el.dataset.field;
+            
+            p[data_member] = el.value;
+        });
+        return  p;
+    }
+
+    // this.elSender.on('change', (e) => {
+    //     let m = { 'sender_id': mThis.elSender.val() };
+    //     vsapi.call([mThis.base_url, '/dms/merchant/address'].join(''), m).then(res => {
+    //         let address = (res.status_code === 200) ? res.data : '';
+    //         mThis.elPickupAddress.val(address);
+    //     });
+    // });
+
+ 
 }
 const SpecialChargeDialog = new function () {
     let mThis = this;

@@ -43,8 +43,8 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <div class="modal-body" id="_cul_dlgCustomer_body">
-                <div class="row">
+            <div class="modal-body" >
+                <div class="row" id="_invoice_dlg_body">
                     <div class="form-group col-lg-6">
                         <label for="name" class="form-label trans-text" data-langprop="titles.Customer Name">CUSTOMER NAME</label>
                             <select id="_name_customer" class="modal-select2 data-input"

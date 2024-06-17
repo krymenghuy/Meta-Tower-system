@@ -43,7 +43,7 @@
         <?php
             ScriptManager::render('priority-one',1);
             ScriptManager::render('primary', 1);
-            ScriptManager::render('primary-defer',1);
+            ScriptManager::render('dms-primary-defer',1);
             ScriptManager::render('dms-components', 1);
             ScriptManager::render('pdfmake', 1);
         ?>

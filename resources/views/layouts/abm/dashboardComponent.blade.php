@@ -135,7 +135,7 @@
             height: 100px;
         }
 
-        div .code {
+        .card-content .code {
             visibility: hidden;
             opacity: 0;
             position: absolute;
@@ -332,12 +332,11 @@
                             </div>
                         </div>
                         <div class="card-body">
-
                             <div class="row ">
-                                <div class="col-md-6 overview-section">
+                                <div id="db_progress_cards" class="col-md-6 overview-section">
                                     <div class="card">
                                         <div class="card-header">
-                                            <p class="section-title mb-0 fs-5">Accountings</p>
+                                            <p class="section-title mb-0 fs-5">Accounting</p>
                                         </div>
                                         <div class="card-body">
                                             <p>Overview the Invoice Amount (%)</p>
@@ -347,27 +346,31 @@
                                             <p>Overview the Payment Amount (%)</p>
                                             <div class="progress mt-2">
                                                 <div class="progress-bar progress-bar-page" role="progressbar" style="width: 67%;" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100">67% - Payment</div>
-                                            </div><br><br><br>
+                                            </div>
+                                            <p>Overview the Payment Amount (%)</p>
+                                            <div class="progress mt-2">
+                                                <div class="progress-bar progress-bar-page" role="progressbar" style="width: 67%;" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100">67% - Payment</div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-md-6 overview-section">
+                                <div id="db_country_cards" class="col-md-6 overview-section">
                                     <div class="card">
                                         <div class="card-header">
-                                            <p class="section-title mb-0 fs-5">Links</p>
+                                            <p class="section-title mb-0 fs-5">Shipments by country</p>
                                         </div>
                                             
                                         <div class="card-body ">
                                             <div class=" gap-3 d-flex">
                                                 <div class="links-overview d-block text-start w-50 p-0">
-                                                    <p class="w-50 p-0">Total Links: 100</p>
+                                                    <p class="w-50 p-0">Country</p>
                                                     <div class="w-100 d-flex justify-content-between"><p>Nofollow:</p> <p>23</p></div>
                                                     <div class="w-100 d-flex justify-content-between"><p>Dofollow: </p> <p></p>663</div>
                                                     <div class="w-100 d-flex justify-content-between"><p>Noreferrer: </p> <p>45</p></div>
                                                     <div class="w-100 d-flex justify-content-between"><p>Noopener: </p> <p>102</p></div>
                                                 </div>
                                                 <div class="links-overview d-block w-50 p-0">
-                                                    <p class="w-50 p-0">Links Type: 3</p>
+                                                    <p class="w-50 p-0">Shippments</p>
                                                     <div class="w-100 d-flex justify-content-between"><p>Internal: </p> <p>154</p></div>
                                                     <div class="w-100 d-flex justify-content-between"><p>External: </p> <p>35</p></div>
                                                     <div class="w-100 d-flex justify-content-between"><p>Anchor: </p> <p>19</p></div>
@@ -380,10 +383,10 @@
                             </div>
 
                             <div class="row ">
-                                <div class="col-md-12 overview-section">
+                                <div id="db_supplier_cards" class="col-md-12 overview-section">
                                     <div class="card">
                                         <div class="card-header">
-                                            <p class="section-title mb-0 fs-5">Backlinks Overview</p>
+                                            <p class="section-title mb-0 fs-5">Shippments by carrier</p>
                                         </div>
                                         <div class="card-body">
                                             <table class="table table-striped">
@@ -434,7 +437,7 @@
             </div>
         </div>
 
-        <script>
+        <!-- <script>
             window.addEventListener("DOMContentLoaded", () => {
                 // update circle when range change
                 const pie = document.querySelectorAll(".pie");
@@ -510,7 +513,7 @@
                 });
             });
 
-        </script>
+        </script> -->
         
     </body>
 </div>

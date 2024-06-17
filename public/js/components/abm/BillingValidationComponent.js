@@ -580,7 +580,8 @@ const PaymentDialog = new function(){
     let shipments_id = null;
 
     this.bodyHeader =  this.self.querySelector('h.header');
-    this.body = this.self.querySelector('p.body');
+    this.body = this.self.querySelector('.modal-body');
+    this.div_payment_info = this.body.querySelector('#_payment_dlg_body');
 
     this.div_filter_fields = this.self.querySelector('div.filter-date');
     this.getFilterData = () => {
@@ -658,7 +659,7 @@ const PaymentDialog = new function(){
             vsapi.call(`${mThis.base_url}/abm/payment/save-many`, p, mThis.btnCreate).then(res => {
                 if (res.status_code === 200) {
                     cv_interact.success('Payment saved'); 
-                    mThis.self.modal('hide');
+                    mThis.modal.hide();
                     if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
                 } else cv_interact.error('html:'+res.error_message);
             });
@@ -666,7 +667,7 @@ const PaymentDialog = new function(){
             vsapi.call(`${mThis.base_url}/abm/payment/save`, p, mThis.btnCreate).then(res => {
                 if (res.status_code === 200) {
                     cv_interact.success('Payment saved'); 
-                    mThis.self.modal('hide');
+                    mThis.modal.hide();
                     if (typeof mThis.options.onClose === 'function') mThis.options.onClose();
                 } else cv_interact.error(res.error_message);
             });
@@ -700,7 +701,6 @@ const PaymentDialog = new function(){
         console.log('p',p);
         // mThis.checkAlert(message);
         mThis.prepareFormOptions( {'id': p} , d => {
-            console.log("d",d);
             if(d.os_shipment != null){
                 mThis.setData(d.os_shipment);
             }
@@ -713,19 +713,14 @@ const PaymentDialog = new function(){
         // });
     }
 
-    this.getFormData = (silent = false) => {
-        let has_error = false;
+    this.getFormData = () => {
+        
         let p = {};
         // const el = '';
-        const f = '';
-        mThis.self.querySelector('.data-input').each(function () {
-            const el = $(this);
-            const f = el.data('field');
-            if (el.data('error') == 1) {
-                has_error = true;
-                return false;
-            }
-            p[f] = el.val();
+        mThis.div_payment_info.querySelectorAll('.data-input').forEach(el => {
+            let data_member = el.dataset.field;
+            p[data_member] = el.value;
+            
         });
         // mThis.self.querySelector('.filter-field').each(function () {
         //     const el = $(this);
@@ -738,12 +733,12 @@ const PaymentDialog = new function(){
         //     // console.log(12,p[f],13,f);
         // });
         // // console.log(12,p[f],13,f);
-        return has_error ? null : p;
+        return p;
     }
 
     this.setData = (d) => {
         if(shipments_id == null)
-        mThis.self.querySelectorAll('.data-input').forEach(el => {
+        mThis.div_payment_info.querySelectorAll('.data-input').forEach(el => {
             if(el.dataset.field == 'amount')
                 el.value = '0.00';
             if(el.dataset.field == 'payment_date'){
@@ -762,7 +757,7 @@ const PaymentDialog = new function(){
         if (!d) return;
         console.log(4,d.amount);
         d = d || {};
-        mThis.self[0].querySelectorAll('.data-input').forEach(el => {
+        mThis.div_payment_info.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
 
             el.value = d[data_member] ?? '';

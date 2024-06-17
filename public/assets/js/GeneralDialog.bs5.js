@@ -222,7 +222,7 @@ class GeneralDialog{
        let index = 0;
        buttons.map(btn =>{
           let data_dismiss_modal ="";
-          if(btn.dismissModal ==true || btn.dismissModal ==1) data_dismiss_modal = ` data-dismiss="modal"`;
+          if(btn.dismissModal ==true || btn.dismissModal ==1) data_dismiss_modal = ` data-bs-dismiss="modal"`;
           let className = btn.cssClass || btn.className;
           className = className || "btn btn-default";
           html = [html, `<button type="button" class="${className}" data-action="${btn.action || ''}" data-index="${index}" ${data_dismiss_modal}>${btn.icon || ""} ${btn.label || (btn.text || "")}</button>`].join('');
@@ -247,9 +247,13 @@ class GeneralDialog{
 
     //Close Dialog
     hide(){
+      //if(this.options.onClose) this.options.onClose(this.canceled);
+      if (this.dataOptions){
+          if(this.dataOptions.onClose) this.dataOptions.onClose(this.getData());
+      } 
+      this.modal.hide();
       // this.jm = this.jm || $(this.divModal);
       // this.jm.modal('hide');
-      this.divModal.show();
     }
 
     renderFields(fields){
@@ -436,6 +440,9 @@ class GeneralDialog{
         const handleClose = () => {
          if (that.options.onClose) {
             that.options.onClose(that.canceled);
+            if(!that.canceled){
+                if(that.dataOptions.onClose) that.dataOptions.onClose(that.getData());
+            }
          }
        };
    
