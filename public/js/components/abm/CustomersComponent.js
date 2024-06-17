@@ -1,6 +1,4 @@
 'use strict';
-
-
     var CustomersComponent = new function () {
     const mThis = this;
     this.title_prop = "Customers";
@@ -18,20 +16,48 @@
     this.form_data = {};
     this.store_agents = {};
  
-        this.setCustomerPriceList = (id,name=null,span=null,def_price_list_id=null, lnk = null) => {
+            /** Show or hide element with class $target_class when user puts mouse over tr or td with class $td_class */
+        function setInstanceVisible(tr, td_class, target_class) {
+            if (!tr) return;
+
+            const td = td_class ? tr.querySelector(`td.${td_class}`) : null;
+            const target = tr.querySelector(`.${target_class}`);
+
+            if (!target) return;
+
+            const showTarget = () => {
+                target.style.visibility = 'visible';
+            };
+
+            const hideTarget = () => {
+                target.style.visibility = 'hidden';
+            };
+
+            if (td) {
+                td.addEventListener('mouseenter', showTarget);
+                td.addEventListener('mouseleave', hideTarget);
+            } else {
+                tr.addEventListener('mouseenter', showTarget);
+                tr.addEventListener('mouseleave', hideTarget);
+            }
+        }
+
+        this.setCustomerPriceList = (id,tr) => {
             mThis.getPriceListItems((items) => {
                 items.unshift({
                     id: null,
                     name: 'Select price list'
                 });
+                let customer_name = tr.dataset.customername;
+                let pl_list_id = tr.dataset.pricelistid;
                 let option = {
-                    title: `Set price list for ${name ? name : 'Customer'}`,
+                    title: `Set price list for ${customer_name ? customer_name : 'Customer'}`,
                     dataLabel: "Price list name",
                     valueMember: "id",
                     textMember: "name",
                     blankErrorMessage: "Please a price list",
                     data: items,
-                    defaultValue: def_price_list_id
+                    defaultValue: pl_list_id
                 };
 
                 InputBox2.show(option, (d) => {
@@ -45,13 +71,9 @@
                                 let d = StringSanitizer.sanitizeObject(res.data);
                                 // span.textContent = d.list_name;
                                 mThis.customerListView.showPage(mThis.getFilterData());
-                                if (lnk){
-                                     const tr = lnk.closest('tr');
-                                     if(tr) tr.dataset.pricelistid = d.price_list_id;
-                                     lnk.dataset.pricelistid = d.price_list_id;
-                                }
+                                if(tr) tr.dataset.pricelistid = d.price_list_id;
                                 InputBox2.close();
-                                cv_interact.success('Price list ' + d.list_name + ' has been assigned to the customer successfully');
+                                cv_interact.success('Customer Price list ' + d.list_name + ' has been assigned');
                             }
                             else
                                 cv_interact.error(res.error_message);
@@ -122,8 +144,8 @@
             {
                 className: "price_list_name align-middle",
                 data: (data, index, tr) => {
-                    let price_list_html = data.price_list_name ? `<span class="customer-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="set-price-list text-danger"><i class="fa-solid fa-pencil"></i></a>`;
-                    const sender_info = ['<span class="sender- text-primary d-block">', price_list_html, '</span>'].join('');
+                    let edit_pl_list = `<a style="visibility:hidden" href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="lnk_set_price_list text-danger"><i class="fa-solid fa-pencil"></i></a>`;
+                    const sender_info = ['<div class="d-flex gap-2">','<span class="text-primary">',(data.price_list_name || 'មិនទាន់មាន'), '</span>',edit_pl_list,'</div>'].join('');
                     return sender_info;
                 },
                 title: 'price list '
@@ -240,12 +262,9 @@
           //todo: Write code to show dialog to edit customer
         }
         
-        this.setPriceList = (customer_id, customer_name,  default_price_list_id, lnk = null)=>{
-            // const id = lnk.dataset.id;
-            // let pl_id = lnk.dataset.pricelistid;
-            customer_name = customer_name || (lnk? lnk.dataset.name: null);
-            // let span = lnk.find('.customer-price-list')[0];
-            mThis.setCustomerPriceList(customer_id, name, null, default_price_list_id);
+        this.setPriceList = (customer_id,lnk)=>{
+            let tr = VSUtil.closestLimited(lnk,'tr');
+            mThis.setCustomerPriceList(customer_id, tr);
         }
 
         this.deleteCustomer = (customer_id, lnk)=>{
@@ -315,7 +334,7 @@
                 onClick:(menuLink, id, name)=>{
                     switch(name){
                         case 'set_price_list':{
-                            mThis.setPriceList(id); // NOT yet defined
+                            mThis.setPriceList(id,menuLink); // NOT yet defined
                             break;
                         }
                         case 'edit_customer':{
@@ -367,13 +386,10 @@
                     }
                     // Click on Set Price List
                     lnk = VSUtil.getElementByClass(e.target, 'btn-set-price-list');
-                    console.log("hello");
                     if (lnk) {
                         const id = lnk.dataset.id;
-                        let pl_id = lnk.dataset.pricelistid;
-                        let name = lnk.dataset.name;
-                        let span = container.find('.customer-price-list')[0];
-                        mThis.setCustomerPriceList(id, name, span ? span.parentElement : null, pl_id);
+                        let tr = VSUtil.closestLimited(lnk,'tr');
+                        mThis.setCustomerPriceList(id, tr);
                         return;
                     }
                     //Click on Delete Merchant
@@ -408,10 +424,8 @@
                     lnk = VSUtil.getElementByClass(e.target, 'set-price-list');
                     if (lnk) {
                         const id = lnk.dataset.id;
-                        let pl_id = lnk.dataset.pricelistid;
-                        let name = lnk.dataset.name;
-                        let span = container.find('.customer-price-list')[0];
-                        mThis.setCustomerPriceList(id, name, span ? span.parentElement : null, pl_id);
+                        let tr = VSUtil.closestLimited(lnk,'tr');
+                        mThis.setCustomerPriceList(id,tr);
                         return;
                     }
                     //Click on Change Status
@@ -490,12 +504,15 @@
                 'rowCreated': (data, index, tr) => {
                     tr.dataset.id = data.id;
                     tr.dataset.pricelistid = data.price_list_id;
+                    tr.dataset.customername = data.name;
+                    tr.dataset.statuscode = data.status_code;
                     mThis.store_agents[data.id] = {
                         code: data.code,
                         name: data.name,
                         user_id: data.user_id,
                         phone_number: data.phone_number
                     };
+                   setInstanceVisible(tr,'price_list_name','lnk_set_price_list'); 
                 },
                 'beforeRender': () => { }
             });
@@ -520,9 +537,7 @@
                 let lnk = VSUtil.closestLimited(e.target,'.lnk_set_price_list');
                 if(lnk){
                      let id = lnk.dataset.id;
-                     let cust_name = lnk.dataset.customername;
-                     let def_price_list_id = lnk.closest('tr').dataset.pricelistid;
-                     mThis.setPriceList(id,cust_name,def_price_list_id,lnk);
+                     mThis.setPriceList(id,lnk);
                      return;
                 }
             } 

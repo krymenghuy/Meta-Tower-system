@@ -16,21 +16,23 @@ var SuppliersComponent = new function(){
     this.btnPrint = mThis.self.find('#_sdl_btnPrint');
     this.btnPDF = mThis.self.find('#_sdl_btnPDF');
 
-    this.setSupplierPriceList = (supplier_id,name=null,span=null,def_price_list_id=null) => {
+    this.setSupplierPriceList = (supplier_id,tr) => {
         mThis.getPriceListItems((items)=>{
             items.unshift({
                 id: null,
                 name: 'Select price list'
             });
+            let supplier_name = tr.dataset.suppliername;
+            let pl_list_id = tr.dataset.pricelistid;
 
             let option = {
-                title: `Set Price List for ${name ? name : 'Supplier'}`,
+                title: `Set Price List for ${supplier_name? supplier_name : 'Supplier'}`,
                 dataLabel: "Price list name",
                 valueMember: "id",
                 textMember: "name",
                 blankErrorMessage: "Please a price list",
                 data: items,
-                defaultValue: def_price_list_id
+                defaultValue: pl_list_id
             };
 
             InputBox2.show(option,(d)=>{
@@ -44,8 +46,9 @@ var SuppliersComponent = new function(){
                         // console.log(res.status_code);
                         if(res.status_code === 200){
                             let d = StringSanitizer.sanitizeObject(res.data);
-                            span.textContent = d.list_name; 
-                            cv_interact.success('Price list ' + d.list_name + ' has been assigned to the supplier successfully');
+                            tr.querySelector('span.price_list_name').textContent = d.list_name; 
+                            InputBox2.close();
+                            cv_interact.success('Price list ' + d.list_name + ' has been assigned');
                             
                         }
                         else
@@ -102,7 +105,7 @@ var SuppliersComponent = new function(){
             data: (data,index,tr)=>{
                 let price_list_html = data.price_list_name ? `<span class="supplier-price-list">${data.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="set-price-list">
                 <i class="fa-solid fa-pencil text-danger"></i></a>`;
-                const sender_info = ['<span class="sender-name text-primary d-block">',price_list_html,'</span>'].join('');
+                const sender_info = ['<span class="price_list_name text-primary d-block">',price_list_html,'</span>'].join('');
                 return sender_info;
             },
             // title: mThis.trans('Sender ID')
@@ -240,14 +243,12 @@ var SuppliersComponent = new function(){
   
         container.off('click').on('click',e => {
             e.preventDefault();
-             
-           
- 
             //click on Set Price List
             let lnk = VSUtil.getElementByClass(e.target,'set-price-list');
             if(lnk){
                 // console.log(lnk);
-                mThis.setSupplierPriceList(lnk.dataset.id,lnk.dataset.name,lnk.parentElement,null);
+                let tr = VSUtil.closestLimited(lnk, 'tr');
+                mThis.setSupplierPriceList(lnk.dataset.id,tr);
                 return;
             }
          });
@@ -276,10 +277,8 @@ var SuppliersComponent = new function(){
                 lnk = VSUtil.getElementByClass(e.target,'btn-set-price-list');
                 if(lnk){
                     const id = lnk.dataset.id;
-                    let pl_id = lnk.dataset.pricelistid;
-                    let name = lnk.dataset.name;
-                    let span = container.find('.supplier-price-list')[0];
-                    mThis.setSupplierPriceList(id,name, span ? span.parentElement : null ,pl_id); 
+                    let tr = VSUtil.closestLimited(lnk,'tr');
+                    mThis.setSupplierPriceList(id,tr); 
                     return;
                 }
                 //Click on Delete Merchant
@@ -316,10 +315,11 @@ var SuppliersComponent = new function(){
                 lnk = VSUtil.getElementByClass(e.target,'btn-set-price-list');
                 if(lnk){
                     const id = lnk.dataset.id;
-                    let pl_id = lnk.dataset.pricelistid;
-                    let name = lnk.dataset.name;
-                    let span = container.find('.supplier-price-list')[0];
-                    mThis.setSupplierPriceList(id,name, span ? span.parentElement : null ,pl_id); 
+                    // let pl_id = lnk.dataset.pricelistid;
+                    // let name = lnk.dataset.name;
+                    // let span = container.find('.supplier-price-list')[0];
+                    let tr = VSUtil.closestLimited(lnk,'tr');
+                    mThis.setSupplierPriceList(id,tr); 
                     return;
                 }
 
@@ -406,6 +406,9 @@ var SuppliersComponent = new function(){
             rowCreated:(data,index,tr)=>{
                 
               tr.dataset.id = data.id;  
+              tr.dataset.suppliername = data.name;
+              tr.dataset.pricelistid = data.price_list_id;
+              tr.dataset.statuscode = data.status_code;
               tr.classList.add('supplier');
               tr.setAttribute('id',['supplier_id',data.id].join('')); 
             //   tr.dataset.statusid = data.status_id;

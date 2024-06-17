@@ -179,7 +179,6 @@ class CountryZone //extends Model
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
        return  DB::table('os_zone_countries as z')->join('loc_countries as c','z.country_id','=','c.country_id')->where('z.id',$id)->where('z.branch_id',$branch_id)->selectRaw('z.id,z.zone_code,c.name AS country_name, c.code as country_code, z.create_user,z.update_user, formatTime(z.update_date) AS create_date')->first();
- 
     }
 
     function deleteZone($country_id,$ss=null){
