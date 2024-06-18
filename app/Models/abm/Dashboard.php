@@ -2,14 +2,13 @@
 
 namespace App\Models\Abm;
 use DB;
-use App\Models\DV;
-use App\Models\JDV;
-use App\Models\Dms\PublicStorage;
-use Illuminate\Pagination\LengthAwarePaginator;
+// use App\Models\DV;
+// use App\Models\Dms\PublicStorage;
+// use Illuminate\Pagination\LengthAwarePaginator;
 use DateTime;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
-use Sanitizer;
+// use Sanitizer;
 use Localization;
 class Dashboard //extends Model
 {   
@@ -21,18 +20,19 @@ class Dashboard //extends Model
     }
     
     
-    static function getSliceCircle($status_id){
+    static function getCircleColor($status_id){
         $colors = [1=>'#E3EA00',2=>'#6200EA',3=>'#33EA00'];
         return $colors[$status_id];
     }
 
-    static function getHeaderCards($ss){   
+    static function getCards($ss){   
         $branch_id = $ss->branch_id;
         $circle_cards=[];
         $normal_cards =[];
         $status_ids = [1,2,3];
         $statuses = [1=>'Pending',2=>'Shipping',3=>'Validated'];
-
+        
+        $str_branch = 'branch_id = '.$branch_id ?? 0;
         $str_dates = '1=1';
         $rows = DB::table('os_shipments as s')->join('os_shipment_statuses as n', 'n.id','=','s.status_id')->whereIn('s.status_id',$status_ids)->whereRaw($str_dates)->selectRaw('COUNT(s.id) as cnt, s.status_id, n.name as `status`')->groupByRaw('s.status_id, n.name')->get();
         $total = 0;
@@ -48,13 +48,13 @@ class Dashboard //extends Model
                 $item= (object)[
                     'value'=>$row->cnt,
                     'status'=>$row->status,
-                    'colorSlice'=> self::getSliceCircle($row->status_id)
+                    'colorSlice'=> self::getCircleColor($row->status_id)
                 ];
            }else{
             $item= (object)[
                 'value'=>0,
                 'status'=> $statuses[$status_id],
-                'colorSlice'=> self::getSliceCircle($status_id)
+                'colorSlice'=> self::getCircleColor($status_id)
             ];
            }
 
@@ -77,7 +77,7 @@ class Dashboard //extends Model
             $customer_cnt += $row->cnt;
         }
         $normal_cards [] = (object)[
-            'title'=>Localization::translate('titles','Total Customer',$ss->lang),
+            'title'=>'Total Customer',
             'value'=>$customer_cnt,
             'icon'=> '<i class="fas fa-user-plus text-info" style="font-size: 3rem;width: 100px;"></i>',
             'color'=>'#0000'
@@ -106,117 +106,111 @@ class Dashboard //extends Model
             'circle_cards' => $circle_cards,
             'normal_cards' => $normal_cards
         ];
-        
-        
-        // $total_customer = DB::table('sender as s')->join('sender_classes as sc','sc.sender_id','=','s.id')->where('sc.sender_class','oversea')->count('s.id');
-        // $active_customer = DB::table('sender as s')->join('sender_classes as sc','sc.sender_id','=','s.id')->where('sc.sender_class','oversea')->where('s.status_code','active')->count('s.id');
-        // $active_seles_agent = DB::table('os_affiliates as a')->join('os_sales_agents as sa','sa.affiliate_id','=','a.id')->where('a.status_code','Active')->count('a.id');
-        // // return [$total_customer , $active_customer ,$active_seles_agent];
-        
-        // $data->shipments_panding = (object)[$panding, number_format(($panding/$total)*100, 2)];
-        // $data->shipments_shipping = (object)[$shipping, number_format(($shipping/$total)*100, 2)];
-        // $data->shipments_validated = (object)[$validated, number_format(($validated/$total)*100, 2)];
-        // $data->shipments_total = $total;
-
-        $data->total_customer = $total_customer;
-        $data->active_customer = $active_customer;
-        $data->active_seles_agent = $active_seles_agent;
-        // return $data;
     }
 
-    static function getBodyCards($ss){   
+    static function getShipmentsByCountry($ss){
 
+    }
+
+    static function getShipmentsBySupplier($ss){
         $branch_id = $ss->branch_id;
-        $progress_cards=[];
-        $country_cards =[];
-        $supplier_cards =[];
-
-        $str_dates = '1=1';
+        $str_branch = 's.branch_id = '.($branch_id ?? 0);
         $start_date = date('Y-m-d', strtotime('-90 days'));
-        $end_date = new DateTime();
-        $end_date = $end_date->format('Y-m-d'); 
-        $str_dates = "DATE(i.create_date) >= '$start_date' AND DATE(i.create_date) <= '$end_date'";
-        // $total_shipment = DB::table('os_shipments as i')->where('i.status_id',3)->whereRaw($str_dates)->count('i.id');
-        $status_ids = [1,2];
-        // return $rows = DB::table('os_customer_invoices as i')->whereIn('i.status_id',$status_ids)->whereRaw($str_dates)->selectRaw('COUNT(i.id) as cnt, i.status_id, i.amount_due')->groupByRaw('i.status_id')->get();
+        $str_dates = 'DATE(s.create_date) >=  \''.$start_date.'\'';
+        $cols = 's.supplier_id, sp.name AS supplier_name, COUNT(s.id) AS cnt, s.status_id, s.pmt_status_id, st.name AS status';
+        $rows = DB::table('os_shipments as s')->join('os_shipment_statuses as st','st.id','=','s.status_id')->join('os_suppliers as sp','sp.id','=','s.supplier_id')->whereRaw($str_dates)->whereRaw($str_branch)->selectRaw($cols)->groupByRaw('s.supplier_id,s.status_id,s.pmt_status_id, st.name, sp.name')->get();
+        $countByStatus = [];
+        $countByPmtStatus = [];
 
-        $cnt_invoice = DB::table('os_customer_invoices as i')->whereRaw($str_dates)->count('i.id');
-        $cnt_invoice_paid =  DB::table('os_customer_invoices as i')->where('i.status_id',2)->whereRaw($str_dates)->count('i.id');
-        $invoce_amount =  DB::table('os_customer_invoices as i')->whereRaw($str_dates)->selectRaw('i.amount_due')->get();
-        $invoce_amount_paid =  DB::table('os_customer_invoices as i')->where('i.status_id',2)->whereRaw($str_dates)->selectRaw('i.amount_due')->get();
+        $checkDuplicates = [];
+        $supplier_list = [];
+        foreach($rows as $row){
+            $supplier_id = $row->supplier_id;
+            $shipment_status = strtolower($row->status);
+            if($shipment_status === 'delivered') $shipment_status ='success';
+            $shipment_status = $shipment_status.'_count';
+
+            $pmt_status = $row->pmt_status_id ==1? 'paid': 'unpaid';
+            $pmt_status =   $pmt_status.'_count';
+            if (!isset($countByStatus[$supplier_id])) $countByStatus[$supplier_id] = [];
+            if (!isset($countByStatus[$supplier_id][ $shipment_status])) $countByStatus[$supplier_id][ $shipment_status] = 0;
+            $countByStatus[$supplier_id][ $shipment_status] += $row->cnt;
+ 
+           if(!isset($countByPmtStatus[$supplier_id])) $countByPmtStatus[$supplier_id] = [];
+           if(!isset($countByPmtStatus[$supplier_id][$pmt_status])) $countByPmtStatus[$supplier_id][$pmt_status] = 0;
+           $countByPmtStatus[$supplier_id][$pmt_status] += $row->cnt;
+           
+           //Collect the list of unique Supplier List (supplier_id, supplier_name)
+           if(!in_array($supplier_id,$checkDuplicates)){
+            $supplier_list[] =[
+                'supplier_id'=>$supplier_id,
+                'supplier_name'=>$row->supplier_name
+              ];
+           }
+        }
         
-        $total_invoce_amount = 0;
-        foreach($invoce_amount as $amount){
-            $total_invoce_amount += $amount->amount_due; 
-        }
-        $total_invoce_amount_paid =0;
-        foreach($invoce_amount_paid as $amount_paid){
-            $total_invoce_amount_paid += $amount_paid->amount_due; 
-        }
+       foreach($supplier_list as $sp){
+           foreach($countByStatus as $shipment_status =>$count){
+            $sp[$shipment_status] = $count;
+           }
+           foreach($$countByPmtStatus as $pmt_status =>$count){
+            $sp[$pmt_status] = $count;
+           }
+       }
+       return $supplier_list;
+    }
 
-        $cnt_bill_payment = DB::table('os_payments as i')->whereRaw($str_dates)->count('i.id');
-        $cnt_bill_payment_paid =  DB::table('os_payments as i')->join('os_bill_payments as b','b.payment_id','=','i.id')->whereRaw($str_dates)->count('i.id');
-        $bill_payment_amount =  DB::table('os_payments as i')->whereRaw($str_dates)->selectRaw('i.amount')->get();
-        $bill_payment_amount_paid =  DB::table('os_payments as i')->join('os_bill_payments as b','b.payment_id','=','i.id')->whereRaw($str_dates)->selectRaw('b.total_price')->get();
+    static function getPaymentOverview($ss){
+        $branch_id = $ss->branch_id;
+        $str_branch = 'inv.branch_id = '.($branch_id ?? 0);
+        $start_date = date('Y-m-d', strtotime('-90 days'));
+        $str_invoice_dates = 'DATE(inv.create_date) >=  \''.$start_date.'\'';
         
-        $total_bill_payment_amount = 0;
-        foreach($bill_payment_amount as $payment){
-            $total_bill_payment_amount += $payment->amount; 
-        }
-        $total_bill_payment_amount_paid = 0;
-        foreach($bill_payment_amount_paid as $payment_paid){
-            $total_bill_payment_amount_paid += $payment_paid->total_price; 
-        }
-
-        // if($total_shipment ==0) $total_shipment =1;
-        $progress_cards [] = (object)[
-            'cnt_invoice'=> $cnt_invoice,
-            'invoce_paid_percent'=> number_format($cnt_invoice_paid *100 / $cnt_invoice,2),
-            'total_invoce_amount'=> number_format($total_invoce_amount,2),
-            'invoce_amount_paid '=> number_format($total_invoce_amount_paid,2),
-            'invoice_color'=> '',
-
-            'cnt_bill_payment'=> $cnt_bill_payment,
-            'bill_payment_paid_percent'=> number_format($cnt_bill_payment_paid *100 / $cnt_bill_payment,2),
-            'total_bill_payment_amount'=> number_format($total_bill_payment_amount,2),
-            'total_bill_payment_amount_paid'=> number_format($total_bill_payment_amount_paid,2),
-            'payment_color'=> '',
+        $paid_count = ', SUM(CASE inv.amount_paid >= inv.amount_due WHEN 1 THEN 1 ELSE 0 END) AS paid_count';
+        $unpaid_count = ', SUM(CASE inv.amount_paid < inv.amount_due WHEN 1 THEN 1 ELSE 0 END) AS unpaid_count';
+        $invoiceInfo = DB::table('os_invoices as inv')->whereRaw($str_invoice_dates)->whereRaw($str_branch)->selectRaw('COUNT(inv.id) AS invoice_count, SUM(inv.amount_due) AS total_amount, SUM(IFNULL(inv.amount_paid,0)) As amount_paid, SUM(IFNULL(inv.amount_due,0) - IFNULL(inv.amount_paid,0) ) AS amount_unpaid'.$paid_count.$unpaid_count)->get()->first();
+          
+        $total_invoce_amount = $invoiceInfo->total_amount;
+        $total_invoce_amount_unpaid = $invoiceInfo->amount_unpaid;
+       
+        $str_shipment_dates = 'DATE(s.create_date) >= \''.$start_date.'\'';
+        $shipmentInfo = DB::table('os_shipments as s')->whereRaw($str_shipment_dates)->selectRaw('COUNT(s.id) AS shipment_count, SUM(IFNULL(s.carrier_cost, 0)) AS total_bill_amount, SUM(CASE IFNULL(s.pmt_status_id,0) = 0 WHEN 1 THEN s.carrier_cost ELSE 0 END) AS total_bill_unpaid')->get()->first();
+         
+        $total_bill_amount =   $shipmentInfo->total_bill_amount;
+        $total_bill_amount_unpaid = $shipmentInfo->total_bill_unpaid;
+        
+        if($total_invoce_amount ==0) $total_invoce_amount =1; 
+        $total_bill_amount = $total_bill_amount ?? 1;
+        return [
+            'invoice'=>[
+                'background_color'=>'green',
+                'alt_color'=>'red',
+                'alt_text_color'=>'white',
+                'alt_perent'=> number_format( $total_invoce_amount_unpaid *100 / $total_invoce_amount,2),
+                'alt_amount'=> number_format($total_invoce_amount_unpaid,2),
+                //'alrt_count'=>$invoiceInfo->invoice_count,
+                'alt_notes'=>'Unpaid invoices $'.number_format($total_invoce_amount_unpaid,2).' of total $'.$total_invoce_amount
+             ],
+             'bill'=>[
+                'background_color'=>'#1884E3',
+                'alt_color'=>'red',
+                'alt_text_color'=>'white',
+                'alt_perent'=> number_format($total_bill_amount_unpaid *100 / $total_bill_amount,2),
+                'alt_amount'=> number_format($total_bill_amount_unpaid,2) ,
+                //'alt_count'=>$shipmentInfo->shipment_count,
+                'alt_notes'=>  'Unpaid bill $'.number_format($total_bill_amount_unpaid,2).' of total $'.$total_bill_amount
+             ]
         ];
+    }
 
-        //country_cards
-        $rows = DB::table('os_shipments as s')->join('loc_countries as c', 'c.id','=','s.to_country_id')->selectRaw('COUNT(c.id) as count_shipment_by_country_id ,c.name as country_name ,c.id as country_id')->groupByRaw('c.id,c.name')->get();
-
-        
-        foreach($rows as $row){
-            $shipment_by_country = null;
-            $shipment_by_country = (object)[   
-                'shipment_by_country'=> $row->count_shipment_by_country_id,
-                'country_name'=>$row->country_name
-            ];
-            $country_cards [] = $shipment_by_country;
-        }
-
-        // supplier card
-        $statuses = [1=>'Pending',2=>'Shipping',3=>'Validated'];
-        return $rows = DB::table('os_shipments as s')->join('os_suppliers as sp', 'sp.id','=','s.supplier_id')->whereIn('s.status_id',$status_ids)->selectRaw('COUNT(sp.id) as count_by_status ,sp.name as supplier_name')->groupByRaw('sp.id,sp.name')->get();
-
-        foreach($rows as $row){
-            $shipment_by_country = null;
-            $shipment_by_country = (object)[   
-                'shipment_by_country'=> $row->count_shipment_by_country_id,
-                'country_name'=>$row->country_name
-            ];
-            $country_cards [] = $shipment_by_country;
-        }
-        
+    /** getOverviewData() is the second API for dashboard. It returns second halft of data for dashboard */
+    static function getOverviewData($ss){   
         return (object)[
             'period'=>'Over last 90 days',
-            'progress_cards' => $progress_cards,
-            'country_cards' => $country_cards,
-            'supplier_cards' => $supplier_cards
+            'progress_bars' =>self::getPaymentOverview($ss),
+            //'customer_table' => self::getShipmentsByCountry($ss),
+            'supplier_table' => self::getShipmentsBySupplier($ss)
         ];
-        
-
     }
 
 }

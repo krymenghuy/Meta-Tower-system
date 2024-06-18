@@ -49,10 +49,11 @@ use App\Http\controllers\abm\DashboardController;
     });
 
      //begin::PriceController
-    Route::post('os_suppliers/set-price-list', [SupplierController::class, 'setSupplierPriceList']);
+   
     // Route::post('getComboItems_price_list', [PriceController::class, 'getComboItems_price_list']);
 
-    Route::middleware([CustomRateLimiter::class])->prefix('os_suppliers')->group(function(){
+    Route::middleware([CustomRateLimiter::class])->prefix('suppliers')->group(function(){
+        Route::post('/set-price-list', [SupplierController::class, 'setSupplierPriceList']);
         Route::post('/save', [SupplierController::class, 'save']);
         Route::post('/list', [SupplierController::class, 'getSuplierList']);
         Route::post('/form-options', [SupplierController::class, 'getFormOptions']);
@@ -166,8 +167,8 @@ use App\Http\controllers\abm\DashboardController;
     
     
     Route::prefix('dashboard')->group(function(){
-        Route::post('/cards', [DashboardController::class, 'getHeaderCards']);
-        Route::post('/body-cards', [DashboardController::class, 'getBodyCards']);
+        Route::post('/cards', [DashboardController::class, 'getCards']);
+        Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
     });
    //begin:: Counties_Zone_Code
     Route::prefix('country')->group(function(){

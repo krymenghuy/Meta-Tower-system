@@ -145,8 +145,8 @@ class Invoice //extends Model
         $id = $res->id;
         $supplier_created = !$id;
         // return JDV::result($inputs);
-        $id = saveData($ss, 'os_customer_invoices', ['id' => $id], $inputs, [], 1, 0);
-        $created_invoice = DB::table('os_supplier_payments')->count('id');
+        $id = saveData($ss, 'os_invoices', ['id' => $id], $inputs, [], 1, 0);
+        $created_invoice = DB::table('os_invoice_payments')->count('id');
         // if ($id > 0) {
         //     DB::table('os_shipments')->where('id', $d->shipment_id)->update(['paid_status_id' => 2, 'trx_id' => $trx_id]);
         // }
@@ -157,7 +157,7 @@ class Invoice //extends Model
             if ($supplier_created) {
                 $new_code = $this->getNextSenderCode($ss); // formatNumber($sender_id,5);
                 //$inputs['code'] = $new_code;
-                DB::table('os_customer_invoices')->where('id', $id)->update(['code' => $new_code]);
+                DB::table('os_invoices')->where('id', $id)->update(['code' => $new_code]);
             }
             foreach ($ret_rows as $i => $row) {
                 DB::table('os_shipments')->where('id', $row->id)->update(['status_id' => 4, 'customer_trx_id' => $created_invoice]);
@@ -201,7 +201,7 @@ class Invoice //extends Model
 
     //     $supplier_created = !$id;
 
-    //     $id = saveData($ss,'os_customer_invoices',['id'=>$id],$inputs,[],1,0);   
+    //     $id = saveData($ss,'os_invoices',['id'=>$id],$inputs,[],1,0);   
     //     if($id > 0){
     //         $new_code = null;
 
@@ -209,7 +209,7 @@ class Invoice //extends Model
     //         if ($supplier_created){
     //             $new_code = $this->getNextSenderCode($ss); // formatNumber($sender_id,5);
     //             //$inputs['code'] = $new_code;
-    //             DB::table('os_customer_invoices')->where('id',$id)->update(['code'=>$new_code]);
+    //             DB::table('os_invoices')->where('id',$id)->update(['code'=>$new_code]);
     //          }a
 
     //     }
@@ -235,7 +235,7 @@ class Invoice //extends Model
     }
     function getInvoiceList()
     {
-        return DB::table('os_customer_invoices')
+        return DB::table('os_invoices')
             // ->join('sender as s','s.id',"=","ci.sender_id")
             // ->join('os_shipments as sh','sh.id','=','ci.shipment_id')
             ->selectRaw('id,sender_id,invoice_type,amount,discount_percent,discount_amount,discount_type,amount_due,issue_date,due_date,pmt_terms,create_date')->get();
@@ -322,7 +322,7 @@ class Invoice //extends Model
         $skip_row = ($current_page - 1) * $per_page;
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
         // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
-        $query = DB::table('os_customer_invoices as ci')
+        $query = DB::table('os_invoices as ci')
             ->join('os_invoice_types as oit', 'oit.id', '=', 'ci.invoice_type_id')
             ->join('sender as s', 's.id', '=', 'ci.sender_id')
             ->join('os_invoice_statuses as ois', 'ois.id', '=', 'ci.status_id')
@@ -361,14 +361,13 @@ class Invoice //extends Model
         $data->customer = DB::table('sender as s')->where('branch_id', $branch_id)->selectRaw('s.id,s.name as sender')->get();
         $data->invoice_type = DB::table('os_invoice_types as oit')->selectRaw('oit.id,oit.name as invoice_type')->get();
 
-
         return $data;
     }
 
     static function details($id, $ss)
     {
         $branch_id = $ss->branch_id;
-        $row = DB::table('os_customer_invoices')->selectRaw('id,sender_id,invoice_type_id,amount,discount_percent,discount_amount,discount_type,amount_due,issue_date,due_date,pmt_terms,create_date')->where('branch_id', $branch_id)->where('id', $id)->take(1)->first();
+        $row = DB::table('os_invoices')->selectRaw('id,sender_id,invoice_type_id,amount,discount_percent,discount_amount,discount_type,amount_due,issue_date,due_date,pmt_terms,create_date')->where('branch_id', $branch_id)->where('id', $id)->take(1)->first();
 
         return $row;
     }
@@ -377,7 +376,7 @@ class Invoice //extends Model
 
         $id = $id ?? $this->id;
 
-        $delete = DB::table('os_customer_invoices')->where('id', $id)->delete();
+        $delete = DB::table('os_invoices')->where('id', $id)->delete();
         return DV::depends($delete, ['action', 'deleted']);
     }
 

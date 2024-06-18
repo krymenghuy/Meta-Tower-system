@@ -227,7 +227,7 @@ class Customer //extends Model
     $branch_id = $ss->branch_id;
 
     $current_page = isset($d->current_page) ? $d->current_page : 1;
-    $per_page = isset($d->per_page) ? $d->per_page : 10;
+    $per_page = isset($d->per_page) ? $d->per_page : 8;
     if (!is_numeric($current_page)) $current_page = 1;
     $skip_rows = ($current_page - 1) * $per_page;
 

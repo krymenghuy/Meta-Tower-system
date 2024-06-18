@@ -1,10 +1,10 @@
 
 
 <style>
-    body {
+    /* body {
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
-        }
+        } */
         .card {
             border: none;
             border-radius: 10px;
@@ -15,18 +15,18 @@
             border-bottom: none;
             font-weight: bold;
         }
-        .progress {
-            height: 15px;
-        }
-        .progress-bar {
-            border-radius: 10px;
-        }
-        .progress-bar-interactive {
+        /* .progress {
+            height: 35px;
+        } */
+        /* .progress-bar {
+            border-radius: 0px;
+        } */
+        /* .progress-bar-interactive {
             background-color: #6c63ff;
-        }
-        .progress-bar-page {
+        } */
+        /* .progress-bar-page {
             background-color: #ff6c63;
-        }
+        } */
         .icon {
             font-size: 20px;
             margin-right: 5px;
@@ -78,23 +78,23 @@
             background: #eceff1;
         } */
 
-        h1 {
+        /* h1 {
             margin: auto;
             text-transform: uppercase;
             text-align: center;
             padding-top: 30px;
-        }
+        } */
 
-        .flex {
+        /* .flex {
             display: flex;
-        }
+        } */
 
-        .container {
+        /* .container {
             flex-wrap: wrap;
             justify-content: center;
             max-width: 100%;
             margin: auto;
-        }
+        } */
 
         .info {
             justify-content: space-between;
@@ -112,14 +112,14 @@
         .info-code:hover {
             color: salmon;
         }
-
-        .progress-wrapper {
+         
+        /* .progress-wrapper {
             max-width: 350px;
             justify-content: space-between;
             margin: auto;
             padding: 20px;
             text-transform: uppercase;
-        }
+        } */
 
         [type="range"] {
             width: 200px;
@@ -357,23 +357,37 @@
                                 <div id="db_country_cards" class="col-md-6 overview-section">
                                     <div class="card">
                                         <div class="card-header">
-                                            <p class="section-title mb-0 fs-5">Shipments by country</p>
+                                            <p class="section-title mb-0 fs-5 trans-text" data-langprop="titles.Shipments by Carrier">Shipments by Carrier</p>
                                         </div>
-                                            
-                                        <div class="card-body ">
-                                            <div class=" gap-3 d-flex">
+                                        <div class="card-body">
+                                            <div class="db_card_table gap-3 d-flex" id="db_shipments_by_supplier">
                                                 <div class="links-overview d-block text-start w-50 p-0">
-                                                    <p class="w-50 p-0">Country</p>
-                                                    <div class="w-100 d-flex justify-content-between"><p>Nofollow:</p> <p>23</p></div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>Dofollow: </p> <p></p>663</div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>Noreferrer: </p> <p>45</p></div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>Noopener: </p> <p>102</p></div>
+                                                    <p class="w-50 p-0 fw-semibold text-warning">Carrier</p>
+                                                    <div class="w-100 d-flex justify-content-between"><p>DHL</p></div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>FeDeX</p> </div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>TNT </p> </div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>MUST</p></div>
                                                 </div>
+                                            
                                                 <div class="links-overview d-block w-50 p-0">
-                                                    <p class="w-50 p-0">Shippments</p>
-                                                    <div class="w-100 d-flex justify-content-between"><p>Internal: </p> <p>154</p></div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>External: </p> <p>35</p></div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>Anchor: </p> <p>19</p></div>
+                                                    <p class="w-50 p-0 text-warning">Shipping</p>
+                                                    <div class="w-100 d-flex justify-content-between"><p>10 </p></div>
+                                                    <div class="w-100 d-flex justify-content-between"><p> 10</p></div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>10 </p></div>
+                                                </div>
+
+                                                <div class="links-overview d-block w-50 p-0">
+                                                    <p class="w-50 p-0 text-warning">Delivered</p>
+                                                    <div class="w-100 d-flex justify-content-between"><p>12</p></div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>12</p></div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>19</p></div>
+                                                </div>
+
+                                                <div class="links-overview d-block w-50 p-0">
+                                                    <p class="w-50 p-0 text-warning">Unpaid</p>
+                                                    <div class="w-100 d-flex justify-content-between"><p>20</p></div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>35</p></div>
+                                                    <div class="w-100 d-flex justify-content-between"><p>19</p></div>
                                                 </div>
                                             </div>
                                         </div>
@@ -386,7 +400,7 @@
                                 <div id="db_supplier_cards" class="col-md-12 overview-section">
                                     <div class="card">
                                         <div class="card-header">
-                                            <p class="section-title mb-0 fs-5">Shippments by carrier</p>
+                                            <p class="section-title mb-0 fs-5">Shippments by Country</p>
                                         </div>
                                         <div class="card-body">
                                             <table class="table table-striped">

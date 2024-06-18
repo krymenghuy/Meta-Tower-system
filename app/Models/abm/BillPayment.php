@@ -3,7 +3,6 @@
 namespace App\Models\Abm;
 use DB;
 use App\Models\DV;
-use App\Models\JDV;
 use App\Models\Dms\PublicStorage;
 use Illuminate\Pagination\LengthAwarePaginator;
 use DateTime;
@@ -11,7 +10,8 @@ use DateTime;
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 // use Illuminate\Database\Eloquent\Model;
 use Sanitizer;
-class Payment //extends Model
+
+class BillPayment //extends Model
 {   
     protected $id = null;
     protected $userInfo = null;
@@ -53,8 +53,8 @@ class Payment //extends Model
             return (object)['status'=>'error','status_code'=>405,'error_message'=>'Shipment('.$check->code.') Validate unacceptable!','data'=>$check->code];
         $supplier_created = !$id; 
         // return JDV::result($inputs);
-        $id = saveData($ss,'os_supplier_payments',['id'=>$id],$inputs,[],1,0);   
-        $trx_id = DB::table('os_supplier_payments')->count('id');
+        $id = saveData($ss,'os_bill_payments',['id'=>$id],$inputs,[],1,0);   
+        $trx_id = DB::table('os_bill_payments')->count('id');
         if($id > 0){
             DB::table('os_shipments')->where('id',$d->shipment_id)->update(['paid_status_id'=>2,'trx_id'=>$trx_id]);
             $shipmentInfo = DB::table('os_shipments as os')->where('os.id',$d->shipment_id)->first();
@@ -211,8 +211,8 @@ class Payment //extends Model
         $id = $res->id; 
         $supplier_created = !$id;
         // return JDV::result($inputs);
-        $id = saveData($ss,'os_supplier_payments',['id'=>$id],$inputs,[],1,0);   
-        $trx_id = DB::table('os_supplier_payments')->count('id');
+        $id = saveData($ss,'os_bill_payments',['id'=>$id],$inputs,[],1,0);   
+        $trx_id = DB::table('os_bill_payments')->count('id');
         if($id > 0){
             foreach ($ret_rows as $row){
                 DB::table('os_shipments')->where('id',$row->id)->update(['paid_status_id'=>2,'trx_id'=>$trx_id]);
@@ -289,14 +289,14 @@ class Payment //extends Model
 
     function getSuplierList(){
         // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());
-        return DB::table('os_supplier_payments')->selectRaw('id,name, phone_number, email, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->get();
+        return DB::table('os_bill_payments')->selectRaw('id,name, phone_number, email, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->get();
     }
 
     function checkUniquePerson($branch_id,$phone_number,$id=null){
         $str_id ="1=1";
         if(!$phone_number) return 'Phone number cannot be empty';
         if ($id>0) $str_id="s.id <> $id";
-        $x = DB::table('os_supplier_payments as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+        $x = DB::table('os_bill_payments as s')->where('s.branch_id',$branch_id)->where("s.phone_number",$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
         if ($x) return 'Phone number "'.$phone_number.'" is already save...';
         return null;
       }
@@ -320,6 +320,7 @@ class Payment //extends Model
                 $str_dates = "DATE(os.create_date) >= '$from_date' AND DATE(os.create_date) <= '$to_date'";
             // return $start_date; 
             }
+            
             $rows = DB::table('os_shipments as os')->join('os_suppliers as sp','sp.id','=','os.supplier_id')
             ->where('os.branch_id',$branch_id)
             ->whereRaw($str_dates)
@@ -389,7 +390,7 @@ class Payment //extends Model
         $skip_row = ($current_page - 1) * $per_page;
         //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
        // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
-        $query = DB::table('os_supplier_payments as s')
+        $query = DB::table('os_bill_payments as s')
                 ->join('os_affiliates as sa','sa.id','=','s.sales_agent_id')
                 ->whereRaw($str_srch)
                 ->whereRaw($str_where)
@@ -422,7 +423,7 @@ class Payment //extends Model
         $p = getDataRow('price_list_names',["id"=>$price_list_id],"id,name");
         if(!$p) return DV::error("Price list ID is not valid");
         $p_name = $p->name;
-        DB::table('os_supplier_payments')->where('id',$id)->update(array(
+        DB::table('os_bill_payments')->where('id',$id)->update(array(
         'price_list_id'=>$price_list_id));
         // return JDV::result($price_list_id );
         return DV::success(['list_name'=>$p_name,'list_id'=>$price_list_id]);
@@ -440,7 +441,7 @@ class Payment //extends Model
 
         $id = $id ?? $this->id;
 
-        $delete = DB::table('os_supplier_payments')->where('id',$id)->delete();
+        $delete = DB::table('os_bill_payments')->where('id',$id)->delete();
         return DV::depends($delete,['action','deleted']);
     }
 
@@ -467,7 +468,7 @@ class Payment //extends Model
             $err = self::getOutstandingBalanceError($id);
             if($err) return DV::error($err);
             }
-        $x = DB::table('os_supplier_payments')->where('id',$id)->update([
+        $x = DB::table('os_bill_payments')->where('id',$id)->update([
             'status_code'=>$status_code
         ]);
         return DV::depends($x,['Supplier status','updated']);
@@ -499,7 +500,7 @@ class Payment //extends Model
     }
     static function details($id,$ss,$includeProfilePicture=false,$includeBankAccount=true){
         $branch_id = $ss->branch_id;    
-        $row = DB::table('os_supplier_payments')->selectRaw('id,name,code, phone_number, email,sales_agent_id,photo_file_name, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
+        $row = DB::table('os_bill_payments')->selectRaw('id,name,code, phone_number, email,sales_agent_id,photo_file_name, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
         if (!$row) return null;
             //$accounts = self::bankAccounts($id,1);
             // if($row->loc_lat ==0) $row->loc_lat = null;
@@ -519,19 +520,19 @@ class Payment //extends Model
      function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
         $id = $id?$id:$this->id;
         $ss = $ss?$ss:$this->userInfo;
-        $supplier = DB::table('os_supplier_payments')->where('id',$id)->selectRaw('id,branch_id,photo_file_name')->first();
+        $supplier = DB::table('os_bill_payments')->where('id',$id)->selectRaw('id,branch_id,photo_file_name')->first();
         $delete_image = (!$photo_data || isImage($photo_data));
         if(!$supplier)return DV::error('Supplier identity is not correct!');
         if($delete_image){
           PublicStorage::delete($ss->branch_id,'general','image',$supplier->photo_file_name);
-          DB::table('os_supplier_payments')->where('id',$id)->update(['photo_file_name'=>null]);
+          DB::table('os_bill_payments')->where('id',$id)->update(['photo_file_name'=>null]);
         }
-        return PublicStorage::saveImage($ss->branch_id,self::$img_dir, null,$photo_data,null,['id'=>$id,'store'=>'os_supplier_payments.photo_file_name']);  
+        return PublicStorage::saveImage($ss->branch_id,self::$img_dir, null,$photo_data,null,['id'=>$id,'store'=>'os_bill_payments.photo_file_name']);  
         
       }
       static function getProfilePicture($id)
   {
-    $row = DB::table('os_supplier_payments ')->where('id', $id)->selectRaw('branch_id,photo_file_name')->first();
+    $row = DB::table('os_bill_payments ')->where('id', $id)->selectRaw('branch_id,photo_file_name')->first();
     if (!$row) {
       return self::defaultImage(1);
     }
@@ -543,11 +544,11 @@ class Payment //extends Model
       {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $supplier = DB::table('os_supplier_payments')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
+        $supplier = DB::table('os_bill_payments')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
         if (!$supplier)
           return DV::error('Supplier identity is not correct!');
         PublicStorage::delete($ss->branch_id, 'os_supplier', 'image', $supplier->photo_file_name);
-        DB::table('os_supplier_payments')->where('id', $id)->update(['photo_file_name' => null]);
+        DB::table('os_bill_payments')->where('id', $id)->update(['photo_file_name' => null]);
         return DV::depends($id,['Supplier are','update']);
       }
 }

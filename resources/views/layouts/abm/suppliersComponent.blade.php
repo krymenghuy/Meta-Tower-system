@@ -26,43 +26,36 @@
 </style>
 <div id="_main_suppliersComponent" style="display:none; margin-right:15px;">
     <div class="d-flex justify-content-between shadow rounded-3 mt-3 p-3 bg-white">
-        <div class="d-flex gap-2">
-            <div class="d-flex gap-2">
-            <button id="_sdl_btnNewSupplier" data-toggle="modal" class="btn btn-primary">
-                <i class="fa fa-users fs-5"></i>
-                <span class="kt-hidden-mobile trans-text" data-langprop="titles.New"></span>
-            </button>
-               
-            </div>
+        <div class="d-flex justify-content-between w-100">
             <div class="d-flex gap-2">
                 <input type="text" class="form-control" id="_sdl_search_supplier" placeholder="Search Supplier">
-                <button id="_sdl_btnSearch" role="button" class="btn btn-primary height">
-                    <i class="la la-search"></i>
-                </button>
-            </div>
-            
-        </div>
-        <div class="d-flex flex-row gap-2">
-        <div class="d-flex gap-2" id="_sdl_filter_fields">
-                <div class="min-width-select d-none">
-                    <select id="_sdl_filter_business_type" class="d-none modal-select2 filter-field" data-field="business_type"></select>
-                </div>
                 <div class="min-width-select">
                     <select id="_sdl_filter_supplier_status" class="modal-select2 filter-field" data-field="status_code">
                         <option value="Active">Active</option>
                         <option value="Inactive">Inactive</option>
                     </select>
                 </div>
+
             </div>
             
-            <button id="_sdl_btnPrint" class="btn btn-success height">
-                <i class="fa fa-print fs-5"></i>
-                <span class="trans-text" data-langprop="buttons.Print"></span>
-            </button>
-            <button id="_sdl_btnExcel" class="btn btn-primary height">
-                <i class="fa fa-file-excel fs-5"></i>
-                <span class="trans-text" data-langprop="buttons.Excel"></span>
-            </button>
+            <div class="d-flex gap-2">
+                    <button id="_sdl_btnNewSupplier" data-toggle="modal" class="btn btn-primary">
+                        <i class="fa fa-users fs-5"></i>
+                        <span class="kt-hidden-mobile trans-text" data-langprop="titles.Add Supplier"></span>
+                    </button>
+               
+            </div>
+
+        </div>
+        <div class="d-flex flex-row gap-2">
+        <div class="d-flex gap-2" id="_sdl_filter_fields">
+                <div class="min-width-select d-none">
+                    <select id="_sdl_filter_business_type" class="d-none modal-select2 filter-field" data-field="business_type"></select>
+                </div>
+             
+            </div>
+            
+            
         </div>
     </div>
     <div class="rounded-3 mt-3 bg-white ">
@@ -102,7 +95,7 @@
                             <div class="form-group col-lg-6">
                                 <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
                                 <span class="text-danger" >*</span>
-                                <div><input class="form-control text-primary data-input" type="number" placeholder="" data-required="1" data-field="phone_number"/></div>
+                                <div><input class="form-control data-input" type="number" placeholder="" data-required="1" data-field="phone_number"/></div>
 
                             </div>
                             <div class="form-group col-lg-6">
@@ -133,26 +126,6 @@
                     <span class="trans-text" data-langprop="buttons.Cancel"></span>
                 </button>
                 <button type="button" class="btn btn-success" id="_sdl_supplier_btnSave">
-                    <span class="trans-text" data-langprop="buttons.Save"></span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade" id="dlg_sdl_add_user" tabindex="-1" aria-labelledby="dlg_sdl_add_user_title" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title trans-text" data-langprop="titles.Create Merchant Login"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body"></div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
-                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
-                </button>
-                <button id="dlg_sdl_add_user_btn_save" type="button" class="btn btn-sm btn-primary">
                     <span class="trans-text" data-langprop="buttons.Save"></span>
                 </button>
             </div>

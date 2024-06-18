@@ -110,7 +110,7 @@
                 className: "align-middle text-capitalize",
                 data: (data, index, tr) => {
                     return ['<div class="d-flex flex-column" >',
-                                '<span class="sender-name d-block">', (data.name || 'គ្មាន'), '</span>',
+                                '<span class="sender-name">', (data.name || 'គ្មាន'), '</span>',
                                 '<div class="d-flex flex-row gap-2">',
                                     '<i class="fa-solid text-warning fa-user"></i>',
                                     '<span class="text-success">', data.sender_type || 'Normal', '</span>',
@@ -123,7 +123,7 @@
                 title: "Contact",
                 className: "align-middle text-nowrap",
                 data: (data, index, tr) => {
-                    return ['<div class="d-flex flex-row gap-2"><i class="fas fa-phone mt-1"></i><span class="">', data.phone_number, '</span></div>','<div class="d-flex p-2" ><i class="fas p-2 fa-envelope"></i><span class=" sender-name d-block p-1">', (data.email || 'គ្មាន'),
+                    return ['<div class="d-flex flex-row gap-2"><i class="fas fa-phone mt-1"></i><span class="">', data.phone_number, '</span></div>','<div class="d-flex gap-2" ><i class="fas fa-envelope p-1"></i><span class="sender-name">', (data.email || 'គ្មាន'),
                         '</span></div>'].join('');
                 }
             },
@@ -151,7 +151,7 @@
                 title: 'price list '
             },
             {
-                title: "Create By",
+                title: "Last Updated",
                 className: 'align-middle text-capitalize',
                 data: (data, index, tr) => {
                     return ['<span class=" sender-name d-block p-1 " >', data.create_user, '</span>', '<span class="d-block p-1 text-muted"><small>', data.created_at, '</small></span>'].join('');

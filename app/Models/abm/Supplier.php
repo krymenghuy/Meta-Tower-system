@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Models\Abm;
-
 use DB;
 use App\Models\DV;
 use App\Models\JDV;
@@ -21,6 +20,7 @@ class Supplier //extends Model
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
+
     function save($arr, $id = null, $ss = null)
     {
         // $id = $id ?? $this->id;
@@ -32,9 +32,8 @@ class Supplier //extends Model
             'phone_number'=>'1|string|1-20',
             'email'=>'0|string',
             'address'=>'0|number',
-            'referrer_id'=>'0|number',
             'code'=>'0|string|0-25',         //Add new code column to table supplier
-            'price_list_id'=>'0|number',
+            'price_list_id'=>'0|number|exists=os_supplier_price_list_names.id',
             'status_code'=>'0|string|default =Active',
             'photo'=>'0|image'        //Add new photo_file_n33ame to table supplier
     ];
@@ -53,17 +52,9 @@ class Supplier //extends Model
         $phone_err = $this->checkUniquePerson($branch_id, $inputs['phone_number'], $id);
         if ($phone_err)
             return DV::error($phone_err);
-        $check_price = isExist('os_supplier_price_list_names', $id, ['id' => $inputs['price_list_id']]);
-        if (!$check_price)
-            return DV::error('Invalid Price list');
-
-        // $check_referrer = isExist('os_sales_agents', $id, ['id' => $inputs['referrer_id']]);
-        // if (!$check_referrer)
-        //     return DV::error('Invalid Referrer');
-  
+        
         $check = isExist('os_suppliers', $id, ['name' => $inputs['name']]);
-
-
+ 
         // $check = isExist('suppliers',$id,['phone_number'=>$inputs['phone_number']]);
         if ($check)
             return DV::error('Name is already save...');
@@ -97,11 +88,11 @@ class Supplier //extends Model
 
     }
 
-    function getSuplierList()
-    {
-        // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());
-        return DB::table('os_suppliers')->selectRaw('id,name, phone_number, email, address,status_code,price_list_id,referrer_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->get();
-    }
+    // function getSuplierList()
+    // {
+    //     // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());
+    //     return DB::table('os_suppliers')->selectRaw('id,name, phone_number, email, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->get();
+    // }
 
     function checkUniquePerson($branch_id, $phone_number, $id = null)
     {
@@ -121,16 +112,10 @@ class Supplier //extends Model
         // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());
         return DB::table('oversea_items')->selectRaw('item_type, billed_weight, actual_weight, allocated_kg, heigth, weigth, length')->get();
     }
-
-
-
-
-    function getSuplierListPaginate($filter, $ss)
+  
+    static function list ($filter, $ss)
     {
-        $branch_id = $ss->branch_id;
         $d = (object) $filter;
-        // return JDV::result($filter->page);
-
         $current_page = isset($d->current_page) ? $d->current_page : 1;
         $per_page = isset($d->per_page) ? $d->per_page : 10;
         $search_value = isset($d->search_value) ? $d->search_value : null;
@@ -139,6 +124,7 @@ class Supplier //extends Model
         $price_list_id = isset($d->price_list_id) ? $d->price_list_id : null;
         $str_srch = '1=1';
         $str_where = '2=2';
+        $str_price_list = '3=3';
         if ($search_value) {
             $skip_row = 0;
             $str_srch = '(s.name LIKE \'%' . $search_value . '%\')';
@@ -146,16 +132,16 @@ class Supplier //extends Model
         if ($status_code) {
             $str_where = 's.status_code = \'' . $status_code . '\'';
         }
-        // if($price_list_id){
-        //     $str_where = 's.price_list_id = '.$price_list_id;
-        // }
+        if($price_list_id){
+            $str_price_list = 's.price_list_id = '.$price_list_id;
+        }
         $skip_row = ($current_page - 1) * $per_page;
-        //$projectName = ',(SELECT p.name FROM projects as p WHERE p.id = r.project_id) as project';
-        // $query = DB::table('requirements as r')->whereRaw($str_srch)->selectRaw('r.id,r.description,r.status_id'.$projectName);
+        $price_list_name = ',(SELECT l.name FROM os_supplier_price_list_names AS l WHERE l.id = s.price_list_id LIMIT 1) AS price_list_name';
         $query = DB::table('os_suppliers as s')
                 ->whereRaw($str_srch)
+                ->whereRaw($str_price_list)
                 ->whereRaw($str_where)
-                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id,getPriceListName(s.price_list_id) AS price_list_name,s.create_user,formatDate(s.create_date) as created_at,DATE_FORMAT(s.create_date,\'%r\') AS request_time' )->orderBy('s.id', 'DESC');;
+                ->selectRaw('s.id ,s.code, s.name, s.phone_number,s.photo_file_name, s.email, s.address, s.status_code,s.branch_id, s.price_list_id'.$price_list_name.',s.create_user,formatTime(s.create_date) as create_date,formatTime(s.update_date) AS update_date' )->orderBy('s.id', 'DESC');
        
         // return $query;
         $clone_query = clone $query;
@@ -196,20 +182,11 @@ class Supplier //extends Model
         // return JDV::result($price_list_id );
         return DV::success(['list_name' => $p_name, 'list_id' => $price_list_id]);
     }
-
-    // function details($id,$ss){
-    //     $id = $id ?? $this->id;
-    //     $branch_id = $ss->branch_id;
-
-    //     $row = DB::table('requirements as r')->where('r.id',$id)->where('r.branch_id',$branch_id)->selectRaw('r.id,r.project_id,r.description,r.status_id')->first();
-    //     return $row;
-    // }
+ 
 
     function delete($id)
     {
-
         $id = $id ?? $this->id;
-
         $delete = DB::table('os_suppliers')->where('id', $id)->delete();
         return DV::depends($delete, ['action', 'deleted']);
     }
@@ -235,20 +212,13 @@ class Supplier //extends Model
     {
         $ss = $ss ? $ss : $this->userInfo;
         $id = $id ? $id : $this->id;
-        // if (in_array(strtolower($status_code), ['inactive', 'locked', 'disabled'])) {
-        //     $err = self::getOutstandingBalanceError($id);
-        //     if ($err)
-        //         return DV::error($err);
-        // }
         $x = DB::table('os_suppliers')->where('id', $id)->update([
-            'status_code' => $status_code
+            'status_code' => $status_code,
+            'update_user'=>$ss->full_name,
+            'update_date'=>getNowTime(),
+            'update_uid'=>$ss->user_id
         ]);
         return DV::depends($x, ['Supplier status', 'updated']);
-        //if(!$x) return DV::error('It seems that provided merchant identity does not exist');
-        // $um = new \App\Models\UM();
-        // $user_id = DB::table('um_users')->where('official_id',$id)->take(1)->value('id');
-        // $res = $um->setUserStatus($status_code,$user_id);
-        // return $res;
     }
 
     static function getOutstandingBalanceError($id)
@@ -260,6 +230,7 @@ class Supplier //extends Model
             return 'មិន​អាច​លុប ឬ​បិទ​គណនី​នេះ​បាន​ទេ ព្រោះ​មាន​កញ្ចប់ ' . $row->item_count . ' ដែល​មិន​ទាន់​បាន​ទូទាត់​ប្រាក់';
         return null;
     }
+
     static function getFormOptions($id, $ss)
     {
         $branch_id = $ss->branch_id;
@@ -270,16 +241,16 @@ class Supplier //extends Model
         $data->supplier = $supplier_details;
         // $data->branches = [(object)['id'=>1,'branch_name'=>'Head Quarter']];
         // $data->sender_types = DB::table('sender_type')->where('branch_id',$branch_id)->selectRaw('id,name AS sender_type')->get();
-        $data->business_types = DB::table('sender_business_types')->selectRaw('business_type AS code,business_type')->get();
-        $data->sender_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name AS status_name')->get();
-        $data->sales_agents = DB::table('os_affiliates AS sa')->where('branch_id',$branch_id)->selectRaw('sa.id,sa.name AS agent_name')->get();
+        //$data->business_types = DB::table('sender_business_types')->selectRaw('business_type AS code,business_type')->get();
+        $data->supplier_statuses = DB::table('sender_statuses')->selectRaw('code as status_code, name AS status_name')->get();
+        //$data->sales_agents = DB::table('os_affiliates AS sa')->where('branch_id',$branch_id)->selectRaw('sa.id,sa.name AS agent_name')->get();
         $data->price_list = DB::table('os_supplier_price_list_names AS l')->where('branch_id',$branch_id)->selectRaw('l.id,l.name')->get();
         
         return $data;
     }
     static function details($id,$ss,$includeProfilePicture=false,$includeBankAccount=true){
         $branch_id = $ss->branch_id;    
-        $row = DB::table('os_suppliers')->selectRaw('id,name,code, phone_number, email,referrer_id,photo_file_name, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
+        $row = DB::table('os_suppliers')->selectRaw('id,name,code, phone_number, email,photo_file_name, address,status_code,price_list_id,formatDate(create_date) as create_date,DATE_FORMAT(create_date,\'%r\') AS request_time')->where('branch_id',$branch_id)->where('id',$id)->take(1)->first();
         if (!$row) return null;
             //$accounts = self::bankAccounts($id,1);
             // if($row->loc_lat ==0) $row->loc_lat = null;

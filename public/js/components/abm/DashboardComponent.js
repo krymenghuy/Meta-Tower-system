@@ -4,21 +4,22 @@ var DashboardComponent = new function () {
     const mThis = this;
     this.title_prop = "Dashboard";
     this.base_url = main_view.base_url;
-    this.self = main_view.appContent.children('#_main_dashboardComponent');
-    this.circle_card_row = mThis.self[0].querySelector('#db_circle_card');
-    this.normal_card_row = mThis.self[0].querySelector('#db_normal_cards');
-    this.progress_card_row = mThis.self[0].querySelector('#db_progress_cards');
-    this.country_card_row = mThis.self[0].querySelector('#db_country_cards');
-    this.supplier_card_row = mThis.self[0].querySelector('#db_supplier_cards');
+    this.jm= main_view.appContent.children('#_main_dashboardComponent');
+    this.self = this.jm[0];
+    this.circle_card_row = mThis.self.querySelector('#db_circle_card');
+    this.normal_card_row = mThis.self.querySelector('#db_normal_cards');
+    this.progress_card_row = mThis.self.querySelector('#db_progress_cards');
+    this.country_card_row = mThis.self.querySelector('#db_country_cards');
+    this.supplier_card_row = mThis.self.querySelector('#db_supplier_cards');
+    this.divShipmentsBySupplier = this.self.querySelector('#db_shipments_by_supplier');
+    this.divShipmentsByCountry = this.self.querySelector('#db_shipments_by_country');
     
-
     this.init= () => {
         if(mThis.initAlready) return;
         
-        
         mThis.initAlready = true;
-
     }
+
     this.initCircleCards = (div)=>{
             const pie = div.querySelectorAll(".pie");
 
@@ -96,7 +97,6 @@ var DashboardComponent = new function () {
             </div>
         </div>`;
         });
-        console.log(mThis.circle_card_row);
         this.circle_card_row.innerHTML = html;
         this.initCircleCards(this.circle_card_row);
     }
@@ -120,31 +120,91 @@ var DashboardComponent = new function () {
         this.normal_card_row.innerHTML = html;
                                 
     }
-    this.renderProgressBar = (d) => {
-        console.log(1,d);
-        let html = '';
-             html += `<div class="card">
-             <div class="card-header">
-                 <p class="section-title mb-0 fs-5">Accounting</p>
-             </div>
-             <div class="card-body">
-                 <p>Overview the Invoice Amount (${d.invoce_paid_percent||0}%)</p>
-                 <div class="progress">
-                     <div class="progress-bar progress-bar-interactive" role="progressbar" style="width: ${d.invoce_paid_percent||0}%;" aria-valuenow="${d.invoce_paid_percent||0}" aria-valuemin="0" aria-valuemax="100"><div style=" position: absolute; width: 94%; color: #000;" >${d.invoce_amount_paid||0}$ of ${d.total_invoce_amount||0}$</div></div>
-                 </div><br>
-                 <p>Overview the Customer Payment Amount (${d.bill_payment_paid_percent||0}%)</p>
-                 <div class="progress mt-2">
-                     <div class="progress-bar progress-bar-page" role="progressbar" style="width: ${d.bill_payment_paid_percent||0}%;" aria-valuenow="${d.bill_payment_paid_percent||0}" aria-valuemin="0" aria-valuemax="100"><div style=" position: absolute; width: 94%; color: #000;" >${d.total_bill_payment_amount_paid||0}$ of ${d.total_bill_payment_amount||0}$</div></div>
-                 </div><br><br><br>
-             </div>
-         </div>`;
-        this.progress_card_row.innerHTML = html;
+
+    this.renderShipmentsBySupplier = (rows = [], height =null)=>{
+        let styleHeight = height > 0 ? `style="height:${height}px;"`:"";
+        let html =[`<div `,styleHeight,` data-field="supplier_name" class="card-col links-overview d-block text-start w-50 p-0">
+                <p class="w-50 p-0 text-warning">Carrier</p>
+            </div>
+
+            <div data-field="shipping_count" class="card-col links-overview d-block w-50 p-0">
+              <p class="w-50 p-0 text-warning">Shipping</p>
+            </div>
+
+            <div data-field="success_count" class="card-col links-overview d-block w-50 p-0">
+                <p class="w-50 p-0 text-warning">Success</p>
+                
+            </div>
+
+            <div data-field="unpaid_count" class="card-col links-overview d-block w-50 p-0">
+                <p class="w-50 p-0 text-warning">Unpaid</p>
+            </div>`].join('');
+        
+            mThis.divShipmentsBySupplier.innerHTML = html;
+            let divs = {};
+            mThis.divShipmentsBySupplier.querySelectorAll('.card-col').forEach(div => {
+                let f = div.dataset.field;
+                if(f) divs[f] = div;
+            });
+
+            const cols = ['supplier_name','shipping_count','success_count','unpaid_count'];          
+            rows.map(row =>{
+                cols.map(col_name =>{
+                    console.log(col_name, '= ', row[col_name]);
+                    let html = `<div class="w-100 d-flex justify-content-between"><p>${row[col_name] || "មិនមាន"}</p></div>`;
+                  
+                    divs[col_name].insertAdjacentHTML(`beforeend`,html);  
+                });
+            });
+            
     }
-    this.renderCountryCards = (d) => {
+
+    this.renderShipmentByCustomer = (d)=>{
+        return;
+    }
+
+    this.renderProgressBars = (bars, card_height = 0) => {
+        let html = '<h5>Payment Overview</h5>';
+                let progress_bar_html = '';
+                for(let bar_name in bars){
+                    if(bars.hasOwnProperty(bar_name)){
+                        let d = bars[bar_name];
+                        progress_bar_html = [progress_bar_html,  
+                            `<div class="flex-wrap d-flex flex-column gap-1 mb-2">`,
+                                    `<div class="d-flex flex-row gap-2"><span class="shadow rounded-2" style="width:50px;height:5px;background:`,d.alt_color,`;"></span> <span style="margin-top:-7px">`,d.alt_notes,`</span></div>`,
+                                    //`<div class="d-flex flex-row gap-2"><span class="shadow rounded-2" style="width:50px;height:5px;background:red;"></span> <span style="margin-top:-7px"><small>60% of $100</small></span></div>`,
+                                `</div>`,
+                                // `<p>Invoice Summary (60%)</p>`,
+                                `<div class="progress">
+                                    <div class="progress-bar progress-bar-interactive" role="progressbar" style="width:100%;background-color:${d.background_color || d.default_background_color};"  aria-valuenow="100";aria-valuemin="0" aria-valuemax="100">`,
+                                    `<div style="width:`,d.alt_percent,`%; color:`,(d.alt_text_color || '#000'),`; text-align: center; background-color:`,d.alt_color,`;">`,d.alt_percent,`% `,(d.alt_percent > 40 ? d.alt_notes:""),`</div>`, 
+                                    `</div>`,
+                                `</div>`,
+                                `<br><br>`
+                            ].join('');
+                    }
+                }
+                let styleHeight = card_height > 0? `style="height:${card_height}px;"`: "";
+                html =[ `<div class="card" `,styleHeight,`>
+                <div class="card-header">
+                    <p class="section-title mb-0 fs-5">Payment Overview</p>
+                </div>
+                <div class="card-body">`,
+                     progress_bar_html,
+                `</div>`,
+            `</div>`].join('');
+
+        mThis.progress_card_row.innerHTML = html;
+    }
+
+    this.renderTableSummaries = (d) => {
+        let title = d.title || "Shipments by country";
+        this.country_card_row.innerHTML = '';
         let html = '';
+
              html += `<div class="card">
              <div class="card-header">
-                 <p class="section-title mb-0 fs-5">Shipments by country</p>
+                 <p class="section-title mb-0 fs-5">${title}</p>
              </div>
                  
              <div class="card-body ">
@@ -155,9 +215,10 @@ var DashboardComponent = new function () {
                             <p class="fs-6 p-0">Shippments</p>
                         </div>`,
                          d.map(c =>{
-                            html+=`<div class="w-100 d-flex justify-content-between"><p>${c.country_name} :</p> <p >${c.shipment_by_country}</p></div>`;
+                            html+=`<div class="w-100 d-flex justify-content-between"><p>${c.country_name} :</p> <p >${c.shipment_count}</p></div>`;
                         
                          });
+
         html += `   </div>
                     <div class="links-overview d-block text-start w-50 p-0">
                         <div class="w-100 d-flex justify-content-between">
@@ -165,7 +226,7 @@ var DashboardComponent = new function () {
                             <p class="fs-6 p-0">Number</p>
                         </div>`,
                         d.map(c =>{
-                            html+=`<div class="w-100 d-flex justify-content-between"><p>${c.country_name} :</p> <p >${c.shipment_by_country}</p></div>`;
+                            html+=`<div class="w-100 d-flex justify-content-between"><p>${c.country_name} :</p> <p >${c.shipment_count}</p></div>`;
                         
                         }); 
         html += `   </div>   
@@ -173,6 +234,7 @@ var DashboardComponent = new function () {
              </div>
              
          </div>`;
+        
         this.country_card_row.innerHTML = html;
     }
 
@@ -215,7 +277,6 @@ var DashboardComponent = new function () {
     this.loadCards = (onFinish)=>{
         let p={};
         vsapi.call(`${mThis.base_url}/abm/dashboard/cards`, p , null,false,false).then(res => {
-            console.log('d2',res.data);
             let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,['icon']) : {};
             mThis.renderCircleCards(d.circle_cards);
             mThis.rederNormalCards(d.normal_cards);
@@ -224,14 +285,14 @@ var DashboardComponent = new function () {
         });
     }
 
-    this.loadBodyCards = (onFinish)=>{
+    /** render second part of dashboard: "Payment Overview", and "Shipments by Cuuntry", "Shipments by Carrier"  */
+    this.loadOverviewData = (onFinish)=>{
         let p={};
-        vsapi.call(`${mThis.base_url}/abm/dashboard/body-cards`, p , null,false,false).then(res => {
-            console.log('d3',res.data);
-            let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,['icon']) : {};
-            mThis.renderProgressBar(d.progress_cards[0]); 
-            mThis.renderCountryCards(d.country_cards);
-            // mThis.renderSupplierCards(d.normal_cards);
+        vsapi.call(`${mThis.base_url}/abm/dashboard/overview-data`, p , null,false,false).then(res => {
+            let d = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data,null,['icon','alt_notes']) : {};
+            mThis.renderProgressBars(d.progress_bars,255); 
+            mThis.renderShipmentsBySupplier(d.supplier_table,170);
+            mThis.renderShipmentByCustomer(d.customer_table);
             onFinish();
         });
     }
@@ -239,7 +300,7 @@ var DashboardComponent = new function () {
     this.prepareFormOptions = ( data, onFinish) => {
         // let p={'id' : data.id }
         mThis.loadCards(onFinish);
-        mThis.loadBodyCards(onFinish);
+        mThis.loadOverviewData(onFinish);
     }
 
     this.show= (options)=>{
@@ -248,8 +309,8 @@ var DashboardComponent = new function () {
         main_view.setTitle(mThis.title_prop);   
         mThis.prepareFormOptions( null , d => {
         // mThis.workSpaceListView.showPage(null, null, () => {
-            mThis.self.siblings().hide();
-            mThis.self.fadeIn(204);
+            mThis.jm.siblings().hide();
+            mThis.jm.fadeIn(250);
         // });
         });
     }

@@ -99,11 +99,7 @@ class Shipment //extends Model
         // return JDV::result(DB::table('shipments')->selectRaw('zone_code,sender_id')->get());
         return DB::table('oversea_items')->selectRaw('item_type, billed_weight, actual_weight, allocated_kg, heigth, weigth, length')->get();
     }
-
-   
-
-    
-    
+     
     function ListPaginate($filter,$ss){
         $branch_id = $ss->branch_id;
         $d = (object)$filter;
@@ -323,6 +319,7 @@ class Shipment //extends Model
         ->take(1)->first();
         return $row;
     }
+    
     function detailsForPayment($id,$ss,$payee_id =null,$from_date = null,$to_date = null){
         $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;

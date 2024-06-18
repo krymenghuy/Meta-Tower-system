@@ -25,8 +25,7 @@ class SupplierController extends Controller
     function getSuplierList(Request $req){
         $ss = UM::getUserInfoByToken($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
-        $data = $this->supplier->getSuplierList();
-        
+        $data = Supplier::list($req->all(),$ss);
         return JDV::result($data);
     }
     function delete(Request $req)
