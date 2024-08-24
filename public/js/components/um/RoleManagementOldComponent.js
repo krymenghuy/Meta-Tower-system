@@ -907,7 +907,7 @@ const RoleTabView = new function(){
                         <td style="width:50%">${c.name}</td>
                         <td class="col_action">
                             <a data-prnid="${c.id}" href="javascript:void(0)" class="_um_roleprn_delete btn btn-sm btn-outline-secondary" style="display:none">
-                                <span class="trans-text" data-langprop="buttons.Remove">Remove</span>
+                                <span class=" " vslang="buttons.Remove">Remove</span>
                             </a>
                         </td>
                     <tr>`;
@@ -2224,7 +2224,7 @@ const CreatePermissionDialog = new function(){
 //                         <td style="width:50%">${c.name}</td>
 //                         <td class="col_action">
 //                             <a data-prnid="${c.id}" href="javascript:void(0)" class="_um_roleprn_delete btn btn-sm btn-outline-secondary" style="display:none">
-//                                 <span class="trans-text" data-langprop="buttons.Remove">Remove</span>
+//                                 <span class=" " vslang="buttons.Remove">Remove</span>
 //                             </a>
 //                         </td>
 //                     <tr>`;

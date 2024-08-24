@@ -21,7 +21,7 @@ namespace App\ScriptManagement;
                 'output_file'=>'/dist/js/priority-one.min.js?v=13',
                 'files'=>[
                     '/assets/js/LocaleManager.js',
-                    '/assets/js/vsapi_jto.js',
+                    '/assets/js/vsapi_bhr.js',
                     '/assets/js/priority-load.js',
                 ]
             ],
@@ -44,48 +44,13 @@ namespace App\ScriptManagement;
                     '/assets/js/vfs_fonts.js'
                 ]
            ],
-           'dms-primary-defer'=>[
-                'attr'=>'defer',
-                'single_file'=>1,
-                'output_file'=>'/dist/js/dms.primary-defer.js?v=53',
-                'files'=>[
-                    '/assets/js/string_san.js',
-                    '/assets/js/vsutil.js',
-                    '/assets/js/sweetalert2.all.min.js',
-                    '/assets/js/sweetalert2.toast.js',
-                    '/assets/js/ExchangeManager.js',
-                    '/assets/js/expandableTableRow.js',
-                    '/assets/js/UMExpandItemView.js',
-                    '/assets/js/VSDropdownMenu.js',
-                    '/assets/js/GeneralDialog.bs5.js',
-                    '/assets/vendors/general/popper.js/dist/umd/popper.js',
-                    '/assets/material-js/bootstrap.min.js',
-                    //'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
-                    '/assets/js/validator.js',
-                    '/assets/js/cv_interact.js',
-                    '/assets/js/datehelper.js',
-                    '/assets/js/date.js',
-                    '/assets/js/jquery.datepicker2.js',
-                    '/assets/js/select2.min.js',
-                    '/assets/js/initializeSelect2.js',
-                    '/assets/js/toastr.min.js',
-                    '/assets/js/init.toastr.js',
-                    '/assets/js/scripts.bundle.js',
-                    '/assets/js/datatables.bundle.min.js',/** to be removed soon */
-                    '/assets/js/browsercontrol.js'
-                ]
-                ,'no-minify'=>[
-                    '/assets/js/crypto-js.js', 
-                ]
-                ],
-
-                'abm-primary-defer'=>[
+                'bhr-primary-defer'=>[
                     'attr'=>'defer',
                     'single_file'=>1,
                     'output_file'=>'/dist/js/dms.primary-defer.js?v=53',
                     'files'=>[
                         '/assets/js/string_san.js',
-                        '/assets/js/vsutil.js',
+                        '/assets/js/vsutil.v2.js',
                         '/assets/js/sweetalert2.all.min.js',
                         '/assets/js/sweetalert2.toast.js',
                         '/assets/js/ExchangeManager.js',
@@ -106,7 +71,7 @@ namespace App\ScriptManagement;
                         '/assets/js/toastr.min.js',
                         '/assets/js/init.toastr.js',
                         '/assets/js/scripts.bundle.js',
-                        '/assets/js/datatables.bundle.min.js',/** to be removed soon */
+                        //'/assets/js/datatables.bundle.min.js',/** to be removed soon */
                         '/assets/js/browsercontrol.js'
                     ]
                     ,'no-minify'=>[
@@ -114,110 +79,32 @@ namespace App\ScriptManagement;
                     ]
                 ],
 
-                'abm-components'=>[
+                'bhr-components'=>[
                     'attr'=>'defer',
                     'single_file'=>1,
                     'output_file'=>'/dist/js/abm.components.js',
                     'files'=>[
-                        'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
                         'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                         '/assets/js/VSRoute.js',
-                        '/js/layout/abm/main.js',
+                        '/js/layout/bhr/main.js',
                         '/assets/js/formUtils.js',
-                        '/js/components/abm/dms.utils.js',
-                        //'/js/components/abm/DialogFilter.js',
- 
-                        '/js/components/abm/PDFReport.js',
+                        
+                        //'/js/components/bhr/PDFReport.js',
                         '/assets/js/ImageBox.js',
                         '/assets/js/ImageHelper.js',
                         '/assets/js/FileChooser.js',
                         '/assets/js/ListView.js',
                         '/assets/js/InputBoxes.bs5.js',
                         '/assets/js/xlsx/xlsx.full.min.js',
-                        // 'js/components/dms/SenderPaymentComponent.js',
-                        // 'js/components/dms/TripListComponent.js',
-                        // 'js/components/abm/RoleManagementComponent.js',
-                        // 'js/components/abm/UserManagementComponent.js',
                         'assets/js/pusher/pusher.min.js',
                         //'/js/components/abm/pusher_client_houxpress.js',
                         '/js/components/common/pusher_client_dms.js',
-
-                        // '/assets/js/InputBoxes.js',
-                        //start Components abm
-                        // '/js/components/abm/CustomersComponent.js',
-                        '/js/components/abm/CountryZonesComponent.js',
-                        '/js/components/abm/SalesAffiliatesComponent.js',
-                        '/js/components/abm/BillingValidationComponent.js',
-                        '/js/components/abm/CustomersComponent.js',
-                        
-                        '/js/components/abm/DashboardComponent.js',
-                        '/js/components/abm/SuppliersComponent.js',
-                        //'/js/components/abm/CustomersComponent.js',
-                        '/js/components/abm/ShipmentsComponent.js',
-                        'js/components/abm/PriceSettingsComponent.js',
-                        'js/components/abm/SupplierPriceSettingsComponent.js',
-                        'js/components/abm/InvoicesComponent.js',
-
-
+                        '/js/components/bhr/DashboardComponent.js',
+                          
                     ]
               ],
 
-               'dms-components'=>[
-                    'attr'=>'defer',
-                    'single_file'=>1,
-                    'output_file'=>'/dist/js/dms.components.js?v=204',
-                    'files'=>[
-                        //'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
-                        '/assets/js/VSRoute.js',
-                        '/js/layout/dms/main.js?v=1',
-                        '/assets/js/formUtils.js',
-                        '/js/components/dms/dms.utils.js',
-                        '/js/components/dms/FilterDialog.js',
-                        '/js/components/dms/PDFReport.js',
-                        '/assets/js/ImageBox.js',
-                        '/assets/js/ImageHelper.js',
-                        '/assets/js/FileChooser.js',
-                        '/assets/js/ListView.js',
-                        'js/components/dms/DashboardComponent.js',
-                        '/js/components/dms/CompanyComponent.js',
-                        '/js/components/dms/CompletedPackageListComponent.js',
-                        'js/components/dms/DeliveryPriceComponent.js',
-                        'js/components/dms/DeliveryZoneComponent.js',
-                        'js/components/dms/DriverListComponent.js?v=1',
-                        'js/components/dms/DriverPaymentComponent.js',
-                        'js/components/dms/MerchantBalancesCompoment.js',
-                        'js/components/dms/DriverBalancesCompoment.js',
-                        'js/components/dms/ExchangeRatesComponent.js',
-                        'js/components/dms/GeneralSettingsComponent.js',
-                        '/assets/js/InputBoxes.js',
-                        'js/components/dms/LocationComponent.js?v=1',
-                        'js/components/dms/MobileBrandImagesComponent.js',
-                        // 'js/components/dms/MobileTCComponent.js',
-                        // 'js/components/dms/MobilePrivacyComponent.js',
-                        'js/components/dms/PackageListComponent.js',
-                        'js/components/dms/FindPersonDialog.js',
-                        'js/components/dms/PickupListComponent.js',
-                        // 'js/components/dms/MagicEntryUtil.js',
-                        // 'js/components/dms/MagicEntryDialog.js',
-                        'js/components/dms/PriceSettingsComponent.js',
-                        'js/components/dms/ProductCategoriesComponent.js',
-                        'js/components/dms/RemarksComponent.js',
-                        'js/components/dms/OrderImagesComponent.js',
-                        'js/components/dms/PromotionComponent.js',
-                        'js/components/dms/ReportCenterComponent.js',
-                        'js/components/dms/SocialMediaComponent.js',
-                        'js/components/dms/SalesAgentsComponent.js',
-                        'js/components/dms/SenderListComponent.js?v=1',
-                        'js/components/dms/SenderPaymentComponent.js',
-                        'js/components/dms/TripListComponent.js',
-                        'js/components/um/RoleManagementComponent.js',
-                        'js/components/um/UserManagementComponent.js',
-                        'assets/js/pusher/pusher.min.js',
-                        //'/js/components/dms/pusher_client_houxpress.js',
-                       '/js/components/common/pusher_client_dms.js'
-                    ]
-
-                    ],
+            
                     'report-scripts'=>[
                         'attr'=>'defer',
                         'single_file'=>1,

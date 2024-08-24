@@ -4,7 +4,9 @@ namespace App\Models;
 
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
-use Localization;
+
+use App\Locales\LocaleManager;
+use App\Services\Umt\AuthService;
 use Illuminate\Support\Facades\Log;
 //DV is the Data Valiator class
 class DV
@@ -77,21 +79,21 @@ class DV
        else return self::result($obj);
     }
 
-    static function emptyResult($status_code =0,$def_result=null,$lang ='en',$error_message = null){
-       if (!$lang) $lang = Session('lang','en');
+    static function emptyResult($status_code =0,$def_result=null,$lang =null,$error_message = null){
+           
        switch($status_code){
         case 401:{
             $error_message = $error_message ?? 'Authentication failed';
-            return (object)['status'=>'Error','status_code'=>401,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result];
+            return (object)['status'=>'Error','status_code'=>401,'error_message'=>LocaleManager::trans($error_message,null,null,$lang),'data'=>$def_result];
         }
         //error:402 => Expired token
         case 402:{
             $error_message = $error_message ?? 'Token Expired';
-            return (object)['status'=>'Error','status_code'=>402,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result];
+            return (object)['status'=>'Error','status_code'=>402,'error_message'=>LocaleManager::trans($error_message,null,null,$lang),'data'=>$def_result];
         }
         case 403:{
             $err_message = $error_message ?? 'Permission required';
-            return (object)['status'=>'Error','status_code'=>403,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result];
+            return (object)['status'=>'Error','status_code'=>403,'error_message'=>LocaleManager::trans($error_message,null,null,$lang),'data'=>$def_result];
         }
         default:
         {
@@ -102,10 +104,11 @@ class DV
     }
 
     //return error object. default status code is 405 for Data Validation error;
-    static function error($err_message=null,$lang ='en',$status_code=405,$err_code=null,$log=false){
-        $lang = $lang ?? Session::get('lang','en');
+    static function error($err_message=null,$lang=null,$status_code=405,$err_code=null,$log=false){
+        $c_user = AuthService::user();
+        $lang = $lang ?? ($c_user? $c_user->lang:'en');
         $def_langSection = 'validation';
-        $err_message = $err_message? Localization::translate($lang,$err_message,$def_langSection):'There was an error but no error message provided by developer';
+        $err_message = $err_message? LocaleManager::trans($err_message,$def_langSection,null,$lang):'There was an error but no error message provided by developer';
         $response = (object)['status'=>'Error','status_code'=>$status_code,'error_code'=>$err_code,'error_message'=>$err_message];
         if(!$status_code) $status_code = 405;
         else if($status_code == 200) $status_code =405;// Status_code cannot be 200 for error
@@ -114,6 +117,21 @@ class DV
         return $response;
     }
 
+    static function authFailed($lang ='en'){
+       return self::error('User authentication Failed',$lang,401);
+    }
+
+    static function needPermission($prn_number, $lang = null){
+        $c_user = AuthService::user();
+        $lang = $lang ?? ($c_user? $c_user->lang:'en');
+        return self::error('Permission ? is required::'.$prn_number,$lang,405);
+    }
+
+    static function permissionRequired($prn_number, $lang = null){
+        $c_user = AuthService::user();
+        $lang = $lang ?? ($c_user? $c_user->lang:'en');
+        return self::error('Permission ? is required::'.$prn_number,$lang,405);
+    }
     // //$return_type = {'text','object','boolean','bool'}
     // static function valiate($data_type,$data,$return_type='object'){
     //     $lang = Session('lang','en');

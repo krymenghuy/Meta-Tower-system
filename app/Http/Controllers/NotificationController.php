@@ -1,19 +1,19 @@
 <?php
 
 namespace App\Http\Controllers;
-// use App\Models\Dms\Notifier;
+use App\Http\Controllers\Controller;
 use App\Models\Notifier;
 use Illuminate\Http\Request;
 use App\Models\JDV;
-use App\Models\UM;
+use App\Services\Umt\AuthService;
 
 class NotificationController extends Controller
 {
     function getNotificationListByUser(Request $req){
-      $ss = UM::getUserInfoByToken($req,-1);
-      if($ss->status_code !==200) return JDV::raw($ss);
-       $rows = Notifier::getNotificationListByUser($ss);
-       return JDV::result($rows);
+      $ss = AuthService::verifyAuth($req,-1);
+      if($ss->status_code !==200) return JDV::result([]);
+      $rows = Notifier::getNotificationListByUser($req->all(),$ss);
+      return JDV::result($rows);
     }
 
     function getPendingRequests(Request $req){
@@ -21,22 +21,25 @@ class NotificationController extends Controller
     }
 
     function getUnreadCount(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
+        $ss = AuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $cnt = Notifier::getUnreadCount($ss->user_id,$ss->user_class);
         return JDV::result(['count'=>$cnt]);
     }
 
     function markReadAll(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
+        $ss = AuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);
         $res = Notifier::markReadAll($ss->user_id);
         return JDV::raw($res);
     }
 
     function sendToMobile(Request $req){
+        $subs_id = $req->subs_id;
         $cdata = [
             [
+                'subs_id'=>$subs_id,
+                'category'=>$req->category,
                 'user_class'=>$req->user_class?$req->user_class:'merchant',
                 'user_id'=>$req->user_id,
                 'target_user_id'=>$req->official_id,
@@ -55,8 +58,8 @@ class NotificationController extends Controller
             //     'message'=>'Message to students'
             // ]
         ];
-
-        $res= Notifier::notify_mobile(1,$cdata);
+   
+        $res = Notifier::notify_mobile(['subs_id'=>$subs_id,'branch_id'=>1],$cdata);
         return JDV::raw($res);
     }
 }

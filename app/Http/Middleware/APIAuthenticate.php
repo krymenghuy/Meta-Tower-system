@@ -2,20 +2,22 @@
 namespace App\Http\Middleware;
 
 use Closure;
+use App\Services\Umt\AuthService;
 use App\Models\JDV; // Assuming JDV is your custom response handler
-use App\Models\UM;
-
+  
 class APIAuthenticate
 {
     public function handle($request, Closure $next, ...$guards)
-    {
-        if (UM::useJWT() != 1) return $next($request);
-
+    {      
+        $lang = $request->lang;
+        //$token_encrypted = false;
         // Set 'user' to null at the beginning
         $request->user = null;
-
-        $ss = UM::getUserInfoByToken($request);
-
+        $ss =null;
+        /** AuthService::getWebToken() will return access_token that is stored in web http cookie from Web page (e.g Backend system) */
+        //$token =AuthService::getWebToken($request, $token_encrypted);
+        $token = $request->bearerToken() ?? (($request->header('Authorization') ?: $request->query('api_token')));
+        $ss = AuthService::authenticateToken($token,false,$lang);
         // Set $def_lang based on the 'lang' property of $ss
         $def_lang = $ss->lang ?? 'en';
 
@@ -24,8 +26,8 @@ class APIAuthenticate
             case 200:
                 unset($ss->status_code,$ss->status);
                 // Update user details in the request
-                $request->user = $ss;
-
+                $request->user = $ss->user;
+              
                 return $next($request);
             case 400:
             case 401:

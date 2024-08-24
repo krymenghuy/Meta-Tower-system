@@ -1,15 +1,17 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-// use App\Http\Controllers\Branch\BranchController;
+//use app\Http\Middleware\CustomRateLimiter;
+  use App\Services\Umt\AuthService;
+  use App\Http\Controllers\Bhr\ExcelReportController;
 // use App\Http\Controllers\Category\CategoryController;
 // use App\Http\Controllers\Slide\SlideController;
 
 // use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\WebReportController;
+use App\Http\Controllers\Bhr\WebReportController;
 // use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\Login\LoginController;
+//use App\Http\Controllers\DbExportController;
 // use Illuminate\Http\Request;
 use App\Models\Notifier;
 // use App\Models\Package;
@@ -83,9 +85,18 @@ Route::get('tell-merchant/{user_id}',function($user_id=null){
     return response()->json($res);
 });
 
+Route::get('excel-report/{q}', [ExcelReportController::class, 'index']);
+
+Route::get('privacy',function(){
+    return view('privacy');
+});
 
 Route::get('privacy',function(){
    return view('privacy');
+});
+
+Route::get('houconnect/privacy',function(){
+    return view('hou_connect_privacy');
 });
 
 Route::get('test-count',function(){
@@ -101,12 +112,12 @@ Route::get('test-count',function(){
 });
 
 Route::get('reset-merchant-code',function(){
-   $res = \App\Models\Sender::resetCodes(1,'HM'); 
+   $res = \App\Models\Dms\Sender::resetCodes(1,'HM'); 
    echo response()->json($res);
 });
 
 Route::get('reset-driver-code',function(){
-    $res = \App\Models\Driver::resetCodes(1,'HD'); 
+    $res = \App\Models\Dms\Driver::resetCodes(1,'HD'); 
     echo response()->json($res);
 });
 
@@ -117,56 +128,108 @@ Route::get('/', function () {
 Route::get('logout',function(){
     return view('login.index');
 });
-Route::get('landing',function(){
-    return view('landing.landing');
-});
 
 Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);
 Route::get('dms-gen-report/{q}', [WebReportController::class, 'general_report']);
+// Route::get('sales-module-report/{q}', [SalesModuleReportController::class, 'showReport']);
 Route::get('hs-merchant-invoice/{q}', [WebReportController::class, 'hs_merchant_invoice']);
 Route::get('hs-merchant-invoice-v2/{q}', [WebReportController::class, 'hs_merchant_invoice_v2']);
 Route::get('merchant-invoice/{q}', [WebReportController::class, 'merchant_invoice']);
 
 Route::post('processLogin', [LoginController::class, 'processLogin']);
+// Route::post('process_mac_login', [LoginController::class, 'process_mac_login']);
+
 //route 'dms' or Delivery Management System(DMS) routing to default Home View on firt log in
 Route::get('login', [LoginController::class , 'login']);
 
-Route::get('abm/{componentName?}',function($componentName= null){
-    if(!Session('login_name')){
+// //Todo: set authentication and authorization
+// Route::get('/export-db031181', [DbExportController::class, 'exportDatabase']);
+// Route::get('/export-dbbydate031181/{date?}', [DbExportController::class, 'exportDataByDate']);
+
+Route::get('landingpoint',function(){
+    if(!AuthService::user()){
+       $base_url =url('/');
+       echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+       return;
+    };
+    return view('landing_page');
+});
+
+Route::get('hr/{componentName?}',function($componentName= null){
+    if(!AuthService::user()){
        // return redirect('/')
        $base_url =url('/');
        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
        return;
     };
     $data = ['defaultComponent' => $componentName];
-    return view('abm',$data);
+    return view('bhr',$data);
 });
 
-Route::get('dms/{componentName?}',function($componentName= null){
-    if(!Session('login_name')){
+Route::get('umt/{componentName?}',function($componentName= null){
+    if(!AuthService::user()){
        // return redirect('/')
        $base_url =url('/');
        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
        return;
     };
+    $componentName = $componentName ?? 'RoleManagementComponent';
     $data = ['defaultComponent' => $componentName];
-    return view('dms',$data);
+    return view('umt',$data);
 });
 
-Route::get('usm/{componentName?}',function($componentName= null){
-    if(!Session('login_name')){
-       // return redirect('/')
-       $base_url =url('/');
-       echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
-       return;
-    };
-    $data = ['defaultComponent' => $componentName];
-    return view('usm',$data);
-});
+// Route::get('acc/{componentName?}',function($componentName= null){
+//     if(!AuthService::user()){
+//        // return redirect('/')
+//        $base_url =url('/');
+//        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+//        return;
+//     };
+//     $data = ['defaultComponent' => $componentName];
+//     return view('acc',$data);
+// });
 
+// Route::get('/mac-login',function(){
+//     return view('login.mac_login',[]);
+// });
+
+// Route::get('mac/{componentName?}',function($componentName= null){
+//     $user = AuthService::user();
+//     $data = ['defaultComponent' => $componentName];
+//     if(!$user){
+//        // return redirect('/')
+//        $base_url =url('/mac-login');
+//        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+//        return;
+//     } else if($user->user_class !=='merchant' || !$user->official_id){
+//         $result = AuthService::getLinkedUser($user->id, ($user->subs_id ?? null));
+//         if ($result->error){
+//             echo '<p>'.$result->error."</p><a href='/mac' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+//             return;
+//         }
+//         $linked_user = $result->user; 
+//         if($linked_user && $linked_user->user_class ==='merchant'){
+//             AuthService::login($linked_user);  
+//             return view('mac',$data);
+//         }
+//         return view('login.mac_login',[]);
+//     }
+//     return view('mac',$data);
+// });
+
+// Route::get('gmt/{componentName?}',function($componentName= null){
+//     if(!AuthService::user()){
+//        // return redirect('/')
+//        $base_url =url('/');
+//        echo "There was a problem processing you user identity!<div style='margin-left:10px'><a href='$base_url' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
+//        return;
+//     };
+//     $data = ['defaultComponent' => $componentName];
+//     return view('gmt',$data);
+// });
+ 
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-
+ 
 //Clear Cache facade value:
 Route::get('/clear-cache', function() {
     $exitCode = Artisan::call('cache:clear');

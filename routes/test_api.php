@@ -35,27 +35,37 @@ Route::middleware([CustomRateLimiter::class])->group(function(){
         return response()->json($res);
     });
     
-    Route::get('tell-agent', function(Request $request){
-        $id = $request->id ?? $request->user_id;
-        $official_id = $request->official_id;
-        //$e=(object)['branch_id'=>1,'target_user_id'=>$id,'title'=>'Tell Merchant','message'=>'Special Offers for delivery services'];
-        $custom_data = ['event_name'=>'deal_won','lead_id'=>0,'phone_number'=>'012565657'];
-        $data =[
+    Route::get('tell-agent/{user_id}/{cat_id?}', function ($user_id = null, $cat_id = 1) {
+        // Create custom data
+        $custom_data = [
+            'date' => now(), // Assuming getNowTime() returns current time
+            'color' => '#049716',
+            'case' => 'new_merchant'
+        ];
+    
+        // Get category details if cat_id is provided
+        $cat = Notifier::getCategory($cat_id);
+    
+        // Prepare notification data
+        $notification_data = [
             [
-               'user_class'=>'sales_agent',
-               'user_id'=>$id,
-               'target_user_id'=>$official_id, /** This official_id is optional */
-               'persist'=>0,
-               'title'=>$request->title ?? 'Hou Xpress Agent',
-               'message'=>$request->message ?? 'Sample notification to agent',
-               'data'=>$custom_data
+                'user_class' => 'sales_agent',
+                'user_id' => $user_id,
+                'title' => 'Successful Deal',
+                'message' => $cat ? ('Prospect for ' . $cat->name . ' ID ' . $cat->id . ' has become a merchant') : 'Prospect has become a merchant',
+                'persist' => 1, // Assuming you want the notification to persist
+                'data' =>null
             ]
         ];
-        $res = Notifier::notify_mobile(1,$data);
-        return response()->json($res);
+    
+        // Send notification and get response
+        $response = Notifier::notify_mobile(1, $notification_data, $cat_id);
+    
+        // Return JSON response
+        return response()->json($response);
     });
+    
    
-     
     /** begin:: API routes created for testing only */
         Route::post('mobile/notifications/send', [NotificationController::class, 'sendToMobile']);
         Route::get('mobile/notifications/send-get', [NotificationController::class, 'sendToMobile']); 

@@ -37,34 +37,25 @@ class RouteServiceProvider extends ServiceProvider
         $this->configureRateLimiting();
 
         $this->routes(function () {
-            Route::prefix('api')
-            ->middleware('api')
-            ->namespace($this->namespace)
-            ->group(base_path('routes/driver_app_api.php'));
-
-            Route::prefix('api')
-            ->middleware('api')
-            ->namespace($this->namespace)
-            ->group(base_path('routes/merchant_app_api.php'));
-
-            Route::prefix('api')
-            ->middleware('api')
-            ->namespace($this->namespace)
-            ->group(base_path('routes/sales_app_api.php'));
-
-            Route::prefix('dms')
+            
+            Route::prefix('hr')
                 ->middleware('api')
                 ->namespace($this->namespace)
-                ->group(base_path('routes/dms_api.php'));
-            Route::prefix('abm')
+                ->group(base_path('routes/hr_api.php'));
+
+            Route::prefix('mobile')
             ->middleware('api')
             ->namespace($this->namespace)
-            ->group(base_path('routes/abm_api.php'));
+            ->group(base_path('routes/hr_mobile_api.php'));
+ 
+            Route::prefix('acc')
+                ->middleware('api')
+                ->namespace($this->namespace)
+                ->group(base_path('routes/acc_api.php'));
 
             Route::middleware('web')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/web.php'));
-                
             Route::prefix('api')
                 ->middleware('api')
                 ->namespace($this->namespace)
@@ -72,7 +63,7 @@ class RouteServiceProvider extends ServiceProvider
             Route::prefix('api')
                 ->middleware('api')
                 ->namespace($this->namespace)
-                ->group(base_path('routes/um_api.php'));
+                ->group(base_path('routes/um_api_v2.php'));
             
             Route::prefix('utils')
                 ->middleware('api')
@@ -82,7 +73,6 @@ class RouteServiceProvider extends ServiceProvider
                 ->middleware('api')
                 ->namespace($this->namespace)
                 ->group(base_path('routes/test_api.php'));
-
            });
  
     }

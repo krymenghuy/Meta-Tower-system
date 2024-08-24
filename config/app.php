@@ -126,10 +126,11 @@ return [
     /*
       the following are specific variables for DMS system.
     */
+    'secure_route'=>env('SECURE_ROUTE',null), 
+   'subs_id'=>env('SUBS_ID',null),
    'app_id'=>env('APP_ID',null),
-   'merchant_app_id'=>env('MERCHANT_APP_ID',null),
-   'driver_app_id'=>env('DRIVER_APP_ID',null),
-   'sales_app_id'=>env('SALES_APP_ID',null),
+   'bhr_app_id'=>env('MERCHANT_APP_ID',null),
+   'hr_portal_app_id'=>env('DRIVER_APP_ID',null),
    'cookie_name'=>env('COOKIE_NAME','da337_acctk_1298XA'),
    'allowed_image_types'=>[
       'pdf','heif','png','jpg','jpeg','gif'

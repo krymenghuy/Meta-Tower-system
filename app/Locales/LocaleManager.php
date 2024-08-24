@@ -1,11 +1,13 @@
 <?php
 namespace App\Locales;
-use LangContentProvider;
+
+use App\Services\Umt\AuthService;
+use App\Locales\LangContentProvider;
 
 //BEGIN:: LocaleManager class
 class LocaleManager{
         protected static  $langRoutes = [];
-
+        protected static $default_lang = 'en';
         public static $reload_count=0;
 
         function __construct(){
@@ -58,28 +60,45 @@ class LocaleManager{
         }
 
         //If for example, $text_prop = 'Data must be between ? and ?::5;100' then method translate() will return 'Data must be between 5 and 100'. In this case, the parameter $replacements is not used
+        /** translate() is used to support previous codecode and previous projects and library. trans() is the new version of this translate() function */
         static function translate($lang,$text_prop,$replacements=null,$langSection='validation'){
-            try{
-                $parts = explode('::',$text_prop);
-                $langSection = $langSection ?? 'validation';
-                if (isset($parts[1])){
-                    $text = self::getLangText($lang,$parts[0],$langSection);
-                    $arr = explode(';',$parts[1]);
-                    return self::replace_marks($text,$arr);   
-                }else {
-                    $text = self::getLangText($lang,$text_prop,$langSection);
-                    if(!$replacements) 
-                       return $text;
-                    else return self::replace_marks($text,$replacements);   
-                }
-            }catch(\Exception $e){
-                \Log::error($e->getMessage());
-                \Log::error($e->getTraceAsString());
-                if(gettype($text_prop) ==='string') return $text_prop; 
-                return 'There was an problem in Translation of error message. See Server Log for details';
+            if(!$lang){
+                $user = AuthService::user();
+                $lang = $user? $user->lang : self::$default_lang;
             }
-        
+            $parts = explode('::',$text_prop);
+            $langSection = $langSection ?? 'validation';
+            if (isset($parts[1])){
+                $text = self::getLangText($lang,$parts[0],$langSection);
+                $arr = explode(';',$parts[1]);
+                return self::replace_marks($text,$arr);   
+            }else {
+                $text = self::getLangText($lang,$text_prop,$langSection);
+                if(!$replacements) 
+                   return $text;
+                else return self::replace_marks($text,$replacements);   
+            }
         }
+
+    static function trans($text_prop,$langSection='validation',$replacements=null,$lang = null){
+        if(!$lang){
+            $user = AuthService::user();
+            $lang = $user? $user->lang : self::$default_lang;
+        }
+        $parts = explode('::',$text_prop);
+        $langSection = $langSection ?? 'validation';
+        if (isset($parts[1])){
+            $text = self::getLangText($lang,$parts[0],$langSection);
+            $arr = explode(';',$parts[1]);
+            return self::replace_marks($text,$arr);   
+        }else {
+            $text = self::getLangText($lang,$text_prop,$langSection);
+            if(!$replacements) 
+               return $text;
+            else return self::replace_marks($text,$replacements);   
+        }
+    }
+
 }
 
 ?>

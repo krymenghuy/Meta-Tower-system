@@ -1,0 +1,60 @@
+/* Base styles for the dropdown menu */
+.vs-dropdown-menu {
+	position:absolute;
+    background-color: #fff; /* White background */
+    border: 1px solid #ddd; /* Light border */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Soft shadow for depth */
+    border-radius: 0.5rem; /* Increased border radius for a more elegant look */
+    padding: 0.5rem 0; /* Vertical padding */
+    min-width: 10rem; /* Minimum width */
+    z-index: 1000; /* Ensure it's above other elements */
+    opacity: 0; /* Initially hidden */
+    transform: translateY(-10px); /* Initial position for sliding effect */
+    transition: opacity 0.3s ease, transform 0.3s ease, display 0s 0.3s; /* Smooth transition for appearance */
+    display: none; /* Hidden by default */
+}
+
+/* Dropdown item styles */
+.vs-dropdown-menu .dropdown-item {
+    display: block; /* Block display */
+    padding: 0.5rem 1rem; /* Padding for items */
+    clear: both; /* Clear floats */
+    font-weight: 400; /* Regular font weight */
+    color: #212529; /* Dark text color */
+    text-align: inherit; /* Inherit text alignment */
+    white-space: nowrap; /* Prevent text wrap */
+    background-color: transparent; /* Transparent background */
+    border: 0; /* No border */
+    cursor: pointer; /* Pointer cursor */
+}
+
+.vs-dropdown-menu .dropdown-item:hover,
+.vs-dropdown-menu .dropdown-item:focus {
+    color: #fff; /* White text on hover */
+    background-color: #007bff; /* Bootstrap primary color on hover */
+    text-decoration: none; /* No underline */
+}
+
+/* Animation for showing the dropdown */
+.vs-dropdown-menu.show {
+    opacity: 1; /* Fully visible */
+    transform: translateY(0); /* No translation */
+    display: block; /* Ensure it's displayed */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Smooth transition for appearance */
+}
+
+/* Animation keyframes for a more dynamic effect */
+@keyframes vs-dropdown-fade {
+    from {
+        opacity: 0; /* Start invisible */
+        transform: translateY(-10px); /* Start 10px above */
+    }
+    to {
+        opacity: 1; /* End fully visible */
+        transform: translateY(0); /* End in place */
+    }
+}
+
+.vs-dropdown-menu.show {
+    animation: vs-dropdown-fade 0.3s ease; /* Apply the animation */
+}

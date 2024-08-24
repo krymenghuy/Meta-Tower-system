@@ -1,0 +1,30 @@
+<?php
+use App\Http\Middleware\CustomRateLimiter;
+use Illuminate\Support\Facades\Route;
+use App\Http\controllers\Bhr\DashboardController;
+use App\Http\Controllers\Login\LoginController;
+use App\Http\Controllers\CompanyProfileController;
+
+ //begin:: api without Authentication
+ Route::middleware([CustomRateLimiter::class])->group(function(){
+    // Route::post('logout', [ApiController::class,'logout_mobile']);
+    // Route::post('auth/login', [ApiController::class, 'externalLogin']);
+    Route::post('admin/login', [LoginController::class, 'apiLogin']);
+});
+//end:: api without Authentication
+
+//begin::CompanyProfileController
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->group(function(){
+    Route::post('/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
+    Route::post('/logo-url', [CompanyProfileController::class, 'getCompanyLogo']);
+    Route::post('/delete-logo', [CompanyProfileController::class, 'deleteCompanyLogo']);
+    Route::post('/save-details', [CompanyProfileController::class, 'saveCompanyInfo']);
+    Route::post('/details', [CompanyProfileController::class, 'getCompanyInfo']);
+    Route::post('/info', [CompanyProfileController::class, 'getCompanyInfo']);
+});
+//end::CompanyProfileController
+
+Route::prefix('dashboard')->group(function(){
+    Route::post('/cards', [DashboardController::class, 'getCards']);
+    Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
+});

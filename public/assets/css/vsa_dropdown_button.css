@@ -1,0 +1,21 @@
+.vsa-dropdown {
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    position: absolute;
+    color: #000;
+    margin-top:10px;
+    z-index: 100;
+    right: 0;
+}
+
+.vsa-dropdown a {
+    text-decoration: none;
+    align-items: center;
+    display: flex;
+    color: #000;
+}
+.menu-item span{
+    padding:3px;
+    font-size:1.1em;
+}

@@ -255,7 +255,7 @@ var UserManagementComponent = new function(){
                           ${user.is_locked ? '<i class="fa-solid fa-ban fs-4 text-danger"></i>' : ''}
                         </div>
                             <button class="btn-action btn btn-sm btn-info rounded-5 text-nowrap" type="button" data-roleid = "${(user.role_id || user.primary_role_id) ||''}" data-id="${user.id}" data-user="${user.login_name}" data-lock="${user.is_locked ? 'unlock' : 'lock'}">
-                                <span class="trans-text" data-langprop="buttons.Action">Action</span>
+                                <span class=" " vslang="buttons.Action">Action</span>
                                 <i class="fa-solid fa-caret-down"></i>
                             </button>
                         </div>
@@ -588,7 +588,7 @@ var UserManagementComponent = new function(){
     }
 }
 
-const AddUserDialog = new function(){
+const AddUserDialogOld = new function(){
     const mThis = this;
     this.self = main_view.appContent.children('#dlg_um_')[0];
     this.elTitle = mThis.self.querySelector('.modal-title');
@@ -767,7 +767,7 @@ const AddUserDialog = new function(){
                     password_fields = `<div class="row gy-2">
                     <div class="col-lg-6">
                         <div class="form-group">
-                            <label for="password" class="form-label trans-text" data-langprop="titles.Password"></label>
+                            <label for="password" class="form-label  " vslang="titles.Password"></label>
                             <div class="input-group flex-nowrap">
                                 <input type="password" class="form-control ${user_id > 0 ? '' : 'data-input'} data-validate" ${user_id > 0 ? '' : 'data-field="password"'} autocomplete="off" ${user_id >0 ? 'readonly' : ''}/>
                                 <div class="input-group-text" role="button">
@@ -778,7 +778,7 @@ const AddUserDialog = new function(){
                     </div>
                     <div class="col-lg-6">
                         <div class="form-group">
-                            <label for="confirm_password" class="form-label trans-text" data-langprop="titles.Confirm Password"></label>
+                            <label for="confirm_password" class="form-label  " vslang="titles.Confirm Password"></label>
                             <div class="input-group flex-nowrap">
                                 <input type="password" class="form-control ${user_id > 0 ? '' : 'data-input'} data-validate" ${user_id > 0? '' : 'data-field="confirm_password"'} autocomplete="off" ${user_id >0 ? 'readonly' : ''}/>
                                 <div class="input-group-text" role="button">
@@ -795,7 +795,7 @@ const AddUserDialog = new function(){
                             <div class="row gy-2 align-items-end">
                                 <div class="col-lg-5">
                                     <div class="form-group">
-                                        <label for="user_profile" class="form-label trans-text" data-langprop="titles.Profile Photo"></label>
+                                        <label for="user_profile" class="form-label  " vslang="titles.Profile Photo"></label>
                                         <div class="container-user-profile">
                                             <div id="_um_profile_show" class="d-flex align-items-center justify-content-center rounded-3 w-100 h-100">
                                                 <i class="fa-regular fa-image text-muted fs-5"></i>
@@ -805,7 +805,7 @@ const AddUserDialog = new function(){
                                 </div>
                                 <div class="col-lg-7">
                                     <div class="form-group">
-                                        <label for="user_class" class="form-label trans-text" data-langprop="titles.User Class"></label>
+                                        <label for="user_class" class="form-label  " vslang="titles.User Class"></label>
                                         <div class="width-select-dialog">
                                             <select class="modal-select2 data-input user-class" data-field="user_class" ${options.user_id ? ' disabled' : ''}>
                                                 ${option=null,
@@ -820,7 +820,7 @@ const AddUserDialog = new function(){
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="role_id" class="form-label trans-text" data-langprop="titles.Role"></label>
+                                <label for="role_id" class="form-label  " vslang="titles.Role"></label>
                                 <div class="width-select-dialog">
                                     <select class="modal-select2 user-role data-input" data-field="role_id">
                                     </select>
@@ -831,13 +831,13 @@ const AddUserDialog = new function(){
                     <div class="row gy-2">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="login_name" class="form-label trans-text" data-langprop="titles.Login Name"></label>
+                                <label for="login_name" class="form-label  " vslang="titles.Login Name"></label>
                                 <input type="text" class="form-control data-input" data-field="login_name"/>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="full_name" class="form-label trans-text" data-langprop="titles.Full Name"></label>
+                                <label for="full_name" class="form-label  " vslang="titles.Full Name"></label>
                                 <input type="text" class="form-control data-input" data-field="full_name"/>
                             </div>
                         </div>
@@ -845,13 +845,13 @@ const AddUserDialog = new function(){
                     <div class="row gy-2">
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="offical_id" class="um_label_official_code form-label trans-text" data-langprop="titles.${user_class? VSUtil.properCase(user_class):'Official'} ID"></label>
+                                <label for="offical_id" class="um_label_official_code form-label  " vslang="titles.${user_class? VSUtil.properCase(user_class):'Official'} ID"></label>
                                 <input type="text" class="form-control data-input" data-field="official_code"/>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <div class="form-group">
-                                <label for="phone_number" class="form-label trans-text" data-langprop="titles.Phone Number"></label>
+                                <label for="phone_number" class="form-label  " vslang="titles.Phone Number"></label>
                                 <input type="text" class="form-control data-input" data-field="phone_number"/>
                             </div>
                        </div>
@@ -944,7 +944,7 @@ const AddUserDialog = new function(){
         const div = modalDiv.querySelector('.modal-body');
         const html = `<form action="" method="POST" autocomplete="off">
             <div class="form-group">
-                <label for="password" class="form-label trans-text" data-langprop="titles.New Password"></label>
+                <label for="password" class="form-label  " vslang="titles.New Password"></label>
                 <div class="input-group flex-nowrap">
                     <input type="password" class="form-control data-input data-validate" data-field="password" autocomplete="off"/>
                     <div class="input-group-text" role="button">
@@ -953,7 +953,7 @@ const AddUserDialog = new function(){
                 </div>
             </div>
             <div class="form-group">
-                <label for="confirm_password" class="form-label trans-text" data-langprop="titles.Confirm New Password"></label>
+                <label for="confirm_password" class="form-label  " vslang="titles.Confirm New Password"></label>
                 <div class="input-group flex-nowrap">
                     <input type="password" class="form-control data-input data-validate" data-field="confirm_password" autocomplete="off"/>
                     <div class="input-group-text" role="button">

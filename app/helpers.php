@@ -2,14 +2,17 @@
  use App\Models\PublicStorage;
  //use Illuminate\support\Facades\Auth;
  use Illuminate\Support\Facades\DB;
- use App\Models\UM;
+ use App\Models\DBX;
  use Carbon\Carbon;
  use App\Models\DV;
- use Intervention\Image\Facades\Image;
+use App\Models\Umt\Subscription;
+use App\Models\Umt\UMTSettings;
+use Intervention\Image\Facades\Image;
  use Ramsey\Uuid\Uuid;
  //use GuzzleHttp\Client;
  use Illuminate\Http\Client\RequestException;
-
+use App\Services\Umt\AuthService;
+//use Illuminate\Support\Facades\Session;
  //BEGIN:: LocaleManager class
 
  //END:: LocaleManager class
@@ -58,6 +61,22 @@ function api_response($data,$error_code=300,$error_message=null) {
                 return response()->json($d);
             }
      }
+}
+
+function getAccessBranches($ss=null,$filter_branch_id = null){
+    if(!$ss) $ss = AuthService::user(); 
+    if(!$ss) return [0];
+    $branches = $ss->branches;
+    $branchIds = [];
+    if(!isset($branches[0])){
+      return DB::table('um_branches as b')->where('b.id',$ss->branch_id)->pluck('id');
+    }
+     foreach($branches as $b) $branchIds[] =$b->id;
+     if($filter_branch_id > 0 && in_array($filter_branch_id,$branchIds)){
+       return [$filter_branch_id];
+     }
+     if(!isset($branchIds[0]))  $branchIds[] = 0;
+     return $branchIds;
 }
 
 function escape_like_str($portion) {
@@ -250,10 +269,10 @@ function makeJsonResponse($data) {
     } else return response()->json((object)['status'=>'OK','status_code'=>200,'data'=>$data]);
 }
 
- //if module_id is supplied, then it means if module is accessible => allows access
- function prn_allowed($prn_id,$module_id){
-    return UM::allowed($prn_id,$module_id);
- }
+//  //if module_id is supplied, then it means if module is accessible => allows access
+//  function prn_allowed($prn_id,$module_id){
+//     return UM::allowed($prn_id,$module_id);
+//  }
  
  function getLastDayOfMonth($mDate)
  {
@@ -474,7 +493,7 @@ function deleteFile($fileName)
   } else return 'File not found for deleting';
 }
 
-function readFileContent($fileName=null)
+function readFileContent($fileName=null,$file_format = 'UTF-8')
 {
     if (empty($fileName)) return null;
     if (!file_exists($fileName)) return null;
@@ -568,17 +587,24 @@ function readFileContent($fileName=null)
         return str_pad($num, $len, '0', STR_PAD_LEFT);
     }
 
-    // //the following functions return value of Session variables to be used in .blade or javascript file, for example: {{sess_user_token}}
-    // function sess_user_token(){
-    //     return Session('access_token',null);
-    // }
-
+    //sess_branch_id
     function sess_company_id(){
-        return Session('branch_id',null);
+        $user =AuthService::user();
+        return $user->branch_id;
     }
 
     function sess_user_id(){
-        return Session('user_id',null);
+        return AuthService::user()->id;  
+    }
+    
+    function sess_subs_id(){
+        $user = AuthService::user();
+        if(!$user) return "";
+        return $user->subs_id;
+    }
+
+    function sess_app_id($route_name){
+        return UMTSettings::getAppIdFromRoute($route_name);
     }
 
     function base_url($uri=null){
@@ -589,6 +615,35 @@ function readFileContent($fileName=null)
       return url('/')."/".$public_folder.$uri;
     }
 
+    function getCurrentSubsId($use_env_value = false){
+        $user = AuthService::user();
+        if(!$user){
+             //This is correct only for Single-subscriber system.
+             if ($use_env_value){
+                $d = Subscription::defaultSubscription(30);
+                return ($d? $d->id: null);  
+             }
+             else return null;
+        } 
+        return $user->subs_id;
+    }
+    function getCurrentSubs($use_env_value=false){
+        $user = AuthService::user();
+        if(!$user){
+            if($use_env_value){
+                //This is correct only for Single-subscriber system.
+                $d = Subscription::defaultSubscription(30);
+                return (Object)['id'=>$d->id,'subscriber_id'=>$d->subscriber_id];
+            }else return (Object)['id'=>null,'subscriber_id'=>null];
+        }
+        return (Object)['id'=>$user->subs_id,'subscriber_id'=>$user->subscriber_id];
+    }
+
+    function isBinary($string)
+    {
+        return preg_match('~[^\x20-\x7E\t\r\n]~', $string) > 0;
+    }
+     
  //@key can be id that refers to column (settings_string.id) or a key that refers to (settings_string.key)
 /** for example, you can call get_settings_value(1,"string") or get_settings_value("default_currency","string"), both ways return a default currency code  **/
  function get_settings_value($user_session,$key,$valueType)
@@ -647,18 +702,7 @@ function readFileContent($fileName=null)
     }
     return $inputs;
  }
-
- function getDefaultCurrency($user_session)
- {
-     $branch_id = $user_session->branch_id;
-	 $code = $this->get_settings_value('default_currency','string');
-     $rows = DB::table('currencies')->where('branch_id',$branch_id)->where('code',$code)->selectRaw('code,symbol')->limit(1)->get();
-	 foreach($rows as $row) return $row;
-     $this->save_setting($user_session,'string','default_currency','USD','Default currency');
-     return (object)array('code'=>'USD','symbol'=>'$');
-
-  }
-
+  
  function getMonthName_full($num)
  {
 	 if ($num < 1) $num =1;
@@ -718,7 +762,7 @@ function readFileContent($fileName=null)
    $str_branch ="1=1";
 
    if($use_branch_id){
-      $branch_id = Session::get('branch_id',0);
+      $branch_id = AuthService::getBranchId();
       $str_branch ="branch_id = $branch_id";
    }
    return DB::table($table_name)->where($key_field_name,$key_value)->whereRaw($str_branch)->selectRaw($key_field_name)->take(1)->exists();
@@ -747,7 +791,7 @@ function readFileContent($fileName=null)
         if ($use_branch_id) $str_branch = "branch_id =".$ss->branch_id?$ss->branch_id:0;
         $inputs['update_uid'] = $ss->user_id;
         $inputs['update_user'] = $ss->full_name;
-        $inputs['update_date'] = getNowTime();
+        $inputs[DBX::$updated_at] = getNowTime();
         DB::table($table_name)->where($key_field_name,$key_value)->whereRaw($str_branch)->update($inputs);
         $new_id = $key_value;
     }
@@ -756,7 +800,7 @@ function readFileContent($fileName=null)
         $inputs['branch_id'] = $ss->branch_id;
         $inputs['create_uid'] = $ss->user_id;
         $inputs['create_user'] = $ss->full_name;
-        $inputs['create_date'] = getNowTime();
+        $inputs[DBX::$created_at] = getNowTime();
         DB::table($table_name)->insert($inputs);
         $new_id = DB::getPdo()->lastInsertId();
     }
@@ -774,8 +818,9 @@ function readFileContent($fileName=null)
 // }
 
 /** createUUID version 4 */
-function createUUID() {
+function createUUID($remove_hiphens = false) {
     $uuid = Uuid::uuid4()->toString();
+    if($remove_hiphens) return str_replace('-','',$uuid);
     return $uuid;
 }
 
@@ -798,10 +843,12 @@ function createUUIDV1()
  //Unlike createForcibly(), the method saveData() checks the given $key_value. If it is given valid then UPDATE, else CREATE new record.
  //Unlike method createForcibly(), saveData() will commit UPDATE when the given key_value is positive even this key_value does not exists in target table
  //$pk_field_array is $key_fields. example ['id'=>120] or ["id"=>":student_id"]. In ":student_id", the "student_id" is the prop or array key, for example, $input['student_id']
- function saveData($ss,$table_name,$pk_field_array = [],$inputs=[],$extended_cols=[],$use_branch_id = 0,$endure_exits=false,$primary_key_integer = true){
+ // $data_scope = {0 = not use branch_id and subs_id ,1 = use branch_id, 2 = use subs_id}.
+ function saveData($ss,$table_name,$pk_field_array = [],$inputs=[],$extended_cols=[],$data_scope = 0,$endure_exits=false,$primary_key_type = 'auto_number'){
     $key_field =null;
     $key_value = null;
-    if($primary_key_integer ===null) $primary_key_integer = true;
+    $primary_key_type = $primary_key_type ?? 'auto_number';
+    $primary_key_type = in_array($primary_key_type,['auto_number','number','int','integer'])? 'auto_number':$primary_key_type;
     foreach($pk_field_array as $field=>$value){
         $key_field = $field;
         if (substr($value,0,1)===":")
@@ -813,31 +860,60 @@ function createUUIDV1()
 
     $new_id = null;
     if(is_array($extended_cols)) foreach($extended_cols as $prop=>$value) $inputs[$prop] = $value;
+    
+    $use_fixed_branch = 0;
+    $use_fixed_subs_id = 0;
+    if ($data_scope === 1){
+        $subs_id = $ss->subs_id;
+        $branch_id = $inputs['branch_id'] ?? $ss->branch_id;
+        $use_fixed_branch = 1;
+        $use_fixed_subs_id = 1;
+    }else if($data_scope === 2){
+        $subs_id = $ss->subs_id;
+        $branch_id = $inputs['branch_id'] ?? $ss->branch_id;
+        $use_fixed_branch = 1;
+        $use_fixed_subs_id = 1;
+    }
+    else{
+        $subs_id = null;
+        $branch_id = null;
+    }
+    
     if ($key_value){
-        $str_branch ="1=1";
-        if ($use_branch_id) $str_branch = "branch_id =".$ss->branch_id?$ss->branch_id:0;
+        //$str_branch ="1=1";
+        //if ($use_fixed_branch && $branch_id) $str_branch = "branch_id =".$branch_id;
+        $query = DB::table($table_name)->where($key_field,$key_value);
+        if($use_fixed_subs_id ===1 && $subs_id) $query->where('subs_id',hex2bin($subs_id));
+        //if($use_fixed_branch ===1 && $branch_id > 0) $query->where('branch_id',$branch_id); 
+
         $inputs['update_uid'] = $ss->user_id;
         $inputs['update_user'] = $ss->full_name;
-        $inputs['update_date'] = getNowTime();
-        DB::table($table_name)->where($key_field,$key_value)->whereRaw($str_branch)->update($inputs);
+        $inputs[DBX::$updated_at] = getNowTime();
+        $query->update($inputs);
         return $key_value;
     }else{
         $nowTime = getNowTime();
-        if ($use_branch_id) $inputs['branch_id'] = $ss->branch_id;
+        if ($branch_id) $inputs['branch_id'] = $branch_id;
+        if ($subs_id) $inputs['subs_id'] = hex2bin($subs_id);
         $inputs['create_uid'] = $ss->user_id;
         $inputs['create_user'] = $ss->full_name;
-        $inputs['create_date'] = $nowTime;
+        $inputs[DBX::$created_at] = $nowTime;
         $inputs['update_uid'] = $ss->user_id;
         $inputs['update_user'] = $ss->full_name;
-        $inputs['update_date'] = $nowTime;
+        $inputs[DBX::$updated_at] = $nowTime;
 
         $pk_value = null;
 
-        if($primary_key_integer){
+        if($primary_key_type === 'auto_number'){
             DB::table($table_name)->insert($inputs);
             $new_id = DB::getPdo()->lastInsertId();
             return $new_id;
-        }else{
+        }else if ($primary_key_type ==='guid'){
+            $pk_value =   str_replace('-','',createUUID());
+            $inputs[$key_field]= $pk_value;
+            DB::table($table_name)->insert($inputs);
+            return $pk_value;
+        }else if($primary_key_type ==='binary'){
             //pk_value is a binary(16) value ready to be insert into database tabe column of data type BINARY(16)
             //$pk_value = DB::raw("UNHEX(REPLACE('".createUUID()."', '-', ''))");
             $pk_value = hex2bin( str_replace('-','',createUUID())); 
@@ -848,16 +924,16 @@ function createUUIDV1()
     }
 
  }
-
+ 
  //setIdentityFields() | setCommonCols() | setCommonInputs()
  function setCommonFields($d,$ss,$action = 'create',$include_branch_id=1){
         if ($action === 'create'){
             if ($include_branch_id===1) $d['branch_id'] = $ss->branch_id;
-            $d['create_date'] = getNowTime();
+            $d[DBX::$created_at] = getNowTime();
             $d['create_uid'] = $ss->user_id;
             $d['create_user'] = $ss->full_name;
         }else{
-            $d['update_date'] = getNowTime();
+            $d[DBX::$updated_at] = getNowTime();
             $d['update_uid'] = $ss->user_id;
             $d['update_user'] = $ss->full_name;
         }
@@ -880,10 +956,6 @@ function createUUIDV1()
 
         }
         return $out;
-    }
-    function isExist($tbl_name,$pk_id,$findCols=[]){
-        $pk_id = DB::table($tbl_name)->where('id','<>',$pk_id)->where($findCols)->take(1)->value('id');
-        return $pk_id>0?true:false;
     }
 
     //compress Image Size
@@ -1281,7 +1353,7 @@ function createUUIDV1()
                         $file_types = getPropValue('type',$part4,$part3);
                         $types = explode(';',$file_types);
                         $ext = getFileExtensionFromBase64($val);
-                        if (!in_array($ext, $types)) return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file type is not allowed")];
+                        if (!in_array($ext, $types)) return (object)['error'=> Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file type is not allowed")];
                         $size = getBase64ImageSize($val);
                         if ($interval->min===-1 && $interval->max===-1){
                             $image = null;
@@ -1291,7 +1363,7 @@ function createUUIDV1()
                             return (object)['error'=>null,'default_value'=>$image];
                         }else{
                             if ($size < $interval->min || $size > $interval->max)
-                            return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file size should be between ? and ?"),[$interval->min, $interval->max]];
+                            return (object)['error'=> Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name file size should be between ? and ?"),[$interval->min, $interval->max]];
                             else{
                                 $image = null;
                                 $mx = resizeImage_base64($val);
@@ -1654,26 +1726,19 @@ function createUUIDV1()
       return url('').Config::get('app.storage_dir'); //"/uploads/companies/";
     }
 
-    //To upport misspelling version
-    function getAdminAppId(){
-        return Config::get('app.app_id');
-    }
+    // //To upport misspelling version
+    // function getAdminAppId(){
+    //     return Config::get('app.app_id');
+    // }
 
-    function thisAppId()
-    {
-      return Config::get('app.app_id');
-    }
+    // function thisAppId()
+    // {
+    //   return Config::get('app.app_id');
+    // }
 
-    function getDefaultSubscription(){
-        return (object)[
-            'id'=>'B5F30F8A5F2BF715DC0586A27E669726CB7',
-            'name'=>'A'
-        ];
-    }
-
-    function getAppId(){
-        return Config::get('app.app_id');
-    }
+    // function getAppId(){
+    //     return Config::get('app.app_id');
+    // }
 
     function channel_prefix(){
         //NOTE: main.js => mThis.backend_channel_name = 'houex.backend.${branch_id}'
@@ -1699,7 +1764,7 @@ function createUUIDV1()
         if(!$user_class) return null;
         switch($user_class){
             case 'admin':
-                return Config::get('app.app_id');
+                return Config::get('app.dms_app_id');
                 break;
             case 'driver':
                 return Config::get('app.driver_app_id');
@@ -1711,9 +1776,8 @@ function createUUIDV1()
                 return Config::get('app.sales_app_id');
                 break;
             default:
-              return Config::get('app.app_id');
-              break;  
-
+              return Config::get('app.dms_app_id');
+              break;
         }
      }
 

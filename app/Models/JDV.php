@@ -1,23 +1,25 @@
 <?php
-
 namespace App\Models;
-use Localization;
-use Session;
+use App\Locales\LocaleManager;
 
 //JDV is the Data Valiator class
 class JDV //extends Model
 {
-    //use HasFactory;
-   static function isEmail($e){
-     return filter_var($e, FILTER_VALIDATE_EMAIL);
-   }
-   static function isPhoneNumber($phone){
-      $len = strlen($phone?$phone:'');
-      if($len >25) return false;
-      else if($len<=0) return false;
-      else return true;
-   }
+  //   //use HasFactory;
+  //  static function isEmail($e){
+  //    return filter_var($e, FILTER_VALIDATE_EMAIL);
+  //  }
+  //  static function isPhoneNumber($phone){
+  //     $len = strlen($phone?$phone:'');
+  //     if($len >25) return false;
+  //     else if($len<=0) return false;
+  //     else return true;
+  //  }
  
+   static function unauth($def_lang ='en'){
+      return self::error('Authentication failed',$def_lang,401);
+   }
+
    static function getFriendlyName($field=''){
      return str_replace("_"," ",$field);
    }
@@ -39,8 +41,7 @@ class JDV //extends Model
             return (object)['inputs'=>$inputs,'error'=>null];
     }
 
-    static function emptyResult($status_code =0,$def_result=null,$lang='en',$error_message=null){
-       if (!$lang) $lang = Session('lang','en');
+    static function emptyResult($status_code =0,$def_result=null,$lang=null,$error_message=null){ 
        if (is_object($status_code)) $status_code = $status_code->status_code;
        $error_message = match($status_code){
           401 => $error_message ?? 'Authentication failed',
@@ -51,26 +52,25 @@ class JDV //extends Model
             $error_message="";
           }
        };
-       return makeJsonResponse ((object)['status'=>'Error','status_code'=>$status_code,'error_message'=>Localization::translate($lang,$error_message),'data'=>$def_result]);
+       return makeJsonResponse ((object)['status'=>'Error','status_code'=>$status_code,'error_message'=>LocaleManager::trans($error_message,null,null,$lang),'data'=>$def_result]);
     }
  
-    //return Authentication error, with status_code =401
-    static function authError($status_code=401){
-         $langSection ='validation';
-         if (!$lang) $lang = Session::get('lang','en');
-         if($status_code===401) $err_message ="Authentication failed";
-        return makeJsonResponse ((object)['error_message'=>Localization::translate($lang,$err_message,$langSection),'status'=>'Error','status_code'=>$status_code]);
-    }
+    // //return Authentication error, with status_code =401
+    // static function authError($status_code=401){
+    //      $langSection ='validation';
+    //      if (!$lang) $lang = Session::get('lang','en');
+    //      if($status_code===401) $err_message ="Authentication failed";
+    //     return makeJsonResponse ((object)['error_message'=>Localization::translate($lang,$err_message,$langSection),'status'=>'Error','status_code'=>$status_code]);
+    // }
 
     //return error object. default status code is 405 for Data Validation error;
     static function error($err_message=null,$lang=null,$status_code=405,$err_code=null,$log=false){
       $def_langSection = 'validation';
-      $lang = $lang ?? Session::get('lang','en');
-      $err_message = $err_message? Localization::translate($lang,$err_message,$def_langSection) : 'There was an error but no error message provided by developer';
+      $err_message = $err_message? LocaleManager::trans($err_message,$def_langSection,null,$lang) : 'There was an error but no error message provided by developer';
       $response = (object)['status'=>'Error','status_code'=>$status_code,'error_code'=>$err_code,'error_message'=>$err_message];
       if(!$status_code) $status_code = 405;
       else if($status_code == 200) $status_code =405;// Status_code cannot be 200 for error
-      if($log) Log::info('JDV => Caught Error: '.$err_message);
+      if($log) \Log::info('JDV => Caught Error: '.$err_message);
       return makeJsonResponse($response);     
     }
   
@@ -92,7 +92,7 @@ class JDV //extends Model
     //DV::result($rows) returns SELECT or query result ready to be encoded as JSON straight to be sent to Browser
     //JDV::result() and DV::result() return query results inhabited under "data" property. Example $res->data = [... query result ...]
     static function result($rows = []){
-      $rows = self::replaceNullWithEmptyString($rows);
+      //$rows = self::replaceNullWithEmptyString($rows);
       //default status_code for create, update, delete is "200"
        return response()->json((object)['status'=>'OK','status_code'=>200,'data'=>$rows]);
    }
@@ -111,7 +111,7 @@ class JDV //extends Model
   }
  
    static function raw($data){
-     $data = self::replaceNullWithEmptyString($data);
+     //$data = self::replaceNullWithEmptyString($data);
      return response()->json($data);
    }
 
