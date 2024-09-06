@@ -236,6 +236,8 @@
                                 @include('layouts.common.companyComponent')
                                 @include('layouts.bhr.reportCenterComponent')
                                 @include('layouts.common.socialMediaComponent')
+                                @include('layouts.bhr.employeeComponent')
+
                             </div>
                         </div>
                     </div>

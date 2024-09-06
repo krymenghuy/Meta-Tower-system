@@ -155,7 +155,7 @@ Route::get('landingpoint',function(){
     return view('landing_page');
 });
 
-Route::get('hr/{componentName?}',function($componentName= null){
+Route::get('bhr/{componentName?}',function($componentName= null){
     if(!AuthService::user()){
        // return redirect('/')
        $base_url =url('/');
