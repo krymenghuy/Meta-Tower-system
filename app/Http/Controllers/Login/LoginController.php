@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Login;
 
 use App\Http\Controllers\Controller;
-use App\Models\CrispModel;
 use Illuminate\Http\Request;
 use App\Services\Umt\AuthService; 
 use App\Services\GarbageCollector\GarbageCollector;
@@ -38,11 +37,10 @@ class LoginController extends Controller
         //$request->access_token is used to check if the existing session is valid then just use existing session for this given access_token
         $result = AuthService::verifyUser($THIS_APP_ID,$request->login_name,$request->password,"en");
         if ($result->status_code ===200) {
-                $user = $result->user;
-                CrispModel::createOrUpdateOperator($user);
+            $user = $result->user;
                 $access_token =Crypt::encryptString($user->access_token);
                 unset($user->access_token);
-                AuthService::login($user);
+                 AuthService::login($user);
                 //*** NOTE: app/http/middleware/EncryptCookies.php (for exception of encryption)
                 $cookie_name = Config::get('app.cookie_name');
                 GarbageCollector::cleanAll();
@@ -59,7 +57,7 @@ class LoginController extends Controller
                 }else if(isset($user->apps[0])){
                    $app = $user->apps[0] ?? null;
                    if(!$app){
-                     echo 'There is no accessible application!';
+                     echo 'There is no accessible application!'; 
                      return;
                    }
                    $route_name = $user->apps[0]->home_route ?? null;
