@@ -102,6 +102,7 @@ namespace App\ScriptManagement;
                         '/js/components/common/pusher_client_dms.js',
                         '/js/components/bhr/DashboardComponent.js',
                         '/js/components/bhr/EmployeeComponent.js',
+                        '/js/components/bhr/SkillsComponent.js',
                           
                     ]
               ],
