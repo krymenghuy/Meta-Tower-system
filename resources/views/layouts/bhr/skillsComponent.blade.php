@@ -290,7 +290,7 @@
     .communicate,
     .mobile {
         padding: 20px;
-        width: 380px;
+        width: 370px;
         height: 250px;
         position: relative;
         border: none;
