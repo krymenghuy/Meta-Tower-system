@@ -14,6 +14,48 @@ var JobsLevelComponent = new (function () {
         main_view.setTitle(mThis.title_prop);
     };
 
+    // Show form when Add button is clicked
+    this.addForm = function () {
+        let formHtml = `
+            <div class="add-job-form">
+                <h3>Add New Job</h3>
+                <form id="addJobForm">
+                    <label for="jobTitle">Job Title:</label>
+                    <input type="text" id="jobTitle" name="jobTitle" required><br>
+                    <label for="jobLevel">Job Level:</label>
+                    <input type="text" id="jobLevel" name="jobLevel" required><br>
+                    <label for="jobRating">Job Rating:</label>
+                    <input type="number" id="jobRating" name="jobRating" min="1" max="5" required><br>
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        `;
+        mThis.jm.find(".container").after(formHtml);
+
+        // Form submit action
+        $("#addJobForm").on("submit", function (e) {
+            e.preventDefault();
+            let jobTitle = $("#jobTitle").val();
+            let jobLevel = $("#jobLevel").val();
+            let jobRating = $("#jobRating").val();
+
+            // Logic to create the new job in the table
+            let newRow = `
+                <tr>
+                    <th scope="row">NEW</th>
+                    <td>${jobTitle}</td>
+                    <td>${jobLevel}</td>
+                    <td>${"★".repeat(jobRating)}</td>
+                    <td class="actions"><i class="fa fa-ellipsis-v"></i></td>
+                </tr>
+            `;
+            $(".list_job_level tbody").append(newRow);
+
+            // Remove form after submission
+            $(".add-job-form").remove();
+        });
+    };
+
     // Search functionality for Job Title
     this.searchJobTitle = function () {
         $("#searchSkill").on("input", function () {
@@ -52,7 +94,10 @@ var JobsLevelComponent = new (function () {
 
                 // Action menu click handlers
                 $(".action-menu .fa-eye").on("click", function () {
-                    alert("View job details!");
+                    let row = $(this).closest("tr");
+                    let jobTitle = row.find("td:nth-child(2)").text();
+                    let level = row.find("td:nth-child(3)").text().toLowerCase();
+                    alert("Job Titile: " + jobTitle +"     "+"\n" + "Level: "+ level)
                 });
 
                 $(".action-menu .fa-pen").on("click", function () {
