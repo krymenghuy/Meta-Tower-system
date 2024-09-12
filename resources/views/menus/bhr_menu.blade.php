@@ -341,6 +341,16 @@
                 </a>
             </li>
             {{-- /*skills*/ --}}
+            {{-- /* jobs level*/ --}}
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+                <a href="JobsLevelComponent" modid="-1" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <i class="fas fa-tasks icons opacity-icons"></i>
+                    </span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Job Level"></span>
+                </a>
+            </li>
+            {{-- /*jobs level*/ --}}
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
                 <a href="CompanySetupComponent" modid="201" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">

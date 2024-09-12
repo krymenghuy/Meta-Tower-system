@@ -103,6 +103,7 @@ namespace App\ScriptManagement;
                         '/js/components/bhr/DashboardComponent.js',
                         '/js/components/bhr/EmployeeComponent.js',
                         '/js/components/bhr/SkillsComponent.js',
+                        '/js/components/bhr/JobsLevelComponent.js',
                           
                     ]
               ],
