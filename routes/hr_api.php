@@ -1,21 +1,20 @@
 <?php
+use App\Http\Controllers\Bhr\BenefitController;
+use App\Http\Controllers\Bhr\BookController;
 use App\Http\controllers\Bhr\DashboardController;
 use App\Http\controllers\Bhr\EmployeeController;
-use App\Http\controllers\Bhr\StaffController;
-use App\Http\controllers\Bhr\SkillController;
-use App\Http\Controllers\Bhr\BookController;
 use App\Http\Controllers\Bhr\MembersController;
-use App\Http\Controllers\Bhr\BenefitController;
-use App\Http\controllers\Bhr\StaffBenefitController;
 use App\Http\Controllers\Bhr\PayrollController;
 use App\Http\Controllers\Bhr\PayrollListController;
 use App\Http\Controllers\Bhr\ProductsController;
 use App\Http\Controllers\Bhr\ProfileController;
+use App\Http\controllers\Bhr\SkillController;
+use App\Http\controllers\Bhr\StaffBenefitController;
+use App\Http\controllers\Bhr\StaffController;
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
-
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -94,7 +93,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('profile')->gr
 
 });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('skill')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('skills')->group(function () {
 
     Route::post('/save', [SkillController::class, 'saveSkill']);
     Route::post('/list', [SkillController::class, 'getSkillList']);

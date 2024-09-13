@@ -38,7 +38,7 @@ var SkillsComponent = new (function () {
     // Fetch and display the list of Skills with optional filtering
     this.displaySkills = (searchQuery = "") => {
         vsapi
-            .call(`${mThis.base_url}/bhr/skills/list`, {}, null)
+            .call(`${mThis.base_url}/hr/skills/list`, {}, null)
             .then((res) => {
                 mThis.div_x_list.innerHTML = "";
                 let d = res.status_code === 200 ? res.data : [];
@@ -64,7 +64,7 @@ var SkillsComponent = new (function () {
                             </div>
                         </div>
                         <div>
-                            <img class="mt-2" src="${skill.image_url}" alt="" style="border-radius: 10%; width:380px; height:200px" /> 
+                            <img class="mt-2" src="${skill.image_url}" alt="" style="border-radius: 10%; width:380px; height:200px" />
                         </div>
                     </div>
                 `;
@@ -121,13 +121,13 @@ var SkillsComponent = new (function () {
             });
     };
 
-    this.show = function () {
-        mThis.init();
-        mThis.jm.siblings().hide();
-        mThis.jm.fadeIn(250);
-        mThis.displaySkills();
-        main_view.setTitle(mThis.title_prop);
-    };
+        this.show = function () {
+            mThis.init();
+            mThis.jm.siblings().hide();
+            mThis.jm.fadeIn(250);
+            mThis.displaySkills();
+            main_view.setTitle(mThis.title_prop);
+        };
 
     const SkillsDialog = (() => {
         const self = {};
@@ -147,7 +147,7 @@ var SkillsComponent = new (function () {
                         </div>`,
                         `<div class="form-group col-12">
                             <div class="d-flex align-items-center justify-items-center p-1">
-                                <div name="div_img"></div> 
+                                <div name="div_img"></div>
                             </div>
                         </div>`,
                         `</div>`,

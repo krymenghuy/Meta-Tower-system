@@ -69,7 +69,7 @@ class PayrollList
             ->join('payrolls as p', 'p.id', 'pl.payroll_id')
             ->join('employees as em', 'em.id', 'pl.emp_id')
             ->join('positions as pos', 'pos.id', 'pl.position_id')
-            ->selectRaw('pl.id,pl.payroll_id, p.name as payroll_name,pl.emp_id, em.first_name as emp_first_name, em.last_name as emp_last_name, pl.position_title, pl.process_tax')
+            ->selectRaw('pl.id,pl.payroll_id, p.name as payroll_name,pl.emp_id, em.first_name as emp_first_name, em.last_name as emp_last_name, pos.name as position_name, pl.process_tax')
             ->where('pl.branch_id', $branch_id)
             ->whereRaw($str_search)
             ->orderby('pl.id', 'asc');
@@ -114,7 +114,7 @@ class PayrollList
                 ->join('payrolls as p', 'p.id', 'pl.payroll_id')
                 ->join('employees as em', 'em.id', 'pl.emp_id')
                 ->join('positions as pos', 'pos.id', 'pl.position_id')
-                ->selectRaw('pl.id,pl.payroll_id, p.name as payroll_name,pl.emp_id, em.first_name as emp_first_name, em.last_name as emp_last_name, pl.position_title, pl.process_tax')
+                ->selectRaw('pl.id,pl.payroll_id, p.name as payroll_name,pl.emp_id, em.first_name as emp_first_name, em.last_name as emp_last_name, pos.name as position_name, pl.process_tax')
                 ->where('pl.branch_id', $ss->branch_id)
                 ->where('pl.id', $id)
                 ->first();

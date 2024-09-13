@@ -44,8 +44,6 @@ class Skill
         $d = (object) $inputs;
         $image = $d->image;
 
-
-
         unset($inputs['image']);
         $skill_create = !$id;
 
@@ -72,9 +70,44 @@ class Skill
         return DV::error('Error saving data');
     }
 
-    function getSkills($ss)
+    function getSkills($arr, $ss)
     {
-        return DB::table('skills')->selectRaw('id, title, description, image_file_name, count_member')->get();
+        $d = (object) $arr;
+
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 5;
+        if (!is_numeric($current_page)) {
+            $current_page = 1;
+        }
+
+        $skip_rows = ($current_page - 1) * $per_page;
+
+        $search_value = $d->search_value ?? null;
+
+        $str_search = '1=1';
+
+        $query = DB::table('skills as s')
+            ->selectRaw('s.id, s.title, s.description, s.image_file_name, s.count_member')
+            ->where('s.branch_id', $ss->branch_id);
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->whereRaw("s.title like '%" . $search_value . "%'" . " or s.description like '%" . $search_value . "%'");
+            $query->whereRaw($str_search);
+        }
+
+        $query->orderBy('s.id', 'asc');
+        $count_query = clone $query;
+        $count = $count_query->count('s.id');
+        $rows = $query->get();
+
+        foreach ($rows as $row) {
+            $row->image_url = '';
+            if ($row->image_file_name) {
+                $row->image_url = self::getProfilePicture($row->id);
+            }
+            unset($row->image_file_name);
+        }
+        return $rows;
     }
 
     function getSkillsPaginate($arr, $ss)
@@ -122,7 +155,6 @@ class Skill
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
 
     public static function getProfilePicture($id)
     {
@@ -192,11 +224,4 @@ class Skill
         return DV::depends(1, ['id' => $id, 'deleted' => $file_name ?? 'No file found']);
     }
 
-
-
-
 }
-
-
-
-

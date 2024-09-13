@@ -4,7 +4,7 @@ namespace App\ScriptManagement;
          //base in base_path()/public directory
          /***
           /assets/js
-          /js/components 
+          /js/components
          ***/
          protected static $bundles = [
             'primary-loader'=>[
@@ -76,7 +76,7 @@ namespace App\ScriptManagement;
                         '/assets/js/browsercontrol.js'
                     ]
                     ,'no-minify'=>[
-                        '/assets/js/crypto-js.js', 
+                        '/assets/js/crypto-js.js',
                     ]
                 ],
 
@@ -89,7 +89,7 @@ namespace App\ScriptManagement;
                         '/assets/js/VSRoute.js',
                         '/js/layout/bhr/main.js',
                         '/assets/js/formUtils.js',
-                        
+
                         //'/js/components/bhr/PDFReport.js',
                         '/assets/js/ImageBox.js',
                         '/assets/js/ImageHelper.js',
@@ -104,11 +104,12 @@ namespace App\ScriptManagement;
                         '/js/components/bhr/EmployeeComponent.js',
                         '/js/components/bhr/SkillsComponent.js',
                         '/js/components/bhr/JobsLevelComponent.js',
-                          
+                        '/js/components/bhr/PayrollComponent.js',
+
                     ]
               ],
 
-            
+
                     'report-scripts'=>[
                         'attr'=>'defer',
                         'single_file'=>1,
