@@ -3,10 +3,11 @@
 namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Bhr\Skill;
 use App\Models\JDV;
 use App\Services\Umt\AuthService;
+use Illuminate\Http\Request;
+
 class SkillController extends Controller
 {
     protected $skillModel;
@@ -17,11 +18,13 @@ class SkillController extends Controller
 
     public function saveSkill(Request $req)
     {
-        $ss = AuthService::verifyAuth($req,-1);
-        if($ss->status_code !==200) return JDV::raw($ss);
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
 
         $id = $req->skill_id ?? $req->id;
-        $skill = new Skill($id,$ss);
+        $skill = new Skill($id, $ss);
         $res = $skill->save($req->all());
         return JDV::raw($res);
 
@@ -33,7 +36,7 @@ class SkillController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->skillModel->getSkills( $ss));
+        return JDV::result($this->skillModel->getSkills($req->all(), $ss));
     }
 
     public function getSkillListPaginate(Request $req)
@@ -45,7 +48,7 @@ class SkillController extends Controller
 
         // Assuming 'perPage' is the second argument
         // $perPage = $req->input('perPage', 10);  // Default to 10 if not provided
-        return JDV::result($this->skillModel->getSkillsPaginate( $req->all(),$ss));
+        return JDV::result($this->skillModel->getSkillsPaginate($req->all(), $ss));
     }
 
     public function deleteSkill(Request $req)

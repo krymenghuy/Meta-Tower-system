@@ -206,7 +206,7 @@ echo $user->lang ?? 'en'; ?>">
                                                         $cnt++;
                                                     }
                                                 }
-                                                
+
                                                 ?>
 
                                             </div>
@@ -263,7 +263,7 @@ echo $user->lang ?? 'en'; ?>">
                             @include('layouts.bhr.employeeComponent')
                             @include('layouts.bhr.skillsComponent')
                             @include('layouts.bhr.jobsLevelComponent')
-                            @include('layouts.bhr.holidayComponent')
+                            @include('layouts.bhr.payrollComponent')
 
                         </div>
                     </div>

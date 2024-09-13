@@ -62,7 +62,7 @@ a.menu-selected .kt-menu__link-text {
         hue-rotate(201deg) brightness(122%) contrast(100%); */
         /* color: #8DC63F !important; */
         /* filter:hue-rotate(0deg); */
-    filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%) 
+    filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%)
         hue-rotate(24deg) brightness(87%) contrast(79%);
 }
 
@@ -1646,3 +1646,22 @@ ul.list-filter-um li:not(li:last-child) {
 .margin-float{
     margin-top: -6%;
 }
+
+.table--blue {
+    background: #250384 !important;
+    color: #FFFFFF !important;
+    border-radius: 0.5rem !important;
+
+
+}
+
+.table--blue thead th{
+    color: #FFFFFF !important;
+    border-radius: 0.5rem !important;
+}
+
+
+
+
+
+

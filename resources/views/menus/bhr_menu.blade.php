@@ -264,17 +264,16 @@ function v_display($mod_id, $module_ids = null)
                 </a>
             </li>
             <li class="kt-menu__section" <?php v_display(null, [209, 218, 220, 210]); ?>>
-                <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Playroll"></h4>
+                <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Payroll"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
-                <a href="PlayrollSetupComponent" modid="105" class="menu-item kt-menu__link">
+                <a href="PayrollComponent" modid="105" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/company_profile.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Playroll Setup"></span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Payroll"></span>
                 </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
@@ -284,7 +283,7 @@ function v_display($mod_id, $module_ids = null)
                             src="{{ asset('assets/images/icons/company_profile.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Playroll / Staff Accounts"></span>
+                        data-langprop="menus.Payroll / Staff Accounts"></span>
                 </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
@@ -294,7 +293,7 @@ function v_display($mod_id, $module_ids = null)
                             src="{{ asset('assets/images/icons/company_profile.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Playroll Reporting"></span>
+                        data-langprop="menus.Payroll Reporting"></span>
                 </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
@@ -304,7 +303,7 @@ function v_display($mod_id, $module_ids = null)
                             src="{{ asset('assets/images/icons/company_profile.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Playroll Disbursement"></span>
+                        data-langprop="menus.Payroll Disbursement"></span>
                 </a>
             </li>
             <li class="kt-menu__section" <?php v_display(null, [209]); ?>>

@@ -13,7 +13,7 @@
         <div id="_skills_list" class="row"></div>
     </div>
     {{-- endform --}}
-    <div class="skills">
+    {{-- <div class="skills">
         <div class="marketing">
             <div class="card_header">
                 <h3 id="title">Marketing</h3>
@@ -190,7 +190,7 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div> --}}
 </div>
 <style>
     /* form */
