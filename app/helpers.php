@@ -64,7 +64,7 @@ use App\Services\Umt\AuthService;
 // }
 
 function getAccessBranches($ss=null,$filter_branch_id = null){
-    if(!$ss) $ss = AuthService::user(); 
+    if(!$ss) $ss = AuthService::user();
     if(!$ss) return [0];
     $branches = $ss->branches;
     $branchIds = [];
@@ -79,10 +79,11 @@ function getAccessBranches($ss=null,$filter_branch_id = null){
      return $branchIds;
 }
 
+
 function escape_like_str($portion) {
     return mb_convert_encoding(trim(str_replace(['\\', '%', '_', '\''], ['\\\\', '\\%', '\\_', '\\\''], $portion)), 'UTF-8');
 }
- 
+
 function isExists($table,$pk,$checkCol,$inputValue,$updateID=null){
     $self_exists = DB::table($table)->where($pk)->selectRaw($checkCol)->first();
     if($updateID>0){
@@ -260,7 +261,7 @@ function getNameParts($name,$name_orienation=0){
 function makeJsonResponse($data) {
     $status_code = intVal(isset($data->status_code)?$data->status_code:0);
     if ($status_code > 0){
-      
+
         if (in_array($status_code,[200,401,402,403,405])) return response()->json($data);
         else{
             $err_message = isset($data->error_message)? $data->error_message: 'Unexpected error '.$status_code;
@@ -273,7 +274,7 @@ function makeJsonResponse($data) {
 //  function prn_allowed($prn_id,$module_id){
 //     return UM::allowed($prn_id,$module_id);
 //  }
- 
+
  function getLastDayOfMonth($mDate)
  {
      $mDate = convertDate($mDate);
@@ -361,7 +362,7 @@ function makeJsonResponse($data) {
          $months[] = intval($m);
          $years[] = $y;
      }
-  
+
      $next_date = date('Y-m-d', strtotime($next_date . ' +1 day'));
      $i++;
     }while($next_date <=$end_date);
@@ -573,7 +574,7 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
 
     return $url;
   }
-  
+
    //change date format to yyyy-mm-dd
    function convertDate($date)
    {
@@ -594,9 +595,9 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
     }
 
     function sess_user_id(){
-        return AuthService::user()->id;  
+        return AuthService::user()->id;
     }
-    
+
     function sess_subs_id(){
         $user = AuthService::user();
         if(!$user) return "";
@@ -621,10 +622,10 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
              //This is correct only for Single-subscriber system.
              if ($use_env_value){
                 $d = Subscription::defaultSubscription(30);
-                return ($d? $d->id: null);  
+                return ($d? $d->id: null);
              }
              else return null;
-        } 
+        }
         return $user->subs_id;
     }
     function getCurrentSubs($use_env_value=false){
@@ -643,7 +644,7 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
     {
         return preg_match('~[^\x20-\x7E\t\r\n]~', $string) > 0;
     }
-     
+
  //@key can be id that refers to column (settings_string.id) or a key that refers to (settings_string.key)
 /** for example, you can call get_settings_value(1,"string") or get_settings_value("default_currency","string"), both ways return a default currency code  **/
  function get_settings_value($user_session,$key,$valueType)
@@ -702,7 +703,7 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
     }
     return $inputs;
  }
-  
+
  function getMonthName_full($num)
  {
 	 if ($num < 1) $num =1;
@@ -860,7 +861,7 @@ function createUUIDV1()
 
     $new_id = null;
     if(is_array($extended_cols)) foreach($extended_cols as $prop=>$value) $inputs[$prop] = $value;
-    
+
     $use_fixed_branch = 0;
     $use_fixed_subs_id = 0;
     if ($data_scope === 1){
@@ -878,13 +879,13 @@ function createUUIDV1()
         $subs_id = null;
         $branch_id = null;
     }
-    
+
     if ($key_value){
         //$str_branch ="1=1";
         //if ($use_fixed_branch && $branch_id) $str_branch = "branch_id =".$branch_id;
         $query = DB::table($table_name)->where($key_field,$key_value);
         if($use_fixed_subs_id ===1 && $subs_id) $query->where('subs_id',hex2bin($subs_id));
-        //if($use_fixed_branch ===1 && $branch_id > 0) $query->where('branch_id',$branch_id); 
+        //if($use_fixed_branch ===1 && $branch_id > 0) $query->where('branch_id',$branch_id);
 
         $inputs['update_uid'] = $ss->user_id;
         $inputs['update_user'] = $ss->full_name;
@@ -916,7 +917,7 @@ function createUUIDV1()
         }else if($primary_key_type ==='binary'){
             //pk_value is a binary(16) value ready to be insert into database tabe column of data type BINARY(16)
             //$pk_value = DB::raw("UNHEX(REPLACE('".createUUID()."', '-', ''))");
-            $pk_value = hex2bin( str_replace('-','',createUUID())); 
+            $pk_value = hex2bin( str_replace('-','',createUUID()));
             $inputs[$key_field]= $pk_value;
             DB::table($table_name)->insert($inputs);
             return $pk_value;
@@ -924,7 +925,7 @@ function createUUIDV1()
     }
 
  }
- 
+
  //setIdentityFields() | setCommonCols() | setCommonInputs()
  function setCommonFields($d,$ss,$action = 'create',$include_branch_id=1){
         if ($action === 'create'){
@@ -1803,31 +1804,31 @@ function createUUIDV1()
             //\Log::info('URL is empty or null');
             return $otherwise;
         }
-    
+
         // Construct the local file path based on the provided URL
         $localFilePath = public_path(parse_url($url, PHP_URL_PATH));
-    
+
         // Check if the file exists
         if (file_exists($localFilePath) && is_file($localFilePath)) {
             // Get the file extension
             $fileExtension = pathinfo($localFilePath, PATHINFO_EXTENSION);
-    
+
             // List of allowed file extensions (add more as needed)
             $allowedExtensions = array('jpg', 'jpeg', 'png', 'gif');
-    
+
             // Check if the file extension is in the list of allowed extensions
             if (in_array(strtolower($fileExtension), $allowedExtensions)) {
                 // File exists and has a valid extension
                 return $url;
-            } 
+            }
             // else {
             //     \Log::info('File extension not allowed: ' . $fileExtension);
             // }
-        } 
+        }
         // else {
         //     \Log::info('File does not exist or is not a valid file: ' . $localFilePath);
         // }
-    
+
         // File does not exist or does not have a valid extension
         return $otherwise;
     }
@@ -1839,7 +1840,7 @@ function createUUIDV1()
         }
         return null;
     }
-  
+
     function OPICall($prompt)
         {
             try {
@@ -1878,7 +1879,7 @@ function createUUIDV1()
                 return response()->json(['error' => 'Exception', 'details' => $e->getMessage()], 500);
             }
         }
- 
+
         function getSQLParts_months($input, $month_col_expression = null, $year_col_expression=null) {
             $month_col_expression = $month_col_expression ?? 'c.op_month';
             $year_col_expression = $year_col_expression ?? 'c.op_year';
@@ -1901,7 +1902,7 @@ function createUUIDV1()
             $current_month_num = date('m');
             $current_year = date('Y');
             $def_start_month = ($current_month_num -6 <1? 1: $current_month_num -6 ).' '.$current_year;
-            
+
             $sts = explode(' to ',$input);
             $start_point = $sts[0];
             $end_point = isset($sts[1])?$sts[1]: $def_start_month;
@@ -1919,10 +1920,10 @@ function createUUIDV1()
             }
             $start_month = isset($months[$ps[0]])?$months[$ps[0]]:date('m');
             $start_year = isset($ps[1])? $ps[1] : date('Y');
-            
+
             $start_months= [];
             $start_months[$start_year] = $start_month;
-          
+
             $ps = explode(' ',$end_point);
             if($ps[0] =='all'){
                 return (object)[
@@ -1936,7 +1937,7 @@ function createUUIDV1()
 
             $end_month = isset($months[$ps[0]])?$months[$ps[0]]:date('m');
             $end_year = isset($ps[1])?$ps[1] : date('Y');
-          
+
             if (!$end_month || !$end_year){
                 return (object)[
                     'sql'=>'2=3',
@@ -1978,12 +1979,12 @@ function createUUIDV1()
                         if($tmp_year == $end_year){
                              if($i <= $end_month) $q_months[$tmp_year][]= $i;
                         }else $q_months[$tmp_year][]= $i;
-                       
+
                     }
-              
+
                 $tmp_year++;
             } while($tmp_year <= $end_year);
-            
+
             $str_months = '';
             foreach($years as $year){
               $str_months = $str_months.($str_months? ' OR ': '') . ' (' .$year_col_expression.' = '.$year.' AND '.$month_col_expression.' IN ('.implode(',',$q_months[$year]).'))';

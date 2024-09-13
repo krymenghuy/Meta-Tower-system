@@ -23,16 +23,15 @@ class EmployeeController extends Controller
        $res = $employee->save($req->all());
        return JDV::raw($res);
     }
+    public function deleteEmployee(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
 
-
-   function deleteEmployee(Request $req){
-        $ss = AuthService::verifyAuth($req,253);
-        if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
-        $id = $req->id?$req->id:$req->employee_id;
-        $employee = new Employee($id,$ss);
-        $res = $employee->delete();
-        return JDV::raw($res);
-   }
+        return JDV::result($this->senderModel->delete($req->id, $ss));
+    }
 
    function deleteSenderSpecial(Request $req){
       $ss = AuthService::verifyAuth($req,273);
@@ -63,12 +62,15 @@ class EmployeeController extends Controller
       return JDV::raw($res);
    }
 
-   function getEmployeeDetails(Request $req){
-      $ss = AuthService::verifyAuth($req,-1);
-      if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
-      $id = $req->employee_id?$req->employee_id:$req->id;
-      $employee = new Employee($id,$ss);
-      return JDV::result($employee->getDetails());
+   public function getDetails(Request $req)
+   {
+       $ss = AuthService::verifyAuth($req, -1);
+       if ($ss->status_code !== 200) {
+           return JDV::raw($ss);
+       }
+
+       return JDV::result($this->senderModel->getDetails($req->id, $ss));
+
    }
 
    function updateSenderStatus(Request $req){
@@ -80,18 +82,20 @@ class EmployeeController extends Controller
       return JDV::raw($res);
    }
 
- 
-   function getEmployeeList(Request $req){
-      $ss = AuthService::verifyAuth($req,-1);
-      if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
-      return JDV::result(Employee::list($req->all(),$ss));
+
+   function getListPaginate(Request $req){
+    $ss = AuthService::verifyAuth($req, -1);
+    if ($ss->status_code !== 200) {
+        return JDV::raw($ss);
+    }
+    return JDV::result($this->senderModel->getListPaginate($req->all(), $ss));
    }
 
    function getFormOptions(Request $req){
       $ss = AuthService::verifyAuth($req,-1);
       if ($ss->status_code !==200) return JDV::raw($ss);
-      $id = $req->id?$req->id:$req->employee_id;  
-      $data = Employee::getFormOptions($id,$ss); 
+      $id = $req->id?$req->id:$req->employee_id;
+      $data = Employee::getFormOptions($id,$ss);
       return JDV::result($data);
    }
 }
