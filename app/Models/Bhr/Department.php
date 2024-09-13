@@ -37,7 +37,7 @@ class Department //extends Model
         }
 
         $inputs = $res->values;
-        $id = saveData($ss, 'Departments', ['id' => $id], $inputs, [], 1, false);
+        $id = saveData($ss, 'departments', ['id' => $id], $inputs, [], 1, false);
 
         return DV::depends($id);
     }
