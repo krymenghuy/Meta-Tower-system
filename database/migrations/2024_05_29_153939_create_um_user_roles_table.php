@@ -17,7 +17,7 @@ class CreateUmUserRolesTable extends Migration
             $table->integer('uer_id');
             $table->integer('role_id');
             $table->integer('branch_id');
-            $table->string('app_id',50);
+            $table->string('app_id', 50);
             $table->tinyInteger('is_primary_role')->default(0);
         });
     }

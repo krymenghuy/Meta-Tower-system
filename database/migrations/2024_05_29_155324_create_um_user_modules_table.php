@@ -23,8 +23,8 @@ class CreateUmUserModulesTable extends Migration
             $table->integer('update_uid')->nullable();
             $table->timestamp('update_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
             $table->timestamp('create_date')->default(\DB::raw('CURRENT_TIMESTAMP'));
-            $table->string('create_user',50)->nullable();
-            $table->string('update_user',50)->nullable();
+            $table->string('create_user', 50)->nullable();
+            $table->string('update_user', 50)->nullable();
         });
     }
 
