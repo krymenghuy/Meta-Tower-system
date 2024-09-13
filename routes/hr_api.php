@@ -18,9 +18,8 @@ use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
-
-
 use App\Http\Controllers\Bhr\DepartmentController;
+
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
     // Route::post('logout', [ApiController::class,'logout_mobile']);
