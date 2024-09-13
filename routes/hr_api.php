@@ -6,7 +6,7 @@ use App\Http\controllers\Bhr\DashboardController;
 use App\Http\controllers\Bhr\EmployeeController;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Controllers\CompanyProfileController;
-
+use App\Http\Controllers\Bhr\DepartmentController;
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
     // Route::post('logout', [ApiController::class,'logout_mobile']);
@@ -40,4 +40,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
 
 
     //Route::post('updateSenderStatus', [SenderController::class, 'updateSenderStatus']);
+});
+
+// Department routes
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')->group(function () {
+    Route::post('/save', [DepartmentController::class, 'saveDepartment']);
+    Route::post('/list', [DepartmentController::class, 'getDepartmentList']);
+    Route::post('/options/{id}', [DepartmentController::class, 'getFormOptions']);
+    Route::post('/delete', [DepartmentController::class, 'deleteDepartment']);
 });
