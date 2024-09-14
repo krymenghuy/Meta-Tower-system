@@ -2,10 +2,9 @@
 
 namespace App\Models\Bhr;
 
-
-use \Illuminate\Support\Facades\DB;
 use App\Models\DV;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Pagination\LengthAwarePaginator;
 class Department //extends Model
 {
     protected $table = 'departments';
@@ -51,13 +50,13 @@ class Department //extends Model
             ->get();
     }
 
-    public static function details($id, $ss = null)
+    public static function getDetails($id, $ss = null)
     {
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
         return DB::table('departments')
             ->where('subs_id', hex2bin($subs_id))
             ->where('id', $id)
-            ->select('id', 'name', 'branch_id', 'create_user', 'created_at', 'create_uid', 'update_uid', 'updated_at', 'update_user')
+            ->select('id', 'name', 'branch_id')
             ->first();
     }
 
@@ -65,9 +64,9 @@ class Department //extends Model
     {
         $department = null;
         if ($id > 0) {
-            $department = self::details($id, $ss);
+            $department = self::getDetails($id, $ss);
         }
-        return (object)[
+        return (object) [
             'department' => $department
         ];
     }
@@ -93,5 +92,42 @@ class Department //extends Model
         }
 
         return DV::depends($id);
+    }
+    function getDepartmentListPaginate($arr, $ss)
+    {
+        $d = (object) $arr;
+        $branch_id = $ss->branch_id;
+
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 5;
+        if (!is_numeric($current_page)) {
+            $current_page = 1;
+        }
+
+        $skip_rows = ($current_page - 1) * $per_page;
+
+        $search_value = $d->search_value ?? null;
+        $search_id = $d->id ?? null;
+
+        $str_search = '1=1';
+
+        $query = DB::table('departments as d')
+            ->selectRaw('d.id, d.name');
+
+        if ($search_id) {
+            $query->whereRaw('d.id =' . $search_id);
+
+
+            $query->where('d.branch_id', $branch_id);
+            if ($search_value) {
+                $search_value = escape_like_str($search_value);
+                $query->whereRaw("d.name like '%" . $search_value . "%'");
+            }
+            $query->skip($skip_rows)->take($per_page);
+            $count_query = clone $query;
+            $count = $count_query->count('d.id');
+            $rows = $query->get();
+            return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        }
     }
 }

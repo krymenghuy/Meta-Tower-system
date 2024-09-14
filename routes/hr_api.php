@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Bhr\BenefitController;
 use App\Http\Controllers\Bhr\BookController;
 use App\Http\controllers\Bhr\DashboardController;
@@ -75,7 +76,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('member')->gro
     Route::post('/list-paginate', [MembersController::class, 'getMemberListPaginate']);
     Route::post('/delete', [MembersController::class, 'deleteMember']);
 });
-
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('product')->group(function () {
 
     Route::post('/save', [ProductsController::class, 'saveProduct']);
@@ -91,7 +91,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('profile')->gr
     Route::post('/list-paginate', [ProfileController::class, 'getProfileListPaginate']);
     Route::post('/details', [ProfileController::class, 'getDetails']);
     Route::post('/delete', [ProfileController::class, 'deleteProfile']);
-
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('skills')->group(function () {
@@ -110,7 +109,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->gr
     Route::post('/list-paginate', [BenefitController::class, 'getBenefitListPaginate']);
     Route::post('/details', [BenefitController::class, 'getDetails']);
     Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
-
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('staff-benefit')->group(function () {
@@ -135,4 +133,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list'
     Route::post('/list-paginate', [PayrollListController::class, 'getPayrollListPaginate']);
     Route::post('/details', [PayrollListController::class, 'getDetails']);
     Route::post('/delete', [PayrollListController::class, 'deletePayrollList']);
+});
+// Department routes
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')->group(function () {
+    Route::post('/save', [DepartmentController::class, 'saveDepartment']);
+    Route::post('/list', [DepartmentController::class, 'getDepartmentList']);
+    Route::post('/list-paginate', [DepartmentController::class, 'getDepartmentListPaginate']);
+    Route::post('/detail', [DepartmentController::class, 'getDetails']);
+    Route::post('/delete', [DepartmentController::class, 'deleteDepartment']);
 });
