@@ -4,6 +4,7 @@ use App\Http\Controllers\Bhr\BenefitController;
 use App\Http\Controllers\Bhr\BookController;
 use App\Http\controllers\Bhr\DashboardController;
 use App\Http\controllers\Bhr\EmployeeController;
+use App\Http\Controllers\Bhr\JobLevelController;
 use App\Http\Controllers\Bhr\MembersController;
 use App\Http\Controllers\Bhr\PayrollController;
 use App\Http\Controllers\Bhr\PayrollListController;
@@ -142,4 +143,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')-
     Route::post('/list-paginate', [DepartmentController::class, 'getDepartmentListPaginate']);
     Route::post('/detail', [DepartmentController::class, 'getDetails']);
     Route::post('/delete', [DepartmentController::class, 'deleteDepartment']);
+});
+// Job Level routes
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('job_level')->group(function () {
+    Route::post('/save', [JobLevelController::class, 'saveJobLevel']);
+    Route::post('/list', [JobLevelController::class, 'getJobLevelList']);
+    Route::post('/list-paginate', [JobLevelController::class, 'getJobLevelListPaginate']);
+    Route::post('/detail', [JobLevelController::class, 'getDetails']);
+    Route::post('/delete', [JobLevelController::class, 'deleteJobLevel']);
 });
