@@ -11,6 +11,7 @@ use App\Http\Controllers\Bhr\ProfileController;
 use App\Http\controllers\Bhr\SkillController;
 use App\Http\controllers\Bhr\StaffBenefitController;
 use App\Http\controllers\Bhr\StaffController;
+use App\Http\controllers\Bhr\LeaveManagementController;
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Middleware\CustomRateLimiter;
@@ -39,6 +40,17 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->gr
 Route::prefix('dashboard')->group(function () {
     Route::post('/cards', [DashboardController::class, 'getCards']);
     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
+});
+
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')->group(function () {
+
+    Route::post('/save', [DepartmentController::class, 'saveDepartment']);
+    Route::post('/list-paginate', [DepartmentController::class, 'getDepartmentListPaginate']);
+    Route::post('/details', [DepartmentController::class, 'getDetails']);
+    Route::post('/delete', [DepartmentController::class, 'deleteDepartment']);
+    Route::post('/form-options', [DepartmentController::class, 'getFormOptions']);
+
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->group(function () {
@@ -127,6 +139,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->gr
     Route::post('/list-paginate', [PayrollController::class, 'getPayrollListPaginate']);
     Route::post('/details', [PayrollController::class, 'getDetails']);
     Route::post('/delete', [PayrollController::class, 'deletePayroll']);
+    Route::post('/form-options', [PayrollController::class, 'getFormOptions']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list')->group(function () {
@@ -135,4 +148,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list'
     Route::post('/list-paginate', [PayrollListController::class, 'getPayrollListPaginate']);
     Route::post('/details', [PayrollListController::class, 'getDetails']);
     Route::post('/delete', [PayrollListController::class, 'deletePayrollList']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave-management')->group(function () {
+
+    Route::post('/save', [LeaveManagementController::class, 'saveLeaveManagement']);
+    Route::post('/list-paginate', [LeaveManagementController::class, 'getLeaveManagementListPaginate']);
+    Route::post('/details', [LeaveManagementController::class, 'getDetails']);
+    Route::post('/delete', [LeaveManagementController::class, 'deleteLeaveManagement']);
+    Route::post('/form-options', [LeaveManagementController::class, 'getFormOptions']);
 });

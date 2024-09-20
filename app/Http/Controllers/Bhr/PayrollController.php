@@ -72,4 +72,13 @@ class PayrollController extends Controller
         }
         return JDV::result($this->payrollModel->deletePayroll($req->id, $ss));
     }
+
+    public function getFormOptions(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->payrollModel->getFormOptions($req->id,$ss));
+    }
 }

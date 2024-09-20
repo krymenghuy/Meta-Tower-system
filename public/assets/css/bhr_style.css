@@ -1334,6 +1334,9 @@ input[data-select="datepicker"].data-invoice::placeholder {
     margin-bottom: 0.5rem;
 }
 
+.form-group {
+
+}
 .tbl-image-size,
 .image-logo-tbl {
     width: 50px;
@@ -1650,15 +1653,38 @@ ul.list-filter-um li:not(li:last-child) {
 .table--blue {
     background: #250384 !important;
     color: #FFFFFF !important;
-    border-radius: 0.5rem !important;
-
+    font-size: small !important;
+    font-weight: normal !important;
+    text-align: left !important;
+    /* border-radius: 0.5rem !important; */
+    text-align: center !important;
 
 }
-
-.table--blue thead th{
+.table--blue td {
+    padding: 20px !important;
+    cursor: pointer !important;
+}
+.table--blue tr:hover {
+    background: #0281b3 !important;
     color: #FFFFFF !important;
-    border-radius: 0.5rem !important;
+    font-size: small !important;
+    font-weight: normal !important;
+    text-align: center !important;
+    border: none !important;
+
+
 }
+.table--blue thead th {
+    color: #FFFFFF !important;
+    /* border-radius: 0.5rem !important; */
+    background-color:#000000 !important;
+
+
+}
+
+
+
+
 
 
 

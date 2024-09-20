@@ -195,7 +195,7 @@
         margin-top: 20px;
     }
 
-    .btn {
+    #btnAdd {
         background-color: #007bff;
         color: white;
         border: none;
@@ -206,11 +206,11 @@
         align-items: center;
     }
 
-    .btn i {
+    #btnAdd i {
         margin-right: 10px;
     }
 
-    .btn:hover {
+    #btnAdd:hover {
         background-color: #0056b3;
         color: white;
     }

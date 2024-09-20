@@ -92,7 +92,7 @@ function v_display($mod_id, $module_ids = null)
                         <i class="fas fa-truck-plane icons opacity-icons"></i>
                         <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/package_trail.svg') }}" /> -->
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Departments"></span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Department"></span>
                 </a>
             </li>
 

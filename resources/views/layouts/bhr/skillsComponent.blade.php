@@ -13,7 +13,7 @@
         <div id="_skills_list" class="row"></div>
     </div>
     {{-- endform --}}
-    {{-- <div class="skills">
+    <div class="skills">
         <div class="marketing">
             <div class="card_header">
                 <h3 id="title">Marketing</h3>
@@ -190,7 +190,7 @@
                 </div>
             </div>
         </div>
-    </div> --}}
+    </div>
 </div>
 <style>
     /* form */
@@ -200,7 +200,7 @@
         margin: 10px;
     }
 
-    .btn {
+    #btnAdd {
         background-color: #007bff;
         color: white;
         border: none;
@@ -211,11 +211,11 @@
         align-items: center;
     }
 
-    .btn i {
+    #btnAdd i {
         margin-right: 10px;
     }
 
-    .btn:hover {
+    #btnAdd:hover {
         background-color: #0056b3;
         color: white;
     }

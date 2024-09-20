@@ -15,7 +15,7 @@ var EmployeeComponent = new function(){
     this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
 
     this.form_data = {};
- 
+
     this.renderMerchant = (container, data) => {
         let html = '';
         let cnt = 0;
@@ -54,7 +54,7 @@ var EmployeeComponent = new function(){
                 mobile_login = `<span class="p-2 text-danger">គ្មាន</span>
                 <span>
                     <a href="javascript:void(0)" data-id="${item.id}" class="btn-app-login btn btn-sm btn-outline-primary">
-                        <i class="la la-mobile fs-4"></i> 
+                        <i class="la la-mobile fs-4"></i>
                         <span>Create</span>
                     </a>
                 </span>`;
@@ -137,7 +137,7 @@ var EmployeeComponent = new function(){
                             </div>
                             <div class="d-flex justify-content-end align-items-center h-100">
                                 <div class="d-block position-relative">
-                                    <span class="${status_class}" data-id="${item.id}" data-status="${item.status_code}">${item.status_code}</span>  
+                                    <span class="${status_class}" data-id="${item.id}" data-status="${item.status_code}">${item.status_code}</span>
                                 </div>
                             </div>
                         </div>
@@ -174,14 +174,14 @@ var EmployeeComponent = new function(){
         const merchant_cards = container.querySelectorAll('.merchant-card');
         mThis.initCardEvents(merchant_cards);
         /** Display profile photos for all displayed merchants */
-        mThis.initImageBoxes(merchant_cards);  
+        mThis.initImageBoxes(merchant_cards);
         // mThis.initDropdownMenus(merchant_cards);///
         // mThis.jmContainer = mThis.jmContainer || $(container);
         // mThis.setEvents(mThis.jmContainer);
         LocaleManager.translateZone(container,{"hide":true},()=>{
             container.style.display= 'block';
         });
-         
+
         const parent = container.parentElement;
         parent.style.height = (window.innerHeight - 210)+'px';
         parent.classList.add('overflow-y-auto');
@@ -214,7 +214,7 @@ var EmployeeComponent = new function(){
             }
         });
     }
-  
+
     this.deleteMerchantSpecial = (id,lnk)=>{
         let status_code = lnk.dataset.status;
         let p = {
@@ -222,7 +222,7 @@ var EmployeeComponent = new function(){
             status_code: status_code
         };
         let confirm_count = 0;
-    
+
         const confirmDelete = () => {
             cv_interact.confirm([
                 'html:Are you sure to delete this merchant <span class="text-danger fw-semibold">permanently?</span>',
@@ -235,7 +235,7 @@ var EmployeeComponent = new function(){
             }, e => {
                 if (e) {
                     confirm_count++;
-    
+
                     if (confirm_count === 7) {
                         // vsapi.call(`${mThis.base_url}/dms/merchant/delete-special`, {
                         //     id: id
@@ -254,7 +254,7 @@ var EmployeeComponent = new function(){
                 }
             });
         };
-    
+
         confirmDelete();
     }
 
@@ -275,7 +275,7 @@ var EmployeeComponent = new function(){
              }
         });
     }
- 
+
     //Set event handlers for some clickable elements on each Merchant Card
     this.initCardEvents = (cards)=>{
        cards.forEach(card =>{
@@ -288,10 +288,10 @@ var EmployeeComponent = new function(){
                 return;
              }
 
-           }); 
- 
-       }); 
-     
+           });
+
+       });
+
     }
 
     this.initImageBoxes = (cards)=>{
@@ -300,14 +300,14 @@ var EmployeeComponent = new function(){
             const divImg = card.querySelector('.div-img');
             if(divImg){
                 let imgBox = new ImageBox(divImg,{
-                    containerClass:null, 
+                    containerClass:null,
                     cssClass:"border border-secondary rounded-3",
-                    //emptyClass:"border border-secondary rounded-3", 
+                    //emptyClass:"border border-secondary rounded-3",
                     saveAPI:{
                       endPoint:`${main_view.base_url}/dms/merchant/save-profile-picture`,
-                      params:(photo)=>{ 
-                        return { "id": divImg.dataset.id,"photo":photo}; 
-                      } 
+                      params:(photo)=>{
+                        return { "id": divImg.dataset.id,"photo":photo};
+                      }
                     },
                     deleteAPI:{
                       endPoint:`${main_view.base_url}/dms/merchant/delete-profile-picture`,
@@ -321,12 +321,12 @@ var EmployeeComponent = new function(){
                        return;
                     }
                 });
-                 
+
                 imgBox.setImage(divImg.dataset.imageurl);
             }
         });
 
-       
+
     }
 
     /** initDropdown menus , merchant's dropdown menus */
@@ -334,8 +334,8 @@ var EmployeeComponent = new function(){
         mThis.storeMenus = null;
         //let elements = container.querySelectorAll('.btn_merchant_action');
         cards.forEach(card =>{
- 
-          const actionButton = card.querySelector('.btn_merchant_action'); 
+
+          const actionButton = card.querySelector('.btn_merchant_action');
           let storeMenu =  new VSDropdownButton(actionButton,{
              menus:[
                 {
@@ -394,7 +394,7 @@ var EmployeeComponent = new function(){
                     case "set_price_list":{
                         let sender_id = btn.dataset.id;
                         // let span = card.querySelector('.merchant-price-list');
-                        mThis.setMerchantPriceList(sender_id,card); 
+                        mThis.setMerchantPriceList(sender_id,card);
                         break;
                     }
                     case "reverse_to_lead":{
@@ -423,11 +423,11 @@ var EmployeeComponent = new function(){
                             elements.forEach(el =>{
                                 el.dataset.loginname ="";
                             });
-                            
+
                         });
                         break;
                     }
-                   
+
                     case 'change_password':{
                         let op = {
                             id:btn.dataset.userid,
@@ -440,7 +440,7 @@ var EmployeeComponent = new function(){
                             cv_interact.warning('User ID is unepectedly missing!');
                             return;
                         }
-                        SetPasswordDialog.show(op); 
+                        SetPasswordDialog.show(op);
                         break;
                     }
                     case 'change_login_name':{
@@ -450,7 +450,7 @@ var EmployeeComponent = new function(){
                             id : user_id,
                             login_name: prev_login_name,
                             onClose:(p)=>{
-                               //NOTE: only if p.login_name is a phone number of merchant, so the search will result correctly 
+                               //NOTE: only if p.login_name is a phone number of merchant, so the search will result correctly
                                mThis.elSearch.value = p.login_name;
                                mThis.listView.showPage({"search_value":p.login_name});
                                if(!p.login_name){
@@ -459,7 +459,7 @@ var EmployeeComponent = new function(){
                                       e.dataset.loginname = p.login_name;
                                     });
                                }
-                             
+
                             }
                         }
                         ChangeLoginNameDialog.show(op);
@@ -477,7 +477,7 @@ var EmployeeComponent = new function(){
                  if (dataset.pricelistid > 0 && set_price_menu){
                     set_price_menu.textContent ='Change Price List';
                  }else set_price_menu.textContent ='Set Price List';
-                 
+
                  menus.create_login.style.display = showIt(!dataset.loginname);
                  menus.delete_login.style.display = showIt(dataset.loginname);
                  menus.change_password.style.display = showIt(dataset.loginname);
@@ -491,13 +491,13 @@ var EmployeeComponent = new function(){
             mThis.storeMenus.push(storeMenu);
         });
 
-       
+
     }
-  
+
     //Hide/Show menu Item for Merchant Action Menus
     function showIt(yes){
        if(yes) return 'flex';
-       else return 'none'; 
+       else return 'none';
     }
 
     this.loadFilterData = (onFinish) => {
@@ -512,7 +512,7 @@ var EmployeeComponent = new function(){
         //     //VSUtil.setComboItems(mThis.elFilter_business_type, d.business_types, 'business_type', 'business_type', true, '(All Business Types)', 0);
         //     VSUtil.setComboItems(SenderDialog.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
         //     onFinish();
-           
+
         //     (d.sales_agents || []).unshift({"id":-1,"agent_name":"(No Agent)"});
         //     (d.sales_agents || []).unshift({"id":null,"agent_name":"(All Sales Agents)"});
 
@@ -527,7 +527,7 @@ var EmployeeComponent = new function(){
         //getComboItems_price_list
         // vsapi.call(`${mThis.base_url}/dms/price-list/options-price-list`,null,false).then(res => {
         //     let items = res.status_code ===200? res.data: [];
-        //     onFinish(items); 
+        //     onFinish(items);
         // });
     }
 
@@ -609,13 +609,13 @@ var EmployeeComponent = new function(){
             let op = {
                 id: null,
                 onClose: (d) =>{
-                    mThis.listView.showPage(mThis.getFitlerData());  
+                    mThis.listView.showPage(mThis.getFitlerData());
                 }
             }
             // if (mThis.form_data && op.fields){
             //     op.fields['business_type'].data = mThis.form_data.business_types;
             //     op.fields['sales_agent_id'].data = mThis.form_data.sales_agents;
-            // } 
+            // }
             SenderDialog.show(op);
         });
 
@@ -671,7 +671,7 @@ const SenderDialog = new function(){
     this.modal = new bootstrap.Modal(this.self);
     this.base_url = main_view.base_url;
     this.options = {};
-    
+
     this.elTitle = this.self.querySelector('#_sdl_dlgSenderTitle');
     this.btnSave =  this.self.querySelector('#_sdl_sender_btnSave');
     this.elSenderType =  this.self.querySelector('#_sdl_sender_sendertype');
@@ -691,13 +691,13 @@ const SenderDialog = new function(){
 
     this.prepareData = (id,def, onFinish) => {
         if(!def) def = {};
-        
+
         // vsapi.call(`${mThis.base_url}/bhr/merchant/form-options`,{
         //     id: id
         // },null).then(res => {
         //     let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
         //     d.bank_accounts = d.bank_accounts || [];
-            
+
         //     VSUtil.setComboItems(mThis.elSenderType, d.sender_types, 'id', 'sender_type', true, '(Select Merchant Type)', def.sender_type_id);
         //     VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
         //     VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'name', true, '(Price List)', def.price_list_id);
@@ -726,7 +726,7 @@ const SenderDialog = new function(){
     this.show = (options) => {
         if (!options) options = {};
         mThis.options = options;
-         
+
         mThis.prepareData(mThis.options.id,{},data => {
             if(data.sender){
                 mThis.elTitle.textContent =  "Modify Merchant Information";
@@ -735,7 +735,7 @@ const SenderDialog = new function(){
                 mThis.elTitle.textContent =  "Create Merchant";
             }
             mThis.setData(data.sender);
-            mThis.modal.show({backdrop:true}); 
+            mThis.modal.show({backdrop:true});
         });
     }
 
@@ -751,7 +751,7 @@ const SenderDialog = new function(){
         d.bank_accounts = null;
 
         elements = mThis.div_sender_info.querySelectorAll('.data-input');
-        elements.forEach(el =>{ 
+        elements.forEach(el =>{
             const data_member = el.dataset.field;
             if(el.tagName.toLowerCase() === 'select'){
                 el.value = d[data_member];
@@ -814,9 +814,9 @@ const SenderDialog = new function(){
             mThis.org_bank_account_info = [mThis.org_bank_account_info,el.value].join('');
             el.readOnly = readOnly;
         });
-   
+
         div = mThis.div_bank_account.querySelector('div.secondary_bank_panel');
-   
+
         div.querySelectorAll('.data-input').forEach(el =>{
             mThis.org_bank_account_info = [mThis.org_bank_account_info,el.value].join('');
             el.readOnly = readOnly;
