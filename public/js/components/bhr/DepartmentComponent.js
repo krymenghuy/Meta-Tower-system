@@ -78,9 +78,6 @@ var DepartmentComponent = new function() {
             listContainerClass: null
         });
 
-
-
-
         mThis.divFilter.addEventListener('change', (e) => {
             e.preventDefault();
             mThis.DepartmentListView.showPage(mThis.getDataFormFilter());
@@ -135,9 +132,6 @@ var DepartmentComponent = new function() {
 
         return p;
     };
-
-
-
 
     this.initDropdownMenus = (table)=>{
         const menuOptopns = {
