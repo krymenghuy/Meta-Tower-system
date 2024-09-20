@@ -59,11 +59,11 @@
             <span>Add</span>
         </button>
         <div class="input-group">
-            <input class="searchSkill" type="text" id="searchSkill" placeholder="Search here.....">
+            <input class="searchJobLevel" type="text" id="searchJobLevel" placeholder="Search here.....">
         </div>
     </div>
-    <div class="list_job_level">
-        <table class="table caption-top">
+    <div id="_job_level_list">
+        {{-- <table class="table caption-top">
             <thead>
                 <tr>
                     <th scope="col">Id</th>
@@ -176,7 +176,7 @@
                     </td>
                 </tr>
             </tbody>
-        </table>
+        </table> --}}       
     </div>
 </div>
 <style>
@@ -192,7 +192,7 @@
     .container {
         display: flex;
         gap: 20px;
-        margin-top: 20px;
+        margin-top: 0px;
     }
 
     #btnAdd {
@@ -215,7 +215,7 @@
         color: white;
     }
 
-    .searchSkill {
+    .searchJobLevel{
         padding: 10px;
         border: 1px solid #e2e0e0;
         border-radius: 50px;
@@ -259,14 +259,14 @@
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 10px;
-        margin: 20px;
+        margin: 0px 20px 0px 20px;
 
     }
 
     .card1,
     .card2,
     .card3 {
-        background-color: #9be3b785;
+        background-color: #9be3df85;
         padding: 20px;
         border-radius: 10px;
         gap: 2rem;
@@ -300,8 +300,8 @@
         justify-content: center;
     }
 
-    .list_job_level {
-        height: 310px;
+    #_job_level_list {
+        height: 330px;
         margin-top: 10px;
         overflow-y: auto;
         overflow-x: hidden;

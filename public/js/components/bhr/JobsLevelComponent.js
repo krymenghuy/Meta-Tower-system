@@ -7,70 +7,9 @@ var JobsLevelComponent = new (function () {
     this.self = this.jm[0];
     this.title_prop = "Job Level";
 
-    // Show component
-    this.show = function () {
-        mThis.jm.siblings().hide();
-        mThis.jm.fadeIn(250);
-        main_view.setTitle(mThis.title_prop);
-    };
-
-    // Show form when Add button is clicked
-    this.addForm = function () {
-        let formHtml = `
-            <div class="add-job-form">
-                <h3>Add New Job</h3>
-                <form id="addJobForm">
-                    <label for="jobTitle">Job Title:</label>
-                    <input type="text" id="jobTitle" name="jobTitle" required><br>
-                    <label for="jobLevel">Job Level:</label>
-                    <input type="text" id="jobLevel" name="jobLevel" required><br>
-                    <label for="jobRating">Job Rating:</label>
-                    <input type="number" id="jobRating" name="jobRating" min="1" max="5" required><br>
-                    <button type="submit">Submit</button>
-                </form>
-            </div>
-        `;
-        mThis.jm.find(".container").after(formHtml);
-
-        // Form submit action
-        $("#addJobForm").on("submit", function (e) {
-            e.preventDefault();
-            let jobTitle = $("#jobTitle").val();
-            let jobLevel = $("#jobLevel").val();
-            let jobRating = $("#jobRating").val();
-
-            // Logic to create the new job in the table
-            let newRow = `
-                <tr>
-                    <th scope="row">NEW</th>
-                    <td>${jobTitle}</td>
-                    <td>${jobLevel}</td>
-                    <td>${"★".repeat(jobRating)}</td>
-                    <td class="actions"><i class="fa fa-ellipsis-v"></i></td>
-                </tr>
-            `;
-            $(".list_job_level tbody").append(newRow);
-
-            // Remove form after submission
-            $(".add-job-form").remove();
-        });
-    };
-
-    // Search functionality for Job Title
-    this.searchJobTitle = function () {
-        $("#searchSkill").on("input", function () {
-            let searchTerm = $(this).val().toLowerCase();
-            $(".list_job_level tbody tr").each(function () {
-                let jobTitle = $(this).find("td:first").text().toLowerCase();
-                $(this).toggle(jobTitle.includes(searchTerm));
-            });
-        });
-    };
-
     // Action menu (view, edit, delete) functionality
     this.setupActions = function () {
-        // Handle action menu click
-        $(".list_job_level").on("click", ".actions i", function (e) {
+        $("#_job_level_list").on("click", ".actions", function (e) {
             e.stopPropagation(); // Prevent click event from bubbling up
 
             let actionMenu = $(this).siblings(".action-menu");
@@ -82,25 +21,28 @@ var JobsLevelComponent = new (function () {
                 $(".action-menu").remove();
 
                 let newActionMenu = `
-                    <div class="action-menu">
-                        <i class="fa fa-eye" title="View"></i>
-                        <i class="fa fa-pen" title="Edit"></i>
-                        <i class="fa fa-trash" title="Delete"></i>
-                    </div>
-                `;
+                <div class="action-menu">
+                    <button class="btn-view">View</button>
+                    <button class="btn-edit">Edit</button>
+                    <button class="btn-delete">Delete</button>
+                </div>
+            `;
 
                 // Append the action menu near the clicked icon
                 $(this).closest("td").append(newActionMenu);
 
                 // Action menu click handlers
-                $(".action-menu .fa-eye").on("click", function () {
+                $(".btn-view").on("click", function () {
                     let row = $(this).closest("tr");
                     let jobTitle = row.find("td:nth-child(2)").text();
-                    let level = row.find("td:nth-child(3)").text().toLowerCase();
-                    alert("Job Titile: " + jobTitle +"     "+"\n" + "Level: "+ level)
+                    let level = row
+                        .find("td:nth-child(3)")
+                        .text()
+                        .toLowerCase();
+                    alert("Job Title: " + jobTitle + "\n" + "Level: " + level);
                 });
 
-                $(".action-menu .fa-pen").on("click", function () {
+                $(".btn-edit").on("click", function () {
                     let row = $(this).closest("tr");
                     let jobTitle = row.find("td:nth-child(2)").text();
                     let newJobTitle = prompt("Edit Job Title", jobTitle);
@@ -109,7 +51,7 @@ var JobsLevelComponent = new (function () {
                     }
                 });
 
-                $(".action-menu .fa-trash").on("click", function () {
+                $(".btn-delete").on("click", function () {
                     if (confirm("Are you sure you want to delete this job?")) {
                         $(this).closest("tr").remove();
                     }
@@ -125,11 +67,153 @@ var JobsLevelComponent = new (function () {
         });
     };
 
+    // Define table columns
+    this.cols = [
+        {
+            title: "Job Title",
+            className: "align-middle",
+            data: "Job_Title",
+        },
+        {
+            title: "Level",
+            className: "align-middle",
+            data: "Level",
+        },
+        {
+            title: "Rating",
+            className: "align-middle",
+            data: "Ratting",
+            render: function (data) {
+                const maxStars = 5;
+                const rating = Math.min(Math.max(parseInt(data), 1), maxStars);
+                return "★".repeat(rating) + "☆".repeat(maxStars - rating);
+            },
+        },
+        {
+            title: "",
+            className: "align-middle",
+            render: function () {
+                return `<i class="fa fa-ellipsis-v actions"></i>`;
+            },
+        },
+    ];
+
+    // Modal handling for adding a job
+    this.setupModal = function () {
+        const modal = $("#addJobModal");
+        const btnAdd = $("#btnAdd");
+        const spanClose = $(".close");
+
+        // Show the modal when 'Add' button is clicked
+        btnAdd.on("click", function () {
+            modal.show();
+        });
+
+        // Close the modal when the close button is clicked
+        spanClose.on("click", function () {
+            modal.hide();
+        });
+
+        // Close the modal when clicking outside the modal content
+        $(window).on("click", function (e) {
+            if (e.target === modal[0]) {
+                modal.hide();
+            }
+        });
+
+        // Handle adding a new job to the table
+        $("#addJobForm").on("click", function (e) {
+            e.preventDefault(); // Prevent form submission
+            const jobTitle = $("#jobTitle").val();
+            const jobLevel = $("#jobLevel").val();
+            const jobRating = $("#jobRating").val();
+
+            // Ensure all fields are filled
+            if (!jobTitle || !jobLevel || !jobRating) {
+                alert("Please fill out all fields.");
+                return;
+            }
+
+            // Create a new row
+            const newRow = `
+                <tr>
+                    <td>${jobTitle}</td>
+                    <td>${jobLevel}</td>
+                    <td>${
+                        "★".repeat(jobRating) + "☆".repeat(5 - jobRating)
+                    }</td>
+                    <td><i class="fa fa-ellipsis-v actions"></i></td>
+                </tr>
+            `;
+
+            // Append the new row to the table
+            $("#_job_level_list tbody").append(newRow);
+
+            // Clear the form and hide the modal
+            $("#addJobForm")[0].reset();
+            modal.hide();
+        });
+    };
+
+    // Search functionality for Job Title
+    this.searchJobTitle = function () {
+        $("#searchJobLevel").on("input", function () {
+            const searchQuery = $(this).val().toLowerCase();
+
+            $("#_job_level_list tbody tr").each(function () {
+                const jobTitle = $(this)
+                    .find("td:nth-child(1)")
+                    .text()
+                    .toLowerCase();
+
+                if (jobTitle.includes(searchQuery)) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            });
+        });
+    };
+
+    console.log(document.getElementById("btnAdd"));
+    
     // Initialize all functions
     this.init = function () {
-        $("#btnAdd").on("click", mThis.addForm);
+        // Initialize modal and add job functionality
+        mThis.setupModal();
         mThis.searchJobTitle();
         mThis.setupActions();
+
+        if (mThis.initAlready) return;
+
+        // Initialize ListView (Assuming you have the ListView initialized correctly)
+        mThis.JobLevelListView = new ListView("_job_level_list", {
+            fetchApi: `${mThis.base_url}/hr/job_level/list-paginate`,
+            perPage: 5,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass: "table table--blue header-uppercase",
+            listContainerClass: null,
+            onFetched: function (data) {
+                console.log("Data fetched:", data);
+            },
+        });
+
+        // Apply style to the table
+        $(".table--blue").css("width", "97%");
+        $(".table--blue").css("margin", "20px");
+
+        mThis.initAlready = true;
+    };
+
+    // Show component
+    this.show = function () {
+        this.init();
+        main_view.setTitle(mThis.title_prop);
+        mThis.JobLevelListView.showPage(null, null, () => {
+            $(mThis.self).siblings().hide();
+            $(mThis.self).fadeIn(200);
+        });
     };
 })();
 
