@@ -99,7 +99,7 @@ namespace App\ScriptManagement;
                         '/assets/js/InputBoxes.bs5.js',
                         '/assets/js/xlsx/xlsx.full.min.js',
                         'assets/js/pusher/pusher.min.js',
-                        //'/js/components/abm/pusher_client_houxpress.js',
+                        // '/js/components/abm/pusher_client_houxpress.js',
                         '/js/components/common/pusher_client_dms.js',
                         '/js/components/bhr/DashboardComponent.js',
                         '/js/components/bhr/EmployeeComponent.js',
@@ -107,6 +107,7 @@ namespace App\ScriptManagement;
                         '/js/components/bhr/JobsLevelComponent.js',
                         '/js/components/bhr/PayrollComponent.js',
                         '/js/components/bhr/DepartmentComponent.js',
+                        '/js/components/bhr/LeaveRequestComponent.js',
 
                     ]
               ],

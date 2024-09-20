@@ -254,7 +254,7 @@ function v_display($mod_id, $module_ids = null)
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
-                <a href="LeaveMenagementComponent" modid="105" class="menu-item kt-menu__link">
+                <a href="LeaveRequestComponent" modid="105" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/company_profile.svg') }}" />
