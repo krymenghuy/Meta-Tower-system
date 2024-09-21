@@ -1,16 +1,17 @@
 'use strict';
 
-var DepartmentComponent = new function() {
+var PositionComponent = new function() {
     let mThis = this;
     this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children('#_main_departmentComponent');
+    this.jm = main_view.appContent.children('#_main_positionComponent');
     this.self = this.jm[0];
-    this.title_prop = 'Department';
-    this.btnAdd = this.self.querySelector("#_btnAddDepartment");
+    this.title_prop = 'Position';
+    this.btnAdd = this.self.querySelector("#_btnAddPosition");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elStatus = this.self.querySelector('#el_status');
-    this.elSearch = this.self.querySelector("#_sdl_search_department");
+    this.elSearch = this.self.querySelector("#_sdl_search_position");
     this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
+
     this.cols = [
         {
             title: "No",
@@ -19,14 +20,14 @@ var DepartmentComponent = new function() {
 
         },
         {
-            title: "Department Name",
+            title: "Position Name",
             className: 'align-middle text-capitalize text-nowrap',
             data: "name"
         },
         {
-            title: "Short Name",
+            title: "Department Name",
             className: 'align-middle text-capitalize text-nowrap',
-            data: "short_name"
+            data: "department"
         },
         {
             title: "Status",
@@ -73,8 +74,8 @@ var DepartmentComponent = new function() {
     this.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.DepartmentListView = new ListView('_dep_list', {
-            fetchApi: `${main_view.base_url}/hr/department/list-paginate`,
+        mThis.PositionListView = new ListView('_position_list', {
+            fetchApi: `${main_view.base_url}/hr/position/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -84,7 +85,7 @@ var DepartmentComponent = new function() {
 
         mThis.divFilter.addEventListener('change', (e) => {
             e.preventDefault();
-            mThis.DepartmentListView.showPage(mThis.getDataFormFilter());
+            mThis.PositionListView.showPage(mThis.getDataFormFilter());
         });
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
@@ -92,30 +93,30 @@ var DepartmentComponent = new function() {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.DepartmentListView.showPage();
+                    mThis.PositionListView.showPage();
                 }
             };
-            DepartmentDilog.show(op);
+            PositionDilog.show(op);
         };
         mThis.elSearch.addEventListener('keyup', (e) => {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                if (mThis.DepartmentListView) {
-                    mThis.DepartmentListView.showPage(mThis.getDataFormFilter());
+                if (mThis.PositionListView) {
+                    mThis.PositionListView.showPage(mThis.getDataFormFilter());
                 } else {
-                    console.error("DepartmentListview is not defined");
+                    console.error("PositionListView is not defined");
                 }
             }, 200);
         });
 
         mThis.btnSearch.onclick = e => {
-            if (mThis.DepartmentListView) {
-                mThis.DepartmentListView.showPage(mThis.getDataFormFilter());
+            if (mThis.PositionListView) {
+                mThis.PositionListView.showPage(mThis.getDataFormFilter());
             } else {
                 console.error("listView is not defined");
             }
         };
-        const pr_tbl = mThis.DepartmentListView.getListContainer();
+        const pr_tbl = mThis.PositionListView.getListContainer();
         mThis.initDropdownMenus(pr_tbl);
 
 
@@ -146,16 +147,16 @@ var DepartmentComponent = new function() {
             menus:[
 
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Department">Modify Department</span>',
+                    html:'<span class="ps-2  " vslang="titles.Modify Position">Modify Position</span>',
                     icon:`<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
-                    name:"edit_department"
+                    name:"edit_position"
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete Department">Delete Department</span>',
+                    html:'<span class="ps-2  " vslang="titles.Delete Position">Delete Position</span>',
                     icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
-                    name:"delete_department"
+                    name:"delete_position"
                 },
 
             ],
@@ -163,12 +164,12 @@ var DepartmentComponent = new function() {
             onClick:(menuLink, id, name)=>{
                 switch(name){
 
-                    case 'edit_department':{
-                      mThis.editdepartment(id, menuLink);
+                    case 'edit_position':{
+                      mThis.editposition(id, menuLink);
                       break;
                     }
-                    case 'delete_department':{
-                        mThis.deletedepartment(id, menuLink);
+                    case 'delete_position':{
+                        mThis.deleteposition(id, menuLink);
                         break;
                       }
 
@@ -181,37 +182,37 @@ var DepartmentComponent = new function() {
         new VSDropdownMenu(menuOptopns);
     }
 
-    this.editdepartment = (id, menuLink) => {
+    this.editposition = (id, menuLink) => {
         console.log(234,id );
 
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.DepartmentListView.showPage();
+                mThis.PositionListView.showPage();
             }
         };
-        DepartmentDilog.show(op);
+        PositionDilog.show(op);
     }
 
-    this.deletedepartment = (id, menuLink) => {
+    this.deleteposition = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.DepartmentListView.showPage();
+                mThis.PositionListView.showPage();
             }
         };
-        cv_interact.confirm('Delete this Department?',{
-            title: 'Delete Department',
+        cv_interact.confirm('Delete this Position?',{
+            title: 'Delete Position',
             context: 'delete',
             confirmButtonText:"Delete"
         },function(e){
             if(e){
-                vsapi.call(`${main_view.base_url}/hr/department/delete`,op,false,false,false).then(res => {
+                vsapi.call(`${main_view.base_url}/hr/position/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted Successfully');
-                        mThis.DepartmentListView.showPage();
+                        mThis.PositionListView.showPage();
                     }
                 })
             }
@@ -220,7 +221,7 @@ var DepartmentComponent = new function() {
     }
     this.prepareFormOptions = () => {
 
-        vsapi.call(`${main_view.base_url}/hr/department/form-options`,null,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/hr/position/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
             console.log(1111,this.elStatus);
 
@@ -232,23 +233,24 @@ var DepartmentComponent = new function() {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-            mThis.DepartmentListView.showPage();
+            mThis.PositionListView.showPage();
                 $(mThis.self).siblings().hide();
                 $(mThis.self).fadeIn(200);
             };
 };
 
-const DepartmentDilog = new function() {
+const PositionDilog = new function() {
     const mThis = this;
-    this.self = main_view.VSAppContent.querySelector('#dlg_sdl_add_Department');
+    this.self = main_view.VSAppContent.querySelector('#dlg_sdl_add_Position');
     this.modal = new bootstrap.Modal(this.self);
     this.base_url = main_view.base_url;
     this.options = {};
 
-    this.btnSave = this.self.querySelector('#dlg_sdl_add_department_btn_save');
+    this.btnSave = this.self.querySelector('#dlg_sdl_add_position_btn_save');
     this.elStatusId = this.self.querySelector('#_sdl_status_id');
+    this.elDepartmentId = this.self.querySelector('#_sdl_department_id');
     this.elTitle = mThis.self.querySelector('.modal-title');
-    this.div_department_info = mThis.self.querySelector('#_sdl_department_info');
+    this.div_position_info = mThis.self.querySelector('#_sdl_position_info');
 
 
     this.btnSave.onclick = e => {
@@ -256,11 +258,11 @@ const DepartmentDilog = new function() {
         let p = mThis.getDataForm();
         console.log(77777, p);
 
-        vsapi.call(`${mThis.base_url}/hr/department/save`, p, mThis.btnSave, false).then(res => {
+        vsapi.call(`${mThis.base_url}/hr/position/save`, p, mThis.btnSave, false).then(res => {
             if (res.status_code === 200) {
                 mThis.modal.hide();
                 const d = res.data ?? {};
-                cv_interact.success('Department Saved Success!');
+                cv_interact.success('Position Saved Success!');
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
             } else {
                 cv_interact.error(res.error_message);
@@ -271,10 +273,11 @@ const DepartmentDilog = new function() {
     this.prepareData = (id, def, onFinish) => {
         if (!def) def = {};
         console.log(555555, id);
-        vsapi.call(`${mThis.base_url}/hr/department/form-options`, { id: id }, null).then(res => {
+        vsapi.call(`${mThis.base_url}/hr/position/form-options`, { id: id }, null).then(res => {
             let d = res.status_code === 200 ? res.data : {};
 
             VSUtil.setComboItems(mThis.elStatusId, d.status, 'id', 'name', true, '(Select Status)', null);
+            VSUtil.setComboItems(mThis.elDepartmentId, d.departments, 'id', 'name', true, '(Select Department)', null);
             console.log(33333, d);
             onFinish(d);
         });
@@ -286,12 +289,12 @@ const DepartmentDilog = new function() {
         console.log(123);
 
         mThis.prepareData(id, {}, (data) => {
-            if (data.departments) {
-                mThis.elTitle.textContent = "Modify Department Information";
+            if (data.positions) {
+                mThis.elTitle.textContent = "Modify Position Information";
             } else {
-                mThis.elTitle.textContent = "Create Department";
+                mThis.elTitle.textContent = "Create Position";
             }
-            mThis.setData(data.departments);
+            mThis.setData(data.positions);
             mThis.modal.show();
         });
     };
