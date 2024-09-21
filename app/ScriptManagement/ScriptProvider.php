@@ -107,6 +107,7 @@ namespace App\ScriptManagement;
                         '/js/components/bhr/JobsLevelComponent.js',
                         '/js/components/bhr/PayrollComponent.js',
                         '/js/components/bhr/DepartmentComponent.js',
+                        '/js/components/bhr/PositionComponent.js',
 
                     ]
               ],

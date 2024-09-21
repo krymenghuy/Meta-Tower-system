@@ -97,7 +97,7 @@ function v_display($mod_id, $module_ids = null)
             </li>
 
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(214); ?>>
-                <a href="PositionManagementComponent" modid="214" class="menu-item kt-menu__link">
+                <a href="PositionComponent" modid="214" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <i class="fa fa-users icons opacity-icons"></i>
                         <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/order_image.svg') }}" /> -->

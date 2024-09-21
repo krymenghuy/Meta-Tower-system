@@ -6,8 +6,7 @@ use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-
-class Department
+class Position
 {
     protected $id = null;
     protected $userInfo = null;
@@ -24,12 +23,11 @@ class Department
         $v_rule = [
             'id' => '0|identity=1',
             'name' => '1|string|0-100',
-            'short_name' => '1|string|0-100',
+            'department_id' => '1|number',
             'status_id' => '1|number',
         ];
 
-
-        $checkUnque = ["$branch_id|departments|name|id=id|text=Department already exists."];
+        $checkUnque = ["$branch_id|positions|name|id=id|text=Position already exists."];
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
@@ -38,16 +36,16 @@ class Department
         $id = $res->id;
         $inputs = $res->values;
 
-        $id = saveData($ss,'departments', ['id' => $id], $inputs, [], 1);
+        $id = saveData($ss,'positions', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            return DV::depends(1, ['departments' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['positions' => $inputs, 'id' => $id]);
         }
 
-        return DV::error('Error saving department');
+        return DV::error('Error saving position');
 
     }
 
-    function getDepartmentListPaginate($arr, $ss) {
+    function getPositionListPaginate($arr, $ss) {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
 
@@ -65,25 +63,25 @@ class Department
 
         $str_search = '1=1';
 
-        $query = DB::table('departments as d')
-            ->join('dep_status as ds', 'ds.id', '=', 'd.status_id')
-            ->selectRaw('d.id, d.name, d.short_name, d.status_id, ds.name as status');
-
-
+        $query = DB::table('positions as p')
+            ->join('departments as d', 'd.id', '=', 'p.department_id')
+            ->join('dep_status as ds', 'ds.id', '=', 'p.status_id')
+            ->selectRaw('p.id, p.name, p.department_id, d.name as department, p.status_id, ds.name as status');
         if ($search_id) {
-            $query->where('d.id', $search_id);
+            $query->where('p.id', $search_id);
         }
 
         if ($search_status_id) {
-            $query->where('d.status_id', $search_status_id);
+            $query->where('p.status_id', $search_status_id);
         }
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $query->whereRaw("d.name like '%" . $search_value . "%'" . " or d.short_name like '%" . $search_value . "%'");
+            $str_search = "p.name like '%$search_value%' or d.name like '%$search_value%'";
             $query->whereRaw($str_search);
         }
-        $query->orderBy('d.id', 'asc');
+
+        $query->orderBy('p.id', 'asc');
         $query->skip($skip_rows)->take($per_page);
         $count_query = clone $query;
         $count = $count_query->count('d.id');
@@ -93,37 +91,37 @@ class Department
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getDetails($id) {
-
-        $query = DB::table('departments as d')
-            ->join('dep_status as ds', 'ds.id', '=', 'd.status_id')
-            ->selectRaw('d.id, d.name, d.short_name, d.status_id, ds.name as status');
-        $query->where('d.id', $id);
+    function getDetails($id){
+        $query = DB::table('positions as p')
+            ->join('departments as d', 'd.id', '=', 'p.department_id')
+            ->join('dep_status as ds', 'ds.id', '=', 'p.status_id')
+            ->selectRaw('p.id, p.name, p.department_id, d.name as department, p.status_id, ds.name as status');
+        $query->where('p.id', $id);
         $row = $query->first();
         return $row;
     }
 
-
-    function deleteDepartment($id) {
-        $deleted = DB::table('departments')->where('id', $id)->delete();
+    function deletePosition($id)
+    {
+        $deleted = DB::table('positions')->where('id', $id)->delete();
         return $deleted;
     }
 
     function getFormOptions($id, $ss)
     {
-        $department = null;
+        $position = null;
         if ($id) {
-            $department = self::getDetails($id, $ss);
+            $position = self::getDetails($id, $ss);
         }
         return (object) [
 
             'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
+            'departments' => DB::table('departments')->selectRaw('id,name')->get(),
 
 
-            'departments' => $department,
+            'positions' => $position,
         ];
 
     }
-
 
 }

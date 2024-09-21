@@ -13,20 +13,16 @@ var DepartmentComponent = new function() {
     this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
     this.cols = [
         {
-            title: "No",
-            className: 'align-middle text-capitalize text-nowrap',
-            data: (data, index, i) => { return (index + 1) },
-
+            title: "Logo",
+            className: 'align-middle',
+            data: (data) => {
+                return `<img class="image-student-tbl" src="${data.image_url}" alt=""/>`;
+            }
         },
         {
             title: "Department Name",
             className: 'align-middle text-capitalize text-nowrap',
             data: "name"
-        },
-        {
-            title: "Short Name",
-            className: 'align-middle text-capitalize text-nowrap',
-            data: "short_name"
         },
         {
             title: "Status",
@@ -245,40 +241,44 @@ const DepartmentDilog = new function() {
     this.base_url = main_view.base_url;
     this.options = {};
 
-    this.btnSave = this.self.querySelector('#dlg_sdl_add_department_btn_save');
-    this.elStatusId = this.self.querySelector('#_sdl_status_id');
+    this.btnSave =  this.self.querySelector('#dlg_sdl_add_department_btn_save');
+    this.elStatusId =  this.self.querySelector('#_sdl_status_id');
     this.elTitle = mThis.self.querySelector('.modal-title');
     this.div_department_info = mThis.self.querySelector('#_sdl_department_info');
+    this.btnChooser = mThis.self.querySelector('#dlg_image_chooser_department');
 
 
-    this.btnSave.onclick = e => {
+        this.btnSave.onclick = e => {
         e.preventDefault();
         let p = mThis.getDataForm();
-        console.log(77777, p);
+        console.log(77777,p);
 
-        vsapi.call(`${mThis.base_url}/hr/department/save`, p, mThis.btnSave, false).then(res => {
-            if (res.status_code === 200) {
+        vsapi.call(`${mThis.base_url}/hr/department/save`, p,mThis.btnSave,false).then(res => {
+            if(res.status_code === 200){
                 mThis.modal.hide();
                 const d = res.data ?? {};
                 cv_interact.success('Department Saved Success!');
                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
-            } else {
-                cv_interact.error(res.error_message);
             }
+            else
+                cv_interact.error(res.error_message);
         });
-    };
+    }
 
-    this.prepareData = (id, def, onFinish) => {
-        if (!def) def = {};
-        console.log(555555, id);
-        vsapi.call(`${mThis.base_url}/hr/department/form-options`, { id: id }, null).then(res => {
-            let d = res.status_code === 200 ? res.data : {};
+    this.prepareData = (id,def, onFinish) => {
+        if(!def) def = {};
+        console.log(555555,id);
+        vsapi.call(`${mThis.base_url}/hr/department/form-options`,{
+            id: id
+        },null).then(res => {
+            let d = res.status_code === 200 ?  res.data : {};
 
             VSUtil.setComboItems(mThis.elStatusId, d.status, 'id', 'name', true, '(Select Status)', null);
-            console.log(33333, d);
+            console.log(33333,d);
             onFinish(d);
         });
-    };
+    }
+
 
     this.show = (options = {}) => {
         mThis.options = options;
@@ -288,6 +288,7 @@ const DepartmentDilog = new function() {
         mThis.prepareData(id, {}, (data) => {
             if (data.departments) {
                 mThis.elTitle.textContent = "Modify Department Information";
+
             } else {
                 mThis.elTitle.textContent = "Create Department";
             }
@@ -296,7 +297,52 @@ const DepartmentDilog = new function() {
         });
     };
 
+    this.btnChooser.onclick = (e) => {
+        e.preventDefault();
+        FileChooser.chooseFile(null, (d) => {
+            if (d) {
+                const parent = mThis.btnChooser.parentElement;
+                mThis.setImage(parent, d.dataUrl);
+            }
+        });
+    };
 
+    this.setImage = (div, image = null) => {
+        if (image) {
+            div.innerHTML = `
+                <img class="w-100 h-100 object-fit-scale data-input" src="${image}" alt="department-icon" data-field="photo"/>
+                <div class="position-absolute top-0 end-0 p-2 rounded-2 bg-dark" role="button">
+                    <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+                </div>`;
+            mThis.deleteImage(div);
+        } else {
+            div.innerHTML = `
+                <div id="dlg_image_chooser" class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
+                    <i class="fa-regular fa-image fs-4 text-muted"></i>
+                </div>`;
+            mThis.chooseImage(div);
+        }
+    };
+
+    this.deleteImage = (div) => {
+        const btnDelete = div.querySelector('[role="button"]');
+        btnDelete.onclick = (e) => {
+            e.preventDefault();
+            mThis.setImage(div);
+        };
+    };
+
+    this.chooseImage = (div) => {
+        const btnChoose = div.querySelector('#dlg_image_chooser');
+        btnChoose.onclick = (e) => {
+            e.preventDefault();
+            FileChooser.chooseFile(null, (d) => {
+                if (d) {
+                    mThis.setImage(div, d.dataUrl);
+                }
+            });
+        };
+    };
 
     this.getDataForm = () => {
         const div = mThis.self;
@@ -304,7 +350,7 @@ const DepartmentDilog = new function() {
 
         div.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
-            p[data_member] = el.value;
+            p[data_member] = (el.tagName === 'IMG') ? el.src : el.value;
         });
 
         return p;
@@ -317,10 +363,10 @@ const DepartmentDilog = new function() {
             console.log(7777,data_member,'|',el);
             el.value ='';
         });
-
+        const containerImage = div.querySelector('[aria-label="image"]');
         console.log(4444,d);
         if(!d) return;
-
+        mThis.setImage(containerImage, d.image_url);
         div.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
             console.log(7777,data_member,'|',el);

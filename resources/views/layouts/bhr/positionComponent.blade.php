@@ -1,9 +1,9 @@
-<div id="_main_departmentComponent">
+<div id="_main_positionComponent">
     <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter">
         <div class="d-flex align-items-center w-100 gap-2">
             <div class="d-flex align-items-center w-100 gap-2">
-                <input type="text" class="form-control filter-field" id="_sdl_search_department"
-                    placeholder="Search Department">
+                <input type="text" class="form-control filter-field" id="_sdl_search_position"
+                    placeholder="Search Position">
 
                 <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
                     <i class="la la-search"></i>
@@ -15,38 +15,37 @@
             </div>
         </div>
         <div class="d-flex align-items-center justify-content-end gap-2 w-100">
-            <button type="button" class="btn btn-primary" id="_btnAddDepartment">
+            <button type="button" class="btn btn-primary" id="_btnAddPosition">
                 <i class="fas fa-plus"></i>
-                <span>Add Department</span>
+                <span>Add Position</span>
             </button>
         </div>
-
     </div>
-    <div id="_dep_list" class="p-3"></div>
+    <div id="_position_list" class="p-3"></div>
 </div>
 
-<div class="modal fade" id="dlg_sdl_add_Department" tabindex="-1" aria-labelledby="dlg_sdl_add_department_title"
+
+<div class="modal fade" id="dlg_sdl_add_Position" tabindex="-1" aria-labelledby="dlg_sdl_add_positon_title"
     aria-hidden="true">
     <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title " vslang="titles.Create Department List"></h5>
+                <h5 class="modal-title " vslang="titles.Create Position List"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="row gap-0" id="_sdl_department_info">
+                <div class="row gap-0" id="_sdl_position_info">
                     <div class="col-lg-9 p-5">
                         <div class="form-group">
                             <label for="name" class="form-label trans-text"
-                                data-langprop="titles.Name Of Department">Name</label>
+                                data-langprop="titles.Name Of Position">Name</label>
                             <input type="text" class="form-control data-input" data-field="name" />
                         </div>
                         <div class="form-group">
                             <label for="name" class="form-label trans-text"
-                                data-langprop="titles.Short Name">Name</label>
-                            <input type="text" class="form-control data-input" data-field="short_name" />
+                                data-langprop="titles.Name Of Department">Name</label>
+                            <select class=" data-input" id="_sdl_department_id" data-field="department_id"></select>
                         </div>
-
                         <div class="form-group col-lg-6">
                             <label for="name" class="form-label trans-text" data-langprop="titles.Status"></label>
                             <select class=" data-input" id="_sdl_status_id" data-field="status_id"></select>
@@ -58,7 +57,7 @@
                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
                         <span class="trans-text" data-langprop="titles.Cancel"></span>
                     </button>
-                    <button id="dlg_sdl_add_department_btn_save" type="button" class="btn btn-sm btn-primary">
+                    <button id="dlg_sdl_add_position_btn_save" type="button" class="btn btn-sm btn-primary">
                         <span class="trans-text" data-langprop="titles.Save"></span>
                     </button>
                 </div>
