@@ -106,7 +106,7 @@ namespace App\ScriptManagement;
                         '/js/components/bhr/SkillsComponent.js',
                         '/js/components/bhr/JobsLevelComponent.js',
                         '/js/components/bhr/PayrollComponent.js',
-                        '/js/components/bhr/DepartmentComponent.js',
+                        // '/js/components/bhr/DepartmentComponent.js',
                         '/js/components/bhr/LeaveRequestComponent.js',
 
                     ]
