@@ -12,9 +12,9 @@ var BookingComponent = new function(){
     this.elSearch = mThis.self.querySelector('#_search_booking');
 
     // this.btnViewImageBooking = mThis.self.querySelector('#_btn_view_image_booking');
-    
+
     // this.containerPagination = mThis.self.querySelector('#_booking_container_pagination');
-   
+
     this.init = () => {
         if(mThis.initAlready) return;
 
@@ -29,7 +29,7 @@ var BookingComponent = new function(){
             },
             listContainerClass: null
         });
-       
+
 
         mThis.btnNewBooking.onclick = function (e) {
             e.preventDefault();
@@ -83,31 +83,31 @@ var BookingComponent = new function(){
 
         }
         return p;
-       
+
     }
     this.viewImage = (id, lnk) => {
         let sub_content = mThis.self.querySelector('#sub_content');
         sub_content.classList.add('d-none');
-    
+
         let btnBack = mThis.self.querySelector('#btn_back');
         btnBack.classList.remove('d-none');
-   
-    
+
+
         let sub_view_image = mThis.self.querySelector('#sub_view_image');
         sub_view_image.classList.remove('d-none');
-    
+
         let titleViewImage = mThis.self.querySelector('#_title_view_image');
         titleViewImage.classList.remove('d-none');
 
         let titleViewPackage = mThis.self.querySelector('#_title_view_package');
         titleViewPackage.classList.add('d-none');
-    
+
         let div = sub_view_image.querySelector('#_view_image_container');
-    
+
         let p = {
             order_id: lnk.dataset.id
         };
-    
+
         vsapi.call(`${mThis.base_url}/api/merchant/v2/order-images`, p, false, false, null).then(res => {
             if (res.status_code == 200) {
                 let d = res.data;
@@ -119,7 +119,7 @@ var BookingComponent = new function(){
     this.renderViewImage = (data = null, div) => {
         data = data ?? [];
         let html = '';
-    
+
         if (data.length > 0) {
             html += `<div class="row gap-3">`;
             data.forEach(d => {
@@ -133,7 +133,7 @@ var BookingComponent = new function(){
         } else {
             html = `<p class="text-center text-muted">No images available to display.</p>`;
         }
-    
+
         div.innerHTML = html;
     };
     this.viewPackage = (id, lnk)=>{
@@ -154,11 +154,11 @@ var BookingComponent = new function(){
 
         let div = sub_view_image.querySelector('#_view_image_container');
         mThis.displayOrderItems(div,id,lnk.dataset.sender_id,lnk);
-         
+
     }
     this.displayOrderItems = (div, order_id, sender_id, btn = null) => {
         let p = { 'order_id': order_id };
-    
+
         vsapi.call([mThis.base_url, '/dms/order/package-list'].join(''), p, btn, false, null).then(res => {
             if (res.status_code === 200) {
                 let packages = StringSanitizer.sanitizeObject(res.data, null, ['size']);
@@ -172,7 +172,7 @@ var BookingComponent = new function(){
                             <tr>
                                 <th scope="col">RECEIVER PHONE</th>
                                 <th scope="col">RECEIVER ADDRESS</th>
-                                <th scope="col">PRICE</th> 
+                                <th scope="col">PRICE</th>
                                 <th scope="col">COD</th>
                                 <th scope="col">WEIGHT</th>
                                 <th scope="col">Noted</th>
@@ -180,10 +180,10 @@ var BookingComponent = new function(){
                             </tr>
                         </thead>
                         <tbody class="bg-white" style="color:rgba(0, 0, 0, 0.7);">`;
-    
+
                 data.forEach(d => {
                     let cod_display = d.cod == 1 ? 'Yes' : `$${d.cod}`;
-    
+
                     html += `
                         <tr>
                             <td class="align-middle">${d.receiver_phone}</td>
@@ -201,7 +201,7 @@ var BookingComponent = new function(){
                         <tr><td colspan="100%"><span class="d-flex justify-content-center" style="font-size:12px;">This Booking doesn't have package.</span></td></tr>
                     `;
                 }
-    
+
                 html += `</tbody></table></div>`;
                 div.innerHTML = html;
             }
@@ -226,8 +226,8 @@ var BookingComponent = new function(){
                 cssClass:"viewPackage pb-2",
                 name:"viewPackage"
                 },
-             
-                    
+
+
             ],
             // adjustPosition:{
             //         top:-90
@@ -260,11 +260,11 @@ var BookingComponent = new function(){
                 }
             }
         }
-        
+
         new VSDropdownMenu(menuOptopns);
     }
     this.renderBookingList = (div,items) => {
-        
+
         items = items ?? [];
         if(!AuthManager)
         {
@@ -360,15 +360,15 @@ var BookingComponent = new function(){
     this.beginRenderBooking = (div, items, current_user) => {
         const d = current_user;
         let html = '';
-    
+
         html += this.renderHeaderList(); // Include the header
-    
+
         html += `<div id="_scroll_booking">`;
         let cmt = 0;
-    
+
         items.forEach(data => {
-            const html_image_count = data.image_count > 0 
-                ? `<i class="fa fa-image"></i> ${data.image_count} images` 
+            const html_image_count = data.image_count > 0
+                ? `<i class="fa fa-image"></i> ${data.image_count} images`
                 : '';
             html += `
                 <div class="card w-100 rounded-3 border-start border-5 border-danger-custom px-2 shadow bg-white mb-3  position-relative">
@@ -441,9 +441,9 @@ var BookingComponent = new function(){
                                 </p>
                             </div>
                         </div>
-                        
-                        
-                        <div class="col d-flex justify-content-center align-items-center">                       
+
+
+                        <div class="col d-flex justify-content-center align-items-center">
                             <div class="text-center gap-2 d-flex flex-wrap">
                                  <a href="javascript:void(0)" class="btn_um_action btn_pickup_action" data-id="${data.id}" data-orderid="${data.id}" data-senderid="${data.sender_id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                                     <img src="${main_view.asset_url}/images/icons/Dot.svg" />
@@ -468,24 +468,24 @@ var BookingComponent = new function(){
             `;
 
         }
-    
+
         html += `</div>`;
         div.innerHTML = html;
-    
+
         const sh_parent = div.querySelector('#_scroll_booking');
         sh_parent.style.height = (window.innerHeight - 350) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
-    
+
         window.onresize = function(e) {
             e.preventDefault();
             sh_parent.style.height = (window.innerHeight - 350) + 'px';
         };
     };
-    
+
     this.show = (options) => {
 
-        mThis.init(); 
+        mThis.init();
         if(!options) options = {};
         main_view.setTitle(mThis.title_prop);
             mThis.bookingListView.showPage(mThis.getFilterData());
@@ -503,17 +503,17 @@ const BookingDialog = (()=>{
              createContent: () => {
                 return [`<div class="d-flex flex-column align-items-center">
                       <div class="text-center mb-4">
-                            <button style="width:100px; height:100px; font-size:10px; background-color:#dd2424;" 
+                            <button style="width:100px; height:100px; font-size:10px; background-color:#dd2424;"
                                     name="btn-moto"
-                                    id="motoBtn" 
+                                    id="motoBtn"
                                     class="btn btn-lg rounded-circle mx-3 choice-btn"
                                     data-type="Moto">
                                 <img src="${main_view.asset_url}/images/icons/moto.svg" alt="Moto" style="width: 50px; height: 50px;">
                                 <span class="mt-1 mb-0 text-white">Moto</span>
                             </button>
-                            <button style="width:100px; height:100px; font-size:10px; background-color:#dd2424;" 
+                            <button style="width:100px; height:100px; font-size:10px; background-color:#dd2424;"
                                     name="btn-tuktuk"
-                                    id="tukTukBtn" 
+                                    id="tukTukBtn"
                                     class="btn btn-lg rounded-circle mx-3 choice-btn"
                                     data-type="Tuk Tuk">
                                 <img src="${main_view.asset_url}/images/icons/tok_tok.svg" alt="Tuk Tuk" style="width: 50px; height: 50px;">
@@ -526,18 +526,18 @@ const BookingDialog = (()=>{
                 </div>
                 <div class="booking-info w-100 d-flex flex-column align-items-center">
                     <div class="w-50 mb-3">
-                        <label for="productType" class="form-label">Product Type<span class="text-danger">*</span></label>                           
+                        <label for="productType" class="form-label">Product Type<span class="text-danger">*</span></label>
                             <select name="product_type" class="form-control data-input p-3 px-5 rounded-4" data-field="product_type" id="productType">
                             </select>
                     </div>
                     <div class="w-50 d-none mb-3">
-                        <label for="deliveryTYpe" class="form-label">Delivery Type<span class="text-danger">*</span></label>                           
+                        <label for="deliveryTYpe" class="form-label">Delivery Type<span class="text-danger">*</span></label>
                             <select name="delivery_type" value="normal" class="form-control data-input p-3 px-5 rounded-4" data-field="delivery_type" id="deliveryType">
 
                             </select>
                     </div>
-                            
-                    
+
+
                     <div class="w-50 mb-3">
                         <label for="packageNumber" class="form-label">Number of Package<span class="text-danger">*</span></label>
                         <div >
@@ -609,21 +609,21 @@ const BookingDialog = (()=>{
         // this.style.borderStyle = 'solid'; // Optional: Ensure the border style is solid
                         this.style.backgroundColor = '#007bff'; // Active color
                         this.classList.add('active');
-                        
-                       
+
+
                     });
                 });
                 // Event listener for Add Detail button
                 //me.controls.add_detail.onclick = e =>
-                //me.divModal.querySelector('#_btn_add_detail').onclick = e => 
+                //me.divModal.querySelector('#_btn_add_detail').onclick = e =>
                 me.controls.add_detail.onclick = e =>{
                     e.preventDefault();
-                   
+
 
                     // Hide BookingDialog
                     dialog.hide(false);
                     let p = me.getData();
-                    
+
                     const buttons = me.divModal.querySelector('button.active');
                     p.sender_id = me.dataOptions.sender_id;
                     p.request_vehicle_type = 'moto';
@@ -634,7 +634,7 @@ const BookingDialog = (()=>{
 
                     }
 
-                        
+
 
                     let op ={
                         bookInfo: p,
@@ -652,9 +652,9 @@ const BookingDialog = (()=>{
                 };
                 me.controls.take_photo.onclick = e => {
                     e.preventDefault();
-                
+
                     dialog.hide(false);
-                    
+
                     CameraDialog.show(op);
                 };
             },
@@ -689,10 +689,10 @@ const BookingDialog = (()=>{
             onPrepareForm:(me,data,fields,divModal)=>{
                  LocaleManager.translateZone(me.divModal);
                  me.options.title = me.dataOptions.title||"Vehicle Type";
-                 
+
                 VSUtil.setComboItems(fields.product_type, data,'code','product_type',true,'(Select Product Type*)',null);
                 // VSUtil.setComboItems(fields.delivery_type, data,'code','delivery_type',false,'(Select delivery Type*)','Normal');
-                
+
                 const buttons = me.divModal.querySelectorAll('.choice-btn');
                 buttons.forEach(btn =>{
                     btn.style.backgroundColor = '#dd2424';
@@ -716,7 +716,7 @@ const BookingDialog = (()=>{
                     click: (me) => {
                         let p = me.getData();
                         const buttons = me.divModal.querySelector('button.active');
-                        
+
                         p.sender_id = me.dataOptions.sender_id;
                         p.request_vehicle_type = 'moto';
                         p.delivery_type = 'Normal';
@@ -725,10 +725,10 @@ const BookingDialog = (()=>{
                             p.request_vehicle_type = buttons.dataset.type ?? null;
                         }
                         p.packages = me.storeArrDetail(null,true);
-                        
+
                         console.log(123,p);
-                    
-                        
+
+
                         // vsapi.call(`${main_view.base_url}/api/merchant/v2/create-delivery-order`,p,false).then(res=>{
                         vsapi.call(`${main_view.base_url}/api/merchant/v2/create-delivery-order`,p,false).then(res=>{
 
@@ -746,16 +746,16 @@ const BookingDialog = (()=>{
                 // let content = BookingComponent.bookingListView.getListContainer();
                 // content.parentElement.classList.remove('d-none');
 
-                 
+
             }
-         
+
           });
-         
+
          dialog.show(op);
-      }         
+      }
     return self;
  })();
- 
+
 const AddDetailDialog = (() => {
     const self = {};
     let dialog = null;
@@ -858,7 +858,7 @@ const AddDetailDialog = (() => {
                         },
                         contentCreated: (me) => {
                             me.items = [];
-                        
+
                             me.btn = (name) => {
                                 const btn_back = me.divModal.querySelector('.modal-footer .btn-back');
                                 const btn_add = me.divModal.querySelector('.modal-footer .btn-add');
@@ -872,7 +872,7 @@ const AddDetailDialog = (() => {
                                 else if (name == 'list') return btn_list;
                                 else return;
                             };
-                        
+
                             me.storeListDetail = (data, getData) => {
                                 if (!getData) {
                                     if (data.receiver_name && data.receiver_phone)
@@ -881,23 +881,23 @@ const AddDetailDialog = (() => {
                                 console.log(999, me.items);
                                 return me.items;
                             };
-                        
+
                             me.editListDetail = (newData, i) => {
                                 me.items[i] = newData;
                                 console.log(111, newData, 222, i, 333, me.items[i], 444);
                                 return me.items;
                             };
-                        
+
                             let index = 0;
-                        
+
                             me.getClickIndex = () => {
                                 return index;
                             };
-                        
+
                             me.setClickIndex = (i) => {
                                 index = i;
                             };
-                        
+
                             me.showListDetail = (data, tbl) => {
                                 me.controls.formAddDetail.classList.add('d-none');
                                 tbl.classList.remove('d-none');
@@ -906,7 +906,7 @@ const AddDetailDialog = (() => {
                                 let tbody = '';
                                 let html = '';
                                 let tr = '';
-                            
+
                                 html = `
                                     <th>Receiver's Name</th>
                                     <th>Phone Number</th>
@@ -918,7 +918,7 @@ const AddDetailDialog = (() => {
                                 `;
                                 thead += `<thead><tr>${html}</tr></thead>`;
                                 tbl.innerHTML += thead;
-                            
+
                                 let k = 0;
                                 data.map(c => {
                                     tr += `
@@ -937,7 +937,7 @@ const AddDetailDialog = (() => {
                                     `;
                                     k++;
                                 });
-                            
+
                                 if (k == 0) {
                                     tr = `
                                         <tr>
@@ -945,10 +945,10 @@ const AddDetailDialog = (() => {
                                         </tr>
                                     `;
                                 }
-                            
+
                                 tbody += `<tbody>${tr}</tbody>`;
                                 tbl.innerHTML += tbody;
-                            
+
                                 me.controls.tblListDetail.querySelector('tbody').addEventListener('click', function(event) {
                                     let btn = VSUtil.closestLimited(event.target, 'tr .edit-list-detail');
                                     if (btn) {
@@ -960,7 +960,7 @@ const AddDetailDialog = (() => {
                                             item[td.dataset.name] = td.textContent;
                                             me.setClickIndex(Number(td.dataset.index));
                                         });
-                            
+
                                         item.id = tr.dataset.id;
                                         me.btn('back').classList.add('d-none');
                                         me.btn('add').classList.add('d-none');
@@ -969,19 +969,19 @@ const AddDetailDialog = (() => {
                                         me.controls.formAddDetail.classList.remove('d-none');
                                         updateDialogTitle('Modify');
                                         me.controls.tblListDetail.classList.add('d-none');
-                            
+
                                         me.controls.formAddDetail.querySelectorAll('.data-input').forEach(el => {
                                             const f = el.dataset.field;
                                             el.value = item[f] ?? '';
                                         });
-                            
+
                                         // Call function to check COD based on price and update total
                                         me.checkCodBasedOnPrice();
                                     }
                                 });
                             };
-                            
-                        
+
+
                             me.checkCodBasedOnPrice = () => {
                                 const codYes = me.controls.formAddDetail.querySelector('#codYes');
                                 const codNo = me.controls.formAddDetail.querySelector('#codNo');
@@ -996,12 +996,12 @@ const AddDetailDialog = (() => {
                                         totalAmountInput.value =  totalAmount.toFixed(2);
                                     } else {
                                         codNo.checked = true;
-                                        totalAmountInput.value = '0.00'; 
+                                        totalAmountInput.value = '0.00';
                                     }
                                 }
                             };
 
-                      
+
 
                             // Add event listener to the price input field to update COD selection and total amount when price changes
                             const priceInput = me.controls.formAddDetail.querySelector('[data-field="price"]');
@@ -1012,24 +1012,24 @@ const AddDetailDialog = (() => {
                             }
 
                         },
-                        
-                        
+
+
             buttons: [
                 {
                     label: 'Add',
                     cssClass: 'btn btn-add btn-danger-custom mx-2 rounded-5',
                     // click: () => {
-                        
+
                         // dialog.hide();
                         // if (typeof op.onClose === 'function') op.onClose();
                     // }
                     click: (me) => {
-                        
+
                         let p = me.getData();
                              // p.id = null;
                              p.zone_code = "D018";
                              p.cod = 0;
-                        if(!p.receiver_phone) 
+                        if(!p.receiver_phone)
                             {
                             MessageDialog.show('Invalid receiver phone number.','error');
                             return;
@@ -1051,29 +1051,29 @@ const AddDetailDialog = (() => {
                         me.btn('list').classList.add('d-none');
                         me.controls.tblListDetail.classList.add('d-none');
 
-                        updateDialogTitle('List Detail'); 
+                        updateDialogTitle('List Detail');
                         me.btn('submit').classList.remove('d-none');
 
                         me.btn('back').classList.remove('d-none');
                         let data = me.storeListDetail(null,true);
                         me.showListDetail(data,me.controls.tblListDetail);
 
-                   
-                        
 
-                         
-                       
+
+
+
+
                         //  //show list details
                         //  let data = me.storeListDetail(null,true);
                         //  me.showListDetail(data,me.controls.tblListDetail);
-                         
+
                     }
                 },
                 {
                     label: 'List',
                     cssClass: 'btn  d-none btn-list btn-danger-custom mx-2 rounded-5',
                     click : (me)=>{
-                        updateDialogTitle('List Detail'); 
+                        updateDialogTitle('List Detail');
                         me.btn('list').classList.add('d-none');
                         me.btn('add').classList.add('d-none');
                         me.btn('submit').classList.remove('d-none');
@@ -1088,7 +1088,7 @@ const AddDetailDialog = (() => {
                     label: 'Update',
                     cssClass: 'btn d-none btn-update btn-danger-custom mx-2 rounded-5',
                     // click: () => {
-                        
+
                         // dialog.hide();
                         // if (typeof op.onClose === 'function') op.onClose();
                     // }
@@ -1124,17 +1124,17 @@ const AddDetailDialog = (() => {
 
                         me.controls.formAddDetail.classList.remove('d-none');
                         me.btn('add').classList.remove('d-none');
-                       
+
                         me.controls.formAddDetail.querySelectorAll('.data-input').forEach(el =>{
                             const f = el.dataset.field;
 
                             el.value = '';
-                           
+
                          });
                          me.controls.formAddDetail.querySelectorAll('[name="total_amount"]').forEach(el => {
                             el.value = '';
                         });
-                        
+
                     }
                 },
                 {
@@ -1154,7 +1154,7 @@ const AddDetailDialog = (() => {
                     // delete p.id;
 
                     console.log(1199,p);
-                     
+
                      vsapi.call(`${main_view.base_url}/api/merchant/v2/create-delivery-order`,p,false).then(res=>{
 
                             if(res.status_code == 200){
@@ -1164,10 +1164,10 @@ const AddDetailDialog = (() => {
                         });
                     }
                 },
-             
+
             ],
             onClose:(canceled)=>{
-                 
+
             }
         });
 

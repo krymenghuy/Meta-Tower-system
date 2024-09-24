@@ -18,8 +18,8 @@ class Employee//extends Model
 
     protected $id = null;
     protected $userInfo = null;
-    protected static $img_dir = 'merchant';
-    //Merchant Regitration default options | senderDetaultOptions() | merchantDefaultOptions
+    protected static $img_dir = 'employees';
+    //Employees Regitration default options | senderDetaultOptions() | employeesDefaultOptions
     function getDefaultOptions()
     {
         //price_list_id =11 (Normal Condition)
@@ -46,17 +46,18 @@ class Employee//extends Model
             'id' => '0|identity=1',
             'first_name' => '1|string|0-100',
             'last_name' => '1|string|0-100',
-            'sex' => '1|choice|M,F',
-            'date_of_birth' => '0|string|0-150',
-            'email' => '0|email',
-            'address' => '0|string|0-250',
+            'email' => '1|email',
             'phone_number' => '1|phone|0-20',
+            'gender_id' => '1|number',
+            'nationality' => '1|string|0-150',
+            'date_of_birth' => '1|date',
+            'address' => '0|string|0-250',
             'positions_id' => '1|number',
-            'departments_id' => '1|number',
-            'cp_name' => '0|string|0-100',
-            'cp_phone_number' => '0|number|0-20',
-            'cp_email' => '0|email',
-            'photo_file_type' => '0|number|default=0',
+            'session_id' => '1|number',
+            'joining_date' => '0|date',
+            'NSSF' => '0|string|0-100',
+            'identity_card_number'=> '0|number',
+            'status_id' => '1|number|default = 1',
             'photo' => '0|image',
         ];
 
@@ -111,7 +112,7 @@ class Employee//extends Model
         $row = DB::table('employees as p')->where('id', $id)->selectRaw($col_subs_id . ',p.branch_id,p.photo_file_name')->first();
         $url = '';
         if ($row) {
-           $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'merchant'], 'images') . $row->photo_file_name;
+           $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'employees'], 'images') . $row->photo_file_name;
             return validateUrl($url);
         } else {
             return self::defaultImage($row ? $row->subs_id : null);
@@ -133,15 +134,40 @@ class Employee//extends Model
 
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
-        $search_sex = $d->sex ?? null;
+        $search_position_id = $d->position_id ?? null;
+        $search_status_id = $d->status_id ?? null;
 
         $str_search = '1=1';
 
         $query = DB::table('employees as em')
-            ->join('departments as d', 'd.id', '=', 'em.departments_id')
-            ->join('positions as p', 'p.id', '=', 'em.positions_id')
-            ->selectRaW('em.id,em.first_name,em.last_name,em.sex,em.date_of_birth,em.email,em.address,em.phone_number,d.name as department_name,p.name as position_name,em.cp_name,em.cp_phone_number,em.cp_email,em.photo_file_name')
-            ->where('em.branch_id', $branch_id);
+        ->join('genders as g', 'g.id', '=', 'em.gender_id')
+        ->join('positions as p', 'p.id', '=', 'em.positions_id')
+        ->join('dep_status as ds', 'ds.id', '=', 'em.status_id')
+        ->join('sessions as s', 's.id', '=', 'em.session_id')
+        ->selectRaw('
+            em.id,
+            em.first_name,
+            em.last_name,
+            em.email,
+            em.phone_number,
+            em.gender_id,
+            em.nationality,
+            em.date_of_birth,
+            em.address,
+            em.photo_file_name,
+            em.joining_date,
+            em.nssf,
+            em.identity_card_number,
+            g.name as gender,
+            em.positions_id,
+            p.name as position,
+            em.session_id,
+            s.name as session,
+            em.status_id,
+            ds.name as status
+        ')
+        ->where('em.branch_id', $branch_id);
+
 
 
         if ($search_id) {
@@ -149,15 +175,29 @@ class Employee//extends Model
 
         }
 
-        if ($search_sex) {
-            $query->where('em.sex', $search_sex);
+        if ($search_position_id) {
+            $query->where('em.positions_id', $search_position_id);
+        }
+
+        if ($search_status_id) {
+            $query->where('em.status_id', $search_status_id);
         }
 
         if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $str_search = 'em.first_name like "%' . $search_value . '%" or em.last_name like "%' . $search_value . '%" or em.email like "%' . $search_value . '%" or em.phone_number like "%' . $search_value . '%" or em.cp_name like "%' . $search_value . '%" or d.name like "%' . $search_value . '%" or p.name like "%' . $search_value . '%" or em.address like "%' . $search_value . '%"';
-            $query->whereRaw($str_search);
+            $search_value = addcslashes($search_value, '%_'); // Escape special characters used in LIKE query
+            $query->where(function($q) use ($search_value) {
+                $q->where('em.first_name', 'like', '%' . $search_value . '%')
+                  ->orWhere('em.last_name', 'like', '%' . $search_value . '%')
+                  ->orWhere('em.email', 'like', '%' . $search_value . '%')
+                  ->orWhere('em.phone_number', 'like', '%' . $search_value . '%')
+                  ->orWhere('p.name', 'like', '%' . $search_value . '%')
+                  ->orWhere('em.address', 'like', '%' . $search_value . '%')
+                  ->orWhere('em.joining_date', 'like', '%' . $search_value . '%')
+                  ->orWhere('em.nssf', 'like', '%' . $search_value . '%')
+                  ->orWhere('em.identity_card_number', 'like', '%' . $search_value . '%');
+            });
         }
+
 
         $count = $query->count();
         $query->orderBy('em.id', 'asc');
@@ -177,18 +217,45 @@ class Employee//extends Model
 
     function getDetails($id)
     {
-        $row = DB::table('employees')->where('id', $id)->first();
+        $row = DB::table('employees as em')
+        ->join('genders as g', 'g.id', '=', 'em.gender_id')
+        ->join('positions as p', 'p.id', '=', 'em.positions_id')
+        ->join('dep_status as ds', 'ds.id', '=', 'em.status_id')
+        ->join('sessions as s', 's.id', '=', 'em.session_id')
+        ->selectRaw('
+            em.id,
+            em.first_name,
+            em.last_name,
+            em.email,
+            em.phone_number,
+            em.gender_id,
+            em.nationality,
+            em.date_of_birth,
+            em.address,
+            em.photo_file_name,
+            em.joining_date,
+            em.nssf,
+            em.identity_card_number,
+            g.name as gender,
+            em.positions_id,
+            p.name as position,
+            em.session_id,
+            s.name as session,
+            em.status_id,
+            ds.name as status
+            ')
+            ->where('em.id', $id)
+            ->first();
 
         if ($row) {
-            $image_url = self::getProfilePicture($id);
+            $row->image_url = self::getProfilePicture($id);
         } else {
-            $image_url = null;
+            $row = null; // Or handle the case where employee is not found
         }
 
-        return DB::table('employees')
-            ->selectRaw('id, first_name, last_name, sex, date_of_birth, email, address, phone_number, departments_id, positions_id, cp_name, cp_phone_number, cp_email, ? as image_url', [$image_url])
-            ->where('id', $id)->first();
+        return $row;
     }
+
 
     function delete($id, $ss)
     {
@@ -226,6 +293,25 @@ class Employee//extends Model
 
         // Return success response
         return DV::depends(1, ['id' => $id, 'deleted' => $file_name ?? 'No file found']);
+    }
+
+    function getFormOptions($id, $ss)
+    {
+        $employee = null;
+        if ($id) {
+            $employee = self::getDetails($id, $ss);
+        }
+        return (object) [
+
+            'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
+            'positions' => DB::table('positions')->selectRaw('id,name')->get(),
+            'genders' => DB::table('genders')->selectRaw('id,name')->get(),
+            'sessions' => DB::table('sessions')->selectRaw('id,name')->get(),
+
+
+            'employee' => $employee,
+        ];
+
     }
 
 }

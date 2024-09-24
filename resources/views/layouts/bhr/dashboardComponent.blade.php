@@ -1,66 +1,73 @@
-
-
 <style>
     /* body {
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
         } */
-        .card {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-        }
-        .card-header {
-            background-color: #ffffff;
-            border-bottom: none;
-            font-weight: bold;
-        }
-        /* .progress {
+    .card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-header {
+        background-color: #ffffff;
+        border-bottom: none;
+        font-weight: bold;
+    }
+
+    /* .progress {
             height: 35px;
         } */
-        /* .progress-bar {
+    /* .progress-bar {
             border-radius: 0px;
         } */
-        /* .progress-bar-interactive {
+    /* .progress-bar-interactive {
             background-color: #6c63ff;
         } */
-        /* .progress-bar-page {
+    /* .progress-bar-page {
             background-color: #ff6c63;
         } */
-        .icon {
-            font-size: 20px;
-            margin-right: 5px;
-        }
-        .overview-section {
-            margin-bottom: 30px;
-        }
-        .section-title {
-            font-weight: bold;
-            margin-bottom: 20px;
-        }
-        .overview-card {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 10px 20px;
-        }
-        .overview-card div {
-            flex: 1;
-            text-align: center;
-        }
-        .links-overview {
-            display: flex;
-            justify-content: space-between;
-        }
-        .links-overview div {
-            text-align: center;
-        }
-        *:before,
-        *:after {
-            box-sizing: border-box;
-        }
+    .icon {
+        font-size: 20px;
+        margin-right: 5px;
+    }
 
-        /* html,
+    .overview-section {
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .overview-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px;
+    }
+
+    .overview-card div {
+        flex: 1;
+        text-align: center;
+    }
+
+    .links-overview {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .links-overview div {
+        text-align: center;
+    }
+
+    *:before,
+    *:after {
+        box-sizing: border-box;
+    }
+
+    /* html,
         body {
             margin: 0;
             padding: 0;
@@ -70,7 +77,7 @@
             height: 100%;
         } */
 
-        /* body {
+    /* body {
             position: relative;
             min-height: 100%;
             font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial,
@@ -78,42 +85,42 @@
             background: #eceff1;
         } */
 
-        /* h1 {
+    /* h1 {
             margin: auto;
             text-transform: uppercase;
             text-align: center;
             padding-top: 30px;
         } */
 
-        /* .flex {
+    /* .flex {
             display: flex;
         } */
 
-        /* .container {
+    /* .container {
             flex-wrap: wrap;
             justify-content: center;
             max-width: 100%;
             margin: auto;
         } */
 
-        .info {
-            justify-content: space-between;
-            border-bottom: 1px solid #e6e6e6;
-            padding: 10px 0;
-            text-transform: uppercase;
-            font-size: 90%;
-            margin: auto -15px 30px;
-        }
+    .info {
+        justify-content: space-between;
+        border-bottom: 1px solid #e6e6e6;
+        padding: 10px 0;
+        text-transform: uppercase;
+        font-size: 90%;
+        margin: auto -15px 30px;
+    }
 
-        .info-code {
-            cursor: pointer;
-        }
+    .info-code {
+        cursor: pointer;
+    }
 
-        .info-code:hover {
-            color: salmon;
-        }
-         
-        /* .progress-wrapper {
+    .info-code:hover {
+        color: salmon;
+    }
+
+    /* .progress-wrapper {
             max-width: 350px;
             justify-content: space-between;
             margin: auto;
@@ -121,125 +128,126 @@
             text-transform: uppercase;
         } */
 
-        [type="range"] {
-            width: 200px;
-        }
+    [type="range"] {
+        width: 200px;
+    }
 
-        div.card-content {
-            position: relative;
-            background-color: #fff;
-            /* border-radius: 7px; */
-            /* padding: 5px 30px 30px;
+    div.card-content {
+        position: relative;
+        background-color: #fff;
+        /* border-radius: 7px; */
+        /* padding: 5px 30px 30px;
             margin: 20px;
             width: 200px; */
-            height: 100px;
-        }
+        height: 100px;
+    }
 
-        .card-content .code {
-            visibility: hidden;
-            opacity: 0;
-            position: absolute;
-            width: 260px;
-            height: 0;
-            left: 0;
-            margin: auto;
-            line-height: 1.6;
-            transition: visibility 0s, opacity 0.5s linear;
-        }
+    .card-content .code {
+        visibility: hidden;
+        opacity: 0;
+        position: absolute;
+        width: 260px;
+        height: 0;
+        left: 0;
+        margin: auto;
+        line-height: 1.6;
+        transition: visibility 0s, opacity 0.5s linear;
+    }
 
-        /* .show-code .code {
+    /* .show-code .code {
             visibility: visible;
             opacity: 1;
             height: 100%;
             top: 45px;
         } */
 
-        pre {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+    pre {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    code {
+        height: calc(100% - 45px);
+        margin-top: -20px;
+    }
+
+    .github {
+        position: absolute;
+        text-align: center;
+        left: 0;
+        right: 0;
+        top: 5px;
+        margin: auto;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+    }
+
+    .github a {
+        text-decoration: none;
+    }
+
+    .github a:hover {
+        border-bottom: 1px solid salmon;
+    }
+
+    [data-pie-index="0"] {
+        position: relative;
+        border-radius: 50%;
+        box-shadow: inset 0 0 25px 10px #a2caff;
+    }
+
+    [data-pie-index="1"] {
+        position: relative;
+        border-radius: 50%;
+        box-shadow: inset 0 0 25px 10px #a2caff;
+    }
+
+    [data-pie-index="2"] {
+        position: relative;
+        border-radius: 50%;
+        box-shadow: inset 0 0 25px 10px #a2caff;
+    }
+
+    [data-pie-index="16"] {
+        position: relative;
+        border-radius: 50%;
+        box-shadow: inset 0 0 25px 10px #f50057;
+    }
+
+    [data-pie-index="17"] {
+        position: relative;
+        border-radius: 50%;
+        box-shadow: inset 0 0 25px 10px #f50057;
+    }
+
+    .pie {
+        width: 100px !important;
+        height: 100px !important;
+    }
+
+    .pie svg {
+        width: 100px;
+        height: 100px;
+        /* margin: 0px 60px 20px; */
+    }
+
+    @keyframes heart {
+        0% {
+            transform: scale(1.07);
         }
 
-        code {
-            height: calc(100% - 45px);
-            margin-top: -20px;
+        80% {
+            transform: scale(1);
         }
 
-        .github {
-            position: absolute;
-            text-align: center;
-            left: 0;
-            right: 0;
-            top: 5px;
-            margin: auto;
-            font-size: 0.9rem;
-            text-transform: uppercase;
+        100% {
+            transform: scale(0.8);
         }
-
-        .github a {
-            text-decoration: none;
-        }
-
-        .github a:hover {
-            border-bottom: 1px solid salmon;
-        }
-
-        [data-pie-index="0"] {
-            position: relative;
-            border-radius: 50%;
-            box-shadow: inset 0 0 25px 10px #a2caff;
-        } 
-
-        [data-pie-index="1"] {
-            position: relative;
-            border-radius: 50%;
-            box-shadow: inset 0 0 25px 10px #a2caff;
-        } 
-
-        [data-pie-index="2"] {
-            position: relative;
-            border-radius: 50%;
-            box-shadow: inset 0 0 25px 10px #a2caff;
-        } 
-
-         [data-pie-index="16"] {
-            position: relative;
-            border-radius: 50%;
-            box-shadow: inset 0 0 25px 10px #f50057;
-        }
-        [data-pie-index="17"] {
-            position: relative;
-            border-radius: 50%;
-            box-shadow: inset 0 0 25px 10px #f50057;
-        }
-
-        .pie{
-            width: 100px !important;
-            height: 100px !important;
-        }
-
-        .pie svg {
-            width: 100px;
-            height: 100px;
-            /* margin: 0px 60px 20px; */
-        }
-
-        @keyframes heart {
-            0% {
-                transform: scale(1.07);
-            }
-
-            80% {
-                transform: scale(1);
-            }
-
-            100% {
-                transform: scale(0.8);
-            }
-        }
+    }
 </style>
-<div id="_main_dashboardComponent" style="display:none;padding:px">
+<div id="_main_dashboardComponent" style="display:none;padding:0px;">
 
     <body>
         <div class=" bg-ligth m-0">
@@ -247,19 +255,19 @@
                 <div class="col-md-12 ps-0 pe-2">
                     <div class="card" style="background-color: whitesmoke;">
                         <div class="card-header" style="background-color: whitesmoke;">
-                            <div id="db_circle_card" class="row">   
-                               
-                                
+                            <div id="db_circle_card" class="row">
+
+
                                 <!-- <div class="col-4 overview-section">
                                     <section class="d-flex justify-content-center">
-                                        
+
                                         <div class="section-title mb-0 fs-5 text-center w-100 d-flex align-items-center"><div class="w-100 text-secondary">Shipment <p style="color: #6200EA;">Shipping</p></div>  </div>
                                         <div class="pie"
                                             data-pie='{ "animationSmooth": "1s ease-out", "percent": 70, "colorSlice": "#6200EA", "colorCircle": "#f1f1f1" }'>
                                         </div>
                                         <div class="code">
                                             <pre>
-                                                <code class="language-json">data-pie='{ 
+                                                <code class="language-json">data-pie='{
                                                     "animationSmooth": "1s ease-out",
                                                     "percent": 70,
                                                     "colorSlice": "#6200EA",
@@ -272,14 +280,14 @@
                                 </div>
                                 <div class="col-4 overview-section">
                                     <section class="d-flex justify-content-center">
-                                        
+
                                         <div class="section-title mb-0 fs-5 text-center w-100 d-flex align-items-center"><div class="w-100 text-secondary">Shipment <p style="color: #6200EA;">Validated</p></div>  </div>
                                         <div class="pie"
                                             data-pie='{ "animationSmooth": "1s ease-out", "percent": 30, "colorSlice": "#AB47BC", "colorCircle": "#f1f1f1" }'>
                                         </div>
                                         <div class="code">
                                             <pre>
-                                                <code class="language-json">data-pie='{ 
+                                                <code class="language-json">data-pie='{
                                                     "animationSmooth": "1s ease-out",
                                                     "percent": 30,
                                                     "colorSlice": "#AB47BC",
@@ -291,7 +299,7 @@
                                     </section>
                                 </div> -->
                             </div>
-                            
+
                             <div id="db_normal_cards" class="row">
                                 <div class="col-md-4 ">
                                     <div class="overview-card card">
@@ -301,7 +309,8 @@
                                         </div>
                                         <div class="w-100 d-flex justify-content-between ">
                                             <p class="text-center fs-2">1240</p>
-                                            <i class="fas fa-user-plus text-info" style="font-size: 3rem;width: 100px;"></i>
+                                            <i class="fas fa-user-plus text-info"
+                                                style="font-size: 3rem;width: 100px;"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -313,7 +322,8 @@
                                         </div>
                                         <div class="w-100 d-flex justify-content-between ">
                                             <p class="text-center fs-2">140</p>
-                                            <i class="fas fa-user text-success"  style="font-size: 3rem;width: 100px;"></i>
+                                            <i class="fas fa-user text-success"
+                                                style="font-size: 3rem;width: 100px;"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -325,7 +335,8 @@
                                         </div>
                                         <div class="w-100 d-flex justify-content-between ">
                                             <p class="text-center fs-2">120</p>
-                                            <i class="fa fa-users text-success"  style="font-size: 3rem;width: 100px;"></i>
+                                            <i class="fa fa-users text-success"
+                                                style="font-size: 3rem;width: 100px;"></i>
                                         </div>
                                     </div>
                                 </div>
@@ -341,15 +352,21 @@
                                         <div class="card-body">
                                             <p>Overview the Invoice Amount (%)</p>
                                             <div class="progress">
-                                                <div class="progress-bar progress-bar-interactive" role="progressbar" style="width: 95%;" aria-valuenow="95" aria-valuemin="0" aria-valuemax="100">95% - Invoice</div>
+                                                <div class="progress-bar progress-bar-interactive" role="progressbar"
+                                                    style="width: 95%;" aria-valuenow="95" aria-valuemin="0"
+                                                    aria-valuemax="100">95% - Invoice</div>
                                             </div><br>
                                             <p>Overview the Payment Amount (%)</p>
                                             <div class="progress mt-2">
-                                                <div class="progress-bar progress-bar-page" role="progressbar" style="width: 67%;" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100">67% - Payment</div>
+                                                <div class="progress-bar progress-bar-page" role="progressbar"
+                                                    style="width: 67%;" aria-valuenow="67" aria-valuemin="0"
+                                                    aria-valuemax="100">67% - Payment</div>
                                             </div>
                                             <p>Overview the Payment Amount (%)</p>
                                             <div class="progress mt-2">
-                                                <div class="progress-bar progress-bar-page" role="progressbar" style="width: 67%;" aria-valuenow="67" aria-valuemin="0" aria-valuemax="100">67% - Payment</div>
+                                                <div class="progress-bar progress-bar-page" role="progressbar"
+                                                    style="width: 67%;" aria-valuenow="67" aria-valuemin="0"
+                                                    aria-valuemax="100">67% - Payment</div>
                                             </div>
                                         </div>
                                     </div>
@@ -357,41 +374,68 @@
                                 <div id="db_country_cards" class="col-md-6 overview-section">
                                     <div class="card">
                                         <div class="card-header">
-                                            <p class="section-title mb-0 fs-5 trans-text" data-langprop="titles.Shipments by Carrier">Shipments by Carrier</p>
+                                            <p class="section-title mb-0 fs-5 trans-text"
+                                                data-langprop="titles.Shipments by Carrier">Shipments by Carrier</p>
                                         </div>
                                         <div class="card-body">
                                             <div class="db_card_table gap-3 d-flex" id="db_shipments_by_supplier">
                                                 <div class="links-overview d-block text-start w-50 p-0">
                                                     <p class="w-50 p-0 fw-semibold text-warning">Carrier</p>
-                                                    <div class="w-100 d-flex justify-content-between"><p>DHL</p></div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>FeDeX</p> </div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>TNT </p> </div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>MUST</p></div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p>DHL</p>
+                                                    </div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p>FeDeX</p>
+                                                    </div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p>TNT </p>
+                                                    </div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p>MUST</p>
+                                                    </div>
                                                 </div>
-                                            
+
                                                 <div class="links-overview d-block w-50 p-0">
                                                     <p class="w-50 p-0 text-warning">Shipping</p>
-                                                    <div class="w-100 d-flex justify-content-between"><p>10 </p></div>
-                                                    <div class="w-100 d-flex justify-content-between"><p> 10</p></div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>10 </p></div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p>10 </p>
+                                                    </div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p> 10</p>
+                                                    </div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p>10 </p>
+                                                    </div>
                                                 </div>
 
                                                 <div class="links-overview d-block w-50 p-0">
                                                     <p class="w-50 p-0 text-warning">Delivered</p>
-                                                    <div class="w-100 d-flex justify-content-between"><p>12</p></div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>12</p></div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>19</p></div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p>12</p>
+                                                    </div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p>12</p>
+                                                    </div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p>19</p>
+                                                    </div>
                                                 </div>
 
                                                 <div class="links-overview d-block w-50 p-0">
                                                     <p class="w-50 p-0 text-warning">Unpaid</p>
-                                                    <div class="w-100 d-flex justify-content-between"><p>20</p></div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>35</p></div>
-                                                    <div class="w-100 d-flex justify-content-between"><p>19</p></div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p>20</p>
+                                                    </div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p>35</p>
+                                                    </div>
+                                                    <div class="w-100 d-flex justify-content-between">
+                                                        <p>19</p>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                     </div>
                                 </div>
                             </div>
@@ -416,7 +460,10 @@
                                                 </thead>
                                                 <tbody>
                                                     <tr>
-                                                        <td class="d-flex gap-2"><i class="fa-brands fa-youtube fs-5 text-danger"></i><a href="#">https://www.youtube.com/watch?v=sZdmkif8csY</a></td>
+                                                        <td class="d-flex gap-2"><i
+                                                                class="fa-brands fa-youtube fs-5 text-danger"></i><a
+                                                                href="#">https://www.youtube.com/watch?v=sZdmkif8csY</a>
+                                                        </td>
                                                         <td>100</td>
                                                         <td>25</td>
                                                         <td>58</td>
@@ -424,7 +471,10 @@
                                                         <td>22M</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="d-flex gap-2"><i class="fa-brands fa-facebook fs-5 text-info"></i><a href="#">https://www.forbes.com/sh?v=7f6ccdca2254</a></td>
+                                                        <td class="d-flex gap-2"><i
+                                                                class="fa-brands fa-facebook fs-5 text-info"></i><a
+                                                                href="#">https://www.forbes.com/sh?v=7f6ccdca2254</a>
+                                                        </td>
                                                         <td>65</td>
                                                         <td>65</td>
                                                         <td>96</td>
@@ -432,7 +482,10 @@
                                                         <td>24K</td>
                                                     </tr>
                                                     <tr>
-                                                        <td class="d-flex gap-2"><i class="fa-brands fa-youtube fs-5 text-danger"></i><a href="#">https://www.uikit.to/sh?v=7f6ccdca2254</a></td>
+                                                        <td class="d-flex gap-2"><i
+                                                                class="fa-brands fa-youtube fs-5 text-danger"></i><a
+                                                                href="#">https://www.uikit.to/sh?v=7f6ccdca2254</a>
+                                                        </td>
                                                         <td>76</td>
                                                         <td>75</td>
                                                         <td>47</td>
@@ -526,8 +579,7 @@
                     });
                 });
             });
-
         </script> -->
-        
+
     </body>
 </div>
