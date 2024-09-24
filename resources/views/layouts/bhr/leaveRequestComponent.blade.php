@@ -385,9 +385,9 @@
         display: none;
         position: fixed;
         width: 50%;
-        height: 65%;
-        top: 52%;
-        left: 43.5%;
+        height: 75%;
+        top: 57%;
+        left:43.5%;
         border-radius: 20px;
         transform: translate(-50%, -50%);
         background-color: white;
