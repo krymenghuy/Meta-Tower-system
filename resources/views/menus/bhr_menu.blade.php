@@ -319,8 +319,8 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Warning"></span>
                 </a>
             </li>
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(209); ?>>
-                <a href="ReportCenterComponent" modid="209" class="menu-item kt-menu__link">
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+                <a href="ReportComponent" modid="-1" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/general_report.svg') }}" />

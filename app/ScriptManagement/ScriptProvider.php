@@ -109,6 +109,7 @@ namespace App\ScriptManagement;
                         '/js/components/bhr/DepartmentComponent.js',
                         '/js/components/bhr/PositionComponent.js',
                         '/js/components/bhr/LeaveRequestComponent.js',
+                        '/js/components/bhr/ReportComponent.js',
 
                     ]
               ],
