@@ -91,11 +91,13 @@ class EmployeeController extends Controller
     return JDV::result($this->senderModel->getListPaginate($req->all(), $ss));
    }
 
-   function getFormOptions(Request $req){
-      $ss = AuthService::verifyAuth($req,-1);
-      if ($ss->status_code !==200) return JDV::raw($ss);
-      $id = $req->id?$req->id:$req->employee_id;
-      $data = Employee::getFormOptions($id,$ss);
-      return JDV::result($data);
+   public function getFormOptions(Request $req)
+   {
+       $ss = AuthService::verifyAuth($req, -1);
+       if ($ss->status_code !== 200) {
+           return JDV::raw($ss);
+       }
+       return JDV::result($this->senderModel->getFormOptions($req->id,$ss));
    }
 }
+

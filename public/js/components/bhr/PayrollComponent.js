@@ -93,11 +93,11 @@ var PayrollComponent = new (function () {
                     bg_color = '#6c757d'; // Default gray background for other statuses
                 }
 
-                return `<a class="d-block" data-status="${data.status}" data-id="${data.id}" href="javascript:void(0)">
+                return `<div><a class="d-block" data-status="${data.status}" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:80px; background: ${bg_color}" class="p-1 ${cls_class}">
                                 ${data.status}
                             </span>
-                        </a>`;
+                        </a></div>`;
             }
         },
         {
