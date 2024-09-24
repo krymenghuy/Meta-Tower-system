@@ -28,6 +28,9 @@ var WarningComponent = new (function () {
         document
             .getElementById("saveWarningBtn")
             .addEventListener("click", mThis.saveWarning);
+        document
+            .querySelector("#_warning_search")
+            .addEventListener("input", mThis.searchWarning);
     };
 
     // Show component
@@ -37,13 +40,51 @@ var WarningComponent = new (function () {
         mThis.jm.fadeIn(250);
         main_view.setTitle(mThis.title_prop);
     };
+    //search warning
+    this.searchWarning = function () {
+        let searchTerm = document
+            .querySelector("#_warning_search")
+            .value.toLowerCase();
 
+        let rows = document.querySelectorAll(".warning_item");
+
+        rows.forEach((row) => {
+            let employeeName = row
+                .querySelector(".info_right > h6")
+                .textContent.toLowerCase();
+            let employeeEmail = row
+                .querySelector(".info_right > .email")
+                .textContent.toLowerCase();
+            let employeePosition = row
+                .querySelector(".position")
+                .textContent.toLowerCase();
+            let warningIssues = row
+                .querySelector(".issues")
+                .textContent.toLowerCase();
+            let warningPromises = row
+                .querySelector(".promises")
+                .textContent.toLowerCase();
+
+            if (
+                employeeName.includes(searchTerm) ||
+                employeeEmail.includes(searchTerm) ||
+                employeePosition.includes(searchTerm) ||
+                warningIssues.includes(searchTerm) ||
+                warningPromises.includes(searchTerm)
+            ) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    };
     // Save the new warning and add a row
     this.saveWarning = function () {
         // Get form values
-        let employeeName = document.getElementById("employeeNames").value;       
+        let employeeName = document.getElementById("employeeNames").value;
         let employeeEmail = document.getElementById("employeeEmails").value;
-        let employeePosition = document.getElementById("employeePositions").value;
+        let employeePosition =
+            document.getElementById("employeePositions").value;
         let warningIssues = document.getElementById("warningIssues").value;
         let warningPromises = document.getElementById("warningPromises").value;
         let warningQuntity = document.getElementById("warningSelect1").value;
