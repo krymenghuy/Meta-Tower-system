@@ -70,6 +70,11 @@ var JobsLevelComponent = new (function () {
     // Define table columns
     this.cols = [
         {
+            title: "#",
+            className: "align-middle",
+            data: "id",
+        },
+        {
             title: "Job Title",
             className: "align-middle",
             data: "Job_Title",
@@ -85,15 +90,33 @@ var JobsLevelComponent = new (function () {
             data: "Ratting",
             render: function (data) {
                 const maxStars = 5;
-                const rating = Math.min(Math.max(parseInt(data), 1), maxStars);
-                return "★".repeat(rating) + "☆".repeat(maxStars - rating);
+                const rating = Math.min(Math.max(parseInt(data), 1), maxStars); // Ensures the rating is between 1 and maxStars
+
+                // Generate the star icons using Font Awesome
+                let starIcons = "";
+                for (let i = 0; i < maxStars; i++) {
+                    if (i < rating) {
+                        starIcons += '<i class="fa fa-star"></i>'; // Filled star
+                    } else {
+                        starIcons += '<i class="fa fa-star-o"></i>'; // Empty star
+                    }
+                }
+
+                return starIcons;
             },
         },
         {
-            title: "",
-            className: "align-middle",
-            render: function () {
-                return `<i class="fa fa-ellipsis-v actions"></i>`;
+            className: "col_action align-middle",
+            data: function (data, row, display) {
+                return `
+                   <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class="btn_job_level_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                                <img src="${main_view.asset_url}/images/icons/Dot.svg" />
+                            </a>
+                        </div>
+                    </div>
+                `;
             },
         },
     ];
@@ -176,7 +199,7 @@ var JobsLevelComponent = new (function () {
     };
 
     console.log(document.getElementById("btnAdd"));
-    
+
     // Initialize all functions
     this.init = function () {
         // Initialize modal and add job functionality
