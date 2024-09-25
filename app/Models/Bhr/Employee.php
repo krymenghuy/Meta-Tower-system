@@ -106,7 +106,7 @@ class Employee//extends Model
         return DV::error('Failed to save data');
     }
 
-    function getProfilePicture($id)
+    public static function getProfilePicture($id)
     {
         $col_subs_id = DBX::getHex('p.subs_id', 'subs_id');
         $row = DB::table('employees as p')->where('id', $id)->selectRaw($col_subs_id . ',p.branch_id,p.photo_file_name')->first();
@@ -115,7 +115,7 @@ class Employee//extends Model
            $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'employees'], 'images') . $row->photo_file_name;
             return validateUrl($url);
         } else {
-            return self::defaultImage($row ? $row->subs_id : null);
+            // return self::defaultImage($row ? $row->subs_id : null);
         }
     }
 

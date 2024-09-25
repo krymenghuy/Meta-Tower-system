@@ -23,12 +23,12 @@ class Benefit
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'name' => '1|string|0-100',
+            'category' => '1|string|0-100',
             'amount' => '1|number',
             'description' => '0|string|0-100',
         ];
 
-        // $checkUnque = ["$branch_id|benefits|name|id=id|text=Benefit already exists."];
+        // $checkUnque = ["$branch_id|benefits|category|id=id|text=Benefit already exists."];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
@@ -48,7 +48,7 @@ class Benefit
     }
 
     function getBenefitList($ss ){
-        return DB::table('benefits')->selectRaw('id,name,amount,description')->get();
+        return DB::table('benefits')->selectRaw('id,category,amount,description')->get();
 
     }
 
@@ -70,14 +70,14 @@ class Benefit
         $str_search = '1=1';
 
         $query = DB::table('benefits as b')
-        ->selectRaw('b.id, b.name, b.amount, b.description');
+        ->selectRaw('b.id, b.category, b.amount, b.description');
 
         if ($search_id) {
             $query->whereRaw('b.id =' . $search_id);
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $query->whereRaw("b.name like '%" . $search_value . "%'" . " or b.description like '%" . $search_value . "%'");
+            $str_search = "b.category like '%" . $search_value . "%' or b.description like '%" . $search_value . "%'";
             $query->whereRaw($str_search);
         }
 
@@ -101,7 +101,7 @@ class Benefit
 
         // Build and execute the query
         $query = DB::table('benefits as b')
-        ->selectRaw('b.id, b.name, b.amount, b.description')
+        ->selectRaw('b.id, b.category, b.amount, b.description')
         ->where('b.id', $id)
         ->first();
         if (!$query) {

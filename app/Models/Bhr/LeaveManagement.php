@@ -5,6 +5,7 @@ namespace App\Models\Bhr;
 use App\Models\Bhr\GeneralSettings;
 use App\Models\DV;
 use App\Models\PublicStorage;
+use App\Models\Bhr\Employee;
 use DB;
 use App\Models\DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -38,47 +39,28 @@ class LeaveManagement
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'name' => '1|string|0-100',
-            'position_id' => '1|number',
+            'emp_id' => '1|number',
             'start_date' => '1|date',
             'end_date' => '1|date',
-            'durations' => '1|string|0-100',
             'permission_details' => '1|string|0-250',
             'action_id' => '1|number|default = 1',
-            'photo' => '0|image',
+
         ];
 
-        $res = validateObject($arr, $v_rule, true, ['photo' => GeneralSettings::$image_chars], $ss->lang );
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
-            error_log('Validation error: ' . json_encode($res->error));
             return DV::error($res->error);
         }
+
         $id = $res->id;
         $inputs = $res->values;
-        $d = (object) $inputs;
-        $photo = $d->photo ?? null; // Ensure photo is set
 
-        unset($inputs['photo']);
-        $leavemanagement_created = !$id;
-        $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
-
-        error_log('Saving data: ' . json_encode($inputs));
-        $id = saveData($ss, 'leave_managements', ['id' => $id], $inputs, [], 1);
-
+        $id = saveData($ss,'leave_managements', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            if ($delete_prev_image) {
-                $file_name = DB::table('leave_managements as lm')->where('lm.id', $id)->value('lm.photo_file_name');
-                if ($file_name) {
-                    PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
-                }
-
-                DB::table('leave_managements')->where('id', $id)->update(['photo_file_name' => null]);
-            }
-            PublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'leave_managements.photo_file_name']);
             return DV::depends(1, ['leave_managements' => $inputs, 'id' => $id]);
         }
 
-        return DV::error('Failed to save data');
+        return DV::error('Error saving leave management');
     }
 
     function getLeaveManagementListPaginate($arr, $ss)
@@ -100,10 +82,11 @@ class LeaveManagement
         $str_search = '1=1';
 
         $query = DB::table('leave_managements as lm')
-            ->join('positions as pos', 'pos.id', '=', 'lm.position_id')
-            ->join('action as a', 'a.id', '=', 'lm.action_id')
-            ->selectRaw('lm.id,lm.name,lm.position_id,pos.name as position_name,lm.start_date,lm.end_date,lm.durations,lm.permission_details,a.name as action_name,lm.photo_file_name')
-            ->where('lm.branch_id', $branch_id);
+        ->join('action as a', 'a.id', '=', 'lm.action_id')
+        ->join('employees as e', 'e.id', '=', 'lm.emp_id')
+        ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
+        ->selectRaw('lm.id,e.id as emp_id,e.first_name ,e.last_name,e.positions_id as emp_position_id,pos.name as position,lm.action_id,lm.start_date,lm.end_date,lm.permission_details,a.name as status,e.photo_file_name as emp_photo')
+        ->where('lm.branch_id', $branch_id);
 
         if ($search_id) {
             $query->where('lm.id', $search_id);
@@ -111,15 +94,8 @@ class LeaveManagement
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = 'lm.name LIKE "%' . $search_value . '%" OR ' .
-                          'pos.name LIKE "%' . $search_value . '%" OR ' .
-                          'a.name LIKE "%' . $search_value . '%" OR ' .
-                          'lm.permission_details LIKE "%' . $search_value . '%" OR ' .
-                          'lm.durations LIKE "%' . $search_value . '%" OR ' .
-                          'lm.start_date LIKE "%' . $search_value . '%" OR ' .
-                          'lm.end_date LIKE "%' . $search_value . '%" OR ' .
-                          'a.name LIKE "%' . $search_value . '%"';
-             $query->whereRaw($str_search);
+            $str_search = "e.first_name like '%{$search_value}%' or e.last_name like '%{$search_value}%' or lm.permission_details like '%{$search_value}%' or pos.name like '%{$search_value}%'";
+            $query->whereRaw($str_search);
         }
 
         $count = $query->count();
@@ -128,46 +104,71 @@ class LeaveManagement
 
         foreach ($rows as $row) {
             $row->image_url = '';
-            if ($row->photo_file_name) {
-              $row->image_url = self::getProfilePicture($row->id);
+            if ($row->emp_photo) {
+              $row->image_url = Employee::getProfilePicture($row->id);
             }
-            unset($row->photo_file_name);
+            unset($row->emp_photo);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getProfilePicture($id)
-    {
-        $col_subs_id = DBX::getHex('lm.subs_id', 'subs_id');
-        $row = DB::table('leave_managements as lm')->where('lm.id', $id)->selectRaw($col_subs_id . ',lm.branch_id,lm.photo_file_name')->first();
-        $url = '';
-        if ($row) {
-           $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'leave_managements'], 'images') . $row->photo_file_name;
-            return validateUrl($url);
-        } else {
-            return self::defaultImage($row ? $row->subs_id : null);
-        }
-    }
+
 
     function getDetails($id)
     {
         $row = DB::table('leave_managements as lm')
-            ->join('positions as pos', 'pos.id', '=', 'lm.position_id')
-            ->join('action as a', 'a.id', '=', 'lm.action_id')
-            ->where('lm.id', $id)->first();
+        ->join('action as a', 'a.id', '=', 'lm.action_id')
+        ->join('employees as e', 'e.id', '=', 'lm.emp_id')
+        ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
+        ->selectRaw('lm.id,e.id as emp_id,e.first_name ,e.last_name,e.positions_id as emp_position_id,pos.name as position,lm.action_id,lm.start_date,lm.end_date,lm.permission_details,a.name as status,e.photo_file_name as emp_photo')
+        ->where('lm.id', $id)->first();
 
         if ($row) {
-            $image_url = self::getProfilePicture($id);
+            $row->image_url = Employee::getProfilePicture($id);
         } else {
-            $image_url = null;
+            $row = null;
         }
 
-        return DB::table('leave_managements as lm')
-            ->join('positions as pos', 'pos.id', '=', 'lm.position_id')
-            ->join('action as a', 'a.id', '=', 'lm.action_id')
-            ->selectRaw('lm.id,lm.name,lm.position_id,pos.name as position_name,lm.start_date,lm.end_date,lm.durations,lm.permission_details,a.name as action_name,? as image_url', [$image_url])
-            ->where('lm.id', $id)->first();
+        return $row;
+    }
+
+    function delete($id, $ss)
+    {
+        // Ensure $id is numeric and valid
+        if (!is_numeric($id)) {
+            return DV::error('Invalid ID');
+        }
+
+        // Assuming $ss contains branch_id or other necessary info
+        $branch_id = $ss->branch_id;
+
+        // Build and execute the query
+        $query = DB::table('leave_managements')
+            ->where('id', $id)
+            ->delete();
+        if (!$query) {
+            return DV::error('Leave management not found');
+        }
+        // Return the query result
+        return $query;
+    }
+
+    function getFormOptions($id, $ss)
+    {
+        $leave = null;
+        if ($id) {
+            $leave = self::getDetails($id, $ss);
+        }
+        return (object) [
+
+            'employees' => DB::table('employees')->selectRaw('id,first_name,last_name')->get(),
+            'positions' => DB::table('positions')->selectRaw('id,name')->get(),
+            'status' => DB::table('action')->selectRaw('id,name')->get(),
+
+            'leave' => $leave,
+        ];
+
     }
 
 

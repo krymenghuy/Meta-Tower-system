@@ -117,6 +117,11 @@ var PositionComponent = new function() {
             }
         };
         const pr_tbl = mThis.PositionListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 150) + 'px';
+        sh_parent.classList.add('overflow-y-auto');
+        sh_parent.classList.add('overflow-x-hidden');
+
         mThis.initDropdownMenus(pr_tbl);
 
 
