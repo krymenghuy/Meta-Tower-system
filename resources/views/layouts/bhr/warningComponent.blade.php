@@ -42,7 +42,7 @@
                             <div class="warning">
                                 <select class="form-select" id="warningSelect1" aria-label="Warning select">
                                     <!-- Changed ID here -->
-                                    <option selected>Choose a warning</option>
+                                    <option selected>Warnings</option>
                                     <option value="1">Warning 1</option>
                                     <option value="2">Warning 2</option>
                                     <option value="3">Warning 3</option>
@@ -85,7 +85,7 @@
                 <div class="promises">Don't do like this again</div>
                 <div class="warning">
                     <select class="form-select" id="warningSelect" aria-label="Warning select">
-                        <option selected>Choose a warning</option>
+                        <option selected>Warnings</option>
                         <option value="1">Warning 1</option>
                         <option value="2">Warning 2</option>
                         <option value="3">Warning 3</option>
@@ -111,7 +111,7 @@
                 <div class="promises">Don't do like this again</div>
                 <div class="warning">
                     <select class="form-select" id="warningSelect" aria-label="Warning select">
-                        <option selected>Choose a warning</option>
+                        <option selected>Warnings</option>
                         <option value="1">Warning 1</option>
                         <option value="2">Warning 2</option>
                         <option value="3">Warning 3</option>
@@ -137,7 +137,7 @@
                 <div class="promises">Don't do like this again</div>
                 <div class="warning">
                     <select class="form-select" id="warningSelect" aria-label="Warning select">
-                        <option selected>Choose a warning</option>
+                        <option selected>Warnings</option>
                         <option value="1">Warning 1</option>
                         <option value="2">Warning 2</option>
                         <option value="3">Warning 3</option>
@@ -163,7 +163,7 @@
                 <div class="promises">Don't do like this again</div>
                 <div class="warning">
                     <select class="form-select" id="warningSelect" aria-label="Warning select">
-                        <option selected>Choose a warning</option>
+                        <option selected>Warnings</option>
                         <option value="1">Warning 1</option>
                         <option value="2">Warning 2</option>
                         <option value="3">Warning 3</option>
@@ -189,7 +189,7 @@
                 <div class="promises">Don't do like this again</div>
                 <div class="warning">
                     <select class="form-select" id="warningSelect" aria-label="Warning select">
-                        <option selected>Choose a warning</option>
+                        <option selected>Warnings</option>
                         <option value="1">Warning 1</option>
                         <option value="2">Warning 2</option>
                         <option value="3">Warning 3</option>
@@ -215,7 +215,7 @@
                 <div class="promises">Don't do like this again</div>
                 <div class="warning">
                     <select class="form-select" id="warningSelect" aria-label="Warning select">
-                        <option selected>Choose a warning</option>
+                        <option selected>Warnings</option>
                         <option value="1">Warning 1</option>
                         <option value="2">Warning 2</option>
                         <option value="3">Warning 3</option>
@@ -241,7 +241,7 @@
                 <div class="promises">Don't do like this again</div>
                 <div class="warning">
                     <select class="form-select" id="warningSelect" aria-label="Warning select">
-                        <option selected>Choose a warning</option>
+                        <option selected>Warnings</option>
                         <option value="1">Warning 1</option>
                         <option value="2">Warning 2</option>
                         <option value="3">Warning 3</option>
@@ -267,7 +267,7 @@
                 <div class="promises">Don't do like this again</div>
                 <div class="warning">
                     <select class="form-select" id="warningSelect" aria-label="Warning select">
-                        <option selected>Choose a warning</option>
+                        <option selected>Warnings</option>
                         <option value="1">Warning 1</option>
                         <option value="2">Warning 2</option>
                         <option value="3">Warning 3</option>
@@ -448,17 +448,11 @@
     }
 
     .warning_item .action {
+        display: flex;
+        justify-content: flex-end;
         text-align: center;
+        margin-left: 40px;
     }
-
-    .dropdown-toggle {
-        color: #ffffff;
-        background-color: transparent;
-        cursor: pointer;
-        padding: 0;
-        margin: 0;
-    }
-
     .action i {
         cursor: pointer;
         font-size: 1.5em;

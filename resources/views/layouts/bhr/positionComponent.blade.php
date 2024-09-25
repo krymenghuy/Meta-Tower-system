@@ -65,3 +65,14 @@
         </div>
     </div>
 </div>
+<style>
+    #_position_list{
+        height: 620px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+        gap: 10px;
+        justify-content: center;
+        padding: 20px;
+    }
+</style>
