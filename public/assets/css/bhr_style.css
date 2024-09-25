@@ -1682,6 +1682,10 @@ ul.list-filter-um li:not(li:last-child) {
 
 }
 
+.row{
+    gap:0 !important;
+}
+
 
 
 
