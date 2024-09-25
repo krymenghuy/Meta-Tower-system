@@ -26,7 +26,6 @@ class StyleProvider
                     'assets/css/font-awesome/6.2.0/css/all.min.css',
                     'assets/css/demo1/style.bundle.css',
                     // 'assets/dist/css/adminlte.min.css',
-                    'assets/css/bhr_style.css', /** Must be placed below all.min.css **/
                     'assets/css/choices.min.css',
                     'assets/css/choices.custom.css',
                     'assets/css/vsa_dropdown_button.css',
@@ -36,6 +35,7 @@ class StyleProvider
                     'assets/css/vs-pagination.css',
                     'assets/css/sweetalert2.min.css',
                     'assets/plugins/chart.js/Chart.css',
+                    'assets/css/bhr_style.css', /** Must be placed below all.min.css **/
                 ]
                 ],    
         'report-styles' => [

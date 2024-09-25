@@ -118,3 +118,13 @@
         </div>
     </div>
 </div>
+<style>
+    #_payroll_list{
+        height: 550px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+        gap: 10px;
+        justify-content: center;
+    }
+</style>
