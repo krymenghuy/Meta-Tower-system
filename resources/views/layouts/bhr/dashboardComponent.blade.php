@@ -177,7 +177,7 @@
             </div>
         </div>
         <div class="center_right">
-            <h3>Attendance Today</h3>
+            <h5>Attendance Today</h5>
             <div class="chart-container">
                 <canvas id="attendanceChart"></canvas>
                 <div class="chart-text">
@@ -204,8 +204,6 @@
                         <th>Marketing</th>
                         <th>HR</th>
                         <th>Sales</th>
-                        <th>Accounting</th>
-                        <th>IT</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -220,6 +218,24 @@
                     </tr>
                     <tr>
                         <td>Manager</td>
+                        <td>10</td>
+                        <td>12</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>Assistant Manager</td>
+                        <td>10</td>
+                        <td>12</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>Assistant Manager</td>
                         <td>10</td>
                         <td>12</td>
                         <td>10</td>
@@ -480,8 +496,9 @@
         flex-direction: column;
         justify-content: space-between;
         background-color: #E1ECF7;
-        width: 33%;
+        width: 35%;
         padding: 20px;
+        gap: 0.5rem;
         border-radius: 20px;
     }
 
@@ -522,7 +539,7 @@
         outline: none;
         color: white;
         padding: 5px;
-        width: 110px;
+        width: 90px;
         font-size: 12px;
         border-radius: 20px;
     }
@@ -539,15 +556,21 @@
         background-color: #FF928A;
         color: white;
         padding: 5px;
-        width: 110px;
+        width: 100px;
         font-size: 12px;
         border-radius: 20px;
     }
 
     /* Styling for Chart */
-    .center_mid,
+    .center_mid{
+        width: 45%;
+        height: 350px;
+        background-color: #ffffff;
+        box-shadow: 1px 2px 3px 1px rgba(0, 0, 0, 0.564);
+        border-radius: 20px;
+    }
     .center_right {
-        width: 32.5%;
+        width: 17%;
         height: 350px;
         background-color: #ffffff;
         box-shadow: 1px 2px 3px 1px rgba(0, 0, 0, 0.564);
@@ -664,7 +687,13 @@
 
     .department-table {
         width: 100%;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         border-collapse: collapse;
+        overflow-y: auto;
+        max-height: 300px;
+        overflow-x: hidden;
+        scrollbar-width: none;
         margin-top: 10px;
     }
 
@@ -687,8 +716,9 @@
     }
 
     .staff_wallet canvas {
-        width: 60px;
-        height: 60px;
+        display: flex;
+        width: 70px;
+        padding: 70px;
         margin-top: -60px;
     }
 

@@ -19,9 +19,9 @@
     }
 
     .menu-selected {
-        background-color: #ffffff !important;
+        /* background-color: #EBF5FB !important; */
         box-shadow: 1px 1px 1px #000000 !important;
-        border-radius: 20px 0px 0px 20px;
+        border-radius: 0px 0px 20px 0px;
         color: #000000;
     }
     .kt-menu__link-icon img {
@@ -32,7 +32,7 @@
     }
 
     #kt_aside_menu {
-        background-color: #2B3991;
+        /* background-color: #2B3991; */
         height: 95%;
         display: flex;
         flex-direction: column;
@@ -40,16 +40,16 @@
         color: #000000;
     }
 
-    /* .kt-menu__section {
+    .kt-menu__section {
         color: #0e0e0e;
         border-radius: 0px 0px 20px 0px;
         padding: 10px;
         margin-bottom: 15px;
-    } */
-
-    #kt_aside_menu_wrapper {
-        background-color: #2B3991;
     }
+
+    /* #kt_aside_menu_wrapper {
+        background-color: #2B3991;
+    } */
 
     #kt_aside_brand {
         display: flex;
@@ -59,14 +59,12 @@
     .kt-aside__brand-logo {
         display: flex;
         flex-direction: column;
-        height: 70%;
         align-items: center;
         gap: 0.5rem;
     }
 
     #_dms_aside_menus {
         display: flex;
-        color: white;
         flex-direction: column;
         margin-top: -20px;
     }
@@ -75,7 +73,6 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        color: white;
         margin-top: 20px;
         margin-bottom: 10px;
         font-size: 14px;
@@ -88,9 +85,9 @@
         border-radius: 50%;
     }
 
-    .company_name {
+    /* .company_name {
         color: white
-    }
+    } */
 
     .admin_info {
         display: flex;
@@ -99,7 +96,7 @@
         gap: 10px;
         font-size: 14px;
         font-weight: bold;
-        color: #ffffff;
+        /* color: #ffffff; */
         margin-top: 20px;
     }
 
@@ -109,18 +106,18 @@
         border-radius: 50%;
     }
 
-    .kt-menu__link-text[data-langprop] {
+    /* .kt-menu__link-text[data-langprop] {
         color: #ffffff;
-    }
+    } */
     .kt-menu__item:hover {
-        background-color: #ffffff !important;
-        border-radius: 20px 0px 0px 20px;
+        background-color: #dff1fb !important;
+        border-radius: 0px 0px 20px 0px;
     }
     .kt-menu__link-text[data-langprop]:hover {
-        border-radius: 20px 0px 0px 20px;
+        border-radius: 0px 0px 0px 20px;
         color: #000000;
     }
-
+    
 
 </style>
 
@@ -154,11 +151,11 @@ function v_display($mod_id, $module_ids = null)
                     </div>
                 </div> --}}
             </div>
-            <div class="admin_info">
+            {{-- <div class="admin_info">
                 <img src="{{ asset('assets/images/logo/ratanak_pic.svg') }}" alt="admin">
                 <span class="admin_name">Ratanak Khoeurn</span>
                 <span class="admin_email">ratanak.khoeurn@student.passerellesnumeriques.org</span>
-            </div>
+            </div> --}}
         </div>
 
         <ul class="kt-menu__nav" id="_dms_aside_menus">
@@ -298,10 +295,10 @@ function v_display($mod_id, $module_ids = null)
                         data-langprop="menus.Exit Clearancea Forms"></span>
                 </a>
             </li> --}}
-            {{-- <li class="kt-menu__section" <?php v_display(null, [209, 218, 220, 210]); ?>>
+            <li class="kt-menu__section" <?php v_display(null, [209, 218, 220, 210]); ?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Lave Menagement"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
-            </li> --}}
+            </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                 <a href="LeaveRequestComponent" modid="105" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -311,10 +308,10 @@ function v_display($mod_id, $module_ids = null)
                         data-langprop="menus.Leave Menegement"></span>
                 </a>
             </li>
-            {{-- <li class="kt-menu__section" <?php v_display(null, [209, 218, 220, 210]); ?>>
+            <li class="kt-menu__section" <?php v_display(null, [209, 218, 220, 210]); ?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Payroll"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
-            </li> --}}
+            </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                 <a href="PayrollComponent" modid="105" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -354,10 +351,10 @@ function v_display($mod_id, $module_ids = null)
                         data-langprop="menus.Payroll Disbursement"></span>
                 </a>
             </li> --}}
-            {{-- <li class="kt-menu__section" <?php v_display(null, [209]); ?>>
+            <li class="kt-menu__section" <?php v_display(null, [209]); ?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Notice"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
-            </li> --}}
+            </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                 <a href="WarningComponent" modid="-1" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -395,10 +392,10 @@ function v_display($mod_id, $module_ids = null)
                         data-langprop="menus.Account Menagement"></span>
                 </a>
             </li> --}}
-            {{-- <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
+            <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Settings"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
-            </li> --}}
+            </li>
             {{-- /* skills*/ --}}
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                 <a href="SkillsComponent" modid="-1" class="menu-item kt-menu__link">
