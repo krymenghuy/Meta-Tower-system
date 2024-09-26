@@ -1,585 +1,746 @@
-<style>
-    /* body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-        } */
-    .card {
-        border: none;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
+<div id="_main_dashboardComponent">
+    <div class="dashboard_top">
+        <div class="employees">
+            <div class="total_employee">
+                <div class="total_top">
+                    <span class="total_title">Total Employee</span>
+                    <i class="fa fa-ellipsis-v total_icon"></i>
+                </div>
+                <div class="total_bottom">
+                    <span class="total_number">1200</span>
+                    <i class="fa fa-users text-success" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="employees">
+            <div class="total_employee">
+                <div class="total_top">
+                    <span class="total_title">New Staffs</span>
+                    <i class="fa fa-ellipsis-v total_icon"></i>
+                </div>
+                <div class="total_bottom">
+                    <span class="total_number">100</span>
+                    <i class="fa fa-users text-success" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="employees">
+            <div class="total_employee">
+                <div class="total_top">
+                    <span class="total_title">Total Employee</span>
+                    <i class="fa fa-ellipsis-v total_icon"></i>
+                </div>
+                <div class="total_bottom">
+                    <span class="total_number">1200</span>
+                    <i class="fa fa-users text-success" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="employees">
+            <div class="total_employee">
+                <div class="total_top">
+                    <span class="total_title">Total Employee</span>
+                    <i class="fa fa-ellipsis-v total_icon"></i>
+                </div>
+                <div class="total_bottom">
+                    <span class="total_number">1200</span>
+                    <i class="fa fa-users text-success" style="font-size: 2rem;"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="dashboard_center">
+        <div class="center_left">
+            <div class="leave_title">
+                <h5 class="leave_title_text">On Leave Today</h5>
+            </div>
+            <div class="leave_cards">
+                <div class="leave_card1">
+                    <div class="em_profile">
+                        <img src="assets/images/skills/maketing.png" alt="profile">
+                        <div class="em_name">Layhor Met</div>
+                    </div>
+                    <select name="em_position" id="em_position" class="em_position">
+                        <option value="Positions">Postions</option>
+                        <option value="Web Designer">Web Designer</option>
+                        <option value="UX/UI Designer">UX/UI Designer</option>
+                        <option value="Data Analyst">Data Analyst</option>
+                        <option value="Product Manager">Product Manager</option>
+                        <option value="QA Engineer">QA Engineer</option>
+                        <option value="HR Manager">HR Manager</option>
+                        <option value="Finance Manager">Finance Manager</option>
+                        <option value="Marketing Manager">Marketing Manager</option>
+                        <option value="Sales Manager">Sales Manager</option>
+                    </select>
+                    <span class="leave_type">Health Check</span>
+                </div>
+                <div class="leave_card1">
+                    <div class="em_profile">
+                        <img src="assets/images/skills/maketing.png" alt="profile">
+                        <div class="em_name">Layhor Met</div>
+                    </div>
+                    <select name="em_position" id="em_position" class="em_position">
+                        <option value="Positions">Postions</option>
+                        <option value="Web Designer">Web Designer</option>
+                        <option value="UX/UI Designer">UX/UI Designer</option>
+                        <option value="Data Analyst">Data Analyst</option>
+                        <option value="Product Manager">Product Manager</option>
+                        <option value="QA Engineer">QA Engineer</option>
+                        <option value="HR Manager">HR Manager</option>
+                        <option value="Finance Manager">Finance Manager</option>
+                        <option value="Marketing Manager">Marketing Manager</option>
+                        <option value="Sales Manager">Sales Manager</option>
+                    </select>
+                    <span class="leave_type">Health Check</span>
+                </div>
+                <div class="leave_card1">
+                    <div class="em_profile">
+                        <img src="assets/images/skills/maketing.png" alt="profile">
+                        <div class="em_name">Layhor Met</div>
+                    </div>
+                    <select name="em_position" id="em_position" class="em_position">
+                        <option value="Positions">Postions</option>
+                        <option value="Web Designer">Web Designer</option>
+                        <option value="UX/UI Designer">UX/UI Designer</option>
+                        <option value="Data Analyst">Data Analyst</option>
+                        <option value="Product Manager">Product Manager</option>
+                        <option value="QA Engineer">QA Engineer</option>
+                        <option value="HR Manager">HR Manager</option>
+                        <option value="Finance Manager">Finance Manager</option>
+                        <option value="Marketing Manager">Marketing Manager</option>
+                        <option value="Sales Manager">Sales Manager</option>
+                    </select>
+                    <span class="leave_type">Health Check</span>
+                </div>
+                <div class="leave_card1">
+                    <div class="em_profile">
+                        <img src="assets/images/skills/maketing.png" alt="profile">
+                        <div class="em_name">Layhor Met</div>
+                    </div>
+                    <select name="em_position" id="em_position" class="em_position">
+                        <option value="Positions">Postions</option>
+                        <option value="Web Designer">Web Designer</option>
+                        <option value="UX/UI Designer">UX/UI Designer</option>
+                        <option value="Data Analyst">Data Analyst</option>
+                        <option value="Product Manager">Product Manager</option>
+                        <option value="QA Engineer">QA Engineer</option>
+                        <option value="HR Manager">HR Manager</option>
+                        <option value="Finance Manager">Finance Manager</option>
+                        <option value="Marketing Manager">Marketing Manager</option>
+                        <option value="Sales Manager">Sales Manager</option>
+                    </select>
+                    <span class="leave_type">Health Check</span>
+                </div>
+                <div class="leave_card1">
+                    <div class="em_profile">
+                        <img src="assets/images/skills/maketing.png" alt="profile">
+                        <div class="em_name">Layhor Met</div>
+                    </div>
+                    <select name="em_position" id="em_position" class="em_position">
+                        <option value="Positions">Postions</option>
+                        <option value="Web Designer">Web Designer</option>
+                        <option value="UX/UI Designer">UX/UI Designer</option>
+                        <option value="Data Analyst">Data Analyst</option>
+                        <option value="Product Manager">Product Manager</option>
+                        <option value="QA Engineer">QA Engineer</option>
+                        <option value="HR Manager">HR Manager</option>
+                        <option value="Finance Manager">Finance Manager</option>
+                        <option value="Marketing Manager">Marketing Manager</option>
+                        <option value="Sales Manager">Sales Manager</option>
+                    </select>
+                    <span class="leave_type">Health Check</span>
+                </div>
+                <div class="leave_card1">
+                    <div class="em_profile">
+                        <img src="assets/images/skills/maketing.png" alt="profile">
+                        <div class="em_name">Layhor Met</div>
+                    </div>
+                    <select name="em_position" id="em_position" class="em_position">
+                        <option value="Positions">Postions</option>
+                        <option value="Web Designer">Web Designer</option>
+                        <option value="UX/UI Designer">UX/UI Designer</option>
+                        <option value="Data Analyst">Data Analyst</option>
+                        <option value="Product Manager">Product Manager</option>
+                        <option value="QA Engineer">QA Engineer</option>
+                        <option value="HR Manager">HR Manager</option>
+                        <option value="Finance Manager">Finance Manager</option>
+                        <option value="Marketing Manager">Marketing Manager</option>
+                        <option value="Sales Manager">Sales Manager</option>
+                    </select>
+                    <span class="leave_type">Health Check</span>
+                </div>
+            </div>
+        </div>
+        <div class="center_mid">
+            <div class="chart">
+                <canvas id="myChart"></canvas>
+            </div>
+        </div>
+        <div class="center_right">
+            <h3>Attendance Today</h3>
+            <div class="chart-container">
+                <canvas id="attendanceChart"></canvas>
+                <div class="chart-text">
+                    <span class="percentage">90%</span>
+                    <span class="status">ATTENDANCE</span>
+                </div>
+            </div>
+            <ul class="details">
+                <li><strong>Present</strong><span>390</span></li>
+                <li><strong>Absent</strong><span>10</span></li>
+                <li><strong>On Leave</strong><span>5</span></li>
+                <li><strong>Warning</strong><span>15</span></li>
+            </ul>
+        </div>
+    </div>
+    <div class="dashboard_bottom">
+        <div class="em_departement">
+            <h3>Employee By Department</h3>
+            <table class="department-table">
+                <thead>
+                    <tr>
+                        <th>Role</th>
+                        <th>Finance</th>
+                        <th>Marketing</th>
+                        <th>HR</th>
+                        <th>Sales</th>
+                        <th>Accounting</th>
+                        <th>IT</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Director</td>
+                        <td>10</td>
+                        <td>12</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>Manager</td>
+                        <td>10</td>
+                        <td>12</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                    </tr>
+                    <tr>
+                        <td>Assistant Manager</td>
+                        <td>10</td>
+                        <td>12</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                        <td>10</td>
+                    </tr>
 
-    .card-header {
-        background-color: #ffffff;
-        border-bottom: none;
-        font-weight: bold;
-    }
+                </tbody>
+            </table>
 
-    /* .progress {
-            height: 35px;
-        } */
-    /* .progress-bar {
-            border-radius: 0px;
-        } */
-    /* .progress-bar-interactive {
-            background-color: #6c63ff;
-        } */
-    /* .progress-bar-page {
-            background-color: #ff6c63;
-        } */
-    .icon {
-        font-size: 20px;
-        margin-right: 5px;
-    }
+        </div>
+        <div class="staff_wallet">
+            <h3>Total Staff Wallet</h3>
+            <canvas id="staffWalletChart"></canvas>
+            <div class="wallet_text">
+                <span class="percentage">85%</span>
+            </div>
+            <p>01 October 2024</p>
+        </div>
+        <div class="staff_benefit">
+            <h3>Staff Benefits</h3>
+            <div class="benefit">
+                <div class="benefit-circle" style="background-color: #cdb4db;">
+                    <span>Bonus $5000</span>
+                </div>
+                <div class="benefit-info">
+                    <span>Last Update Aug 25</span>
+                </div>
+            </div>
+            <div class="benefit">
+                <div class="benefit-circle" style="background-color: #bde0fe;">
+                    <span>Seniority $10000</span>
+                </div>
+                <div class="benefit-info">
+                    <span>Last Update Aug 25</span>
+                </div>
+            </div>
+            <div class="benefit">
+                <div class="benefit-circle" style="background-color: #ffccd5;">
+                    <span>Other $1000</span>
+                </div>
+                <div class="benefit-info">
+                    <span>Last Update Aug 25</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    .overview-section {
-        margin-bottom: 30px;
-    }
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    var ctx = document.getElementById('myChart').getContext('2d');
 
-    .section-title {
-        font-weight: bold;
-        margin-bottom: 20px;
-    }
-
-    .overview-card {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 20px;
-    }
-
-    .overview-card div {
-        flex: 1;
-        text-align: center;
-    }
-
-    .links-overview {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    .links-overview div {
-        text-align: center;
-    }
-
-    *:before,
-    *:after {
-        box-sizing: border-box;
-    }
-
-    /* html,
-        body {
-            margin: 0;
-            padding: 0;
+    // Add shadow to the bars
+    Chart.defaults.plugins.barShadow = {
+        beforeDatasetsDraw: function(chart) {
+            const ctx = chart.ctx;
+            chart.data.datasets.forEach(function(dataset, i) {
+                const meta = chart.getDatasetMeta(i);
+                if (!meta.hidden) {
+                    meta.data.forEach(function(element) {
+                        ctx.save();
+                        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+                        ctx.shadowBlur = 10;
+                        ctx.shadowOffsetX = 5;
+                        ctx.shadowOffsetY = 5;
+                        ctx.fillRect(element.x - element.width / 2, element.y, element.width,
+                            chart.scales.y.bottom - element.y);
+                        ctx.restore();
+                    });
+                }
+            });
         }
+    };
 
-        html {
-            height: 100%;
-        } */
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+            datasets: [{
+                    label: 'MengChhorng',
+                    data: [1400, 700, 100, 1000, 1100, 800],
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Darith',
+                    data: [600, 900, 300, 1300, 500, 1000],
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Channrith',
+                    data: [1200, 900, 1500, 760, 1100, 1600],
+                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            plugins: {
+                barShadow: {}
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    var ctx = document.getElementById('attendanceChart').getContext('2d');
+    var attendanceChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Attendance', 'Not Reported'],
+            datasets: [{
+                data: [90, 10],
+                backgroundColor: ['#3C54A2', '#EAEAEA'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            cutout: '70%',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+    var ctx = document.getElementById('staffWalletChart').getContext('2d');
+    var staffWalletChart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Used', 'Available'],
+            datasets: [{
+                data: [85, 15],
+                backgroundColor: ['#d4a373', '#eaeaea'],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%', // Cutout size to match the style
+            plugins: {
+                legend: {
+                    display: false // No legend
+                }
+            }
+        }
+    });
+</script>
 
-    /* body {
-            position: relative;
-            min-height: 100%;
-            font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial,
-                sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol;
-            background: #eceff1;
-        } */
 
-    /* h1 {
-            margin: auto;
-            text-transform: uppercase;
-            text-align: center;
-            padding-top: 30px;
-        } */
-
-    /* .flex {
-            display: flex;
-        } */
-
-    /* .container {
-            flex-wrap: wrap;
-            justify-content: center;
-            max-width: 100%;
-            margin: auto;
-        } */
-
-    .info {
-        justify-content: space-between;
-        border-bottom: 1px solid #e6e6e6;
-        padding: 10px 0;
-        text-transform: uppercase;
-        font-size: 90%;
-        margin: auto -15px 30px;
+<style>
+    #_main_dashboardComponent {
+        display: flex;
+        flex-direction: column;
+        height: 700px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
     }
 
-    .info-code {
+    /* Container */
+    .dashboard_top {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-gap: 20px;
+        padding: 20px;
+        background-color: #f4f4f4;
+    }
+
+    /* Employee Card */
+    .employees {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.564);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .total_employee {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        height: 100%;
+    }
+
+    /* Top Section (Title and Ellipsis) */
+    .total_top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+
+    .total_title {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    /* Bottom Section (Number and Icon) */
+    .total_bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .total_number {
+        font-size: 1.5rem;
+        font-weight: bold;
+    }
+
+    .total_icon {
+        font-size: 1.2rem;
+    }
+
+    /* Styling for Ellipsis Icon */
+    .fa-ellipsis-v {
         cursor: pointer;
     }
 
-    .info-code:hover {
-        color: salmon;
+    /* Hover effect */
+    .employees:hover {
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
 
-    /* .progress-wrapper {
-            max-width: 350px;
-            justify-content: space-between;
-            margin: auto;
-            padding: 20px;
-            text-transform: uppercase;
-        } */
-
-    [type="range"] {
-        width: 200px;
+    .dashboard_center {
+        display: flex;
+        width: 100%;
+        padding: 20px;
+        gap: 1rem;
     }
 
-    div.card-content {
+    /* Styling for Leave Cards */
+    .center_left {
+        display: flex;
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.564);
+        flex-direction: column;
+        justify-content: space-between;
+        background-color: #E1ECF7;
+        width: 33%;
+        padding: 20px;
+        border-radius: 20px;
+    }
+
+    .leave_cards {
+        display: flex;
+        height: 250px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+        flex-direction: column;
+
+    }
+
+    .em_profile {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .leave_card1 {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid #000;
+    }
+
+    .em_profile img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .em_position {
+        background-color: #3793C7;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        outline: none;
+        color: white;
+        padding: 5px;
+        width: 110px;
+        font-size: 12px;
+        border-radius: 20px;
+    }
+
+    .em_position:hover {
+        background-color: #0665e1;
+        color: white;
+    }
+
+    .leave_type {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #FF928A;
+        color: white;
+        padding: 5px;
+        width: 110px;
+        font-size: 12px;
+        border-radius: 20px;
+    }
+
+    /* Styling for Chart */
+    .center_mid,
+    .center_right {
+        width: 32.5%;
+        height: 350px;
+        background-color: #ffffff;
+        box-shadow: 1px 2px 3px 1px rgba(0, 0, 0, 0.564);
+        border-radius: 20px;
+    }
+
+    .chart {
+        width: 100%;
+        height: 400px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #myChart {
+        max-width: 600px;
+        max-height: 400px;
+    }
+
+    .center_right {
+        background-color: #F0F7FF;
+        border-radius: 15px;
+        padding: 20px;
+        width: 32.5%;
+        text-align: center;
+        font-family: Arial, sans-serif;
+    }
+
+    .chart-container {
         position: relative;
-        background-color: #fff;
-        /* border-radius: 7px; */
-        /* padding: 5px 30px 30px;
-            margin: 20px;
-            width: 200px; */
-        height: 100px;
+        width: 150px;
+        height: 150px;
+        margin: 20px auto;
     }
 
-    .card-content .code {
-        visibility: hidden;
-        opacity: 0;
-        position: absolute;
-        width: 260px;
-        height: 0;
-        left: 0;
-        margin: auto;
-        line-height: 1.6;
-        transition: visibility 0s, opacity 0.5s linear;
-    }
-
-    /* .show-code .code {
-            visibility: visible;
-            opacity: 1;
-            height: 100%;
-            top: 45px;
-        } */
-
-    pre {
-        margin: 0;
-        padding: 0;
+    #attendanceChart {
         width: 100%;
         height: 100%;
     }
 
-    code {
-        height: calc(100% - 45px);
-        margin-top: -20px;
-    }
-
-    .github {
+    .chart-text {
         position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
         text-align: center;
-        left: 0;
-        right: 0;
-        top: 5px;
-        margin: auto;
-        font-size: 0.9rem;
-        text-transform: uppercase;
     }
 
-    .github a {
-        text-decoration: none;
+    .chart-text .percentage {
+        font-size: 24px;
+        font-weight: bold;
+        color: #000;
     }
 
-    .github a:hover {
-        border-bottom: 1px solid salmon;
+    .chart-text .status {
+        font-size: 12px;
+        color: #666;
     }
 
-    [data-pie-index="0"] {
-        position: relative;
+    .details {
+        list-style: none;
+        padding: 0;
+        margin-top: 10px;
+        text-align: left;
+    }
+
+    .details li {
+        display: flex;
+        justify-content: space-between;
+        font-size: 14px;
+        margin: 5px 0;
+    }
+
+    .details li strong {
+        color: #000;
+    }
+
+    .details li span {
+        color: #000;
+        font-weight: bold;
+    }
+
+    .dashboard_bottom {
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+        margin: 20px;
+
+    }
+
+    .em_departement,
+    .staff_wallet,
+    .staff_benefit {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        height: 350px;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 1px 3px 4px 1px rgba(65, 64, 64, 0.564);
+
+        flex: 1;
+    }
+
+    .em_departement h3,
+    .staff_wallet h3,
+    .staff_benefit h3 {
+        margin-bottom: 20px;
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .department-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
+
+    .department-table th,
+    .department-table td {
+        padding: 10px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+        font-size: 14px;
+        color: #555;
+    }
+
+    .department-table th {
+        background-color: #f0f0f0;
+        font-weight: bold;
+    }
+
+    .department-table td {
+        background-color: #fafafa;
+    }
+
+    .staff_wallet canvas {
+        width: 60px;
+        height: 60px;
+        margin-top: -60px;
+    }
+
+    .wallet_text .percentage {
+        display: flex;
+        margin-top: -200px;
+        font-size: 30px;
+    }
+
+    .staff_wallet p {
+        text-align: right;
+        font-size: 12px;
+        color: #888;
+        margin-top: -50px;
+    }
+
+    .benefit {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .benefit-circle {
+        width: 20px;
+        height: 20px;
         border-radius: 50%;
-        box-shadow: inset 0 0 25px 10px #a2caff;
+        margin-right: 10px;
     }
 
-    [data-pie-index="1"] {
-        position: relative;
-        border-radius: 50%;
-        box-shadow: inset 0 0 25px 10px #a2caff;
+    .benefit-info span {
+        display: block;
+        font-size: 14px;
+        color: #444;
     }
 
-    [data-pie-index="2"] {
-        position: relative;
-        border-radius: 50%;
-        box-shadow: inset 0 0 25px 10px #a2caff;
+    .benefit-info span:first-child {
+        font-weight: 600;
     }
 
-    [data-pie-index="16"] {
-        position: relative;
-        border-radius: 50%;
-        box-shadow: inset 0 0 25px 10px #f50057;
+    .benefit-info span:last-child {
+        font-size: 12px;
+        color: #888;
+        margin-top: 4px;
     }
 
-    [data-pie-index="17"] {
-        position: relative;
-        border-radius: 50%;
-        box-shadow: inset 0 0 25px 10px #f50057;
-    }
-
-    .pie {
-        width: 100px !important;
-        height: 100px !important;
-    }
-
-    .pie svg {
-        width: 100px;
-        height: 100px;
-        /* margin: 0px 60px 20px; */
-    }
-
-    @keyframes heart {
-        0% {
-            transform: scale(1.07);
-        }
-
-        80% {
-            transform: scale(1);
-        }
-
-        100% {
-            transform: scale(0.8);
-        }
+    .benefit-circle {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        width: 80px;
+        padding: 10px;
+        height: 80px;
     }
 </style>
-<div id="_main_dashboardComponent" style="display:none;padding:0px;">
-
-    <body>
-        <div class=" bg-ligth m-0">
-            <div class="row">
-                <div class="col-md-12 ps-0 pe-2">
-                    <div class="card" style="background-color: whitesmoke;">
-                        <div class="card-header" style="background-color: whitesmoke;">
-                            <div id="db_circle_card" class="row">
-
-
-                                <!-- <div class="col-4 overview-section">
-                                    <section class="d-flex justify-content-center">
-
-                                        <div class="section-title mb-0 fs-5 text-center w-100 d-flex align-items-center"><div class="w-100 text-secondary">Shipment <p style="color: #6200EA;">Shipping</p></div>  </div>
-                                        <div class="pie"
-                                            data-pie='{ "animationSmooth": "1s ease-out", "percent": 70, "colorSlice": "#6200EA", "colorCircle": "#f1f1f1" }'>
-                                        </div>
-                                        <div class="code">
-                                            <pre>
-                                                <code class="language-json">data-pie='{
-                                                    "animationSmooth": "1s ease-out",
-                                                    "percent": 70,
-                                                    "colorSlice": "#6200EA",
-                                                    "colorCircle": "#f1f1f1"
-                                                    }'
-                                                </code>
-                                            </pre>
-                                        </div>
-                                    </section>
-                                </div>
-                                <div class="col-4 overview-section">
-                                    <section class="d-flex justify-content-center">
-
-                                        <div class="section-title mb-0 fs-5 text-center w-100 d-flex align-items-center"><div class="w-100 text-secondary">Shipment <p style="color: #6200EA;">Validated</p></div>  </div>
-                                        <div class="pie"
-                                            data-pie='{ "animationSmooth": "1s ease-out", "percent": 30, "colorSlice": "#AB47BC", "colorCircle": "#f1f1f1" }'>
-                                        </div>
-                                        <div class="code">
-                                            <pre>
-                                                <code class="language-json">data-pie='{
-                                                    "animationSmooth": "1s ease-out",
-                                                    "percent": 30,
-                                                    "colorSlice": "#AB47BC",
-                                                    "colorCircle": "#f1f1f1"
-                                                    }'
-                                                </code>
-                                            </pre>
-                                        </div>
-                                    </section>
-                                </div> -->
-                            </div>
-
-                            <div id="db_normal_cards" class="row">
-                                <div class="col-md-4 ">
-                                    <div class="overview-card card">
-                                        <div class="w-100 d-flex justify-content-between ">
-                                            <p class="section-title mb-2 fs-5">Total Customers</p>
-                                            <i class="fas fa-ellipsis-v fs-5"></i>
-                                        </div>
-                                        <div class="w-100 d-flex justify-content-between ">
-                                            <p class="text-center fs-2">1240</p>
-                                            <i class="fas fa-user-plus text-info"
-                                                style="font-size: 3rem;width: 100px;"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 ">
-                                    <div class="overview-card card">
-                                        <div class="w-100 d-flex justify-content-between ">
-                                            <p class="section-title mb-2 fs-5">Active Customers</p>
-                                            <i class="fas fa-ellipsis-v fs-5"></i>
-                                        </div>
-                                        <div class="w-100 d-flex justify-content-between ">
-                                            <p class="text-center fs-2">140</p>
-                                            <i class="fas fa-user text-success"
-                                                style="font-size: 3rem;width: 100px;"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-4 ">
-                                    <div class="overview-card card">
-                                        <div class="w-100 d-flex justify-content-between ">
-                                            <p class="section-title mb-2 fs-5">Active Sales Agents</p>
-                                            <i class="fas fa-ellipsis-v fs-5"></i>
-                                        </div>
-                                        <div class="w-100 d-flex justify-content-between ">
-                                            <p class="text-center fs-2">120</p>
-                                            <i class="fa fa-users text-success"
-                                                style="font-size: 3rem;width: 100px;"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="row ">
-                                <div id="db_progress_cards" class="col-md-6 overview-section">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <p class="section-title mb-0 fs-5">Accounting</p>
-                                        </div>
-                                        <div class="card-body">
-                                            <p>Overview the Invoice Amount (%)</p>
-                                            <div class="progress">
-                                                <div class="progress-bar progress-bar-interactive" role="progressbar"
-                                                    style="width: 95%;" aria-valuenow="95" aria-valuemin="0"
-                                                    aria-valuemax="100">95% - Invoice</div>
-                                            </div><br>
-                                            <p>Overview the Payment Amount (%)</p>
-                                            <div class="progress mt-2">
-                                                <div class="progress-bar progress-bar-page" role="progressbar"
-                                                    style="width: 67%;" aria-valuenow="67" aria-valuemin="0"
-                                                    aria-valuemax="100">67% - Payment</div>
-                                            </div>
-                                            <p>Overview the Payment Amount (%)</p>
-                                            <div class="progress mt-2">
-                                                <div class="progress-bar progress-bar-page" role="progressbar"
-                                                    style="width: 67%;" aria-valuenow="67" aria-valuemin="0"
-                                                    aria-valuemax="100">67% - Payment</div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div id="db_country_cards" class="col-md-6 overview-section">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <p class="section-title mb-0 fs-5 trans-text"
-                                                data-langprop="titles.Shipments by Carrier">Shipments by Carrier</p>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="db_card_table gap-3 d-flex" id="db_shipments_by_supplier">
-                                                <div class="links-overview d-block text-start w-50 p-0">
-                                                    <p class="w-50 p-0 fw-semibold text-warning">Carrier</p>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p>DHL</p>
-                                                    </div>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p>FeDeX</p>
-                                                    </div>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p>TNT </p>
-                                                    </div>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p>MUST</p>
-                                                    </div>
-                                                </div>
-
-                                                <div class="links-overview d-block w-50 p-0">
-                                                    <p class="w-50 p-0 text-warning">Shipping</p>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p>10 </p>
-                                                    </div>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p> 10</p>
-                                                    </div>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p>10 </p>
-                                                    </div>
-                                                </div>
-
-                                                <div class="links-overview d-block w-50 p-0">
-                                                    <p class="w-50 p-0 text-warning">Delivered</p>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p>12</p>
-                                                    </div>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p>12</p>
-                                                    </div>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p>19</p>
-                                                    </div>
-                                                </div>
-
-                                                <div class="links-overview d-block w-50 p-0">
-                                                    <p class="w-50 p-0 text-warning">Unpaid</p>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p>20</p>
-                                                    </div>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p>35</p>
-                                                    </div>
-                                                    <div class="w-100 d-flex justify-content-between">
-                                                        <p>19</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row ">
-                                <div id="db_supplier_cards" class="col-md-12 overview-section">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <p class="section-title mb-0 fs-5">Shippments by Country</p>
-                                        </div>
-                                        <div class="card-body">
-                                            <table class="table table-striped">
-                                                <thead>
-                                                    <tr>
-                                                        <th scope="col">URL</th>
-                                                        <th scope="col">DA</th>
-                                                        <th scope="col">PA</th>
-                                                        <th scope="col">CF</th>
-                                                        <th scope="col">TF</th>
-                                                        <th scope="col">FB</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody>
-                                                    <tr>
-                                                        <td class="d-flex gap-2"><i
-                                                                class="fa-brands fa-youtube fs-5 text-danger"></i><a
-                                                                href="#">https://www.youtube.com/watch?v=sZdmkif8csY</a>
-                                                        </td>
-                                                        <td>100</td>
-                                                        <td>25</td>
-                                                        <td>58</td>
-                                                        <td>31</td>
-                                                        <td>22M</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="d-flex gap-2"><i
-                                                                class="fa-brands fa-facebook fs-5 text-info"></i><a
-                                                                href="#">https://www.forbes.com/sh?v=7f6ccdca2254</a>
-                                                        </td>
-                                                        <td>65</td>
-                                                        <td>65</td>
-                                                        <td>96</td>
-                                                        <td>62</td>
-                                                        <td>24K</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="d-flex gap-2"><i
-                                                                class="fa-brands fa-youtube fs-5 text-danger"></i><a
-                                                                href="#">https://www.uikit.to/sh?v=7f6ccdca2254</a>
-                                                        </td>
-                                                        <td>76</td>
-                                                        <td>75</td>
-                                                        <td>47</td>
-                                                        <td>42</td>
-                                                        <td>11M</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- <script>
-            window.addEventListener("DOMContentLoaded", () => {
-                // update circle when range change
-                const pie = document.querySelectorAll(".pie");
-
-                // start the animation when the element is in the page view
-                const elements = [].slice.call(document.querySelectorAll(".pie"));
-                const circle = new CircularProgressBar("pie");
-
-                // circle.initial();
-
-                if ("IntersectionObserver" in window) {
-                    const config = {
-                        root: null,
-                        rootMargin: "0px",
-                        threshold: 0.75
-                    };
-
-                    const ovserver = new IntersectionObserver((entries, observer) => {
-                        entries.map((entry) => {
-                            if (entry.isIntersecting && entry.intersectionRatio > 0.75) {
-                                circle.initial(entry.target);
-                                observer.unobserve(entry.target);
-                            }
-                        });
-                    }, config);
-
-                    elements.map((item) => {
-                        ovserver.observe(item);
-                    });
-                } else {
-                    elements.map((element) => {
-                        circle.initial(element);
-                    });
-                }
-
-                setInterval(() => {
-                    const typeFont = [100, 200, 300, 400, 500, 600, 700];
-                    const colorHex = `#${Math.floor((Math.random() * 0xffffff) << 0).toString(
-                        16
-                    )}`;
-                    const options = {
-                        index: 17,
-                        percent: Math.floor(Math.random() * 100 + 1),
-                        colorSlice: colorHex,
-                        fontColor: colorHex,
-                        fontSize: `${Math.floor(Math.random() * (1.4 - 1 + 1) + 1)}rem`,
-                        fontWeight: typeFont[Math.floor(Math.random() * typeFont.length)]
-                    };
-                    circle.animationTo(options);
-                }, 3000);
-
-                // global configuration
-                const globalConfig = {
-                    speed: 30,
-                    animationSmooth: "1s ease-out",
-                    strokeBottom: 5,
-                    colorSlice: "#FF6D00",
-                    colorCircle: "#f1f1f1",
-                    round: true
-                };
-
-                const global = new CircularProgressBar("global", globalConfig);
-                global.initial();
-
-                // update global example when change range
-                // t
-
-                const infoCode = document.querySelectorAll(".info-code");
-                infoCode.forEach((info) => {
-                    info.addEventListener("click", (e) => {
-                        e.target.closest("section").classList.toggle("show-code");
-                    });
-                });
-            });
-        </script> -->
-
-    </body>
-</div>
