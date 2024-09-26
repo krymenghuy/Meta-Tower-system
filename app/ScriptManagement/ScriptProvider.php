@@ -101,7 +101,7 @@ namespace App\ScriptManagement;
                         'assets/js/pusher/pusher.min.js',
                         // '/js/components/abm/pusher_client_houxpress.js',
                         '/js/components/common/pusher_client_dms.js',
-                        // '/js/components/bhr/DashboardComponent.js',
+                        '/js/components/bhr/DashboardComponent.js',
                         '/js/components/bhr/SkillsComponent.js',
                         '/js/components/bhr/JobsLevelComponent.js',
                         '/js/components/bhr/EmployeeComponent.js',
