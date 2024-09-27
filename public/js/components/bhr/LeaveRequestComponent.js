@@ -6,284 +6,458 @@ var LeaveRequestComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_leave_request_component");
     this.self = this.jm[0];
     this.title_prop = "Leave Request";
-    this.initAlready = false;
-    this.editingRow = null; // Track the row being edited
+    this.elStatus = this.self.querySelector('#el_status');
+    this.btnAdd = this.self.querySelector("#_btnAddLeave");
+    this.divFilter = this.self.querySelector("#_divFilter_leave");
+    this.elSearch = this.self.querySelector("#_sdl_search_leave");
+    this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
+
+    this.cols = [
+
+        {
+            title: "No",
+            className: 'align-middle text-capitalize text-nowrap',
+            data: (data, index, i) => { return (index + 1) },
+
+        },
+
+        {
+            title: "Name",
+            className: "align-middle text-start",
+            data: (data, index, tr) => {
+                return `<div style="display: flex; align-items: center;">
+                            <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                            <div>
+                                <span style="font-size: 14px; font-weight: bold;">${data.first_name ?? ''} ${data.last_name ?? ''}</span>
+                                <br/>
+                                <span style="font-size: 12px; color: gray;">${data.position ?? ''}</span>
+                            </div>
+                        </div>`;
+            }
+        },
+
+
+
+        {
+            title: "Duration",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.start_date.replace(/-/g, '/') ?? ''} - ${data.end_date.replace(/-/g, '/') ?? ''}</p>`;
+            }
+        },
+        {
+            title: "Permission detail",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.permission_details ?? ''}</p>`;
+            }
+        },
+        {
+            title: "Status",
+            className: 'status text-nowrap align-middle',
+            data: function (data, index, tr) {
+                let cls_class = 'text-danger text-center';
+                let bg_color = ''; // Default background color
+
+                if ((data.status || '').toLowerCase() === 'approved') {
+                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
+                    bg_color = '#28a745'; // Green background for success
+                } else if ((data.status || '').toLowerCase() === 'pending') {
+                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
+                    bg_color = '#ffc107'; // Yellow background for pending
+                } else if ((data.status || '').toLowerCase() === 'reject') {
+                    cls_class = 'text-white text-center border border-danger rounded-5 p-1';
+                    bg_color = '#dc3545'; // Red background for in progress
+                } else {
+                    bg_color = '#6c757d'; // Default gray background for other statuses
+                }
+
+                return `<div><a class="d-flex justify-content-center" data-status="${data.status}" data-id="${data.id}" href="javascript:void(0)">
+                            <span style="display:block;width:80px; background: ${bg_color}" class="p-1 ${cls_class}">
+                                ${data.status}
+                            </span>
+                        </a></div>`;
+            }
+        },
+        {
+            className: 'col_action align-middle',
+            data: function (data, row, display) {
+                return `
+                   <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class="${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+    ];
+
 
     // Initialize
-    this.init = function () {
+    this.init = () => {
         if (mThis.initAlready) return;
+
+        mThis.LeaveRequestListView = new ListView('_leave_request_list',{
+            fetchApi : `${main_view.base_url}/hr/leave-management/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols,
+            tableClass: 'table table--white overflow-hidden  header-uppercase',
+            listContainerClass: null
+        });
+
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+
+            let op = {
+                id: null,
+                btn: e.target,
+                onClose: () => {
+                    mThis.LeaveRequestListView.showPage();
+                }
+            };
+
+            LeaveRequestDailog.show(op);
+        };
+
+        const pr_tbl = mThis.LeaveRequestListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 150) + 'px';
+        sh_parent.classList.add('overflow-y-auto');
+        sh_parent.classList.add('overflow-x-hidden');
+
+        window.onresize = function(e) {
+            e.preventDefault();
+            sh_parent.style.height = (window.innerHeight - 150) + 'px';
+        };
+        mThis.initDropdownMenus(pr_tbl);
+
+        mThis.divFilter.addEventListener('change', (e) => {
+            e.preventDefault();
+            mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
+        })
+
+
         mThis.initAlready = true;
 
-        // Add event listener for the Add button
-        document
-            .querySelector("#_main_leave_request_btn_add")
-            .addEventListener("click", mThis.showPopup);
-
-        // Handle popup submission
-        document
-            .querySelector("#addLeaveSubmit")
-            .addEventListener("click", mThis.submitLeaveEntry);
-
-        // Handle popup close button
-        document
-            .querySelector("#closePopup")
-            .addEventListener("click", mThis.hidePopup);
-        document
-            .querySelector("#searchLeaveRequest")
-            .addEventListener("input", mThis.searchLeaveEntries);
-
-        // Handle action buttons (approve, edit, view, delete)
-        mThis.addActionListeners();
     };
 
-    // Add action listeners to all icons
-    this.addActionListeners = function () {
-        document.querySelectorAll(".fa-check-circle").forEach((icon) => {
-            icon.addEventListener("click", mThis.approveLeave);
-        });
-        document.querySelectorAll(".fa-times-circle").forEach((icon) => {
-            icon.addEventListener("click", mThis.rejectLeave);
-        });
-        document.querySelectorAll(".fa-pencil-square").forEach((icon) => {
-            icon.addEventListener("click", mThis.editLeave);
-        });
-
-        document.querySelectorAll(".fa-eye").forEach((icon) => {
-            icon.addEventListener("click", mThis.viewLeave);
-        });
-
-        document.querySelectorAll(".fa-trash").forEach((icon) => {
-            icon.addEventListener("click", mThis.deleteLeave);
-        });
-    };
-
-    // Approve leave action
-    this.approveLeave = function (event) {
-        let statusButton = event.target
-            .closest(".table_footer")
-            .querySelector(".status button");
-
-        // Remove any previously applied status classes
-        statusButton.classList.remove("rejected");
-
-        // Update text and add the "approved" class
-        statusButton.textContent = "Approved";
-        statusButton.classList.add("approved");
-    };
-
-    // Reject leave action
-    this.rejectLeave = function (event) {
-        let statusButton = event.target
-            .closest(".table_footer")
-            .querySelector(".status button");
-
-        // Remove any previously applied status classes
-        statusButton.classList.remove("approved");
-
-        // Update text and add the "rejected" class
-        statusButton.textContent = "Rejected";
-        statusButton.classList.add("rejected");
-    };
-    this.searchLeaveEntries = function () {
-        let searchTerm = document
-            .querySelector("#searchLeaveRequest")
-            .value.toLowerCase();
-
-        // Get all the rows of leave requests
-        let rows = document.querySelectorAll(".table_footer");
-
-        rows.forEach((row) => {
-            // Check if employee name, position, or leave duration matches the search term
-            let employeeName = row
-                .querySelector(".em_right h6")
-                .textContent.toLowerCase();
-            let employeePosition = row
-                .querySelector(".em_right span")
-                .textContent.toLowerCase();
-            let leaveDuration = row
-                .querySelector(".duration span")
-                .textContent.toLowerCase();
-
-            // If any match the search term, show the row, otherwise hide it
-            if (
-                employeeName.includes(searchTerm) ||
-                employeePosition.includes(searchTerm) ||
-                leaveDuration.includes(searchTerm)
-            ) {
-                row.style.display = ""; // Show the row
+    mThis.elSearch.addEventListener('keyup', (e) => {
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.LeaveRequestListView) {
+                mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
             } else {
-                row.style.display = "none"; // Hide the row
+                console.error("LeaveRequestListView is not defined");
             }
-        });
-    };
-    // Edit leave action
-    this.editLeave = function (event) {
-        mThis.editingRow = event.target.closest(".table_footer"); // Store reference to the row
-        let employeeName =
-            mThis.editingRow.querySelector(".em_right h6").textContent;
-        let employeePosition =
-            mThis.editingRow.querySelector(".em_right span").textContent;
-        let leaveDuration =
-            mThis.editingRow.querySelector(".duration span").textContent;
-        let permissionDetail =
-            mThis.editingRow.querySelector(".permission_detail").textContent;
+        }, 200);
+    });
 
-        // Pre-fill the form with current data
-        document.querySelector("#employeeName").value = employeeName;
-        document.querySelector("#employeePosition").value = employeePosition;
-        document.querySelector("#leaveDuration").value = leaveDuration;
-        document.querySelector("#permissionDetail").value = permissionDetail;
-
-        // Show the popup for editing
-        mThis.showPopup();
-    };
-
-    // View leave action (simply alert or display a modal with details)
-    this.viewLeave = function (event) {
-        let row = event.target.closest(".table_footer");
-
-        // Get the details from the selected row
-        let employeeName = row.querySelector(".em_right h6").textContent;
-        let employeePosition = row.querySelector(".em_right span").textContent;
-        let leaveDuration = row.querySelector(".duration span").textContent;
-        let permissionDetail =
-            row.querySelector(".permission_detail").textContent;
-        let employeeImageSrc = row.querySelector(".em_left img").src; // Get the image source
-
-        // Populate the modal fields
-        document.querySelector("#viewEmployeeName").textContent = employeeName;
-        document.querySelector("#viewEmployeePosition").textContent =
-            employeePosition;
-        document.querySelector("#viewLeaveDuration").textContent =
-            leaveDuration;
-        document.querySelector("#viewPermissionDetail").textContent =
-            permissionDetail;
-
-        // Set the employee image in the modal
-        document.querySelector("#viewEmployeeImage").src = employeeImageSrc;
-
-        // Show the modal
-        document.querySelector("#viewLeavePopup").classList.add("show");
-    };
-
-    // Handle closing the view modal
-    document
-        .querySelector("#closeViewPopup")
-        .addEventListener("click", function () {
-            document.querySelector("#viewLeavePopup").classList.remove("show");
-        });
-
-    // Delete leave action
-    this.deleteLeave = function (event) {
-        if (confirm("Are you sure you want to delete this leave request?")) {
-            let row = event.target.closest(".table_footer");
-            row.remove();
+    mThis.btnSearch.onclick = e => {
+        if (mThis.LeaveRequestListView) {
+            mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
+        } else {
+            console.error("listView is not defined");
         }
     };
+
+    this.getDataFormFilter = () => {
+        let p = {};
+        p.status_id = mThis.elStatus.value;
+        p.search_value = mThis.elSearch.value;
+        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
+        main_filters.forEach(el => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+        console.log(222, p);
+
+        return p;
+    };
+
+
+
+
+    this.initDropdownMenus = (table)=>{
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass:"btn_leave_action",
+            cssClass:"bg-white shadow",
+            //menuItemClass:"",
+            menus:[
+
+                {
+                    html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                    icon:`<i class="fa-regular fa-exchange fs-5"></i>`,
+
+                    cssClass:"border-bottom pb-2",
+                    name:"change_leave_request_status"
+                },
+                {
+                    html:'<span class="ps-2  " vslang="titles.Modify Leave Request">Modify Leave Request</span>',
+                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"edit_leave_request"
+                },
+                {
+                    html:'<span class="ps-2  " vslang="titles.Delete Leave Request">Delete Leave Request</span>',
+                    icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"delete_leave_request"
+                },
+
+            ],
+
+            onClick:(menuLink, id, name)=>{
+                switch(name){
+
+                    case 'change_leave_request_status':{
+                        mThis.changeStatus(id,menuLink);
+                        break;
+                    }
+                    case 'edit_leave_request':{
+                      mThis.editLeaveRequest(id, menuLink);
+                      break;
+                    }
+                    case 'delete_leave_request':{
+                        mThis.deleteLeaveRequest(id, menuLink);
+                        break;
+                      }
+
+                    default:{
+                      break;
+                    }
+                }
+            }
+        }
+        new VSDropdownMenu(menuOptopns);
+    }
+    this.changeStatus = (id, lnk)=>{
+        // if(!AuthManager.allowed(337,false))
+        //         return;
+        //let status_code = Validator.properCase(lnk.dataset.status);
+        let tr = lnk.closest('tr');
+        let action_id = Validator.properCase(tr? tr.dataset.action_id: "");
+        let inputOptions = {
+            title: 'Set Leave Request Status',
+            dataLabel: "Leave status",
+            valueMember: "action_id",
+            textMember: "name",
+            confirmButtonText:"Save",
+            blankErrorMessage: "Status is not correct!",
+            data: [{
+                action_id: "2",
+                name: "Approved"
+            },
+            {
+                action_id: "3",
+                name: "Reject"
+            }],
+            defaultValue: action_id
+        };
+
+        InputBox2.show(inputOptions,(d)=>{
+            if(d){
+                let p = {
+                    id: id,
+                    action_id: d.value
+                };
+                console.log(123,p);
+
+                vsapi.call(`${mThis.base_url}/hr/leave-management/update-status`,p).then(res => {
+                    if(res.status_code === 200){
+                        // mThis.elFilter_leave_request_status.value = d.value;
+                        InputBox2.close();
+                        // mThis.elFilter_leave_request_status.dispatchEvent ( new Event('change'));
+                        cv_interact.success('The leave request status has been updated');
+                        // if(tr) tr.dataset.statuscode = d.value;
+                        mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
+                    }
+                    else
+                        cv_interact.error(res.error_message);
+                });
+            }
+        });
+    }
+    this.editLeaveRequest = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.LeaveRequestListView.showPage();
+            }
+        };
+        LeaveRequestDailog.show(op);
+    }
+
+    this.deleteLeaveRequest = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.LeaveRequestListView.showPage();
+            }
+        };
+        cv_interact.confirm('Delete this Leave Request?',{
+            title: 'Delete Leave Request',
+            context: 'delete',
+            confirmButtonText:"Delete"
+        },function(e){
+            if(e){
+                vsapi.call(`${main_view.base_url}/hr/leave-management/delete`,op,false,false,false).then(res => {
+                    if(res.status_code == 200){
+                        cv_interact.success('Deleted Successfully');
+                        mThis.LeaveRequestListView.showPage();
+                    }
+                })
+            }
+        });
+
+    }
+
+
 
     // Show the component
+    this.prepareFormOptions = () => {
+
+        vsapi.call(`${main_view.base_url}/hr/leave-management/form-options`,null,null,null).then(res => {
+            const d = res.status_code == 200 ? res.data : {};
+            console.log(1111,this.elSortBy);
+
+            VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',true,'All',null);
+        })
+    }
+
+
     this.show = function () {
         mThis.init();
-        mThis.jm.siblings().hide();
-        mThis.jm.fadeIn(250);
         main_view.setTitle(mThis.title_prop);
-    };
+        mThis.prepareFormOptions();
+            mThis.LeaveRequestListView.showPage();
+                $(mThis.self).siblings().hide();
+                $(mThis.self).fadeIn(200);
+            };
 
-    // Show the popup form
-    this.showPopup = function () {
-        document.querySelector("#addLeavePopup").classList.add("show");
-    };
 
-    // Hide the popup form
-    this.hidePopup = function () {
-        document.querySelector("#addLeavePopup").classList.remove("show");
-        mThis.editingRow = null; // Reset editingRow after closing the popup
-    };
+});
 
-    // Submit (add or edit) a leave entry
-    this.submitLeaveEntry = function () {
-        let employeeName = document.querySelector("#employeeName").value;
-        let employeePosition =
-            document.querySelector("#employeePosition").value;
-        let leaveDuration = document.querySelector("#leaveDuration").value;
-        let permissionDetail =
-            document.querySelector("#permissionDetail").value;
-        let employeeImage = document.querySelector("#employeeImage").files[0];
+const LeaveRequestDailog = new function() {
+    const mThis = this;
+    this.self = main_view.VSAppContent.querySelector('#dlg_sdl_add_Leave_Request');
+    this.modal = new bootstrap.Modal(this.self);
+    this.base_url = main_view.base_url;
+    this.options = {};
 
-        if (!employeeName || !leaveDuration || !permissionDetail) {
-            alert("Please fill out all fields.");
-            return;
-        }
+    this.btnSave = this.self.querySelector('#dlg_sdl_add_Leave_Request_btn_save');
+    this.elEmployee = this.self.querySelector('#_sdl_name_id');
+    this.elInfo = this.self.querySelector('#info');
+    this.elTitle = mThis.self.querySelector('.modal-title');
+    this.div_Leave_Request_info = mThis.self.querySelector('#_sdl_Leave_Request_info');
 
-        let imageUrl = "assets/images/skills/default.png"; // Default image if no image is chosen
 
-        // If an image is selected, create an object URL
-        if (employeeImage) {
-            imageUrl = URL.createObjectURL(employeeImage);
-        }
+    this.btnSave.onclick = e => {
+        e.preventDefault();
+        let p = mThis.getDataForm();
+        console.log(77777, p);
 
-        if (mThis.editingRow) {
-            // Update the existing row
-            mThis.editingRow.querySelector(".em_right h6").textContent =
-                employeeName;
-            mThis.editingRow.querySelector(".em_right span").textContent =
-                employeePosition;
-            mThis.editingRow.querySelector(".duration span").textContent =
-                leaveDuration;
-            mThis.editingRow.querySelector(".permission_detail").textContent =
-                permissionDetail;
-
-            // Update image in the editing row
-            if (employeeImage) {
-                mThis.editingRow.querySelector(".em_left img").src = imageUrl;
+        vsapi.call(`${mThis.base_url}/hr/leave-management/save`, p, mThis.btnSave, false).then(res => {
+            if (res.status_code === 200) {
+                mThis.modal.hide();
+                const d = res.data ?? {};
+                cv_interact.success('Leave Request Saved Success!');
+                if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
+            } else {
+                cv_interact.error(res.error_message);
             }
-        } else {
-            // Create a new entry
-            let newEntry = `
-            <div class="table_footer">
-                <div class="table_id">New</div>
-                <div class="employee">
-                    <div class="em_left">
-                        <img src="${imageUrl}" alt="User" width="60" height="60">
-                    </div>
-                    <div class="em_right">
-                        <h6>${employeeName}</h6>
-                        <span>${employeePosition}</span>
-                    </div>
-                </div>
-                <div class="duration">
-                    <span>${leaveDuration}</span>
-                </div>
-                <div class="permission_detail">${permissionDetail}</div>
-                <div class="status">
-                    <button>Pending</button>
-                </div>
-                <div class="actions">
-                    <i class="fa fa-check-circle"></i>
-                    <i class="fa fa-times-circle"></i>
-                    <i class="fa fa-pencil-square"></i>
-                    <i class="fa fa-eye"></i>
-                    <i class="fa fa-trash"></i>
-                </div>
-            </div>`;
-
-            // Insert the new entry into the DOM
-            document
-                .querySelector(".table_footers")
-                .insertAdjacentHTML("beforeend", newEntry);
-
-            // Re-add action listeners for the newly added entry
-            mThis.addActionListeners();
-        }
-
-        // Hide the popup
-        mThis.hidePopup();
-
-        // Clear the form fields
-        document.querySelector("#employeeName").value = "";
-        document.querySelector("#employeePosition").value = "";
-        document.querySelector("#leaveDuration").value = "";
-        document.querySelector("#permissionDetail").value = "";
-        document.querySelector("#employeeImage").value = ""; // Clear the file input
+        });
     };
-})();
+
+    this.prepareData = (id, def, onFinish) => {
+        if (!def) def = {};
+        console.log(555555, id);
+        vsapi.call(`${mThis.base_url}/hr/leave-management/form-options`, { id: id }, null).then(res => {
+            let d = res.status_code === 200 ? res.data : {};
+            mThis.elInfo.parentElement.classList.add('d-none');
+            VSUtil.setComboItems(mThis.elEmployee, d.employees, 'id', 'name', true, '(Select Employee)', null);
+            console.log(33333, d);
+            mThis.elEmployee.addEventListener('change', () => {
+                let id = mThis.elEmployee.value;
+                console.log(22222,id);
+
+                vsapi.call(`${mThis.base_url}/hr/leave-management/details`, { id: id }, null).then(res => {
+                    let d = res || {};
+                    if(d){
+                        mThis.elInfo.parentElement.classList.remove('d-none');
+                        mThis.elInfo.innerHTML =`<div class="d-block border border-info p-2">
+                                                    <div class="d-block ">
+                                                        <span >name :</span>
+                                                        <span >${ d.first_name +' '+ d.last_name }</span>
+                                                    </div>
+                                                    <div class="d-block ">
+                                                        <span >Position :</span>
+                                                        <span >${ d.position}</span>
+                                                    </div>
+                                                </div>  `;
+                    }
+
+                });
+            })
+            onFinish(d);
+        });
+    };
+
+    this.show = (options = {}) => {
+        mThis.options = options;
+        let id = options.id ?? null;
+        console.log(123);
+
+        mThis.prepareData(id, {}, (data) => {
+            if (data.leave) {
+                mThis.elTitle.textContent = "Modify Leave Request Information";
+            } else {
+                mThis.elTitle.textContent = "Create Leave Request";
+            }
+            mThis.setData(data.leave);
+            mThis.modal.show();
+        });
+    };
+
+
+
+    this.getDataForm = () => {
+        const div = mThis.self;
+        let p = { id: mThis.options.id };
+
+        div.querySelectorAll('.data-input').forEach(el => {
+            const data_member = el.dataset.field;
+            p[data_member] = el.value;
+        });
+
+        return p;
+    };
+
+    this.setData = (d = {}) => {
+        const div = mThis.self;
+        div.querySelectorAll('.data-input').forEach(el => {
+            const data_member = el.dataset.field;
+            console.log(7777,data_member,'|',el);
+            el.value ='';
+        });
+
+        console.log(4444,d);
+        if(!d) return;
+
+        div.querySelectorAll('.data-input').forEach(el => {
+            const data_member = el.dataset.field;
+            console.log(7777,data_member,'|',el);
+
+            el.value = d[data_member] || '';
+        });
+
+    };
+};
+

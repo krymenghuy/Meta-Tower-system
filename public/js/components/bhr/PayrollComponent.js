@@ -15,22 +15,24 @@ var PayrollComponent = new (function () {
     this.cols = [
 
         {
-            title: "Photo",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return ` <img class="image-student-tbl" src="${data.image_url}" alt=""/>`;
-            }
-        },
+            title: "No",
+            className: 'align-middle text-capitalize text-nowrap',
+            data: (data, index, i) => { return (index + 1) },
 
+        },
         {
             title: "Name",
             className: "align-middle text-start",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">
-                            <span class="d-block">${data.name ?? ''}</span>
-                            <span class="d-block">${data.email ?? 'null'}</span>
-                            <span class="d-block">${data.phone_number ?? 'គ្មាន'}</span>
-                        </p>`;
+                return `<div style="display: flex; align-items: center;">
+                            <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                            <div>
+                                <span style="font-size: 14px; font-weight: bold;">${data.first_name ?? ''} ${data.last_name ?? ''}</span>
+                                <br/>
+                                <span style="font-size: 12px; color: white;">${data.email ?? ''}</span><br/>
+                                <span style="font-size: 12px; color: white;">${data.phone_number ?? ''}</span>
+                            </div>
+                        </div>`;
             }
         },
         {
@@ -56,13 +58,6 @@ var PayrollComponent = new (function () {
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.start_date.replace(/-/g, '/') ?? ''} - ${data.end_date.replace(/-/g, '/') ?? ''}</p>`;
-            }
-        },
-        {
-            title: "Working_hours",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.working_hours ?? ''}</p>`;
             }
         },
         {
@@ -323,11 +318,13 @@ const PayRollDailog = new function() {
     this.options = {};
 
     this.btnSave =  this.self.querySelector('#dlg_sdl_add_payroll_btn_save');
+    this.elEmployee = this.self.querySelector('#_sdl_name_id');
     this.elPositionId =  this.self.querySelector('#_sdl_position_id');
     this.elStatusId =  this.self.querySelector('#_sdl_status_id');
+    this.elInfo = this.self.querySelector('#info');
     this.elTitle = mThis.self.querySelector('.modal-title');
     this.div_payroll_info = mThis.self.querySelector('#_sdl_payroll_info');
-    this.btnChooser = mThis.self.querySelector('#dlg_image_chooser');
+
 
     this.btnSave.onclick =  e =>{
         e.preventDefault();
@@ -345,24 +342,56 @@ const PayRollDailog = new function() {
                 cv_interact.error(res.error_message);
         });
     };
+    this.prepareData = (id, def = {}, onFinish) => {
+        console.log(555555, id);
 
-    this.prepareData = (id,def, onFinish) => {
-        if(!def) def = {};
-        console.log(555555);
-        vsapi.call(`${mThis.base_url}/hr/payroll/form-options`,{
-            id: id
-        },null).then(res => {
-            let d = res.status_code === 200 ?  res.data : {};
+        vsapi.call(`${mThis.base_url}/hr/payroll/form-options`, { id: id }, null).then(res => {
+            let d = res.status_code === 200 ? res.data : {};
+            mThis.elInfo.parentElement.classList.add('d-none');
+            VSUtil.setComboItems(mThis.elEmployee, d.employees, 'id', 'name', true, '(Select Employee)', null);
+          
 
-            // VSUtil.setComboItems(mThis.elSenderType, d.sender_types, 'id', 'sender_type', true, '(Select Merchant Type)', def.sender_type_id);
-            // VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
-            // VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'name', true, '(Price List)', def.price_list_id);
-            VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'name', true, '(Select Position)', null);
-            VSUtil.setComboItems(mThis.elStatusId, d.status, 'id', 'name', true, '(Select Status)', null);
-            console.log(33333,d);
-            onFinish(d);
+            mThis.elEmployee.addEventListener('change', () => {
+                let id = mThis.elEmployee.value;
+                console.log(22222, id);
+
+                vsapi.call(`${mThis.base_url}/hr/payroll/form-options`, { id: id }, null).then(res => {
+                    let d = res || {};
+                    if (d) {
+                        mThis.elInfo.parentElement.classList.remove('d-none');
+                        mThis.elInfo.innerHTML = `
+                            <div class="d-block border border-info p-2">
+                                <div class="d-block">
+                                    <span>Name:</span>
+                                    <span>${d.first_name} ${d.last_name}</span>
+                                </div>
+                                <div>
+                                    <span>Email:</span><span>${d.email}</span>
+                                </div>
+                                <div>
+                                    <span>Phone:</span><span>${d.phone_number}</span>
+                                </div>
+                                <div class="d-block">
+                                    <span>Position:</span>
+                                    <span>${d.position}</span>
+                                </div>
+                                 <div>
+                                    <span>Working Hours:</span><span>${d.section}</span>
+                                </div>
+
+                            </div>`;
+                    }
+
+                    VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'name', true, '(Select Position)', null);
+                    VSUtil.setComboItems(mThis.elStatusId, d.status, 'id', 'name', true, '(Select Status)', null);
+                    console.log(33333, d);
+                    onFinish(d);
+                });
+            });
         });
-    }
+    };
+
+
 
 
     this.show = (options) => {
@@ -384,95 +413,35 @@ const PayRollDailog = new function() {
         });
     }
 
-        mThis.btnChooser.onclick = function(e){
-        e.preventDefault();
-        FileChooser.chooseFile(null,(d) => {
-            if(d){
-                const parent = this.parentElement;
-                mThis.setImage(parent,d.dataUrl);
-            }
-        });
-    }
-
-    this.setImage = (div,image=null) => {
-        if(image){
-            const html = `<image class="w-100 h-100 object-fit-scale data-input" src="${image}" alt="social-icon" data-field="photo"/>
-            <div class="position-absolute top-0 end-0 p-2 rounded-2 bg-dark" role="button">
-                <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-            </div>`;
-            div.innerHTML = html;
-            mThis.deleteImage(div);
-        }
-        else{
-            const html = `<div id="dlg_image_chooser"
-                                class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
-                                <i class="fa-regular fa-image fs-4 text-muted"></i>
-                            </div>`;
-            div.innerHTML = html;
-            mThis.chooseImage(div);
-        }
-    }
-
-    this.deleteImage = (div) => {
-        const btnDelete = div.querySelector('[role=\'button\']');
-        btnDelete.onclick = function(e){
-            e.preventDefault();
-            const html = `<div id="dlg_image_chooser"
-                                class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
-                                <i class="fa-regular fa-image fs-4 text-muted"></i>
-                            </div>`;
-            div.innerHTML = html;
-            mThis.chooseImage(div);
-        }
-    }
-
-    this.chooseImage = (div) => {
-        const btnChoose = div.querySelector('#dlg_image_chooser');
-        btnChoose.onclick = function(e){
-            e.preventDefault();
-            FileChooser.chooseFile(null,(d) => {
-                if(d){
-                    mThis.setImage(div,d.dataUrl);
-                }
-            });
-        }
-    }
-
-    this.getDataForm = () => {
+  this.getDataForm = () => {
         const div = mThis.self;
-        let p = {
-            id: mThis.options.id
-        };
+        let p = { id: mThis.options.id };
 
         div.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
-            if(el.tagName === 'IMG'){
-                p[data_member] = el.src;
-            }
-            else{
-                p[data_member] = el.value;
-            }
+            p[data_member] = el.value;
         });
 
         return p;
-    }
-    this.setData = (d) => {
-        d =d ?? {};
-        const div = mThis.self,
-    containerImage = div.querySelector('[aria-label=\'image\']');
-        let elements = div.querySelectorAll('.data-input');
-        mThis.setImage(containerImage,d.image_url);
+    };
 
-        elements.forEach(el =>{
+    this.setData = (d = {}) => {
+        const div = mThis.self;
+        div.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
-            el.value = d[data_member] ? d[data_member] : '';
+            console.log(7777,data_member,'|',el);
+            el.value ='';
+        });
 
+        console.log(4444,d);
+        if(!d) return;
 
-    });
-}
+        div.querySelectorAll('.data-input').forEach(el => {
+            const data_member = el.dataset.field;
+            console.log(7777,data_member,'|',el);
 
+            el.value = d[data_member] || '';
+        });
 
-
-
-}
-
+    };
+};

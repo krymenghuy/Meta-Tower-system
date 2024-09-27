@@ -105,6 +105,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->gr
     Route::post('/details', [PayrollController::class, 'getDetails']);
     Route::post('/delete', [PayrollController::class, 'deletePayroll']);
     Route::post('/form-options', [PayrollController::class, 'getFormOptions']);
+    Route::post('/update-status', [PayrollController::class, 'updateStatus']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list')->group(function () {
@@ -122,6 +123,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave-managem
     Route::post('/details', [LeaveManagementController::class, 'getDetails']);
     Route::post('/delete', [LeaveManagementController::class, 'deleteLeaveManagement']);
     Route::post('/form-options', [LeaveManagementController::class, 'getFormOptions']);
+    Route::post('/update-status', [LeaveManagementController::class, 'updateStatus']);
 });
 
 // Job Level routes

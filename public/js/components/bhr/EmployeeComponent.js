@@ -12,6 +12,7 @@ var EmployeeComponent = new (function () {
     this.elSearch = this.self.querySelector("#_sdl_search_employee");
     this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
     this.employee_detail = mThis.self.querySelector('#_employee_detail');
+    this.containerPagination = mThis.self.querySelector('#container_pagination');
     let div = mThis.self.querySelector('#_employee_list');
     this.init= () => {
         if(mThis.initAlready) return;
@@ -19,11 +20,10 @@ var EmployeeComponent = new (function () {
         mThis.EmployeeListView = new ListView('_employee_list', {
             fetchApi: `${main_view.base_url}/hr/employee/list-paginate`,
             // clientSidePagination: true,
-            perPage: 10,
-            // paginationContainer: mThis.containerPagination,
+            perPage: 8,
+            paginationContainer: mThis.containerPagination,
             apiCluster: main_view.apiCluster,
             processResponse:(res)=>{
-                console.log(res.data);
                 return res.data;
             },
             renderItems: (data,list_container) => {
@@ -98,7 +98,7 @@ var EmployeeComponent = new (function () {
                 const statusColor = status === 'Inactive' ? 'background-color: #dc3545;' : 'background-color: #2B3991;'; // #dc3545 is Bootstrap's danger color
 
                 html += `
-                    <div class="col-md-3">
+                    <div class="col-md-3 mt-3 mb-3">
                         <div class="card">
                             <div class="card-header">
                                 <div class="status_employee" style="${statusColor} color: white; padding: 5px; border-radius: 5px;">
@@ -116,7 +116,7 @@ var EmployeeComponent = new (function () {
                                     alt="Profile Picture" style="width: 100px; height: 100px;">
                                 <h5 class="card-title">${d.first_name || 'John'} ${d.last_name || 'John Doe'}</h5>
                                 <div class="card_container">
-                                    <div class="employee_id">#: ${d.id || ''}</div>
+                                    <div class="employee_id">#: ${d.code || ''}</div>
                                     <div class="container_top">
                                         <div class="position">
                                             <i class="fa-solid fa-dashboard"></i> <span>${d.position || 'Web Developer'}</span>
