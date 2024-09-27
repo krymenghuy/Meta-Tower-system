@@ -24,7 +24,7 @@ class Employee//extends Model
     {
         //price_list_id =11 (Normal Condition)
         $data = (object) [
-            'price_list_id' => self::getDefaultPriceList()->id,
+            'price_list_id' => self::getDefaultPriceList()->emp_id,
             'cod' => 0,
             'cod_fee' => 0,
         ];
