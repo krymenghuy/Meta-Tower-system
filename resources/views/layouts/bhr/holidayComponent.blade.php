@@ -1,4 +1,4 @@
-<div id="_main_holidayComponent">
+<div id="_main_holidayComponent"  style="display:none;padding:20px 0 0">
     {{-- formAddHoliday --}}
 
     {{-- endform --}}

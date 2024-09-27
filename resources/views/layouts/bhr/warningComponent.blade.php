@@ -1,4 +1,4 @@
-<div id="_main_warningComponent">
+<div id="_main_warningComponent" style="display:none;padding:20px 0 0">
     <div class="warning_top">
         <h4>Report</h4>
         <div class="search">
@@ -453,6 +453,7 @@
         text-align: center;
         margin-left: 40px;
     }
+
     .action i {
         cursor: pointer;
         font-size: 1.5em;

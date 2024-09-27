@@ -209,6 +209,13 @@ var PayrollComponent = new (function () {
             menus:[
 
                 {
+                    html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                    icon:`<i class="fa-regular fa-exchange fs-5"></i>`,
+
+                    cssClass:"border-bottom pb-2",
+                    name:"change_payroll_status"
+                },
+                {
                     html:'<span class="ps-2  " vslang="titles.Modify Payroll">Modify Payroll</span>',
                     icon:`<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
@@ -232,7 +239,10 @@ var PayrollComponent = new (function () {
             // },
             onClick:(menuLink, id, name)=>{
                 switch(name){
-
+                    case 'change_payroll_status':{
+                        mThis.changeStatus(id,menuLink);
+                        break;
+                    }
                     case 'edit_payroll':{
                       mThis.editPayroll(id, menuLink);
                       break;
@@ -249,6 +259,52 @@ var PayrollComponent = new (function () {
             }
         }
         new VSDropdownMenu(menuOptopns);
+    }
+
+    this.changeStatus = (id, lnk)=>{
+        // if(!AuthManager.allowed(337,false))
+        //         return;
+        //let status_code = Validator.properCase(lnk.dataset.status);
+        let tr = lnk.closest('tr');
+        let status_id = Validator.properCase(tr? tr.dataset.status_id: "");
+        let inputOptions = {
+            title: 'Set Payroll Status',
+            dataLabel: "Payroll status",
+            valueMember: "status_id",
+            textMember: "name",
+            confirmButtonText:"Save",
+            blankErrorMessage: "Status is not correct!",
+            data: [{
+                status_id: "3",
+                name: "Success"
+            },
+            {
+                status_id: "2",
+                name: "Inprogress"
+            }],
+            defaultValue: status_id
+        };
+
+        InputBox2.show(inputOptions,(d)=>{
+            if(d){
+                let p = {
+                    id: id,
+                    status_id: d.value
+                };
+                console.log(123,p);
+
+                vsapi.call(`${mThis.base_url}/hr/payroll/update-status`,p).then(res => {
+                    if(res.status_code === 200){
+
+                        InputBox2.close();
+                        cv_interact.success('The Payroll status has been updated');
+                        mThis.PayrollListView.showPage(mThis.getDataFormFilter());
+                    }
+                    else
+                        cv_interact.error(res.error_message);
+                });
+            }
+        });
     }
 
     this.editPayroll = (id, menuLink) => {
@@ -347,16 +403,18 @@ const PayRollDailog = new function() {
 
         vsapi.call(`${mThis.base_url}/hr/payroll/form-options`, { id: id }, null).then(res => {
             let d = res.status_code === 200 ? res.data : {};
-            mThis.elInfo.parentElement.classList.add('d-none');
+            // mThis.elInfo.parentElement.classList.add('d-none');
             VSUtil.setComboItems(mThis.elEmployee, d.employees, 'id', 'name', true, '(Select Employee)', null);
-          
+
 
             mThis.elEmployee.addEventListener('change', () => {
                 let id = mThis.elEmployee.value;
                 console.log(22222, id);
 
-                vsapi.call(`${mThis.base_url}/hr/payroll/form-options`, { id: id }, null).then(res => {
-                    let d = res || {};
+                vsapi.call(`${mThis.base_url}/hr/employee/details`, { id: id }, null).then(res => {
+                    let d = res.data || {};
+                    console.log(1111, d);
+
                     if (d) {
                         mThis.elInfo.parentElement.classList.remove('d-none');
                         mThis.elInfo.innerHTML = `
@@ -381,13 +439,10 @@ const PayRollDailog = new function() {
 
                             </div>`;
                     }
-
-                    VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'name', true, '(Select Position)', null);
-                    VSUtil.setComboItems(mThis.elStatusId, d.status, 'id', 'name', true, '(Select Status)', null);
                     console.log(33333, d);
-                    onFinish(d);
                 });
             });
+            onFinish(d);
         });
     };
 
@@ -397,7 +452,7 @@ const PayRollDailog = new function() {
     this.show = (options) => {
         if (!options) options = {};
         mThis.options = options;
-        let id = options.id??null;
+        let id = options.id ??null;
 
         mThis.prepareData(id,{},data => {
             if(data.payrolls){

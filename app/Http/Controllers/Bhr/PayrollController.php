@@ -22,10 +22,7 @@ class PayrollController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->payroll_id ?? $req->id;
-        $payroll = new Payroll($id, $ss);
-        $res = $payroll->save($req->all());
-        return JDV::raw($res);
+        return $this->payrollModel->save($req->all(), $ss);
     }
 
     public function getPayrollList(Request $req)
@@ -90,8 +87,8 @@ class PayrollController extends Controller
         }
 
         $id = $req->id ? $req->id : $req->id;
-        $leave = new Payroll($id, $ss);
-        $res = $leave->updateStatus($req->action_id, $id);
+        $payroll = new Payroll($id, $ss);
+        $res = $payroll->updateStatus($req->status_id, $id);
 
         return JDV::raw($res);
     }
