@@ -22,7 +22,7 @@ class LeaveManagementController extends Controller
             return JDV::raw($ss);
         }
 
-        return JDV::result($this->leavemanagement->save($req->all(), $ss));
+        return $this->leavemanagement->save($req->all(), $ss);
     }
 
     public function getLeaveManagementListPaginate(Request $req)
@@ -32,7 +32,7 @@ class LeaveManagementController extends Controller
             return JDV::raw($ss);
         }
 
-        return $this->leavemanagement->getLeaveManagementListPaginate($req->all(), $ss);
+        return JDV::result($this->leavemanagement->getLeaveManagementListPaginate($req->all(), $ss));
     }
 
     public function getDetails(Request $req)
@@ -42,7 +42,7 @@ class LeaveManagementController extends Controller
             return JDV::raw($ss);
         }
 
-        return $this->leavemanagement->getDetails($req->all(), $ss);
+        return $this->leavemanagement->getDetails($req->id, $ss);
     }
 
 
@@ -66,4 +66,17 @@ class LeaveManagementController extends Controller
         return JDV::result($this->leavemanagement->getFormOptions($req->id, $ss));
     }
 
+   public function updateStatus(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        $id = $req->id ? $req->id : $req->id;
+        $leave = new LeaveManagement($id, $ss);
+        $res = $leave->updateStatus($req->action_id, $id);
+
+        return JDV::raw($res);
+    }
 }

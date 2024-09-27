@@ -2,12 +2,9 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\Bhr\GeneralSettings;
 use App\Models\DV;
-use App\Models\PublicStorage;
 use App\Models\Bhr\Employee;
 use DB;
-use App\Models\DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 class LeaveManagement
 {
@@ -78,6 +75,7 @@ class LeaveManagement
 
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
+        $search_status_id = $d->status_id ?? null;
 
         $str_search = '1=1';
 
@@ -92,6 +90,10 @@ class LeaveManagement
             $query->where('lm.id', $search_id);
         }
 
+        if ($search_status_id) {
+            $query->where('lm.action_id', $search_status_id);
+        }
+
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $str_search = "e.first_name like '%{$search_value}%' or e.last_name like '%{$search_value}%' or lm.permission_details like '%{$search_value}%' or pos.name like '%{$search_value}%'";
@@ -99,13 +101,13 @@ class LeaveManagement
         }
 
         $count = $query->count();
-        $query->orderBy('lm.id', 'asc');
+        $query->orderBy('lm.id', 'desc');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->emp_photo) {
-              $row->image_url = Employee::getProfilePicture($row->id);
+              $row->image_url = Employee::getProfilePicture($row->emp_id);
             }
             unset($row->emp_photo);
         }
@@ -115,7 +117,7 @@ class LeaveManagement
 
 
 
-    function getDetails($id)
+    function getDetails($id ,$ss =null)
     {
         $row = DB::table('leave_managements as lm')
         ->join('action as a', 'a.id', '=', 'lm.action_id')
@@ -162,13 +164,28 @@ class LeaveManagement
         }
         return (object) [
 
-            'employees' => DB::table('employees')->selectRaw('id,first_name,last_name')->get(),
+            'employees' => DB::table('employees')->selectRaw('id,CONCAT(first_name," ",last_name) as name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,name')->get(),
             'status' => DB::table('action')->selectRaw('id,name')->get(),
 
             'leave' => $leave,
         ];
 
+    }
+
+
+
+    function updateStatus($action_id, $id = null, $ss = null)
+    {
+
+        $ss = $ss ? $ss : $this->userInfo;
+        $x = DB::table('leave_managements')->where('id', $id)->update([
+            'action_id' => $action_id,
+            'update_user'=>$ss->full_name,
+            'update_date'=>getNowTime(),
+            'update_uid'=>$ss->user_id
+        ]);
+        return DV::depends($x, ['leave management status', 'updated']);
     }
 
 

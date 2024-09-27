@@ -91,6 +91,12 @@ class Employee//extends Model
         $id = saveData($ss, 'employees', ['id' => $id], $inputs, [], 1);
 
         if ($id > 0) {
+            $new_code = null; // $this->getNextSenderCode($ss);
+            if($id){
+            $prefix = 'EM';
+            $res = setOfficialCode($branch_id,'employee_code_control','employees',['id'=>$id],$prefix,5,null);
+            $new_code = $res->code;
+            }
             if ($delete_prev_image) {
                 $file_name = DB::table('employees as em')->where('em.id', $id)->take(1)->value('em.photo_file_name');
                 if ($file_name) {
@@ -145,6 +151,7 @@ class Employee//extends Model
         ->join('dep_status as ds', 'ds.id', '=', 'em.status_id')
         ->join('sessions as s', 's.id', '=', 'em.session_id')
         ->selectRaw('
+            em.code,
             em.id,
             em.first_name,
             em.last_name,
@@ -223,6 +230,7 @@ class Employee//extends Model
         ->join('dep_status as ds', 'ds.id', '=', 'em.status_id')
         ->join('sessions as s', 's.id', '=', 'em.session_id')
         ->selectRaw('
+            em.code,
             em.id,
             em.first_name,
             em.last_name,

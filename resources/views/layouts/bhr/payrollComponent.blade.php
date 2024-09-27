@@ -43,37 +43,13 @@
             </div>
             <div class="modal-body">
                 <div class="row gap-0" id="_sdl_payroll_info">
-
-                    <div class="col-lg-6">
-                        <div class="width-height-social-icon d-flex align-items-center justify-content-center border-primary border rounded-3 overflow-hidden position-relative"
-                            style="height: 280px" aria-label="image">
-                            <div id="dlg_image_chooser"
-                                class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
-                                <i class="fa-regular fa-image fs-4 text-muted"></i>
-                            </div>
-                        </div>
+                    <div class="form-group col-12">
+                        <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
+                        <select class=" data-input" id="_sdl_name_id" data-field="emp_id"></select>
                     </div>
-                    <div class="col-lg-6">
-                        <div class="form-group">
-                            <label for="name" class="form-label trans-text" data-langprop="titles.Name">Name</label>
-                            <input type="text" class="form-control data-input" data-field="name" />
-                        </div>
-                        <div class="form-group">
-                            <label for="email" class="form-label trans-text"
-                                data-langprop="titles.Email">Email</label>
-                            <input type="text" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
-                        </div>
-                        <div class="form-group">
-                            <label for="phone_number" class="form-label trans-text"
-                                data-langprop="titles.Phone Number">Phone Number</label>
-                            <input type="text" class="form-control data-input" data-field="phone_number" />
-                        </div>
-                    </div>
+                    <div class="form-group  col-12 d.none">
 
-
-                    <div class="form-group col-lg-6">
-                        <label for="name" class="form-label trans-text" data-langprop="titles.Position"></label>
-                        <select class=" data-input" id="_sdl_position_id" data-field="position_id"></select>
+                        <div id="info"></div>
                     </div>
                     <div class="form-group col-lg-6">
                         <label for="name" class="form-label trans-text" data-langprop="titles.Rate"></label>
@@ -89,22 +65,9 @@
                         <input type="date" class="form-control data-input" data-field="end_date" />
                     </div>
                     <div class="form-group col-lg-6">
-                        <label for="name" class="form-label trans-text"
-                            data-langprop="titles.Working Hours"></label>
-                        <select id="_sdl_cod" class="form-control data-input" data-field="working_hours">
-                            <option value="Full Day">Full Day</option>
-                            <option value="Half Day">Half Day</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-lg-6">
                         <label for="name" class="form-label trans-text" data-langprop="titles.Salary"></label>
                         <input type="text" class="form-control data-input" data-field="salary" />
                     </div>
-                    <div class="form-group col-lg-6">
-                        <label for="name" class="form-label trans-text" data-langprop="titles.Status"></label>
-                        <select class=" data-input" id="_sdl_status_id" data-field="status_id"></select>
-                    </div>
-
                 </div>
             </div>
             <div class="modal-footer">

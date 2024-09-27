@@ -1686,10 +1686,31 @@ ul.list-filter-um li:not(li:last-child) {
     gap:0 !important;
 }
 
+.table--white {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    font-size: small !important;
+    font-weight: normal !important;
+    text-align: left !important;
+    /* border-radius: 0.5rem !important; */
+    text-align: center !important;
 
+}
 
+.table--white thead th {
+    color: white!important;
+    /* border-radius: 0.5rem !important; */
+    background-color:#000000 !important;
+}
 
-
+.table--white tr:hover {
+    background: skyblue !important;
+    color: #FFFFFF !important;
+    font-size: small !important;
+    font-weight: normal !important;
+    text-align: center !important;
+    border: none !important;
+}
 
 
 
