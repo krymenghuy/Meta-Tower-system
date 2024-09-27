@@ -172,9 +172,22 @@
             </div>
         </div>
         <div class="center_mid">
-            <div class="chart">
-                <canvas id="myChart"></canvas>
+            <h5>Top Staffs</h5>
+            <div class="top_staffs">
+                <div class="top2">
+                    <img src="assets/images/logo/logo_add.png" alt="">
+                    <span>Chanrith</span>
+                </div>
+                <div class="top1">
+                    <img src="assets/images/logo/logo_add.png" alt="">
+                    <span>Meng Chhorng</span>
+                </div>
+                <div class="top3">
+                    <img src="assets/images/logo/logo_add.png" alt="">
+                    <span>Darith</span>
+                </div>
             </div>
+            <canvas id="myChart"></canvas>
         </div>
         <div class="center_right">
             <h5>Attendance Today</h5>
@@ -321,44 +334,44 @@
         }
     };
 
-    var myChart = new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-            datasets: [{
-                    label: 'MengChhorng',
-                    data: [1400, 700, 100, 1000, 1100, 800],
-                    backgroundColor: 'rgba(255, 99, 132, 0.6)',
-                    borderColor: 'rgba(255, 99, 132, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Darith',
-                    data: [600, 900, 300, 1300, 500, 1000],
-                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
-                    borderColor: 'rgba(54, 162, 235, 1)',
-                    borderWidth: 1
-                },
-                {
-                    label: 'Channrith',
-                    data: [1200, 900, 1500, 760, 1100, 1600],
-                    backgroundColor: 'rgba(75, 192, 192, 0.6)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }
-            ]
-        },
-        options: {
-            plugins: {
-                barShadow: {}
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+    // var myChart = new Chart(ctx, {
+    //     type: 'bar',
+    //     data: {
+    //         labels: ['January', 'February', 'March', 'April', 'May', 'June'],
+    //         datasets: [{
+    //                 label: 'MengChhorng',
+    //                 data: [1400, 700, 100, 1000, 1100, 800],
+    //                 backgroundColor: 'rgba(255, 99, 132, 0.6)',
+    //                 borderColor: 'rgba(255, 99, 132, 1)',
+    //                 borderWidth: 1
+    //             },
+    //             {
+    //                 label: 'Darith',
+    //                 data: [600, 900, 300, 1300, 500, 1000],
+    //                 backgroundColor: 'rgba(54, 162, 235, 0.6)',
+    //                 borderColor: 'rgba(54, 162, 235, 1)',
+    //                 borderWidth: 1
+    //             },
+    //             {
+    //                 label: 'Channrith',
+    //                 data: [1200, 900, 1500, 760, 1100, 1600],
+    //                 backgroundColor: 'rgba(75, 192, 192, 0.6)',
+    //                 borderColor: 'rgba(75, 192, 192, 1)',
+    //                 borderWidth: 1
+    //             }
+    //         ]
+    //     },
+    //     options: {
+    //         plugins: {
+    //             barShadow: {}
+    //         },
+    //         scales: {
+    //             y: {
+    //                 beginAtZero: true
+    //             }
+    //         }
+    //     }
+    // });
     var ctx = document.getElementById('attendanceChart').getContext('2d');
     var attendanceChart = new Chart(ctx, {
         type: 'doughnut',
@@ -494,17 +507,19 @@
         display: flex;
         box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.564);
         flex-direction: column;
+        align-items: center;
         justify-content: space-between;
         background-color: #E1ECF7;
-        width: 35%;
-        padding: 20px;
-        gap: 0.5rem;
+        width: 40%;
+        padding: 10px;
         border-radius: 20px;
     }
 
     .leave_cards {
         display: flex;
-        height: 250px;
+        width: 100%;
+        height: 280px;
+        gap: 0.5rem;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
@@ -539,7 +554,7 @@
         outline: none;
         color: white;
         padding: 5px;
-        width: 90px;
+        width: 100px;
         font-size: 12px;
         border-radius: 20px;
     }
@@ -562,22 +577,27 @@
     }
 
     /* Styling for Chart */
-    .center_mid{
-        width: 45%;
-        height: 350px;
-        background-color: #ffffff;
-        box-shadow: 1px 2px 3px 1px rgba(0, 0, 0, 0.564);
-        border-radius: 20px;
-    }
-    .center_right {
-        width: 17%;
+    .center_mid {
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        padding: 20px;
+        width: 40%;
         height: 350px;
         background-color: #ffffff;
         box-shadow: 1px 2px 3px 1px rgba(0, 0, 0, 0.564);
         border-radius: 20px;
     }
 
-    .chart {
+    .center_right {
+        width: 20%;
+        height: 350px;
+        background-color: #ffffff;
+        box-shadow: 1px 2px 3px 1px rgba(0, 0, 0, 0.564);
+        border-radius: 20px;
+    }
+
+    .top_staffs {
         width: 100%;
         height: 400px;
         display: flex;
@@ -585,6 +605,45 @@
         align-items: center;
     }
 
+    .top1,
+    .top2,
+    .top3 {
+        display: flex;
+        gap: 1rem;
+        width: 130px;
+        height: 130px;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+
+    .top1 {
+        margin-bottom: 20%;
+    }
+
+    .top2,
+    .top3 {
+        margin-top: 30%;
+    }
+
+    .top1 img,
+    .top2 img,
+    .top3 img {
+        width: 100px;
+        height: 100px;
+        border-radius: 50% 50% 0% 50%;
+        object-fit: cover;
+    }
+    .top1 span,
+    .top2 span,
+    .top3 span {
+        width: 100%;
+        background-color: rgb(108, 202, 227);
+        color: white;
+        padding: 5px;
+        border-radius: 20px 0px 20px 0px;
+    }
     #myChart {
         max-width: 600px;
         max-height: 400px;
