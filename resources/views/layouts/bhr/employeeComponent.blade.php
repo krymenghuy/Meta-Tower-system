@@ -1,4 +1,16 @@
 <style>
+    #_employee_list {
+        display: flex;
+        flex-wrap: wrap;
+        height: 620px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+        gap: 10px;
+        justify-content: center;
+        padding: 20px;
+    }
+
     .card {
         border-radius: 10px;
         box-shadow: 0px 0px 10px 0px #000000;
