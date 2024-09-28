@@ -118,16 +118,16 @@ echo $user->lang ?? 'en'; ?>">
                 <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
                     <div class="animation-line line--loader" style="display:none" id="vs_loader"></div>
                     <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
-                        <div class="d-flex flex-row flex-wrap justify-content-between">
+                        <div class="d-flex flex-row flex-wrap shadow bg-secondary justify-content-between">
                             <div class="mainview-top-right">
-                                <div class="show--title flex-grow-1">
-                                    <div class="screen-info">
-                                        <h5 class="screen-title mb-0 " vslang="titles.dashboard"
-                                            style="text-transform:uppercase" id="screen_title">Dashboard</h5>
+                                <div class="show--title mx-4 p-3 flex-grow-1 ">
+                                    <div class="screen-info  w-50">
+                                        <h6 class="screen-title mb-0 " vslang="titles.dashboard"
+                                            style="color:grey;" id="screen_title">Dashboard</h6>
                                     </div>
                                 </div>
                                 <div id="_main_top_right_menus"
-                                    class="d-flex flex-row gap-2 flex-wrap justify-content-center align-items-center">
+                                    class="d-flex flex-row gap-2 w-50 flex-wrap px-5 justify-content-end align-items-center">
                                     <div class="dropdown shadow-lg rounded-5 bg-white choose--language">
                                         <button id="_main_btn_lang" class="btn-dropdown align--language"
                                             data-menu="lang">
@@ -162,7 +162,7 @@ echo $user->lang ?? 'en'; ?>">
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="dropdown mr-3 shadow-lg rounded-5 bg-white nav--notification">
+                                    <div class="dropdown  shadow-lg rounded-5 bg-white nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
                                             <i class="fa-regular fa-bell fs-4"></i>
