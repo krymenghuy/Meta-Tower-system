@@ -60,6 +60,7 @@
     }
 
     .kt-aside__brand-logo {
+        height: 150px;
         display: flex;
         flex-direction: column;
         align-items: center;
@@ -86,7 +87,7 @@
 
     .company img {
         width: 60px;
-        height: 50px;
+        height: 60px;
         border-radius: 50%;
     }
 
@@ -141,9 +142,9 @@ function v_display($mod_id, $module_ids = null)
     <div id="kt_aside_menu" class="kt-aside-menu" data-ktmenu-vertical="1" data-ktmenu-scroll="1"
         data-ktmenu-dropdown-timeout="500">
         <div class="kt-aside__brand-logo">
-            <div class="company">
+            <div class="company pt-3">
                 <img src="{{ asset('assets/images/logo/lc_logo.svg') }}" alt="" class="img-logo" />
-                <span class="company_name">LC CASH EXPRESS CO.,LTD.</span>
+                <span class="company_name mt-3">LC CASH EXPRESS CO.,LTD.</span>
                 {{-- <div class="kt-aside__brand kt-grid__item" id="kt_aside_brand">
                     <div class="kt-aside__brand-tools">
                         <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler"
@@ -250,7 +251,15 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Attendance Management"></span>
                 </a>
             </li>
-          
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+                <a href="EmployeeBenefitComponent" modid="-1" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons"
+                            src="{{ asset('assets/images/bhr/User_check.svg') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Employee Benefit"></span>
+                </a>
+            </li>
 
             {{-- <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Employee Movements"></h4>
