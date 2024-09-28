@@ -1,4 +1,4 @@
-<div id="_main_dashboardComponent">
+<div id="_main_dashboardComponent" style="display:none;padding:20px 0 0">
     <div class="dashboard_top">
         <div class="employees">
             <div class="total_employee">

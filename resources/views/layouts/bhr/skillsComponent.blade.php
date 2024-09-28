@@ -1,4 +1,4 @@
-<div id="_main_skillsComponent" style="display:none;padding:0px">
+<div id="_main_skillsComponent"  style="display:none;padding:20px 0 0">
     {{-- formAddSkill --}}
     <div class="container">
         <button type="button" class="btn" id="btnAdd">

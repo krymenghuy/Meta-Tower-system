@@ -1,4 +1,4 @@
-<div id="_main_payrollComponent">
+<div id="_main_payrollComponent"  style="display:none;padding:20px 0 0">
     <div class="d-flex  p-3 justify-content-between w-100 " id="_divFilter">
         <div class="d-flex align-items-center w-50 gap-2">
             <div class="w-50">
@@ -81,13 +81,3 @@
         </div>
     </div>
 </div>
-<style>
-    #_payroll_list{
-        height: 550px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-        gap: 10px;
-        justify-content: center;
-    }
-</style>

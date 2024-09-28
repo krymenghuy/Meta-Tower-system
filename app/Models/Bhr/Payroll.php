@@ -2,10 +2,7 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\Bhr\GeneralSettings;
-use App\Models\DBX;
 use App\Models\DV;
-use App\Models\PublicStorage;
 use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -52,91 +49,92 @@ class Payroll
     }
 
     function getPayrollListPaginate($arr, $ss)
-{
-    $d = (object) $arr;
-    $branch_id = $ss->branch_id;
+    {
+        $d = (object) $arr;
+        $branch_id = $ss->branch_id;
 
-    $current_page = $d->current_page ?? 1;
-    $per_page = $d->per_page ?? 10;
-    if (!is_numeric($current_page)) {
-        $current_page = 1;
-    }
-
-    $skip_rows = ($current_page - 1) * $per_page;
-
-    $search_value = $d->search_value ?? null;
-    $search_id = $d->id ?? null;
-    $sort_by = $d->sort_by ?? 'pay.id';
-    $sort_order = $d->sort_order ?? 'asc';
-    $search_position_id = $d->position_id ?? null;
-    $search_status_id = $d->status_id ?? null;
-
-    $query = DB::table('payrolls as pay')
-        ->join('employees as e', 'e.id', '=', 'pay.emp_id')
-        ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
-        ->join('statuses as s', 's.id', '=', 'pay.status_id')
-        ->join('sessions as sec', 'sec.id', '=', 'e.session_id')
-        ->selectRaw('pay.id,
-                    e.id as emp_id,
-                    e.first_name,
-                    e.last_name,
-                    e.email,
-                    e.phone_number,
-                    e.positions_id as emp_position_id,
-                    pos.name as position,
-                    e.session_id as emp_section_id,
-                    sec.name as section,
-                    pay.rate,
-                    pay.start_date,
-                    pay.end_date,
-                    pay.salary,
-                    pay.status_id,
-                    s.name as status,
-                    e.photo_file_name as emp_photo')
-        ->where('pay.branch_id', $branch_id);
-
-    if ($search_id) {
-        $query->where('pay.id', $search_id);
-    }
-
-    if ($search_position_id) {
-        $query->where('pos.id', $search_position_id);
-    }
-
-    if ($search_status_id) {
-        $query->where('s.id', $search_status_id);
-    }
-
-    if ($search_value) {
-        $search_value = DB::raw('%' . $search_value . '%');
-        $query->where(function ($q) use ($search_value) {
-            $q->where('e.first_name', 'like', $search_value)
-                ->orWhere('e.last_name', 'like', $search_value)
-                ->orWhere('pos.name', 'like', $search_value)
-                ->orWhere('s.name', 'like', $search_value)
-                ->orWhere('pay.rate', 'like', $search_value)
-                ->orWhere('pay.start_date', 'like', $search_value)
-                ->orWhere('pay.end_date', 'like', $search_value)
-                ->orWhere('pay.working_hours', 'like', $search_value)
-                ->orWhere('pay.salary', 'like', $search_value);
-        });
-    }
-
-    $query->orderBy($sort_by, $sort_order);
-
-    $count = $query->count('pay.id');
-    $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-    foreach ($rows as $row) {
-        $row->image_url = '';
-        if ($row->emp_photo) {
-            $row->image_url = Employee::getProfilePicture($row->emp_id);
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 10;
+        if (!is_numeric($current_page)) {
+            $current_page = 1;
         }
-        unset($row->emp_photo);
-    }
 
-    return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-}
+        $skip_rows = ($current_page - 1) * $per_page;
+
+        $search_value = $d->search_value ?? null;
+        $search_id = $d->id ?? null;
+        $sort_by = $d->sort_by ?? 'pay.id';
+        $sort_order = $d->sort_order ?? 'asc';
+        $search_position_id = $d->position_id ?? null;
+        $search_status_id = $d->status_id ?? null;
+
+        $str_search = '1=1';
+         $query = DB::table('payrolls as pay')
+            ->join('employees as e', 'e.id', '=', 'pay.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
+            ->join('statuses as s', 's.id', '=', 'pay.status_id')
+            ->join('sessions as sec', 'sec.id', '=', 'e.session_id')
+            ->selectRaw('pay.id,
+                        e.id as emp_id,
+                        e.first_name,
+                        e.last_name,
+                        e.email,
+                        e.phone_number,
+                        e.positions_id as emp_position_id,
+                        pos.name as position,
+                        e.session_id as emp_section_id,
+                        sec.name as section,
+                        pay.rate,
+                        pay.start_date,
+                        pay.end_date,
+                        pay.salary,
+                        pay.status_id,
+                        s.name as status,
+                        e.photo_file_name as emp_photo')
+            ->where('pay.branch_id', $branch_id);
+
+
+        if ($search_id) {
+            $query->where('pay.id', $search_id);
+        }
+        if ($search_position_id) {
+            $query->where('e.positions_id', $search_position_id);
+        }
+        if ($search_status_id) {
+            $query->where('pay.status_id', $search_status_id);
+        }
+
+
+        if ($search_value) {
+            $str_search = "CONCAT(e.first_name,' ',e.last_name) like '%{$search_value}%' or
+            e.email like '%{$search_value}%' or
+            e.phone_number like '%{$search_value}%' or
+            pos.name like '%{$search_value}%' or
+            pay.rate like '%{$search_value}%' or
+            pay.start_date like '%{$search_value}%' or
+            pay.end_date like '%{$search_value}%' or
+            pay.salary like '%{$search_value}%' or
+            s.name like '%{$search_value}%' or
+            sec.name like '%{$search_value}%' ";
+        }
+
+        $query->whereRaw($str_search);
+
+        $query->orderBy($sort_by, $sort_order);
+
+        $count = $query->count('pay.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        foreach ($rows as $row) {
+            $row->image_url = '';
+            if ($row->emp_photo) {
+                $row->image_url = Employee::getProfilePicture($row->emp_id);
+            }
+            unset($row->emp_photo);
+        }
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
 
 
     function getDetails($id, $ss)
@@ -206,24 +204,37 @@ class Payroll
         }
         return (object) [
             'sort_by' => [
-                ['id' => 'pay.name', 'name' => 'By Name'],
-                ['id' => 'pay.email', 'name' => 'By Email'],
-                ['id' => 'pay.phone_number', 'name' => 'By Phone Number'],
+                ['id' => 'e.first_name', 'name' => 'By First Name'],
+                ['id' => 'e.last_name', 'name' => 'By Last Name'],
+                ['id' => 'e.email', 'name' => 'By Email'],
+                ['id' => 'e.phone_number', 'name' => 'By Phone Number'],
                 ['id' => 'pos.name', 'name' => 'By Position'],
                 ['id' => 'pay.rate', 'name' => 'By  Rate'],
                 ['id' => 'pay.salary', 'name' => 'By Salary'],
                 ['id' => 'pay.start_date', 'name' => 'By Start Date'],
                 ['id' => 'pay.end_date', 'name' => 'By End Date'],
-                ['id' => 'pay.working_hours', 'name' => 'By Working Hours'],
-                ['id' => 'pay.photo_file_name', 'name' => 'By Photo'],
 
             ],
+            'employees' => DB::table('employees')->selectRaw('id,CONCAT(first_name," ",last_name) as name')->get(),
             'status' => DB::table('statuses')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,name')->get(),
-            'employees' => DB::table('employees')->selectRaw('id,CONCAT(first_name," ",last_name) as name')->get(),
+
 
             'payrolls' => $payroll,
         ];
 
+    }
+
+    function updateStatus($status_id, $id = null, $ss = null)
+    {
+
+        $ss = $ss ? $ss : $this->userInfo;
+        $x = DB::table('payrolls')->where('id', $id)->update([
+            'status_id' => $status_id,
+            'update_user'=>$ss->full_name,
+            'update_date'=>getNowTime(),
+            'update_uid'=>$ss->user_id
+        ]);
+        return DV::depends($x, ['Payroll  status', 'updated']);
     }
 }

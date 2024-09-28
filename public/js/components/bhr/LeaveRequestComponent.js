@@ -388,8 +388,8 @@ const LeaveRequestDailog = new function() {
                 let id = mThis.elEmployee.value;
                 console.log(22222,id);
 
-                vsapi.call(`${mThis.base_url}/hr/leave-management/details`, { id: id }, null).then(res => {
-                    let d = res || {};
+                vsapi.call(`${mThis.base_url}/hr/employee/details`, { id: id }, null).then(res => {
+                    let d = res.data || {};
                     if(d){
                         mThis.elInfo.parentElement.classList.remove('d-none');
                         mThis.elInfo.innerHTML =`<div class="d-block border border-info p-2">

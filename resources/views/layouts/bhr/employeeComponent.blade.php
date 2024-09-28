@@ -1,15 +1,4 @@
 <style>
-    #_employee_list {
-        display: flex;
-        flex-wrap: wrap;
-        height: 620px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-        gap: 10px;
-        justify-content: center;
-        padding: 20px;
-    }
 
     .card {
         border-radius: 10px;
@@ -98,7 +87,7 @@
     }
 </style>
 
-<div id="_main_employeeComponent">
+<div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
     <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter_emp">
         <div class="d-flex align-items-center w-100 gap-2">
             <div class="d-flex align-items-center w-100 gap-2">
@@ -124,7 +113,7 @@
     <div id="_employee_list" class="p-3">
 
     </div>
-    <div id="container_pagination" class=""></div>
+    <div id="container_pagination" class=" "></div>
 </div>
 {{-- end h --}}
 <div class="modal fade" id="dlg_sdl_add_employee" tabindex="-1" aria-labelledby="dlg_sdl_add_employee_title"

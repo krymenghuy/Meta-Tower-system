@@ -1,4 +1,4 @@
-<div id="_main_jobsLevelComponent">
+<div id="_main_jobsLevelComponent"  style="display:none;padding:20px 0 0">
     <div class="top_level_card">
         <div class="card_title">TOP JOBS</div>
         <div class="cards">
@@ -62,7 +62,7 @@
             <input class="searchJobLevel" type="text" id="searchJobLevel" placeholder="Search here.....">
         </div>
     </div>
-    <div id="_job_level_list">    
+    <div id="_job_level_list">
     </div>
 </div>
 <style>
