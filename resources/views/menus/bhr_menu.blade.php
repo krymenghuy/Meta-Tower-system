@@ -175,26 +175,9 @@ function v_display($mod_id, $module_ids = null)
                 </a>
             </li>
 
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
-                <a href="DepartmentComponent" modid="202" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        <i class="fas fa-truck-plane icons opacity-icons"></i>
-                        <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/package_trail.svg') }}" /> -->
-                    </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Department"></span>
-                </a>
-            </li>
+            
 
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(214); ?>>
-                <a href="PositionComponent" modid="214" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        <!-- <i class="fa fa-users icons opacity-icons"></i> -->
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/gmail_groups.svg') }}" />
-                    </span>
-                    <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Position Menagement"></span>
-                </a>
-            </li>
+        
 
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(205); ?>>
                 <a href="EmployeeComponent" modid="205" class="menu-item kt-menu__link">
@@ -203,7 +186,7 @@ function v_display($mod_id, $module_ids = null)
                         <i class="fas fa-tasks icons opacity-icons"></i>
                         <!-- <svg class="icons opacity-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.<path d="M139.6 35.5a12 12 0 0 0 -17 0L58.9 98.8l-22.7-22.1a12 12 0 0 0 -17 0L3.5 92.4a12 12 0 0 0 0 17l47.6 47.4a12.8 12.8 0 0 0 17.6 0l15.6-15.6L156.5 69a12.1 12.1 0 0 0 .1-17zm0 159.2a12 12 0 0 0 -17 0l-63.7 63.7-22.7-22.1a12 12 0 0 0 -17 0L3.5 252a12 12 0 0 0 0 17L51 316.5a12.8 12.8 0 0 0 17.6 0l15.7-15.7 72.2-72.2a12 12 0 0 0 .1-16.9zM64 368c-26.5 0-48.6 21.5-48.6 48S37.5 464 64 464a48 48 0 0 0 0-96zm432 16H208a16 16 0 0 0 -16 16v32a16 16 0 0 0 16 16h288a16 16 0 0 0 16-16v-32a16 16 0 0 0 -16-16zm0-320H208a16 16 0 0 0 -16 16v32a16 16 0 0 0 16 16h288a16 16 0 0 0 16-16V80a16 16 0 0 0 -16-16zm0 160H208a16 16 0 0 0 -16 16v32a16 16 0 0 0 16 16h288a16 16 0 0 0 16-16v-32a16 16 0 0 0 -16-16z"/></svg> -->
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Employee"></span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Employee Management"></span>
                 </a>
             </li>
 
@@ -414,7 +397,17 @@ function v_display($mod_id, $module_ids = null)
                 <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Settings"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li> -->
-            {{-- /* skills*/ --}}
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(214); ?>>
+                <a href="PositionComponent" modid="214" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <!-- <i class="fa fa-users icons opacity-icons"></i> -->
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/gmail_groups.svg') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color trans-text"
+                        data-langprop="menus.Position Menagement"></span>
+                </a>
+            </li>
+
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                 <a href="SkillsComponent" modid="-1" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -424,14 +417,21 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Skills"></span>
                 </a>
             </li>
-            {{-- /*skills*/ --}}
-            {{-- /* jobs level*/ --}}
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                 <a href="JobsLevelComponent" modid="-1" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <i class="fas fa-tasks icons opacity-icons"></i>
                     </span>
                     <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Job Level"></span>
+                </a>
+            </li>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
+                <a href="DepartmentComponent" modid="202" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <i class="fas fa-truck-plane icons opacity-icons"></i>
+                        <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/package_trail.svg') }}" /> -->
+                    </span>
+                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Department"></span>
                 </a>
             </li>
             {{-- /*jobs level*/ --}}

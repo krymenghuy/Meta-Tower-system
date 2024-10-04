@@ -1,9 +1,9 @@
-<div id="_main_dashboardComponent" style="display:none;padding:20px 0 0">
+<div id="_main_dashboardComponent" style="display:none;padding:20px 0 0; overflow:auto;">
     <div class="dashboard_top" id="_dashboard_top">
       
     </div>
-    <div class="dashboard_center">
-        <div class="center_left">
+    <div class="dashboard_center" id="_dashboard_center">
+    <div class="center_left">
             <div class="leave_title">
                 <h5 class="leave_title_text">On Leave Today</h5>
             </div>
@@ -33,7 +33,7 @@
                         <div class="em_name">Layhor Met</div>
                     </div>
                     <select name="em_position" id="em_position" class="em_position">
-                        <option value="Positions">Postions</option>
+                        <option value="Positions">Positions</option>
                         <option value="Web Designer">Web Designer</option>
                         <option value="UX/UI Designer">UX/UI Designer</option>
                         <option value="Data Analyst">Data Analyst</option>
@@ -52,7 +52,7 @@
                         <div class="em_name">Layhor Met</div>
                     </div>
                     <select name="em_position" id="em_position" class="em_position">
-                        <option value="Positions">Postions</option>
+                        <option value="Positions">Positions</option>
                         <option value="Web Designer">Web Designer</option>
                         <option value="UX/UI Designer">UX/UI Designer</option>
                         <option value="Data Analyst">Data Analyst</option>
@@ -158,9 +158,10 @@
                 <li><strong>Warning</strong><span>15</span></li>
             </ul>
         </div>
+      
     </div>
-    <div class="dashboard_bottom">
-        <div class="em_departement">
+    <div class="dashboard_bottom" id="_dashboard_bottom">
+    <div class="em_departement">
             <h3 class="d-flex align-items-start">Employee By Department</h3>
             <table class="table  bg-white rounded-4">
                 <thead>
