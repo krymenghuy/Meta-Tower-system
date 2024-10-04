@@ -7,6 +7,8 @@ var DashboardComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_dashboardComponent");
     this.self = this.jm[0];
     this.dashboard_top = mThis.self.querySelector('#_dashboard_top');
+    this.dashboard_center = mThis.self.querySelector('#_dashboard_center');
+    this.dashboard_Bottom  = mThis.self.querySelector('#_dashboard_bottom');
     // this.initAlready = false;
 
     // Initialize component
@@ -72,6 +74,7 @@ var DashboardComponent = new (function () {
         mThis.dashboard_top.innerHTML = html;
 
     }
+  
     this.loadCards = (onFinish)=>{
         let p={};
   
@@ -80,6 +83,7 @@ var DashboardComponent = new (function () {
             console.log(123,data);   
 
             mThis.renderDashboardTop();
+
             onFinish();
           });
     }
@@ -88,7 +92,17 @@ var DashboardComponent = new (function () {
         mThis.loadCards(onFinish);
 
     }
+    this.setDashboardScroll = ()=>{
+        const parent = mThis.self;
+        parent.style.height = (window.innerHeight - 100)+'px';
+        parent.classList.add('overflow-y-auto');
+        parent.classList.add('overflow-x-hidden');
+        window.onresize = () => {
+            parent.style.height = (window.innerHeight - 100)+'px';
+        }
+    }
     this.show =  (options) => {
+        mThis.setDashboardScroll();
         mThis.init();
         if(!options) options = {};
         main_view.setTitle(mThis.title_prop);
@@ -97,4 +111,6 @@ var DashboardComponent = new (function () {
             mThis.jm.fadeIn(250);
         });
     };
+    
 })();
+

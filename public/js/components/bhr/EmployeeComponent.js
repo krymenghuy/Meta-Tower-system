@@ -5,14 +5,17 @@ var EmployeeComponent = new (function () {
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_employeeComponent");
     this.self = this.jm[0];
-    this.title_prop = "Employee";
+    this.title_prop = "Employee management";
     this.elStatus = this.self.querySelector('#el_status');
     this.btnAdd = this.self.querySelector("#_btnAddEmployee");
     this.divFilter = this.self.querySelector("#_divFilter_emp");
     this.elSearch = this.self.querySelector("#_sdl_search_employee");
-    this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
     this.employee_detail = mThis.self.querySelector('#_employee_detail');
     this.containerPagination = mThis.self.querySelector('#container_pagination');
+
+
+   
+
     let div = mThis.self.querySelector('#_employee_list');
     this.init= () => {
         if(mThis.initAlready) return;
@@ -86,7 +89,7 @@ var EmployeeComponent = new (function () {
 
         let html = '';
         html += `<div id="_scroll_emp">
-            <div id="_employee_detail" class="row">
+            <div id="_employee_detail" class="row px-3">
         `;
 
         let cmt = 0;
@@ -178,13 +181,7 @@ var EmployeeComponent = new (function () {
         }, 200);
     });
 
-    mThis.btnSearch.onclick = e => {
-        if (mThis.EmployeeListView) {
-            mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
-        } else {
-            console.error("listView is not defined");
-        }
-    };
+  
 
     this.getDataFormFilter = () => {
         let p = {};
