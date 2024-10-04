@@ -5,13 +5,15 @@
             <input class="filter-field" type="text" id="_warning_search" placeholder="Search Warning Here ........">
         </div>
         <div class="top_actions">
-            <div class="btnAddWarning"><i class="fa fa-plus"></i>Add Warning</div>
+            <div class="btnAddWarning" data-bs-toggle="modal" data-bs-target="#addWarningModal">
+                <i class="fa fa-plus"></i>Add Warning
+            </div>
             <div class="btnExportWarning"><i class="fa fa-download"></i>Export Warning</div>
         </div>
-        <!-- Modal for Adding New Warning -->
     </div>
-    <div class="modal fade" id="addWarningModal" tabindex="-1" aria-labelledby="addWarningModalLabel"
-        aria-hidden="true">
+
+    <!-- Modal for Adding New Warning -->
+    <div class="modal fade" id="addWarningModal" tabindex="-1" aria-labelledby="addWarningModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -21,15 +23,15 @@
                 <div class="modal-body">
                     <form id="warningForm">
                         <div class="mb-3">
-                            <label for="employeeName" class="form-label">Employee Name</label>
-                            <input type="text" class="form-control" id="employeeNames" required>
+                            <label for="employeeImage" class="form-label">Upload Image (optional)</label>
+                            <input type="file" class="form-control" id="employeeImage" accept="image/*">
                         </div>
                         <div class="mb-3">
-                            <label for="employeeEmail" class="form-label">Employee Email</label>
-                            <input type="email" class="form-control" id="employeeEmails" required>
+                            <label for="empId" class="form-label">Employee Id</label>
+                            <input type="number" class="form-control" id="employeeId" placeholder="input Employee Id" required>
                         </div>
                         <div class="mb-3">
-                            <label for="employeePosition" class="form-label">Position</label>
+                            <label for="employeePosition" class="form-label">Position Id</label>
                             <input type="text" class="form-control" id="employeePositions" required>
                         </div>
                         <div class="mb-3">
@@ -40,14 +42,18 @@
                             <label for="warningPromises" class="form-label">Promises</label>
                             <textarea class="form-control" id="warningPromises" rows="2" required></textarea>
                         </div>
-                        <div class="warning">
-                            <select class="form-select" id="warningSelect1" aria-label="Warning select">
-                                <!-- Changed ID here -->
-                                <option selected>Warnings</option>
+                        <div class="mb-3">
+                            <label for="warningSelect" class="form-label">Warning</label>
+                            <select class="form-select" id="warningSelect" aria-label="Warning select" required>
+                                <option value="" disabled selected>Select Warning</option>
                                 <option value="1">Warning 1</option>
                                 <option value="2">Warning 2</option>
                                 <option value="3">Warning 3</option>
                             </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="sub_id" class="form-label">Sub Id</label>
+                            <input type="number" class="form-control" id="sub_id" required>
                         </div>
                     </form>
                 </div>
@@ -58,8 +64,10 @@
             </div>
         </div>
     </div>
+
     <div id="_warning_list"></div>
 </div>
+
 <style>
     #_main_warningComponent {
         /* padding: 40px 20px; */

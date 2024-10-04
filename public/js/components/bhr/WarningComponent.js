@@ -310,62 +310,113 @@ var WarningComponent = new (function () {
         });
     };
     // Save the new warning and add a row
-    this.saveWarning = function () {
-        // Get form values
-        let employeeName = document.getElementById("employeeNames").value;
-        let employeeEmail = document.getElementById("employeeEmails").value;
-        let employeePosition =
-            document.getElementById("employeePositions").value;
-        let warningIssues = document.getElementById("warningIssues").value;
-        let warningPromises = document.getElementById("warningPromises").value;
-        let warningQuntity = document.getElementById("warningSelect").value;
+    document
+        .getElementById("saveWarningBtn")
+        .addEventListener("click", function () {
+            // Get form values
+            let employeeId = document.getElementById("employeeId").value;
+            let employeePosition =
+                document.getElementById("employeePositions").value;
+            let warningIssues = document.getElementById("warningIssues").value;
+            let warningPromises =
+                document.getElementById("warningPromises").value;
+            let warningQuantity =
+                document.getElementById("warningSelect").value;
 
-        // Create a new warning row
-        let warningBody = document.querySelector(".warning_body");
-        let newRow = document.createElement("div");
-        newRow.className = "warning_item";
+            // Get the uploaded image file (if any, since it's not mentioned in the form)
+            let employeeImageInput = document.getElementById("employeeImage");
+            let employeeImageFile = employeeImageInput
+                ? employeeImageInput.files[0]
+                : null;
 
-        // Populate warning options dynamically from the existing select
-        let warningOptions =
-            document.getElementById("warningSelect").innerHTML;
+            // Read the image file and convert it to Base64
+            let reader = new FileReader();
+            reader.onloadend = function () {
+                let employeeImage = reader.result || ""; // Base64-encoded image or empty string
 
-        newRow.innerHTML = `
-            <div class="warning_item">
-            <div class="info">
-                <div class="info_left">
-                    <img src="assets/images/skills/maketing.png" alt="User">
-                </div>
-                <div class="info_right">
-                    <h6>${employeeName}</h6>
-                    <span class="email">${employeeEmail}</span>
-                </div>
-            </div>
-            <div class="position">${employeePosition}</div>
-            <div class="issues">${warningIssues}</div>
-            <div class="promises">${warningPromises}</div>
-            <div class="warning">
-                <select class="form-select" id="warningSelect" aria-label="Warning select">
-                    ${warningOptions}
-                </select>
-            </div>
-            <div class="action">
-                <i class="fa fa-ellipsis-v"></i>
-            </div>
-            </div>
-        `;
+                // Create payload to send to the backend
+                let warningData = {
+                    emp_id: employeeId,
+                    position: employeePosition,
+                    issues: warningIssues,
+                    promises: warningPromises,
+                    warning: warningQuantity,
+                    employee_image: employeeImage, // Include the Base64 image data (if any)
+                };
 
-        // Append the new row to the warning body
-        warningBody.appendChild(newRow);
+                // Make an API call to save the warning to the database
+                vsapi
+                    .call(`${mThis.base_url}/hr/warning/save`, warningData)
+                    .then((response) => {
+                        if (response.status_code === 200) {
+                            // Create a new warning row
+                            let _warning_list =
+                                document.getElementById("_warning_list");
+                            let warningBody = document.createElement("div");
+                            warningBody.className = "warning_body";
+                            let newRow = document.createElement("div");
+                            newRow.className = "warning_item";
 
-        // Hide the modal after adding
-        let addWarningModal = bootstrap.Modal.getInstance(
-            document.getElementById("addWarningModal")
-        );
-        addWarningModal.hide();
+                            // Populate warning options dynamically from the existing select
+                            let warningOptions =
+                                document.getElementById(
+                                    "warningSelect"
+                                ).innerHTML;
 
-        // Clear the form fields after submission
-        document.getElementById("warningForm").reset();
+                            newRow.innerHTML = `
+                        <div class="warning_item">
+                            <div class="info">
+                                <div class="info_left">
+                                    <img src="${employeeImage}" alt="User">
+                                </div>
+                                <div class="info_right">
+                                    <h6>${employeeId}</h6>
+                                    <span class="email">${employeePosition}</span>
+                                </div>
+                            </div>
+                            <div class="issues">${warningIssues}</div>
+                            <div class="promises">${warningPromises}</div>
+                            <div class="warning">
+                                <select class="form-select" id="warningSelect" aria-label="Warning select">
+                                    ${warningOptions}
+                                </select>
+                            </div>
+                            <div class="action">
+                                <i class="fa fa-ellipsis-v"></i>
+                            </div>
+                        </div>
+                    `;
 
-        console.log("New warning row added");
-    };
+                            warningBody.appendChild(newRow);
+                            _warning_list.appendChild(warningBody);
+
+                            let addWarningModal = bootstrap.Modal.getInstance(
+                                document.getElementById("addWarningModal")
+                            );
+                            addWarningModal.hide();
+                            document.getElementById("warningForm").reset();
+                            console.log(
+                                "New warning row added and saved to database"
+                            );
+                        } else {
+                            console.error(
+                                "Error saving warning:",
+                                response.error_message
+                            );
+                            cv_interact.error(response.error_message);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("API error:", error);
+                        cv_interact.error(
+                            "Failed to save warning. Please try again."
+                        );
+                    });
+            };
+            if (employeeImageFile) {
+                reader.readAsDataURL(employeeImageFile);
+            } else {
+                reader.onloadend();
+            }
+        });
 })();
