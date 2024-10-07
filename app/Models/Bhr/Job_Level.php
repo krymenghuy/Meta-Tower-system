@@ -65,14 +65,13 @@ class Job_Level //extends Model
     public static function getFormOptions($id, $ss)
     {
         $job_level = null;
-        if ($id > 0) {
+        if ($id) {
             $job_level = self::getDetails($id, $ss);
         }
         return (object) [
-            'job_level' => $job_level
+            'job_levels' => $job_level
         ];
     }
-
     public function deleteJobLevel($id = null)
     {
         $id = $id ?? $this->id;
