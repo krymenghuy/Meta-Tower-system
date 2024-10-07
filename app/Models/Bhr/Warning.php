@@ -8,11 +8,11 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class Warning extends Model // Extend the Eloquent Model
+class Warning extends Model
 {
-    use HasFactory; // Use Eloquent's factory features
+    use HasFactory;
 
-    protected $table = 'warnings'; // Define the table name if it's not plural
+    protected $table = 'warnings'; // Define the table name
     protected $fillable = [
         'first_name',
         'last_name',
@@ -32,24 +32,38 @@ class Warning extends Model // Extend the Eloquent Model
         $ss = $userInfo ?? $this->userInfo; // Fallback to the instance's userInfo
         $branch_id = $ss->branch_id;
 
+        // Validation rules
         $v_rule = [
             'id' => 'nullable|numeric', // Allow id for update
             'emp_id' => '1|numeric',
-            'position' => '1|string|max:250',
+            'position' => '1|numeric',
             'issues' => '1|string|max:250',
             'promises' => '1|string|max:250',
             'warning' => '1|string|max:100',
             'subs_id' => '1|numeric', // Ensure subs_id is provided
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang); // Make sure validateObject is defined
+        // Validate inputs
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
 
-        $inputs = $res->values; // Get validated inputs
+        $inputs = $res->values;
 
-        // Check if an id is provided to determine if we're updating or creating
+        // Check if the employee exists in the database
+        $employee = DB::table('employees')->where('id', $inputs['emp_id'])->first();
+        if (!$employee) {
+            return DV::error('Employee not found for the provided employee ID.');
+        }
+
+        // Check if the position exists in the database
+        $position = DB::table('positions')->where('id', $inputs['position'])->first();
+        if (!$position) {
+            return DV::error('Position not found for the provided position ID.');
+        }
+
+        // Check if we're updating or creating
         if (isset($inputs['id'])) {
             // Update existing warning
             $warning = self::find($inputs['id']);
@@ -67,7 +81,7 @@ class Warning extends Model // Extend the Eloquent Model
             }
         }
 
-        return DV::error('Error saving warnings');
+        return DV::error('Error saving warnings.');
     }
 
     function getWarningsListPaginate($arr, $ss)
@@ -93,7 +107,6 @@ class Warning extends Model // Extend the Eloquent Model
             ->join('employees as e', 'e.id', '=', 'war.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
             ->selectRaw('war.id, e.id as emp_id, e.first_name, e.last_name, e.positions_id as emp_position_id,e.email as email, pos.name as position, war.issues, war.promises, war.warning, e.photo_file_name as emp_photo');
-            // ->where('war.branch_id', $branch_id);
 
         if ($search_id) {
             $query->where('war.id', $search_id);
@@ -110,7 +123,6 @@ class Warning extends Model // Extend the Eloquent Model
         }
 
         $count = $query->count();
-        // $query->orderBy('war.id', 'desc');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
@@ -137,18 +149,27 @@ class Warning extends Model // Extend the Eloquent Model
         // Check if the warning exists before attempting to delete
         $warningExists = DB::table('warnings')->where('id', $id)->exists();
         if (!$warningExists) {
-            return DV::error('Warning not found'); // Return error if the warning doesn't exist
+            return DV::error('Warning not found');
         }
 
         // Attempt to delete the warning
         $deleted = DB::table('warnings')->where('id', $id)->delete();
 
-        // Check if the deletion was successful
         if ($deleted) {
             return DV::result(['message' => 'Warning deleted successfully']);
         }
 
-        return DV::error('Error deleting the warning'); // Return an error response if deletion fails
+        return DV::error('Error deleting the warning');
     }
-
+    static function details($id)
+    {
+        return DB::table('warnings')->where('id', $id)->selectRaw('id, position, issues, promises, warning')->first();
+    }
+    static function getFormOptions($id, $ss)
+    {
+        return (object)[
+            "warning" => self::details($id),
+            "warning_types" => GeneralSettings::options_warning_types($ss)
+        ];
+    }
 }

@@ -402,4 +402,9 @@ class GeneralSettings //extends Model
     $branch_id =1;
     return DB::table('sender_business_types as b')->selectRaw('b.`business_type` AS code, b.`business_type`, b.allow_register')->get();
   }
+
+  //warning
+  static function options_warning_types($ss =null){
+    return DB::table('warning_types as t')->selectRaw('id, name as warning_types')->get();
+  }
 }

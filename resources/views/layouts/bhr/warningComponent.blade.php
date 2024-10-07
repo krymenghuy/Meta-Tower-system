@@ -1,65 +1,18 @@
 <div id="_main_warningComponent" style="display:none;padding:20px 0 0">
     <div class="warning_top">
-        <h4>Report</h4>
         <div class="search">
             <input class="filter-field" type="text" id="_warning_search" placeholder="Search Warning Here ........">
         </div>
         <div class="top_actions">
-            <div class="btnAddWarning"><i class="fa fa-plus"></i>Add Warning</div>
-            <div class="btnExportWarning"><i class="fa fa-download"></i>Export Warning</div>
-        </div>
-        <!-- Modal for Adding New Warning -->
-    </div>
-    <div class="modal fade" id="addWarningModal" tabindex="-1" aria-labelledby="addWarningModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="addWarningModalLabel">Add New Warning</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="warningForm">
-                        <div class="mb-3">
-                            <label for="employeeName" class="form-label">Employee Name</label>
-                            <input type="text" class="form-control" id="employeeNames" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="employeeEmail" class="form-label">Employee Email</label>
-                            <input type="email" class="form-control" id="employeeEmails" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="employeePosition" class="form-label">Position</label>
-                            <input type="text" class="form-control" id="employeePositions" required>
-                        </div>
-                        <div class="mb-3">
-                            <label for="warningIssues" class="form-label">Issues</label>
-                            <textarea class="form-control" id="warningIssues" rows="2" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label for="warningPromises" class="form-label">Promises</label>
-                            <textarea class="form-control" id="warningPromises" rows="2" required></textarea>
-                        </div>
-                        <div class="warning">
-                            <select class="form-select" id="warningSelect1" aria-label="Warning select">
-                                <!-- Changed ID here -->
-                                <option selected>Warnings</option>
-                                <option value="1">Warning 1</option>
-                                <option value="2">Warning 2</option>
-                                <option value="3">Warning 3</option>
-                            </select>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="saveWarningBtn">Save Warning</button>
-                </div>
+            <div class="btnAddWarning" data-bs-toggle="modal" data-bs-target="#addWarningModal" id="_btnAddWarning">
+                <i class="fa fa-plus"></i>Add Warning
             </div>
+            <div class="btnExportWarning"><i class="fa fa-download"></i>Export Warning</div>
         </div>
     </div>
     <div id="_warning_list"></div>
 </div>
+
 <style>
     #_main_warningComponent {
         /* padding: 40px 20px; */
