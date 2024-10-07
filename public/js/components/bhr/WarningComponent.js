@@ -7,7 +7,10 @@ var WarningComponent = new (function () {
     this.self = this.jm[0];
     this.initAlready = false;
     this.title_prop = "Warning";
-    //render warning component
+    this.btnAddWarning = this.self.querySelector("#_btnAddWarning");
+    this.elSearch = this.self.querySelector("#_warning_search");
+
+    // Define the columns for the warning list view
     this.cols = [
         {
             title: "NO",
@@ -17,22 +20,20 @@ var WarningComponent = new (function () {
         {
             title: "Name",
             className: "align-middle text-start",
-            data: (data, index, tr) => {
-                return `<div style="display: flex; align-items: center; margin-left:40px">
-                            <img class="image-student-tbl" src="${
-                                data.image_url
-                            }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
-                            <div>
-                                <span style="font-size: 14px; font-weight: bold;">${
-                                    data.first_name ?? ""
-                                } ${data.last_name ?? ""}</span>
-                                <br/>
-                                <span style="font-size: 12px; color: gray;">${
-                                    data.email ?? ""
-                                }</span>
-                            </div>
-                        </div>`;
-            },
+            data: (data) => `
+                <div style="display: flex; align-items: center; margin-left:40px">
+                    <img class="image-student-tbl" src="${
+                        data.image_url
+                    }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                    <div>
+                        <span style="font-size: 14px; font-weight: bold;">${
+                            data.first_name ?? ""
+                        } ${data.last_name ?? ""}</span><br/>
+                        <span style="font-size: 12px; color: gray;">${
+                            data.email ?? ""
+                        }</span>
+                    </div>
+                </div>`,
         },
         {
             title: "POSITION",
@@ -52,35 +53,31 @@ var WarningComponent = new (function () {
         {
             title: "WARNING",
             className: "align-middle",
-            data: "warning",
+            data: (data) => `Warning: ${data.warning}`,
         },
         {
             className: "col_action align-middle",
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class="${
-                                    data.action_id > 1
-                                        ? "d-none"
-                                        : "btn_warning_action"
-                                }" data-id="${data.id}" data-statusid="${
-                    data.status_id
-                }" aria-haspopup="true" aria-expanded="false">
-                                <img src="${
-                                    main_view.asset_url
-                                }/images/icons/more_vert (3).svg" />
-                            </a>
-                        </div>
+            data: (data) => `
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="text-center gap-2 d-flex flex-wrap">
+                        <a href="javascript:void(0)" class="${
+                            data.action_id > 1 ? "d-none" : "btn_warning_action"
+                        }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                            <img src="${
+                                main_view.asset_url
+                            }/images/icons/more_vert (3).svg" />
+                        </a>
                     </div>
-                `;
-            },
+                </div>`,
         },
     ];
 
     // Initialize component
     this.init = function () {
         if (mThis.initAlready) return;
+
         mThis.WarningListView = new ListView("_warning_list", {
             fetchApi: `${mThis.base_url}/hr/warning/list-paginate`,
             perPage: 6,
@@ -88,31 +85,43 @@ var WarningComponent = new (function () {
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",
             listContainerClass: null,
-            onFetched: function (data) {
-                console.log("Data fetched:", data);
+            rowCreated: (data, index, tr) => {
+                tr.dataset.id = data.id; // recode data
+            },
+            renderComplete: () => {
+                mThis.initDropdownMenus(mThis.WarningListView.getTable());
             },
         });
-        mThis.initAlready = true;
 
         // Event binding for add warning button
-        document
-            .querySelector(".btnAddWarning")
-            .addEventListener("click", function () {
-                let addWarningModal = new bootstrap.Modal(
-                    document.getElementById("addWarningModal"),
-                    {}
-                );
-                addWarningModal.show();
-            });
+        mThis.btnAddWarning.onclick = () => {
+            let op = {
+                id: null,
+                onClose: (p) => {
+                    mThis.WarningListView.showPage(mThis.getFilterData());
+                },
+            };
+            WarningDialog.show(op);
+        };
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                if (mThis.WarningListView) {
+                    mThis.WarningListView.showPage(mThis.getDataFormFilter());
+                } else {
+                    console.error("WarningListView is not defined");
+                }
+            }, 200);
+        });
 
-        // Event binding for save warning button
-        document
-            .getElementById("saveWarningBtn")
-            .addEventListener("click", mThis.saveWarning);
-        document
-            .getElementById("_warning_search")
-            .addEventListener("input", mThis.searchWarning);
+        this.getDataFormFilter = () => {
+            let p = {};
+            p.search_value = mThis.elSearch.value;
+            return p;
+        };
+        mThis.initAlready = true;
     };
+
     this.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
@@ -121,32 +130,29 @@ var WarningComponent = new (function () {
             //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                    html: '<span class="ps-2  " vslang="titles.Edit Warning">Edit Warning</span>',
                     icon: `<i class="fa-regular fa-exchange fs-5"></i>`,
 
-                    cssClass: "border-bottom pb-2",
-                    name: "change_warning_status",
-                },
-                {
-                    html: '<span class="ps-2  " vslang="titles.Modify warning">Modify warning</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_warning",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete warning">Delete warning</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    html: '<span class="ps-2  " vslang="titles.Delete Warning">Delete Warning</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_warning",
                 },
             ],
-
+            // adjustPosition:{
+            //         top:-90
+            // },
+            //onShow:(instance, menuContainer)=>{
+            //     console.log('open: ', instance.getMenus());
+            // },
+            // onClose:(instance, menus)=>{
+            // },
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "change_warning_status": {
-                        mThis.changeStatus(id, menuLink);
-                        break;
-                    }
                     case "edit_warning": {
                         mThis.editWarning(id, menuLink);
                         break;
@@ -155,7 +161,6 @@ var WarningComponent = new (function () {
                         mThis.deleteWarning(id, menuLink);
                         break;
                     }
-
                     default: {
                         break;
                     }
@@ -164,155 +169,41 @@ var WarningComponent = new (function () {
         };
         new VSDropdownMenu(menuOptopns);
     };
-    this.changeStatus = (id, lnk) => {
-        let tr = lnk.closest("tr");
-        let action_id = Validator.properCase(tr ? tr.dataset.action_id : "");
-        let inputOptions = {
-            title: "Set warning Status",
-            dataLabel: "Warning status",
-            valueMember: "action_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data: [
-                {
-                    action_id: "2",
-                    name: "Approved",
-                },
-                {
-                    action_id: "3",
-                    name: "Reject",
-                },
-            ],
-            defaultValue: action_id,
-        };
 
-        InputBox2.show(inputOptions, (d) => {
-            if (d) {
-                let p = {
-                    id: id,
-                    action_id: d.value,
-                };
-                console.log(123, p);
-
-                vsapi
-                    .call(`${mThis.base_url}/hr/warning/update-status`, p)
-                    .then((res) => {
-                        if (res.status_code === 200) {
-                            // mThis.elFilter_warning_status.value = d.value;
-                            InputBox2.close();
-                            // mThis.elFilter_warning_status.dispatchEvent ( new Event('change'));
-                            cv_interact.success(
-                                "The warnign status has been updated"
-                            );
-                            // if(tr) tr.dataset.statuscode = d.value;
-                            mThis.WarningListView.showPage(
-                                mThis.getDataFormFilter()
-                            );
-                        } else cv_interact.error(res.error_message);
-                    });
-            }
-        });
+    this.getFilterData = () => {
+        return {};
     };
-    this.editWarning = (id, menuLink) => {
+
+    this.editWarning = (id) => {
         let op = {
             id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.WarningListView.showPage();
+            onClose: (p) => {
+                mThis.WarningListView.showPage(mThis.getFilterData());
             },
         };
-        WarningDailog.show(op);
+        WarningDialog.show(op);
     };
-
-    this.deleteWarning = (id, menuLink) => {
+    this.deleteWarning = (id) => {
         let op = {
             id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.WarningListView.showPage();
+            onClose: (p) => {
+                mThis.WarningListView.showPage(mThis.getFilterData());
             },
-        };
-        cv_interact.confirm(
-            "Delete this warning?",
-            {
-                title: "Delete warning",
-                context: "delete",
-                confirmButtonText: "Delete",
-            },
-            function (e) {
-                if (e) {
-                    vsapi
-                        .call(
-                            `${main_view.base_url}/hr/warning/delete`,
-                            op,
-                            false,
-                            false,
-                            false
-                        )
-                        .then((res) => {
-                            if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
-                                mThis.WarningListView.showPage();
-                            }
-                        });
-                }
-            }
-        );
-    };
+        }
+    }
     // Show component
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.WarningListView.showPage(null, null, () => {
-            $(mThis.self).siblings().hide();
-            $(mThis.self).fadeIn(200);
+        mThis.WarningListView.showPage(mThis.getFilterData(), null, () => {
+            mThis.jm.siblings().hide();
+            mThis.jm.fadeIn(200);
         });
     };
-    // Search warning
-    this.searchWarning = function () {
-        let searchTerm = document
-            .querySelector("#_warning_search")
-            .value.toLowerCase();
-        let rows = document.querySelectorAll(".warning_item");
-        rows.forEach((row) => {
-            let employeeName = row
-                .querySelector(".info_right > h6")
-                .textContent.toLowerCase();
-            let employeeEmail = row
-                .querySelector(".info_right > .email")
-                .textContent.toLowerCase();
-            let employeePosition = row
-                .querySelector(".position")
-                .textContent.toLowerCase();
-            let warningIssues = row
-                .querySelector(".issues")
-                .textContent.toLowerCase();
-            let warningPromises = row
-                .querySelector(".promises")
-                .textContent.toLowerCase();
-            let warningType = row
-                .querySelector(".warning")
-                .textContent.toLowerCase();
 
-            if (
-                employeeName.includes(searchTerm) ||
-                employeeEmail.includes(searchTerm) ||
-                employeePosition.includes(searchTerm) ||
-                warningIssues.includes(searchTerm) ||
-                warningPromises.includes(searchTerm) ||
-                warningType.includes(searchTerm)
-            ) {
-                row.style.display = "";
-            } else {
-                row.style.display = "none";
-            }
-        });
-    };
-    // Save the new warning and add a row
-    document
-        .getElementById("saveWarningBtn")
-        .addEventListener("click", function () {
+    // Save warning function
+    this.saveWarning = function () {
+        return new Promise((resolve, reject) => {
             // Get form values
             let employeeId = document.getElementById("employeeId").value;
             let employeePosition =
@@ -322,101 +213,146 @@ var WarningComponent = new (function () {
                 document.getElementById("warningPromises").value;
             let warningQuantity =
                 document.getElementById("warningSelect").value;
+            let subs_id = document.getElementById("subs_id").value;
 
-            // Get the uploaded image file (if any, since it's not mentioned in the form)
-            let employeeImageInput = document.getElementById("employeeImage");
-            let employeeImageFile = employeeImageInput
-                ? employeeImageInput.files[0]
-                : null;
+            // Validate the inputs
+            if (
+                !employeeId ||
+                !employeePosition ||
+                !warningIssues ||
+                !warningPromises ||
+                !warningQuantity
+            ) {
+                return cv_interact.error("Please fill all required fields.");
+            }
 
-            // Read the image file and convert it to Base64
-            let reader = new FileReader();
-            reader.onloadend = function () {
-                let employeeImage = reader.result || ""; // Base64-encoded image or empty string
+            let warningData = {
+                emp_id: employeeId,
+                position: employeePosition,
+                issues: warningIssues,
+                promises: warningPromises,
+                warning: warningQuantity,
+                subs_id: subs_id,
+            };
 
-                // Create payload to send to the backend
-                let warningData = {
-                    emp_id: employeeId,
-                    position: employeePosition,
-                    issues: warningIssues,
-                    promises: warningPromises,
-                    warning: warningQuantity,
-                    employee_image: employeeImage, // Include the Base64 image data (if any)
-                };
+            // API call to save the warning to the database
+            vsapi
+                .call(`${mThis.base_url}/hr/warning/save`, warningData)
+                .then((response) => {
+                    if (response.status_code === 200) {
+                        cv_interact.success("New warning saved successfully.");
+                        resolve();
+                    } else {
+                        cv_interact.error(response.error_message);
+                        reject(response.error_message);
+                    }
+                })
+                .catch((error) => {
+                    console.error("API error:", error);
+                    cv_interact.error(
+                        "Failed to save warning. Please try again."
+                    );
+                    reject(error);
+                });
+        });
+    };
+})();
 
-                // Make an API call to save the warning to the database
-                vsapi
-                    .call(`${mThis.base_url}/hr/warning/save`, warningData)
-                    .then((response) => {
-                        if (response.status_code === 200) {
-                            // Create a new warning row
-                            let _warning_list =
-                                document.getElementById("_warning_list");
-                            let warningBody = document.createElement("div");
-                            warningBody.className = "warning_body";
-                            let newRow = document.createElement("div");
-                            newRow.className = "warning_item";
+const WarningDialog = (() => {
+    const self = {};
+    let dialog = null;
 
-                            // Populate warning options dynamically from the existing select
-                            let warningOptions =
-                                document.getElementById(
-                                    "warningSelect"
-                                ).innerHTML;
-
-                            newRow.innerHTML = `
-                        <div class="warning_item">
-                            <div class="info">
-                                <div class="info_left">
-                                    <img src="${employeeImage}" alt="User">
-                                </div>
-                                <div class="info_right">
-                                    <h6>${employeeId}</h6>
-                                    <span class="email">${employeePosition}</span>
-                                </div>
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                title: "Add Warning",
+                createContent: () => {
+                    return [
+                        `<form id="warningForm">
+                            <div class="mb-3">
+                                <label for="empId" class="form-label">Employee Id</label>
+                                <input type="number" class="form-control data-input" data-field="id" id="employeeId" placeholder="Input Employee Id" required>
                             </div>
-                            <div class="issues">${warningIssues}</div>
-                            <div class="promises">${warningPromises}</div>
-                            <div class="warning">
-                                <select class="form-select" id="warningSelect" aria-label="Warning select">
-                                    ${warningOptions}
+                            <div class="mb-3">
+                                <label for="employeePosition" class="form-label">Position</label>
+                                <input type="number" class="form-control" id="employeePositions" placeholder="">
+                            </div>
+                            <div class="mb-3">
+                                <label for="warningIssues" class="form-label">Issues</label>
+                                <textarea class="form-control data-input" data-field="issues" id="warningIssues" rows="2" placeholder="Input issues here" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="warningPromises" class="form-label">Promises</label>
+                                <textarea class="form-control data-input" data-field="promises" id="warningPromises" rows="2" placeholder="Input promises here" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label for="warningSelect" class="form-label">Warning</label>
+                                <select class="form-select" id="warningSelect" aria-label="Warning select" required>
+                                    <option value="" disabled selected>Select Warning</option>
+                                    <option value="1">Warning 1</option>
+                                    <option value="2">Warning 2</option>
+                                    <option value="3">Warning 3</option>
                                 </select>
                             </div>
-                            <div class="action">
-                                <i class="fa fa-ellipsis-v"></i>
+                            <div class="mb-3">
+                                <label for="subs_id" class="form-label">Subs ID</label>
+                                <input type="number" class="form-control" id="subs_id" placeholder="Input Subs ID" required>
                             </div>
-                        </div>
-                    `;
+                        </form>`,
+                    ].join("");
+                },
+                buttons: [
+                    {
+                        name: "cancel",
+                        label: "Cancel",
+                        click: (me, btn, divModal) => {
+                            me.hide(true);
+                        },
+                    },
+                    {
+                        name: "save",
+                        label: "Save",
+                        click: (me, btn, divModal) => {
+                            // Validate form before saving
+                            const warningForm =
+                                document.getElementById("warningForm");
+                            if (!warningForm.checkValidity()) {
+                                warningForm.reportValidity();
+                                return;
+                            }
 
-                            warningBody.appendChild(newRow);
-                            _warning_list.appendChild(warningBody);
+                            // Call saveWarning function to save data to the database
+                            WarningComponent.saveWarning();
 
-                            let addWarningModal = bootstrap.Modal.getInstance(
-                                document.getElementById("addWarningModal")
-                            );
-                            addWarningModal.hide();
-                            document.getElementById("warningForm").reset();
-                            console.log(
-                                "New warning row added and saved to database"
-                            );
-                        } else {
-                            console.error(
-                                "Error saving warning:",
-                                response.error_message
-                            );
-                            cv_interact.error(response.error_message);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("API error:", error);
-                        cv_interact.error(
-                            "Failed to save warning. Please try again."
-                        );
-                    });
-            };
-            if (employeeImageFile) {
-                reader.readAsDataURL(employeeImageFile);
-            } else {
-                reader.onloadend();
-            }
-        });
+                            // Hide dialog after saving
+                            me.hide(true);
+                        },
+                    },
+                ],
+                contentCreated: (me, divModal) => {
+                    me.saveWarning = (p) => {
+                        alert("Data saved.");
+                    };
+                },
+                prepareFormOptions: {
+                    createTitle: "Add warning",
+                    modifyTitle: "Edit warning",
+                    targetProp: "warning",
+                    api: {
+                        endpoint:
+                            main_view.base_url + "/hr/warning/form-options",
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                    onResponse: (res) => {
+                        console.log(2355, res);
+                    },
+                },
+            });
+
+        dialog.show(op);
+    };
+    return self;
 })();

@@ -1,11 +1,11 @@
-<!-- <style>    
+<!-- <style>
 .set-parent-active .active span {
     border:1px solid #ffb822 !important;
     background-color: #dfdfdf87 !important;
-    color: #1167c9 !important;    
+    color: #1167c9 !important;
   }
 </style> -->
-<div id="_sttn_locationsComponent"   style="display:none;padding:15px; overflow: auto;height: 95.5%;">
+<div id="_sttn_locationsComponent"   style="display:none;padding:20px 0 0">
   <div class="bg-white p-3 rounded-3">
     <div class="row">
       <div class="col-lg-6">
@@ -95,7 +95,7 @@
             </div>
           </div>
         </div>
-      </div> 
+      </div>
     </div>
   </div>
 </div>
@@ -111,7 +111,7 @@
         </button>
       </div>
       <div class="modal-body">
-        
+
       <div class="row">
           <div class="col-lg-6">
             <div class="form-group">
@@ -141,10 +141,10 @@
               <input type="text" class="form-control text-primary data-input" data-field="standard_zone" placeholder="number">
             </div>
           </div>
-          
+
         </div>
-     
-       
+
+
       </div>
       <div class="modal-footer">
         <span class="error_text" id="_sttn_dlgZone_error"></span>

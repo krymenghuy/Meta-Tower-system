@@ -15,8 +15,8 @@ body {
     color: #000;
     font-size: 0.9rem;
     font-weight: normal;
-    overflow: hidden;
-    /* overflow: auto; */
+    /* overflow: hidden; */
+    overflow: auto;
     /* padding-top: 50px; */
 }
 
@@ -54,22 +54,25 @@ li.kt-menu__section {
 }
 
 a.menu-selected .kt-menu__link-text {
-    color: #8DC63F;
+    color: black;
 }
 
 .menu-selected .icons {
     /* filter: brightness(0) saturate(100%) invert(96%) sepia(80%) saturate(811%)
         hue-rotate(201deg) brightness(122%) contrast(100%); */
         /* color: #8DC63F !important; */
-        /* filter:hue-rotate(0deg); */
-    filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%)
-        hue-rotate(24deg) brightness(87%) contrast(79%);
+        filter:hue-rotate(127deg);
+        
+    /* filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%)
+        hue-rotate(24deg) brightness(87%) contrast(79%); */
 }
 
 .icons {
     /* filter: invert(53%) sepia(46%) saturate(7477%) hue-rotate(219deg)
         brightness(90%) contrast(91%); */
-        filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(341deg) brightness(103%) contrast(103%);
+        /* filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(341deg) brightness(103%) contrast(103%); */
+        filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+
 }
 
 .kt-menu__link-icon img {
@@ -120,7 +123,7 @@ a.menu-selected .kt-menu__link-text {
     /* background-color: #fff; */
     padding: 10px;
     /* border-radius: 50%; */
-    /* margin-left: 15px; */
+    margin-left: 15px;
 }
 
 .number--notification {
@@ -131,11 +134,15 @@ a.menu-selected .kt-menu__link-text {
 
 .app--list {
     /* background-color: #fff; */
-    padding: 7px;
+    padding: 10px;
     /* border-radius: 20px; */
+    margin-left: 15px;
+
 }
 .user--info {
-    padding: 8px;
+    padding: 10px;
+    margin-left: 15px;
+
 }
 
 .line--loader {
@@ -279,7 +286,7 @@ a.menu-selected .kt-menu__link-text {
 .show--title {
     margin: 18px 0;
     padding: 10px 15px;
-    background-color: #e6e6e6;
+    background-color: #fff;
     border-radius: 30px;
 }
 
@@ -1712,7 +1719,14 @@ ul.list-filter-um li:not(li:last-child) {
     border: none !important;
 }
 
+.select2{
+    display: none !important;
+}
 
 
+/* body{
+
+    overflow: unset !important;
+} */
 
 

@@ -24,7 +24,7 @@ class Employee//extends Model
     {
         //price_list_id =11 (Normal Condition)
         $data = (object) [
-            'price_list_id' => self::getDefaultPriceList()->id,
+            'price_list_id' => self::getDefaultPriceList()->emp_id,
             'cod' => 0,
             'cod_fee' => 0,
         ];
@@ -302,7 +302,9 @@ class Employee//extends Model
         // Return success response
         return DV::depends(1, ['id' => $id, 'deleted' => $file_name ?? 'No file found']);
     }
-
+    static function currentPosition($id){
+        return DB::table('employees as e')->join('positions as p', 'p.id', '=', 'e.position_id')->selectRaw('p.name , p.id')->first();
+    }
     function getFormOptions($id, $ss)
     {
         $employee = null;

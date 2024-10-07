@@ -1,4 +1,4 @@
-<div id="_main_reportComponent">
+<div id="_main_reportComponent"  style="display:none;padding:20px">
     <div class="report_top">
         <h4>Report</h4>
         <div class="search">

@@ -1,53 +1,6 @@
-<div id="_main_dashboardComponent">
-    <div class="dashboard_top">
-        <div class="employees">
-            <div class="total_employee">
-                <div class="total_top">
-                    <span class="total_title">Total Employee</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
-                </div>
-                <div class="total_bottom">
-                    <span class="total_number">1200</span>
-                    <i class="fa fa-users text-success" style="font-size: 2rem;"></i>
-                </div>
-            </div>
-        </div>
-        <div class="employees">
-            <div class="total_employee">
-                <div class="total_top">
-                    <span class="total_title">New Staffs</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
-                </div>
-                <div class="total_bottom">
-                    <span class="total_number">100</span>
-                    <i class="fa fa-users text-success" style="font-size: 2rem;"></i>
-                </div>
-            </div>
-        </div>
-        <div class="employees">
-            <div class="total_employee">
-                <div class="total_top">
-                    <span class="total_title">Total Employee</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
-                </div>
-                <div class="total_bottom">
-                    <span class="total_number">1200</span>
-                    <i class="fa fa-users text-success" style="font-size: 2rem;"></i>
-                </div>
-            </div>
-        </div>
-        <div class="employees">
-            <div class="total_employee">
-                <div class="total_top">
-                    <span class="total_title">Total Employee</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
-                </div>
-                <div class="total_bottom">
-                    <span class="total_number">1200</span>
-                    <i class="fa fa-users text-success" style="font-size: 2rem;"></i>
-                </div>
-            </div>
-        </div>
+<div id="_main_dashboardComponent" style="display:none;padding:20px 0 0">
+    <div class="dashboard_top" id="_dashboard_top">
+      
     </div>
     <div class="dashboard_center">
         <div class="center_left">
@@ -58,7 +11,7 @@
                 <div class="leave_card1">
                     <div class="em_profile">
                         <img src="assets/images/skills/maketing.png" alt="profile">
-                        <div class="em_name">Layhor Met</div>
+                        <div class="em_name text-nowrap">Layhor Met</div>
                     </div>
                     <select name="em_position" id="em_position" class="em_position">
                         <option value="Positions">Postions</option>
@@ -208,8 +161,8 @@
     </div>
     <div class="dashboard_bottom">
         <div class="em_departement">
-            <h3>Employee By Department</h3>
-            <table class="department-table">
+            <h3 class="d-flex align-items-start">Employee By Department</h3>
+            <table class="table  bg-white rounded-4">
                 <thead>
                     <tr>
                         <th>Role</th>
@@ -217,6 +170,9 @@
                         <th>Marketing</th>
                         <th>HR</th>
                         <th>Sales</th>
+                        <th>Account</th>
+                        <th>IT</th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -510,7 +466,7 @@
         align-items: center;
         justify-content: space-between;
         background-color: #E1ECF7;
-        width: 40%;
+        width: 28%;
         padding: 10px;
         border-radius: 20px;
     }
@@ -553,8 +509,8 @@
         text-align: center;
         outline: none;
         color: white;
-        padding: 5px;
-        width: 100px;
+        padding: 1px;
+        width: 90px;
         font-size: 12px;
         border-radius: 20px;
     }
@@ -570,8 +526,8 @@
         justify-content: center;
         background-color: #FF928A;
         color: white;
-        padding: 5px;
-        width: 100px;
+        padding: 1px;
+        width: 90px;
         font-size: 12px;
         border-radius: 20px;
     }
@@ -579,10 +535,10 @@
     /* Styling for Chart */
     .center_mid {
         display: flex;
-        align-items: center;
+        /* align-items: center; */
         flex-direction: column;
         padding: 20px;
-        width: 40%;
+        width: 46%;
         height: 350px;
         background-color: #ffffff;
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
@@ -590,7 +546,7 @@
     }
 
     .center_right {
-        width: 20%;
+        width: 24%;
         height: 350px;
         background-color: #ffffff;
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
@@ -624,7 +580,7 @@
 
     .top2,
     .top3 {
-        margin-top: 30%;
+        margin-top: 23%;
     }
 
     .top1 img,
@@ -655,7 +611,7 @@
         background-color: #F0F7FF;
         border-radius: 15px;
         padding: 20px;
-        width: 32.5%;
+        width: 24%;
         text-align: center;
         font-family: Arial, sans-serif;
     }
@@ -715,18 +671,48 @@
     }
 
     .dashboard_bottom {
+        width: 100%;
         display: flex;
         justify-content: space-between;
         gap: 20px;
-        margin: 20px;
+        /* margin: 20px; */
+        padding: 20px;
 
     }
 
-    .em_departement,
-    .staff_wallet,
-    .staff_benefit {
+    .em_departement{
+        width: 48%;
+        display: flex;
+        /* align-items: center; */
+        flex-direction: column;
+        height: 350px;
+        background-color: #E1ECF7;
+
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
+
+    }
+    .staff_wallet
+    {
+        width: 24%;
         display: flex;
         align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        height: 350px;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
+
+        flex: 1;
+    }
+    .staff_benefit
+    {
+        width: 24%;
+        display: flex;
+        /* align-items: center; */
         flex-direction: column;
         height: 350px;
         background-color: #f5f5f5;
@@ -740,9 +726,10 @@
     .em_departement h3,
     .staff_wallet h3,
     .staff_benefit h3 {
-        margin-bottom: 20px;
-        font-size: 18px;
-        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
         color: #333;
     }
 
@@ -778,8 +765,8 @@
 
     .staff_wallet canvas {
         display: flex;
-        width: 70px;
-        padding: 70px;
+        width: 80px;
+        padding: 30px;
         margin-top: -60px;
     }
 
