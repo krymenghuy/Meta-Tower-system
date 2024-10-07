@@ -145,15 +145,12 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('position')->g
     Route::post('/form-options', [PositionController::class, 'getFormOptions']);
 });
 
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('report')->group(function () {
 
-// warning routes
+    Route::post('/save', [ReportController::class, 'saveReport']);
+    Route::post('/list-paginate', [ReportController::class, 'getReportListPaginate']);
+    Route::post('/details', [ReportController::class, 'getDetails']);
+    Route::post('/delete', [ReportController::class, 'deleteReport']);
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('warning')->group(function () {
 
-    Route::post('/save',[WarningController::class, 'saveWarning']);
-    Route::post('/list-paginate', [WarningController::class, 'getWarningListPaginate']);
-    Route::post('/details', [WarningController::class, 'getDetails']);
-    Route::post('/delete',[WarningController::class, 'deleteWarning']);
-    Route::post('/form-options', [WarningController::class, 'getFormOptions']);
-    Route::post('/update-status', [WarningController::class, 'updateStatus']);
 });
