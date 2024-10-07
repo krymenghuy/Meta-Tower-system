@@ -1,4 +1,4 @@
-<div id="_main_reportComponent"  style="display:none;padding:20px 0 0">
+<div id="_main_reportComponent"  style="display:none;padding:20px">
     <div class="report_top">
         <h4>Report</h4>
         <div class="search">
@@ -330,14 +330,15 @@
         height: 80px;
         padding: 0px 25px;
         border-bottom: 1px solid #ccc;
-        background-color: #250384;
+        background-color: #fff;
         border-radius: 10px;
         align-items: center;
-        color: #fff;
+        color: #000;
     }
 
     .report_item:hover {
-        background-color: #2b5f92;
+        background-color: #2989b8;
+        color: #fff;
         cursor: pointer;
 
     }
@@ -407,9 +408,11 @@
     .action i {
         cursor: pointer;
         font-size: 1.5em;
-        color: #ffffff;
+        color: #000000;
     }
-
+    .action i:hover{
+        color: #fff; 
+    }
     .popup {
         display: none;
         position: fixed;

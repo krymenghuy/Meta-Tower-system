@@ -55,6 +55,10 @@
                         <label for="name" class="form-label trans-text" data-langprop="titles.Rate"></label>
                         <input type="text" class="form-control data-input" data-field="rate" />
                     </div>
+                    <div class="form-group col-lg-6">
+                        <label for="name" class="form-label trans-text" data-langprop="titles.Salary"></label>
+                        <input type="text" class="form-control data-input" data-field="salary" />
+                    </div>
 
                     <div class="form-group col-lg-6">
                         <label for="name" class="form-label trans-text" data-langprop="titles.Start Date"></label>
@@ -64,10 +68,7 @@
                         <label for="name" class="form-label trans-text" data-langprop="titles.End Date"></label>
                         <input type="date" class="form-control data-input" data-field="end_date" />
                     </div>
-                    <div class="form-group col-lg-6">
-                        <label for="name" class="form-label trans-text" data-langprop="titles.Salary"></label>
-                        <input type="text" class="form-control data-input" data-field="salary" />
-                    </div>
+
                 </div>
             </div>
             <div class="modal-footer">
