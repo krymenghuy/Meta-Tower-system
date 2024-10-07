@@ -319,7 +319,7 @@
         flex-wrap: wrap;
         padding: 20px;
         width: 100%;
-        height: 590px;
+        height: 530px;
         overflow-y: auto;
         justify-content: space-between;
         gap: 2.5rem
@@ -387,6 +387,12 @@
         display: flex;
         align-items: center;
         gap: 1.5rem;
+    }
+    .action i{
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        transition: color 0.3s ease;
     }
 
     .action .fa-pen:hover {

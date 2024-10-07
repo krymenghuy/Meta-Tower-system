@@ -9,10 +9,10 @@ use App\Models\JDV;
 
 class JobLevelController extends Controller
 {
-    protected $job_levelModel;
+    protected $job_level;
     public function __construct(Job_Level $job_level)
     {
-        $this->job_levelModel = $job_level;
+        $this->job_level = $job_level;
     }
     function saveJobLevel(Request $req)
     {
@@ -32,14 +32,13 @@ class JobLevelController extends Controller
         $data = $job_level->getList($ss);
         return JDV::result($data);
     }
-
-    function getFormOptions(Request $req)
+    public function getFormOptions(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code != 200) return JDV::raw($ss);
-        $id = $req->id;
-        $data = Job_Level::getFormOptions($id, $ss);
-        return JDV::result($data);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->job_level->getFormOptions($req->id, $ss));
     }
     public function getDetails(Request $req)
     {
@@ -51,15 +50,16 @@ class JobLevelController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->job_levelModel->getDetails($req->id, $ss));
+        return JDV::result($this->job_level->getDetails($req->id, $ss));
     }
-    function  deleteJobLevel(Request $req)
+    public function deleteJobLevel(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code != 200) return JDV::raw($ss);
-        $job_level = new Job_Level($req->id, $ss);
-        $res = $job_level->deleteJobLevel($req->id);
-        return JDV::raw($res);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        return JDV::result($this->job_level->deleteJobLevel($req->id, $ss));
     }
     public function getJobLevelListPaginate(Request $req)
     {

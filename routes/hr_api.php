@@ -16,6 +16,7 @@ use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Bhr\DepartmentController;
 use App\Http\Controllers\Bhr\PositionController;
+use App\Http\Controllers\Bhr\ReportController;
 use App\Http\Controllers\Bhr\WarningController;
 
 //begin:: api without Authentication
@@ -134,6 +135,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('job_level')->
     Route::post('/list', [JobLevelController::class, 'getJobLevelList']);
     Route::post('/list-paginate', [JobLevelController::class, 'getJobLevelListPaginate']);
     Route::post('/detail', [JobLevelController::class, 'getDetails']);
+    Route::post('/form-options', [JobLevelController::class, 'getFormOptions']);
     Route::post('/delete', [JobLevelController::class, 'deleteJobLevel']);
 });
 
