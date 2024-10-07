@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Bhr\BenefitController;
 use App\Http\controllers\Bhr\DashboardController;
 use App\Http\controllers\Bhr\EmployeeController;
@@ -15,6 +16,7 @@ use App\Http\Middleware\CustomRateLimiter;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Bhr\DepartmentController;
 use App\Http\Controllers\Bhr\PositionController;
+use App\Http\Controllers\Bhr\WarningController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -48,7 +50,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')-
     Route::post('/details', [DepartmentController::class, 'getDetails']);
     Route::post('/delete', [DepartmentController::class, 'deleteDepartment']);
     Route::post('/form-options', [DepartmentController::class, 'getFormOptions']);
-
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->group(function () {
@@ -87,7 +88,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->gr
     Route::post('/list-paginate', [BenefitController::class, 'getBenefitListPaginate']);
     Route::post('/details', [BenefitController::class, 'getDetails']);
     Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
-
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('staff-benefit')->group(function () {
@@ -151,6 +151,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('report')->gro
     Route::post('/list-paginate', [ReportController::class, 'getReportListPaginate']);
     Route::post('/details', [ReportController::class, 'getDetails']);
     Route::post('/delete', [ReportController::class, 'deleteReport']);
-    
+
 
 });

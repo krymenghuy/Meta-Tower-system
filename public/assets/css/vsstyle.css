@@ -7,7 +7,7 @@
 }
 
 body {
-  overflow-y:auto !important;
+  overflow-y:auto;
 }
 
 @media screen and (max-width:820px) {

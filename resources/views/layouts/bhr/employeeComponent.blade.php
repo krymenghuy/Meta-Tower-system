@@ -2,7 +2,7 @@
 
     .card {
         border-radius: 10px;
-        box-shadow: 0px 0px 10px 0px #000000;
+        box-shadow: 0px 0px 3px 0px grey;
 
 
     }
@@ -88,32 +88,42 @@
 </style>
 
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
-    <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter_emp">
-        <div class="d-flex align-items-center w-100 gap-2">
-            <div class="d-flex align-items-center w-100 gap-2">
-                <input type="text" class="form-control filter-field" id="_sdl_search_employee"
-                    placeholder="Search Employee">
-
-                <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
-                    <i class="la la-search"></i>
-                </button>
-                <div class="d-flex align-items-center w-50 gap-2form-group w-50">
-                    <label for="" class="form-label trans-text p-2" data-langprop="titles.Status"></label>
-                    <select type="id" id="el_status" class="data-input filter-field" data-field="status"></select>
-                </div>
-            </div>
+    <div id="_tab_body" class="d-flex  p-3 justify-content-between w-100">
+        <div id="vs-tab-header" class="d-flex align-items-center w-25 gap-5" style="font-size:18px;" >
+                <ul class="nav nav-tabs border border-0 m-0 tab-header" id="custom-tabs-one-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <a class="tab-button view_employee nav-link pt-2 pb-2 border border-0 rounded-5 active" data-view ="view_employee" id="view_employee" data-bs-toggle="tab" data-bs-target="#employee-pane" type="button" role="tab" aria-controls="employee-pane" aria-selected="true">
+                            <span class="">Employee</span>
+                        </a>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <a class="tab-button view_employee_list nav-link pt-2 pb-2 border border-0 rounded-5" data-view ="view_employee_list" id="view_employee_list" data-bs-toggle="tab" data-bs-target="#employee-list-pane" type="button" role="tab" aria-controls="employee-list-pane" aria-selected="false">
+                            <span class="">Employee List</span>
+                        </a>
+                    </li>
+                </ul>         
         </div>
-        <div class="d-flex align-items-center justify-content-end gap-2 w-100">
-            <button type="button" class="btn btn-primary" id="_btnAddEmployee">
+        <div class="d-flex align-items-center justify-content-end gap-2 w-75" id="_divFilter_emp">
+            <div class="d-flex align-items-center">
+
+            <input type="text" class="form-control filter-field" id="_sdl_search_employee" placeholder="Search Employee">
+            </div>
+
+            <div class="d-flex align-items-center">
+                <!-- <label for="" class="form-label trans-text p-2" data-langprop="titles.Status"></label> -->
+                <select type="id" id="el_status" class="data-input filter-field" data-field="status"></select>
+            </div>
+            <button type="button" class="btn text-white" style="background-color:hwb(231.76deg 16.86% 43.14%);" id="_btnAddEmployee">
                 <i class="fas fa-plus"></i>
                 <span>Add Employee</span>
             </button>
         </div>
     </div>
-    <div id="_employee_list" class="p-3">
+
+    <div id="_employee_list" class="bg-white">
 
     </div>
-    <div id="container_pagination" class=" "></div>
+    <div id="container_pagination" class=""></div>
 </div>
 {{-- end h --}}
 <div class="modal fade" id="dlg_sdl_add_employee" tabindex="-1" aria-labelledby="dlg_sdl_add_employee_title"
