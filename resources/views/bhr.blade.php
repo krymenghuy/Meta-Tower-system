@@ -118,7 +118,7 @@ echo $user->lang ?? 'en'; ?>">
                 <div id="kt_header" class="kt-header kt-grid__item kt-header--fixed">
                     <div class="animation-line line--loader" style="display:none" id="vs_loader"></div>
                     <div class="kt-header-menu-wrapper" id="kt_header_menu_wrapper">
-                        <div class="d-flex flex-row flex-wrap shadow bg-secondary justify-content-between">
+                        <div class="d-flex flex-row flex-wrap shadow justify-content-between" style="background-color:#ececec;">
                             <div class="mainview-top-right">
                                 <div class="show--title mx-4 p-3 flex-grow-1 ">
                                     <div class="screen-info  w-50">

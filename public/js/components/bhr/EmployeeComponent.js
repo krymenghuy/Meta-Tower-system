@@ -8,11 +8,10 @@ var EmployeeComponent = new (function () {
     this.title_prop = "Employee management";
     this.elStatus = this.self.querySelector('#el_status');
     this.btnAdd = this.self.querySelector("#_btnAddEmployee");
+    this.btnBack = this.self.querySelector('#_btn_backTo_employee');
     this.divFilter = this.self.querySelector("#_divFilter_emp");
     this.elSearch = this.self.querySelector("#_sdl_search_employee");
-    this.employee_detail = mThis.self.querySelector('#_employee_detail');
     this.containerPagination = mThis.self.querySelector('#container_pagination');
-
 
    
 
@@ -40,10 +39,9 @@ var EmployeeComponent = new (function () {
 
         let content = mThis.self.querySelector('#_employee_list');
         console.log(2222,content);
-        mThis.initDropdownMenus(content);///
+        mThis.initDropdownMenus(content);
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
-            // let content = mThis.bookingListView.getListContainer();
 
             let op = {
                 id: null,
@@ -56,8 +54,19 @@ var EmployeeComponent = new (function () {
             };
             // content.parentElement.classList.add('d-none');
 
-            EmployeeDailog.show(op);
+            EmployeeDialog.show(op);
         };
+        mThis.btnBack.onclick = function (e) {
+            e.preventDefault();
+            let view_profile_info = mThis.self.querySelector('#sub_view_profile');
+            view_profile_info.classList.add('d-none');
+            let btnBack = mThis.self.querySelector('#btn_back');
+            btnBack.classList.add('d-none');
+            let sub_content = mThis.self.querySelector('#sub_content');
+            sub_content.classList.remove('d-none');
+          
+        }
+       
 
         mThis.divFilter.addEventListener('change', (e) => {
             e.preventDefault();
@@ -67,47 +76,34 @@ var EmployeeComponent = new (function () {
         mThis.initAlready = true;
     }
     this.renderEmployeeList = (div,data) => {
-        console.log(666,div,777,data);
-
-
         data = data ?? [];
         if(!AuthManager)
         {
             console.error('Authentication Management does not seems to work properly. You may need to refresh page');
             return;
         }
-        //AuthManager() provides current user information
-        // console.log(AuthManager.init);
-
+      
         AuthManager.init().then(user => {
-            // console.log(user);
            mThis.renderEmployee(data,user)
         });
     }
     this.renderEmployee = (data) => {
-        console.log(777, data);
-
         let html = '';
-        html += `<div id="_scroll_emp">
-            <div id="_employee_detail" class="row px-3">
-        `;
-
+        html += `<div id="_scroll_emp" class="row px-3">`;
         let cmt = 0;
-
+    
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
                 const status = d.status || 'Active';
-                // Determine the status and assign the background color accordingly
-                const statusColor = status === 'Inactive' ? 'background-color: #dc3545;' : 'background-color: #2B3991;'; // #dc3545 is Bootstrap's danger color
-
+                const statusColor = status === 'Inactive' ? 'background-color: #dc3545;' : 'background-color: #2B3991;';
+    
                 html += `
-                    <div class="col-md-3 mt-3 mb-3">
+                    <div class="col-md-3 mt-5 mb-3 employee-card" data-employee-id="${d.id}">
                         <div class="card">
                             <div class="card-header">
-                                <div class="status_employee" style="${statusColor} color: white; padding: 5px; border-radius: 5px;">
+                                <div class="status_employee" style="${statusColor} color: white; padding: 3px; border-radius: 20px;">
                                     <span>${status}</span>
                                 </div>
-
                                 <div class="dropdown">
                                     <a href="javascript:void(0)" class="btn_employee_action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa fa-ellipsis-v"></i>
@@ -117,7 +113,7 @@ var EmployeeComponent = new (function () {
                             <div class="card-body text-center">
                                 <img src="${d.image_url || '../uploads/public/1_data/default/images/mr.avif'}" class="rounded-circle mb-3"
                                     alt="Profile Picture" style="width: 100px; height: 100px;">
-                                <h5 class="card-title">${d.first_name || 'John'} ${d.last_name || 'John Doe'}</h5>
+                                <h5 class="card-title">${d.first_name || 'John'} ${d.last_name || 'Doe'}</h5>
                                 <div class="card_container">
                                     <div class="employee_id">#: ${d.code || ''}</div>
                                     <div class="container_top">
@@ -137,39 +133,63 @@ var EmployeeComponent = new (function () {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card_bottom">
+                                <div class="card_bottom pt-1">
                                     <div class="joining">Joining Date: ${d.joining_date || '01/Aug/2024'}</div>
-                                    <a href="#" class="detail">See Detail</a>
+                                    <a href="javascript:void(0)" class="see-detail" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">See Detail</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-
                 `;
                 cmt++;
             });
         }
-
+    
         if (cmt === 0) {
             html += `<div class="w-100 rounded-3 border-start text-center border-5 border-danger-custom p-3 shadow bg-white mb-3 position-relative">
-            <div class="row">
-                <div class="col">No Data Found</div>
-            </div>
+                <div class="row">
+                    <div class="col">No Data Found</div>
+                </div>
             </div>`;
         }
-
-        html += `</div></div>`;
+    
+        html += `</div>`;
         div.innerHTML = html;
+    
         const sh_parent = div.querySelector('#_scroll_emp');
-        sh_parent.style.height = (window.innerHeight - 150) + 'px';
+        sh_parent.style.height = (window.innerHeight - 195) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
-
+    
+        // Handle resize
         window.onresize = function(e) {
             e.preventDefault();
-            sh_parent.style.height = (window.innerHeight - 150) + 'px';
+            sh_parent.style.height = (window.innerHeight - 100) + 'px';
         };
+    
+        const seeProfileInfo = div.querySelectorAll('.see-detail');
+        seeProfileInfo.forEach(link => {
+            
+            link.addEventListener('click', (e) => {
+                const employeeId = e.target.dataset.id;
+                let sub_content = mThis.self.querySelector('#sub_content');
+                sub_content.classList.add('d-none');
+                let btnBack = mThis.self.querySelector('#btn_back');
+                btnBack.classList.remove('d-none');
+                let view_profile_info = mThis.self.querySelector('#sub_view_profile');
+                view_profile_info.classList.remove('d-none');
+            });
+        });
     };
+    
+    
+  
+   
+    
+    
+    
+   
+    
     mThis.elSearch.addEventListener('keyup', (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
@@ -249,7 +269,7 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage();
             }
         };
-        EmployeeDailog.show(op);
+        EmployeeDialog.show(op);
     }
 
     this.deleteEmployee = (id, menuLink) => {
@@ -298,7 +318,8 @@ var EmployeeComponent = new (function () {
 
 });
 
-const EmployeeDailog = new function() {
+
+const EmployeeDialog = new function() {
     const mThis = this;
     this.self = main_view.VSAppContent.querySelector('#dlg_sdl_add_employee');
     this.modal = new bootstrap.Modal(this.self);
@@ -308,8 +329,7 @@ const EmployeeDailog = new function() {
     this.btnSave =  this.self.querySelector('#dlg_sdl_add_employee_btn_save');
     this.elPositionId =  this.self.querySelector('#_sdl_position_id');
     this.elSessionId =  this.self.querySelector('#_sdl_session_id');
-    this.elStatusId =  this.self.querySelector('#_sdl_status_id');
-    this.elGenderId =  this.self.querySelector('#_sdl_gender_id');
+    // this.elGenderId =  this.self.querySelector('#_sdl_gender_id');
     this.elTitle = mThis.self.querySelector('.modal-title');
     this.div_employee_info = mThis.self.querySelector('#_sdl_employee_info');
     this.btnChooser = mThis.self.querySelector('#dlg_image_chooser');
@@ -330,6 +350,7 @@ const EmployeeDailog = new function() {
                 cv_interact.error(res.error_message);
         });
     };
+    
 
     this.prepareData = (id,def, onFinish) => {
         if(!def) def = {};
@@ -341,9 +362,8 @@ const EmployeeDailog = new function() {
 
 
             VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'name', true, '(Select Position)', null);
-            VSUtil.setComboItems(mThis.elStatusId, d.status, 'id', 'name', true, '(Select Status)', null);
             VSUtil.setComboItems(mThis.elSessionId, d.sessions, 'id', 'name', true, '(Select Session)', null);
-            VSUtil.setComboItems(mThis.elGenderId, d.genders, 'id', 'name', true, '(Select Gender)', null);
+            // VSUtil.setComboItems(mThis.elGenderId, d.genders, 'id', 'name', true, '(Select Gender)', null);
             console.log(33333,d);
             onFinish(d);
         });

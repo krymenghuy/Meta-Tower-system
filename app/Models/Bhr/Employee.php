@@ -11,7 +11,7 @@ use DB;
 use App\Models\DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class Employee//extends Model
+class employee//extends Model
 
 {
     //use HasFactory;
@@ -19,17 +19,8 @@ class Employee//extends Model
     protected $id = null;
     protected $userInfo = null;
     protected static $img_dir = 'employees';
-    //Employees Regitration default options | senderDetaultOptions() | employeesDefaultOptions
-    function getDefaultOptions()
-    {
-        //price_list_id =11 (Normal Condition)
-        $data = (object) [
-            'price_list_id' => self::getDefaultPriceList()->emp_id,
-            'cod' => 0,
-            'cod_fee' => 0,
-        ];
-        return $data;
-    }
+    //employees Regitration default options | senderDetaultOptions() | employeesDefaultOptions
+    
 
     function __construct($id = null, $userInfo = null)
     {
@@ -37,7 +28,6 @@ class Employee//extends Model
         $this->userInfo = $userInfo;
     }
 
-    //saveSender()
     function save($arr = [], $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
@@ -48,23 +38,23 @@ class Employee//extends Model
             'last_name' => '1|string|0-100',
             'email' => '1|email',
             'phone_number' => '1|phone|0-20',
-            'gender_id' => '1|number',
+            'sex' => '1|string',
             'nationality' => '1|string|0-150',
             'date_of_birth' => '1|date',
             'address' => '0|string|0-250',
             'positions_id' => '1|number',
             'session_id' => '1|number',
-            'joining_date' => '0|date',
-            'NSSF' => '0|string|0-100',
-            'identity_card_number'=> '0|number',
+            'joining_date' => '1|date',
+            'nssf_id' => '0|string|0-100',
+            'nid'=> '0|number',
             'status_id' => '1|number|default = 1',
             'photo' => '0|image',
         ];
-
+  
 
         $checkUnque = [
-            "$branch_id|employees|phone_number|id=id|text=Employee already exists by phone number",
-            "$branch_id|employees|email|id=id|text=Employee already exists by email",
+            "$branch_id|employees|phone_number|id=id|text=employee already exists by phone number",
+            "$branch_id|employees|email|id=id|text=employee already exists by email",
         ];
 
         $res = validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnque);
@@ -74,14 +64,18 @@ class Employee//extends Model
         }
 
         $id = $res->id;
+        
         $inputs = $res->values;
+     
+
+
         $d = (object) $inputs;
         $photo = $d->photo;
-        $d->phone_nuper = str_replace(' ', '', $inputs['phone_number']);
-        $inputs['phone_number'] = $d->phone_nuper;
-        if (!$d->phone_nuper) {
-            error_log('Phone numer is required for valid  Employee');
-            return DV::error('Phone numer is required for valid  Employee');
+        $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
+        $inputs['phone_number'] = $d->phone_number;
+        if (!$d->phone_number) {
+            error_log('Phone number is required for valid  employee');
+            return DV::error('Phone number is required for valid  employee');
         }
         unset($inputs['photo']);
         $employee_created = !$id;
@@ -91,14 +85,14 @@ class Employee//extends Model
         $id = saveData($ss, 'employees', ['id' => $id], $inputs, [], 1);
 
         if ($id > 0) {
-            $new_code = null; // $this->getNextSenderCode($ss);
+            $new_code = null; 
             if($id){
-            $prefix = 'EM';
+            $prefix = 'emp';
             $res = setOfficialCode($branch_id,'employee_code_control','employees',['id'=>$id],$prefix,5,null);
             $new_code = $res->code;
             }
             if ($delete_prev_image) {
-                $file_name = DB::table('employees as em')->where('em.id', $id)->take(1)->value('em.photo_file_name');
+                $file_name = DB::table('employees as emp')->where('emp.id', $id)->take(1)->value('emp.photo_file_name');
                 if ($file_name) {
                     PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
                 }
@@ -109,7 +103,7 @@ class Employee//extends Model
             return DV::depends(1, ['employees' => $inputs, 'id' => $id]);
         }
 
-        return DV::error('Failed to save data');
+        return DV::error('Failed to save employee');
     }
 
     public static function getProfilePicture($id)
@@ -127,87 +121,73 @@ class Employee//extends Model
 
     function getListPaginate($arr, $ss)
     {
-        $d = (object) $arr;
         $branch_id = $ss->branch_id;
-
+        $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 5;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
-
         $skip_rows = ($current_page - 1) * $per_page;
-
+        $status = $d->status_id ?? null;
         $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-        $search_position_id = $d->position_id ?? null;
-        $search_status_id = $d->status_id ?? null;
+        $str_srch = '1=1';
+        $str_where = '2=2';
+        if($search_value){
+            $skip_rows = 0;
+            $str_srch = "(emp.first_name LIKE '%".$search_value."%' OR emp.last_name = '".$search_value."' OR emp.nid = '".$search_value."' OR emp.phone_number = '".$search_value."')";
+        }
+        if($status){
+            $str_where = 'emp.status_id =\'' . $status . '\'';
 
-        $str_search = '1=1';
-
-        $query = DB::table('employees as em')
-        ->join('genders as g', 'g.id', '=', 'em.gender_id')
-        ->join('positions as p', 'p.id', '=', 'em.positions_id')
-        ->join('dep_status as ds', 'ds.id', '=', 'em.status_id')
-        ->join('sessions as s', 's.id', '=', 'em.session_id')
-        ->selectRaw('
-            em.code,
-            em.id,
-            em.first_name,
-            em.last_name,
-            em.email,
-            em.phone_number,
-            em.gender_id,
-            em.nationality,
-            em.date_of_birth,
-            em.address,
-            em.photo_file_name,
-            em.joining_date,
-            em.nssf,
-            em.identity_card_number,
-            g.name as gender,
-            em.positions_id,
+        }
+        $query = DB::table('employees as emp')
+            ->join('positions as p', 'p.id', '=', 'emp.positions_id')
+            ->join('dep_status as ds', 'ds.id', '=', 'emp.status_id')
+            ->join('sessions as s', 's.id', '=', 'emp.session_id')
+            ->whereRaw($str_srch)
+            ->whereRaw($str_where)
+            ->selectRaw('
+            emp.code,
+            emp.id,
+            emp.first_name,
+            emp.last_name,
+            emp.email,
+            emp.phone_number,
+            emp.sex,
+            emp.nationality,
+            emp.date_of_birth,
+            emp.address,
+            emp.photo_file_name,
+            emp.joining_date,
+            emp.nssf_id,
+            emp.nid,
+            emp.positions_id,
             p.name as position,
-            em.session_id,
+            emp.session_id,
             s.name as session,
-            em.status_id,
+            emp.status_id,
             ds.name as status
         ')
-        ->where('em.branch_id', $branch_id);
+        ->orderBy('emp.id', 'DESC');
 
+        // if ($search_value) {
+        //     $search_value = addcslashes($search_value, '%_'); // Escape special characters used in LIKE query
+        //     $query->where(function($q) use ($search_value) {
+        //         $q->where('emp.first_name', 'like', '%' . $search_value . '%')
+        //           ->orWhere('emp.last_name', 'like', '%' . $search_value . '%')
+        //           ->orWhere('emp.email', 'like', '%' . $search_value . '%')
+        //           ->orWhere('emp.phone_number', 'like', '%' . $search_value . '%')
+        //           ->orWhere('p.name', 'like', '%' . $search_value . '%')
+        //           ->orWhere('emp.address', 'like', '%' . $search_value . '%')
+        //           ->orWhere('emp.joining_date', 'like', '%' . $search_value . '%')
+        //           ->orWhere('emp.nssf_id', 'like', '%' . $search_value . '%')
+        //           ->orWhere('emp.nid', 'like', '%' . $search_value . '%');
+        //     });
+        // }
 
-
-        if ($search_id) {
-            $query->where('em.id', $search_id);
-
-        }
-
-        if ($search_position_id) {
-            $query->where('em.positions_id', $search_position_id);
-        }
-
-        if ($search_status_id) {
-            $query->where('em.status_id', $search_status_id);
-        }
-
-        if ($search_value) {
-            $search_value = addcslashes($search_value, '%_'); // Escape special characters used in LIKE query
-            $query->where(function($q) use ($search_value) {
-                $q->where('em.first_name', 'like', '%' . $search_value . '%')
-                  ->orWhere('em.last_name', 'like', '%' . $search_value . '%')
-                  ->orWhere('em.email', 'like', '%' . $search_value . '%')
-                  ->orWhere('em.phone_number', 'like', '%' . $search_value . '%')
-                  ->orWhere('p.name', 'like', '%' . $search_value . '%')
-                  ->orWhere('em.address', 'like', '%' . $search_value . '%')
-                  ->orWhere('em.joining_date', 'like', '%' . $search_value . '%')
-                  ->orWhere('em.nssf', 'like', '%' . $search_value . '%')
-                  ->orWhere('em.identity_card_number', 'like', '%' . $search_value . '%');
-            });
-        }
-
-
-        $count = $query->count();
-        $query->orderBy('em.id', 'asc');
+        $clone_query = clone $query;
+        $count = $clone_query->count('emp.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
@@ -222,37 +202,38 @@ class Employee//extends Model
     }
 
 
-    function getDetails($id)
+    function getDetails($id,$ss)
     {
-        $row = DB::table('employees as em')
-        ->join('genders as g', 'g.id', '=', 'em.gender_id')
-        ->join('positions as p', 'p.id', '=', 'em.positions_id')
-        ->join('dep_status as ds', 'ds.id', '=', 'em.status_id')
-        ->join('sessions as s', 's.id', '=', 'em.session_id')
+        $branch_id = $ss->branch_id;
+
+        $row = DB::table('employees as emp')
+            ->join('positions as p', 'p.id', '=', 'emp.positions_id')
+            ->join('dep_status as ds', 'ds.id', '=', 'emp.status_id')
+            ->join('sessions as s', 's.id', '=', 'emp.session_id')
         ->selectRaw('
-            em.code,
-            em.id,
-            em.first_name,
-            em.last_name,
-            em.email,
-            em.phone_number,
-            em.gender_id,
-            em.nationality,
-            em.date_of_birth,
-            em.address,
-            em.photo_file_name,
-            em.joining_date,
-            em.nssf,
-            em.identity_card_number,
-            g.name as gender,
-            em.positions_id,
+            emp.code,
+            emp.id,
+            emp.first_name,
+            emp.last_name,
+            emp.email,
+            emp.sex,
+            emp.phone_number,
+            emp.nationality,
+            emp.date_of_birth,
+            emp.address,
+            emp.photo_file_name,
+            emp.joining_date,
+            emp.nssf_id,
+            emp.nid,
+            emp.positions_id,
             p.name as position,
-            em.session_id,
+            emp.session_id,
             s.name as session,
-            em.status_id,
+            emp.status_id,
             ds.name as status
             ')
-            ->where('em.id', $id)
+            ->where('emp.branch_id',$branch_id)
+            ->where('emp.id', $id)
             ->first();
 
         if ($row) {
@@ -288,7 +269,7 @@ class Employee//extends Model
             ], 'images', $file_name);
         }
 
-        // Update the profile to remove the photo file name
+        // Update the profile to rempove the photo file name
         DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
 
         // Delete the profile
@@ -296,7 +277,7 @@ class Employee//extends Model
 
         // Check if the query was successful
         if (!$deleted) {
-            return DV::error('Employee not found or not deleted');
+            return DV::error('employee not found or not deleted');
         }
 
         // Return success response
@@ -313,7 +294,7 @@ class Employee//extends Model
 
             'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,name')->get(),
-            'genders' => DB::table('genders')->selectRaw('id,name')->get(),
+            // 'genders' => DB::table('genders')->selectRaw('id,name')->get(),
             'sessions' => DB::table('sessions')->selectRaw('id,name')->get(),
 
 
