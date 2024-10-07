@@ -88,6 +88,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->gr
     Route::post('/list-paginate', [BenefitController::class, 'getBenefitListPaginate']);
     Route::post('/details', [BenefitController::class, 'getDetails']);
     Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
+    Route::post('/form-options', [BenefitController::class, 'getFormOptions']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('staff-benefit')->group(function () {
@@ -151,6 +152,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('report')->gro
     Route::post('/list-paginate', [ReportController::class, 'getReportListPaginate']);
     Route::post('/details', [ReportController::class, 'getDetails']);
     Route::post('/delete', [ReportController::class, 'deleteReport']);
+    Route::post('/form-options', [ReportController::class, 'getFormOptions']);
 
 
 });

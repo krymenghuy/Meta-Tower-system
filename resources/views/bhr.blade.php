@@ -268,6 +268,7 @@ echo $user->lang ?? 'en'; ?>">
                             @include('layouts.bhr.positionComponent')
                             @include('layouts.bhr.leaveRequestComponent')
                             @include('layouts.bhr.warningComponent')
+                            @include('layouts.bhr.benefitComponent')
                         </div>
                     </div>
                 </div>
