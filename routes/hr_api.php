@@ -144,3 +144,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('position')->g
     Route::post('/delete', [PositionController::class, 'deletePosition']);
     Route::post('/form-options', [PositionController::class, 'getFormOptions']);
 });
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('report')->group(function () {
+
+    Route::post('/save', [ReportController::class, 'saveReport']);
+    Route::post('/list-paginate', [ReportController::class, 'getReportListPaginate']);
+    Route::post('/details', [ReportController::class, 'getDetails']);
+    Route::post('/delete', [ReportController::class, 'deleteReport']);
+    
+
+});

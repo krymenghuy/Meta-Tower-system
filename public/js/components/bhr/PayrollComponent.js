@@ -434,7 +434,7 @@ const PayRollDailog = new function() {
                                     <span>${d.position}</span>
                                 </div>
                                  <div>
-                                    <span>Working Hours:</span><span>${d.section}</span>
+                                    <span>Working Hours:</span><span>${d.session}</span>
                                 </div>
 
                             </div>`;
