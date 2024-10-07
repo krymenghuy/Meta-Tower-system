@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
+use App\Models\Bhr\GeneralSettings;
 use App\Models\Bhr\Warning;
 use Illuminate\Http\Request;
 use App\Models\JDV;
@@ -48,5 +49,13 @@ class WarningController extends Controller
         $result = $this->warnings->deleteWarning($req->id, $ss);
 
         return $result; // Return the result from the model
+    }
+    public function getFormOptions(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $id = $req->id;
+        $data = Warning::getFormOptions($id, $ss);
+        return JDV::result($data);
     }
 }

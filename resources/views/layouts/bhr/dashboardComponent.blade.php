@@ -380,7 +380,7 @@
     #_main_dashboardComponent {
         display: flex;
         flex-direction: column;
-        height: 700px;
+        height: 550px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
@@ -399,7 +399,7 @@
     .employees {
         background-color: white;
         border-radius: 10px;
-        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.564);
+        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
         padding: 20px;
         display: flex;
         flex-direction: column;
@@ -449,7 +449,7 @@
 
     /* Hover effect */
     .employees:hover {
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 4px 5px rgba(66, 92, 165, 0.255);
     }
 
     .dashboard_center {
@@ -462,7 +462,7 @@
     /* Styling for Leave Cards */
     .center_left {
         display: flex;
-        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.564);
+        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
@@ -542,7 +542,7 @@
         width: 46%;
         height: 350px;
         background-color: #ffffff;
-        box-shadow: 1px 2px 3px 1px rgba(0, 0, 0, 0.564);
+        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
         border-radius: 20px;
     }
 
@@ -550,7 +550,7 @@
         width: 24%;
         height: 350px;
         background-color: #ffffff;
-        box-shadow: 1px 2px 3px 1px rgba(0, 0, 0, 0.564);
+        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
         border-radius: 20px;
     }
 
@@ -592,6 +592,7 @@
         border-radius: 50% 50% 0% 50%;
         object-fit: cover;
     }
+
     .top1 span,
     .top2 span,
     .top3 span {
@@ -601,6 +602,7 @@
         padding: 5px;
         border-radius: 20px 0px 20px 0px;
     }
+
     #myChart {
         max-width: 600px;
         max-height: 400px;
@@ -689,7 +691,7 @@
 
         border-radius: 8px;
         padding: 20px;
-        box-shadow: 1px 3px 4px 1px rgba(65, 64, 64, 0.564);
+        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
 
     }
     .staff_wallet
@@ -698,11 +700,12 @@
         display: flex;
         align-items: center;
         flex-direction: column;
+        justify-content: center;
         height: 350px;
         background-color: #f5f5f5;
         border-radius: 8px;
         padding: 20px;
-        box-shadow: 1px 3px 4px 1px rgba(65, 64, 64, 0.564);
+        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
 
         flex: 1;
     }
@@ -716,7 +719,7 @@
         background-color: #f5f5f5;
         border-radius: 8px;
         padding: 20px;
-        box-shadow: 1px 3px 4px 1px rgba(65, 64, 64, 0.564);
+        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
 
         flex: 1;
     }
@@ -724,9 +727,10 @@
     .em_departement h3,
     .staff_wallet h3,
     .staff_benefit h3 {
-        margin-bottom: 20px;
-        font-size: 18px;
-        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
         color: #333;
     }
 
@@ -762,8 +766,8 @@
 
     .staff_wallet canvas {
         display: flex;
-        width: 70px;
-        padding: 70px;
+        width: 80px;
+        padding: 30px;
         margin-top: -60px;
     }
 
