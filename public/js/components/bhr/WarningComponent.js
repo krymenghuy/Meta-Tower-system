@@ -183,14 +183,46 @@ var WarningComponent = new (function () {
         };
         WarningDialog.show(op);
     };
-    this.deleteWarning = (id) => {
-        let op = {
-            id: id,
-            onClose: (p) => {
-                mThis.WarningListView.showPage(mThis.getFilterData());
-            },
-        }
-    }
+    this.deleteWarning = (id, menuLink) => {
+        // Ask for confirmation before deleting
+        cv_interact.confirm(
+            "Are you sure you want to delete this warning?",
+            () => {
+                // Make API call to delete the warning
+                vsapi;
+
+                console
+                    .log(`${mThis.base_url}/hr/warning/delete`, { id })
+
+                    .call(`${mThis.base_url}/hr/warning/delete`, { id })
+                    .then((response) => {
+                        if (response.status_code === 200) {
+                            cv_interact.success(
+                                "Warning deleted successfully."
+                            );
+
+                            // Remove the row from the table
+                            let row = menuLink.closest("tr");
+                            row.remove();
+
+                            // Optionally, refresh the warning list view
+                            mThis.WarningListView.showPage(
+                                mThis.getFilterData()
+                            );
+                        } else {
+                            cv_interact.error(response.error_message);
+                        }
+                    })
+                    .catch((error) => {
+                        console.error("API error:", error);
+                        cv_interact.error(
+                            "Failed to delete warning. Please try again."
+                        );
+                    });
+            }
+        );
+    };
+
     // Show component
     this.show = function () {
         mThis.init();
