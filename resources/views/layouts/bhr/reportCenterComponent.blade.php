@@ -404,6 +404,10 @@
     .report_item .action {
         text-align: center;
     }
+    
+    .report_item .action .fa-ellipsis-v {
+        color: #000;
+    }
 
     .action i {
         cursor: pointer;
