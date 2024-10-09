@@ -6,209 +6,355 @@ var SkillsComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_skillsComponent");
     this.self = this.jm[0];
     this.title_prop = "Skills";
+    this.btnAdd = this.self.querySelector("#_btnAddSkill");
+    this.divFilter = this.self.querySelector("#_divFilter_skill");
+    this.elSearch = this.self.querySelector("#_sdl_search_skill");
+
+
+
 
     this.init = () => {
         if (mThis.initAlready) return;
 
-        // Select elements
-        mThis.btnAdd = mThis.self.querySelector("#btnAdd");
-        mThis.SkillsNameInput = mThis.self.querySelector("#searchSkill");
-        mThis.div_x_list = mThis.self.querySelector("#_skills_list");
+        mThis.SkillsListView = new ListView('_skill_list', {
+            fetchApi: `${main_view.base_url}/hr/skills/list-paginate`,
+            perPage: 8,
+            // paginationContainer: mThis.containerPagination,
+            apiCluster: main_view.apiCluster,
+            processResponse: (res) => {
+                console.log(123,res.data);
 
-        // Add Skill Button
-        mThis.btnAdd.onclick = (e) => {
+                return res.data;
+            },
+            renderItems: (data,list_container) => {
+
+                mThis.renderskillsList(list_container, data);
+            },
+            listContainerClass: null
+        });
+        this.listContainer = mThis.SkillsListView.getListContainer();
+
+        let content = mThis.self.querySelector('#_skill_list');
+        // console.log(2222, content);
+
+        mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
-            const op = {
+
+            let op = {
                 id: null,
+                btn: e.target,
                 onClose: () => {
-                    mThis.displaySkills(); // Refresh Skills list
-                },
+                    mThis.SkillsListView.showPage();
+                }
             };
-            SkillsDialog.show(op);
+
+
+            SkillDailog.show(op);
         };
 
-        // Search Skills Input
-        mThis.SkillsNameInput.oninput = () => {
-            mThis.displaySkills(mThis.SkillsNameInput.value);
-        };
+        mThis.divFilter.addEventListener('change', (e) => {
+            e.preventDefault();
+            mThis.SkillsListView.showPage(mThis.getDataFormFilter());
+        });
 
+        // Set window resize only once in init
+        window.onresize = function (e) {
+            e.preventDefault();
+            let sh_parent = mThis.self.querySelector('#_scroll_skill');
+            if (sh_parent) {
+                sh_parent.style.height = (window.innerHeight - 150) + 'px';
+            }
+        };
+        // mThis.setAction(pr_tbl);
         mThis.initAlready = true;
     };
+    this.setAction = (tbl)=>{
+        tbl.addEventListener('click', (e) => {
 
-    // Fetch and display the list of Skills with optional filtering
-    this.displaySkills = (searchQuery = "") => {
-        vsapi
-            .call(`${mThis.base_url}/hr/skills/list`, {}, null)
-            .then((res) => {
-                mThis.div_x_list.innerHTML = "";
-                let d = res.status_code === 200 ? res.data : [];
+            let btn = VSUtil.closestLimited(e.target,'button.b-btn-delete');
+            if (btn) {
+                mThis.deleteSkill(btn.dataset.id, btn);
+            }
+            btn = VSUtil.closestLimited(e.target,'button.b-btn-edit');
+            if (btn) {
+                mThis.editSkill(btn.dataset.id, btn);
+            }
+            console.log(123,btn);
+        })
+    }
 
-                // Filter Skills based on search query
-                d = d.filter((skill) =>
-                    skill.name.toLowerCase().includes(searchQuery.toLowerCase())
-                );
+    this.renderskillsList = (div,data) => {
+        console.log(666,div,777,data);
 
-                let html = "";
-                d.forEach((skill) => {
-                    html += `
-                    <div class="mt-5" style="width:450px; padding-left:4.7%">
-                        <div class="d-flex justify-content-between border bg-light p-2" style="border-radius: 100px; width:80%">
-                            <div class="text-center">${skill.name}</div>
-                            <div>
-                                <a class="btn_edit_skill mr-2" data-id="${skill.id}" href="javascript:void(0)">
-                                    <i class="fa fa-pencil fs-5"></i>
-                                </a>
-                                <a class="btn_delete_skill mr-2" data-id="${skill.id}" href="javascript:void(0)">
-                                    <i class="fa fa-trash fs-5 text-danger"></i>
-                                </a>
+
+        data = data ?? [];
+        if(!AuthManager)
+        {
+            console.error('Authentication Management does not seems to work properly. You may need to refresh page');
+            return;
+        }
+        //AuthManager() provides current user information
+        // console.log(AuthManager.init);
+
+        AuthManager.init().then(user => {
+            // console.log(user);
+           mThis.renderskills(data,user)
+        });
+    }
+    this.renderskills = (data) => {
+        console.log(777, data);
+
+        let div = mThis.self.querySelector("#_skill_list");  // Ensure you define the `div`
+        let html = `
+            <div id="_scroll_skill">
+                <div id="_skill_detail" class="row">
+        `;
+
+        let cmt = 0;
+
+        if (Array.isArray(data) && data.length > 0) {
+            data.forEach(d => {
+                html += `
+                        <div class="skills col-3">
+                        <div class="default">
+                            <div class="card_header">
+                                <h3 id="title">${d.title}</h3>
+                                <img src="${d.image_url}" alt="">
                             </div>
-                        </div>
-                        <div>
-                            <img class="mt-2" src="${skill.image_url}" alt="" style="border-radius: 10%; width:380px; height:200px" />
+                            <p>${d.description}</p>
+                            <div class="count_staff">
+                                <div class="count">
+                                    <i class="fa fa-users"></i>
+                                    <span>${d.count_member}</span>
+                                </div>
+                                <div class="action">
+                                    <button class="btn btn-sm btn-primary b-btn-edit" data-id="${data.id}"><i class="fa-regular fa-pen-to-square"></i></button>
+                                    <button class="btn btn-sm btn-danger b-btn-delete" data-id="${data.id}"><i class="fa-regular fa-trash-can"></i></button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 `;
-                });
-
-                mThis.div_x_list.innerHTML = html;
-
-                mThis.div_x_list.onclick = (e) => {
-                    e.preventDefault();
-                    let btn = VSUtil.closestLimited(
-                        e.target,
-                        ".btn_edit_skill"
-                    );
-                    if (btn) {
-                        let op = {
-                            id: btn.dataset.id,
-                            onClose: () => {
-                                mThis.displaySkills(); // Refresh skill list
-                            },
-                        };
-                        SkillsDialog.show(op);
-                        return;
-                    }
-
-                    // Handle delete button click
-                    btn = VSUtil.closestLimited(e.target, ".btn_delete_skill");
-                    if (btn) {
-                        let skillId = btn.dataset.id;
-                        if (
-                            confirm(
-                                "Are you sure you want to delete this Skill?"
-                            )
-                        ) {
-                            vsapi
-                                .call(
-                                    `${mThis.base_url}/bhr/skills/delete`,
-                                    { id: skillId },
-                                    btn
-                                )
-                                .then((res) => {
-                                    if (res.status_code === 200) {
-                                        cv_interact.success(
-                                            "Skill deleted successfully"
-                                        );
-                                        mThis.displaySkills(); // Refresh Skill list
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
-                                });
-                        }
-                        return;
-                    }
-                };
+                cmt++;
             });
+        }
+
+        if (cmt === 0) {
+            html += `
+                <div class="w-100 rounded-3 border-start text-center border-5 border-danger-custom p-3 shadow bg-white mb-3 position-relative">
+                    <div class="row">
+                        <div class="col">No Data Found</div>
+                    </div>
+                </div>`;
+        }
+
+        html += `</div></div>`;
+        div.innerHTML = html;
+
+        const sh_parent = div.querySelector('#_scroll_skill');
+        sh_parent.style.height = (window.innerHeight - 150) + 'px';
+        sh_parent.classList.add('overflow-y-auto');
+        sh_parent.classList.add('overflow-x-hidden');
+
     };
+    mThis.elSearch.addEventListener('keyup', (e) => {
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.SkillsListView) {
+                mThis.SkillsListView.showPage(mThis.getDataFormFilter());
+            } else {
+                console.error("SkillsListView is not defined");
+            }
+        }, 200);
+    });
+    this.getDataFormFilter = () => {
+        let p = {};
+        p.search_value = mThis.elSearch.value;
+        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
+        main_filters.forEach(el => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+        console.log(222, p);
 
-        this.show = function () {
-            mThis.init();
-            mThis.jm.siblings().hide();
-            mThis.jm.fadeIn(250);
-            mThis.displaySkills();
-            main_view.setTitle(mThis.title_prop);
+        return p;
+    };
+    this.editSkill = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.SkillsListView.showPage();
+            }
+        };
+        console.log(333,op);
+
+        SkillDailog.show(op);
+    }
+
+    this.deleteSkill = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.SkillsListView.showPage();
+            }
+        };
+        cv_interact.confirm('Delete this Employee Benefit?',{
+            title: 'Delete Employee Benefit',
+            context: 'delete',
+            confirmButtonText:"Delete"
+        },function(e){
+            if(e){
+                vsapi.call(`${main_view.base_url}/hr/benefit/delete`,op,false,false,false).then(res => {
+                    if(res.status_code == 200){
+                        cv_interact.success('Deleted Successfully');
+                        mThis.SkillsListView.showPage();
+                    }
+                })
+            }
+        });
+
+    }
+
+    this.show = function () {
+        mThis.init();
+        main_view.setTitle(mThis.title_prop);
+        mThis.SkillsListView.showPage(null, null, () => {
+            $(mThis.self).siblings().hide();
+            $(mThis.self).fadeIn(200);
+        });
+    };
+})();
+const SkillDailog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+    cssClass: "",
+    createContent: () => {
+        return [
+            `<div class="w-100 d-flex flex-wrap flex-row align-items-center justify-content-center gap-2">
+                 <div name="div_skill_photo"></div>
+                 <div style="visibility:hidden" class="d-none align-items-center justify-content-center border border-secondary rounded-5 p-3 flex-grow">
+                 <h5 class="p-2">User may have an official profile details</h5>
+                 </div>
+           </div>`,
+            `<div class="form-group col-md-12">`,
+            `<label class="form-label" vslang="titles.title"> Title </label>`,
+            `<div><input name="title" class="form-control data-input" data-field="title"/></div>`,
+            `</div>`,
+
+            `<div class="form-group col-md-12">`,
+            `<label class="form-label" vslang="titles.Description"> Description </label>`,
+            `<div><input name="description" class="form-control data-input" data-field="description"/></div>`,
+            `</div>`,
+
+        ].join('');
+    },
+    onPrepareForm:(me)=>{
+        LocaleManager.translateZone(me.divModal);
+        let div_skill_photo = me.divModal.querySelector('[name="div_skill_photo"]');
+        console.log(444,div_skill_photo);
+        me.userImageBox = new ImageBox(div_skill_photo,{cssClass:"data-input",dataset:{"field" :"image"}});
+        me.showProfile =  (code) =>{
+           let fields = ['full_name','email','phone_number','login_name'];
+           let p = {"official_code":code,'user_class': me.controls.user_class.value};
+           console.log(111,p);
+
+        //    vsapi.call([main_view.base_url,'/api/user/profile-by-code'].join(''),p,false,false).then(res =>{
+        //       let d = res.status_code ==200? res.data: {};
+        //       d = d || {};
+              me.fieldList.forEach(el =>{
+                 const f =el.dataset.field;
+                 if(fields.indexOf(f)>=0){
+                       el.value = d[f] || "";
+                 }
+              });
+        //    });
         };
 
-    const SkillsDialog = (() => {
-        const self = {};
-        let dialog = null;
+     },
+    buttons:[
+        {
+           label:"<span>Cancel</span>",
+           cssClass:"btn btn-warning",
+           click:(me)=>{
+              me.hide(false);
+           }
+        },
+        {
+           label:"<span>Save</span>",
+           cssClass:"btn btn-primary",
+           click:(me)=>{
+              let p = me.getData();
+              p.photo = me.userImageBox? me.userImageBox.getImage(): '';
+              console.log(222,p);
+              vsapi.call([main_view.base_url,'/hr/skills/save'].join(''),p,false,false).then(res =>{
+                  if(res.status_code ==200){
+                      me.modal.hide(true,p);
+                  }else cv_interact.error(res.error_message);
+              });
+           }
+        }
+     ],
+    // configSelect: [
+    //     {
+    //         name: "emp_id",
+    //         data:"employees",
+    //         valueField: "id",
+    //         textField: "name",
+    //         filterData:(data,res)=>{
+    //             return data.options;
+    //         }
+    //     },
+    //     {
+    //         name: "module",
+    //         data: "modules",
+    //         filterOptions: {
+    //             triggerBy: "emp",
+    //             filter: (me, data, controls) => {
+    //                 return data.filter(x => x.emp_id === controls.emp.value);
+    //             }
+    //         },
+    //         valueField: "id",
+    //         textField: "name",
+    //         depends: {
+    //             triggerBy: "emp",
+    //             api: {
+    //                 endpoint: `${main_view.base_url}/api/module/list`,
+    //                 params: (me, dataOptions, controls) => {
+    //                     return { "emp_id": controls.emp.value };
+    //                 },
+    //                 onResponse: (me, res) => {
+    //                     console.log(111, res.data);
+    //                 }
+    //             }
+    //         }
+    //     }
+    // ],
+    prepareFormOptions: {
+        createTitle: "New Employee Skill",
+        modifyTitle: "Edit Employee Skill",
+        targetProp: "skill",
+        api: {
+            endpoint: `${main_view.base_url}/hr/skills/form-options`,
+            params: (op) => {
+                return { id: op.id };
+            },
+            onResponse: (me, res) => {
+                console.log(111, res);
+            }
+        }
+    },
+    onShow: (me) => {
+        // me.controls.emp.focus();
+        // me.controls.emp.select();
+    }
 
-        self.show = (op) => {
-            // Recreate the dialog every time it is shown to ensure fresh state
-            dialog = new GeneralDialog({
-                title: op.id ? "Edit Skill" : "Add Skill",
-                cssClass: "modal-md vs-modal-dialog",
-                createContent: () => {
-                    return [
-                        `<div class="row">`,
-                        `<div class="form-group col-12">
-                            <label class="form-label" vslang="titles.Skill name"></label>
-                            <div><input class="form-control data-input" data-field="name" placeholder="Input Skill here............" /></div>
-                        </div>`,
-                        `<div class="form-group col-12">
-                            <div class="d-flex align-items-center justify-items-center p-1">
-                                <div name="div_img"></div>
-                            </div>
-                        </div>`,
-                        `</div>`,
-                    ].join("");
-                },
-                contentCreated: (me, divModal) => {
-                    me.logoBox = new ImageBox(me.controls.div_img, {});
-                },
-                buttons: [
-                    {
-                        cssClass: "btn btn-warning",
-                        label: '<span vslang="DataTransferItemList.Cancel">Cancel</span>',
-                        dismissModal: true,
-                    },
-                    {
-                        cssClass: "btn btn-primary",
-                        label: '<span vslang="buttons.Save">Save</span>',
-                        click: (me, btn, divModal) => {
-                            let p = me.getData();
-                            p.logo = me.logoBox.getImage();
-                            console.log(p);
-                            vsapi
-                                .call(
-                                    `${main_view.base_url}/bhr/skills/save`,
-                                    p,
-                                    btn,
-                                    false,
-                                    false
-                                )
-                                .then((res) => {
-                                    if (res.status_code === 200) {
-                                        me.hide(true, p);
-                                        cv_interact.success(
-                                            "Skill saved successfully"
-                                        );
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
-                                });
-                        },
-                    },
-                ],
-                prepareFormOptions: {
-                    createTitle: LocaleManager.trans("Add Skill", "titles"),
-                    modifyTitle: LocaleManager.trans("Edit Skill", "titles"),
-                    targetProp: "Skill",
-                    api: {
-                        endpoint: `${main_view.base_url}/bhr/skills/form-options`,
-                        params: (dataOptions) => {
-                            return { id: dataOptions.id };
-                        },
-                    },
-                },
-                onPrepareForm: (me) => {
-                    LocaleManager.translateZone(me.divModal);
-                },
-            });
-
-            dialog.show(op);
-        };
-
-        return self;
-    })();
+});
+dialog.show(op);
+    }
+    return self;
 })();

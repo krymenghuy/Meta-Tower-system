@@ -64,7 +64,7 @@ var PayrollComponent = new (function () {
             title: "Salary",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.salary ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + data.salary ?? ''}</p>`;
             }
         },
 

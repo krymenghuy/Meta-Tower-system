@@ -14,7 +14,7 @@ var EmployeeComponent = new (function () {
     this.containerPagination = mThis.self.querySelector('#container_pagination');
 
 
-   
+
 
     let div = mThis.self.querySelector('#_employee_list');
     this.init= () => {
@@ -181,7 +181,7 @@ var EmployeeComponent = new (function () {
         }, 200);
     });
 
-  
+
 
     this.getDataFormFilter = () => {
         let p = {};
