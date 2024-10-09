@@ -10,6 +10,7 @@ var WarningComponent = new (function () {
     this.btnAddWarning = this.self.querySelector("#_btnAddWarning");
     this.elSearch = this.self.querySelector("#_warning_search");
 
+
     // Define the columns for the warning list view
     this.cols = [
         {
@@ -27,8 +28,8 @@ var WarningComponent = new (function () {
                     }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                     <div>
                         <span style="font-size: 14px; font-weight: bold;">${
-                            data.first_name ?? ""
-                        } ${data.last_name ?? ""}</span><br/>
+                            data.name ?? ""
+                        } ${data.name_kh ?? ""}</span><br/>
                         <span style="font-size: 12px; color: gray;">${
                             data.email ?? ""
                         }</span>
@@ -184,41 +185,37 @@ var WarningComponent = new (function () {
         WarningDialog.show(op);
     };
     this.deleteWarning = (id, menuLink) => {
-        // Ask for confirmation before deleting
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.WarningListView.showPage();
+            },
+        };
         cv_interact.confirm(
-            "Are you sure you want to delete this warning?",
-            () => {
-                // Make API call to delete the warning
-                vsapi;
-
-                console
-                    .log(`${mThis.base_url}/hr/warning/delete`, { id })
-
-                    .call(`${mThis.base_url}/hr/warning/delete`, { id })
-                    .then((response) => {
-                        if (response.status_code === 200) {
-                            cv_interact.success(
-                                "Warning deleted successfully."
-                            );
-
-                            // Remove the row from the table
-                            let row = menuLink.closest("tr");
-                            row.remove();
-
-                            // Optionally, refresh the warning list view
-                            mThis.WarningListView.showPage(
-                                mThis.getFilterData()
-                            );
-                        } else {
-                            cv_interact.error(response.error_message);
-                        }
-                    })
-                    .catch((error) => {
-                        console.error("API error:", error);
-                        cv_interact.error(
-                            "Failed to delete warning. Please try again."
-                        );
-                    });
+            "Do you want to delete this Warning?",
+            {
+                title: "Delete Warning",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/hr/warning/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("Deleted Successfully");
+                                mThis.WarningListView.showPage();
+                            }
+                        });
+                }
             }
         );
     };

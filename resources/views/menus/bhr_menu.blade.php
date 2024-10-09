@@ -232,14 +232,41 @@ function v_display($mod_id, $module_ids = null)
                         data-langprop="menus.Attendance Management"></span>
                 </a>
             </li>
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
-                <a href="EmployeeBenefitComponent" modid="-1" class="menu-item kt-menu__link">
+            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
+                data-ktmenu-submenu-toggle="hover"<?php v_display(null, [100, 101]); ?>>
+                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/User_check.svg') }}" />
+                        <img class="icons opacity-icons"
+                            src="{{ asset('assets/images/bhr/User_check.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Employee Benefit"></span>
+                    <span class="kt-menu__link-text text-nowrap trans-text" data-langprop="menus.Employee Benefits">
+                        Employee Benefits</span>
+                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
+                <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
+                    <ul class="kt-menu__subnav">
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+                            <a href="EmployeeBonusComponent" modid="-1" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons"
+                                        src="{{ asset('assets/images/bhr/User_check.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color trans-text"
+                                    data-langprop="menus.Bonus"></span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+                            <a href="EmployeeSeniorityComponent" modid="-1" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons"
+                                        src="{{ asset('assets/images/bhr/User_check.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color trans-text"
+                                    data-langprop="menus.Seniority"></span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                 <a href="StaffAttendanComponent" modid="209" class="menu-item kt-menu__link">

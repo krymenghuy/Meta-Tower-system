@@ -67,7 +67,7 @@
 </div>
 <style>
     #_position_list{
-        height: 620px;
+        height: 480px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;

@@ -29,8 +29,8 @@ var PayrollComponent = new (function () {
                             <div>
                                 <span style="font-size: 14px; font-weight: bold;">${data.first_name ?? ''} ${data.last_name ?? ''}</span>
                                 <br/>
-                                <span style="font-size: 12px; color: white;">${data.email ?? ''}</span><br/>
-                                <span style="font-size: 12px; color: white;">${data.phone_number ?? ''}</span>
+                                <span style="font-size: 12px">${data.email ?? ''}</span><br/>
+                                <span style="font-size: 12px">${data.phone_number ?? ''}</span>
                             </div>
                         </div>`;
             }
@@ -41,7 +41,7 @@ var PayrollComponent = new (function () {
             data: (data, index, tr) => {
                 // Add custom styling or logic here
                 let position = data.position ? data.position : 'N/A';
-                return `<p style=" background: linear-gradient(97.44deg, #FFFFFF -6.65%, rgba(199, 231, 1, 0.66) 18.08%, rgba(199, 231, 1, 0.66) 32.5%);" class="p-0 m-0 text-white text-center border border-primary rounded-5 p-1">${position}</p>`;
+                return `<p style=" background: linear-gradient(97.44deg, #FFFFFF -6.65%, rgba(199, 231, 1, 0.66) 18.08%, rgba(199, 231, 1, 0.66) 32.5%);" class="p-0 m-0 text-primary text-center border border-primary rounded-5 p-1">${position}</p>`;
             }
         },
 
@@ -64,7 +64,7 @@ var PayrollComponent = new (function () {
             title: "Salary",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.salary ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + data.salary ?? ''}</p>`;
             }
         },
 
@@ -96,19 +96,16 @@ var PayrollComponent = new (function () {
             }
         },
         {
-            className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class="btn_payroll_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/Dot.svg" />
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
-        }
+            className: "col_action align-middle",
+            data: (data) => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-center gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_payroll_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                        <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`,
+        },
 
     ];
 
@@ -121,7 +118,7 @@ var PayrollComponent = new (function () {
             //paginationContainer: mThis.containerPagination,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table  table--blue rounded-2   overflow-hidden  header-uppercase',
+            tableClass: 'table  table--white rounded-2   overflow-hidden  header-uppercase',
             listContainerClass: null
         });
 

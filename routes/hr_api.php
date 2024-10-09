@@ -18,6 +18,7 @@ use App\Http\Controllers\Bhr\DepartmentController;
 use App\Http\Controllers\Bhr\PositionController;
 use App\Http\Controllers\Bhr\ReportController;
 use App\Http\Controllers\Bhr\WarningController;
+use App\Http\Controllers\Bhr\SeniorityController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -84,6 +85,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('skills')->gro
     Route::post('/list-paginate', [SkillController::class, 'getSkillListPaginate']);
     Route::post('/details', [SkillController::class, 'getDetails']);
     Route::post('/delete', [SkillController::class, 'deleteSkill']);
+    Route::post('/form-options', [SkillController::class, 'getFormOptions']);
+    Route::post('/save-logo', [SkillController::class, 'saveSkillLogo']);
+    Route::post('/logo-url', [SkillController::class, 'getSkillLogo']);
+    Route::post('/delete-logo', [SkillController::class, 'deleteSkillLogo']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->group(function () {
@@ -94,6 +99,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->gr
     Route::post('/details', [BenefitController::class, 'getDetails']);
     Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
     Route::post('/form-options', [BenefitController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('seniorities')->group(function () {
+
+    Route::post('/save', [SeniorityController::class, 'saveSeniority']);
+    Route::post('/list-paginate', [SeniorityController::class, 'getSeniorityListPaginate']);
+    Route::post('/details', [SeniorityController::class, 'getDetails']);
+    Route::post('/delete', [SeniorityController::class, 'deleteSeniority']);
+    Route::post('/form-options', [SeniorityController::class, 'getFormOptions']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('staff-benefit')->group(function () {
