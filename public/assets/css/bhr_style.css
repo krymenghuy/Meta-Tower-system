@@ -12,7 +12,7 @@ body {
     padding: 0;
     box-sizing: border-box;
     background-color: #f5f5f5;
-    color: #000;
+    color: #000000;
     font-size: 0.9rem;
     font-weight: normal;
     overflow: hidden;
@@ -54,22 +54,25 @@ li.kt-menu__section {
 }
 
 a.menu-selected .kt-menu__link-text {
-    color: #8DC63F;
+    color: black;
 }
 
 .menu-selected .icons {
     /* filter: brightness(0) saturate(100%) invert(96%) sepia(80%) saturate(811%)
         hue-rotate(201deg) brightness(122%) contrast(100%); */
         /* color: #8DC63F !important; */
-        /* filter:hue-rotate(0deg); */
-    filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%)
-        hue-rotate(24deg) brightness(87%) contrast(79%);
+        filter:hue-rotate(127deg);
+
+    /* filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%)
+        hue-rotate(24deg) brightness(87%) contrast(79%); */
 }
 
 .icons {
     /* filter: invert(53%) sepia(46%) saturate(7477%) hue-rotate(219deg)
         brightness(90%) contrast(91%); */
-        filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(341deg) brightness(103%) contrast(103%);
+        /* filter: invert(0%) sepia(0%) saturate(0%) hue-rotate(341deg) brightness(103%) contrast(103%); */
+        filter: invert(100%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(100%) contrast(100%);
+
 }
 
 .kt-menu__link-icon img {
@@ -120,7 +123,7 @@ a.menu-selected .kt-menu__link-text {
     /* background-color: #fff; */
     padding: 10px;
     /* border-radius: 50%; */
-    /* margin-left: 15px; */
+    margin-left: 15px;
 }
 
 .number--notification {
@@ -131,11 +134,15 @@ a.menu-selected .kt-menu__link-text {
 
 .app--list {
     /* background-color: #fff; */
-    padding: 7px;
+    padding: 10px;
     /* border-radius: 20px; */
+    margin-left: 15px;
+
 }
 .user--info {
-    padding: 8px;
+    padding: 10px;
+    margin-left: 15px;
+
 }
 
 .line--loader {
@@ -279,7 +286,7 @@ a.menu-selected .kt-menu__link-text {
 .show--title {
     margin: 18px 0;
     padding: 10px 15px;
-    background-color: #e6e6e6;
+    background-color: #fff;
     border-radius: 30px;
 }
 
@@ -353,20 +360,25 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .h-info-student .div-img {
-    border: none;
-    width: 180px;
-    max-height: 180px;
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     position: relative;
 }
 
 .h-info-student .div-img img {
-    height: 100%;
     width: 100%;
+    height: 100%;
     border: 0.5px solid #00000067;
-    border-radius: var(--bs-border-radius-xl);
-    object-fit: contain;
+    border-radius: 50%;
+    object-fit: cover;
     cursor: pointer;
 }
+
 
 .width-p {
     width: 100px;
@@ -1677,7 +1689,7 @@ ul.list-filter-um li:not(li:last-child) {
 .table--blue thead th {
     color: #FFFFFF !important;
     /* border-radius: 0.5rem !important; */
-    background-color:#000000 !important;
+    background-color:#2B3991!important;
 
 
 }
@@ -1686,12 +1698,62 @@ ul.list-filter-um li:not(li:last-child) {
     gap:0 !important;
 }
 
+.table--white {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    font-size: small !important;
+    font-weight: normal !important;
+    text-align: left !important;
+    /* border-radius: 0.5rem !important; */
+    text-align: center !important;
+
+}
+
+.table--white thead th {
+    color: white!important;
+    /* border-radius: 0.5rem !important; */
+    background-color:#2B3991 !important;
+}
+
+.table--white tr:hover {
+    background: skyblue !important;
+    color: #FFFFFF !important;
+    font-size: small !important;
+    font-weight: normal !important;
+    text-align: center !important;
+    border: none !important;
+}
+
+.select2{
+    display: none !important;
+}
 
 
+/* body{
+
+    overflow: unset !important;
+} */
 
 
+.custom-modal-select{
+    background-color: #fff;
+    display: inline-block;
+    vertical-align: top;
+    width: 100%;
+    /* background-color: #f9f9f9; */
+    padding: 7.5px 7.5px 7.5px;
+    border: 1px solid #ddd;
+    border-radius: 2.5px;
+    font-size: 14px;
+    min-height: 44px;
+    overflow: hidden;
+}
 
-
-
-
-
+.custom-modal-select>.modal-select{
+    min-width: 150px;
+    width: 100%;
+    background-color: #fff;
+    display: inline-block;
+    padding: 4px 16px 4px 4px;
+    border: 0;
+}

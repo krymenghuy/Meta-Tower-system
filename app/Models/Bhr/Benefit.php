@@ -132,4 +132,12 @@ class Benefit
         return $query;
     }
 
+    function getFormOptions($id, $ss){
+        if($id)
+        return $data = (object) [
+            'benefit' => $this->getDetails($id, $ss)
+        ];
+        else return $data = (object) [];
+    }
+
 }

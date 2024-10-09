@@ -1,4 +1,4 @@
-<div id="_main_positionComponent">
+<div id="_main_positionComponent"  style="display:none;padding:20px 0 0">
     <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter">
         <div class="d-flex align-items-center w-100 gap-2">
             <div class="d-flex align-items-center w-100 gap-2">
@@ -38,8 +38,8 @@
                     <div class="col-lg-9 p-5">
                         <div class="form-group">
                             <label for="name" class="form-label trans-text"
-                                data-langprop="titles.Name Of Position">Name</label>
-                            <input type="text" class="form-control data-input" data-field="name" />
+                                data-langprop="titles.Title Of Position">Name</label>
+                            <input type="text" class="form-control data-input" data-field="title" />
                         </div>
                         <div class="form-group">
                             <label for="name" class="form-label trans-text"
@@ -67,7 +67,7 @@
 </div>
 <style>
     #_position_list{
-        height: 620px;
+        height: 480px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;

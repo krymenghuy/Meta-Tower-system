@@ -1,19 +1,30 @@
 <style>
-    #_employee_list {
-        display: flex;
-        flex-wrap: wrap;
-        height: 620px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-        gap: 10px;
-        justify-content: center;
-        padding: 20px;
+    .progress-bar {
+        background-color: #6c63ff;
+    }
+
+    .progress {
+        background-color: #e0e0ff;
+        height: 6px;
+    }
+
+    .card-body p {
+        margin: 0;
+    }
+ 
+
+    .ellipsis {
+        font-size: 18px;
+    }
+    .experience-company {
+        font-weight: bold;
+        font-size: 16px;
+
     }
 
     .card {
-        border-radius: 10px;
-        box-shadow: 0px 0px 10px 0px #000000;
+        border-radius: 5px;
+        box-shadow: 0px 0px 3px 0px grey;
 
 
     }
@@ -96,35 +107,310 @@
     .joining {
         font-size: 10px;
     }
+
+    .bg-secondary-custom {
+        background-color: red;
+    }
+
+    .social-icons a {
+        display: inline-block;
+        width: 40px;
+        /* Adjust size as needed */
+        height: 40px;
+        transition: transform 0.2s ease;
+    }
+
+    .social-icons a:hover {
+        transform: scale(1.1);
+        /* Slight zoom on hover */
+    }
+
+    .social-icon {
+        width: 100%;
+        height: 100%;
+    }
+
+    .social-icons img {
+        display: block;
+        width: 100%;
+        height: auto;
+    }
 </style>
 
-<div id="_main_employeeComponent">
-    <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter_emp">
-        <div class="d-flex align-items-center w-100 gap-2">
-            <div class="d-flex align-items-center w-100 gap-2">
-                <input type="text" class="form-control filter-field" id="_sdl_search_employee"
-                    placeholder="Search Employee">
-
-                <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
-                    <i class="la la-search"></i>
+<div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
+    <div id="sub_content">
+        <div class="d-flex  p-3 justify-content-between w-100">
+            <div class="d-flex w-25">
+                <button type="button" class="btn text-white" style="background-color:hwb(231.76deg 16.86% 43.14%);"
+                    id="_btnAddEmployee">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Employee</span>
                 </button>
-                <div class="d-flex align-items-center w-50 gap-2form-group w-50">
-                    <label for="" class="form-label trans-text p-2" data-langprop="titles.Status"></label>
-                    <select type="id" id="el_status" class="data-input filter-field" data-field="status"></select>
+            </div>
+            <div class="d-flex align-items-center justify-content-end gap-2 w-75" id="_divFilter_emp">
+                <div class="d-flex align-items-center w-50">
+
+                    <input type="text" class="form-control filter-field" id="_sdl_search_employee"
+                        placeholder="Search Employee">
                 </div>
+
+                <div class="d-flex align-items-center">
+                    <!-- <label for="" class="form-label trans-text p-2" data-langprop="titles.Status"></label> -->
+                    <select type="id" id="el_status" class="data-input filter-field" data-field="status_id"></select>
+                </div>
+
             </div>
         </div>
-        <div class="d-flex align-items-center justify-content-end gap-2 w-100">
-            <button type="button" class="btn btn-primary" id="_btnAddEmployee">
-                <i class="fas fa-plus"></i>
-                <span>Add Employee</span>
-            </button>
-        </div>
-    </div>
-    <div id="_employee_list" class="p-3">
+        <div id="_employee_list" class="bg-white"></div>
+        <div id="container_pagination" class="px-3 bg-white"></div>
 
     </div>
+    <div class="p-3">
+        <div class=" mb-2" id="btn_back">
+            <button id="_btn_backTo_employee" style="background-color:rgba(236, 29, 39, 1); width:100px;"
+                class="btn text-white shadow rounded-4 m-2 p-2" type="button">
+                <span class="" vslang="buttons.Back">Back</span>
+            </button>
+        </div>
+        <div id="_view_profile_container">
+            <div class="mt-3 px-3 overflow-y-auto overflow-x-hidden " style="height:550px;" id="sub_view_profile">
+                <div id="profile_info_emp" class="employee-card d-flex p-3 bg-secondary h-info-student mb-2" data-id="" data-merchantname="" data-pricelistid="">
+                    <div class="d-block ms-3 w-100">
+                        <div class="row row-cols-3 mb-0">
+                            <div class="col-2">
+                                <div class="div-img" data-id="" data-imageurl="">
+                                    <img src="http://127.0.0.1:8000/uploads/public/1F70F792E749483492D8830538CC77E1/employees/images/0_file_06700bdaf6b9f120241005_111047.png"
+                                        alt="">
+                                </div>
+                                <div class="social-icons d-flex justify-content-start mt-3">
+                                    <a href="https://www.facebook.com/houexpress.est.2022" class="mx-2" target="_blank"
+                                        rel="noopener noreferrer">
+                                        <img src="assets/images/bhr/facebook.svg" alt="Facebook" class="social-icon">
+                                    </a>
+                                    <a href="https://www.instagram.com/YOUR_INSTAGRAM_PAGE" class="mx-2" target="_blank"
+                                        rel="noopener noreferrer">
+                                        <img src="assets/images/bhr/facebook.svg" alt="Instagram" class="social-icon">
+                                    </a>
+                                    <a href="https://wa.me/YOUR_PHONE_NUMBER" class="mx-2" target="_blank"
+                                        rel="noopener noreferrer">
+                                        <img src="assets/images/bhr/facebook.svg" alt="WhatsApp" class="social-icon">
+                                    </a>
+
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted   width-p" vslang="titles.Name">Name</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize data-get" data-field="full_name">Kry Mengchhorng</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted   width-p" vslang="titles.Position">Position</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">Web-developer</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted   width-p" vslang="titles.Email">Email</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">mengchhorng@gmail.com</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted   width-p" vslang="titles.Tel">Tel</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize data-get" data-field="phone_number">0712126288</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted   width-p" vslang="titles.ID">ID</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">EMP1000001</p>
+                                </div>
+                                <div class="d-flex justify-content-start mt-3">
+
+
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-warning rounded-2 me-3 dropdown-toggle" type="button"
+                                            id="movementDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                            Movement
+                                        </button>
+                                        <ul class="dropdown-menu bg-danger" aria-labelledby="movementDropdown">
+                                            <li><a class="dropdown-item" href="#">Action 1</a></li>
+                                            <li><a class="dropdown-item" href="#">Action 2</a></li>
+                                            <li><a class="dropdown-item" href="#">Action 3</a></li>
+                                        </ul>
+                                    </div>
+                                    <button type="button" class="btn btn-sm btn-primary rounded-2 ">
+                                        <span>Update Profile</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted   width-p" vslang="titles.Nationality">Nationality</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">Khmer</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted   width-p" vslang="titles.Date of Birth">Date of Birth</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">01/03/2004</p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <p class="text-nowrap text-muted   width-bp" vslang="titles.Address">Address</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">TBOUNG KHMUM</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted   width-p" vslang="titles.NSSF">NSSF</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">000 000 0001</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted   width-p" vslang="titles.Identity Card">Identity Card</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">000 000 0000</p>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row mt-3 p-3" id="profile_card_detail">
+                    <div class="col-md-4">
+                        <div class="card" style="height:487px;">
+                            <div class="card-header">
+                                <h4>Skills</h4>
+                                <span class="ellipsis">...</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <p>PHP</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 85%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>JavaScript</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>Node.Js</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 50%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>Vue.Js</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 65%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>Laravel</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 60%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>OOP</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 80%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>Next.Js</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 40%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>React.Js</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 60%;"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card" style="height:487px;">
+                            <div class="card-header">
+                                <h4>Education</h4>
+                                <span class="ellipsis">...</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="">
+                                    <h5>2022-2024</h5>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="w-50">Associate Degree</p>
+                                        <p class="text-primary w-75">University of Oxford</p>
+                                    </div>
+                                    <span class="text-muted">Web Development</span>
+                                </div>
+                                <div class="mt-3">
+                                    <h5>2022-2024</h5>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="w-50">Associate Degree</p>
+                                        <p class="text-primary w-75">University of Cambridge</p>
+                                    </div>
+                                    <span class="text-muted">Web Development</span>
+                                </div>
+                                <div class="mt-3">
+                                    <h5>2022-2024</h5>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="w-50">Associate Degree</p>
+                                        <p class="text-primary w-75">Royal University of Phnom penh</p>
+                                    </div>
+                                    <span class="text-muted">Web Development</span>
+                                </div>
+                                <div class="mt-3">
+                                    <h5>2022-2024</h5>
+                                    <div class="d-flex justify-content-between">
+                                        <p class="w-50">Associate Degree</p>
+                                        <p class="text-primary w-75">Massachusetts Institute of Technology</p>
+                                    </div>
+                                    <span class="text-muted">Web Development</span>
+                                </div>
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card" style="height:487px;">
+                            <div class="card-header">
+                                <h4>Experience</h4>
+                                <span class="ellipsis">...</span>
+                            </div>
+                            <div class="card-body">
+                            <div class="">
+                                <h6>02-02-2023 - 14-11-2024</h6>
+                                <h5>Web Developer</h5>
+                                <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Expedita.</p>
+                                <p class="experience-company">Vectorasoft Company</p>
+                                <hr class="border border-warning">
+                            </div>
+                            <div class="">
+                                <h6>02-02-2023 - 14-11-2024</h6>
+                                <h5>Web Developer</h5>
+                                <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Expedita.</p>
+                                <p class="experience-company">Vectorasoft Company</p>
+                            </div>
+                        
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+    
+
+            </div>
+        </div>
+        
+    </div>
 </div>
+
 {{-- end h --}}
 <div class="modal fade" id="dlg_sdl_add_employee" tabindex="-1" aria-labelledby="dlg_sdl_add_employee_title"
     aria-hidden="true">
@@ -134,20 +420,16 @@
                 <h5 class="modal-title " vslang="titles.Create Employee List"></h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body overflow-x-hidden">
                 <div class="row gap-0" id="_sdl_employee_info">
-
-                    <div class="col-12 p-0">
                         <div class="row">
                             <div class="col-3">
-                                <div class="width-height-social-icon d-flex
-                                align-items-center justify-content-center border-primary border rounded-3 overflow-hidden
-                                position-relative"
-                                    style="height: 150px" aria-label="image">
+                                <div class="width-height-social-icon d-flex align-items-center justify-content-center border rounded-3 position-relative"
+                                    style="height: 170px;" aria-label="image">
                                     <div id="dlg_image_chooser"
                                         class="d-flex align-items-center justify-content-center w-100 h-100"
                                         role="button">
-                                        <i class="fa-regular fa-image fs-4 text-muted"></i>
+                                        <i class="fa-regular fa-image fs-4"></i>
                                     </div>
                                 </div>
                             </div>
@@ -155,99 +437,118 @@
                             <div class="col-9">
                                 <div class="row">
                                     <div class="form-group col-6">
-                                        <label for="name" class="form-label trans-text"
-                                            data-langprop="titles.First Name">First
-                                            Name</label>
-                                        <input type="text" class="form-control data-input" data-field="first_name" />
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="name" class="form-label trans-text"
-                                            data-langprop="titles.Last Name">Last
-                                            Name</label>
-                                        <input type="text" class="form-control data-input" data-field="last_name" />
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="email" class="form-label trans-text"
-                                            data-langprop="titles.Email">Email</label>
-                                        <input type="text" class="form-control data-input"
-                                            placeholder="example@gmail.com" data-field="email" />
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="phone_number" class="form-label trans-text"
-                                            data-langprop="titles.Phone Number">Phone Number</label>
-                                        <input type="text" class="form-control data-input"
-                                            data-field="phone_number" />
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="name" class="form-label trans-text"
-                                            data-langprop="titles.Gender"></label>
-                                        <select class=" data-input" id="_sdl_gender_id" data-field="gender_id"></select>
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="date_of_birth" class="form-label trans-text"
-                                            data-langprop="titles.Date of Birth">Date of Birth</label>
-                                        <input type="date" class="form-control data-input"
-                                            data-field="date_of_birth" />
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="nationality" class="form-label trans-text"
-                                            data-langprop="titles.Nationality">Nationality</label>
-                                        <input type="text" class="form-control data-input"
-                                            data-field="nationality" />
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="address" class="form-label trans-text"
-                                            data-langprop="titles.Address">Address</label>
-                                        <input type="text" class="form-control data-input" data-field="address" />
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="name" class="form-label trans-text"
-                                            data-langprop="titles.Position"></label>
-                                        <select class=" data-input" id="_sdl_position_id"
-                                            data-field="positions_id"></select>
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="name" class="form-label trans-text"
-                                            data-langprop="titles.Session"></label>
-                                        <select class=" data-input" id="_sdl_session_id"
-                                            data-field="session_id"></select>
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="joining_date" class="form-label trans-text"
-                                            data-langprop="titles.Joining Date"></label>
-                                        <input type="date" class="form-control data-input"
-                                            data-field="joining_date" />
+                                        <label for="name" class="form-label">
+                                            First Name <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control data-input" data-field="name" />
                                     </div>
 
                                     <div class="form-group col-6">
-                                        <label for="name" class="form-label trans-text"
-                                            data-langprop="titles.NSSF"></label>
-                                        <input type="text" class="form-control data-input" data-field="nssf" />
+                                        <label for="name" class="form-label">
+                                            Last Name <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" class="form-control data-input" data-field="name_kh" />
                                     </div>
-                                    <div class="form-group col-6">
-                                        <label for="name" class="form-label trans-text"
-                                            data-langprop="titles.Identity Card"></label>
-                                        <input type="text" class="form-control data-input"
-                                            data-field="identity_card_number" />
+                                    <div class="form-group col-4">
+                                        <label for="gender" class="form-label">
+                                            Gender <span class="text-danger">*</span>
+                                        </label>
+                                        <div class="min-width-select custom-modal-select">
+                                            <select class="modal-select data-input" data-field="sex">
+                                                <option value="">(Gender)</option>
+                                                <option value="M">Male</option>
+                                                <option value="F">Female</option>
+                                            </select>
+                                        </div>
+                                        
                                     </div>
-                                    <div class="form-group col-6">
-                                        <label for="name" class="form-label trans-text"
-                                            data-langprop="titles.Status"></label>
-                                        <select class=" data-input" id="_sdl_status_id"
-                                            data-field="status_id"></select>
+                                    <div class="form-group col-4">
+                                        <label for="date_of_birth" class="form-label">
+                                            Date of Birth <span class="text-danger">*</span>
+                                        </label>
+                                        <input  data-select="datepicker"  class="form-control data-input" placeholder="" data-field="date_of_birth" />
                                     </div>
+                                    <div class="form-group col-4">
+                                        <label for="nationality" class="form-label">
+                                            Nationality
+                                        </label>
+                                        <input type="text" class="form-control data-input" data-field="nationality" />
+                                    </div>
+                                   
+
+                                    
+
+                                    
                                 </div>
+
                             </div>
+                            <div class="form-group col-3">
+                                <label for="nid" class="form-label">
+                                    ID Card
+                                </label>
+                                <input type="text" class="form-control data-input"
+                                    data-field="nid" />
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="phone_number" class="form-label">
+                                    Phone Number <span class="text-danger">*</span>
+                                </label>
+                                <input type="number" class="form-control data-input" data-field="phone_number" />
+                            </div>
+                            <div class="form-group col-5">
+                                <label for="email" class="form-label">
+                                    Email <span class="text-danger">*</span>
+                                </label>
+                                <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="joining_date" class="form-label">
+                                    Joining Date
+                                </label>
+                                <input  data-select="datepicker"  class="form-control data-input" data-field="joining_date" />
+                            </div>
+                        <div class="form-group col-6">
+                            <label for="position" class="form-label">
+                                Position
+                            </label>
+                            <select class="form-control data-input" id="_sdl_position_id"
+                                data-field="positions_id"></select>
                         </div>
+
+                        <div class="form-group col-6">
+                            <label for="session" class="form-label">
+                                Session
+                            </label>
+                            <select class="form-control data-input" id="_sdl_session_id"
+                                data-field="session_id"></select>
+                        </div>
+
+                        
+
+                        <div class="form-group col-6">
+                            <label for="nssf" class="form-label">
+                                NSSF
+                            </label>
+                            <input type="text" class="form-control data-input" data-field="nssf_id" />
+                        </div>
+                        <div class="form-group col-12">
+                            <label for="address" class="form-label">
+                                Address
+                            </label>
+                            <textarea type="text" class="form-control data-input" data-field="address"></textarea>
+                        </div>
+
+                                
                     </div>
                 </div>
             </div>
+
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
                     <span class="trans-text" data-langprop="titles.Cancel"></span>
                 </button>
                 <button id="dlg_sdl_add_employee_btn_save" type="button" class="btn btn-sm btn-primary">
-                    <span class="trans-text" data-langprop="titles.Save"></span>
+                    <span class="trans-text" data-langprop="titles.Add Employee"></span>
                 </button>
             </div>
         </div>

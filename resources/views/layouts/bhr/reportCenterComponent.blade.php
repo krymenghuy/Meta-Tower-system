@@ -1,6 +1,5 @@
-<div id="_main_reportComponent">
+<div id="_main_reportComponent"  style="display:none;padding:20px">
     <div class="report_top">
-        <h4>Report</h4>
         <div class="search">
             <input type="text" id="_report_search" placeholder="Search Report Here ........">
         </div>
@@ -245,6 +244,7 @@
 
     .report_top {
         display: flex;
+        margin-top: 20px;
         justify-content: space-between;
         align-items: center;
     }
@@ -292,7 +292,7 @@
         padding: 10px 20px;
         margin-top: 10px;
         border-bottom: 1px solid #ccc;
-        background-color: #2B3992;
+        background-color: #000;
         border-radius: 10px;
         color: #fff;
     }
@@ -330,14 +330,15 @@
         height: 80px;
         padding: 0px 25px;
         border-bottom: 1px solid #ccc;
-        background-color: #250384;
+        background-color: #fff;
         border-radius: 10px;
         align-items: center;
-        color: #fff;
+        color: #000;
     }
 
     .report_item:hover {
-        background-color: #2b5f92;
+        background-color: #2989b8;
+        color: #fff;
         cursor: pointer;
 
     }
@@ -403,13 +404,19 @@
     .report_item .action {
         text-align: center;
     }
+    
+    .report_item .action .fa-ellipsis-v {
+        color: #000;
+    }
 
     .action i {
         cursor: pointer;
         font-size: 1.5em;
-        color: #ffffff;
+        color: #000000;
     }
-
+    .action i:hover{
+        color: #fff; 
+    }
     .popup {
         display: none;
         position: fixed;

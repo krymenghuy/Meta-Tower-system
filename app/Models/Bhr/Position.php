@@ -22,12 +22,12 @@ class Position
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'name' => '1|string|0-100',
+            'title' => '1|string|0-100',
             'department_id' => '1|number',
-            'status_id' => '1|number',
+            'inactive' => '1|number|default = 0',
         ];
 
-        $checkUnque = ["$branch_id|positions|name|id=id|text=Position already exists."];
+        $checkUnque = ["$branch_id|positions|title|id=id|text=Position already exists."];
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
@@ -46,59 +46,49 @@ class Position
     }
 
     function getPositionListPaginate($arr, $ss) {
-        $d = (object) $arr;
         $branch_id = $ss->branch_id;
+        $d = (object) $arr;
+
 
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
-
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-        $search_status_id = $d->status_id ?? null;
-
         $str_search = '1=1';
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $str_search = "(p.title LIKE '%" .$search_value."%' OR d.name = '" . $search_value . "')";
+        }
 
         $query = DB::table('positions as p')
             ->join('departments as d', 'd.id', '=', 'p.department_id')
-            ->join('dep_status as ds', 'ds.id', '=', 'p.status_id')
-            ->selectRaw('p.id, p.name, p.department_id, d.name as department, p.status_id, ds.name as status');
-        if ($search_id) {
-            $query->where('p.id', $search_id);
-        }
+            ->where('p.inactive',0)
+            ->whereRaw($str_search)
+            ->selectRaw('p.id, p.title, p.department_id, d.name as department')->orderBy('p.id','DESC');
+        $clone_query = clone $query;
+        $count = $clone_query->count('p.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        if ($search_status_id) {
-            $query->where('p.status_id', $search_status_id);
-        }
-
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $str_search = "p.name like '%$search_value%' or d.name like '%$search_value%'";
-            $query->whereRaw($str_search);
-        }
-
-        $query->orderBy('p.id', 'asc');
-        $query->skip($skip_rows)->take($per_page);
-        $count_query = clone $query;
-        $count = $count_query->count('d.id');
-        $rows = $query->get();
 
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getDetails($id){
-        $query = DB::table('positions as p')
+    function getDetails($id,$ss){
+        $branch_id = $ss->branch_id;
+
+        $rows = DB::table('positions as p')
             ->join('departments as d', 'd.id', '=', 'p.department_id')
-            ->join('dep_status as ds', 'ds.id', '=', 'p.status_id')
-            ->selectRaw('p.id, p.name, p.department_id, d.name as department, p.status_id, ds.name as status');
-        $query->where('p.id', $id);
-        $row = $query->first();
-        return $row;
+            ->selectRaw('p.id, p.title, p.department_id, d.name as department')
+            ->where('p.inactive',0)
+            ->where('p.branch_id',$branch_id)
+            ->where('p.id',$id)->take(1)
+            ->first();
+        return $rows;
     }
 
     function deletePosition($id)
@@ -115,7 +105,7 @@ class Position
         }
         return (object) [
 
-            'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
+            // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
             'departments' => DB::table('departments')->selectRaw('id,name')->get(),
 
 

@@ -1,4 +1,4 @@
-<div id="_main_jobsLevelComponent">
+<div id="_main_jobsLevelComponent"  style="display:none;padding:20px 0 0">
     <div class="top_level_card">
         <div class="card_title">TOP JOBS</div>
         <div class="cards">
@@ -8,7 +8,7 @@
                 </div>
                 <div class="card_right">
                     <h6>Information Technology</h6>
-                    <p>Level: Pro</p>
+                    <p>Level: Pro</p>   
                     <div class="rating">Rating:
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
@@ -54,15 +54,15 @@
         </div>
     </div>
     <div class="container">
-        <button type="button" class="btn" id="btnAdd">
+        <button type="button" class="btn" id="_btnAddJobLevel">
             <i class="fas fa-plus"></i>
             <span>Add</span>
         </button>
         <div class="input-group">
-            <input class="searchJobLevel" type="text" id="searchJobLevel" placeholder="Search here.....">
+            <input class="_job_level_search" type="text" id="_job_level_search" placeholder="Search here.....">
         </div>
     </div>
-    <div id="_job_level_list">    
+    <div id="_job_level_list">
     </div>
 </div>
 <style>
@@ -78,10 +78,10 @@
     .container {
         display: flex;
         gap: 20px;
-        margin-top: 0px;
+        margin-top: -20px;
     }
 
-    #btnAdd {
+    #_btnAddJobLevel {
         background-color: #007bff;
         color: white;
         border: none;
@@ -92,7 +92,7 @@
         align-items: center;
     }
 
-    #btnAdd i {
+    #_btnAddJobLevel i {
         margin-right: 10px;
     }
 
@@ -101,7 +101,7 @@
         color: white;
     }
 
-    .searchJobLevel{
+    ._job_level_search{
         padding: 10px;
         border: 1px solid #e2e0e0;
         border-radius: 50px;
@@ -187,8 +187,7 @@
     }
 
     #_job_level_list {
-        height: 330px;
-        margin-top: 10px;
+        height: 250px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;

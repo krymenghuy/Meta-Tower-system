@@ -580,9 +580,10 @@ const BookingDialog = (()=>{
                     "prependHTML":' <img src="http://127.0.0.1:8000/assets/images/icons/kube_form.svg" style="margin: 10px" >',
                     "containerClass":'mac-select d-flex border border-secondary rounded-4 align-items-center',
                 });
-                const footer = me.divModal.querySelector('.modal-footer');
                 const headerTitle = me.divModal.querySelector('.modal-header .modal-title');
                 header.classList.add('bg-danger-custom','modal-header-custom');
+                const footer = me.divModal.querySelector('.modal-footer');
+
                 footer.classList.add('justify-content-between','border-0');
                 headerTitle.classList.add('justify-content-center','text-white','w-100','d-flex');
                 header.parentElement.classList.add('overflow-hidden');

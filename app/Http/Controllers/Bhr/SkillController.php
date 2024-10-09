@@ -69,4 +69,40 @@ class SkillController extends Controller
         }
         return JDV::result($this->skillModel->getDetails($req->id, $ss));
     }
+
+    public function getFormOptions(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->skillModel->getFormOptions($req->id, $ss));
+    }
+
+    public function saveSkillLogo(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->skillModel->saveLogo($req->all(), $ss));
+    }
+
+    public function getSkillLogo(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->skillModel->getLogo($req->all(),$ss));
+    }
+
+    public function deleteSkillLogo(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->skillModel->deleteLogo($ss));
+    }
 }

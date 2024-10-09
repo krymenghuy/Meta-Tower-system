@@ -1,4 +1,4 @@
-<div id="_main_departmentComponent">
+<div id="_main_departmentComponent" style="display:none;padding:20px 0 0">
     <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter">
         <div class="d-flex align-items-center w-100 gap-2">
             <div class="d-flex align-items-center w-100 gap-2">

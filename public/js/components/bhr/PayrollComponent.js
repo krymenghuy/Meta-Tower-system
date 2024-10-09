@@ -15,22 +15,24 @@ var PayrollComponent = new (function () {
     this.cols = [
 
         {
-            title: "Photo",
-            className: 'align-middle',
-            data: (data, index, tr) => {
-                return ` <img class="image-student-tbl" src="${data.image_url}" alt=""/>`;
-            }
-        },
+            title: "No",
+            className: 'align-middle text-capitalize text-nowrap',
+            data: (data, index, i) => { return (index + 1) },
 
+        },
         {
             title: "Name",
             className: "align-middle text-start",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">
-                            <span class="d-block">${data.name ?? ''}</span>
-                            <span class="d-block">${data.email ?? 'null'}</span>
-                            <span class="d-block">${data.phone_number ?? 'គ្មាន'}</span>
-                        </p>`;
+                return `<div style="display: flex; align-items: center;">
+                            <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                            <div>
+                                <span style="font-size: 14px; font-weight: bold;">${data.name ?? ''}</span>
+                                <br/>
+                                <span style="font-size: 12px">${data.email ?? ''}</span><br/>
+                                <span style="font-size: 12px">${data.phone_number ?? ''}</span>
+                            </div>
+                        </div>`;
             }
         },
         {
@@ -39,7 +41,7 @@ var PayrollComponent = new (function () {
             data: (data, index, tr) => {
                 // Add custom styling or logic here
                 let position = data.position ? data.position : 'N/A';
-                return `<p style=" background: linear-gradient(97.44deg, #FFFFFF -6.65%, rgba(199, 231, 1, 0.66) 18.08%, rgba(199, 231, 1, 0.66) 32.5%);" class="p-0 m-0 text-white text-center border border-primary rounded-5 p-1">${position}</p>`;
+                return `<p style=" background: linear-gradient(97.44deg, #FFFFFF -6.65%, rgba(199, 231, 1, 0.66) 18.08%, rgba(199, 231, 1, 0.66) 32.5%);" class="p-0 m-0 text-primary text-center border border-primary rounded-5 p-1">${position}</p>`;
             }
         },
 
@@ -59,17 +61,10 @@ var PayrollComponent = new (function () {
             }
         },
         {
-            title: "Working_hours",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.working_hours ?? ''}</p>`;
-            }
-        },
-        {
             title: "Salary",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.salary ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + data.salary ?? ''}</p>`;
             }
         },
 
@@ -101,19 +96,16 @@ var PayrollComponent = new (function () {
             }
         },
         {
-            className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class="btn_payroll_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/Dot.svg" />
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
-        }
+            className: "col_action align-middle",
+            data: (data) => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-center gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_payroll_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                        <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`,
+        },
 
     ];
 
@@ -126,7 +118,7 @@ var PayrollComponent = new (function () {
             //paginationContainer: mThis.containerPagination,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table  table--blue rounded-2   overflow-hidden  header-uppercase',
+            tableClass: 'table  table--white rounded-2   overflow-hidden  header-uppercase',
             listContainerClass: null
         });
 
@@ -214,6 +206,13 @@ var PayrollComponent = new (function () {
             menus:[
 
                 {
+                    html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                    icon:`<i class="fa-regular fa-exchange fs-5"></i>`,
+
+                    cssClass:"border-bottom pb-2",
+                    name:"change_payroll_status"
+                },
+                {
                     html:'<span class="ps-2  " vslang="titles.Modify Payroll">Modify Payroll</span>',
                     icon:`<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
@@ -237,7 +236,10 @@ var PayrollComponent = new (function () {
             // },
             onClick:(menuLink, id, name)=>{
                 switch(name){
-
+                    case 'change_payroll_status':{
+                        mThis.changeStatus(id,menuLink);
+                        break;
+                    }
                     case 'edit_payroll':{
                       mThis.editPayroll(id, menuLink);
                       break;
@@ -254,6 +256,52 @@ var PayrollComponent = new (function () {
             }
         }
         new VSDropdownMenu(menuOptopns);
+    }
+
+    this.changeStatus = (id, lnk)=>{
+        // if(!AuthManager.allowed(337,false))
+        //         return;
+        //let status_code = Validator.properCase(lnk.dataset.status);
+        let tr = lnk.closest('tr');
+        let status_id = Validator.properCase(tr? tr.dataset.status_id: "");
+        let inputOptions = {
+            title: 'Set Payroll Status',
+            dataLabel: "Payroll status",
+            valueMember: "status_id",
+            textMember: "name",
+            confirmButtonText:"Save",
+            blankErrorMessage: "Status is not correct!",
+            data: [{
+                status_id: "3",
+                name: "Success"
+            },
+            {
+                status_id: "2",
+                name: "Inprogress"
+            }],
+            defaultValue: status_id
+        };
+
+        InputBox2.show(inputOptions,(d)=>{
+            if(d){
+                let p = {
+                    id: id,
+                    status_id: d.value
+                };
+                console.log(123,p);
+
+                vsapi.call(`${mThis.base_url}/hr/payroll/update-status`,p).then(res => {
+                    if(res.status_code === 200){
+
+                        InputBox2.close();
+                        cv_interact.success('The Payroll status has been updated');
+                        mThis.PayrollListView.showPage(mThis.getDataFormFilter());
+                    }
+                    else
+                        cv_interact.error(res.error_message);
+                });
+            }
+        });
     }
 
     this.editPayroll = (id, menuLink) => {
@@ -323,11 +371,13 @@ const PayRollDailog = new function() {
     this.options = {};
 
     this.btnSave =  this.self.querySelector('#dlg_sdl_add_payroll_btn_save');
+    this.elEmployee = this.self.querySelector('#_sdl_name_id');
     this.elPositionId =  this.self.querySelector('#_sdl_position_id');
     this.elStatusId =  this.self.querySelector('#_sdl_status_id');
+    this.elInfo = this.self.querySelector('#info');
     this.elTitle = mThis.self.querySelector('.modal-title');
     this.div_payroll_info = mThis.self.querySelector('#_sdl_payroll_info');
-    this.btnChooser = mThis.self.querySelector('#dlg_image_chooser');
+
 
     this.btnSave.onclick =  e =>{
         e.preventDefault();
@@ -345,30 +395,61 @@ const PayRollDailog = new function() {
                 cv_interact.error(res.error_message);
         });
     };
+    this.prepareData = (id, def = {}, onFinish) => {
+        console.log(555555, id);
 
-    this.prepareData = (id,def, onFinish) => {
-        if(!def) def = {};
-        console.log(555555);
-        vsapi.call(`${mThis.base_url}/hr/payroll/form-options`,{
-            id: id
-        },null).then(res => {
-            let d = res.status_code === 200 ?  res.data : {};
+        vsapi.call(`${mThis.base_url}/hr/payroll/form-options`, { id: id }, null).then(res => {
+            let d = res.status_code === 200 ? res.data : {};
+            // mThis.elInfo.parentElement.classList.add('d-none');
+            VSUtil.setComboItems(mThis.elEmployee, d.employees, 'id', 'name', true, '(Select Employee)', null);
 
-            // VSUtil.setComboItems(mThis.elSenderType, d.sender_types, 'id', 'sender_type', true, '(Select Merchant Type)', def.sender_type_id);
-            // VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
-            // VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'name', true, '(Price List)', def.price_list_id);
-            VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'name', true, '(Select Position)', null);
-            VSUtil.setComboItems(mThis.elStatusId, d.status, 'id', 'name', true, '(Select Status)', null);
-            console.log(33333,d);
+
+            mThis.elEmployee.addEventListener('change', () => {
+                let id = mThis.elEmployee.value;
+                console.log(22222, id);
+
+                vsapi.call(`${mThis.base_url}/hr/employee/details`, { id: id }, null).then(res => {
+                    let d = res.data || {};
+                    console.log(1111, d);
+
+                    if (d) {
+                        mThis.elInfo.parentElement.classList.remove('d-none');
+                        mThis.elInfo.innerHTML = `
+                            <div class="d-block border border-info p-2">
+                                <div class="d-block">
+                                    <span>Name:</span>
+                                    <span>${d.first_name} ${d.last_name}</span>
+                                </div>
+                                <div>
+                                    <span>Email:</span><span>${d.email}</span>
+                                </div>
+                                <div>
+                                    <span>Phone:</span><span>${d.phone_number}</span>
+                                </div>
+                                <div class="d-block">
+                                    <span>Position:</span>
+                                    <span>${d.position}</span>
+                                </div>
+                                 <div>
+                                    <span>Working Hours:</span><span>${d.session}</span>
+                                </div>
+
+                            </div>`;
+                    }
+                    console.log(33333, d);
+                });
+            });
             onFinish(d);
         });
-    }
+    };
+
+
 
 
     this.show = (options) => {
         if (!options) options = {};
         mThis.options = options;
-        let id = options.id??null;
+        let id = options.id ??null;
 
         mThis.prepareData(id,{},data => {
             if(data.payrolls){
@@ -384,95 +465,35 @@ const PayRollDailog = new function() {
         });
     }
 
-        mThis.btnChooser.onclick = function(e){
-        e.preventDefault();
-        FileChooser.chooseFile(null,(d) => {
-            if(d){
-                const parent = this.parentElement;
-                mThis.setImage(parent,d.dataUrl);
-            }
-        });
-    }
-
-    this.setImage = (div,image=null) => {
-        if(image){
-            const html = `<image class="w-100 h-100 object-fit-scale data-input" src="${image}" alt="social-icon" data-field="photo"/>
-            <div class="position-absolute top-0 end-0 p-2 rounded-2 bg-dark" role="button">
-                <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-            </div>`;
-            div.innerHTML = html;
-            mThis.deleteImage(div);
-        }
-        else{
-            const html = `<div id="dlg_image_chooser"
-                                class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
-                                <i class="fa-regular fa-image fs-4 text-muted"></i>
-                            </div>`;
-            div.innerHTML = html;
-            mThis.chooseImage(div);
-        }
-    }
-
-    this.deleteImage = (div) => {
-        const btnDelete = div.querySelector('[role=\'button\']');
-        btnDelete.onclick = function(e){
-            e.preventDefault();
-            const html = `<div id="dlg_image_chooser"
-                                class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
-                                <i class="fa-regular fa-image fs-4 text-muted"></i>
-                            </div>`;
-            div.innerHTML = html;
-            mThis.chooseImage(div);
-        }
-    }
-
-    this.chooseImage = (div) => {
-        const btnChoose = div.querySelector('#dlg_image_chooser');
-        btnChoose.onclick = function(e){
-            e.preventDefault();
-            FileChooser.chooseFile(null,(d) => {
-                if(d){
-                    mThis.setImage(div,d.dataUrl);
-                }
-            });
-        }
-    }
-
-    this.getDataForm = () => {
+  this.getDataForm = () => {
         const div = mThis.self;
-        let p = {
-            id: mThis.options.id
-        };
+        let p = { id: mThis.options.id };
 
         div.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
-            if(el.tagName === 'IMG'){
-                p[data_member] = el.src;
-            }
-            else{
-                p[data_member] = el.value;
-            }
+            p[data_member] = el.value;
         });
 
         return p;
-    }
-    this.setData = (d) => {
-        d =d ?? {};
-        const div = mThis.self,
-    containerImage = div.querySelector('[aria-label=\'image\']');
-        let elements = div.querySelectorAll('.data-input');
-        mThis.setImage(containerImage,d.image_url);
+    };
 
-        elements.forEach(el =>{
+    this.setData = (d = {}) => {
+        const div = mThis.self;
+        div.querySelectorAll('.data-input').forEach(el => {
             const data_member = el.dataset.field;
-            el.value = d[data_member] ? d[data_member] : '';
+            console.log(7777,data_member,'|',el);
+            el.value ='';
+        });
 
+        console.log(4444,d);
+        if(!d) return;
 
-    });
-}
+        div.querySelectorAll('.data-input').forEach(el => {
+            const data_member = el.dataset.field;
+            console.log(7777,data_member,'|',el);
 
+            el.value = d[data_member] || '';
+        });
 
-
-
-}
-
+    };
+};
