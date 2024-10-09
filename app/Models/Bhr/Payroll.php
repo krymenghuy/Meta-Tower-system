@@ -81,7 +81,7 @@ class Payroll
                         e.email,
                         e.phone_number,
                         e.positions_id as emp_position_id,
-                        pos.name as position,
+                        pos.title as position,
                         e.session_id as emp_section_id,
                         sec.name as section,
                         pay.rate,
@@ -109,7 +109,7 @@ class Payroll
             $str_search = "CONCAT(e.name,' ',e.name_kh) like '%{$search_value}%' or
             e.email like '%{$search_value}%' or
             e.phone_number like '%{$search_value}%' or
-            pos.name like '%{$search_value}%' or
+            pos.title like '%{$search_value}%' or
             pay.rate like '%{$search_value}%' or
             pay.start_date like '%{$search_value}%' or
             pay.end_date like '%{$search_value}%' or
@@ -151,7 +151,7 @@ class Payroll
                     e.email,
                     e.phone_number,
                     e.positions_id as emp_position_id,
-                    pos.name as position,
+                    pos.title as position,
                     e.session_id as emp_section_id,
                     sec.name as section,
                     pay.rate,
@@ -208,7 +208,7 @@ class Payroll
                 ['id' => 'e.name_kh', 'name' => 'By Last Name'],
                 ['id' => 'e.email', 'name' => 'By Email'],
                 ['id' => 'e.phone_number', 'name' => 'By Phone Number'],
-                ['id' => 'pos.name', 'name' => 'By Position'],
+                ['id' => 'pos.title', 'name' => 'By Position'],
                 ['id' => 'pay.rate', 'name' => 'By  Rate'],
                 ['id' => 'pay.salary', 'name' => 'By Salary'],
                 ['id' => 'pay.start_date', 'name' => 'By Start Date'],
@@ -217,7 +217,7 @@ class Payroll
             ],
             'employees' => DB::table('employees')->selectRaw('id,CONCAT(name) as name')->get(),
             'status' => DB::table('statuses')->selectRaw('id,name')->get(),
-            'positions' => DB::table('positions')->selectRaw('id,name')->get(),
+            'positions' => DB::table('positions')->selectRaw('id,title')->get(),
 
 
             'payrolls' => $payroll,

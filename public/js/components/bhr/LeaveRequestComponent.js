@@ -28,7 +28,7 @@ var LeaveRequestComponent = new (function () {
                 return `<div style="display: flex; align-items: center;">
                             <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
-                                <span style="font-size: 14px; font-weight: bold;">${data.first_name ?? ''} ${data.last_name ?? ''}</span>
+                                <span style="font-size: 14px; font-weight: bold;">${data.name ??''}</span>
                                 <br/>
                                 <span style="font-size: 12px; color: gray;">${data.position ?? ''}</span>
                             </div>
@@ -397,7 +397,7 @@ const LeaveRequestDailog = new function() {
                         mThis.elInfo.innerHTML =`<div class="d-block border border-info p-2">
                                                     <div class="d-block ">
                                                         <span >name :</span>
-                                                        <span >${ d.first_name +' '+ d.last_name }</span>
+                                                        <span >${ d.name }</span>
                                                     </div>
                                                     <div class="d-block ">
                                                         <span >Position :</span>

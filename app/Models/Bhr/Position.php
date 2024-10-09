@@ -71,8 +71,8 @@ class Position
             ->selectRaw('p.id, p.title, p.department_id, d.name as department')->orderBy('p.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('p.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();    
-        
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+
 
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -105,7 +105,7 @@ class Position
         }
         return (object) [
 
-            'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
+            // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
             'departments' => DB::table('departments')->selectRaw('id,name')->get(),
 
 
