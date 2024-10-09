@@ -24,8 +24,9 @@ class Department
         $v_rule = [
             'id' => '0|identity=1',
             'name' => '1|string|0-100',
-            'short_name' => '1|string|0-100',
-            'status_id' => '1|number',
+            'shortcut' => '1|string|0-10',
+            'description' => '0|string|255',
+            'inactive' => '1|number|default = 0',
         ];
 
 
@@ -48,65 +49,51 @@ class Department
     }
 
     function getDepartmentListPaginate($arr, $ss) {
-        $d = (object) $arr;
         $branch_id = $ss->branch_id;
+        $d = (object) $arr;
+
 
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
-
+        $search_value = $d->search_value ?? null;
         $skip_rows = ($current_page - 1) * $per_page;
 
-        $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-        $search_status_id = $d->status_id ?? null;
-
         $str_search = '1=1';
+        if($search_value){
+            $skip_rows = 0;
+            $str_search = "(d.name LIKE '%" . $search_value . "%' OR d.shortcut ='" . $search_value . "')";
+        }
 
         $query = DB::table('departments as d')
-            ->join('dep_status as ds', 'ds.id', '=', 'd.status_id')
-            ->selectRaw('d.id, d.name, d.short_name, d.status_id, ds.name as status');
-
-
-        if ($search_id) {
-            $query->where('d.id', $search_id);
-        }
-
-        if ($search_status_id) {
-            $query->where('d.status_id', $search_status_id);
-        }
-
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $query->whereRaw("d.name like '%" . $search_value . "%'" . " or d.short_name like '%" . $search_value . "%'");
-            $query->whereRaw($str_search);
-        }
-        $query->orderBy('d.id', 'asc');
-        $query->skip($skip_rows)->take($per_page);
-        $count_query = clone $query;
-        $count = $count_query->count('d.id');
-        $rows = $query->get();
+            ->where('d.inactive',0)
+            ->whereRaw($str_search)
+            ->selectRaw('d.id, d.name, d.shortcut, d.description')->orderBy('d.id','DESC');
+        $clone_query = clone  $query;
+        $count = $clone_query->count('d.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getDetails($id) {
+    function getDetails($id,$ss) {
+        $branch_id = $ss->branch_id;
 
-        $query = DB::table('departments as d')
-            ->join('dep_status as ds', 'ds.id', '=', 'd.status_id')
-            ->selectRaw('d.id, d.name, d.short_name, d.status_id, ds.name as status');
-        $query->where('d.id', $id);
-        $row = $query->first();
+        $row  = DB::table('departments as d')
+            ->selectRaw('d.id, d.name, d.shortcut, d.description,d.inactive,d.create_date,d.update_date,d.create_user,d.update_user')->where('d.inactive',0)->where('d.branch_id',$branch_id)->where('d.id',$id)->take(1)->first();
+        
         return $row;
     }
 
 
     function deleteDepartment($id) {
-        $deleted = DB::table('departments')->where('id', $id)->delete();
-        return $deleted;
+        $id = $id ?? $this->id;
+
+        $delete = DB::table('departments')->where('id', $id)->update(['inactive'=>1]);
+        return DV::depends($delete, ['action', 'deleted']);
     }
 
     function getFormOptions($id, $ss)
@@ -117,7 +104,7 @@ class Department
         }
         return (object) [
 
-            'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
+            // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
 
 
             'departments' => $department,

@@ -11,7 +11,7 @@ use DB;
 use App\Models\DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class employee//extends Model
+class Employee//extends Model
 
 {
     //use HasFactory;
@@ -34,8 +34,8 @@ class employee//extends Model
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'first_name' => '1|string|0-100',
-            'last_name' => '1|string|0-100',
+            'name' => '1|string|0-100',
+            'name_kh' => '1|string|0-100',
             'email' => '1|email',
             'phone_number' => '1|phone|0-20',
             'sex' => '1|string',
@@ -135,7 +135,7 @@ class employee//extends Model
         $str_where = '2=2';
         if($search_value){
             $skip_rows = 0;
-            $str_srch = "(emp.first_name LIKE '%".$search_value."%' OR emp.last_name = '".$search_value."' OR emp.nid = '".$search_value."' OR emp.phone_number = '".$search_value."')";
+            $str_srch = "(emp.name LIKE '%".$search_value."%' OR emp.name_kh = '".$search_value."' OR emp.nid = '".$search_value."' OR emp.phone_number = '".$search_value."')";
         }
         if($status){
             $str_where = 'emp.status_id =\'' . $status . '\'';
@@ -143,15 +143,15 @@ class employee//extends Model
         }
         $query = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
-            ->join('dep_status as ds', 'ds.id', '=', 'emp.status_id')
+            ->join('employee_status as ds', 'ds.id', '=', 'emp.status_id')
             ->join('sessions as s', 's.id', '=', 'emp.session_id')
             ->whereRaw($str_srch)
             ->whereRaw($str_where)
             ->selectRaw('
             emp.code,
             emp.id,
-            emp.first_name,
-            emp.last_name,
+            emp.name,
+            emp.name_kh,
             emp.email,
             emp.phone_number,
             emp.sex,
@@ -163,7 +163,7 @@ class employee//extends Model
             emp.nssf_id,
             emp.nid,
             emp.positions_id,
-            p.name as position,
+            p.title as position,
             emp.session_id,
             s.name as session,
             emp.status_id,
@@ -174,8 +174,8 @@ class employee//extends Model
         // if ($search_value) {
         //     $search_value = addcslashes($search_value, '%_'); // Escape special characters used in LIKE query
         //     $query->where(function($q) use ($search_value) {
-        //         $q->where('emp.first_name', 'like', '%' . $search_value . '%')
-        //           ->orWhere('emp.last_name', 'like', '%' . $search_value . '%')
+        //         $q->where('emp.name', 'like', '%' . $search_value . '%')
+        //           ->orWhere('emp.name_kh', 'like', '%' . $search_value . '%')
         //           ->orWhere('emp.email', 'like', '%' . $search_value . '%')
         //           ->orWhere('emp.phone_number', 'like', '%' . $search_value . '%')
         //           ->orWhere('p.name', 'like', '%' . $search_value . '%')
@@ -208,13 +208,13 @@ class employee//extends Model
 
         $row = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
-            ->join('dep_status as ds', 'ds.id', '=', 'emp.status_id')
+            ->join('employee_status as ds', 'ds.id', '=', 'emp.status_id')
             ->join('sessions as s', 's.id', '=', 'emp.session_id')
         ->selectRaw('
             emp.code,
             emp.id,
-            emp.first_name,
-            emp.last_name,
+            emp.name,
+            emp.name_kh,
             emp.email,
             emp.sex,
             emp.phone_number,
@@ -226,7 +226,7 @@ class employee//extends Model
             emp.nssf_id,
             emp.nid,
             emp.positions_id,
-            p.name as position,
+            p.title as position,
             emp.session_id,
             s.name as session,
             emp.status_id,
@@ -284,7 +284,7 @@ class employee//extends Model
         return DV::depends(1, ['id' => $id, 'deleted' => $file_name ?? 'No file found']);
     }
     static function currentPosition($id){
-        return DB::table('employees as e')->join('positions as p', 'p.id', '=', 'e.position_id')->selectRaw('p.name , p.id')->first();
+        return DB::table('employees as e')->join('positions as p', 'p.id', '=', 'e.position_id')->selectRaw('p.title , p.id')->first();
     }
     function getFormOptions($id, $ss)
     {
@@ -294,8 +294,8 @@ class employee//extends Model
         }
         return (object) [
 
-            'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
-            'positions' => DB::table('positions')->selectRaw('id,name')->get(),
+            'status' => DB::table('employee_status')->selectRaw('id,name')->get(),
+            'positions' => DB::table('positions')->selectRaw('id,title')->get(),
             // 'genders' => DB::table('genders')->selectRaw('id,name')->get(),
             'sessions' => DB::table('sessions')->selectRaw('id,name')->get(),
 

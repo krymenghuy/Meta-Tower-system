@@ -45,14 +45,7 @@ Route::prefix('dashboard')->group(function () {
 });
 
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')->group(function () {
 
-    Route::post('/save', [DepartmentController::class, 'saveDepartment']);
-    Route::post('/list-paginate', [DepartmentController::class, 'getDepartmentListPaginate']);
-    Route::post('/details', [DepartmentController::class, 'getDetails']);
-    Route::post('/delete', [DepartmentController::class, 'deleteDepartment']);
-    Route::post('/form-options', [DepartmentController::class, 'getFormOptions']);
-});
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->group(function () {
 
@@ -65,6 +58,17 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
 
     //Route::post('updateSenderStatus', [SenderController::class, 'updateSenderStatus']);
 });
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')->group(function () {
+
+    Route::post('/save', [DepartmentController::class, 'saveDepartment']);
+    Route::post('/list-paginate', [DepartmentController::class, 'getDepartmentListPaginate']);
+    Route::post('/details', [DepartmentController::class, 'getDetails']);
+    Route::post('/delete', [DepartmentController::class, 'deleteDepartment']);
+    Route::post('/form-options', [DepartmentController::class, 'getFormOptions']);
+});
+
+
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('staff')->group(function () {
 
     Route::post('/save', [StaffController::class, 'saveStaff']);
