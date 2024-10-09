@@ -15,35 +15,38 @@ var PositionComponent = new function() {
     this.cols = [
         {
             title: "No",
-            className: 'align-middle text-capitalize text-nowrap',
-            data: (data, index, i) => { return (index + 1) },
-
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data, index, i) => {
+                return index + 1;
+            },
         },
         {
             title: "Position Name",
-            className: 'align-middle text-capitalize text-nowrap',
-            data: "name"
+            className: "align-middle text-capitalize text-nowrap",
+            data: "name",
         },
         {
             title: "Department Name",
-            className: 'align-middle text-capitalize text-nowrap',
-            data: "department"
+            className: "align-middle text-capitalize text-nowrap",
+            data: "department",
         },
         {
             title: "Status",
-            className: 'align-middle',
+            className: "align-middle",
             data: (data) => {
-                let cls_class = 'text-danger text-center';
-                let bg_color = '#6c757d'; // Default gray background color
+                let cls_class = "text-danger text-center";
+                let bg_color = "#6c757d"; // Default gray background color
 
-                const status = (data.status || '').toLowerCase();
+                const status = (data.status || "").toLowerCase();
 
-                if (status === 'active') {
-                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#28a745';
-                } else if (status === 'inactive') {
-                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
-                    bg_color = '#ffc107';
+                if (status === "active") {
+                    cls_class =
+                        "text-white text-center border border-success rounded-5 p-1";
+                    bg_color = "#28a745";
+                } else if (status === "inactive") {
+                    cls_class =
+                        "text-white text-center border border-warning rounded-5 p-1";
+                    bg_color = "#ffc107";
                 }
 
                 return `
@@ -52,23 +55,19 @@ var PositionComponent = new function() {
                             ${data.status}
                         </span>
                     </a>`;
-            }
+            },
         },
         {
-            title:"Action",
-            className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class="btn_payroll_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/Dot.svg" />
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
-        }
+            className: "col_action align-middle",
+            data: (data) => `
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-center gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_payroll_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                        <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`,
+        },
     ];
 
     this.init = () => {
@@ -79,7 +78,7 @@ var PositionComponent = new function() {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--blue rounded-2 overflow-hidden header-uppercase',
+            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
             listContainerClass: null
         });
 

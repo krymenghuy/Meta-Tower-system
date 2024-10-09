@@ -28,8 +28,8 @@ var WarningComponent = new (function () {
                     }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                     <div>
                         <span style="font-size: 14px; font-weight: bold;">${
-                            data.first_name ?? ""
-                        } ${data.last_name ?? ""}</span><br/>
+                            data.name ?? ""
+                        } ${data.name_kh ?? ""}</span><br/>
                         <span style="font-size: 12px; color: gray;">${
                             data.email ?? ""
                         }</span>

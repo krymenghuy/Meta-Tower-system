@@ -5,6 +5,7 @@ var ReportComponent = new (function () {
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_reportComponent");
     this.self = this.jm[0];
+    this.title_prop = "Report";
     this.initAlready = false;
 
     this.init = function () {
