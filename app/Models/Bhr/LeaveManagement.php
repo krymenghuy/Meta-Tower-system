@@ -83,7 +83,7 @@ class LeaveManagement
         ->join('action as a', 'a.id', '=', 'lm.action_id')
         ->join('employees as e', 'e.id', '=', 'lm.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
-        ->selectRaw('lm.id,e.id as emp_id,e.first_name ,e.last_name,e.positions_id as emp_position_id,pos.name as position,lm.action_id,lm.start_date,lm.end_date,lm.permission_details,a.name as status,e.photo_file_name as emp_photo')
+        ->selectRaw('lm.id,e.id as emp_id,e.name ,e.name_kh,e.positions_id as emp_position_id,pos.name as position,lm.action_id,lm.start_date,lm.end_date,lm.permission_details,a.name as status,e.photo_file_name as emp_photo')
         ->where('lm.branch_id', $branch_id);
 
         if ($search_id) {
@@ -96,7 +96,7 @@ class LeaveManagement
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "e.first_name like '%{$search_value}%' or e.last_name like '%{$search_value}%' or lm.permission_details like '%{$search_value}%' or pos.name like '%{$search_value}%'";
+            $str_search = "e.name like '%{$search_value}%'  or lm.permission_details like '%{$search_value}%' or pos.name like '%{$search_value}%'";
             $query->whereRaw($str_search);
         }
 
@@ -123,7 +123,7 @@ class LeaveManagement
         ->join('action as a', 'a.id', '=', 'lm.action_id')
         ->join('employees as e', 'e.id', '=', 'lm.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
-        ->selectRaw('lm.id,e.id as emp_id,e.first_name ,e.last_name,e.positions_id as emp_position_id,pos.name as position,lm.action_id,lm.start_date,lm.end_date,lm.permission_details,a.name as status,e.photo_file_name as emp_photo')
+        ->selectRaw('lm.id,e.id as emp_id,e.name ,e.name_kh,e.positions_id as emp_position_id,pos.name as position,lm.action_id,lm.start_date,lm.end_date,lm.permission_details,a.name as status,e.photo_file_name as emp_photo')
         ->where('lm.id', $id)->first();
 
         if ($row) {

@@ -76,8 +76,8 @@ class Payroll
             ->join('sessions as sec', 'sec.id', '=', 'e.session_id')
             ->selectRaw('pay.id,
                         e.id as emp_id,
-                        e.first_name,
-                        e.last_name,
+                        e.name,
+                        e.name_kh,
                         e.email,
                         e.phone_number,
                         e.positions_id as emp_position_id,
@@ -106,7 +106,7 @@ class Payroll
 
 
         if ($search_value) {
-            $str_search = "CONCAT(e.first_name,' ',e.last_name) like '%{$search_value}%' or
+            $str_search = "CONCAT(e.name,' ',e.name_kh) like '%{$search_value}%' or
             e.email like '%{$search_value}%' or
             e.phone_number like '%{$search_value}%' or
             pos.name like '%{$search_value}%' or
@@ -146,8 +146,8 @@ class Payroll
         ->join('sessions as sec', 'sec.id', '=', 'e.session_id')
         ->selectRaw('pay.id,
                     e.id as emp_id,
-                    e.first_name,
-                    e.last_name,
+                    e.name,
+                    e.name_kh,
                     e.email,
                     e.phone_number,
                     e.positions_id as emp_position_id,
@@ -204,8 +204,8 @@ class Payroll
         }
         return (object) [
             'sort_by' => [
-                ['id' => 'e.first_name', 'name' => 'By First Name'],
-                ['id' => 'e.last_name', 'name' => 'By Last Name'],
+                ['id' => 'e.name', 'name' => 'By First Name'],
+                ['id' => 'e.name_kh', 'name' => 'By Last Name'],
                 ['id' => 'e.email', 'name' => 'By Email'],
                 ['id' => 'e.phone_number', 'name' => 'By Phone Number'],
                 ['id' => 'pos.name', 'name' => 'By Position'],
@@ -215,7 +215,7 @@ class Payroll
                 ['id' => 'pay.end_date', 'name' => 'By End Date'],
 
             ],
-            'employees' => DB::table('employees')->selectRaw('id,CONCAT(first_name," ",last_name) as name')->get(),
+            'employees' => DB::table('employees')->selectRaw('id,CONCAT(name) as name')->get(),
             'status' => DB::table('statuses')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,name')->get(),
 

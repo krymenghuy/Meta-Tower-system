@@ -13,9 +13,7 @@ var EmployeeComponent = new (function () {
     this.elSearch = this.self.querySelector("#_sdl_search_employee");
     this.containerPagination = mThis.self.querySelector('#container_pagination');
 
-
-
-
+   
 
     let div = mThis.self.querySelector('#_employee_list');
     this.init= () => {
@@ -60,8 +58,8 @@ var EmployeeComponent = new (function () {
         };
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
-            let view_profile_info = mThis.self.querySelector('#sub_view_profile');
-            view_profile_info.classList.add('d-none');
+            // let view_profile_info = mThis.self.querySelector('#sub_view_profile');
+            // view_profile_info.classList.add('d-none');
             let btnBack = mThis.self.querySelector('#btn_back');
             btnBack.classList.add('d-none');
             let sub_content = mThis.self.querySelector('#sub_content');
@@ -108,14 +106,16 @@ var EmployeeComponent = new (function () {
                                 </div>
                                 <div class="dropdown">
                                     <a href="javascript:void(0)" class="btn_employee_action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa fa-ellipsis-v"></i>
+                                        <img src="${main_view.asset_url}/images/bhr/more_vert.svg">
                                     </a>
                                 </div>
                             </div>
                             <div class="card-body text-center">
                                 <img src="${d.image_url || '../uploads/public/1_data/default/images/mr.avif'}" class="rounded-circle mb-3"
                                     alt="Profile Picture" style="width: 100px; height: 100px;">
-                                <h5 class="card-title">${d.first_name || 'John'} ${d.last_name || 'Doe'}</h5>
+                                <div class="card-title">
+                                    <h5>${d.name}</h5>
+                                </div>
                                 <div class="card_container">
                                     <div class="employee_id">#: ${d.code || ''}</div>
                                     <div class="container_top">
@@ -135,9 +135,9 @@ var EmployeeComponent = new (function () {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card_bottom pt-1">
+                                <div class="card_bottom pt-3">
                                     <div class="joining">Joining Date: ${d.joining_date || '01/Aug/2024'}</div>
-                                    <a href="javascript:void(0)" class="see-detail" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">See Detail</a>
+                                    <a href="javascript:void(0)" class="see-detail" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">view info</a>
                                 </div>
                             </div>
                         </div>
@@ -168,30 +168,42 @@ var EmployeeComponent = new (function () {
             e.preventDefault();
             sh_parent.style.height = (window.innerHeight - 100) + 'px';
         };
-
+    
         const seeProfileInfo = div.querySelectorAll('.see-detail');
         seeProfileInfo.forEach(link => {
-
+            
             link.addEventListener('click', (e) => {
                 const employeeId = e.target.dataset.id;
-                let sub_content = mThis.self.querySelector('#sub_content');
-                sub_content.classList.add('d-none');
-                let btnBack = mThis.self.querySelector('#btn_back');
-                btnBack.classList.remove('d-none');
-                let view_profile_info = mThis.self.querySelector('#sub_view_profile');
-                view_profile_info.classList.remove('d-none');
+    
+                // Find the employee data by id
+                const employeeData = data.find(emp => emp.id == employeeId);
+    
+                if (employeeData) {
+                    // Hide the main content and show the profile view
+                    let sub_content = mThis.self.querySelector('#sub_content');
+                    sub_content.classList.add('d-none');
+                    let btnBack = mThis.self.querySelector('#btn_back');
+                    btnBack.classList.remove('d-none');
+                    
+    
+                    // Show the profile section
+                    mThis.renderProfile(employeeData);
+                    mThis.renderCardDetail();
+                } else {
+                    console.error('Employee data not found for ID:', employeeId);
+                }
             });
         });
     };
-
-
-
-
-
-
-
-
-
+    
+    
+  
+   
+    
+    
+    
+   
+    
     mThis.elSearch.addEventListener('keyup', (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
