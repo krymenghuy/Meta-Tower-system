@@ -171,19 +171,18 @@ class Skill
 
     function getDetails($id)
     {
-        $row = DB::table('skills')->where('id', $id)->first();
-
-        if ($row) {
-            $row->image_url = self::getProfilePicture($id);
-        }
-
-        return DB::table('skills')
-            ->select('id', 'title', 'description', 'count_member')
-            ->addSelect(DB::raw("'{$row->image_url}' as image_url"))
+        $row = DB::table('skills')
+            ->selectRaw('id, title, description, image_file_name')
             ->where('id', $id)
             ->first();
-    }
+            if ($row) {
+                $row->image_url = self::getProfilePicture($id);
+            } else {
+                $row = null; // Or handle the case where employee is not found
+            }
 
+            return $row;
+        }
     function delete($id, $ss)
     {
         // Ensure $id is numeric and valid
@@ -224,4 +223,41 @@ class Skill
         return DV::depends(1, ['id' => $id, 'deleted' => $file_name ?? 'No file found']);
     }
 
+    function getFormOptions($id, $ss)
+    {
+        $skill = null;
+        if ($id) {
+            $skill = self::getDetails($id, $ss);
+        }
+        return (object) [
+
+
+            'skill' => $skill,
+        ];
+
+    }
+
+
+    static function saveLogo($d,$ss)
+  {
+    //$branch_id = null; // $ss->branch_id;
+    $skill_id = $d->id;
+    if(!$skill_id) return DV::error('Invalid skill ID');
+
+	  $file_type = isset($d['file_type'])?$d['file_type']:'png';
+    $photo = isset($d['photo_data'])?$d['photo_data']: (isset($d['photoData'])?$d['photoData']:null);
+    $delete_photo = (!$photo || isImage($photo));
+    $logo_file_name = DB::table('skills')->where('id',$skill_id)->selectRaw('logo_file_name')->value('logo_file_name');
+    if ($delete_photo){
+      PublicStorage::delete (['subs_id'=>$ss->subs_id, 'branch_id'=>null,'dir'=>self::$img_dir],'image',$logo_file_name);
+    }
+    $maxSize =500;
+	  $res = PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'branch_id'=>null,'dir'=>self::$img_dir],$file_type,$photo,$maxSize,['id'=>$skill_id,'store'=>'skills.image_file_name']);
+    if($res->status ==='Error') return DV::error($res->error_message);
+    return DV::depends(1);
+  }
+
 }
+
+
+

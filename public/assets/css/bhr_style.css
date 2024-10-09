@@ -12,7 +12,7 @@ body {
     padding: 0;
     box-sizing: border-box;
     background-color: #f5f5f5;
-    color: #000;
+    color: #000000;
     font-size: 0.9rem;
     font-weight: normal;
     overflow: hidden;
@@ -62,7 +62,7 @@ a.menu-selected .kt-menu__link-text {
         hue-rotate(201deg) brightness(122%) contrast(100%); */
         /* color: #8DC63F !important; */
         filter:hue-rotate(127deg);
-        
+
     /* filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%)
         hue-rotate(24deg) brightness(87%) contrast(79%); */
 }
@@ -1689,7 +1689,7 @@ ul.list-filter-um li:not(li:last-child) {
 .table--blue thead th {
     color: #FFFFFF !important;
     /* border-radius: 0.5rem !important; */
-    background-color:#000000 !important;
+    background-color:#2B3991!important;
 
 
 }
@@ -1712,7 +1712,7 @@ ul.list-filter-um li:not(li:last-child) {
 .table--white thead th {
     color: white!important;
     /* border-radius: 0.5rem !important; */
-    background-color:#000000 !important;
+    background-color:#2B3991 !important;
 }
 
 .table--white tr:hover {
