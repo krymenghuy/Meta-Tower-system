@@ -111,6 +111,31 @@
   background-color: rgb(227, 127, 4);
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.564);
 }
+    .skills {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 20px;
+        width: 100%;
+        height: 530px;
+        overflow-y: auto;
+        justify-content: space-between;
+        gap: 2.5rem
+    }
+
+    .marketing {
+        background-color: rgb(227, 205, 4);
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.564);
+    }
+
+    .HR {
+        background-color: rgb(234, 109, 7);
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.564);
+    }
+
+    .DB {
+        background-color: rgb(31, 125, 213);
+        box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.564);
+    }
 
 
 
@@ -132,6 +157,17 @@
   align-items: center;
   gap: 1.5rem;
 }
+    .action {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+    .action i{
+        color: #fff;
+        font-size: 20px;
+        cursor: pointer;
+        transition: color 0.3s ease;
+    }
 
 .action .fa-pen:hover {
   cursor: pointer;
