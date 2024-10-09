@@ -21,9 +21,9 @@ var PositionComponent = new function() {
             },
         },
         {
-            title: "Position Name",
+            title: "Position title",
             className: "align-middle text-capitalize text-nowrap",
-            data: "name",
+            data: "title",
         },
         {
             title: "Department Name",

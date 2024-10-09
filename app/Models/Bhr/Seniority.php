@@ -64,7 +64,7 @@ class Seniority
 
         $query = DB::table('seniorities as s')
             ->join('employees as e', 'e.id', 's.emp_id')
-            ->selectRaw('s.id, s.emp_id, e.first_name as emp_first_name, e.last_name as emp_last_name, s.period, s.description, s.amount,e.photo_file_name as emp_photo')
+            ->selectRaw('s.id, s.emp_id, e.name as emp_name, s.period, s.description, s.amount,e.photo_file_name as emp_photo')
             ->where('s.branch_id', $branch_id)
             ->whereRaw($str_search)
             ->orderby('s.id', 'asc');
@@ -75,7 +75,7 @@ class Seniority
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "s.description like '%" . $search_value . "%' or e.first_name like '%" . $search_value . "%' or e.last_name like '%" . $search_value . "%' or s.period like '%" . $search_value . "%' or s.amount like '%" . $search_value . "%'";
+            $str_search = "s.description like '%" . $search_value . "%' or e.name like '%" . $search_value . "%' or s.period like '%" . $search_value . "%' or s.amount like '%" . $search_value . "%'";
             $query->whereRaw($str_search);
         }
 
@@ -96,7 +96,7 @@ class Seniority
     function getDetails($id, $ss) {
         $row = DB::table('seniorities as s')
             ->join('employees as e', 'e.id', 's.emp_id')
-            ->selectRaw('s.id, s.emp_id, e.first_name as emp_first_name, e.last_name as emp_last_name, s.period, s.description, s.amount,e.photo_file_name as emp_photo')
+            ->selectRaw('s.id, s.emp_id, e.name as emp_name, s.period, s.description, s.amount,e.photo_file_name as emp_photo')
             ->where('s.id', $id)->first();
         if ($row) {
             $row->image_url = Employee::getProfilePicture($row->emp_id);
@@ -136,7 +136,7 @@ class Seniority
         }
         return (object) [
 
-            'employees' => DB::table('employees')->selectRaw('id,CONCAT(first_name," ",last_name) as name')->get(),
+            'employees' => DB::table('employees')->selectRaw('id, name')->get(),
 
 
 
