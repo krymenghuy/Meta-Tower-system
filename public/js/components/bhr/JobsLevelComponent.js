@@ -35,18 +35,18 @@ var JobsLevelComponent = new (function () {
                 // Action menu click handlers
                 $(".btn-view").on("click", function () {
                     let row = $(this).closest("tr");
-                    let jobTitle = row.find("td:nth-child(2)").text();
+                    let jobName = row.find("td:nth-child(2)").text();
                     let level = row
                         .find("td:nth-child(3)")
                         .text()
                         .toLowerCase();
-                    alert("Job Title: " + jobTitle + "\n" + "Level: " + level);
+                    alert("Job Title: " + jobName + "\n" + "Level: " + level);
                 });
 
                 $(".btn-edit").on("click", function () {
                     let row = $(this).closest("tr");
-                    let jobTitle = row.find("td:nth-child(2)").text();
-                    let newJobTitle = prompt("Edit Job Title", jobTitle);
+                    let jobName = row.find("td:nth-child(2)").text();
+                    let newJobTitle = prompt("Edit Job Title", jobName);
                     if (newJobTitle) {
                         row.find("td:nth-child(2)").text(newJobTitle);
                     }
@@ -76,19 +76,19 @@ var JobsLevelComponent = new (function () {
             data: "id",
         },
         {
-            title: "Job Title",
+            title: "Job Name",
             className: "align-middle",
-            data: "Job_Title",
+            data: "name",
         },
         {
-            title: "Level",
+            title: "Description",
             className: "align-middle",
-            data: "Level",
+            data: "description",
         },
         {
-            title: "Rating",
+            title: "Ranking",
             className: "align-middle",
-            data: "Ratting",
+            data: "rank",
             render: function (data) {
                 const maxStars = 5;
                 const rating = Math.min(Math.max(parseInt(data), 1), maxStars); // Ensures the rating is between 1 and maxStars
@@ -111,7 +111,7 @@ var JobsLevelComponent = new (function () {
             data: (data) => `
             <div class="d-flex justify-content-center align-items-center">
                 <div class="text-center gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${ data.action_id > 1 ? "d-none" : "btn_jobLevel_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="${ data.action_id > -1 ? "d-none" : "btn_jobLevel_action"}" data-id="${data.id}"aria-haspopup="true" aria-expanded="false">
                         <img src="${
                             main_view.asset_url
                         }/images/icons/more_vert (3).svg" />
@@ -147,12 +147,12 @@ var JobsLevelComponent = new (function () {
         // Handle adding a new job to the table
         $("#addJobForm").on("click", function (e) {
             e.preventDefault(); // Prevent form submission
-            const jobTitle = $("#Job_Title").val();
-            const jobLevel = $("#Level").val();
-            const jobRating = $("#Ratting").val();
+            const jobName = $("#name").val();
+            const jobDescription = $("#description").val();
+            const jobRanking = $("#rank").val();
 
             // Ensure all fields are filled
-            if (!jobTitle || !jobLevel || !jobRating) {
+            if (!jobName || !jobDescription || !jobRanking) {
                 alert("Please fill out all fields.");
                 return;
             }
@@ -160,10 +160,10 @@ var JobsLevelComponent = new (function () {
             // Create a new row
             const newRow = `
                 <tr>
-                    <td>${jobTitle}</td>
-                    <td>${jobLevel}</td>
+                    <td>${jobName}</td>
+                    <td>${jobDescription}</td>
                     <td>${
-                        "★".repeat(jobRating) + "☆".repeat(5 - jobRating)
+                        "★".repeat(jobRanking) + "☆".repeat(5 - jobRanking)
                     }</td>
                     <td><i class="fa fa-ellipsis-v actions"></i></td>
                 </tr>
@@ -241,7 +241,6 @@ var JobsLevelComponent = new (function () {
                 {
                     html: '<span class="ps-2  " vslang="titles.Edit Job Level">Edit Job Level</span>',
                     icon: `<i class="fa-regular fa-exchange fs-5"></i>`,
-
                     cssClass: "border-bottom pb-2",
                     name: "edit_jobLevel",
                 },
@@ -262,8 +261,7 @@ var JobsLevelComponent = new (function () {
             // },
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "edit_jobLevel": {
-                       
+                    case "edit_jobLevel": {                       
                         mThis.editJobLevel(id, menuLink);
                         break;
                     }
@@ -350,19 +348,19 @@ var JobsLevelComponent = new (function () {
     this.saveJobLevel = function () {
         return new Promise((resolve, reject) => {
             // Get form values
-            let Job_Title = document.getElementById("Job_Title").value;
-            let Level = document.getElementById("Level").value;
-            let Ratting = document.getElementById("Ratting").value;
+            let name = document.getElementById("name").value;
+            let description = document.getElementById("description").value;
+            let rank = document.getElementById("rank").value;
 
             // Validate the inputs
-            if (!Job_Title || !Level || !Ratting) {
+            if (!name || !description || !rank) {
                 return cv_interact.error("Please fill all required fields.");
             }
 
             let jobLevelData = {
-                Job_Title: Job_Title,
-                Level: Level,
-                Ratting: Ratting,
+                name: name,
+                description: description,
+                rank: rank,
             };
 
             // API call to save the job_level to the database
@@ -404,17 +402,17 @@ const JobLevelDialog = (() => {
                     return [
                         `<form id="jobLevelForm">
                             <div class="mb-3">
-                                <label for="Job_Title" class="form-label">Job Title</label>
-                                <input type="text" class="form-control data-input" data-field="id" id="Job_Title" placeholder="job title" required>
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control data-input" data-field="id" id="name" placeholder="job name" required>
                             </div>
                             <div class="mb-3">
-                                <label for="Level" class="form-label">Job Level</label>
-                                <input type="text" class="form-control" id="Level" placeholder="job level">
+                                <label for="description" class="form-label">Description</label>
+                                <input type="text" class="form-control" id="description" placeholder="job description">
                             </div>
                             <div class="mb-3">
-                                <label for="Ratting" class="form-label">Rating</label>
-                                <select class="form-select" id="Ratting" aria-label="rating" required>
-                                    <option value="" disabled selected>Rating</option>
+                                <label for="rank" class="form-label">ranking</label>
+                                <select class="form-select" id="rank" aria-label="rank" required>
+                                    <option value="" disabled selected>ranking</option>
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
