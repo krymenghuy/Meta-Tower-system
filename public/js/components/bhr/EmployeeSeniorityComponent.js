@@ -26,7 +26,7 @@ var EmployeeSeniorityComponent = new (function () {
                 return `<div style="display: flex; align-items: center;">
                             <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
-                                <span style="font-size: 14px; font-weight: bold;">${data.emp_first_name ?? ''} ${data.emp_last_name ?? ''}</span>
+                                <span style="font-size: 14px; font-weight: bold;">${data.emp_name ?? ''}</span>
                             </div>
                         </div>`;
             }

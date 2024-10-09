@@ -38,8 +38,8 @@
                     <div class="col-lg-9 p-5">
                         <div class="form-group">
                             <label for="name" class="form-label trans-text"
-                                data-langprop="titles.Name Of Position">Name</label>
-                            <input type="text" class="form-control data-input" data-field="name" />
+                                data-langprop="titles.Title Of Position">Name</label>
+                            <input type="text" class="form-control data-input" data-field="title" />
                         </div>
                         <div class="form-group">
                             <label for="name" class="form-label trans-text"
