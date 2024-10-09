@@ -109,21 +109,15 @@ var JobsLevelComponent = new (function () {
         {
             className: "col_action align-middle",
             data: (data) => `
-                <div class="d-flex justify-content-center align-items-center">
-                    <div class="text-center gap-2 d-flex flex-wrap">
-                        <a href="javascript:void(0)" class="${
-                            data.action_id > 1
-                                ? "d-none"
-                                : "btn_jobLevel_action"
-                        }" data-id="${data.id}" data-statusid="${
-                data.status_id
-            }" aria-haspopup="true" aria-expanded="false">
-                            <img src="${
-                                main_view.asset_url
-                            }/images/icons/more_vert (3).svg" />
-                        </a>
-                    </div>
-                </div>`,
+            <div class="d-flex justify-content-center align-items-center">
+                <div class="text-center gap-2 d-flex flex-wrap">
+                    <a href="javascript:void(0)" class="${ data.action_id > 1 ? "d-none" : "btn_jobLevel_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
+                    </a>
+                </div>
+            </div>`,               
         },
     ];
 
@@ -291,17 +285,24 @@ var JobsLevelComponent = new (function () {
     };
 
     // Handling edit functionality
-    this.editJobLevel = (id, menuLink) => {
+    // this.editJobLevel = (id) => {
+    //     let op = {
+    //         id: id,
+    //         onClose: (p) => {                
+    //             mThis.JobLevelListView.showPage();
+    //         },
+    //     };
+    //     JobLevelDialog.show(op);
+    // };
+    this.editJobLevel = (id) => {
         let op = {
             id: id,
-            btn: menuLink,
-            onClose: () => {                
-                mThis.JobLevelListView.showPage();
+            onClose: (p) => {
+                mThis.JobLevelListView.showPage(mThis.getFilterData());
             },
         };
         JobLevelDialog.show(op);
     };
-    
     this.deleteJobLevel = (id, menuLink) => {
         let op = {
             id: id,
