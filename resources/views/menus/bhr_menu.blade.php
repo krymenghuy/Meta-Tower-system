@@ -51,7 +51,6 @@
     .kt-aside__brand-logo {
         display: flex;
         flex-direction: column;
-        height: 70%;
         align-items: center;
         gap: 0.5rem;
     }
@@ -105,7 +104,8 @@
         color: #ffffff;
     }
     .kt-menu__item:hover {
-        background-color: #ffffff !important;
+        background-color: #2B3991 !important;
+        opacity: 0.7;
         border-radius: 20px 0px 0px 20px;
     }
     .kt-menu__link-text[data-langprop]:hover {
@@ -133,7 +133,7 @@ function v_display($mod_id, $module_ids = null)
         <div class="kt-aside__brand-logo pt-2">
             <div class="company">
                 <img src="{{ asset('assets/images/logo/lc_logo.svg') }}" alt="" class="img-logo" />
-                <span class="company_name">LC CASH EXPRESS CO.,LTD.</span>
+                <span class="company_name"></span>
                 {{-- <div class="kt-aside__brand kt-grid__item" id="kt_aside_brand">
                     <div class="kt-aside__brand-tools">
                         <button class="kt-aside__brand-aside-toggler" id="kt_aside_toggler"
@@ -146,11 +146,11 @@ function v_display($mod_id, $module_ids = null)
                     </div>
                 </div> --}}
             </div>
-            <div class="admin_info">
+            <!-- <div class="admin_info">
                 <img src="{{ asset('assets/images/logo/ratanak_pic.svg') }}" alt="admin">
                 <span class="admin_name">Ratanak Khoeurn</span>
                 <span class="admin_email">ratanak.khoeurn@pnc.org</span>
-            </div>
+            </div> -->
         </div>
 
         <ul class="kt-menu__nav" id="_dms_aside_menus">
