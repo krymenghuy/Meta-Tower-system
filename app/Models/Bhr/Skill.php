@@ -247,7 +247,7 @@ class Skill
 	  $file_type = isset($d['file_type'])?$d['file_type']:'png';
     $photo = isset($d['photo_data'])?$d['photo_data']: (isset($d['photoData'])?$d['photoData']:null);
     $delete_photo = (!$photo || isImage($photo));
-    $logo_file_name = DB::table('skills')->where('id',$skill_id)->selectRaw('logo_file_name')->value('logo_file_name');
+    $logo_file_name = DB::table('skills')->where('id',$skill_id)->selectRaw('image_file_name')->value('image_file_name');
     if ($delete_photo){
       PublicStorage::delete (['subs_id'=>$ss->subs_id, 'branch_id'=>null,'dir'=>self::$img_dir],'image',$logo_file_name);
     }

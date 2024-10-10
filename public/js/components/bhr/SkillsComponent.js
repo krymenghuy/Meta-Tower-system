@@ -29,6 +29,7 @@ var SkillsComponent = new (function () {
             renderItems: (data,list_container) => {
 
                 mThis.renderskillsList(list_container, data);
+
             },
             listContainerClass: null
         });
@@ -51,24 +52,27 @@ var SkillsComponent = new (function () {
 
             SkillDailog.show(op);
         };
+        const pr_tbl = mThis.SkillsListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 150) + 'px';
+        sh_parent.classList.add('overflow-y-auto');
+        sh_parent.classList.add('overflow-x-hidden');
+
+        window.onresize = function(e) {
+            e.preventDefault();
+            sh_parent.style.height = (window.innerHeight - 150) + 'px';
+        };
 
         mThis.divFilter.addEventListener('change', (e) => {
             e.preventDefault();
             mThis.SkillsListView.showPage(mThis.getDataFormFilter());
         });
 
-        // Set window resize only once in init
-        window.onresize = function (e) {
-            e.preventDefault();
-            let sh_parent = mThis.self.querySelector('#_scroll_skill');
-            if (sh_parent) {
-                sh_parent.style.height = (window.innerHeight - 150) + 'px';
-            }
-        };
-        // mThis.setAction(pr_tbl);
         mThis.initAlready = true;
     };
     this.setAction = (tbl)=>{
+        console.log(9999,tbl);
+
         tbl.addEventListener('click', (e) => {
 
             let btn = VSUtil.closestLimited(e.target,'button.b-btn-delete');
@@ -76,10 +80,11 @@ var SkillsComponent = new (function () {
                 mThis.deleteSkill(btn.dataset.id, btn);
             }
             btn = VSUtil.closestLimited(e.target,'button.b-btn-edit');
+            console.log(3344,btn);
+
             if (btn) {
                 mThis.editSkill(btn.dataset.id, btn);
             }
-            console.log(123,btn);
         })
     }
 
@@ -114,6 +119,8 @@ var SkillsComponent = new (function () {
 
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
+                console.log(5555,d);
+
                 html += `
                         <div class="skills col-3">
                         <div class="default">
@@ -128,8 +135,8 @@ var SkillsComponent = new (function () {
                                     <span>${d.count_member}</span>
                                 </div>
                                 <div class="action">
-                                    <button class="btn btn-sm btn-primary b-btn-edit" data-id="${data.id}"><i class="fa-regular fa-pen-to-square"></i></button>
-                                    <button class="btn btn-sm btn-danger b-btn-delete" data-id="${data.id}"><i class="fa-regular fa-trash-can"></i></button>
+                                    <button class="btn btn-sm btn-primary b-btn-edit" data-id="${d.id}"><i class="fa-regular fa-pen-to-square"></i></button>
+                                    <button class="btn btn-sm btn-danger b-btn-delete" data-id="${d.id}"><i class="fa-regular fa-trash-can"></i></button>
                                 </div>
                             </div>
                         </div>
@@ -156,6 +163,9 @@ var SkillsComponent = new (function () {
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
 
+        mThis.setAction(sh_parent);
+
+
     };
     mThis.elSearch.addEventListener('keyup', (e) => {
         clearTimeout(mThis.search_timeout);
@@ -180,6 +190,7 @@ var SkillsComponent = new (function () {
         return p;
     };
     this.editSkill = (id, menuLink) => {
+
         let op = {
             id: id,
             btn: menuLink,
@@ -236,7 +247,7 @@ const SkillDailog = (() => {
     createContent: () => {
         return [
             `<div class="w-100 d-flex flex-wrap flex-row align-items-center justify-content-center gap-2">
-                 <div name="div_skill_photo"></div>
+                 <img name="div_skill_photo" class="data-input" data-field="image_url" src="">
                  <div style="visibility:hidden" class="d-none align-items-center justify-content-center border border-secondary rounded-5 p-3 flex-grow">
                  <h5 class="p-2">User may have an official profile details</h5>
                  </div>
@@ -257,23 +268,36 @@ const SkillDailog = (() => {
         LocaleManager.translateZone(me.divModal);
         let div_skill_photo = me.divModal.querySelector('[name="div_skill_photo"]');
         console.log(444,div_skill_photo);
-        me.userImageBox = new ImageBox(div_skill_photo,{cssClass:"data-input",dataset:{"field" :"image"}});
+        me.userImageBox = new ImageBox(div_skill_photo,{cssClass:"data-input",dataset:{"field" :"image_url"}});
+        console.log(999,op);
+
         me.showProfile =  (code) =>{
            let fields = ['full_name','email','phone_number','login_name'];
-           let p = {"official_code":code,'user_class': me.controls.user_class.value};
+           let p = {'id':code};
            console.log(111,p);
 
-        //    vsapi.call([main_view.base_url,'/api/user/profile-by-code'].join(''),p,false,false).then(res =>{
-        //       let d = res.status_code ==200? res.data: {};
-        //       d = d || {};
-              me.fieldList.forEach(el =>{
+           vsapi.call([main_view.base_url,'/hr/skills/form-options'].join(''),p,false,false).then(res =>{
+              let d = res.status_code ==200? res.data: {};
+              d = d.skill || {};
+
+              me.divModal.querySelectorAll('.data-input').forEach(el =>{
                  const f =el.dataset.field;
+                 console.log(7788899,f);
+
                  if(fields.indexOf(f)>=0){
                        el.value = d[f] || "";
                  }
+                else if(el.tagName ==='IMG'){
+
+                    el.setAttribute('src',d[f] || '');
+                }
               });
-        //    });
+           });
         };
+
+
+        me.showProfile(op.id);
+
 
      },
     buttons:[
@@ -289,7 +313,7 @@ const SkillDailog = (() => {
            cssClass:"btn btn-primary",
            click:(me)=>{
               let p = me.getData();
-              p.photo = me.userImageBox? me.userImageBox.getImage(): '';
+              p.image = me.userImageBox? me.userImageBox.getImage(): '';
               console.log(222,p);
               vsapi.call([main_view.base_url,'/hr/skills/save'].join(''),p,false,false).then(res =>{
                   if(res.status_code ==200){
@@ -354,6 +378,8 @@ const SkillDailog = (() => {
     }
 
 });
+console.log(888,op);
+
 dialog.show(op);
     }
     return self;

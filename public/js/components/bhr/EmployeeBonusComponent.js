@@ -154,6 +154,7 @@ var EmployeeBonusComponent = new (function () {
     };
 
 
+
     this.editBenefit = (id, menuLink) => {
         let op = {
             id: id,
