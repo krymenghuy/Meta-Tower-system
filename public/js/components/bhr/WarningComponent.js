@@ -10,7 +10,6 @@ var WarningComponent = new (function () {
     this.btnAddWarning = this.self.querySelector("#_btnAddWarning");
     this.elSearch = this.self.querySelector("#_warning_search");
 
-
     // Define the columns for the warning list view
     this.cols = [
         {

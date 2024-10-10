@@ -106,7 +106,7 @@ class Warning extends Model
         $query = DB::table('warnings as war')
             ->join('employees as e', 'e.id', '=', 'war.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
-            ->selectRaw('war.id, e.id as emp_id, e.name, e.name_kh, e.positions_id as emp_position_id,e.email as email, pos.name as position, war.issues, war.promises, war.warning, e.photo_file_name as emp_photo');
+            ->selectRaw('war.id, e.id as emp_id, e.name, e.name_kh, e.positions_id as emp_position_id,e.email as email, pos.title as position, war.issues, war.promises, war.warning, e.photo_file_name as emp_photo');
 
         if ($search_id) {
             $query->where('war.id', $search_id);
@@ -118,7 +118,7 @@ class Warning extends Model
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "e.name like '%{$search_value}%' or e.name_kh like '%{$search_value}%' or war.promises like '%{$search_value}%' or pos.name like '%{$search_value}%'";
+            $str_search = "e.name like '%{$search_value}%' or e.name_kh like '%{$search_value}%' or war.promises like '%{$search_value}%' or pos.title like '%{$search_value}%'";
             $query->whereRaw($str_search);
         }
 

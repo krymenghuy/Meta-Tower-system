@@ -9,7 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class Job_Level //extends Model
 {
     protected $table = 'job_levels';
-    protected $fillable = ['Job_Title', 'Level','Ratting','branch_id','subs_id','created_at', 'updated_at'];
+    protected $fillable = ['name', 'description','rank','branch_id','subs_id','created_at', 'updated_at'];
 
     protected $id = null;
     protected $userInfo = null;
@@ -25,18 +25,19 @@ class Job_Level //extends Model
         $id = $id ?? $this->id;
         $ss = $userInfo ?? $this->userInfo;
         //$subs_id = $userInfo->subs_id ?? getCurrentSubsId(true);
-
+        $branch_id = $ss->branch_id;
         $v_rule = [
-            'Job_Title' => '1|string|0-250',
-            'Level' => '1|string|0-250',
-            'Ratting' => '1|number'
+            'name' => '1|string|0-250',
+            'description' => '1|string|0-250',
+            'rank' => '1|number'
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        $checkUnque = ["$branch_id|job_levels|name|id=id|text= job name already exists."];
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
-
+        
         $inputs = $res->values;
         $id = saveData($ss, 'job_levels', ['id' => $id], $inputs, [], 1, false);
 
@@ -48,7 +49,7 @@ class Job_Level //extends Model
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
         return DB::table('job_levels')
         ->where('subs_id', hex2bin($subs_id))
-            ->select('id', 'Job_Title','Level', 'Ratting','branch_id')
+            ->select('id', 'name', 'description', 'rank', 'branch_id')
             ->get();
     }
 
@@ -58,7 +59,7 @@ class Job_Level //extends Model
         return DB::table('job_levels')
         ->where('subs_id', hex2bin($subs_id))
             ->where('id', $id)
-            ->select('id','Job_Title', 'Level', 'Ratting', 'branch_id')
+            ->select('id','name', 'description', 'rank', 'branch_id')
             ->first();
     }
 
@@ -113,7 +114,7 @@ class Job_Level //extends Model
         $str_search = '1=1';
 
         $query = DB::table('job_levels as jl')
-        ->selectRaw('jl.id, jl.Job_Title, jl.Level, jl.Ratting');
+        ->selectRaw('jl.id, jl.name, jl.description, jl.rank');
 
        
         $query->where('jl.branch_id', $branch_id);
@@ -122,7 +123,7 @@ class Job_Level //extends Model
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $query->whereRaw("jl.Job_Title like '%" . $search_value . "%'");
+            $query->whereRaw("jl.name like '%" . $search_value . "%'");
         }
         $query->skip($skip_rows)->take($per_page);
         $count_query = clone $query;
