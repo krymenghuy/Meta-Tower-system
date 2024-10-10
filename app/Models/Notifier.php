@@ -10,6 +10,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Dms\Promotion;
+use Config;
 
 class Notifier
 {
