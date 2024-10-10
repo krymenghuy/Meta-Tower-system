@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="<?php $user = App\Services\Umt\AuthService::user();
 echo $user->lang ?? 'en'; ?>">
-
 <head>
     <base href="../">
     <meta charset="utf-8" />

@@ -613,7 +613,7 @@ function v_display($mod_id, $module_ids = null)
         return;
     });
     __dx.style.display = 'block';
-    __dx.style.height = (window.innerHeight - 65) + 'px';
+    __dx.style.height = (window.innerHeight - 65) +'px';
     __dx.style.overflowY = 'auto';
 
 

@@ -200,6 +200,10 @@ var EmployeeComponent = new (function () {
 
 
 
+
+
+
+
     mThis.elSearch.addEventListener('keyup', (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
