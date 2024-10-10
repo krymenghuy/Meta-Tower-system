@@ -268,7 +268,7 @@ const SkillDailog = (() => {
         LocaleManager.translateZone(me.divModal);
         let div_skill_photo = me.divModal.querySelector('[name="div_skill_photo"]');
         console.log(444,div_skill_photo);
-        me.userImageBox = new ImageBox(div_skill_photo,{cssClass:"data-input",dataset:{"field" :"image_url"}});
+        me.userImageBox = new ImageBox(div_skill_photo,{containerclass:'user-profile-container',imgClass:"data-input",dataset:{"field" :"image_url"}});
         console.log(999,op);
 
         me.showProfile =  (code) =>{
