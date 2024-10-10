@@ -41,7 +41,7 @@ li.kt-menu__section {
     background: #ebf5fb;
     border: 1px solid #d0d3d4;
     padding: 10px;
-    box-shadow: 1.5px 2px #d0d3d4;
+    /* box-shadow: 1.5px 2px #d0d3d4; */
 }
 
 .kt-menu__section-text {
