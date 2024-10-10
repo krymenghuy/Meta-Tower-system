@@ -93,7 +93,7 @@
 
 .default:hover
 {
-  background-color: rgb(205, 131, 255);
+  background-color:#4a74ad;
   cursor: pointer;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.564);
   scale: 1.02;
@@ -108,9 +108,10 @@
 
 }
 .default {
-  background-color: rgb(227, 127, 4);
+  background-color:#2B3991;
   box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.564);
 }
+
 
     .marketing {
         background-color: rgb(227, 205, 4);

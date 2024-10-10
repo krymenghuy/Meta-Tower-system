@@ -13,7 +13,7 @@ var EmployeeComponent = new (function () {
     this.elSearch = this.self.querySelector("#_sdl_search_employee");
     this.containerPagination = mThis.self.querySelector('#container_pagination');
 
-   
+
 
     let div = mThis.self.querySelector('#_employee_list');
     this.init= () => {
@@ -168,24 +168,24 @@ var EmployeeComponent = new (function () {
             e.preventDefault();
             sh_parent.style.height = (window.innerHeight - 100) + 'px';
         };
-    
+
         const seeProfileInfo = div.querySelectorAll('.see-detail');
         seeProfileInfo.forEach(link => {
-            
+
             link.addEventListener('click', (e) => {
                 const employeeId = e.target.dataset.id;
-    
+
                 // Find the employee data by id
                 const employeeData = data.find(emp => emp.id == employeeId);
-    
+
                 if (employeeData) {
                     // Hide the main content and show the profile view
                     let sub_content = mThis.self.querySelector('#sub_content');
                     sub_content.classList.add('d-none');
                     let btnBack = mThis.self.querySelector('#btn_back');
                     btnBack.classList.remove('d-none');
-                    
-    
+
+
                     // Show the profile section
                     mThis.renderProfile(employeeData);
                     mThis.renderCardDetail();
@@ -195,15 +195,11 @@ var EmployeeComponent = new (function () {
             });
         });
     };
-    
-    
-  
-   
-    
-    
-    
-   
-    
+
+
+
+
+
     mThis.elSearch.addEventListener('keyup', (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
