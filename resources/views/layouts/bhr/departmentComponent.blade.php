@@ -49,7 +49,10 @@
 
                         <div class="form-group col-lg-6">
                             <label for="name" class="form-label trans-text" data-langprop="titles.Status"></label>
-                            <select class=" data-input" id="_sdl_status_id" data-field="status_id"></select>
+                            <select class=" data-input" id="_sdl_status_id" data-field="status_id">
+                                <option value="active" id="_active">1</option>
+                                <option value="inactive" id="_inactive">2</option>
+                            </select>
                         </div>
 
                     </div>

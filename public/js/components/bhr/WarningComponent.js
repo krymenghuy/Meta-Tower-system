@@ -276,7 +276,7 @@ var WarningComponent = new (function () {
                     }
                 })
                 .catch((error) => {
-                    console.error("API error:", error);
+                    console.error("API error:", error); 	
                     cv_interact.error(
                         "Failed to save warning. Please try again."
                     );
@@ -304,7 +304,7 @@ const WarningDialog = (() => {
                             </div>
                             <div class="mb-3">
                                 <label for="employeePosition" class="form-label">Position</label>
-                                <input type="number" class="form-control" id="employeePositions" placeholder="">
+                                <input type="number" class="form-control" id="employeePositions" placeholder="Input position id">
                             </div>
                             <div class="mb-3">
                                 <label for="warningIssues" class="form-label">Issues</label>
@@ -325,7 +325,7 @@ const WarningDialog = (() => {
                             </div>
                             <div class="mb-3">
                                 <label for="subs_id" class="form-label">Subs ID</label>
-                                <input type="number" class="form-control" id="subs_id" placeholder="Input Subs ID" required>
+                                <input type="number" class="form-control" id="subs_id" placeholder="Input Subs ID">
                             </div>
                         </form>`,
                     ].join("");
