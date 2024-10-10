@@ -70,7 +70,7 @@ class Department
         $query = DB::table('departments as d')
             ->where('d.inactive',0)
             ->whereRaw($str_search)
-            ->selectRaw('d.id, d.name, d.shortcut, d.description')->orderBy('d.id','DESC');
+            ->selectRaw('d.id, d.name, d.shortcut, d.description, d.inactive,d.updated_at,d.update_user')->orderBy('d.id','DESC');
         $clone_query = clone  $query;
         $count = $clone_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -83,7 +83,7 @@ class Department
         $branch_id = $ss->branch_id;
 
         $row  = DB::table('departments as d')
-            ->selectRaw('d.id, d.name, d.shortcut, d.description,d.inactive,d.create_date,d.update_date,d.create_user,d.update_user')->where('d.inactive',0)->where('d.branch_id',$branch_id)->where('d.id',$id)->take(1)->first();
+            ->selectRaw('d.id, d.name, d.shortcut, d.description,d.inactive,d.created_at,d.updated_at,d.create_user,d.update_user')->where('d.inactive',0)->where('d.branch_id',$branch_id)->where('d.id',$id)->take(1)->first();
         
         return $row;
     }
