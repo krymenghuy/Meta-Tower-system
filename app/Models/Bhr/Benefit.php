@@ -57,7 +57,7 @@ class Benefit
         $branch_id = $ss->branch_id;
 
         $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 5;
+        $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
