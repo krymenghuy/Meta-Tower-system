@@ -548,7 +548,7 @@
                     <span class="trans-text" data-langprop="titles.Cancel"></span>
                 </button>
                 <button id="dlg_sdl_add_employee_btn_save" type="button" class="btn btn-sm btn-primary">
-                    <span class="trans-text" data-langprop="titles.Add Employee"></span>
+                    <span class="trans-text" data-langprop="titles.Save"></span>
                 </button>
             </div>
         </div>

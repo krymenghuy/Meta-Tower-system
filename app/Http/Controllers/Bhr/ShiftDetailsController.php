@@ -3,39 +3,39 @@
 namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bhr\WorkShift;
+use App\Models\Bhr\ShiftDetails;
 use App\Models\JDV;
 use App\Services\Umt\AuthService;
 use Illuminate\Http\Request;
 
-class WorkShiftController extends Controller
+class ShiftDetailsController extends Controller
 {
-    protected $workShiftModel;
-
-    public function __construct(WorkShift $workShiftModel)
+    protected $shiftDetailsModel;
+    public function __construct(ShiftDetails $shiftDetailsModel)
     {
-        $this->workShiftModel = $workShiftModel;
+        $this->shiftDetailsModel = $shiftDetailsModel;
     }
 
-    public function saveWorkShift(Request $req)
+    public function saveShiftDetails(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->work_shift_id ?? $req->id;
-        $workShift = new WorkShift($id, $ss);
-        $res = $workShift->save($req->all());
+
+        $id = $req->shift_details_id ?? $req->id;
+        $shiftDetails = new ShiftDetails($id, $ss);
+        $res = $shiftDetails->save($req->all());
         return JDV::raw($res);
     }
 
-    public function getWorkShiftListPaginate(Request $req)
+    public function getShiftDetailsListPaginate(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->workShiftModel->getWorkShiftListPaginate($ss));
+        return JDV::result($this->shiftDetailsModel->getShiftDetailsListPaginate($req->all(), $ss));
     }
 
     public function getDetails(Request $req)
@@ -48,10 +48,10 @@ class WorkShiftController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->workShiftModel->getDetails($req->id, $ss));
+        return JDV::result($this->shiftDetailsModel->getDetails($req->id, $ss));
     }
 
-    public function deleteWorkShift(Request $req)
+    public function deleteShiftDetails(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -61,7 +61,7 @@ class WorkShiftController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->workShiftModel->deleteWorkShift($req->id, $ss));
+        return JDV::result($this->shiftDetailsModel->deleteShiftDetails($req->id, $ss));
     }
 
     public function getFormOptions(Request $req)
@@ -70,6 +70,6 @@ class WorkShiftController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->workShiftModel->getFormOptions($req->id, $ss));
+        return JDV::result($this->shiftDetailsModel->getFormOptions($req->id, $ss));
     }
 }

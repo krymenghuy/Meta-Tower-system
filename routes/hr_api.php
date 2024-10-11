@@ -193,7 +193,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('warning')->gr
     Route::post('/update-status', [WarningController::class, 'updateStatus']);
 });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('work_shifts')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('work-shifts')->group(function () {
 
     Route::post('/save', [WorkShiftController::class, 'saveWorkShift']);
     Route::post('/list-paginate', [WorkShiftController::class, 'getWorkShiftListPaginate']);
@@ -202,7 +202,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('work_shifts')
     Route::post('/form-options', [WorkShiftController::class, 'getFormOptions']);
 });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('shift_details')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('shift-details')->group(function () {
 
     Route::post('/save', [ShiftDetailsController::class, 'saveShiftDetails']);
     Route::post('/list-paginate', [ShiftDetailsController::class, 'getShiftDetailsListPaginate']);
@@ -211,7 +211,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('shift_details
     Route::post('/form-options', [ShiftDetailsController::class, 'getFormOptions']);
 });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('scan_plan')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('scan-plan')->group(function () {
 
     Route::post('/save', [ScanPlanController::class, 'saveScanPlan']);
     Route::post('/list-paginate', [ScanPlanController::class, 'getScanPlanListPaginate']);

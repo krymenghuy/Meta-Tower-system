@@ -578,7 +578,7 @@ const EmployeeDialog = new function() {
             let d = res.status_code === 200 ?  res.data : {};
 
 
-            VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'name', true, '(Select Position)', null);
+            VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'title', true, '(Select Position)', null);
             VSUtil.setComboItems(mThis.elSessionId, d.sessions, 'id', 'name', true, '(Select Session)', null);
             // VSUtil.setComboItems(mThis.elGenderId, d.genders, 'id', 'name', true, '(Select Gender)', null);
             console.log(33333,d);

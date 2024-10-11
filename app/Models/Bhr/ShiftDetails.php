@@ -5,8 +5,7 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-
-class ScanPlan
+class ShiftDetails
 {
     protected $id = null;
     protected $userInfo = null;
@@ -22,12 +21,13 @@ class ScanPlan
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'shift_details_id' => '1|number',
-            'scan_time' => '1|string|0-100',
-            'action' => '1|string|0-100',
+            'work_shift_id' => '1|number',
+            'day' => '1|string|0-100',
+            'start_time' => '1|string|0-100',
+            'end_time' => '1|string|0-100',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, ['day'=>['-']], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -35,15 +35,15 @@ class ScanPlan
         $id = $res->id;
         $inputs = $res->values;
 
-        $id = saveData($ss,'scan_plan', ['id' => $id], $inputs, [], 1);
+        $id = saveData($ss,'shift_details', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            return DV::depends(1, ['scan_plan' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['shift_details' => $inputs, 'id' => $id]);
         }
 
-        return DV::error('Error saving scan plan');
+        return DV::error('Error saving shift details');
     }
 
-    function getScanPlanListPaginate($arr, $ss) {
+    function getShiftDetailsListPaginate($arr, $ss) {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
 
@@ -60,22 +60,22 @@ class ScanPlan
 
         $str_search = '1=1';
 
-        $query = DB::table('scan_plan as sp')
-            ->join('shift_details as sd', 'sd.id', '=', 'sp.shift_details_id')
+        $query = DB::table('shift_details as sd')
             ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
-            ->selectRaw('sp.id, sp.shift_details_id,ws.name as work_shift_name,sd.day, sd.start_time, sd.end_time, sp.scan_time, sp.action');
+            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.start_time, sd.end_time, ws.name as work_shift_name');
 
         if ($search_id) {
-            $query->whereRaw('sp.id =' . $search_id);
+            $query->whereRaw('sd.id =' . $search_id);
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "sd.day like '%" . $search_value . "%'  or ws.name like '%" . $search_value . "%' or sp.scan_time like '%" . $search_value . "%' or sp.action like '%" . $search_value . "%'";
+            $str_search = "sd.day like '%" . $search_value . "%' or ws.name like '%" . $search_value . "%'";
             $query->whereRaw($str_search);
         }
+
         $query->skip($skip_rows)->take($per_page);
         $count_query = clone $query;
-        $count = $count_query->count('sp.id');
+        $count = $count_query->count('sd.id');
         $rows = $query->get();
 
 
@@ -83,33 +83,40 @@ class ScanPlan
     }
 
     function getDetails($id,$ss){
-        $query = DB::table('scan_plan as sp')
-            ->join('shift_details as sd', 'sd.id', '=', 'sp.shift_details_id')
+
+        $query = DB::table('shift_details as sd')
             ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
-            ->selectRaw('sp.id, sp.shift_details_id,ws.name as work_shift_name,sd.day, sd.start_time, sd.end_time, sp.scan_time, sp.action')
-            ->where('sp.id',$id)
+            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.start_time, sd.end_time, ws.name as work_shift_name')
+            ->where('sd.id',$id)
             ->first();
         return $query;
+
     }
 
-    function deleteScanPlan($id, $ss){
-        $query = DB::table('scan_plan')
+    function deleteShiftDetails($id, $ss){
+        $query = DB::table('shift_details')
             ->where('id', $id)
             ->delete();
         if (!$query) {
-            return DV::error('Scan Plan not found');
+            return DV::error('Shift Details not found');
         }
         return $query;
     }
 
-    function getFormOptions($id, $ss){
-        $scan_plan = null;
+    function getFormOptions($id, $ss)
+    {
+        $shiftdetails = null;
         if ($id) {
-            $scan_plan = self::getDetails($id, $ss);
+            $shiftdetails = self::getDetails($id, $ss);
         }
         return (object) [
+
+            // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
             'Work Shift' => DB::table('work_shifts')->selectRaw('id,name')->get(),
-            'scan_plan' => $scan_plan,
+
+
+            'shiftdetails' => $shiftdetails,
         ];
+
     }
 }
