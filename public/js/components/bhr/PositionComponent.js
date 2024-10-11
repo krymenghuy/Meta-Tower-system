@@ -31,39 +31,31 @@ var PositionComponent = new function() {
             data: "department",
         },
         {
-            title: "Status",
-            className: "align-middle text-nowrap text-center",
-            data: (data) => {
-                let cls_class = "text-danger text-center";
-                let bg_color = "#6c757d"; // Default gray background color
-
-                const status = (data.status || "").toLowerCase();
-
-                if (status === "active") {
-                    cls_class =
-                        "text-white text-center border border-success rounded-5 p-1";
-                    bg_color = "#28a745";
-                } else if (status === "inactive") {
-                    cls_class =
-                        "text-white text-center border border-warning rounded-5 p-1";
-                    bg_color = "#ffc107";
-                }
-
-                return `
-                    <a class="d-flex justify-content-left" data-status="${data.status}" data-id="${data.id}" href="javascript:void(0)">
-                        <span style="display:block;width:80px;background:${bg_color};" class="${cls_class}">
-                            ${data.status}
-                        </span>
-                    </a>`;
-            },
+            title: "Create By",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span style="font-size: 14px; font-weight: bold;">${
+                    data.update_user ?? ""
+                }</span><br/>
+                <span style="font-size: 12px; color: gray;">${
+                    data.updated_at ?? ""
+                }</span>
+            </div>`,
         },
         {
             className: "col_action align-middle",
             data: (data) => `
             <div class="d-flex justify-content-center align-items-center">
                 <div class="text-center gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_payroll_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                        <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "btn_payroll_action"
+                    }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
                     </a>
                 </div>
             </div>`,

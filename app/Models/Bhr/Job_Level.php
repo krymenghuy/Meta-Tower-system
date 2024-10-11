@@ -22,12 +22,13 @@ class Job_Level //extends Model
 
     public function save($arr, $id = null, $ss = null)
     {
-        $id = $id ?? $this->id;
+         $id = $id ?? $this->id;
         $ss = $userInfo ?? $this->userInfo;
         //$subs_id = $userInfo->subs_id ?? getCurrentSubsId(true);
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'name' => '1|string|0-250',
+            'id' => '0|identify=1',
+            'name' => '1|string|0-100',
             'description' => '1|string|0-250',
             'rank' => '1|number'
         ];
@@ -40,27 +41,31 @@ class Job_Level //extends Model
         
         $inputs = $res->values;
         $id = saveData($ss, 'job_levels', ['id' => $id], $inputs, [], 1, false);
-
-        return DV::depends($id);
+        if($id > 0){
+            return DV::depends(1,['job_levels' => $inputs, 'id' => $id]);
+        }
+        return DV::error('error save job level');
     }
 
-    public function getList($ss)
-    {
-        $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
-        return DB::table('job_levels')
-        ->where('subs_id', hex2bin($subs_id))
-            ->select('id', 'name', 'description', 'rank', 'branch_id')
-            ->get();
+    public function getList($arr,$ss)
+    {   
+        $ss = $ss ?? $this->userInfo;
+        $d = (object)$arr;
+        $branch_id = $d->branch_id ?? null;
+        $query = DB::table('job_levels as j')->where('j.branch_id',$branch_id)->selectRaw('j.id,j.name,j.description,j.rank')->orderBy('j.id','DESC');
+
+        $rows = $query->get();
+        return $rows;
+       
     }
 
     public static function getDetails($id, $ss = null)
     {
-        $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
-        return DB::table('job_levels')
-        ->where('subs_id', hex2bin($subs_id))
-            ->where('id', $id)
-            ->select('id','name', 'description', 'rank', 'branch_id')
-            ->first();
+        $branch_id = $ss->branch_id;
+        $row = DB::table('job_levels as j')->selectRaw('j.id,j.name,j.description,j.rank')->where('j.branch_id',$branch_id)->where('j.id',$id)->take(1)->first();
+        return $row;
+
+     
     }
 
     public static function getFormOptions($id, $ss)
@@ -76,29 +81,16 @@ class Job_Level //extends Model
     public function deleteJobLevel($id = null)
     {
         $id = $id ?? $this->id;
-        $userInfo = $this->userInfo;
-        $subs_id = $userInfo->subs_id ?? getCurrentSubsId(true);
 
-        if (!$id) {
-            return DV::error('Job Level ID is required');
-        }
+        $delete = DB::table('job_levels')->where('id', $id)->delete();
+    
 
-        $job_level = DB::table('job_levels')->where('id', $id)->first();
-        if (!$job_level) {
-            return DV::error('Job Level not found');
-        }
-
-        $res = DB::table('job_levels')->where('id', $id)->delete();
-        if (!$res) {
-            return DV::error('Failed to delete Job Level');
-        }
-
-        return DV::depends($id);
+        return DV::depends($delete,['action','deleted']);
     }
     function getJobLevelListPaginate($arr, $ss)
     {
-        $d = (object) $arr;
         $branch_id = $ss->branch_id;
+        $d = (object) $arr;
 
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 5;
@@ -106,29 +98,25 @@ class Job_Level //extends Model
             $current_page = 1;
         }
 
-        $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-
         $str_search = '1=1';
-
-        $query = DB::table('job_levels as jl')
-        ->selectRaw('jl.id, jl.name, jl.description, jl.rank');
-
-       
-        $query->where('jl.branch_id', $branch_id);
-        if ($search_id) {
-            $query->whereRaw('jl.id =' . $search_id);
-        }
         if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $query->whereRaw("jl.name like '%" . $search_value . "%'");
+            $skip_rows = 0;
+            $str_search = "(j.name LIKE \'%" .$search_value. "%' OR j.rank = '" .$search_value . "')";
+          
         }
-        $query->skip($skip_rows)->take($per_page);
-        $count_query = clone $query;
-        $count = $count_query->count('jl.id');
-        $rows = $query->get();
+        $skip_rows = ($current_page - 1) * $per_page;
+
+
+
+        $query = DB::table('job_levels as j')
+        ->whereRaw($str_search)
+        ->selectRaw('j.id, j.name, j.description, j.rank, j.updated_at,j.update_user')->orderBy('j.id','DESC');
+     
+       $clone_query = clone $query;
+       $count = $clone_query->count('j.id');
+       $rows = $query->skip($skip_rows)->take($per_page)->get();
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 }

@@ -103,7 +103,7 @@ var SkillsComponent = new (function () {
         let div = mThis.self.querySelector("#_skill_list");
         let html = `
             <div id="_scroll_skill">
-                <div id="_skill_detail" class="row">
+                <div id="_skill_detail" class="row py-5">
         `;
 
         let cmt = 0;

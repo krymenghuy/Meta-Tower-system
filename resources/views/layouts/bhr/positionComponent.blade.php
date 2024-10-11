@@ -57,8 +57,12 @@
     </div>
 </div>
 <style>
+    #_position_list_paginator{
+        display: flex;
+        position: fixed;
+        margin-top: -60px;
+    }
     #_position_list{
-        height: 480px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;

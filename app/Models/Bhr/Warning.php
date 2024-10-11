@@ -40,7 +40,7 @@ class Warning extends Model
             'issues' => '1|string|max:250',
             'promises' => '1|string|max:250',
             'warning' => '1|string|max:100',
-            'subs_id' => '1|numeric', // Ensure subs_id is provided
+            'subs_id' => '0|numeric',
         ];
 
         // Validate inputs
