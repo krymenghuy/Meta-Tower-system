@@ -8,61 +8,84 @@ var DepartmentComponent = new (function () {
     this.title_prop = "Department";
     this.btnAdd = this.self.querySelector("#_btnAddDepartment");
     this.divFilter = this.self.querySelector("#_divFilter");
-    this.elStatus = this.self.querySelector("#el_status");
+    // this.elStatus = this.self.querySelector("#el_status");
     this.elSearch = this.self.querySelector("#_sdl_search_department");
     this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
     this.cols = [
         {
             title: "No",
-            className: "align-middle text-capitalize text-nowrap",
+            className: "align-middle text-capitalize text-nowrap text-left",
             data: (data, index, i) => {
                 return index + 1;
             },
         },
         {
             title: "Department Name",
-            className: "align-middle text-capitalize text-nowrap",
+            className: "align-middle text-capitalize text-nowrap text-left",
             data: "name",
         },
         {
             title: "Short Name",
-            className: "align-middle text-capitalize text-nowrap",
-            data: "short_name",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: "shortcut",
         },
         {
-            title: "Status",
-            className: "align-middle",
-            data: (data) => {
-                let cls_class = "text-danger text-center";
-                let bg_color = "#6c757d"; // Default gray background color
-
-                const status = (data.status || "").toLowerCase();
-
-                if (status === "active") {
-                    cls_class =
-                        "text-white text-center border border-success rounded-5 p-1";
-                    bg_color = "#28a745";
-                } else if (status === "inactive") {
-                    cls_class =
-                        "text-white text-center border border-warning rounded-5 p-1";
-                    bg_color = "#ffc107";
-                }
-
-                return `
-                    <a class="d-flex justify-content-center" data-status="${data.status}" data-id="${data.id}" href="javascript:void(0)">
-                        <span style="display:block;width:80px;background:${bg_color};" class="${cls_class}">
-                            ${data.status}
-                        </span>
-                    </a>`;
-            },
+            title: "Description",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: "description",
         },
+        {
+            title: "Create By",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
+                <span style="font-size: 12px; color: gray;">${data.updated_at ??""}</span>
+            </div>`,
+        },
+        // {
+        //     title: "Status",
+        //     className: "status text-nowrap align-middle",
+        //     data: function (data, index, tr) {
+        //         let cls_class = "text-danger text-center";
+        //         let bg_color = ""; // Default background color
+
+        //         if ((data.status || "").toLowerCase() === "approved") {
+        //             cls_class =
+        //                 "text-white text-center border border-success rounded-5 p-1";
+        //             bg_color = "#28a745"; // Green background for success
+        //         } else if ((data.status || "").toLowerCase() === "pending") {
+        //             cls_class =
+        //                 "text-white text-center border border-warning rounded-5 p-1";
+        //             bg_color = "#ffc107"; // Yellow background for pending
+        //         } else if ((data.status || "").toLowerCase() === "reject") {
+        //             cls_class =
+        //                 "text-white text-center border border-danger rounded-5 p-1";
+        //             bg_color = "#dc3545"; // Red background for in progress
+        //         } else {
+        //             bg_color = "#6c757d"; // Default gray background for other statuses
+        //         }
+
+        //         return `<div><a class="d-flex justify-content-left" data-status="${data.status}" data-id="${data.id}" href="javascript:void(0)">
+        //                     <span style="display:block;width:80px; background: ${bg_color}" class="p-1 ${cls_class}">
+        //                         ${data.status}
+        //                     </span>
+        //                 </a></div>`;
+        //     },
+        // },
         {
             className: "col_action align-middle",
             data: (data) => `
             <div class="d-flex justify-content-center align-items-center">
                 <div class="text-center gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_payroll_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                        <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 1 ? "d-none" : "btn_payroll_action"
+                    }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
                     </a>
                 </div>
             </div>`,
@@ -131,7 +154,7 @@ var DepartmentComponent = new (function () {
     this.getDataFormFilter = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
-        p.status_id = mThis.elStatus.value;
+        // p.status_id = mThis.elStatus.value;
         let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
         main_filters.forEach((el) => {
             const f = el.dataset.field;
@@ -241,17 +264,17 @@ var DepartmentComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, this.elStatus);
+                // console.log(1111, this.elStatus);
 
-                VSUtil.setComboItems(
-                    mThis.elStatus,
-                    d.status,
-                    "id",
-                    "name",
-                    true,
-                    "All",
-                    null
-                );
+                // VSUtil.setComboItems(
+                //     mThis.elStatus,
+                //     d.status,
+                //     "id",
+                //     "name",
+                //     true,
+                //     "All",
+                //     null
+                // );
             });
     };
 
@@ -273,7 +296,7 @@ const DepartmentDilog = new (function () {
     this.options = {};
 
     this.btnSave = this.self.querySelector("#dlg_sdl_add_department_btn_save");
-    this.elStatusId = this.self.querySelector("#_sdl_status_id");
+    // this.elStatusId = this.self.querySelector("#_sdl_status_id");
     this.elTitle = mThis.self.querySelector(".modal-title");
     this.div_department_info = mThis.self.querySelector(
         "#_sdl_department_info"
@@ -315,16 +338,15 @@ const DepartmentDilog = new (function () {
             )
             .then((res) => {
                 let d = res.status_code === 200 ? res.data : {};
-
-                VSUtil.setComboItems(
-                    mThis.elStatusId,
-                    d.status,
-                    "id",
-                    "name",
-                    true,
-                    "(Select Status)",
-                    null
-                );
+                // VSUtil.setComboItems(
+                //     mThis.elStatusId,
+                //     d.status,
+                //     "id",
+                //     "name",
+                //     true,
+                //     "(Select Status)",
+                //     null
+                // );
                 console.log(33333, d);
                 onFinish(d);
             });

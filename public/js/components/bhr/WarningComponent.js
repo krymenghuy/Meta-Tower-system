@@ -21,7 +21,7 @@ var WarningComponent = new (function () {
             title: "Name",
             className: "align-middle text-start",
             data: (data) => `
-                <div style="display: flex; align-items: center; margin-left:40px">
+                <div style="display: flex; align-items: center;">
                     <img class="image-student-tbl" src="${
                         data.image_url
                     }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
@@ -240,7 +240,7 @@ var WarningComponent = new (function () {
             let warningPromises =
                 document.getElementById("warningPromises").value;
             let warningQuantity =
-                document.getElementById("warningSelect").value;
+                document.getElementById("c").value;
             let subs_id = document.getElementById("subs_id").value;
 
             // Validate the inputs
@@ -315,8 +315,8 @@ const WarningDialog = (() => {
                                 <textarea class="form-control data-input" data-field="promises" id="warningPromises" rows="2" placeholder="Input promises here" required></textarea>
                             </div>
                             <div class="mb-3">
-                                <label for="warningSelect" class="form-label">Warning</label>
-                                <select class="form-select" id="warningSelect" aria-label="Warning select" required>
+                                <label for="c" class="form-label">Warning</label>
+                                <select class="form-select" id="c" aria-label="Warning select" required>
                                     <option value="" disabled selected>Select Warning</option>
                                     <option value="1">Warning 1</option>
                                     <option value="2">Warning 2</option>
