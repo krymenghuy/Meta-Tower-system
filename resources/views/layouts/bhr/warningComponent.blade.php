@@ -104,4 +104,16 @@
         transition: color 0.3s ease-in-out;
         cursor: pointer;
     }
+    th,
+    td {
+        padding: 10px;
+        vertical-align: middle;
+        text-align: left;
+        overflow: hidden;
+        white-space: wrap;
+        text-overflow: ellipsis;
+        word-wrap: break-word;
+        white-space: nowrap;
+        max-width: 100px;
+    }
 </style>
