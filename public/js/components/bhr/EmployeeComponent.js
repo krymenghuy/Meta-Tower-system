@@ -626,7 +626,7 @@ const EmployeeDialog = new function() {
     this.btnSave.onclick =  e =>{
         e.preventDefault();
         let p = mThis.getDataForm();
-        console.log(77777,p);
+        // console.log(77777,p);
 
         vsapi.call(`${mThis.base_url}/hr/employee/save`, p,mThis.btnSave,false).then(res => {
             if(res.status_code === 200){
