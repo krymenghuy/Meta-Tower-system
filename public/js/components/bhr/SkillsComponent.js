@@ -19,7 +19,7 @@ var SkillsComponent = new (function () {
         mThis.SkillsListView = new ListView('_skill_list', {
             fetchApi: `${main_view.base_url}/hr/skills/list-paginate`,
             perPage: 8,
-            // paginationContainer: mThis.containerPagination,
+            paginationContainer: mThis.containerPagination,
             apiCluster: main_view.apiCluster,
             processResponse: (res) => {
                 console.log(123,res.data);
@@ -211,13 +211,13 @@ var SkillsComponent = new (function () {
                 mThis.SkillsListView.showPage();
             }
         };
-        cv_interact.confirm('Delete this Employee Benefit?',{
-            title: 'Delete Employee Benefit',
+        cv_interact.confirm('Delete this Skill?',{
+            title: 'Delete Skill',
             context: 'delete',
             confirmButtonText:"Delete"
         },function(e){
             if(e){
-                vsapi.call(`${main_view.base_url}/hr/benefit/delete`,op,false,false,false).then(res => {
+                vsapi.call(`${main_view.base_url}/hr/skills/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted Successfully');
                         mThis.SkillsListView.showPage();
@@ -247,11 +247,9 @@ const SkillDailog = (() => {
     createContent: () => {
         return [
             `<div class="w-100 d-flex flex-wrap flex-row align-items-center justify-content-center gap-2">
-                 <img name="div_skill_photo" class="data-input" data-field="image_url" src="">
-                 <div style="visibility:hidden" class="d-none align-items-center justify-content-center border border-secondary rounded-5 p-3 flex-grow">
-                 <h5 class="p-2">User may have an official profile details</h5>
-                 </div>
-           </div>`,
+                 <div name="div_skill_photo" class="data-input" data-field="image_url" role="button">></div>
+            </div>`,
+
             `<div class="form-group col-md-12">`,
             `<label class="form-label" vslang="titles.title"> Title </label>`,
             `<div><input name="title" class="form-control data-input" data-field="title"/></div>`,
@@ -274,7 +272,7 @@ const SkillDailog = (() => {
         me.showProfile =  (code) =>{
            let fields = ['full_name','email','phone_number','login_name'];
            let p = {'id':code};
-           console.log(111,p);
+           console.log(4545,me);
 
            vsapi.call([main_view.base_url,'/hr/skills/form-options'].join(''),p,false,false).then(res =>{
               let d = res.status_code ==200? res.data: {};
@@ -282,21 +280,37 @@ const SkillDailog = (() => {
 
               me.divModal.querySelectorAll('.data-input').forEach(el =>{
                  const f =el.dataset.field;
-                 console.log(7788899,f);
+                 console.log(7788899,d);
 
                  if(fields.indexOf(f)>=0){
                        el.value = d[f] || "";
                  }
-                else if(el.tagName ==='IMG'){
-
-                    el.setAttribute('src',d[f] || '');
+                else if(f ==='image_url'){
+                    if (me.dataOptions.id)
+                    el.innerHTML = `<img name="div_skill_photo" class="w-100" src="${d[f] || ''}"/>`;
                 }
               });
            });
         };
+        me.deleteImage = (div) => {
+            const btnDelete = div;//.querySelector('[role=\'button\']');
+            btnDelete.onclick = function(e){
+                e.preventDefault();
+                const html = `<div id="dlg_image_chooser"
+                                    class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
+                                    <i class="fa-regular fa-image fs-4 text-muted"></i>
+                                </div>`;
+                div.innerHTML = html;
+                // mThis.chooseImage(div);
+                // let div_skill_photo = div.querySelector('[name="div_skill_photo"]');
+                me.userImageBox = new ImageBox(div,{containerclass:'user-profile-container',imgClass:"data-input",dataset:{"field" :"image_url"}});
+            }
+        }
+
+        me.deleteImage(div_skill_photo);
 
 
-        me.showProfile(op.id);
+        me.showProfile(me.dataOptions.id);
 
 
      },
