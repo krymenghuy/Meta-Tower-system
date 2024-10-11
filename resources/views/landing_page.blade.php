@@ -32,7 +32,7 @@
   <div class="box-center  d-flex justify-content-center align-items-center">
       <div class="container p-1  rounded-5">
         <div class="logo_">
-          <img src="assets/images/logo/log_jto.png">
+          <img src="assets/images/logo/lc_logo.svg">
         </div>
         <div class="row m-3">
 
