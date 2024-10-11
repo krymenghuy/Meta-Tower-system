@@ -224,7 +224,7 @@ function v_display($mod_id, $module_ids = null)
                 </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
-                <a href="AttendanceManagementComponent" modid="-1" class="menu-item kt-menu__link">
+                <a href="AttendanceComponent" modid="-1" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/User_check.svg') }}" />
                     </span>
