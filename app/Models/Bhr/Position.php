@@ -93,8 +93,10 @@ class Position
 
     function deletePosition($id)
     {
-        $deleted = DB::table('positions')->where('id', $id)->delete();
-        return $deleted;
+        $id = $id ?? $this->id;
+
+        $delete = DB::table('positions')->where('id', $id)->update(['inactive'=>1]);
+        return DV::depends($delete, ['action','deleted']);
     }
 
     function getFormOptions($id, $ss)
