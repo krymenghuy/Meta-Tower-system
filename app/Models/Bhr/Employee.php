@@ -20,7 +20,7 @@ class Employee//extends Model
     protected $userInfo = null;
     protected static $img_dir = 'employees';
     //employees Regitration default options | senderDetaultOptions() | employeesDefaultOptions
-    
+
 
     function __construct($id = null, $userInfo = null)
     {
@@ -38,19 +38,19 @@ class Employee//extends Model
             'name_kh' => '1|string|0-100',
             'email' => '1|email',
             'phone_number' => '1|phone|0-20',
-            'sex' => '1|string',
+            'gender_id' => '1|number',
             'nationality' => '1|string|0-150',
             'date_of_birth' => '1|date',
             'address' => '0|string|0-250',
             'positions_id' => '1|number',
-            'session_id' => '1|number',
+            'emp_role_id' => '1|number',
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
             'nid'=> '0|number',
             'status_id' => '1|number|default = 1',
             'photo' => '0|image',
         ];
-  
+
 
         $checkUnque = [
             "$branch_id|employees|phone_number|id=id|text=employee already exists by phone number",
@@ -64,9 +64,9 @@ class Employee//extends Model
         }
 
         $id = $res->id;
-        
+
         $inputs = $res->values;
-     
+
 
 
         $d = (object) $inputs;
@@ -82,15 +82,16 @@ class Employee//extends Model
         $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
 
         error_log('Saving data: ' . json_encode($inputs));
+        $save = !$id;
         $id = saveData($ss, 'employees', ['id' => $id], $inputs, [], 1);
-
-        if ($id > 0) {
-            $new_code = null; 
-            if($id){
+        if($save){
             $prefix = 'emp';
             $res = setOfficialCode($branch_id,'employee_code_control','employees',['id'=>$id],$prefix,5,null);
             $new_code = $res->code;
             }
+        if ($id > 0) {
+            $new_code = null;
+
             if ($delete_prev_image) {
                 $file_name = DB::table('employees as emp')->where('emp.id', $id)->take(1)->value('emp.photo_file_name');
                 if ($file_name) {
@@ -143,8 +144,9 @@ class Employee//extends Model
         }
         $query = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
-            ->join('employee_status as ds', 'ds.id', '=', 'emp.status_id')
-            ->join('sessions as s', 's.id', '=', 'emp.session_id')
+            ->join('employee_status as es', 'es.id', '=', 'emp.status_id')
+            ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
+            ->join('genders as g', 'g.id', '=', 'emp.gender_id')
             ->whereRaw($str_srch)
             ->whereRaw($str_where)
             ->selectRaw('
@@ -154,7 +156,8 @@ class Employee//extends Model
             emp.name_kh,
             emp.email,
             emp.phone_number,
-            emp.sex,
+            emp.gender_id,
+            g.name as gender,
             emp.nationality,
             emp.date_of_birth,
             emp.address,
@@ -164,12 +167,12 @@ class Employee//extends Model
             emp.nid,
             emp.positions_id,
             p.title as position,
-            emp.session_id,
-            s.name as session,
+            emp.emp_role_id,
+            el.name as role,
             emp.status_id,
-            ds.name as status
+            es.name as status
         ')
-        ->orderBy('emp.id', 'DESC');
+        ->orderBy('emp.id', 'ASC');
 
         // if ($search_value) {
         //     $search_value = addcslashes($search_value, '%_'); // Escape special characters used in LIKE query
@@ -206,31 +209,33 @@ class Employee//extends Model
     {
         $branch_id = $ss->branch_id;
 
-        $row = DB::table('employees as emp')
+        $row =DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
-            ->join('employee_status as ds', 'ds.id', '=', 'emp.status_id')
-            ->join('sessions as s', 's.id', '=', 'emp.session_id')
-        ->selectRaw('
-            emp.code,
-            emp.id,
-            emp.name,
-            emp.name_kh,
-            emp.email,
-            emp.sex,
-            emp.phone_number,
-            emp.nationality,
-            emp.date_of_birth,
-            emp.address,
-            emp.photo_file_name,
-            emp.joining_date,
-            emp.nssf_id,
-            emp.nid,
-            emp.positions_id,
-            p.title as position,
-            emp.session_id,
-            s.name as session,
-            emp.status_id,
-            ds.name as status
+            ->join('employee_status as es', 'es.id', '=', 'emp.status_id')
+            ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
+            ->join('genders as g', 'g.id', '=', 'emp.gender_id')
+            ->selectRaw('
+                emp.code,
+                emp.id,
+                emp.name,
+                emp.name_kh,
+                emp.email,
+                emp.phone_number,
+                emp.gender_id,
+                g.name as gender,
+                emp.nationality,
+                emp.date_of_birth,
+                emp.address,
+                emp.photo_file_name,
+                emp.joining_date,
+                emp.nssf_id,
+                emp.nid,
+                emp.positions_id,
+                p.title as position,
+                emp.emp_role_id,
+                el.name as role,
+                emp.status_id,
+                es.name as status
             ')
             ->where('emp.branch_id',$branch_id)
             ->where('emp.id', $id)
@@ -296,13 +301,24 @@ class Employee//extends Model
 
             'status' => DB::table('employee_status')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,title')->get(),
-            // 'genders' => DB::table('genders')->selectRaw('id,name')->get(),
-            'sessions' => DB::table('sessions')->selectRaw('id,name')->get(),
+            'genders' => DB::table('genders')->selectRaw('id,name')->get(),
+            'roles' => DB::table('emp_roles')->selectRaw('id,name')->get(),
 
 
             'employee' => $employee,
         ];
 
     }
+    function updateStatus($status_id, $id = null, $ss = null)
+    {
 
+        $ss = $ss ? $ss : $this->userInfo;
+        $x = DB::table('employees')->where('id', $id)->update([
+            'status_id' => $status_id,
+            'update_user'=>$ss->full_name,
+            'update_date'=>getNowTime(),
+            'update_uid'=>$ss->user_id
+        ]);
+        return DV::depends($x, ['Employee  status', 'updated']);
+    }
 }

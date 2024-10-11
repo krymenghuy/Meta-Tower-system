@@ -9,7 +9,7 @@ var SkillsComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnAddSkill");
     this.divFilter = this.self.querySelector("#_divFilter_skill");
     this.elSearch = this.self.querySelector("#_sdl_search_skill");
-
+    this.containerPagination = mThis.self.querySelector('#container_pagination');
 
 
 
@@ -54,14 +54,7 @@ var SkillsComponent = new (function () {
         };
         const pr_tbl = mThis.SkillsListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 150) + 'px';
-        sh_parent.classList.add('overflow-y-auto');
-        sh_parent.classList.add('overflow-x-hidden');
 
-        window.onresize = function(e) {
-            e.preventDefault();
-            sh_parent.style.height = (window.innerHeight - 150) + 'px';
-        };
 
         mThis.divFilter.addEventListener('change', (e) => {
             e.preventDefault();
@@ -90,8 +83,6 @@ var SkillsComponent = new (function () {
 
     this.renderskillsList = (div,data) => {
         console.log(666,div,777,data);
-
-
         data = data ?? [];
         if(!AuthManager)
         {
@@ -109,7 +100,7 @@ var SkillsComponent = new (function () {
     this.renderskills = (data) => {
         console.log(777, data);
 
-        let div = mThis.self.querySelector("#_skill_list");  // Ensure you define the `div`
+        let div = mThis.self.querySelector("#_skill_list");
         let html = `
             <div id="_scroll_skill">
                 <div id="_skill_detail" class="row">
@@ -158,8 +149,9 @@ var SkillsComponent = new (function () {
         html += `</div></div>`;
         div.innerHTML = html;
 
+
         const sh_parent = div.querySelector('#_scroll_skill');
-        sh_parent.style.height = (window.innerHeight - 150) + 'px';
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
 
@@ -266,11 +258,11 @@ const SkillDailog = (() => {
         LocaleManager.translateZone(me.divModal);
         let div_skill_photo = me.divModal.querySelector('[name="div_skill_photo"]');
         console.log(444,div_skill_photo);
-        me.userImageBox = new ImageBox(div_skill_photo,{containerclass:'user-profile-container',imgClass:"data-input",dataset:{"field" :"image_url"}});
+        me.userImageBox = new ImageBox(div_skill_photo,{containerclass:'skill-profile-container',imgClass:"data-input",dataset:{"field" :"image_url"}});
         console.log(999,op);
 
         me.showProfile =  (code) =>{
-           let fields = ['full_name','email','phone_number','login_name'];
+           let fields = [];
            let p = {'id':code};
            console.log(4545,me);
 
@@ -303,7 +295,7 @@ const SkillDailog = (() => {
                 div.innerHTML = html;
                 // mThis.chooseImage(div);
                 // let div_skill_photo = div.querySelector('[name="div_skill_photo"]');
-                me.userImageBox = new ImageBox(div,{containerclass:'user-profile-container',imgClass:"data-input",dataset:{"field" :"image_url"}});
+                me.userImageBox = new ImageBox(div,{containerclass:'skill-profile-container',imgClass:"data-input",dataset:{"field" :"image_url"}});
             }
         }
 
