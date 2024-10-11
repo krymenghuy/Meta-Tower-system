@@ -12,16 +12,6 @@ class LeaveManagement
     protected $userInfo = null;
     protected static $img_dir = 'leave_managements';
 
-    function getDefaultOptions()
-    {
-        //price_list_id =11 (Normal Condition)
-        $data = (object) [
-            'price_list_id' => self::getDefaultPriceList()->id,
-            'cod' => 0,
-            'cod_fee' => 0,
-        ];
-        return $data;
-    }
 
     function __construct($id = null, $userInfo = null)
     {
@@ -29,30 +19,37 @@ class LeaveManagement
         $this->userInfo = $userInfo;
     }
 
-    //saveSender()
-    function save($arr = [], $ss = null)
+    function save($arr, $id=null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'emp_id' => '1|number',
+            'emp_id' => '0|number',
+            'leave_type_id' => '1|number',
             'start_date' => '1|date',
             'end_date' => '1|date',
-            'permission_details' => '1|string|0-250',
-            'action_id' => '1|number|default = 1',
+            'reason' => '0|string|250',
+            'status_id' => '1|number|default = 1',
 
         ];
+        $img_char = ['+',':',',',';','/','\\','=','?'];
+        $checkUnque = ["$branch_id|leave_managements|emp_id|id=id|text=Employee has already Leave "];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-        if ($res->error) {
+
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,$checkUnque);
+
+        if ($res->error) 
             return DV::error($res->error);
-        }
 
-        $id = $res->id;
         $inputs = $res->values;
+        $d = (object) $inputs;
+        if(!$d->emp_id) return DV::error('Employee is required for leave');
+        $leave_created = $id > 0 ? 0 : 1;
+        $leave_created = !$id;
 
-        $id = saveData($ss,'leave_managements', ['id' => $id], $inputs, [], 1);
+        $id = saveData($ss,'leave_managements', ['id' => $id], $inputs, [], 1,false);
+     
         if ($id > 0) {
             return DV::depends(1, ['leave_managements' => $inputs, 'id' => $id]);
         }
@@ -60,79 +57,82 @@ class LeaveManagement
         return DV::error('Error saving leave management');
     }
 
-    function getLeaveManagementListPaginate($arr, $ss)
+    function getLeaveListPaginate($arr, $ss)
     {
-        $d = (object) $arr;
         $branch_id = $ss->branch_id;
-
+        $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 5;
+        $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
-
-        $skip_rows = ($current_page - 1) * $per_page;
-
+    
+        $status_id = $d->status_id ?? null;
         $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-        $search_status_id = $d->status_id ?? null;
-
+        $start_date = $d->start_date ?? null;
+        $end_date = $d->end_date ?? null;
+    
         $str_search = '1=1';
-
-        $query = DB::table('leave_managements as lm')
-        ->join('action as a', 'a.id', '=', 'lm.action_id')
-        ->join('employees as e', 'e.id', '=', 'lm.emp_id')
-        ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
-        ->selectRaw('lm.id,e.id as emp_id,e.name ,e.name_kh,e.positions_id as emp_position_id,pos.title as position,lm.action_id,lm.start_date,lm.end_date,lm.permission_details,a.name as status,e.photo_file_name as emp_photo')
-        ->where('lm.branch_id', $branch_id);
-
-        if ($search_id) {
-            $query->where('lm.id', $search_id);
-        }
-
-        if ($search_status_id) {
-            $query->where('lm.action_id', $search_status_id);
-        }
-
+        $str_status = '1=1';
+        $str_dates = '1=1';
+    
         if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $str_search = "e.name like '%{$search_value}%'  or lm.permission_details like '%{$search_value}%' or pos.title like '%{$search_value}%'";
-            $query->whereRaw($str_search);
+            $str_search = "(l.reason LIKE '%" . $search_value . "%')";
         }
-
-        $count = $query->count();
-        $query->orderBy('lm.id', 'desc');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-        foreach ($rows as $row) {
-            $row->image_url = '';
-            if ($row->emp_photo) {
-              $row->image_url = Employee::getProfilePicture($row->emp_id);
+        if ($status_id) {
+            $str_status = 'l.status_id = \'' . $status_id . '\'';
+        } else {
+            $end_date = convertDate($end_date);
+            $start_date = convertDate($start_date);
+            if ((bool) strtotime($start_date) && (bool) strtotime($end_date)) {
+                $str_dates = "DATE(l.created_at) BETWEEN '$start_date' AND '$end_date'";
+            } elseif ($end_date) {
+                $start_date = date('Y-m-d', strtotime(date('Y-m-d') . '-90 days'));
+                $str_dates = "DATE(l.created_at) BETWEEN '$start_date' AND '$end_date'";
             }
-            unset($row->emp_photo);
         }
-
+        
+        $skip_rows = ($current_page - 1) * $per_page;
+    
+        $query = DB::table('leave_managements as l')
+            ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
+            ->join('positions as p', 'p.id', '=', 'emp.positions_id')
+            ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
+            ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
+            ->where('l.branch_id', $branch_id)
+            ->whereRaw($str_search)
+            ->whereRaw($str_status)
+            ->whereRaw($str_dates)
+            ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.start_date, l.end_date, ls.name as status, l.reason, l.update_user, l.update_date')
+            ->orderBy('l.id', 'DESC');
+    
+        $clone_query = clone $query;
+        $count = $clone_query->count('l.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+    
+       
+    
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+    
 
 
 
     function getDetails($id ,$ss =null)
     {
-        $row = DB::table('leave_managements as lm')
-        ->join('action as a', 'a.id', '=', 'lm.action_id')
-        ->join('employees as e', 'e.id', '=', 'lm.emp_id')
-        ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
-        ->selectRaw('lm.id,e.id as emp_id,e.name ,e.name_kh,e.positions_id as emp_position_id,pos.title as position,lm.action_id,lm.start_date,lm.end_date,lm.permission_details,a.name as status,e.photo_file_name as emp_photo')
-        ->where('lm.id', $id)->first();
+        $branch_id = $ss->branch_id;
 
-        if ($row) {
-            $row->image_url = Employee::getProfilePicture($id);
-        } else {
-            $row = null;
-        }
+        $leave = DB::table('leave_managements as l')
+        ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
+        ->join('positions as p', 'p.id', '=', 'emp.positions_id')
+        ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
+        ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
+        ->where('l.id', $id)
+        ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.start_date, l.end_date, ls.name as status, l.reason, l.update_user, l.update_date')
+        ->first();
 
-        return $row;
+       
+        return $leave;
     }
 
     function delete($id, $ss)
@@ -166,7 +166,7 @@ class LeaveManagement
 
             'employees' => DB::table('employees')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,title')->get(),
-            'status' => DB::table('action')->selectRaw('id,name')->get(),
+            'status' => DB::table('leave_statuses')->selectRaw('id,name,code')->get(),
 
             'leave' => $leave,
         ];
@@ -175,18 +175,18 @@ class LeaveManagement
 
 
 
-    function updateStatus($action_id, $id = null, $ss = null)
-    {
+    // function updateStatus($action_id, $id = null, $ss = null)
+    // {
 
-        $ss = $ss ? $ss : $this->userInfo;
-        $x = DB::table('leave_managements')->where('id', $id)->update([
-            'action_id' => $action_id,
-            'update_user'=>$ss->full_name,
-            'update_date'=>getNowTime(),
-            'update_uid'=>$ss->user_id
-        ]);
-        return DV::depends($x, ['leave management status', 'updated']);
-    }
+    //     $ss = $ss ? $ss : $this->userInfo;
+    //     $x = DB::table('leave_managements')->where('id', $id)->update([
+    //         'action_id' => $action_id,
+    //         'update_user'=>$ss->full_name,
+    //         'update_date'=>getNowTime(),
+    //         'update_uid'=>$ss->user_id
+    //     ]);
+    //     return DV::depends($x, ['leave management status', 'updated']);
+    // }
 
 
 
