@@ -194,6 +194,7 @@
     </div>
 
     <div class="p-3">
-        <div id="_skill_list" class="bg-s _skills"></div>
+        <div id="_skill_list" class="bg-white _skills"></div>
+        <div id="container_pagination" class="px-3 bg-white"></div>
     </div>
 </div>

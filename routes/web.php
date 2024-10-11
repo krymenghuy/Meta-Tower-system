@@ -18,7 +18,7 @@ use App\Models\Notifier;
 use Carbon\Carbon; //for testing only
 
 //use App\Models\UM;
-  
+
 // Route::get('/getlogin', function(){
 //     $email = 'admin@gmail.com';
 //     $password = '123456';
@@ -112,12 +112,12 @@ Route::get('test-count',function(){
 });
 
 Route::get('reset-merchant-code',function(){
-   $res = \App\Models\Dms\Sender::resetCodes(1,'HM'); 
+   $res = \App\Models\Dms\Sender::resetCodes(1,'HM');
    echo response()->json($res);
 });
 
 Route::get('reset-driver-code',function(){
-    $res = \App\Models\Dms\Driver::resetCodes(1,'HD'); 
+    $res = \App\Models\Dms\Driver::resetCodes(1,'HD');
     echo response()->json($res);
 });
 
@@ -207,9 +207,9 @@ Route::get('umt/{componentName?}',function($componentName= null){
 //             echo '<p>'.$result->error."</p><a href='/mac' style=\"color:green;font-size:1.2em;font-weight:bold\">Login Again</a></div>";
 //             return;
 //         }
-//         $linked_user = $result->user; 
+//         $linked_user = $result->user;
 //         if($linked_user && $linked_user->user_class ==='merchant'){
-//             AuthService::login($linked_user);  
+//             AuthService::login($linked_user);
 //             return view('mac',$data);
 //         }
 //         return view('login.mac_login',[]);
@@ -227,9 +227,9 @@ Route::get('umt/{componentName?}',function($componentName= null){
 //     $data = ['defaultComponent' => $componentName];
 //     return view('gmt',$data);
 // });
- 
+
 // Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
- 
+
 //Clear Cache facade value:
 Route::get('/clear-cache', function() {
     $exitCode = Artisan::call('cache:clear');

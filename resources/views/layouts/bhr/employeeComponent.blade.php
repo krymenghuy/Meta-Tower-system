@@ -11,7 +11,7 @@
     .card-body p {
         margin: 0;
     }
- 
+
 
     .ellipsis {
         font-size: 18px;
@@ -373,7 +373,7 @@
                                     </div>
                                     <span class="text-muted">Web Development</span>
                                 </div>
-                                
+
                             </div>
                         </div>
                     </div>
@@ -397,17 +397,17 @@
                                 <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Expedita.</p>
                                 <p class="experience-company">Vectorasoft Company</p>
                             </div>
-                        
+
                             </div>
                         </div>
                     </div>
 
                 </div>
-    
+
 
             </div>
         </div>
-        
+
     </div>
 </div>
 
@@ -438,35 +438,31 @@
                                 <div class="row">
                                     <div class="form-group col-6">
                                         <label for="name" class="form-label">
-                                            First Name <span class="text-danger">*</span>
+                                             Name <span class="text-danger">*</span>
                                         </label>
                                         <input type="text" class="form-control data-input" data-field="name" />
                                     </div>
 
                                     <div class="form-group col-6">
                                         <label for="name" class="form-label">
-                                            Last Name <span class="text-danger">*</span>
+                                             Name KH <span class="text-danger">*</span>
                                         </label>
                                         <input type="text" class="form-control data-input" data-field="name_kh" />
                                     </div>
                                     <div class="form-group col-4">
-                                        <label for="gender" class="form-label">
-                                            Gender <span class="text-danger">*</span>
+                                        <label for="gender_id" class="form-label">
+                                            Gender
                                         </label>
-                                        <div class="min-width-select custom-modal-select">
-                                            <select class="modal-select data-input" data-field="sex">
-                                                <option value="">(Gender)</option>
-                                                <option value="M">Male</option>
-                                                <option value="F">Female</option>
-                                            </select>
-                                        </div>
-                                        
+                                        <select class="form-control data-input" id="_sdl_gender_id"
+                                            data-field="gender_id">
+                                        </select>
+
                                     </div>
                                     <div class="form-group col-4">
                                         <label for="date_of_birth" class="form-label">
-                                            Date of Birth <span class="text-danger">*</span>
+                                            Date of Birth
                                         </label>
-                                        <input  data-select="datepicker"  class="form-control data-input" placeholder="" data-field="date_of_birth" />
+                                        <input type="date" class="form-control data-input" data-field="date_of_birth" />
                                     </div>
                                     <div class="form-group col-4">
                                         <label for="nationality" class="form-label">
@@ -474,17 +470,13 @@
                                         </label>
                                         <input type="text" class="form-control data-input" data-field="nationality" />
                                     </div>
-                                   
 
-                                    
-
-                                    
                                 </div>
 
                             </div>
                             <div class="form-group col-3">
                                 <label for="nid" class="form-label">
-                                    ID Card
+                                    Identity Card
                                 </label>
                                 <input type="text" class="form-control data-input"
                                     data-field="nid" />
@@ -505,7 +497,7 @@
                                 <label for="joining_date" class="form-label">
                                     Joining Date
                                 </label>
-                                <input  data-select="datepicker"  class="form-control data-input" data-field="joining_date" />
+                                <input type="date" class="form-control data-input" data-field="joining_date" />
                             </div>
                         <div class="form-group col-6">
                             <label for="position" class="form-label">
@@ -516,14 +508,14 @@
                         </div>
 
                         <div class="form-group col-6">
-                            <label for="session" class="form-label">
-                                Session
+                            <label for="roles" class="form-label">
+                                Role
                             </label>
-                            <select class="form-control data-input" id="_sdl_session_id"
-                                data-field="session_id"></select>
+                            <select class="form-control data-input" id="_sdl_role_id"
+                                data-field="emp_role_id"></select>
                         </div>
 
-                        
+
 
                         <div class="form-group col-6">
                             <label for="nssf" class="form-label">
@@ -538,7 +530,7 @@
                             <textarea type="text" class="form-control data-input" data-field="address"></textarea>
                         </div>
 
-                                
+
                     </div>
                 </div>
             </div>

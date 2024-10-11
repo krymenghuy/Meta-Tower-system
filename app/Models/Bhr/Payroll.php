@@ -73,7 +73,7 @@ class Payroll
             ->join('employees as e', 'e.id', '=', 'pay.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
             ->join('statuses as s', 's.id', '=', 'pay.status_id')
-            ->join('sessions as sec', 'sec.id', '=', 'e.session_id')
+            ->join('emp_roles as er', 'er.id', '=', 'e.emp_role_id')
             ->selectRaw('pay.id,
                         e.id as emp_id,
                         e.name,
@@ -82,8 +82,7 @@ class Payroll
                         e.phone_number,
                         e.positions_id as emp_position_id,
                         pos.title as position,
-                        e.session_id as emp_section_id,
-                        sec.name as section,
+                        er.name as emp_role,
                         pay.rate,
                         pay.start_date,
                         pay.end_date,
@@ -143,7 +142,7 @@ class Payroll
         ->join('employees as e', 'e.id', '=', 'pay.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
         ->join('statuses as s', 's.id', '=', 'pay.status_id')
-        ->join('sessions as sec', 'sec.id', '=', 'e.session_id')
+        ->join('emp_roles as er', 'er.id', '=', 'e.emp_role_id')
         ->selectRaw('pay.id,
                     e.id as emp_id,
                     e.name,
@@ -152,8 +151,7 @@ class Payroll
                     e.phone_number,
                     e.positions_id as emp_position_id,
                     pos.title as position,
-                    e.session_id as emp_section_id,
-                    sec.name as section,
+                    er.name as emp_role,
                     pay.rate,
                     pay.start_date,
                     pay.end_date,
@@ -204,15 +202,11 @@ class Payroll
         }
         return (object) [
             'sort_by' => [
-                ['id' => 'e.name', 'name' => 'By First Name'],
-                ['id' => 'e.name_kh', 'name' => 'By Last Name'],
-                ['id' => 'e.email', 'name' => 'By Email'],
-                ['id' => 'e.phone_number', 'name' => 'By Phone Number'],
+                ['id' => 'e.name', 'name' => 'By Name'],
                 ['id' => 'pos.title', 'name' => 'By Position'],
-                ['id' => 'pay.rate', 'name' => 'By  Rate'],
                 ['id' => 'pay.salary', 'name' => 'By Salary'],
-                ['id' => 'pay.start_date', 'name' => 'By Start Date'],
-                ['id' => 'pay.end_date', 'name' => 'By End Date'],
+                ['id' => 'e.phone_number', 'name' => 'By Phone Number'],
+                ['id' => 'pay.rate', 'name' => 'By  Rate'],
 
             ],
             'employees' => DB::table('employees')->selectRaw('id,CONCAT(name) as name')->get(),

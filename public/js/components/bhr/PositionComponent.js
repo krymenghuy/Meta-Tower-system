@@ -89,6 +89,12 @@ var PositionComponent = new function() {
             };
             PositionDilog.show(op);
         };
+        const pr_tbl = mThis.PositionListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 275) + 'px';
+        sh_parent.classList.add('overflow-y-auto');
+        sh_parent.classList.add('overflow-x-hidden');
+
         mThis.elSearch.addEventListener('keyup', (e) => {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
@@ -107,14 +113,8 @@ var PositionComponent = new function() {
                 console.error("listView is not defined");
             }
         };
-        const pr_tbl = mThis.PositionListView.getListContainer();
-        const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 150) + 'px';
-        sh_parent.classList.add('overflow-y-auto');
-        sh_parent.classList.add('overflow-x-hidden');
 
         mThis.initDropdownMenus(pr_tbl);
-
 
         mThis.initAlready = true;
     };

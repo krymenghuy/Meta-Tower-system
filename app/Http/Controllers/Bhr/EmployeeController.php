@@ -99,5 +99,17 @@ class EmployeeController extends Controller
        }
        return JDV::result($this->senderModel->getFormOptions($req->id,$ss));
    }
+
+   public function updateStatus(Request $req)
+   {
+       $ss = AuthService::verifyAuth($req, -1);
+       if ($ss->status_code !== 200) {
+           return JDV::raw($ss);
+       }
+       $id = $req->id ? $req->id : $req->id;
+       $employee = new Employee($id, $ss);
+       $res = $employee->updateStatus($req->status_id, $id);
+       return JDV::raw($res);
+   }
 }
 

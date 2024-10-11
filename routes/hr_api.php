@@ -59,6 +59,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
     Route::post('/filter-options', [EmployeeController::class, 'getFilterOptions']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
+    Route::post('/update-status', [EmployeeController::class, 'updateStatus']);
 
     //Route::post('updateSenderStatus', [SenderController::class, 'updateSenderStatus']);
 });

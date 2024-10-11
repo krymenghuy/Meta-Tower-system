@@ -96,14 +96,10 @@ var EmployeeSeniorityComponent = new (function () {
 
         const pr_tbl = mThis.SeniorityListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 150) + 'px';
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
 
-        window.onresize = function(e) {
-            e.preventDefault();
-            sh_parent.style.height = (window.innerHeight - 150) + 'px';
-        };
         mThis.initDropdownMenus(pr_tbl);
 
         mThis.divFilter.addEventListener('change', (e) => {
@@ -275,24 +271,29 @@ const SeniorityDialog = (() => {
                     `</div>`
                 ].join('');
             },
-            showCancelButton: true,
-            buttons: [
+            buttons:[
                 {
-                    label: "<span>Save</span>",
-                    click: (me, btn, divModal) => {
-                        let p = me.getData();
-
-                        vsapi.call(`${main_view.base_url}/hr/seniorities/save`, p, false, false, false).then(res => {
-                            if (res.status_code == 200) {
-                                me.hide();
-                                cv_interact.success(['Seniority has been saved'].join(''));
-                            } else {
-                                cv_interact.error(res.error_message);
-                            }
-                        });
-                    }
+                   label:"<span>Cancel</span>",
+                   cssClass:"btn btn-warning",
+                   click:(me)=>{
+                      me.hide(false);
+                   }
+                },
+                {
+                   label:"<span>Save</span>",
+                   cssClass:"btn btn-primary",
+                   click:(me)=>{
+                      let p = me.getData();
+                      p.image = me.userImageBox? me.userImageBox.getImage(): '';
+                      console.log(222,p);
+                      vsapi.call([main_view.base_url,'/hr/seniorities/save'].join(''),p,false,false).then(res =>{
+                          if(res.status_code ==200){
+                              me.modal.hide(true,p);
+                          }else cv_interact.error(res.error_message);
+                      });
+                   }
                 }
-            ],
+             ],
             configSelect: [
                 {
                     name: "emp_id",
@@ -300,7 +301,8 @@ const SeniorityDialog = (() => {
                     valueField: "id",
                     textField: "name",
                     filterData: (data, res) => {
-                        return data.options;
+
+                        return data;
                     }
                 }
             ],
