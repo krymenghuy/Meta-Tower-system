@@ -14,7 +14,7 @@ var EmployeeComponent = new (function () {
     this.containerPagination = mThis.self.querySelector('#container_pagination');
     this.profile_card_detail = mThis.self.querySelector('#profile_card_detail');
     this.profile_info_emp = mThis.self.querySelector('#profile_info_emp');
-   
+
 
     let div = mThis.self.querySelector('#_employee_list');
     this.init= () => {
@@ -238,7 +238,7 @@ var EmployeeComponent = new (function () {
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${data.code || ''}</p>
                                 </div>
-                                
+
                             </div>
                             <div class="col">
                                 <div class="d-flex">
@@ -270,7 +270,7 @@ var EmployeeComponent = new (function () {
                         </div>
                     </div>
         `;
-    
+
         this.profile_info_emp.innerHTML = html;
     };
     this.renderCardDetail = () => {
@@ -374,7 +374,7 @@ var EmployeeComponent = new (function () {
                             </div>
                             <span class="text-muted">Web Development</span>
                         </div>
-                        
+
                     </div>
                 </div>
             </div>
@@ -398,15 +398,15 @@ var EmployeeComponent = new (function () {
                         <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Expedita.</p>
                         <p class="experience-company">Vectorasoft Company</p>
                      </div>
-                 
+
                     </div>
                 </div>
             </div>`
         ].join('');
         this.profile_card_detail.innerHTML = html;
     }
-    
-    
+
+
     mThis.elSearch.addEventListener('keyup', (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
@@ -554,7 +554,7 @@ const EmployeeDialog = new function() {
     this.btnSave.onclick =  e =>{
         e.preventDefault();
         let p = mThis.getDataForm();
-        console.log(77777,p);
+        // console.log(77777,p);
 
         vsapi.call(`${mThis.base_url}/hr/employee/save`, p,mThis.btnSave,false).then(res => {
             if(res.status_code === 200){
