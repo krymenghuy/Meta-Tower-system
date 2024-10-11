@@ -38,9 +38,14 @@
                             <input type="text" class="form-control data-input" data-field="name" />
                         </div>
                         <div class="form-group">
-                            <label for="name" class="form-label trans-text"
+                            <label for="shortcut" class="form-label trans-text"
                                 data-langprop="titles.Short Name">Name</label>
-                            <input type="text" class="form-control data-input" data-field="short_name" />
+                            <input type="text" class="form-control data-input" data-field="shortcut" />
+                        </div>
+                        <div class="form-group">
+                            <label for="description" class="form-label trans-text"
+                                data-langprop="titles.Description">Description</label>
+                            <input type="text" class="form-control data-input" data-field="description" />
                         </div>
 
                         {{-- <div class="form-group col-lg-6">
@@ -65,16 +70,22 @@
     </div>
 </div>
 <style>
+    #_main_departmentComponent{
+        height: 600px;
+        padding: 0px;
+    }
     #_dep_list {
-        height: 620px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
-        gap: 10px;
         justify-content: center;
-        padding: 20px;
-    }
 
+    }
+    #_dep_list_paginator{
+        display: flex;
+        position: fixed;
+        margin-top: -60px;
+    }
     th,
     td {
         padding: 10px;
