@@ -68,7 +68,7 @@ class Position
             ->join('departments as d', 'd.id', '=', 'p.department_id')
             ->where('p.inactive',0)
             ->whereRaw($str_search)
-            ->selectRaw('p.id, p.title, p.department_id, d.name as department')->orderBy('p.id','DESC');
+            ->selectRaw('p.id, p.title, p.department_id, d.name as department,d.updated_at,d.update_user')->orderBy('p.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -93,8 +93,10 @@ class Position
 
     function deletePosition($id)
     {
-        $deleted = DB::table('positions')->where('id', $id)->delete();
-        return $deleted;
+        $id = $id ?? $this->id;
+
+        $delete = DB::table('positions')->where('id', $id)->update(['inactive'=>1]);
+        return DV::depends($delete, ['action','deleted']);
     }
 
     function getFormOptions($id, $ss)

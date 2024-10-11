@@ -97,7 +97,7 @@ var DepartmentComponent = new (function () {
 
         mThis.DepartmentListView = new ListView("_dep_list", {
             fetchApi: `${main_view.base_url}/hr/department/list-paginate`,
-            perPage: 10,
+            perPage: 6,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:

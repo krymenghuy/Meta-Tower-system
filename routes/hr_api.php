@@ -20,7 +20,7 @@ use App\Http\Controllers\Bhr\ReportController;
 use App\Http\Controllers\Bhr\WarningController;
 use App\Http\Controllers\Bhr\SeniorityController;
 use App\Http\Controllers\Bhr\WorkShiftController;
-use App\Http\Controllers\Bhr\ShiftDetailsController;
+use App\Http\Controllers\Bhr\ShiftDetailController;
 use App\Http\Controllers\Bhr\ScanPlanController;
 use App\Http\Controllers\Bhr\AttendanceController;
 
@@ -59,6 +59,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
     Route::post('/filter-options', [EmployeeController::class, 'getFilterOptions']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
+    Route::post('/update-status', [EmployeeController::class, 'updateStatus']);
 
     //Route::post('updateSenderStatus', [SenderController::class, 'updateSenderStatus']);
 });
@@ -142,8 +143,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list'
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave-management')->group(function () {
 
-    Route::post('/save', [LeaveManagementController::class, 'saveLeaveManagement']);
-    Route::post('/list-paginate', [LeaveManagementController::class, 'getLeaveManagementListPaginate']);
+    Route::post('/save', [LeaveManagementController::class, 'save']);
+    Route::post('/list-paginate', [LeaveManagementController::class, 'getLeaveListPaginate']);
     Route::post('/details', [LeaveManagementController::class, 'getDetails']);
     Route::post('/delete', [LeaveManagementController::class, 'deleteLeaveManagement']);
     Route::post('/form-options', [LeaveManagementController::class, 'getFormOptions']);
@@ -204,11 +205,11 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('work-shifts')
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('shift-details')->group(function () {
 
-    Route::post('/save', [ShiftDetailsController::class, 'saveShiftDetails']);
-    Route::post('/list-paginate', [ShiftDetailsController::class, 'getShiftDetailsListPaginate']);
-    Route::post('/details', [ShiftDetailsController::class, 'getDetails']);
-    Route::post('/delete', [ShiftDetailsController::class, 'deleteShiftDetails']);
-    Route::post('/form-options', [ShiftDetailsController::class, 'getFormOptions']);
+    Route::post('/save', [ShiftDetailController::class, 'saveShiftDetails']);
+    Route::post('/list-paginate', [ShiftDetailController::class, 'getShiftDetailsListPaginate']);
+    Route::post('/details', [ShiftDetailController::class, 'getDetails']);
+    Route::post('/delete', [ShiftDetailController::class, 'deleteShiftDetails']);
+    Route::post('/form-options', [ShiftDetailController::class, 'getFormOptions']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('scan-plan')->group(function () {

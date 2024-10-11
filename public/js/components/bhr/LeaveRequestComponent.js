@@ -126,14 +126,10 @@ var LeaveRequestComponent = new (function () {
 
         const pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 150) + 'px';
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
 
-        window.onresize = function(e) {
-            e.preventDefault();
-            sh_parent.style.height = (window.innerHeight - 150) + 'px';
-        };
         mThis.initDropdownMenus(pr_tbl);
 
         mThis.divFilter.addEventListener('change', (e) => {
@@ -390,8 +386,10 @@ const LeaveRequestDailog = new function() {
                 let id = mThis.elEmployee.value;
                 console.log(22222,id);
 
-                vsapi.call(`${mThis.base_url}/hr/leave-management/details`, { id: id }, null).then(res => {
-                    let d = res || {};
+                vsapi.call(`${mThis.base_url}/hr/employee/details`, { id: id }, null).then(res => {
+                    let d = res.data || {};
+                    console.log(33344, d);
+
                     if(d){
                         mThis.elInfo.parentElement.classList.remove('d-none');
                         mThis.elInfo.innerHTML =`<div class="d-block border border-info p-2">

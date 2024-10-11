@@ -115,7 +115,6 @@ var PayrollComponent = new (function () {
         mThis.PayrollListView = new ListView('_payroll_list',{
             fetchApi : `${main_view.base_url}/hr/payroll/list-paginate`,
             perPage: 10,
-            //paginationContainer: mThis.containerPagination,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table  table--white rounded-2   overflow-hidden  header-uppercase',
@@ -142,14 +141,10 @@ var PayrollComponent = new (function () {
 
         const pr_tbl = mThis.PayrollListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 150) + 'px';
+        sh_parent.style.height = (window.innerHeight - 275) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
 
-        window.onresize = function(e) {
-            e.preventDefault();
-            sh_parent.style.height = (window.innerHeight - 150) + 'px';
-        };
         mThis.initDropdownMenus(pr_tbl);///
 
         mThis.divFilter.addEventListener('change', (e) => {
@@ -418,7 +413,7 @@ const PayRollDailog = new function() {
                             <div class="d-block border border-info p-2">
                                 <div class="d-block">
                                     <span>Name:</span>
-                                    <span>${d.first_name} ${d.last_name}</span>
+                                    <span>${d.name} </span>
                                 </div>
                                 <div>
                                     <span>Email:</span><span>${d.email}</span>
@@ -431,7 +426,7 @@ const PayRollDailog = new function() {
                                     <span>${d.position}</span>
                                 </div>
                                  <div>
-                                    <span>Working Hours:</span><span>${d.session}</span>
+                                    <span>Role:</span><span>${d.role}</span>
                                 </div>
 
                             </div>`;

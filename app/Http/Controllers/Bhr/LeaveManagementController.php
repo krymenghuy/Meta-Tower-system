@@ -10,39 +10,38 @@ use App\Services\Umt\AuthService;
 
 class LeaveManagementController extends Controller
 {
-    protected $leavemanagement;
+    protected $leave=null;
     public function __construct(){
-        $this->leavemanagement = new LeaveManagement();
+        $this->leave = new LeaveManagement();
     }
 
-    public function saveLeaveManagement(Request $req)
+    public function save(Request $req)
     {
+        $id = $req->id;
+        // $prn_code = $id ? 306:305;
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $save = $this->leave->save($req->all(),$id,$ss);
 
-        return $this->leavemanagement->save($req->all(), $ss);
+        return JDV::raw($save);
     }
 
-    public function getLeaveManagementListPaginate(Request $req)
+    public function getLeaveListPaginate(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $data = $this->leave->getLeaveListPaginate($req->all(),$ss);
 
-        return JDV::result($this->leavemanagement->getLeaveManagementListPaginate($req->all(), $ss));
+        return JDV::result($data);
     }
 
     public function getDetails(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $leave = $this->leave->getDetails($req->id,$ss);
 
-        return $this->leavemanagement->getDetails($req->id, $ss);
+        return JDV::result($leave);
     }
 
 
@@ -60,10 +59,10 @@ class LeaveManagementController extends Controller
     public function getFormOptions(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        return JDV::result($this->leavemanagement->getFormOptions($req->id, $ss));
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $leave = $this->leave->getFormOptions($req->id,$ss);
+
+        return JDV::result($leave);
     }
 
    public function updateStatus(Request $req)

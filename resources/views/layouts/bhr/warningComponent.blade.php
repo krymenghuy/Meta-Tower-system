@@ -14,10 +14,11 @@
 </div>
 
 <style>
-    #_main_warningComponent {
-        /* padding: 40px 20px; */
+    #_warning_list_paginator{
+        display: flex;
+        position: fixed;
+        margin-top: 50px;
     }
-
     #_warning_list {
         max-width: 100%;
         margin: 15px;
@@ -110,7 +111,6 @@
         vertical-align: middle;
         text-align: left;
         overflow: hidden;
-        white-space: wrap;
         text-overflow: ellipsis;
         word-wrap: break-word;
         white-space: nowrap;

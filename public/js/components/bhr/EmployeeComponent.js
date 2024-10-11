@@ -22,7 +22,6 @@ var EmployeeComponent = new (function () {
 
         mThis.EmployeeListView = new ListView('_employee_list', {
             fetchApi: `${main_view.base_url}/hr/employee/list-paginate`,
-            // clientSidePagination: true,
             perPage: 8,
             paginationContainer: mThis.containerPagination,
             apiCluster: main_view.apiCluster,
@@ -124,7 +123,7 @@ var EmployeeComponent = new (function () {
                                             <i class="fa-solid fa-dashboard"></i> <span>${d.position || 'Web Developer'}</span>
                                         </div>
                                         <div class="me-3">
-                                            <i class="fa-solid fa-clock"></i> <span>${d.session || 'Full Time'}</span>
+                                            <i class="fa-solid fa-clock"></i> <span>${d.role || ' Staff'}</span>
                                         </div>
                                     </div>
                                     <div class="container_bottom">
@@ -219,6 +218,16 @@ var EmployeeComponent = new (function () {
                                     <p class="text-nowrap text-capitalize">${data.name}</p>
                                 </div>
                                 <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">KH Name</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${data.name_kh}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Gender</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.gender || ''}</p>
+                                </div>
+                                <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Position</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${data.position || ''}</p>
@@ -242,10 +251,16 @@ var EmployeeComponent = new (function () {
                             </div>
                             <div class="col">
                                 <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Role</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.role || ''}</p>
+                                </div>
+                                <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Nationality</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${data.nationality || ''}</p>
                                 </div>
+
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Date of Birth</p>
                                     <p class="px-2">:</p>
@@ -443,6 +458,13 @@ var EmployeeComponent = new (function () {
             cssClass:"bg-white shadow",
             //menuItemClass:"",
             menus:[
+                {
+                    html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                    icon:`<i class="fa-regular fa-exchange fs-5"></i>`,
+
+                    cssClass:"border-bottom pb-2",
+                    name:"change_employee_status"
+                },
 
                 {
                     html:'<span class="ps-2  " vslang="titles.Modify Employee">Modify Employee</span>',
@@ -461,6 +483,10 @@ var EmployeeComponent = new (function () {
             onClick:(menuLink, id, name)=>{
                 switch(name){
 
+                    case 'change_employee_status':{
+                        mThis.changeStatus(id,menuLink);
+                        break;
+                    }
                     case 'edit_employee':{
                       mThis.editEmployee(id, menuLink);
                       break;
@@ -477,6 +503,52 @@ var EmployeeComponent = new (function () {
             }
         }
         new VSDropdownMenu(menuOptopns);
+    }
+
+    this.changeStatus = (id, lnk)=>{
+        // if(!AuthManager.allowed(337,false))
+        //         return;
+        //let status_code = Validator.properCase(lnk.dataset.status);
+        let tr = lnk.closest('tr');
+        let status_id = Validator.properCase(tr? tr.dataset.status_id: "");
+        let inputOptions = {
+            title: 'Set Employee Status',
+            dataLabel: "Employee status",
+            valueMember: "status_id",
+            textMember: "name",
+            confirmButtonText:"Save",
+            blankErrorMessage: "Status is not correct!",
+            data: [{
+                status_id: "1",
+                name: "Active"
+            },
+            {
+                status_id: "2",
+                name: "Inactive"
+            }],
+            defaultValue: status_id
+        };
+
+        InputBox2.show(inputOptions,(d)=>{
+            if(d){
+                let p = {
+                    id: id,
+                    status_id: d.value
+                };
+                console.log(123,p);
+
+                vsapi.call(`${mThis.base_url}/hr/employee/update-status`,p).then(res => {
+                    if(res.status_code === 200){
+
+                        InputBox2.close();
+                        cv_interact.success('The Employee status has been updated');
+                        mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
+                    }
+                    else
+                        cv_interact.error(res.error_message);
+                });
+            }
+        });
     }
     this.editEmployee = (id, menuLink) => {
         let op = {
@@ -545,8 +617,8 @@ const EmployeeDialog = new function() {
 
     this.btnSave =  this.self.querySelector('#dlg_sdl_add_employee_btn_save');
     this.elPositionId =  this.self.querySelector('#_sdl_position_id');
-    this.elSessionId =  this.self.querySelector('#_sdl_session_id');
-    // this.elGenderId =  this.self.querySelector('#_sdl_gender_id');
+    this.elRoleId =  this.self.querySelector('#_sdl_role_id');
+    this.elGenderId =  this.self.querySelector('#_sdl_gender_id');
     this.elTitle = mThis.self.querySelector('.modal-title');
     this.div_employee_info = mThis.self.querySelector('#_sdl_employee_info');
     this.btnChooser = mThis.self.querySelector('#dlg_image_chooser');
@@ -578,9 +650,9 @@ const EmployeeDialog = new function() {
             let d = res.status_code === 200 ?  res.data : {};
 
 
-            VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'name', true, '(Select Position)', null);
-            VSUtil.setComboItems(mThis.elSessionId, d.sessions, 'id', 'name', true, '(Select Session)', null);
-            // VSUtil.setComboItems(mThis.elGenderId, d.genders, 'id', 'name', true, '(Select Gender)', null);
+            VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'title', true, '(Select Position)', null);
+            VSUtil.setComboItems(mThis.elRoleId, d.roles, 'id', 'name', true, '(Select Role)', null);
+            VSUtil.setComboItems(mThis.elGenderId, d.genders, 'id', 'name', true, '(Select Gender)', null);
             console.log(33333,d);
             onFinish(d);
         });
