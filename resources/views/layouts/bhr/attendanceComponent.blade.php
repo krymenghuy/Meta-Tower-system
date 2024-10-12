@@ -21,22 +21,22 @@
         <div class="_attendance_cards">
             <div class="_attendance_card1">
                 <div class="_attendance_card_body">
-                    <h5 class="_attendance_card_title">Staff Attendance</h5>
-                    <p class="_attendance_card_text">100 staffs</p>
+                    <h5 class="_attendance_card_title1">All Staff</h5>
+                    <div class="_attendance_card_text1"><h3>100</h3><span>staffs</span></div>
                     <a href="">See Detail</a>
                 </div>
             </div>
             <div class="_attendance_card2">
                 <div class="_attendance_card_body">
-                    <h5 class="_attendance_card_title">Staff Permision</h5>
-                    <p class="_attendance_card_text">100 staffs</p>
+                    <h5 class="_attendance_card_title2">Staff Attendance</h5>
+                    <div class="_attendance_card_text2"><h3>90</h3><span>/100</span><span style="margin-left: 5px">staffs</span></div>
                     <a href="">See Detail</a>
                 </div>
             </div>
             <div class="_attendance_card3">
                 <div class="_attendance_card_body">
-                    <h5 class="_attendance_card_title">Staff Absent</h5>
-                    <p class="_attendance_card_text">100 staffs</p>
+                    <h5 class="_attendance_card_title3">Staff On Leave</h5>
+                    <div class="_attendance_card_text3"><h3>10</h3><span>/100</span><span style="margin-left: 5px">staffs</span></div>
                     <a href="">See Detail</a>
                 </div>
             </div>
@@ -83,10 +83,34 @@
         margin-bottom: 10px;
     }
 
-    ._attendance_card_text {
-        font-size: 14px;
+    ._attendance_card_text1,
+    ._attendance_card_text2,
+    ._attendance_card_text3 {
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-
+    ._attendance_card_text1 h3{
+        font-size: 30px;
+        font-weight: bold;
+        margin-right: 10px;
+        font-family: "Montserrat", sans-serif;
+        color: rgb(16, 56, 186);
+    }
+    ._attendance_card_text2 h3{
+        font-size: 30px;
+        font-weight: bold;
+        margin-right: 10px;
+        font-family: "Montserrat", sans-serif;
+        color: rgb(15, 137, 27);
+    }
+    ._attendance_card_text3 h3{
+        font-size: 30px;
+        font-weight: bold;
+        margin-right: 10px;
+        font-family: "Montserrat", sans-serif;
+        color: rgb(233, 62, 76);
+    }
     a {
         color: #007bff;
         text-decoration: none;

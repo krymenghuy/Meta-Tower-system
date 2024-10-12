@@ -156,6 +156,8 @@
 		"Collector":"អ្នកដឹកចូល"
 	},
 	"titles":{
+		"Staff Movement": "កាផ្លាស់ប្ដូរ​របស់បុគ្គលិក",
+		"Staff Attendance": "អវត្តមាន​របស់បុគ្គលិក",
 		"Attendance":"វត្តមាន",
 		"Quick Order":"បញ្ជាលឿន",
 		"New Shipment":"ការបញ្ជាថ្មី",

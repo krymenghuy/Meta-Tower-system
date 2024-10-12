@@ -112,7 +112,7 @@ class Job_Level //extends Model
 
         $query = DB::table('job_levels as j')
         ->whereRaw($str_search)
-        ->selectRaw('j.id, j.name, j.description, j.rank, j.updated_at,j.update_user')->orderBy('j.id','DESC');
+        ->selectRaw('j.id, j.name, j.description, j.rank, j.updated_at,j.update_user')->orderBy('j.id','ASC');
      
        $clone_query = clone $query;
        $count = $clone_query->count('j.id');
