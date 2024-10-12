@@ -1,4 +1,4 @@
-<div id="_main_dashboardComponent" style="display:none;padding:20px 0 0; overflow:auto;">
+<div id="_main_dashboardComponent" style="display:none;padding:10px 0 0; overflow:auto;">
     <div class="dashboard_top" id="_dashboard_top">
       
     </div>
