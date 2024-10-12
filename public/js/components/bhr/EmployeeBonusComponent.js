@@ -224,27 +224,29 @@ const BenefitDailog = (() => {
     `</div>`,
      ].join('');
     },
-    showCancelButton:true,
     buttons:[
-         {
-           label:"<span>Save</span>",
-           click:(me,btn, divModal)=>{
-               let p = me.getData();
-
-               vsapi.call(`${main_view.base_url}/hr/benefit/save`,p,false, false,false).then(res =>{
-                   if(res.status_code ==200){
-                       me.hide();
-                    //   let app_id =  me.controls.app.value;
-                    //   if(app_id){
-                    //     that.elAppFilter.value = app_id;
-                    //     that.elAppFilter.dispatchEvent(new Event("change"));
-                    //   }
-                      cv_interact.success(['Benefit has been saved'].join(''));
-                   }else cv_interact.error(res.error_message);
-               })
+        {
+           label:"<span>Cancel</span>",
+           cssClass:"btn btn-warning",
+           click:(me)=>{
+              me.hide(false);
            }
-       }
-    ],
+        },
+        {
+           label:"<span>Save</span>",
+           cssClass:"btn btn-primary",
+           click:(me)=>{
+              let p = me.getData();
+              p.image = me.userImageBox? me.userImageBox.getImage(): '';
+              console.log(222,p);
+              vsapi.call([main_view.base_url,'/hr/benefit/save'].join(''),p,false,false).then(res =>{
+                  if(res.status_code ==200){
+                      me.modal.hide(true,p);
+                  }else cv_interact.error(res.error_message);
+              });
+           }
+        }
+     ],
     // configSelect:[
     //    {
     //        name: "app",

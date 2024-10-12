@@ -618,7 +618,7 @@ const EmployeeDialog = new function() {
     this.btnSave =  this.self.querySelector('#dlg_sdl_add_employee_btn_save');
     this.elPositionId =  this.self.querySelector('#_sdl_position_id');
     this.elRoleId =  this.self.querySelector('#_sdl_role_id');
-    this.elGenderId =  this.self.querySelector('#_sdl_gender_id');
+    // this.elGenderId =  this.self.querySelector('#_sdl_gender_id');
     this.elTitle = mThis.self.querySelector('.modal-title');
     this.div_employee_info = mThis.self.querySelector('#_sdl_employee_info');
     this.btnChooser = mThis.self.querySelector('#dlg_image_chooser');
@@ -652,7 +652,7 @@ const EmployeeDialog = new function() {
 
             VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'title', true, '(Select Position)', null);
             VSUtil.setComboItems(mThis.elRoleId, d.roles, 'id', 'name', true, '(Select Role)', null);
-            VSUtil.setComboItems(mThis.elGenderId, d.genders, 'id', 'name', true, '(Select Gender)', null);
+            // VSUtil.setComboItems(mThis.elGenderId, d.genders, 'id', 'name', true, '(Select Gender)', null);
             console.log(33333,d);
             onFinish(d);
         });
