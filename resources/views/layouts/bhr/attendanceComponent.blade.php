@@ -19,24 +19,24 @@
     </div>
     <div id="_attendenceTop">
         <div class="_attendance_cards">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Staff Attendance</h5>
-                    <p class="card-text">100 staffs</p>
+            <div class="_attendance_card1">
+                <div class="_attendance_card_body">
+                    <h5 class="_attendance_card_title">Staff Attendance</h5>
+                    <p class="_attendance_card_text">100 staffs</p>
                     <a href="">See Detail</a>
                 </div>
             </div>
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Staff Permision</h5>
-                    <p class="card-text">100 staffs</p>
+            <div class="_attendance_card2">
+                <div class="_attendance_card_body">
+                    <h5 class="_attendance_card_title">Staff Permision</h5>
+                    <p class="_attendance_card_text">100 staffs</p>
                     <a href="">See Detail</a>
                 </div>
             </div>
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Staff Absent</h5>
-                    <p class="card-text">100 staffs</p>
+            <div class="_attendance_card3">
+                <div class="_attendance_card_body">
+                    <h5 class="_attendance_card_title">Staff Absent</h5>
+                    <p class="_attendance_card_text">100 staffs</p>
                     <a href="">See Detail</a>
                 </div>
             </div>
@@ -45,27 +45,50 @@
     <div id="_attendance_list" class="p-3"></div>
 </div>
 <style>
-    #_attendenceCenter,
-    #_attendenceTop{
+    /* Add your CSS styles here */
+    ._attendance_cards {
         display: flex;
+        gap: 20px;
         padding: 20px;
     }
-    ._attendance_cards{
-        display: flex;
-        width: 100%;
-        gap: 20px;
-    }
-    .card{
-        display: flex;
-        flex-direction: column;
-        width: 20%;
+    ._attendance_card1,
+    ._attendance_card2,
+    ._attendance_card3 {
+        height: 150px;
+        width: 300px;
+        background-color: #f8f9fa;
+        box-shadow: 0 4px 8px 0 rgba(30, 30, 30, 0.149);
         border-radius: 10px;
-        box-shadow: 0 10px 20px rgba(53, 51, 51, 0.19);
+        overflow: hidden;
     }
-    .card-body{
+    ._attendance_card1:hover,
+    ._attendance_card2:hover,
+    ._attendance_card3:hover {
+        box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+        scale: 1.01;
+    }
+    ._attendance_card_body {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        justify-content: space-between;
+        height: 100%;
+        width: 100%;
+        padding: 20px;
+    }
+
+    ._attendance_card_title {
+        font-size: 20px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    ._attendance_card_text {
+        font-size: 14px;
+    }
+
+    a {
+        color: #007bff;
+        text-decoration: none;
     }
 </style>
-
