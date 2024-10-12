@@ -450,12 +450,17 @@
                                         <input type="text" class="form-control data-input" data-field="name_kh" />
                                     </div>
                                     <div class="form-group col-4">
-                                        <label for="gender_id" class="form-label">
-                                            Gender
+                                        <label for="gender" class="form-label">
+                                            Gender <span class="text-danger">*</span>
                                         </label>
-                                        <select class="form-control data-input" id="_sdl_gender_id"
-                                            data-field="gender_id">
-                                        </select>
+                                        <div class="min-width-select custom-modal-select">
+                                            <select class="modal-select data-input" data-field="gender">
+                                                <option value="">(Gender)</option>
+                                                <option value="M">Male</option>
+                                                <option value="F">Female</option>
+                                                <option value="O">Other</option>
+                                            </select>
+                                        </div>
 
                                     </div>
                                     <div class="form-group col-4">
