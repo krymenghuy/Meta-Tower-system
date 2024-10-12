@@ -38,7 +38,7 @@ class Employee//extends Model
             'name_kh' => '1|string|0-100',
             'email' => '1|email',
             'phone_number' => '1|phone|0-20',
-            'gender_id' => '1|number',
+            'gender' => '1|string|0-6',
             'nationality' => '1|string|0-150',
             'date_of_birth' => '1|date',
             'address' => '0|string|0-250',
@@ -146,7 +146,6 @@ class Employee//extends Model
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
             ->join('employee_status as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
-            ->join('genders as g', 'g.id', '=', 'emp.gender_id')
             ->whereRaw($str_srch)
             ->whereRaw($str_where)
             ->selectRaw('
@@ -156,8 +155,7 @@ class Employee//extends Model
             emp.name_kh,
             emp.email,
             emp.phone_number,
-            emp.gender_id,
-            g.name as gender,
+            emp.gender,
             emp.nationality,
             emp.date_of_birth,
             emp.address,
@@ -213,7 +211,6 @@ class Employee//extends Model
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
             ->join('employee_status as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
-            ->join('genders as g', 'g.id', '=', 'emp.gender_id')
             ->selectRaw('
                 emp.code,
                 emp.id,
@@ -221,8 +218,7 @@ class Employee//extends Model
                 emp.name_kh,
                 emp.email,
                 emp.phone_number,
-                emp.gender_id,
-                g.name as gender,
+                emp.gender,
                 emp.nationality,
                 emp.date_of_birth,
                 emp.address,
@@ -301,7 +297,7 @@ class Employee//extends Model
 
             'status' => DB::table('employee_status')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,title')->get(),
-            'genders' => DB::table('genders')->selectRaw('id,name')->get(),
+            // 'genders' => DB::table('genders')->selectRaw('id,name')->get(),
             'roles' => DB::table('emp_roles')->selectRaw('id,name')->get(),
 
 

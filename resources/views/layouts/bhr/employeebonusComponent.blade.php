@@ -21,3 +21,22 @@
         <div id="_bonus_list"></div>
     </div>
 </div>
+<style>
+    #_bonus_list_paginator{
+        display: flex;
+        position: fixed;
+        margin-top: 20px;
+    }
+    th,
+    td {
+        padding: 10px;
+        vertical-align: middle;
+        text-align: left;
+        overflow: hidden;
+        white-space: wrap;
+        text-overflow: ellipsis;
+        word-wrap: break-word;
+        white-space: nowrap;
+        max-width: 100px;
+    }
+</style>

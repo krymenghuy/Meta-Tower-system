@@ -113,8 +113,7 @@ class Payroll
             pay.start_date like '%{$search_value}%' or
             pay.end_date like '%{$search_value}%' or
             pay.salary like '%{$search_value}%' or
-            s.name like '%{$search_value}%' or
-            sec.name like '%{$search_value}%' ";
+            er.name like '%{$search_value}%'";
         }
 
         $query->whereRaw($str_search);
