@@ -53,7 +53,7 @@ var LeaveRequestComponent = new (function () {
             title: "Duration",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.start_date.replace(/-/g, '/') ?? ''} - ${data.end_date.replace(/-/g, '/') ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
             }
         },
         {
@@ -106,7 +106,7 @@ var LeaveRequestComponent = new (function () {
         if (mThis.initAlready) return;
 
         mThis.LeaveRequestListView = new ListView('_leave_request_list',{
-            fetchApi : `${main_view.base_url}/hr/leave-management/list-paginate`,
+            fetchApi : `${main_view.base_url}/hr/leaves/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -268,7 +268,7 @@ var LeaveRequestComponent = new (function () {
                 };
                 console.log(123,p);
 
-                vsapi.call(`${mThis.base_url}/hr/leave-management/update-status`,p).then(res => {
+                vsapi.call(`${mThis.base_url}/hr/leaves/update-status`,p).then(res => {
                     if(res.status_code === 200){
                         // mThis.elFilter_leave_request_status.value = d.value;
                         InputBox2.close();
@@ -308,7 +308,7 @@ var LeaveRequestComponent = new (function () {
             confirmButtonText:"Delete"
         },function(e){
             if(e){
-                vsapi.call(`${main_view.base_url}/hr/leave-management/delete`,op,false,false,false).then(res => {
+                vsapi.call(`${main_view.base_url}/hr/leaves/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted Successfully');
                         mThis.LeaveRequestListView.showPage();
@@ -324,7 +324,7 @@ var LeaveRequestComponent = new (function () {
     // Show the component
     this.prepareFormOptions = () => {
 
-        vsapi.call(`${main_view.base_url}/hr/leave-management/form-options`,null,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/hr/leaves/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
             console.log(1111,this.elSortBy);
 
@@ -367,7 +367,7 @@ const LeaveRequestDailog = new function() {
         let p = mThis.getDataForm();
         console.log(77777, p);
 
-        vsapi.call(`${mThis.base_url}/hr/leave-management/save`, p, mThis.btnSave, false).then(res => {
+        vsapi.call(`${mThis.base_url}/hr/leaves/save`, p, mThis.btnSave, false).then(res => {
             if (res.status_code === 200) {
                 mThis.modal.hide();
                 const d = res.data ?? {};
@@ -382,7 +382,7 @@ const LeaveRequestDailog = new function() {
     this.prepareData = (id, def, onFinish) => {
         if (!def) def = {};
         console.log(555555, id);
-        vsapi.call(`${mThis.base_url}/hr/leave-management/form-options`, { id: id }, null).then(res => {
+        vsapi.call(`${mThis.base_url}/hr/leaves/form-options`, { id: id }, null).then(res => {
             let d = res.status_code === 200 ? res.data : {};
             mThis.elInfo.parentElement.classList.add('d-none');
             VSUtil.setComboItems(mThis.elEmployee, d.employees, 'id', 'name', true, '(Select Employee)', null);
