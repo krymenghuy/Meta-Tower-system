@@ -15,7 +15,6 @@ var EmployeeComponent = new (function () {
     this.profile_card_detail = mThis.self.querySelector('#profile_card_detail');
     this.profile_info_emp = mThis.self.querySelector('#profile_info_emp');
 
-
     let div = mThis.self.querySelector('#_employee_list');
     this.init= () => {
         if(mThis.initAlready) return;
@@ -71,7 +70,9 @@ var EmployeeComponent = new (function () {
         mThis.divFilter.addEventListener('change', (e) => {
             e.preventDefault();
             mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
-        })
+        });
+        
+
 
         mThis.initAlready = true;
     }
@@ -354,7 +355,17 @@ var EmployeeComponent = new (function () {
                 <div class="card" style="height:487px;">
                     <div class="card-header">
                         <h4>Education</h4>
-                        <span class="ellipsis">...</span>
+                        <div class="d-flex gap-2">
+                            <a href="javascript:void(0)" id="lnk_add_education">
+                            <i class="fa fa-plus-circle fs-5 text-success"></i>
+                            </a>
+                            <a href="javascript:void(0)" id="ps-lnk_delete_education" style="">
+                            <i class="fa fa-trash fs-5 text-danger"></i>
+                            </a>
+                            <a href="javascript:void(0)" id="ps-lnk_edit_education" style="">
+                            <i class="fa fa-edit fs-5 text-warning"></i>
+                            </a>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="">
@@ -419,6 +430,18 @@ var EmployeeComponent = new (function () {
             </div>`
         ].join('');
         this.profile_card_detail.innerHTML = html;
+        document.getElementById('lnk_add_education').addEventListener('click', function (e)  {
+            e.preventDefault();
+            let op = {'title':'New Education'};
+            AddEducation.show(op,(new_id)=>{
+                console.log(321,op,123,new_id);
+                
+                if(new_id){
+                    alert(123456);
+                }
+            });
+        // Action for adding new education
+        });
     }
 
 
@@ -606,6 +629,59 @@ var EmployeeComponent = new (function () {
 
 
 });
+const AddEducation = new function () {
+    let mThis = this;
+    this.base_url = main_view.base_url;
+    this.self = main_view.appContent.children('#addEducation_dlg')[0];
+    this.modal = new bootstrap.Modal(this.self);
+    this.btnOK = this.self.querySelector('#addEducation_dlg_btnOK');
+    this.elError = this.self.querySelector('#addEducation_dlg_error');
+    this.elTitle = this.self.querySelector('#addEducation_dlgTitle');
+  
+    this.elName = this.self.querySelector('#ps-newpl_name');
+    this.elWeightMarker = this.self.querySelector('#ps-newpl_kg_marker');
+  
+    this.btnOK.onclick = e => {
+      e.preventDefault();
+      let p = mThis.getData();
+      if (!p.name) {
+        mThis.elError.innerHTML = ('Name cannot be empty');
+        return;
+      }
+  
+      if (!$.isNumeric(p.kg_marker)) {
+        mThis.elError.innerHTML = ('Weight Marker is not valid');
+        return;
+      }
+  
+      vsapi.call([mThis.base_url, '/abm/createSupplierPriceList'].join(''), p).then(res => {
+        if (res.status_code === 200) {
+          let d = res.data;
+          if (typeof mThis.onClose === 'function') mThis.onClose(d.id);
+          mThis.modal.hide();
+        } else mThis.elError.innerHTML(res.error_message);
+      });
+  
+    };
+  
+    
+  
+    this.getData = () => {
+      let p = {};
+      p.name = mThis.elName.value;
+      p.kg_marker = mThis.elWeightMarker.value;
+  
+      return p;
+    }
+  
+    this.show = (option, onClose) => {
+      mThis.elError.innerHTML = (null);
+      mThis.elTitle.innerHTML = (option.title)
+      mThis.onClose = onClose;
+      mThis.modal.show();
+  
+    }
+  }
 
 
 const EmployeeDialog = new function() {
