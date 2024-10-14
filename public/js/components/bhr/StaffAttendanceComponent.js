@@ -36,18 +36,18 @@ var StaffAttendanceComponent = new (function () {
         {
             title: "start sate",
             className: "align-middle",
-            data: "start_date",
+            data: "leave_date",
         },
         {
             title: "end date",
             className: "align-middle",
-            data: "end_date",
+            data: "return_date",
         },
         {
             title: "reason",
             className: "align-middle",
             // data: (data) => `reason: ${data.reason}`,
-            data: "reason",
+            data: "remarks",
         },
         {
             className: "col_action align-middle",
@@ -75,13 +75,15 @@ var StaffAttendanceComponent = new (function () {
         if (mThis.initAlready) return;
 
         mThis.StaffAttendanceListView = new ListView("_staff_attendance_list", {
-            fetchApi: `${mThis.base_url}/hr/leave-management/list-paginate`,
+            fetchApi: `${mThis.base_url}/hr/attendances/list`,
             perPage: 6,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",
             listContainerClass: null,
             rowCreated: (data, index, tr) => {
+                console.log(123,data);
+                
                 tr.dataset.id = data.id; // recode data
             },
             renderComplete: () => {
