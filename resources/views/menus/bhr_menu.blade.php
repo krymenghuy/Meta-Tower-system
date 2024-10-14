@@ -196,26 +196,9 @@ function v_display($mod_id, $module_ids = null)
                         data-langprop="menus.Employee Management"></span>
                 </a>
             </li>
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
-                            <a href="EmployeeMovementComponent" modid="-1" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/warning.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Staff Movement"></span>
-                            </a>
-                        </li>
+        
 
-            <li class="d-none kt-menu__item" aria-haspopup="true" <?php v_display(203); ?>>
-                <a href="ShipmentsComponent" modid="203" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        <i class="fas fa-shipping-fast icons opacity-icons"></i>
-                        <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_fleet.svg') }}" /> -->
-                    </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Shipments"></span>
-                </a>
-            </li>
+         
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
                 data-ktmenu-submenu-toggle="hover"<?php v_display(null, [100, 101]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
@@ -312,15 +295,25 @@ function v_display($mod_id, $module_ids = null)
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
-                            <a href="ReportComponent" modid="-1" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/general_report.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Report Center"></span>
-                            </a>
-                        </li>
+                <a href="ReportComponent" modid="-1" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons"
+                            src="{{ asset('assets/images/icons/general_report.svg') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color trans-text"
+                        data-langprop="menus.Report Center"></span>
+                </a>
+            </li>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+                <a href="WarningComponent" modid="-1" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons"
+                            src="{{ asset('assets/images/icons/warning.svg') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color trans-text"
+                        data-langprop="menus.Warning"></span>
+                </a>
+            </li>
           
             {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                     <a href="WarningComponent" modid="-1" class="menu-item kt-menu__link">
@@ -557,6 +550,7 @@ function v_display($mod_id, $module_ids = null)
                     </ul>
                 </div>
             </li> --}}
+
             
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
                 data-ktmenu-submenu-toggle="hover"<?php v_display(null, [100, 101]); ?>>

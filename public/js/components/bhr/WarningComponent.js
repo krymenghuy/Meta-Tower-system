@@ -1,12 +1,12 @@
 "use strict";
 
-var EmployeeMovementComponent = new (function () {
+var WarningComponent = new (function () {
     let mThis = this;
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_warningComponent");
     this.self = this.jm[0];
     this.initAlready = false;
-    this.title_prop = "Employee Movement";
+    this.title_prop = "Warning";
     this.btnAddWarning = this.self.querySelector("#_btnAddWarning");
     this.elSearch = this.self.querySelector("#_warning_search");
 
