@@ -36,9 +36,6 @@ class Leave
         $img_char = ['+',':',',',';','/','\\','=','?'];
         $checkUnque = ["$branch_id|leaves|emp_id|id=id|text=Employee has already Leave "];
 
-
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,$checkUnque);
-
         if ($res->error)
             return DV::error($res->error);
 
@@ -63,6 +60,7 @@ class Leave
         $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
+
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
@@ -72,22 +70,19 @@ class Leave
         $start_date = $d->start_date ?? null;
         $end_date = $d->end_date ?? null;
 
-        $str_search = '1=1';
         $str_status = '1=1';
         $str_dates = '1=1';
 
-        if ($search_value) {
-            $str_search = "(l.reason LIKE '%" . $search_value . "%')";
-        }
         if ($status_id) {
             $str_status = 'l.status_id = \'' . $status_id . '\'';
         } else {
             $end_date = convertDate($end_date);
             $start_date = convertDate($start_date);
-            if ((bool) strtotime($start_date) && (bool) strtotime($end_date)) {
+
+            if (strtotime($start_date) && strtotime($end_date)) {
                 $str_dates = "DATE(l.created_at) BETWEEN '$start_date' AND '$end_date'";
             } elseif ($end_date) {
-                $start_date = date('Y-m-d', strtotime(date('Y-m-d') . '-90 days'));
+                $start_date = date('Y-m-d', strtotime('-90 days'));
                 $str_dates = "DATE(l.created_at) BETWEEN '$start_date' AND '$end_date'";
             }
         }
@@ -100,20 +95,33 @@ class Leave
             ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
             ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
             ->where('l.branch_id', $branch_id)
-            ->whereRaw($str_search)
             ->whereRaw($str_status)
             ->whereRaw($str_dates)
-            ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.start_date, l.end_date, ls.name as status, l.reason, l.update_user, l.update_date')
+            ->selectRaw(
+                'l.id, emp.name as employee, p.title, l.leave_type_id,
+                lt.name as leave_type, l.start_date, l.end_date,
+                ls.name as status, l.reason, l.update_user, l.update_date'
+            )
             ->orderBy('l.id', 'DESC');
 
+        // Apply search logic with grouping to avoid conflicts with other filters
+        if ($search_value) {
+            $query->where(function ($q) use ($search_value) {
+                $q->where('emp.name', 'like', '%' . $search_value . '%')
+                    ->orWhere('l.reason', 'like', '%' . $search_value . '%');
+            });
+        }
+
+        // Clone the query to get the total count
         $clone_query = clone $query;
         $count = $clone_query->count('l.id');
+
+        // Paginate the results
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
 
 
 
@@ -165,7 +173,7 @@ class Leave
         return (object) [
 
             'employees' => DB::table('employees')->selectRaw('id,name')->get(),
-            'positions' => DB::table('positions')->selectRaw('id,title')->get(),
+            'leave_types' => DB::table('leave_types')->selectRaw('id,name')->get(),
             'status' => DB::table('leave_statuses')->selectRaw('id,name,code')->get(),
 
             'leave' => $leave,
@@ -175,18 +183,18 @@ class Leave
 
 
 
-    // function updateStatus($action_id, $id = null, $ss = null)
-    // {
+    function updateStatus($status_id, $id = null, $ss = null)
+    {
 
-    //     $ss = $ss ? $ss : $this->userInfo;
-    //     $x = DB::table('leaves')->where('id', $id)->update([
-    //         'action_id' => $action_id,
-    //         'update_user'=>$ss->full_name,
-    //         'update_date'=>getNowTime(),
-    //         'update_uid'=>$ss->user_id
-    //     ]);
-    //     return DV::depends($x, ['leave management status', 'updated']);
-    // }
+        $ss = $ss ? $ss : $this->userInfo;
+        $x = DB::table('leaves')->where('id', $id)->update([
+            'action_id' => $action_id,
+            'update_user'=>$ss->full_name,
+            'update_date'=>getNowTime(),
+            'update_uid'=>$ss->user_id
+        ]);
+        return DV::depends($x, ['leave management status', 'updated']);
+    }
 
 
 
