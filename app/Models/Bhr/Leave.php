@@ -25,16 +25,19 @@ class Leave
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'emp_id' => '0|number',
+            'emp_id' => '0|number|exists=employees.id',
+            'leave_date' => '1|date',
+            'return_date' => '1|date',
             'leave_type_id' => '1|number',
-            'start_date' => '1|date',
-            'end_date' => '1|date',
-            'reason' => '0|string|250',
-            'status_id' => '1|number|default = 1',
+            'remarks' => '0|string|250',
+            // 'has_returned' =>'number|default=0',
+            'status_id' => '1|number|default = 2',
 
         ];
         $img_char = ['+',':',',',';','/','\\','=','?'];
         $checkUnque = ["$branch_id|leaves|emp_id|id=id|text=Employee has already Leave "];
+
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,$checkUnque);
 
         if ($res->error)
             return DV::error($res->error);
@@ -69,7 +72,7 @@ class Leave
         $search_value = $d->search_value ?? null;
         $start_date = $d->start_date ?? null;
         $end_date = $d->end_date ?? null;
-
+        $str_search = '1=1';
         $str_status = '1=1';
         $str_dates = '1=1';
 
@@ -95,13 +98,11 @@ class Leave
             ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
             ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
             ->where('l.branch_id', $branch_id)
+            ->where('l.status_id',2)
+            ->whereRaw($str_search)
             ->whereRaw($str_status)
             ->whereRaw($str_dates)
-            ->selectRaw(
-                'l.id, emp.name as employee, p.title, l.leave_type_id,
-                lt.name as leave_type, l.start_date, l.end_date,
-                ls.name as status, l.reason, l.update_user, l.update_date'
-            )
+            ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.leave_date, l.return_date, ls.name as status, l.remarks, l.update_user, l.update_date,l.status_id')
             ->orderBy('l.id', 'DESC');
 
         // Apply search logic with grouping to avoid conflicts with other filters
@@ -136,7 +137,8 @@ class Leave
         ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
         ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
         ->where('l.id', $id)
-        ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.start_date, l.end_date, ls.name as status, l.reason, l.update_user, l.update_date')
+        ->where('l.status_id',2)
+        ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.leave_date, l.return_date, ls.name as status, l.remarks, l.update_user, l.update_date')
         ->first();
 
 
@@ -145,23 +147,13 @@ class Leave
 
     function delete($id, $ss)
     {
-        // Ensure $id is numeric and valid
-        if (!is_numeric($id)) {
-            return DV::error('Invalid ID');
-        }
-
-        // Assuming $ss contains branch_id or other necessary info
+        $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
 
-        // Build and execute the query
-        $query = DB::table('leaves')
-            ->where('id', $id)
-            ->delete();
-        if (!$query) {
-            return DV::error('Leave management not found');
-        }
-        // Return the query result
-        return $query;
+        $delete = DB::table('leaves')->where('id',$id)->delete();
+        return DV::depends($delete,['action','deleted']);
+
+
     }
 
     function getFormOptions($id, $ss)
@@ -183,18 +175,6 @@ class Leave
 
 
 
-    function updateStatus($status_id, $id = null, $ss = null)
-    {
-
-        $ss = $ss ? $ss : $this->userInfo;
-        $x = DB::table('leaves')->where('id', $id)->update([
-            'action_id' => $action_id,
-            'update_user'=>$ss->full_name,
-            'update_date'=>getNowTime(),
-            'update_uid'=>$ss->user_id
-        ]);
-        return DV::depends($x, ['leave management status', 'updated']);
-    }
 
 
 
