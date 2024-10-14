@@ -26,30 +26,34 @@ var LeaveRequestComponent = new (function () {
             className: "align-middle text-start",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
-                            <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
-                                <span style="font-size: 14px; font-weight: bold;">${data.name ??''}</span>
+                                <span style="font-size: 14px; font-weight: bold;">${data.employee ??''}</span>
                                 <br/>
-                                <span style="font-size: 12px; color: gray;">${data.position ?? ''}</span>
+                                <span style="font-size: 12px; color: gray;">${data.title ?? ''}</span>
                             </div>
                         </div>`;
             }
         },
 
-
-
+        {
+            title: "Leave Type",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.leave_type ?? ''}</p>`;
+            }
+        },
+        {
+            title: "Reason",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.reason ?? ''}</p>`;
+            }
+        },
         {
             title: "Duration",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.start_date.replace(/-/g, '/') ?? ''} - ${data.end_date.replace(/-/g, '/') ?? ''}</p>`;
-            }
-        },
-        {
-            title: "Permission detail",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.permission_details ?? ''}</p>`;
             }
         },
         {
@@ -65,7 +69,7 @@ var LeaveRequestComponent = new (function () {
                 } else if ((data.status || '').toLowerCase() === 'pending') {
                     cls_class = 'text-white text-center border border-warning rounded-5 p-1';
                     bg_color = '#ffc107'; // Yellow background for pending
-                } else if ((data.status || '').toLowerCase() === 'reject') {
+                } else if ((data.status || '').toLowerCase() === 'rejected') {
                     cls_class = 'text-white text-center border border-danger rounded-5 p-1';
                     bg_color = '#dc3545'; // Red background for in progress
                 } else {
@@ -237,30 +241,30 @@ var LeaveRequestComponent = new (function () {
         //         return;
         //let status_code = Validator.properCase(lnk.dataset.status);
         let tr = lnk.closest('tr');
-        let action_id = Validator.properCase(tr? tr.dataset.action_id: "");
+        let status_id = Validator.properCase(tr? tr.dataset.status_id: "");
         let inputOptions = {
             title: 'Set Leave Request Status',
             dataLabel: "Leave status",
-            valueMember: "action_id",
+            valueMember: "status_id",
             textMember: "name",
             confirmButtonText:"Save",
             blankErrorMessage: "Status is not correct!",
             data: [{
-                action_id: "2",
+                status_id: "2",
                 name: "Approved"
             },
             {
-                action_id: "3",
-                name: "Reject"
+                status_id: "3",
+                name: "Rejected"
             }],
-            defaultValue: action_id
+            defaultValue: status_id
         };
 
         InputBox2.show(inputOptions,(d)=>{
             if(d){
                 let p = {
                     id: id,
-                    action_id: d.value
+                    status_id: d.value
                 };
                 console.log(123,p);
 
@@ -352,6 +356,7 @@ const LeaveRequestDailog = new function() {
 
     this.btnSave = this.self.querySelector('#dlg_sdl_add_Leave_Request_btn_save');
     this.elEmployee = this.self.querySelector('#_sdl_name_id');
+    this.elLeaveType = this.self.querySelector('#_sdl_leave_type_id');
     this.elInfo = this.self.querySelector('#info');
     this.elTitle = mThis.self.querySelector('.modal-title');
     this.div_Leave_Request_info = mThis.self.querySelector('#_sdl_Leave_Request_info');
@@ -381,6 +386,7 @@ const LeaveRequestDailog = new function() {
             let d = res.status_code === 200 ? res.data : {};
             mThis.elInfo.parentElement.classList.add('d-none');
             VSUtil.setComboItems(mThis.elEmployee, d.employees, 'id', 'name', true, '(Select Employee)', null);
+            VSUtil.setComboItems(mThis.elLeaveType, d.leave_types, 'id', 'name', true, '(Select Leave Type)', null);
             console.log(33333, d);
             mThis.elEmployee.addEventListener('change', () => {
                 let id = mThis.elEmployee.value;

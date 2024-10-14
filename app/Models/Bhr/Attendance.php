@@ -17,15 +17,103 @@ class Attendance
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr, $id = null, $ss = null)
+    {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
+    
+        // Validation rules
         $v_rule = [
             'id' => '0|identity=1',
-            'emp_id' => '1|number',
-            'work_shift_id' => '1|number',
-            'leave_id' => '1|number',
-            'attendance_date'   => '1|date',
+            'emp_id' => '1||exists=employees.id',
+            'check_in_time' => '0|time',
+            'check_out_time' => '0|time',
+            'attendance_date' => '0|date',
+            'status_id' => '1|enum|DEFAULT=Present',
+            'remark' => '0|string',
         ];
+    
+        $res = validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+    
+        $inputs = $res->values;
+        $emp_id = $inputs['emp_id'];
+    
+        if (isset($inputs['attendance_date'])) {
+            $attendance_date = date('Y-m-d', strtotime($inputs['attendance_date']));
+        } else {
+            return DV::error('Attendance date is required');
+        }
+    
+        $day_name = date('D', strtotime($attendance_date));
+        $except_days = ['Sun', 'Sat'];
+        if (in_array($day_name, $except_days)) {
+            return DV::error('The day is a weekend');
+        }
+    
+        $check_in_time = isset($inputs['check_in_time']) ? date('H:i:s', strtotime($inputs['check_in_time'])) : '00:00:00';
+        $check_out_time = isset($inputs['check_out_time']) ? date('H:i:s', strtotime($inputs['check_out_time'])) : '00:00:00';
+    
+        $status_id = isset($inputs['status_id']) ? $inputs['status_id'] : 'Present';
+        $remark = isset($inputs['remark']) ? $inputs['remark'] : '';
+    
+        $arr_attendance = [
+            'emp_id' => $emp_id,
+            'check_in_time' => $check_in_time,
+            'check_out_time' => $check_out_time,
+            'attendance_date' => $attendance_date,
+            'status_id' => $status_id,
+            'remark' => $remark,
+        ];
+    
+        unset($inputs['status_id']);
+    
+        $newID = saveData($ss, 'attendances', ['id' => $id], $arr_attendance, [], 1, 1);
+    
+        return DV::depends($newID, ['attendances' => $inputs, 'id' => $newID], $ss);
+    }
+    
+    function attendanceList($filter=[],$ss=null){
+        $branch_id = $ss->branch_id;
+        $d = (object)$filter;
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 10;
+        if(!is_numeric($current_page)){
+            $current_page = 1;
+        }
+        $search_value = $d->search_value ?? null ;
+        $employee_id = $d->emp_id ?? null;
+        $attendance_date = $d->attendance_date ?? null;
+        $skip_rows = ($current_page -1)* $per_page;
+        $str_search = '1=1';
+        if($str_search){
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_search = "(emp.name = '$search_value' OR emp.code LIKE '%$search_value%')"; 
+        }
+        if ($attendance_date) {
+            $formatted_attendance_date = date('Y-m-d', strtotime($attendance_date));  // Ensure the date is in 'Y-m-d' format
+            $str_search .= " AND a.attendance_date = '$formatted_attendance_date'";
+        }
+
+      
+        $selectCols = 'emp.id as employee_id,emp.sex,emp.name,emp.name_kh,emp.code,emp.date_of_birth as dob,a.attendance_date,a.check_in_time,a.check_out_time';
+        $query = DB::table('employees as emp')
+                ->join('attendances as a','a.emp_id','=','emp.id')
+                // ->join('enrollments as e','e.id','=','sa.enrollment_id')
+                ->whereRaw($str_search)
+                ->selectRaw($selectCols)
+                ->distinct()
+                ->orderBy('emp.id','desc');
+        // $query = DB::table('student_attendances')->selectRaw();
+        $count_query = clone $query;
+        $count = $count_query->count('emp.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+   
+
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 }

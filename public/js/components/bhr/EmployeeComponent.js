@@ -225,7 +225,7 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Gender</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.gender || ''}</p>
+                                    <p class="text-nowrap">${data.gender == 'M' ? 'Male' : ''}${data.gender == 'F' ? 'Female' : ''}${data.gender == 'O' ? 'Other' : ''}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Position</p>
