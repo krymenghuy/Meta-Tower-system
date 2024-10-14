@@ -23,6 +23,7 @@ use App\Http\Controllers\Bhr\WorkShiftController;
 use App\Http\Controllers\Bhr\ShiftDetailController;
 use App\Http\Controllers\Bhr\ScanPlanController;
 use App\Http\Controllers\Bhr\AttendanceController;
+use App\Http\Controllers\Bhr\MovementsController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -228,4 +229,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('attendances')
     Route::post('/details', [AttendanceController::class, 'getDetails']);
     Route::post('/delete', [AttendanceController::class, 'deleteAttendance']);
     Route::post('/form-options', [AttendanceController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('staff-movements')->group(function () {
+
+    Route::post('/save', [MovementsController::class, 'saveMovements']);
+    Route::post('/list-paginate', [MovementsController::class, 'getMovementsListPaginate']);
+    Route::post('/details', [MovementsController::class, 'getDetails']);
+    Route::post('/delete', [MovementsController::class, 'deleteMovements']);
+    Route::post('/form-options', [MovementsController::class, 'getFormOptions']);
 });
