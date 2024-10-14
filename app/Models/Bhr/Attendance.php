@@ -100,7 +100,7 @@ class Attendance
         }
 
       
-        $selectCols = 'emp.id as employee_id,emp.sex,emp.name,emp.name_kh,emp.code,emp.date_of_birth as dob,a.attendance_date,a.check_in_time,a.check_out_time';
+        $selectCols = 'emp.id as employee_id,emp.gender,emp.name,emp.name_kh,emp.code,emp.date_of_birth as dob,a.attendance_date,a.check_in_time,a.check_out_time';
         $query = DB::table('employees as emp')
                 ->join('attendances as a','a.emp_id','=','emp.id')
                 // ->join('enrollments as e','e.id','=','sa.enrollment_id')

@@ -46,7 +46,7 @@ var LeaveRequestComponent = new (function () {
             title: "Reason",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.reason ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.remarks ?? ''}</p>`;
             }
         },
         {
