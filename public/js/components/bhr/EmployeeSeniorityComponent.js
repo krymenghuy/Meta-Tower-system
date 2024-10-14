@@ -313,9 +313,13 @@ const SeniorityDialog = (() => {
                 api: {
                     endpoint: `${main_view.base_url}/hr/seniorities/form-options`,
                     params: (op) => {
+                        console.log(4444,op);
+                        
                         return { id: op.id };  // Pass ID to fetch data for edit
                     },
                     onResponse: (me, res) => {
+                        console.log(1111111111,me,1,res);
+                        
                         if (op.id) {
                             // Populate form with existing data for edit mode
                             // me.setValue('emp_id', res.data.emp_id);
