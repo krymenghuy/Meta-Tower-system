@@ -53,7 +53,7 @@ class LeaveManagementController extends Controller
             return JDV::raw($ss);
         }
 
-        return JDV::result($this->leavemanagement->delete($req->id, $ss));
+        return JDV::result($this->leave->delete($req->id, $ss));
     }
 
     public function getFormOptions(Request $req)
@@ -74,7 +74,7 @@ class LeaveManagementController extends Controller
 
         $id = $req->id ? $req->id : $req->id;
         $leave = new LeaveManagement($id, $ss);
-        $res = $leave->updateStatus($req->action_id, $id);
+        $res = $leave->updateStatus($req->status_id, $id);
 
         return JDV::raw($res);
     }
