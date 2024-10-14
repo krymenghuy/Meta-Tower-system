@@ -44,6 +44,7 @@ class Employee//extends Model
             'address' => '0|string|0-250',
             'positions_id' => '1|number',
             'emp_role_id' => '1|number',
+            'work_shift_id' => '1|number',
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
             'nid'=> '0|number',
@@ -146,6 +147,7 @@ class Employee//extends Model
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
             ->join('employee_status as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
+            ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->whereRaw($str_srch)
             ->whereRaw($str_where)
             ->selectRaw('
@@ -167,6 +169,8 @@ class Employee//extends Model
             p.title as position,
             emp.emp_role_id,
             el.name as role,
+            emp.work_shift_id,
+            ws.name as work_shift,
             emp.status_id,
             es.name as status
         ')
@@ -211,6 +215,7 @@ class Employee//extends Model
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
             ->join('employee_status as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
+            ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->selectRaw('
                 emp.code,
                 emp.id,
@@ -230,6 +235,8 @@ class Employee//extends Model
                 p.title as position,
                 emp.emp_role_id,
                 el.name as role,
+                emp.work_shift_id,
+                ws.name as work_shift,
                 emp.status_id,
                 es.name as status
             ')
@@ -297,8 +304,8 @@ class Employee//extends Model
 
             'status' => DB::table('employee_status')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,title')->get(),
-            // 'genders' => DB::table('genders')->selectRaw('id,name')->get(),
             'roles' => DB::table('emp_roles')->selectRaw('id,name')->get(),
+            'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
 
 
             'employee' => $employee,
