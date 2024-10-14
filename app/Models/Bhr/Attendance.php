@@ -26,7 +26,7 @@ class Attendance
         // Validation rules
         $v_rule = [
             'id' => '0|identity=1',
-            'emp_id' => '1|number',
+            'emp_id' => '1||exists=employees.id',
             'check_in_time' => '0|time',
             'check_out_time' => '0|time',
             'attendance_date' => '0|date',
