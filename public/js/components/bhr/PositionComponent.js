@@ -67,7 +67,7 @@ var PositionComponent = new function() {
 
         mThis.PositionListView = new ListView('_position_list', {
             fetchApi: `${main_view.base_url}/hr/position/list-paginate`,
-            perPage: 10,
+            perPage: 8,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
@@ -268,11 +268,11 @@ const PositionDilog = new function() {
 
     this.prepareData = (id, def, onFinish) => {
         if (!def) def = {};
-        console.log(555555, id);
+        console.log(5555556352, id);
         vsapi.call(`${mThis.base_url}/hr/position/form-options`, { id: id }, null).then(res => {
             let d = res.status_code === 200 ? res.data : {};
 
-            VSUtil.setComboItems(mThis.elStatusId, d.status, 'id', 'title', true, '(Select Status)', null);
+            // VSUtil.setComboItems(mThis.elStatusId, d.status, 'id', 'title', true, '(Select Status)', null);
             VSUtil.setComboItems(mThis.elDepartmentId, d.departments, 'id', 'name', true, '(Select Department)', null);
             console.log(33333, d);
             onFinish(d);

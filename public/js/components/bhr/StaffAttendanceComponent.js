@@ -251,10 +251,15 @@ var StaffAttendanceComponent = new (function () {
 
             // API call to save the leave-management to the database
             vsapi
-                .call(`${mThis.base_url}/hr/leave-management/save`, staffAttendance)
+                .call(
+                    `${mThis.base_url}/hr/leave-management/save`,
+                    staffAttendance
+                )
                 .then((response) => {
                     if (response.status_code === 200) {
-                        cv_interact.success("New leave-management saved successfully.");
+                        cv_interact.success(
+                            "New leave-management saved successfully."
+                        );
                         resolve();
                     } else {
                         cv_interact.error(response.error_message);
