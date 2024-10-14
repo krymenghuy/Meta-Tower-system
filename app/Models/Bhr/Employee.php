@@ -86,7 +86,7 @@ class Employee//extends Model
         $save = !$id;
         $id = saveData($ss, 'employees', ['id' => $id], $inputs, [], 1);
         if($save){
-            $prefix = 'emp';
+            $prefix = 'LC';
             $res = setOfficialCode($branch_id,'employee_code_control','employees',['id'=>$id],$prefix,5,null);
             $new_code = $res->code;
             }
@@ -132,6 +132,7 @@ class Employee//extends Model
         }
         $skip_rows = ($current_page - 1) * $per_page;
         $status = $d->status_id ?? null;
+        $role = $d->role_id ?? null;
         $search_value = $d->search_value ?? null;
         $str_srch = '1=1';
         $str_where = '2=2';
@@ -142,6 +143,9 @@ class Employee//extends Model
         if($status){
             $str_where = 'emp.status_id =\'' . $status . '\'';
 
+        }
+        if($role){
+            $str_where = 'emp.emp_role_id =\'' . $role . '\'';
         }
         $query = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')

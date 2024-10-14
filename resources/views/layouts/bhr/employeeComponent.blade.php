@@ -139,26 +139,29 @@
 
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
     <div id="sub_content">
-        <div class="d-flex  p-3 justify-content-between w-100">
-            <div class="d-flex w-25">
-                <button type="button" class="btn text-white" style="background-color:hwb(231.76deg 16.86% 43.14%);"
-                    id="_btnAddEmployee">
-                    <i class="fas fa-plus"></i>
-                    <span>Add Employee</span>
-                </button>
+        <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter_emp">
+            <div class="d-flex align-items-center w-100 gap-2">
+                <div class="d-flex align-items-center w-100 gap-2">
+                    <input type="text" class="form-control filter-field" id="_sdl_search_employee" placeholder="Search Employee">
+
+                    <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
+                        <i class="la la-search"></i>
+                    </button>
+                    <div class="d-flex align-items-center w-50 gap-2form-group w-50">
+                        <label for="" class="form-label trans-text p-2" data-langprop="titles.Status"></label>
+                        <select type="id" id="el_status" class="data-input filter-field" data-field="status"></select>
+                    </div>
+                    <div class="d-flex align-items-center w-50 gap-2form-group w-50">
+                        <label for="" class="form-label trans-text p-2" data-langprop="titles.Role"></label>
+                        <select type="id" id="el_role" class="data-input filter-field" data-field="role"></select>
+                    </div>
+                </div>
             </div>
-            <div class="d-flex align-items-center justify-content-end gap-2 w-75" id="_divFilter_emp">
-                <div class="d-flex align-items-center w-50">
-
-                    <input type="text" class="form-control filter-field" id="_sdl_search_employee"
-                        placeholder="Search Employee">
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <!-- <label for="" class="form-label trans-text p-2" data-langprop="titles.Status"></label> -->
-                    <select type="id" id="el_status" class="data-input filter-field" data-field="status_id"></select>
-                </div>
-
+            <div class="d-flex align-items-center justify-content-end gap-2 w-100">
+                <button type="button" class="btn btn-primary" id="_btnAddEmployee">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Employee </span>
+                </button>
             </div>
         </div>
         <div id="_employee_list" class="bg-white"></div>
@@ -519,7 +522,13 @@
                             <select class="form-control data-input" id="_sdl_role_id"
                                 data-field="emp_role_id"></select>
                         </div>
-
+                        <div class="form-group col-6">
+                            <label for="work_shift" class="form-label">
+                                Work Shift
+                            </label>
+                            <select class="form-control data-input" id="_sdl_work_shift_id"
+                                data-field="work_shift_id"></select>
+                        </div>
 
 
                         <div class="form-group col-6">
@@ -528,7 +537,7 @@
                             </label>
                             <input type="text" class="form-control data-input" data-field="nssf_id" />
                         </div>
-                        <div class="form-group col-12">
+                        <div class="form-group col-6">
                             <label for="address" class="form-label">
                                 Address
                             </label>

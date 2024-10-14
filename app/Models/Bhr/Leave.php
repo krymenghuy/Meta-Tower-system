@@ -109,7 +109,7 @@ class Leave
         if ($search_value) {
             $query->where(function ($q) use ($search_value) {
                 $q->where('emp.name', 'like', '%' . $search_value . '%')
-                    ->orWhere('l.reason', 'like', '%' . $search_value . '%');
+                    ->orWhere('l.remarks', 'like', '%' . $search_value . '%');
             });
         }
 

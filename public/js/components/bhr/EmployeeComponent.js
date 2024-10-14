@@ -7,6 +7,7 @@ var EmployeeComponent = new (function () {
     this.self = this.jm[0];
     this.title_prop = "Employee management";
     this.elStatus = this.self.querySelector('#el_status');
+    this.elRole = this.self.querySelector('#el_role');
     this.btnAdd = this.self.querySelector("#_btnAddEmployee");
     this.btnBack = this.self.querySelector('#_btn_backTo_employee');
     this.divFilter = this.self.querySelector("#_divFilter_emp");
@@ -256,6 +257,11 @@ var EmployeeComponent = new (function () {
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${data.role || ''}</p>
                                 </div>
+                                                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Work Shift</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.work_shift || ''}</p>
+                                </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Nationality</p>
                                     <p class="px-2">:</p>
@@ -465,6 +471,7 @@ var EmployeeComponent = new (function () {
     this.getDataFormFilter = () => {
         let p = {};
         p.status_id = mThis.elStatus.value;
+        p.role_id = mThis.elRole.value;
         p.search_value = mThis.elSearch.value;
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {
@@ -619,6 +626,7 @@ var EmployeeComponent = new (function () {
             const d = res.status_code == 200 ? res.data : {};
 
             VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',true,'All',null);
+            VSUtil.setComboItems(mThis.elRole,d.roles,'id','name',true,'All',null);
         })
     }
 
@@ -805,7 +813,7 @@ const EmployeeDialog = new function() {
     this.btnSave =  this.self.querySelector('#dlg_sdl_add_employee_btn_save');
     this.elPositionId =  this.self.querySelector('#_sdl_position_id');
     this.elRoleId =  this.self.querySelector('#_sdl_role_id');
-    // this.elGenderId =  this.self.querySelector('#_sdl_gender_id');
+    this.elWorkShiftId =  this.self.querySelector('#_sdl_work_shift_id');
     this.elTitle = mThis.self.querySelector('.modal-title');
     this.div_employee_info = mThis.self.querySelector('#_sdl_employee_info');
     this.btnChooser = mThis.self.querySelector('#dlg_image_chooser');
@@ -839,7 +847,7 @@ const EmployeeDialog = new function() {
 
             VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'title', true, '(Select Position)', null);
             VSUtil.setComboItems(mThis.elRoleId, d.roles, 'id', 'name', true, '(Select Role)', null);
-            // VSUtil.setComboItems(mThis.elGenderId, d.genders, 'id', 'name', true, '(Select Gender)', null);
+            VSUtil.setComboItems(mThis.elWorkShiftId, d.work_shifts, 'id', 'name', true, '(Select Work Shift)', null);
             console.log(33333,d);
             onFinish(d);
         });
