@@ -6,11 +6,11 @@ use App\Models\DV;
 use App\Models\Bhr\Employee;
 use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-class LeaveManagement
+class Leave
 {
     protected $id = null;
     protected $userInfo = null;
-    protected static $img_dir = 'leave_managements';
+    protected static $img_dir = 'leave';
 
 
     function __construct($id = null, $userInfo = null)
@@ -34,7 +34,7 @@ class LeaveManagement
 
         ];
         $img_char = ['+',':',',',';','/','\\','=','?'];
-        $checkUnque = ["$branch_id|leave_managements|emp_id|id=id|text=Employee has already Leave "];
+        $checkUnque = ["$branch_id|leaves|emp_id|id=id|text=Employee has already Leave "];
 
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,$checkUnque);
@@ -48,10 +48,10 @@ class LeaveManagement
         $leave_created = $id > 0 ? 0 : 1;
         $leave_created = !$id;
 
-        $id = saveData($ss,'leave_managements', ['id' => $id], $inputs, [], 1,false);
+        $id = saveData($ss,'leaves', ['id' => $id], $inputs, [], 1,false);
      
         if ($id > 0) {
-            return DV::depends(1, ['leave_managements' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['leaves' => $inputs, 'id' => $id]);
         }
 
         return DV::error('Error saving leave management');
@@ -94,7 +94,7 @@ class LeaveManagement
         
         $skip_rows = ($current_page - 1) * $per_page;
     
-        $query = DB::table('leave_managements as l')
+        $query = DB::table('leaves as l')
             ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
             ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
@@ -122,7 +122,7 @@ class LeaveManagement
     {
         $branch_id = $ss->branch_id;
 
-        $leave = DB::table('leave_managements as l')
+        $leave = DB::table('leaves as l')
         ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
         ->join('positions as p', 'p.id', '=', 'emp.positions_id')
         ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
@@ -146,7 +146,7 @@ class LeaveManagement
         $branch_id = $ss->branch_id;
 
         // Build and execute the query
-        $query = DB::table('leave_managements')
+        $query = DB::table('leaves')
             ->where('id', $id)
             ->delete();
         if (!$query) {
@@ -179,7 +179,7 @@ class LeaveManagement
     // {
 
     //     $ss = $ss ? $ss : $this->userInfo;
-    //     $x = DB::table('leave_managements')->where('id', $id)->update([
+    //     $x = DB::table('leaves')->where('id', $id)->update([
     //         'action_id' => $action_id,
     //         'update_user'=>$ss->full_name,
     //         'update_date'=>getNowTime(),
