@@ -46,7 +46,7 @@ var EmployeeBonusComponent = new (function () {
             className: 'col_action align-middle',
             data: function (data, row, display) {
                 return `
-                   <div class="d-flex justify-content-center align-items-center">
+                   <div class="d-flex justify-content-start align-items-center">
                         <div class="text-center gap-2 d-flex flex-wrap">
                                 <button class="btn btn-sm btn-primary b-btn-edit" data-id="${data.id}"><i class="fa-regular fa-pen-to-square"></i></button>
                                 <button class="btn btn-sm btn-danger b-btn-delete" data-id="${data.id}"><i class="fa-regular fa-trash-can"></i></button>

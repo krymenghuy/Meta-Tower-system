@@ -9,7 +9,7 @@ use App\Http\Controllers\Bhr\PayrollListController;
 use App\Http\controllers\Bhr\SkillController;
 use App\Http\controllers\Bhr\StaffBenefitController;
 use App\Http\controllers\Bhr\StaffController;
-use App\Http\controllers\Bhr\LeaveManagementController;
+use App\Http\controllers\Bhr\LeaveController;
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Middleware\CustomRateLimiter;
@@ -141,14 +141,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list'
     Route::post('/delete', [PayrollListController::class, 'deletePayrollList']);
 });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave-management')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leaves')->group(function () {
 
-    Route::post('/save', [LeaveManagementController::class, 'save']);
-    Route::post('/list-paginate', [LeaveManagementController::class, 'getLeaveListPaginate']);
-    Route::post('/details', [LeaveManagementController::class, 'getDetails']);
-    Route::post('/delete', [LeaveManagementController::class, 'deleteLeaveManagement']);
-    Route::post('/form-options', [LeaveManagementController::class, 'getFormOptions']);
-    Route::post('/update-status', [LeaveManagementController::class, 'updateStatus']);
+    Route::post('/save', [LeaveController::class, 'save']);
+    Route::post('/list-paginate', [LeaveController::class, 'getLeaveListPaginate']);
+    Route::post('/details', [LeaveController::class, 'getDetails']);
+    Route::post('/delete', [LeaveController::class, 'delete']);
+    Route::post('/form-options', [LeaveController::class, 'getFormOptions']);
+    Route::post('/update-status', [LeaveController::class, 'updateStatus']);
 });
 
 // Job Level routes
@@ -224,7 +224,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('scan-plan')->
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('attendances')->group(function () {
 
     Route::post('/save', [AttendanceController::class, 'saveAttendance']);
-    Route::post('/list-paginate', [AttendanceController::class, 'getAttendanceListPaginate']);
+    Route::post('/list', [AttendanceController::class, 'attendanceList']);
     Route::post('/details', [AttendanceController::class, 'getDetails']);
     Route::post('/delete', [AttendanceController::class, 'deleteAttendance']);
     Route::post('/form-options', [AttendanceController::class, 'getFormOptions']);

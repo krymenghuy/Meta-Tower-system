@@ -1,15 +1,14 @@
-<div id="_main_jobsLevelComponent"  style="display:none;padding:20px 0 0">
+<div id="_main_jobsLevelComponent" style="display:none;padding:20px 0 0">
     <div class="top_level_card">
         <div class="card_title">TOP JOBS</div>
-        <div class="cards">
-            <div class="card1">
+        <div class="top_level_cards">
+            <div class="top_level_card1">
                 <div class="card_left">
                     <img src="assets/images/skills/software.png" alt="">
                 </div>
                 <div class="card_right">
                     <h6>Information Technology</h6>
-                    <p>Level: Pro</p>   
-                    <div class="rating">Rating:
+                    <div class="rating">
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
@@ -18,14 +17,13 @@
                     </div>
                 </div>
             </div>
-            <div class="card2">
+            <div class="top_level_card2">
                 <div class="card_left">
                     <img src="assets/images/skills/backend.png" alt="">
                 </div>
                 <div class="card_right">
                     <h6>Backend Development</h6>
-                    <p>Level: Pro</p>
-                    <div class="rating">Rating:
+                    <div class="rating">
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
@@ -34,13 +32,12 @@
                     </div>
                 </div>
             </div>
-            <div class="card3">
+            <div class="top_level_card3">
                 <div class="card_left">
                     <img src="assets/images/skills/maketing.png" alt="">
                 </div>
                 <div class="card_right">
                     <h6>Marketing</h6>
-                    <p>Level: Pro</p>
                     <div class="rating">
                         rating:
                         <i class="fa fa-star"></i>
@@ -78,7 +75,7 @@
     .container {
         display: flex;
         gap: 20px;
-        margin-top: -20px;
+        margin-top: -100px;
     }
 
     #_btnAddJobLevel {
@@ -101,7 +98,7 @@
         color: white;
     }
 
-    ._job_level_search{
+    ._job_level_search {
         padding: 10px;
         border: 1px solid #e2e0e0;
         border-radius: 50px;
@@ -109,19 +106,9 @@
         background-color: #f8f9fa;
     }
 
-    .table-container {
-        margin-top: 50px;
-    }
-
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-
     /* endform */
 
-    /* cards */
+    /* top_level_cards */
     .top_level_card {
         display: flex;
         flex-direction: column;
@@ -130,38 +117,32 @@
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
-        margin-top: 15px;
+        padding: 20px;
     }
 
     .card_title {
         font-size: 24px;
         font-weight: bold;
-        margin-bottom: 20px;
-        margin-left: 20px;
     }
 
-    .cards {
+    .top_level_cards {
         display: flex;
-        justify-content: space-between;
         flex-wrap: wrap;
         gap: 10px;
-        margin: 0px 20px 0px 20px;
 
     }
 
-    .card1,
-    .card2,
-    .card3 {
-        background-color: #9be3df85;
-        padding: 20px;
+    .top_level_card1,
+    .top_level_card2,
+    .top_level_card3 {
+        height: 120px;
+        width: 300px;
+        background-color: #f8f9fa;
+        box-shadow: 0 4px 8px 0 rgba(30, 30, 30, 0.149);
         border-radius: 10px;
-        gap: 2rem;
-        width: 350px;
-        height: 200px;
+        overflow: hidden;
         display: flex;
         position: relative;
-        justify-content: center;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
     }
 
     .card_left {
@@ -174,20 +155,26 @@
     .card_left img {
         display: flex;
         position: absolute;
-        width: 120px;
-        height: 120px;
+        width: 60px;
+        height: 60px;
     }
 
     .card_right {
-        width: 65%;
+        /* width: 100px; */
         display: flex;
         flex-direction: column;
         align-items: flex-start;
         justify-content: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        word-wrap: break-word;
+        white-space: nowrap;
+        max-width: 180px;
     }
 
     #_job_level_list {
-        height: 250px;
+        height: 300px;
+        padding: 10px 20px 0px 20px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
@@ -220,5 +207,10 @@
         cursor: pointer;
         transition: color 0.3s;
         scale: 1.1;
+    }
+    #_job_level_list_paginator{
+        display: flex;
+        position: fixed;
+        margin-top: -15px;
     }
 </style>

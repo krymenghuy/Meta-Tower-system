@@ -1,18 +1,19 @@
+
 <?php
 
 namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\Bhr\LeaveManagement;
+use App\Models\Bhr\Leave;
 use App\Models\JDV;
 use App\Services\Umt\AuthService;
 
-class LeaveManagementController extends Controller
+class LeaveController extends Controller
 {
     protected $leave=null;
     public function __construct(){
-        $this->leave = new LeaveManagement();
+        $this->leave = new Leave();
     }
 
     public function save(Request $req)
@@ -46,7 +47,7 @@ class LeaveManagementController extends Controller
 
 
 
-    public function deleteLeaveManagement(Request $req)
+    public function delete(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -73,8 +74,8 @@ class LeaveManagementController extends Controller
         }
 
         $id = $req->id ? $req->id : $req->id;
-        $leave = new LeaveManagement($id, $ss);
-        $res = $leave->updateStatus($req->status_id, $id);
+        $leave = new Leave($id, $ss);
+        $res = $leave->updateStatus($req->action_id, $id);
 
         return JDV::raw($res);
     }

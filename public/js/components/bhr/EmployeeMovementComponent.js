@@ -1,12 +1,12 @@
 "use strict";
 
-var WarningComponent = new (function () {
+var EmployeeMovementComponent = new (function () {
     let mThis = this;
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_warningComponent");
     this.self = this.jm[0];
     this.initAlready = false;
-    this.title_prop = "Warning";
+    this.title_prop = "Employee Movement";
     this.btnAddWarning = this.self.querySelector("#_btnAddWarning");
     this.elSearch = this.self.querySelector("#_warning_search");
 
@@ -27,8 +27,7 @@ var WarningComponent = new (function () {
                     }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                     <div>
                         <span style="font-size: 14px; font-weight: bold;">${
-                            data.name ?? ""
-                        } ${data.name_kh ?? ""}</span><br/>
+                            data.name ?? ""}</span><br/>
                         <span style="font-size: 12px; color: gray;">${
                             data.email ?? ""
                         }</span>
