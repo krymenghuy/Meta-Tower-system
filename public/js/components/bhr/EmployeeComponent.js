@@ -356,15 +356,10 @@ var EmployeeComponent = new (function () {
                     <div class="card-header">
                         <h4>Education</h4>
                         <div class="d-flex gap-2">
-                            <a href="javascript:void(0)" id="lnk_add_education">
+                            <a href="javascript:void(0)" data="id" id="lnk_add_education">
                             <i class="fa fa-plus-circle fs-5 text-success"></i>
                             </a>
-                            <a href="javascript:void(0)" id="ps-lnk_delete_education" style="">
-                            <i class="fa fa-trash fs-5 text-danger"></i>
-                            </a>
-                            <a href="javascript:void(0)" id="ps-lnk_edit_education" style="">
-                            <i class="fa fa-edit fs-5 text-warning"></i>
-                            </a>
+                            
                         </div>
                     </div>
                     <div class="card-body">
@@ -373,6 +368,12 @@ var EmployeeComponent = new (function () {
                             <div class="d-flex justify-content-between">
                                 <p class="w-50">Associate Degree</p>
                                 <p class="text-primary w-75">University of Oxford</p>
+                                <div class="d-flex gap-2"><a href="javascript:void(0)" id="ps-lnk_delete_education" style="">
+                            <i class="fa fa-trash fs-8 text-danger"></i>
+                            </a>
+                            <a href="javascript:void(0)" id="ps-lnk_edit_education" style="">
+                            <i class="fa fa-edit fs-8 text-warning"></i>
+                            </a></div>
                             </div>
                             <span class="text-muted">Web Development</span>
                         </div>
@@ -432,14 +433,17 @@ var EmployeeComponent = new (function () {
         this.profile_card_detail.innerHTML = html;
         document.getElementById('lnk_add_education').addEventListener('click', function (e)  {
             e.preventDefault();
-            let op = {'title':'New Education'};
-            AddEducation.show(op,(new_id)=>{
-                console.log(321,op,123,new_id);
-                
-                if(new_id){
-                    alert(123456);
+            let op = {
+                id: null,
+                btn: e.target,
+                title:"New Education",
+                onClose: () => {
+                    mThis.EmployeeListView.showPage();
                 }
-            });
+            };
+            console.log(op);
+            
+            AddEducation.show(op);
         // Action for adding new education
         });
     }
@@ -629,60 +633,167 @@ var EmployeeComponent = new (function () {
 
 
 });
-const AddEducation = new function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.self = main_view.appContent.children('#addEducation_dlg')[0];
-    this.modal = new bootstrap.Modal(this.self);
-    this.btnOK = this.self.querySelector('#addEducation_dlg_btnOK');
-    this.elError = this.self.querySelector('#addEducation_dlg_error');
-    this.elTitle = this.self.querySelector('#addEducation_dlgTitle');
+// const AddEducation = new function () {
+//     let mThis = this;
+//     this.base_url = main_view.base_url;
+//     this.self = main_view.appContent.children('#addEducation_dlg')[0];
+//     this.modal = new bootstrap.Modal(this.self);
+//     this.btnOK = this.self.querySelector('#addEducation_dlg_btnOK');
+//     this.elError = this.self.querySelector('#addEducation_dlg_error');
+//     this.elTitle = this.self.querySelector('#addEducation_dlgTitle');
   
-    this.elName = this.self.querySelector('#ps-newpl_name');
-    this.elWeightMarker = this.self.querySelector('#ps-newpl_kg_marker');
+//     this.elName = this.self.querySelector('#ps-newpl_name');
+//     this.elWeightMarker = this.self.querySelector('#ps-newpl_kg_marker');
   
-    this.btnOK.onclick = e => {
-      e.preventDefault();
-      let p = mThis.getData();
-      if (!p.name) {
-        mThis.elError.innerHTML = ('Name cannot be empty');
-        return;
-      }
+//     this.btnOK.onclick = e => {
+//       e.preventDefault();
+//       let p = mThis.getData();
+//       if (!p.name) {
+//         mThis.elError.innerHTML = ('Name cannot be empty');
+//         return;
+//       }
   
-      if (!$.isNumeric(p.kg_marker)) {
-        mThis.elError.innerHTML = ('Weight Marker is not valid');
-        return;
-      }
+//       if (!$.isNumeric(p.kg_marker)) {
+//         mThis.elError.innerHTML = ('Weight Marker is not valid');
+//         return;
+//       }
   
-      vsapi.call([mThis.base_url, '/abm/createSupplierPriceList'].join(''), p).then(res => {
-        if (res.status_code === 200) {
-          let d = res.data;
-          if (typeof mThis.onClose === 'function') mThis.onClose(d.id);
-          mThis.modal.hide();
-        } else mThis.elError.innerHTML(res.error_message);
-      });
+//       vsapi.call([mThis.base_url, '/abm/createSupplierPriceList'].join(''), p).then(res => {
+//         if (res.status_code === 200) {
+//           let d = res.data;
+//           if (typeof mThis.onClose === 'function') mThis.onClose(d.id);
+//           mThis.modal.hide();
+//         } else mThis.elError.innerHTML(res.error_message);
+//       });
   
-    };
+//     };
   
     
   
-    this.getData = () => {
-      let p = {};
-      p.name = mThis.elName.value;
-      p.kg_marker = mThis.elWeightMarker.value;
+//     this.getData = () => {
+//       let p = {};
+//       p.name = mThis.elName.value;
+//       p.kg_marker = mThis.elWeightMarker.value;
   
-      return p;
-    }
+//       return p;
+//     }
   
-    this.show = (option, onClose) => {
-      mThis.elError.innerHTML = (null);
-      mThis.elTitle.innerHTML = (option.title)
-      mThis.onClose = onClose;
-      mThis.modal.show();
+//     this.show = (option, onClose) => {
+//       mThis.elError.innerHTML = (null);
+//       mThis.elTitle.innerHTML = (option.title)
+//       mThis.onClose = onClose;
+//       mThis.modal.show();
   
-    }
-  }
+//     }
+//   }
+const AddEducation = (() => {
+    const self = {};
+    let dialog = null;
 
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            title: op.id ? "Edit Employee Seniority" : "New Employee Seniority",  // Dynamically set title
+            cssClass: "modal-md d-flex justify-content-center",
+            createContent: () => {
+                return [
+                    `<div class="row"><div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.Employee">Employee</label>
+        <div><select name="emp_id" class="data-input" data-field="emp_id"></select></div>
+    </div>
+    <div class=" form-group col-md-6">
+        <label class="form-label" vslang="titles.School">School</label>
+        <div><select name="school_id" class="data-input" data-field="school_id"></select></div>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.Period">Period</label>
+        <div><input name="period" class="form-control data-input" data-field="period"/></div>
+    </div>
+     <div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.Major">Major</label>
+        <div><input name="major" class="form-control data-input" data-field="major"/></div>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.Start Year">Start Year</label>
+        <div><input name="start_year" class="form-control data-input" data-field="start_year"/></div>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.End Year">End Year</label>
+        <div><input name="end_year" class="form-control data-input" data-field="end_year"/></div>
+    </div>
+   
+    <div class="form-group col-md-12">
+        <label class="form-label" vslang="titles.Diploma">Diploma</label>
+        <div><input name="diploma" class="form-control data-input" data-field="diploma"/></div>
+    </div></div>`
+                    
+                ].join('');
+            },
+            buttons:[
+                {
+                   label:"<span>Cancel</span>",
+                   cssClass:"btn btn-warning",
+                   click:(me)=>{
+                      me.hide(false);
+                   }
+                },
+                {
+                   label:"<span>Save</span>",
+                   cssClass:"btn btn-primary",
+                   click:(me)=>{
+                      let p = me.getData();
+                    //   p.image = me.userImageBox? me.userImageBox.getImage(): '';
+                      console.log(222,p);
+                      vsapi.call([main_view.base_url,'/hr/seniorities/save'].join(''),p,false,false).then(res =>{
+                          if(res.status_code ==200){
+                              me.modal.hide(true,p);
+                          }else cv_interact.error(res.error_message);
+                      });
+                   }
+                }
+             ],
+            configSelect: [
+                {
+                    name: "emp_id",
+                    data: "employees",
+                    valueField: "id",
+                    textField: "name",
+                    filterData: (data, res) => {
+
+                        return data;
+                    }
+                }
+            ],
+            prepareFormOptions: {
+                createTitle: "New Employee Seniority",
+                modifyTitle: "Edit Employee Seniority",
+                targetProp: "seniority",
+                api: {
+                    endpoint: `${main_view.base_url}/hr/seniorities/form-options`,
+                    params: (op) => {
+                        console.log(9090,op);
+                        
+                        return { id: op.id };  // Pass ID to fetch data for edit
+                    },
+                    onResponse: (me, res) => {
+                        if (op.id) {
+                            // Populate form with existing data for edit mode
+                            // me.setValue('emp_id', res.data.emp_id);
+                            // me.setValue('period', res.data.period);
+                            // me.setValue('description', res.data.description);
+                            // me.setValue('amount', res.data.amount);
+                        }
+                    }
+                }
+            },
+            onShow: (me) => {
+                // Any additional actions on dialog show can be placed here
+            }
+        });
+
+        dialog.show(op);
+    }
+    return self;
+})();
 
 const EmployeeDialog = new function() {
     const mThis = this;

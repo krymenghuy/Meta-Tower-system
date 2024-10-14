@@ -554,7 +554,7 @@
 
 
 
-<div class="modal fade" id="addEducation_dlg" tabindex="-1" role="dialog" aria-labelledby="addEducation_dlgTitle" aria-hidden="true">
+<!-- <div class="modal fade" id="addEducation_dlg" tabindex="-1" role="dialog" aria-labelledby="addEducation_dlgTitle" aria-hidden="true">
   <div class="modal-dialog modal-lg" role="dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -588,4 +588,4 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
