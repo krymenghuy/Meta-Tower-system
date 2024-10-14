@@ -42,6 +42,15 @@
                         <div id="info"></div>
                     </div>
                     <div class="form-group col-6">
+                        <label for="name" class="form-label trans-text" data-langprop="titles.Leave Type"></label>
+                        <select class=" data-input" id="_sdl_leave_type_id" data-field="leave_type_id"></select>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="name" class="form-label trans-text"
+                            data-langprop="titles.Reason"></label>
+                        <input type="text" class="form-control data-input" data-field="reason" />
+                    </div>
+                    <div class="form-group col-6">
                         <label for="name" class="form-label trans-text" data-langprop="titles.Start Date"></label>
                         <input type="date" class="form-control data-input" data-field="start_date" />
                     </div>
@@ -49,12 +58,6 @@
                         <label for="name" class="form-label trans-text" data-langprop="titles.End Date"></label>
                         <input type="date" class="form-control data-input" data-field="end_date" />
                     </div>
-                    <div class="form-group col-12">
-                        <label for="name" class="form-label trans-text"
-                            data-langprop="titles.Permission Detail"></label>
-                        <input type="text" class="form-control data-input" data-field="permission_details" />
-                    </div>
-
                 </div>
             </div>
 

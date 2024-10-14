@@ -39,7 +39,7 @@ class Leave
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,$checkUnque);
 
-        if ($res->error) 
+        if ($res->error)
             return DV::error($res->error);
 
         $inputs = $res->values;
@@ -49,7 +49,7 @@ class Leave
         $leave_created = !$id;
 
         $id = saveData($ss,'leaves', ['id' => $id], $inputs, [], 1,false);
-     
+
         if ($id > 0) {
             return DV::depends(1, ['leaves' => $inputs, 'id' => $id]);
         }
@@ -66,16 +66,16 @@ class Leave
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
-    
+
         $status_id = $d->status_id ?? null;
         $search_value = $d->search_value ?? null;
         $start_date = $d->start_date ?? null;
         $end_date = $d->end_date ?? null;
-    
+
         $str_search = '1=1';
         $str_status = '1=1';
         $str_dates = '1=1';
-    
+
         if ($search_value) {
             $str_search = "(l.reason LIKE '%" . $search_value . "%')";
         }
@@ -91,9 +91,9 @@ class Leave
                 $str_dates = "DATE(l.created_at) BETWEEN '$start_date' AND '$end_date'";
             }
         }
-        
+
         $skip_rows = ($current_page - 1) * $per_page;
-    
+
         $query = DB::table('leaves as l')
             ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
@@ -105,16 +105,16 @@ class Leave
             ->whereRaw($str_dates)
             ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.start_date, l.end_date, ls.name as status, l.reason, l.update_user, l.update_date')
             ->orderBy('l.id', 'DESC');
-    
+
         $clone_query = clone $query;
         $count = $clone_query->count('l.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-    
-       
-    
+
+
+
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-    
+
 
 
 
@@ -131,7 +131,7 @@ class Leave
         ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.start_date, l.end_date, ls.name as status, l.reason, l.update_user, l.update_date')
         ->first();
 
-       
+
         return $leave;
     }
 
