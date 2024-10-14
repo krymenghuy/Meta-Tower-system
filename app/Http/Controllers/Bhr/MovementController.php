@@ -3,35 +3,35 @@
 namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bhr\Movements;
+use App\Models\Bhr\Movement;
 use App\Models\JDV;
 use App\Services\Umt\AuthService;
 use Illuminate\Http\Request;
 
-class MovementsController extends Controller
+class MovementController extends Controller
 {
-    protected $movements;
-    public function __construct(Movements $movements)
+    protected $movement;
+    public function __construct(Movement $movement)
     {
-        $this->movements = $movements;
+        $this->movement = $movement;
     }
 
-    public function saveMovements(Request $req)
+    public function saveMovement(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return $this->movements->save($req->all(), $ss);
+        return $this->movement->save($req->all(), $ss);
     }
 
-    public function getMovementsListPaginate(Request $req)
+    public function getMovementListPaginate(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->movements->getMovementsListPaginate($req->all(), $ss));
+        return JDV::result($this->movement->getMovementListPaginate($req->all(), $ss));
     }
 
     public function getDetails(Request $req)
@@ -40,16 +40,16 @@ class MovementsController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->movements->getDetails($req->id, $ss));
+        return JDV::result($this->movement->getDetails($req->id, $ss));
     }
 
-    public function deleteMovements(Request $req)
+    public function deleteMovement(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return $this->movements->delete($req->id, $ss);
+        return $this->movement->delete($req->id, $ss);
     }
 
     public function getFormOptions(Request $req)
@@ -58,7 +58,7 @@ class MovementsController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->movements->getFormOptions($req->id, $ss));
+        return JDV::result($this->movement->getFormOptions($req->id, $ss));
     }
 
 }
