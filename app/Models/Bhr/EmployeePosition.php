@@ -64,7 +64,7 @@ class EmployeePosition
 
         $query = DB::table('emp_positions as ep')
             ->join('employees as e', 'e.id', '=', 'ep.emp_id')
-            ->join('employee_status as s', 's.id', '=', 'ep.status_id')
+            ->join('employee_statuses as s', 's.id', '=', 'ep.status_id')
             ->selectRaw('ep.id, e.id as emp_id, e.name, ep.prev_position_id,ep.position_id, ep.salary, s.name as status')
             ->where('ep.branch_id', $ss->branch_id);
 
@@ -103,7 +103,7 @@ class EmployeePosition
         // Build and execute the query
         $query = DB::table('emp_positions as ep')
             ->join('employees as e', 'e.id', '=', 'ep.emp_id')
-            ->join('employee_status as s', 's.id', '=', 'ep.status_id')
+            ->join('employee_statuses as s', 's.id', '=', 'ep.status_id')
             ->selectRaw('ep.id, e.id as emp_id, e.name,ep.position_id, ep.prev_position_id, ep.salary, s.name as status')
             ->where('ep.branch_id', $ss->branch_id)
             ->where('ep.id', $id)
@@ -146,7 +146,7 @@ class EmployeePosition
         return (object) [
 
             'employees' => DB::table('employees')->selectRaw('id,name')->get(),
-            'status' => DB::table('employee_status')->selectRaw('id,name')->get(),
+            'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
             'prev_positions' => DB::table('positions')->selectRaw('id,title')->get(),
             'positions' => DB::table('positions')->selectRaw('id,title')->get(),
             'emp_position' => $emp_position,
