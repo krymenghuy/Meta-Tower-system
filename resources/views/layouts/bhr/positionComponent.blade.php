@@ -1,4 +1,4 @@
-<div id="_main_positionComponent"  style="display:none;padding:20px 0 0">
+<div id="_main_positionComponent" style="display:none;padding:20px 0 0">
     <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter">
         <div class="d-flex align-items-center justify-content-start gap-2 w-100">
             <button type="button" class="btn btn-primary" id="_btnAddPosition">
@@ -19,7 +19,7 @@
                     <select type="id" id="el_status" class="data-input filter-field" data-field="status_id"></select>
                 </div>
             </div>
-        </div>  
+        </div>
     </div>
     <div id="_position_list" class="p-3"></div>
 </div>
@@ -61,12 +61,13 @@
     </div>
 </div>
 <style>
-    #_position_list_paginator{
+    #_position_list_paginator {
         display: flex;
         position: fixed;
-        margin-top: 60px;
+        bottom: 0;
     }
-    #_position_list{
+
+    #_position_list {
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
@@ -75,6 +76,7 @@
         justify-content: center;
         padding: 20px;
     }
+
     th,
     td {
         padding: 10px;

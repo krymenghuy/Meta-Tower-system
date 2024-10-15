@@ -1,9 +1,8 @@
-<div id="_main_bonusComponent"  style="display:none;padding:20px 0 0">
+<div id="_main_bonusComponent" style="display:none;padding:20px 0 0">
     <div class="d-flex  p-3 justify-content-between w-100 " id="_divFilter">
         <div class="d-flex align-items-center w-50 gap-2">
             <div class="w-50">
-                <input type="text" class="form-control filter-field" id="_sdl_search_bonus"
-                    placeholder="Search Bonus">
+                <input type="text" class="form-control filter-field" id="_sdl_search_bonus" placeholder="Search Bonus">
             </div>
             <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
                 <i class="la la-search"></i>
@@ -22,11 +21,12 @@
     </div>
 </div>
 <style>
-    #_bonus_list_paginator{
+    #_bonus_list_paginator {
         display: flex;
         position: fixed;
-        margin-top: 20px;
+        bottom: 0;
     }
+
     th,
     td {
         padding: 10px;

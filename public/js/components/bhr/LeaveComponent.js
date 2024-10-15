@@ -52,7 +52,7 @@ var LeaveComponent = new (function () {
             title: "Duration",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.start_date.replace(/-/g, '/') ?? ''} - ${data.end_date.replace(/-/g, '/') ?? ''}</p>`;
             }
         },
         {
@@ -419,7 +419,7 @@ const LeaveRequestDailog = (()=>{
                 cssClass:'btn btn-primary',
                 click:(me,btn)=>{
                     const p = me.getData();
-                    vsapi.call( [main_view.base_url,'hr/leaves/save'].join(''), p,btn,null).then(res=>{
+                    vsapi.call( [main_view.base_url,'/hr/leaves/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          me.hide(true,p);
                        }else cv_interact.error(res.error_message);

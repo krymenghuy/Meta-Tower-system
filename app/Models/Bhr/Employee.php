@@ -218,7 +218,6 @@ class Employee//extends Model
             }
             unset($row->photo_file_name);
         }
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 

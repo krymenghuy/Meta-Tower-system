@@ -211,6 +211,6 @@
     #_job_level_list_paginator{
         display: flex;
         position: fixed;
-        margin-top: -15px;
+        bottom: 0;
     }
 </style>
