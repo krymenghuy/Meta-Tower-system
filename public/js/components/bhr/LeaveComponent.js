@@ -52,7 +52,7 @@ var LeaveComponent = new (function () {
             title: "Duration",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.start_date.replace(/-/g, '/') ?? ''} - ${data.end_date.replace(/-/g, '/') ?? ''}</p>`;
             }
         },
         {
@@ -177,7 +177,7 @@ var LeaveComponent = new (function () {
 
         return p;
     };
- 
+
 
     this.initDropdownMenus = (table)=>{
         const menuOptopns = {
@@ -343,17 +343,17 @@ var LeaveComponent = new (function () {
 
 
 });
- 
+
 //begin::LeaveRequestDialog using GeneralDialog
 const LeaveRequestDailog = (()=>{
 
     const self = {};
     let dialog = null;
      self.show = (op)=>{
-   
+
         dialog = dialog || new GeneralDialog({
             cssClass:'modal-lg',
-            backdrop: 'static', //User click outside form, do not close form 
+            backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
                  return [`<div class="row">
@@ -365,29 +365,29 @@ const LeaveRequestDailog = (()=>{
                      <div id="info"></div>
                  </div>
                  <div class="form-group col-6">
-                    <label for="leave_date" class="form-label" vslang="titles.Start Date"></label>
-                    <input name="leave_date" class="form-control data-input" data-field="leave_date" />
+                    <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
+                    <input name="start_date" class="form-control data-input" data-field="start_date" />
                 </div>
                 <div class="form-group col-6">
-                  <label for="return_date" class="form-label" vslang="titles.End Date"></label>
-                  <input name="return_date" class="form-control data-input" data-field="return_date" />
+                  <label for="end_date" class="form-label" vslang="titles.End Date"></label>
+                  <input name="end_date" class="form-control data-input" data-field="end_date" />
                 </div>
                  <div class="form-group col-12">
                      <label for="leave_type" class="form-label" vslang="titles.Leave Type"></label>
                      <select name="leave_type" class=" data-input"  data-field="leave_type_id"></select>
                  </div>
                  <div class="form-group col-12">
-                     <label for="remarks" class="form-label"
-                     vslang="titles.Remarks"></label>
-                     <textarea  type="text" class="form-control data-input" data-field="remarks"></textarea>
+                     <label for="reason" class="form-label"
+                     vslang="titles.Reason"></label>
+                     <textarea  type="text" class="form-control data-input" data-field="reason"></textarea>
                  </div>
-                
+
               </div>`].join('');
             },
             contentCreated:(me)=>{
-               //Convert field to be DatePicker : leave_date and return_date 
-               DateTimePicker.init(me.controls.leave_date);
-               DateTimePicker.init(me.controls.return_date);
+               //Convert field to be DatePicker : start_date and end_date
+               DateTimePicker.init(me.controls.start_date);
+               DateTimePicker.init(me.controls.end_date);
 
             },
             configSelect:[
@@ -395,6 +395,7 @@ const LeaveRequestDailog = (()=>{
                  name:"employee",
                  data:'employees',
                  textField:(me, d)=> {return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.phone_number}</span></div></div>`; },
+                // textField:"name",
                  valueField:'id'
                },
                {
@@ -418,9 +419,7 @@ const LeaveRequestDailog = (()=>{
                 cssClass:'btn btn-primary',
                 click:(me,btn)=>{
                     const p = me.getData();
-                    console.log(87878, p);
-                    
-                    vsapi.call( [main_view.base_url,'hr/leaves/save'].join(''), p,btn,null).then(res=>{
+                    vsapi.call( [main_view.base_url,'/hr/leaves/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          me.hide(true,p);
                        }else cv_interact.error(res.error_message);
@@ -431,16 +430,16 @@ const LeaveRequestDailog = (()=>{
             prepareFormOptions:{
                createTitle:'Add Leave Request',
                modifyTitle:'Edit Leave Request',
-               targetProp: 'leave_request', 
+               targetProp: 'leave_request',
                api:{
                  endpoint: [main_view.base_url,'/hr/leaves/form-options'].join(''),
                  params:(op)=>{
                     return {'id':op.id};
                  }
-               }, 
-               onResponse: (me, res)=>{
-                 console.log('result from api "/form-options": ', res);
-               }  
+               },
+            //    onResponse: (me, res)=>{
+            //      console.log('result from api "/form-options": ', res);
+            //    }
             },
 
             onPrepareForm:(me, data)=>{
@@ -475,7 +474,7 @@ const LeaveRequestDailog = (()=>{
 //     this.btnSave.onclick = e => {
 //         e.preventDefault();
 //         let p = mThis.getDataForm();
-         
+
 //         vsapi.call(`${mThis.base_url}/hr/leaves/save`, p, mThis.btnSave, false).then(res => {
 //             if (res.status_code === 200) {
 //                 mThis.modal.hide();
@@ -563,7 +562,7 @@ const LeaveRequestDailog = (()=>{
 //             el.value ='';
 //         });
 
-      
+
 //         if(!d) return;
 
 //         div.querySelectorAll('.data-input').forEach(el => {

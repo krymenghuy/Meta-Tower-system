@@ -110,9 +110,10 @@ class EmployeeEvent
         }
         return (object) [
 
-            'employees' => DB::table('employees')->selectRaw('id,name')->get(),
-            'impacts' => DB::table('event_impacts')->selectRaw('id,name')->get(),
-            'events' => DB::table('events')->selectRaw('id,name')->get(),
+            'employees' => GeneralSettings::options_employee(10,$ss),
+            'impacts' => GeneralSettings::options_event_impact($ss),
+            'events' => GeneralSettings::options_event($ss),
+
             'emp_event' => $emp_event,
         ];
 

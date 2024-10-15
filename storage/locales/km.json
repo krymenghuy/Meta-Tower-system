@@ -60,7 +60,7 @@
 		"Code":"Code",
 		"Unspecified":"មិនទាន់កំណត់"
 	},
- 
+
    "transaction":{
 	"Date":"Date",
 	"Amount":"Amount",
@@ -156,6 +156,7 @@
 		"Collector":"អ្នកដឹកចូល"
 	},
 	"titles":{
+        "Start Date":"ថ្ងៃចាប់ផ្តើម",
 		"Staff Movement": "កាផ្លាស់ប្ដូរ​របស់បុគ្គលិក",
 		"Staff Attendance": "អវត្តមាន​របស់បុគ្គលិក",
 		"Attendance":"វត្តមាន",
@@ -176,7 +177,7 @@
 		"Sales Commissions":"កំរៃជើងសារភ្នាក់ងារ",
 		"Posters":"ទាំងរូបភាព",
 		"Report Center":"មណ្ឌលរបាយការណ៍",
-	 
+
 		"Commission Policies":"ក្រមកម្រៃជើងសារ",
 		"Commission Payments":"ការទូទាត់កម្រៃជើងសារ",
 		"Leads":"អតិថិជនគោលដៅ",
