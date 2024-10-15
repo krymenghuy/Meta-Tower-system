@@ -124,11 +124,11 @@ class Leave
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
- 
+
 
     function getDetails($id ,$ss =null)
     {
-        $col_update_date = DBX::formatDate('l.updated_at','update_date'); 
+        $col_update_date = DBX::formatDate('l.updated_at','update_date');
         $leave = DB::table('leaves as l')
         ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
         ->join('positions as p', 'p.id', '=', 'emp.positions_id')
@@ -144,7 +144,7 @@ class Leave
     function delete($id, $ss)
     {
         $id = $id ?? $this->id;
-         
+
         $delete = DB::table('leaves')->where('id',$id)->delete();
         return DV::depends($delete,['action','deleted']);
     }
@@ -157,7 +157,7 @@ class Leave
             'employees' => GeneralSettings::options_employee(10,$ss),
             'leave_types' =>GeneralSettings::options_leave_type($ss),
             'status' =>GeneralSettings::options_leave_status($ss),
-            'leave' => $leave,
+            'leave_request' => $leave,
         ];
 
     }
