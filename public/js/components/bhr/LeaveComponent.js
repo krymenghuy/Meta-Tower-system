@@ -177,7 +177,7 @@ var LeaveComponent = new (function () {
             status_id: mThis.elFilter_status.value,
             leave_type_id: mThis.elFilter_leaveType.value,
             search_value:mThis.elSearch.value,
-             
+
         };
         p = mThis.setFilterPeriod(p, periodName, null,null);
         // let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
@@ -185,7 +185,7 @@ var LeaveComponent = new (function () {
         //     const f = el.dataset.field;
         //     p[f] = el.value;
         // });
-        
+
 
         return p;
     };
@@ -302,7 +302,7 @@ var LeaveComponent = new (function () {
                 mThis.LeaveRequestListView.showPage();
             }
         };
-    
+
         LeaveRequestDailog.show(op);
     }
 
@@ -470,4 +470,3 @@ const LeaveRequestDailog = (()=>{
     return self;
 })();
 //end:: LeaveRequestDialog
- 

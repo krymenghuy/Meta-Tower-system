@@ -816,14 +816,7 @@ const EmployeeDialog = (()=>{
             createContent:()=>{
                  return [`<div class="row">
                             <div class="col-3">
-                                <div class="width-height-social-icon d-flex align-items-center justify-content-center border rounded-3 position-relative"
-                                    style="height: 170px;" aria-label="image">
-                                    <div id=""
-                                        class="d-flex align-items-center justify-content-center w-100 h-100"
-                                        role="button">
-                                        <i class="fa-regular fa-image fs-4"></i>
-                                    </div>
-                                </div>
+                                <div name="div_emp_photo" class="data-input" data-field="image_url" role="button"></div>
                             </div>
                             <div class="col-9">
                                 <div class="row">
@@ -902,6 +895,55 @@ const EmployeeDialog = (()=>{
                //Convert field to be DatePicker : start_date and end_date
                DateTimePicker.init(me.controls.date_of_birth);
                DateTimePicker.init(me.controls.joining_date);
+               console.log(444);
+               LocaleManager.translateZone(me.divModal);
+                let div_emp_photo = me.divModal.querySelector('[name="div_emp_photo"]');
+                me.userImageBox = new ImageBox(div_emp_photo,{containerclass:'emp-profile-container',imgClass:"data-input",dataset:{"field" :"image_url"}});
+                console.log(999,op);
+
+                me.showProfile =  (code) =>{
+                   let fields = [];
+                   let p = {'id':code};
+                   console.log(4545,me);
+
+                   vsapi.call([main_view.base_url,'/hr/employee/form-options'].join(''),p,false,false).then(res =>{
+                      let d = res.status_code ==200? res.data: {};
+                      d = d.employee || {};
+
+                      me.divModal.querySelectorAll('.data-input').forEach(el =>{
+                         const f =el.dataset.field;
+                         console.log(7788899,d);
+
+                         if(fields.indexOf(f)>=0){
+                               el.value = d[f] || "";
+                         }
+                        else if(f ==='image_url'){
+                            if (me.dataOptions.id)
+                            el.innerHTML = `<img name="div_emp_photo" class="w-100" src="${d[f] || ''}"/>`;
+                        }
+                      });
+                   });
+                };
+                me.deleteImage = (div) => {
+                    const btnDelete = div;//.querySelector('[role=\'button\']');
+                    btnDelete.onclick = function(e){
+                        e.preventDefault();
+                        const html = `<div id="dlg_image_chooser"
+                                            class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
+                                            <i class="fa-regular fa-image fs-4 text-muted"></i>
+                                        </div>`;
+                        div.innerHTML = html;
+                        // mThis.chooseImage(div);
+                        // let div_emp_photo = div.querySelector('[name="div_emp_photo"]');
+                        me.userImageBox = new ImageBox(div,{containerclass:'emp-profile-container',imgClass:"data-input",dataset:{"field" :"image_url"}});
+                    }
+                }
+
+                me.deleteImage(div_emp_photo);
+
+
+                me.showProfile(me.dataOptions.id);
+
 
             },
             configSelect:[
@@ -938,8 +980,10 @@ const EmployeeDialog = (()=>{
                 label:'<span>Save</span>',
                 cssClass:'btn btn-primary',
                 click:(me,btn)=>{
-                    const p = me.getData();
-                    vsapi.call( [main_view.base_url,'hr/employee/save'].join(''), p,btn,null).then(res=>{
+                    let p = me.getData();
+                    p.photo = me.userImageBox? me.userImageBox.getImage(): '';
+                    console.log(222444,p);
+                    vsapi.call( [main_view.base_url,'/hr/employee/save'].join(''), p,btn,false,false).then(res =>{
                        if(res.status_code ==200){
                          me.hide(true,p);
                        }else cv_interact.error(res.error_message);
@@ -952,14 +996,14 @@ const EmployeeDialog = (()=>{
                modifyTitle:'Edit Employee',
                targetProp: 'employee',
                api:{
-                 endpoint: [main_view.base_url,'/hr/employee/form-options`'].join(''),
+                endpoint: [main_view.base_url,'/hr/employee/form-options'].join(''),
                  params:(op)=>{
                     return {'id':op.id};
                  }
                },
-            //    onResponse: (me, res)=>{
-            //      console.log('result from api "/form-options": ', res);
-            //    }
+               onResponse: (me, res)=>{
+                 console.log('result from api "/form-options": ', res);
+               }
             },
 
             onPrepareForm:(me, data)=>{
