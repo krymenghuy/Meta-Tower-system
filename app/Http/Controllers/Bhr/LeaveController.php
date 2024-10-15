@@ -60,9 +60,8 @@ class LeaveController extends Controller
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $leave = $this->leave->getFormOptions($req->id,$ss);
-
-        return JDV::result($leave);
+        $data = $this->leave->getFormOptions($req->id,$ss);
+        return JDV::result($data);
     }
 
    public function updateStatus(Request $req)

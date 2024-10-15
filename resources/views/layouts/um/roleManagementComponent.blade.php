@@ -113,10 +113,10 @@
     </div>
     <div class="d-flex flex-row gap-2">
       <button id="_lnkNewRole" class="btn btn-sm btn-primary rounded-5" type="button">
-        <span class="trans-text text-nowrap" data-langprop="buttons.Add Role"></span></i>
+        <span class=" text-nowrap" vslang="buttons.Add Role"></span></i>
       </button>
       <button id="_um_btn_pdf" class="btn btn-sm btn-danger mr-5 rounded-5" type="button">
-        <i class="fa fa-file-pdf"></i>&nbsp;<span class="trans-text text-white" data-langprop="buttons.PDF"></span>
+        <i class="fa fa-file-pdf"></i>&nbsp;<span class=" text-white" vslang="buttons.PDF"></span>
       </button>
     </div>
   </div>
@@ -130,15 +130,15 @@
     class="mt-3 w-100 flex-column shadow-lg rounded-3 p-2 d-flex flex-row gap-3 bg-white vs-tab-view" id="_um_role_tab">
     <div class="d-flex flex-row gap-2 vs-tab-header">
       <a href="javascript:void(0)" class="tab-button view_users active" data-target="view_users"><span
-          class="trans-text rounded-3  p-2" data-langprop="buttons.Users">Users</span></a>
-      <a href="javascript:void(0)" class="tab-button view_apps" data-target="view_apps"><span class="trans-text"
-          data-langprop="buttons.Applications"></span></a>
-      <a href="javascript:void(0)" class="tab-button view_modules" data-target="view_modules"><span class="trans-text"
-          data-langprop="buttons.Modules"></span></a>
+          class=" rounded-3  p-2" vslang="buttons.Users">Users</span></a>
+      <a href="javascript:void(0)" class="tab-button view_apps" data-target="view_apps"><span class=""
+          vslang="buttons.Applications"></span></a>
+      <a href="javascript:void(0)" class="tab-button view_modules" data-target="view_modules"><span class=""
+          vslang="buttons.Modules"></span></a>
       <a href="javascript:void(0)" class="tab-button view_permissions" data-target="view_permissions"><span
-          class="trans-text" data-langprop="buttons.Permissions"></span></a>
-      <a href="javascript:void(0)" class="tab-button view_reports" data-target="view_reports"><span class="trans-text"
-          data-langprop="buttons.Reports"></span></a>
+          class="" vslang="buttons.Permissions"></span></a>
+      <a href="javascript:void(0)" class="tab-button view_reports" data-target="view_reports"><span class=""
+          vslang="buttons.Reports"></span></a>
     </div>
     <div class="w-100 p-2 m-3 vs-tab-body">
    
@@ -151,11 +151,11 @@
             </div>
             <div class="d-flex pt-2 gap-2">
               <a href="javascript:void(0)" id="_um_role_add_member" class=""><span
-                  class="trans-text pr-2 pl-2 p-1 bg-primary text-white border border-primary rounded-4"
-                  data-langprop="buttons.Add Member"></span></a>
+                  class=" pr-2 pl-2 p-1 bg-primary text-white border border-primary rounded-4"
+                  vslang="buttons.Add Member"></span></a>
               <a href="javascript:void(0)" id="_um_role_create_user" class=""><span
-                  class="trans-text pr-2 pl-2 p-1 bg-primary text-white border border-primary rounded-4"
-                  data-langprop="buttons.Create User"></span></a>
+                  class=" pr-2 pl-2 p-1 bg-primary text-white border border-primary rounded-4"
+                  vslang="buttons.Create User"></span></a>
             </div>
           </div>
           <div class="mt-2">
@@ -225,7 +225,7 @@
   <div class="modal-dialog modal-lg vs-modal-dialog" role="dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title trans-text" id="_um_dlgFindUser_title" data-langprop="titles.Find Users">Find Users</h5>
+        <h5 class="modal-title " id="_um_dlgFindUser_title" vslang="titles.Find Users">Find Users</h5>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
@@ -243,10 +243,10 @@
 
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary trans-text" data-dismiss="modal"
-          data-langprop="buttons.Cancel"></button>
-        <button type="button" class="btn btn-primary trans-text" id="_um_dlgFindUser_btnOK"
-          data-langprop="buttons.OK"></button>
+        <button type="button" class="btn btn-secondary " data-dismiss="modal"
+          vslang="buttons.Cancel"></button>
+        <button type="button" class="btn btn-primary " id="_um_dlgFindUser_btnOK"
+          vslang="buttons.OK"></button>
       </div>
     </div>
   </div>

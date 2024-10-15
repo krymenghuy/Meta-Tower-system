@@ -119,7 +119,7 @@
         border-radius: 50%;
     }
 
-    /* .kt-menu__link-text[data-langprop] {
+    /* .kt-menu__link-text[vslang] {
         color: #ffffff;
     } */
     .kt-menu__item:hover {
@@ -127,7 +127,7 @@
         /* border-radius: 0px 0px 20px 0px; */
     }
 
-    .kt-menu__link-text[data-langprop]:hover {
+    .kt-menu__link-text[vslang]:hover {
         border-radius: 0px 0px 0px 20px;
         color: #000000;
     }
@@ -177,7 +177,7 @@ function v_display($mod_id, $module_ids = null)
                         <!-- <i class="fas fa-chart-line icons opacity-icons"></i> -->
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/Grid.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Dashboard"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Dashboard"></span>
                 </a>
             </li>
 
@@ -192,8 +192,8 @@ function v_display($mod_id, $module_ids = null)
                         <i class="fas fa-tasks icons opacity-icons"></i>
                         <!-- <svg class="icons opacity-icons" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">!Font Awesome Free 6.5.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.<path d="M139.6 35.5a12 12 0 0 0 -17 0L58.9 98.8l-22.7-22.1a12 12 0 0 0 -17 0L3.5 92.4a12 12 0 0 0 0 17l47.6 47.4a12.8 12.8 0 0 0 17.6 0l15.6-15.6L156.5 69a12.1 12.1 0 0 0 .1-17zm0 159.2a12 12 0 0 0 -17 0l-63.7 63.7-22.7-22.1a12 12 0 0 0 -17 0L3.5 252a12 12 0 0 0 0 17L51 316.5a12.8 12.8 0 0 0 17.6 0l15.7-15.7 72.2-72.2a12 12 0 0 0 .1-16.9zM64 368c-26.5 0-48.6 21.5-48.6 48S37.5 464 64 464a48 48 0 0 0 0-96zm432 16H208a16 16 0 0 0 -16 16v32a16 16 0 0 0 16 16h288a16 16 0 0 0 16-16v-32a16 16 0 0 0 -16-16zm0-320H208a16 16 0 0 0 -16 16v32a16 16 0 0 0 16 16h288a16 16 0 0 0 16-16V80a16 16 0 0 0 -16-16zm0 160H208a16 16 0 0 0 -16 16v32a16 16 0 0 0 16 16h288a16 16 0 0 0 16-16v-32a16 16 0 0 0 -16-16z"/></svg> -->
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Employee Management"></span>
+                    <span class="kt-menu__link-text font-color "
+                        vslang="menus.Employee Management"></span>
                 </a>
             </li>
         
@@ -206,7 +206,7 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/bhr/User_check.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text text-nowrap trans-text" data-langprop="menus.Employee Benefits">
+                    <span class="kt-menu__link-text text-nowrap " vslang="menus.Employee Benefits">
                         Employee Benefits</span>
                     <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
                 </a>
@@ -218,8 +218,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/bhr/User_check.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Bonus"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Bonus"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
@@ -228,20 +228,20 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/bhr/User_check.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Seniority"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Seniority"></span>
                             </a>
                         </li>
                     </ul>
                 </div>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
-                <a href="LeaveRequestComponent" modid="105" class="menu-item kt-menu__link">
+                <a href="LeaveComponent" modid="105" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/User x.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Leave Menegement"></span>
+                    <span class="kt-menu__link-text font-color "
+                        vslang="menus.Leave Menegement"></span>
                 </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
@@ -249,7 +249,7 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/Credit card.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Payroll"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Payroll"></span>
                 </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
@@ -257,8 +257,8 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/User_check.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Attendance Management"></span>
+                    <span class="kt-menu__link-text font-color "
+                        vslang="menus.Attendance Management"></span>
                 </a>
             </li>
             
@@ -267,8 +267,8 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/general_report.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Employee Attendance"></span>
+                    <span class="kt-menu__link-text font-color "
+                        vslang="menus.Employee Attendance"></span>
                 </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(209); ?>>
@@ -277,8 +277,8 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/general_report.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Account Menagement"></span>
+                    <span class="kt-menu__link-text font-color "
+                        vslang="menus.Account Menagement"></span>
                 </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
@@ -287,11 +287,11 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/company_profile.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Skills"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Skills"></span>
                 </a>
             </li>
             <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
-                <h4 class="kt-menu__section-text trans-text" data-langprop="menus.Settings"></h4>
+                <h4 class="kt-menu__section-text " vslang="menus.Settings"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
@@ -300,8 +300,8 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/general_report.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Report Center"></span>
+                    <span class="kt-menu__link-text font-color "
+                        vslang="menus.Report Center"></span>
                 </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
@@ -310,8 +310,8 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/warning.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text"
-                        data-langprop="menus.Warning"></span>
+                    <span class="kt-menu__link-text font-color "
+                        vslang="menus.Warning"></span>
                 </a>
             </li>
           
@@ -320,7 +320,7 @@ function v_display($mod_id, $module_ids = null)
                         <span class="kt-menu__link-icon">
                             <img class="icons opacity-icons" src="{{ asset('assets/images/icons/warning.svg') }}" />
                         </span>
-                        <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Warning"></span>
+                        <span class="kt-menu__link-text font-color " vslang="menus.Warning"></span>
                     </a>
                 </li>
                 <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
@@ -329,7 +329,7 @@ function v_display($mod_id, $module_ids = null)
                             <img class="icons opacity-icons"
                                 src="{{ asset('assets/images/icons/general_report.svg') }}" />
                         </span>
-                        <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Report Center"></span>
+                        <span class="kt-menu__link-text font-color " vslang="menus.Report Center"></span>
                     </a>
                 </li> --}}
             {{-- /* skills*/ --}}
@@ -342,7 +342,7 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-icon">
                         <i class="fas fa-truck-plane icons opacity-icons"></i>
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Holiday"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Holiday"></span>
                 </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
@@ -351,7 +351,7 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/company_profile.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Company Setup"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Company Setup"></span>
                 </a>
             </li>
             <li class="d-none kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
@@ -361,7 +361,7 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/general_settings.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text trans-text" data-langprop="menus.General Settings"></span>
+                    <span class="kt-menu__link-text " vslang="menus.General Settings"></span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu">
@@ -373,8 +373,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/delivery_zones.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Country Zone"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Country Zone"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(220); ?>>
@@ -383,8 +383,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/zone_price.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Customer Zone Prices"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Customer Zone Prices"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(230); ?>>
@@ -393,8 +393,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/zone_price.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Supplier Zone Prices"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Supplier Zone Prices"></span>
                             </a>
                         </li>
                     </ul>
@@ -408,7 +408,7 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/general_settings.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Histhory setup"></span>
+                    <span class="kt-menu__link-text " vslang="menus.Histhory setup"></span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu">
@@ -420,8 +420,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/delivery_zones.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Holiday Setup"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Holiday Setup"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(220); ?>>
@@ -430,8 +430,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/zone_price.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Automatic Employee"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Automatic Employee"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(230); ?>>
@@ -440,8 +440,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/zone_price.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Department List"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Department List"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(230); ?>>
@@ -450,8 +450,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/zone_price.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Position List"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Position List"></span>
                             </a>
                         </li>
                     </ul>
@@ -465,7 +465,7 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/general_settings.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text trans-text" data-langprop="menus.Whole Database backup"></span>
+                    <span class="kt-menu__link-text " vslang="menus.Whole Database backup"></span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu">
@@ -477,8 +477,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/delivery_zones.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Whole Database Backup"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Whole Database Backup"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(220); ?>>
@@ -487,8 +487,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/zone_price.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Restore Database"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Restore Database"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(230); ?>>
@@ -497,8 +497,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/zone_price.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Data Import"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Data Import"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(230); ?>>
@@ -507,8 +507,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/zone_price.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Data Export"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Data Export"></span>
                             </a>
                         </li>
                     </ul>
@@ -521,8 +521,8 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/users_management.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text text-nowrap trans-text"
-                        data-langprop="menus.staff movement">User & Role Management</span>
+                    <span class="kt-menu__link-text text-nowrap "
+                        vslang="menus.staff movement">User & Role Management</span>
                     <i class="kt-menu__ver-arrow la la-angle-right"></i>
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
@@ -533,8 +533,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/manage_roles.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.Role Management"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.Role Management"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(100); ?>>
@@ -543,8 +543,8 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/manage_users.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text"
-                                    data-langprop="menus.User Management"></span>
+                                <span class="kt-menu__link-text font-color "
+                                    vslang="menus.User Management"></span>
                             </a>
                         </li>
                     </ul>
@@ -559,7 +559,7 @@ function v_display($mod_id, $module_ids = null)
                         <img class="icons opacity-icons"
                             src="{{ asset('assets/images/icons/users_management.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text text-nowrap trans-text" data-langprop="menus.Mobile Settings">Mobile Settings</span>
+                    <span class="kt-menu__link-text text-nowrap " vslang="menus.Mobile Settings">Mobile Settings</span>
                     <i class="kt-menu__ver-arrow la la-angle-right text-white"></i>
                 </a>
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
@@ -570,7 +570,7 @@ function v_display($mod_id, $module_ids = null)
                                     <i class="fas fa-truck-plane icons opacity-icons"></i>
                                     <!-- <img class="icons opacity-icons" src="{{ asset('assets/images/icons/package_trail.svg') }}" /> -->
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Department"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Department"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
@@ -579,7 +579,7 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/icons/general_report.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Position"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Position"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
@@ -587,7 +587,7 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-icon">
                                     <i class="fas fa-tasks icons opacity-icons"></i>
                                 </span>
-                                <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Job Level"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Job Level"></span>
                             </a>
                         </li>
                     </ul>
@@ -598,7 +598,7 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/icons/log_out.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color trans-text" data-langprop="menus.Log Out">Log
+                    <span class="kt-menu__link-text font-color " vslang="menus.Log Out">Log
                         Out</span>
                 </a>
             </li>
