@@ -70,7 +70,7 @@ class Benefit
         $str_search = '1=1';
 
         $query = DB::table('benefits as b')
-        ->selectRaw('b.id, b.category, b.amount, b.description');
+        ->selectRaw('b.id, b.category_id, b.amount, b.description');
 
         if ($search_id) {
             $query->whereRaw('b.id =' . $search_id);

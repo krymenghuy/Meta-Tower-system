@@ -375,11 +375,11 @@
     </div>
     <div class="justify-content-end w-100 d-none d-sm-none d-md-flex d-lg-flex">
         <button id="_um_btn_pdf" class="btn btn-sm btn-primary mr-5 rounded-5" type="button">
-          <i class="fa fa-file-pdf"></i> <span class="trans-text" data-langprop="buttons.PDF"></span>
+          <i class="fa fa-file-pdf"></i> <span class="" vslang="buttons.PDF"></span>
         </button>
 
         <button  id="_lnkNewRole" class="btn btn-sm btn-primary mr-5 btn-circle shadow text-nowrap " type="button">
-            <i class="fa fa-user-plus"><span class="trans-text text-nowrap" data-langprop="buttons.New Role"></span></i>
+            <i class="fa fa-user-plus"><span class=" text-nowrap" vslang="buttons.New Role"></span></i>
         </button>
     </div>
   </div>
@@ -530,7 +530,7 @@
     <div class="modal-dialog modal-md vs-modal-dialog" role="dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title trans-text" id="_role_dlgTitle" data-langprop="titles.Creating a new role"></h5>
+                <h5 class="modal-title " id="_role_dlgTitle" vslang="titles.Creating a new role"></h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -560,8 +560,8 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary btn-default height" data-dismiss="modal"><span class="trans-text" data-langprop="buttons.Cancel"></span></button>
-                <button type="button" class="btn btn-primary height" id="_role_dlg_btnOK"><span class="trans-text" data-langprop="buttons.Create"></span></button>
+                <button type="button" class="btn btn-secondary btn-default height" data-dismiss="modal"><span class="" vslang="buttons.Cancel"></span></button>
+                <button type="button" class="btn btn-primary height" id="_role_dlg_btnOK"><span class="" vslang="buttons.Create"></span></button>
             </div>
         </div>
     </div>

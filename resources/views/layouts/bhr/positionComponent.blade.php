@@ -15,7 +15,7 @@
                     <i class="la la-search"></i>
                 </button>
                 <div class="d-flex align-items-center">
-                    <!-- <label for="" class="form-label trans-text p-2" data-langprop="titles.Status"></label> -->
+                    <!-- <label for="" class="form-label  p-2" vslang="titles.Status"></label> -->
                     <select type="id" id="el_status" class="data-input filter-field" data-field="status_id"></select>
                 </div>
             </div>
@@ -37,23 +37,23 @@
                 <div class="row gap-0" id="_sdl_position_info">
                     <div class="col p-5">
                         <div class="form-group">
-                            <label for="name" class="form-label trans-text"
-                                data-langprop="titles.Title Of Position">Name</label>
+                            <label for="name" class="form-label "
+                                vslang="titles.Title Of Position">Name</label>
                             <input type="text" class="form-control data-input w-100" data-field="title" />
                         </div>
                         <div class="form-group">
-                            <label for="name" class="form-label trans-text"
-                                data-langprop="titles.Name Of Department">Name</label>
+                            <label for="name" class="form-label "
+                                vslang="titles.Name Of Department">Name</label>
                             <select class=" data-input w-100" id="_sdl_department_id" data-field="department_id"></select>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
-                        <span class="trans-text" data-langprop="titles.Cancel"></span>
+                        <span class="" vslang="titles.Cancel"></span>
                     </button>
                     <button id="dlg_sdl_add_position_btn_save" type="button" class="btn btn-sm btn-primary">
-                        <span class="trans-text" data-langprop="titles.Save"></span>
+                        <span class="" vslang="titles.Save"></span>
                     </button>
                 </div>
             </div>

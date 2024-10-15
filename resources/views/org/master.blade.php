@@ -143,7 +143,7 @@
                             </div>
                             <div class="show--title">
                                 <div class="screen-info">
-                                    <h5 class="screen-title mb-0 trans-text" data-langprop="titles.dashboard" style="text-transform:uppercase" id="screen_title">Dashboard</h5>
+                                    <h5 class="screen-title mb-0 " vslang="titles.dashboard" style="text-transform:uppercase" id="screen_title">Dashboard</h5>
                                 </div>
                             </div>
                         </div>

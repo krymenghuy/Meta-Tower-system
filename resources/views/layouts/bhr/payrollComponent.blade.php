@@ -16,11 +16,11 @@
 
         <div class="d-flex align-items-center justify-content-end gap-2 w-50">
             <div class="form-group">
-                <label for="" class="form-label trans-text" data-langprop="titles.Sort By"></label>
+                <label for="" class="form-label " vslang="titles.Sort By"></label>
                 <select type="id" id="el_sort_by" class="modal filter-field"></select>
             </div>
             <div class="form-group">
-                <label for="" class="form-label trans-text" data-langprop="titles.Status"></label>
+                <label for="" class="form-label " vslang="titles.Status"></label>
                 <select type="id" id="el_status" class="modal filter-field "></select>
             </div>
 
@@ -44,7 +44,7 @@
             <div class="modal-body">
                 <div class="row gap-0" id="_sdl_payroll_info">
                     <div class="form-group col-12">
-                        <label for="name" class="form-label trans-text" data-langprop="titles.Name"></label>
+                        <label for="name" class="form-label " vslang="titles.Name"></label>
                         <select class=" data-input" id="_sdl_name_id" data-field="emp_id"></select>
                     </div>
                     <div class="form-group  col-12 d.none">
@@ -52,20 +52,20 @@
                         <div id="info"></div>
                     </div>
                     <div class="form-group col-lg-6">
-                        <label for="name" class="form-label trans-text" data-langprop="titles.Rate"></label>
+                        <label for="name" class="form-label " vslang="titles.Rate"></label>
                         <input type="text" class="form-control data-input" data-field="rate" />
                     </div>
                     <div class="form-group col-lg-6">
-                        <label for="name" class="form-label trans-text" data-langprop="titles.Salary"></label>
+                        <label for="name" class="form-label " vslang="titles.Salary"></label>
                         <input type="text" class="form-control data-input" data-field="salary" />
                     </div>
 
                     <div class="form-group col-lg-6">
-                        <label for="name" class="form-label trans-text" data-langprop="titles.Start Date"></label>
+                        <label for="name" class="form-label " vslang="titles.Start Date"></label>
                         <input type="date" class="form-control data-input" data-field="start_date" />
                     </div>
                     <div class="form-group col-lg-6">
-                        <label for="name" class="form-label trans-text" data-langprop="titles.End Date"></label>
+                        <label for="name" class="form-label " vslang="titles.End Date"></label>
                         <input type="date" class="form-control data-input" data-field="end_date" />
                     </div>
 
@@ -73,10 +73,10 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
-                    <span class="trans-text" data-langprop="titles.Cancel"></span>
+                    <span class="" vslang="titles.Cancel"></span>
                 </button>
                 <button id="dlg_sdl_add_payroll_btn_save" type="button" class="btn btn-sm btn-primary">
-                    <span class="trans-text" data-langprop="titles.Save"></span>
+                    <span class="" vslang="titles.Save"></span>
                 </button>
             </div>
         </div>
