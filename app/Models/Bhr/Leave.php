@@ -6,6 +6,8 @@ use App\Models\DV;
 use App\Models\Bhr\Employee;
 use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+use ZipStream\GeneralPurposeBitFlag;
+
 class Leave
 {
     protected $id = null;
@@ -109,7 +111,7 @@ class Leave
         if ($search_value) {
             $query->where(function ($q) use ($search_value) {
                 $q->where('emp.name', 'like', '%' . $search_value . '%')
-                    ->orWhere('l.reason', 'like', '%' . $search_value . '%');
+                    ->orWhere('l.remarks', 'like', '%' . $search_value . '%');
             });
         }
 
@@ -122,52 +124,39 @@ class Leave
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
-
-
-
+ 
 
     function getDetails($id ,$ss =null)
     {
-        $branch_id = $ss->branch_id;
-
+        $col_update_date = DBX::formatDate('l.updated_at','update_date'); 
         $leave = DB::table('leaves as l')
         ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
         ->join('positions as p', 'p.id', '=', 'emp.positions_id')
         ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
         ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
         ->where('l.id', $id)
-        ->where('l.status_id',2)
-        ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.leave_date, l.return_date, ls.name as status, l.remarks, l.update_user, l.update_date')
+        //->where('l.status_id',2
+        ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.leave_date, l.return_date, ls.name as status, l.remarks, l.update_user,'.$col_update_date)
         ->first();
-
-
         return $leave;
     }
 
     function delete($id, $ss)
     {
         $id = $id ?? $this->id;
-        $branch_id = $ss->branch_id;
-
+         
         $delete = DB::table('leaves')->where('id',$id)->delete();
         return DV::depends($delete,['action','deleted']);
-
-
     }
 
     function getFormOptions($id, $ss)
     {
         $leave = null;
-        if ($id) {
-            $leave = self::getDetails($id, $ss);
-        }
+        if ($id) $leave = self::getDetails($id, $ss);
         return (object) [
-
-            'employees' => DB::table('employees')->selectRaw('id,name')->get(),
-            'leave_types' => DB::table('leave_types')->selectRaw('id,name')->get(),
-            'status' => DB::table('leave_statuses')->selectRaw('id,name,code')->get(),
-
+            'employees' => GeneralSettings::options_employee(10,$ss),
+            'leave_types' =>GeneralSettings::options_leave_type($ss),
+            'leave_statuses' =>GeneralSettings::options_leave_status($ss),
             'leave' => $leave,
         ];
 

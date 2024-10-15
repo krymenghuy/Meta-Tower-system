@@ -24,14 +24,14 @@ var EmployeeBonusComponent = new (function () {
             title: "Category",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.category ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.category_id ?? ''}</p>`;
             }
         },
         {
             title: "Description",
             className: "align-middle text-start",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.description ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.remark ?? ''}</p>`;
             }
         },
         {

@@ -332,6 +332,26 @@ class GeneralSettings //extends Model
         return DB::table('loc_communes as c')->whereRaw($str_where)->select('id','name as commune')->orderBy('c.name','ASC')->get();
     }
 
+    static function options_leave_status($ss){
+        return DB::table('leave_statuses')->selectRaw('id,name as leave_status')->get();
+    }
+
+    static function options_leave_type($ss){
+        return DB::table('leave_types')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS leave_type')->get();
+    }
+
+    /** $emp_status_id = {1o: Active, 20: Resigned, 21: Terminiated}*/
+    static function options_employee($emp_status_id, $ss){
+       $q = DB::table('employees as e')->where('e.subs_id',hex2bin($ss->subs_id))->selectRaw('id,name, sex, name_kh, photo_file_name');
+       if($emp_status_id) $q->where('e.status_id',$emp_status_id);
+       $rows = $q->get();
+       foreach($rows as $row){
+         $row->image_url = Employee::profilePicture($row->id);
+         unset($row->photo_file_name);
+       } 
+       return $rows;
+    }
+
     function deleteProductType($d){
         $ss = UM::getUserInfoByToken($d);
         if($ss->status_code !==200) return $ss; //user not authenticated

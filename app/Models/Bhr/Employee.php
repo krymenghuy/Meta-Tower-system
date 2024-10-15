@@ -12,7 +12,6 @@ use App\Models\DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class Employee//extends Model
-
 {
     //use HasFactory;
 
@@ -86,7 +85,7 @@ class Employee//extends Model
         $save = !$id;
         $id = saveData($ss, 'employees', ['id' => $id], $inputs, [], 1);
         if($save){
-            $prefix = 'emp';
+            $prefix = 'LC';
             $res = setOfficialCode($branch_id,'employee_code_control','employees',['id'=>$id],$prefix,5,null);
             $new_code = $res->code;
             }
@@ -107,23 +106,50 @@ class Employee//extends Model
 
         return DV::error('Failed to save employee');
     }
-
-    public static function getProfilePicture($id)
-    {
-        $col_subs_id = DBX::getHex('p.subs_id', 'subs_id');
-        $row = DB::table('employees as p')->where('id', $id)->selectRaw($col_subs_id . ',p.branch_id,p.photo_file_name')->first();
-        $url = '';
-        if ($row) {
-           $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'employees'], 'images') . $row->photo_file_name;
-            return validateUrl($url);
-        } else {
-            // return self::defaultImage($row ? $row->subs_id : null);
+  
+    function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $col_subs_id = DBX::getHex('e.subs_id','subs_id');
+        $employee = DB::table('employees as e')->where('e.id',$id)->selectRaw($col_subs_id.',e.id,e.branch_id,e.photo_file_name')->first();
+        $delete_image = (!$photo_data || isImage($photo_data));
+        if(!$employee)return DV::error('Emplyee identity is not correct!');
+        if($delete_image){
+          PublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'image',$employee->photo_file_name);
+          DB::table('employees')->where('id',$id)->update(['photo_file_name'=>null]);
         }
+        return PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'dir'=> self::$img_dir] ,null,$photo_data,null,['id'=>$id,'store'=>'employees.photo_file_name']);  
+      }
+  
+      function deleteProfilePicture($id=null,$ss=null){
+          $id = $id ?? $this->id;
+          $ss = $ss ?? $this->userInfo;
+          $sender = DB::table('employees as s')->where('id',$id)->selectRaw('id,branch_id,photo_file_name')->first();
+          if(!$sender) return DV::error('Employee identity is not correct!');
+          PublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'image',$sender->photo_file_name);
+          DB::table('sender')->where('id',$id)->update(['photo_file_name'=>null]);
+          return DV::success();
+      }
+  
+    static function profilePicture($id){
+        $col_subs_id = DBX::getHex('e.subs_id','subs_id');
+        $row = DB::table('employees as e')->where('e.id',$id)->selectRaw($col_subs_id.',e.branch_id,e.photo_file_name')->first();
+        $def_image = self::defaultPhoto($row? $row->subs_id: null);
+        $url = '';
+        if($row){
+          $url = PublicStorage::getUrl(['subs_id'=>$row->subs_id,'dir'=>self::$img_dir],'image').$row->photo_file_name; 
+          return validateUrl($url,$def_image);
+        }else return $def_image;
+    }
+
+    static function defaultPhoto($subs_id){
+        return url('').'/assets/images/default/default-staff.png';
     }
 
     function getListPaginate($arr, $ss)
     {
-        $branch_id = $ss->branch_id;
+        $subs_id = $ss->subs_id;
+        //$branch_id = $ss->branch_id;
         $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 5;
@@ -132,20 +158,101 @@ class Employee//extends Model
         }
         $skip_rows = ($current_page - 1) * $per_page;
         $status = $d->status_id ?? null;
+        $role = $d->role_id ?? null;
         $search_value = $d->search_value ?? null;
         $str_srch = '1=1';
         $str_where = '2=2';
         if($search_value){
             $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
             $str_srch = "(emp.name LIKE '%".$search_value."%' OR emp.name_kh = '".$search_value."' OR emp.nid = '".$search_value."' OR emp.phone_number = '".$search_value."')";
         }
         if($status){
             $str_where = 'emp.status_id =\'' . $status . '\'';
 
         }
+        if($role){
+            $str_where = 'emp.emp_role_id =\'' . $role . '\'';
+        }
         $query = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
-            ->join('employee_status as es', 'es.id', '=', 'emp.status_id')
+            ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
+            ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
+            ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
+            ->whereRaw($str_srch)
+            ->whereRaw($str_where)
+            ->selectRaw('
+            emp.code,
+            emp.id,
+            emp.name,
+            emp.name_kh,
+            emp.email,
+            emp.phone_number,
+            emp.sex,
+            emp.nationality,
+            emp.date_of_birth,
+            emp.address,
+            emp.photo_file_name,
+            emp.joining_date,
+            emp.nssf_id,
+            emp.nid,
+            emp.positions_id,
+            p.title as position,
+            emp.emp_role_id,
+            el.name as role,
+            emp.work_shift_id,
+            ws.name as work_shift,
+            emp.status_id,
+            es.name as status
+        ')
+        ->orderBy('emp.id', 'ASC');
+
+        $clone_query = clone $query;
+        $count = $clone_query->count('emp.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        foreach ($rows as $row) {
+            $row->image_url = '';
+            if ($row->photo_file_name) {
+              $row->image_url = self::profilePicture($row->id);
+            }
+            unset($row->photo_file_name);
+        }
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    }
+
+ 
+    function find($arr, $ss)
+    {
+        $subs_id = $ss->subs_id;
+        //$branch_id = $ss->branch_id;
+        $d = (object) $arr;
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 5;
+        if (!is_numeric($current_page)) {
+            $current_page = 1;
+        }
+        $skip_rows = ($current_page - 1) * $per_page;
+        $status = $d->status_id ?? null;
+        $role = $d->role_id ?? null;
+        $search_value = $d->search_value ?? null;
+        $str_srch = '1=1';
+        $str_where = '2=2';
+        if($search_value){
+            $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
+            $str_srch = "(emp.name LIKE '%".$search_value."%' OR emp.name_kh = '".$search_value."' OR emp.nid = '".$search_value."' OR emp.phone_number = '".$search_value."')";
+        }
+        if($status){
+            $str_where = 'emp.status_id =\'' . $status . '\'';
+
+        }
+        if($role){
+            $str_where = 'emp.emp_role_id =\'' . $role . '\'';
+        }
+        $query = DB::table('employees as emp')
+            ->join('positions as p', 'p.id', '=', 'emp.positions_id')
+            ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->whereRaw($str_srch)
@@ -167,29 +274,11 @@ class Employee//extends Model
             emp.nid,
             emp.positions_id,
             p.title as position,
-            emp.emp_role_id,
-            el.name as role,
-            emp.work_shift_id,
             ws.name as work_shift,
             emp.status_id,
             es.name as status
         ')
         ->orderBy('emp.id', 'ASC');
-
-        // if ($search_value) {
-        //     $search_value = addcslashes($search_value, '%_'); // Escape special characters used in LIKE query
-        //     $query->where(function($q) use ($search_value) {
-        //         $q->where('emp.name', 'like', '%' . $search_value . '%')
-        //           ->orWhere('emp.name_kh', 'like', '%' . $search_value . '%')
-        //           ->orWhere('emp.email', 'like', '%' . $search_value . '%')
-        //           ->orWhere('emp.phone_number', 'like', '%' . $search_value . '%')
-        //           ->orWhere('p.name', 'like', '%' . $search_value . '%')
-        //           ->orWhere('emp.address', 'like', '%' . $search_value . '%')
-        //           ->orWhere('emp.joining_date', 'like', '%' . $search_value . '%')
-        //           ->orWhere('emp.nssf_id', 'like', '%' . $search_value . '%')
-        //           ->orWhere('emp.nid', 'like', '%' . $search_value . '%');
-        //     });
-        // }
 
         $clone_query = clone $query;
         $count = $clone_query->count('emp.id');
@@ -198,7 +287,7 @@ class Employee//extends Model
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->photo_file_name) {
-              $row->image_url = self::getProfilePicture($row->id);
+              $row->image_url = self::profilePicture($row->id);
             }
             unset($row->photo_file_name);
         }
@@ -206,14 +295,13 @@ class Employee//extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-
     function getDetails($id,$ss)
     {
         $branch_id = $ss->branch_id;
 
         $row =DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
-            ->join('employee_status as es', 'es.id', '=', 'emp.status_id')
+            ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->selectRaw('
@@ -245,7 +333,7 @@ class Employee//extends Model
             ->first();
 
         if ($row) {
-            $row->image_url = self::getProfilePicture($id);
+            $row->image_url = self::profilePicture($id);
         } else {
             $row = null; // Or handle the case where employee is not found
         }
@@ -294,6 +382,7 @@ class Employee//extends Model
     static function currentPosition($id){
         return DB::table('employees as e')->join('positions as p', 'p.id', '=', 'e.position_id')->selectRaw('p.title , p.id')->first();
     }
+
     function getFormOptions($id, $ss)
     {
         $employee = null;
@@ -302,12 +391,10 @@ class Employee//extends Model
         }
         return (object) [
 
-            'status' => DB::table('employee_status')->selectRaw('id,name')->get(),
+            'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,title')->get(),
             'roles' => DB::table('emp_roles')->selectRaw('id,name')->get(),
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
-
-
             'employee' => $employee,
         ];
 

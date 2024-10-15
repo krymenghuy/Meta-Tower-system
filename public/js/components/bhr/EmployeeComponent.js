@@ -7,6 +7,7 @@ var EmployeeComponent = new (function () {
     this.self = this.jm[0];
     this.title_prop = "Employee management";
     this.elStatus = this.self.querySelector('#el_status');
+    this.elRole = this.self.querySelector('#el_role');
     this.btnAdd = this.self.querySelector("#_btnAddEmployee");
     this.btnBack = this.self.querySelector('#_btn_backTo_employee');
     this.divFilter = this.self.querySelector("#_divFilter_emp");
@@ -14,7 +15,6 @@ var EmployeeComponent = new (function () {
     this.containerPagination = mThis.self.querySelector('#container_pagination');
     this.profile_card_detail = mThis.self.querySelector('#profile_card_detail');
     this.profile_info_emp = mThis.self.querySelector('#profile_info_emp');
-
 
     let div = mThis.self.querySelector('#_employee_list');
     this.init= () => {
@@ -71,7 +71,9 @@ var EmployeeComponent = new (function () {
         mThis.divFilter.addEventListener('change', (e) => {
             e.preventDefault();
             mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
-        })
+        });
+        
+
 
         mThis.initAlready = true;
     }
@@ -255,6 +257,11 @@ var EmployeeComponent = new (function () {
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${data.role || ''}</p>
                                 </div>
+                                                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Work Shift</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.work_shift || ''}</p>
+                                </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Nationality</p>
                                     <p class="px-2">:</p>
@@ -354,7 +361,12 @@ var EmployeeComponent = new (function () {
                 <div class="card" style="height:487px;">
                     <div class="card-header">
                         <h4>Education</h4>
-                        <span class="ellipsis">...</span>
+                        <div class="d-flex gap-2">
+                            <a href="javascript:void(0)" data="id" id="lnk_add_education">
+                            <i class="fa fa-plus-circle fs-5 text-success"></i>
+                            </a>
+                            
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="">
@@ -362,6 +374,12 @@ var EmployeeComponent = new (function () {
                             <div class="d-flex justify-content-between">
                                 <p class="w-50">Associate Degree</p>
                                 <p class="text-primary w-75">University of Oxford</p>
+                                <div class="d-flex gap-2"><a href="javascript:void(0)" id="ps-lnk_delete_education" style="">
+                            <i class="fa fa-trash fs-8 text-danger"></i>
+                            </a>
+                            <a href="javascript:void(0)" id="ps-lnk_edit_education" style="">
+                            <i class="fa fa-edit fs-8 text-warning"></i>
+                            </a></div>
                             </div>
                             <span class="text-muted">Web Development</span>
                         </div>
@@ -419,6 +437,21 @@ var EmployeeComponent = new (function () {
             </div>`
         ].join('');
         this.profile_card_detail.innerHTML = html;
+        document.getElementById('lnk_add_education').addEventListener('click', function (e)  {
+            e.preventDefault();
+            let op = {
+                id: null,
+                btn: e.target,
+                title:"New Education",
+                onClose: () => {
+                    mThis.EmployeeListView.showPage();
+                }
+            };
+            console.log(op);
+            
+            AddEducation.show(op);
+        // Action for adding new education
+        });
     }
 
 
@@ -438,6 +471,7 @@ var EmployeeComponent = new (function () {
     this.getDataFormFilter = () => {
         let p = {};
         p.status_id = mThis.elStatus.value;
+        p.role_id = mThis.elRole.value;
         p.search_value = mThis.elSearch.value;
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {
@@ -592,6 +626,7 @@ var EmployeeComponent = new (function () {
             const d = res.status_code == 200 ? res.data : {};
 
             VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',true,'All',null);
+            VSUtil.setComboItems(mThis.elRole,d.roles,'id','name',true,'All',null);
         })
     }
 
@@ -606,7 +641,167 @@ var EmployeeComponent = new (function () {
 
 
 });
+// const AddEducation = new function () {
+//     let mThis = this;
+//     this.base_url = main_view.base_url;
+//     this.self = main_view.appContent.children('#addEducation_dlg')[0];
+//     this.modal = new bootstrap.Modal(this.self);
+//     this.btnOK = this.self.querySelector('#addEducation_dlg_btnOK');
+//     this.elError = this.self.querySelector('#addEducation_dlg_error');
+//     this.elTitle = this.self.querySelector('#addEducation_dlgTitle');
+  
+//     this.elName = this.self.querySelector('#ps-newpl_name');
+//     this.elWeightMarker = this.self.querySelector('#ps-newpl_kg_marker');
+  
+//     this.btnOK.onclick = e => {
+//       e.preventDefault();
+//       let p = mThis.getData();
+//       if (!p.name) {
+//         mThis.elError.innerHTML = ('Name cannot be empty');
+//         return;
+//       }
+  
+//       if (!$.isNumeric(p.kg_marker)) {
+//         mThis.elError.innerHTML = ('Weight Marker is not valid');
+//         return;
+//       }
+  
+//       vsapi.call([mThis.base_url, '/abm/createSupplierPriceList'].join(''), p).then(res => {
+//         if (res.status_code === 200) {
+//           let d = res.data;
+//           if (typeof mThis.onClose === 'function') mThis.onClose(d.id);
+//           mThis.modal.hide();
+//         } else mThis.elError.innerHTML(res.error_message);
+//       });
+  
+//     };
+  
+    
+  
+//     this.getData = () => {
+//       let p = {};
+//       p.name = mThis.elName.value;
+//       p.kg_marker = mThis.elWeightMarker.value;
+  
+//       return p;
+//     }
+  
+//     this.show = (option, onClose) => {
+//       mThis.elError.innerHTML = (null);
+//       mThis.elTitle.innerHTML = (option.title)
+//       mThis.onClose = onClose;
+//       mThis.modal.show();
+  
+//     }
+//   }
+const AddEducation = (() => {
+    const self = {};
+    let dialog = null;
 
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            title: op.id ? "Edit Employee Seniority" : "New Employee Seniority",  // Dynamically set title
+            cssClass: "modal-md d-flex justify-content-center",
+            createContent: () => {
+                return [
+                    `<div class="row"><div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.Employee">Employee</label>
+        <div><select name="emp_id" class="data-input" data-field="emp_id"></select></div>
+    </div>
+    <div class=" form-group col-md-6">
+        <label class="form-label" vslang="titles.School">School</label>
+        <div><select name="school_id" class="data-input" data-field="school_id"></select></div>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.Period">Period</label>
+        <div><input name="period" class="form-control data-input" data-field="period"/></div>
+    </div>
+     <div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.Major">Major</label>
+        <div><input name="major" class="form-control data-input" data-field="major"/></div>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.Start Year">Start Year</label>
+        <div><input name="start_year" class="form-control data-input" data-field="start_year"/></div>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.End Year">End Year</label>
+        <div><input name="end_year" class="form-control data-input" data-field="end_year"/></div>
+    </div>
+   
+    <div class="form-group col-md-12">
+        <label class="form-label" vslang="titles.Diploma">Diploma</label>
+        <div><input name="diploma" class="form-control data-input" data-field="diploma"/></div>
+    </div></div>`
+                    
+                ].join('');
+            },
+            buttons:[
+                {
+                   label:"<span>Cancel</span>",
+                   cssClass:"btn btn-warning",
+                   click:(me)=>{
+                      me.hide(false);
+                   }
+                },
+                {
+                   label:"<span>Save</span>",
+                   cssClass:"btn btn-primary",
+                   click:(me)=>{
+                      let p = me.getData();
+                    //   p.image = me.userImageBox? me.userImageBox.getImage(): '';
+                      console.log(222,p);
+                      vsapi.call([main_view.base_url,'/hr/seniorities/save'].join(''),p,false,false).then(res =>{
+                          if(res.status_code ==200){
+                              me.modal.hide(true,p);
+                          }else cv_interact.error(res.error_message);
+                      });
+                   }
+                }
+             ],
+            configSelect: [
+                {
+                    name: "emp_id",
+                    data: "employees",
+                    valueField: "id",
+                    textField: "name",
+                    filterData: (data, res) => {
+
+                        return data;
+                    }
+                }
+            ],
+            prepareFormOptions: {
+                createTitle: "New Employee Seniority",
+                modifyTitle: "Edit Employee Seniority",
+                targetProp: "seniority",
+                api: {
+                    endpoint: `${main_view.base_url}/hr/seniorities/form-options`,
+                    params: (op) => {
+                        console.log(9090,op);
+                        
+                        return { id: op.id };  // Pass ID to fetch data for edit
+                    },
+                    onResponse: (me, res) => {
+                        if (op.id) {
+                            // Populate form with existing data for edit mode
+                            // me.setValue('emp_id', res.data.emp_id);
+                            // me.setValue('period', res.data.period);
+                            // me.setValue('description', res.data.description);
+                            // me.setValue('amount', res.data.amount);
+                        }
+                    }
+                }
+            },
+            onShow: (me) => {
+                // Any additional actions on dialog show can be placed here
+            }
+        });
+
+        dialog.show(op);
+    }
+    return self;
+})();
 
 const EmployeeDialog = new function() {
     const mThis = this;
@@ -618,7 +813,7 @@ const EmployeeDialog = new function() {
     this.btnSave =  this.self.querySelector('#dlg_sdl_add_employee_btn_save');
     this.elPositionId =  this.self.querySelector('#_sdl_position_id');
     this.elRoleId =  this.self.querySelector('#_sdl_role_id');
-    // this.elGenderId =  this.self.querySelector('#_sdl_gender_id');
+    this.elWorkShiftId =  this.self.querySelector('#_sdl_work_shift_id');
     this.elTitle = mThis.self.querySelector('.modal-title');
     this.div_employee_info = mThis.self.querySelector('#_sdl_employee_info');
     this.btnChooser = mThis.self.querySelector('#dlg_image_chooser');
@@ -652,7 +847,7 @@ const EmployeeDialog = new function() {
 
             VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'title', true, '(Select Position)', null);
             VSUtil.setComboItems(mThis.elRoleId, d.roles, 'id', 'name', true, '(Select Role)', null);
-            // VSUtil.setComboItems(mThis.elGenderId, d.genders, 'id', 'name', true, '(Select Gender)', null);
+            VSUtil.setComboItems(mThis.elWorkShiftId, d.work_shifts, 'id', 'name', true, '(Select Work Shift)', null);
             console.log(33333,d);
             onFinish(d);
         });

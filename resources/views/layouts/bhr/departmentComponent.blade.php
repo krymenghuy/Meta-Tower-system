@@ -33,23 +33,23 @@
                 <div class="row gap-0" id="_sdl_department_info">
                     <div class="col-lg-12 p-5">
                         <div class="form-group">
-                            <label for="name" class="form-label trans-text"
-                                data-langprop="titles.Name Of Department">Name</label>
+                            <label for="name" class="form-label "
+                                vslang="titles.Name Of Department">Name</label>
                             <input type="text" class="form-control data-input" data-field="name" />
                         </div>
                         <div class="form-group">
-                            <label for="shortcut" class="form-label trans-text"
-                                data-langprop="titles.Short Name">Name</label>
+                            <label for="shortcut" class="form-label "
+                                vslang="titles.Short Name">Name</label>
                             <input type="text" class="form-control data-input" data-field="shortcut" />
                         </div>
                         <div class="form-group">
-                            <label for="description" class="form-label trans-text"
-                                data-langprop="titles.Description">Description</label>
+                            <label for="description" class="form-label "
+                                vslang="titles.Description">Description</label>
                             <input type="text" class="form-control data-input" data-field="description" />
                         </div>
 
                         {{-- <div class="form-group col-lg-6">
-                            <label for="name" class="form-label trans-text" data-langprop="titles.Status"></label>
+                            <label for="name" class="form-label " vslang="titles.Status"></label>
                             <select class=" data-input" id="_sdl_status_id" data-field="status_id">
                                
                             </select>
@@ -59,10 +59,10 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
-                        <span class="trans-text" data-langprop="titles.Cancel"></span>
+                        <span class="" vslang="titles.Cancel"></span>
                     </button>
                     <button id="dlg_sdl_add_department_btn_save" type="button" class="btn btn-sm btn-primary">
-                        <span class="trans-text" data-langprop="titles.Save"></span>
+                        <span class="" vslang="titles.Save"></span>
                     </button>
                 </div>
             </div>

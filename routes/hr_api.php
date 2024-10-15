@@ -23,6 +23,12 @@ use App\Http\Controllers\Bhr\WorkShiftController;
 use App\Http\Controllers\Bhr\ShiftDetailController;
 use App\Http\Controllers\Bhr\ScanPlanController;
 use App\Http\Controllers\Bhr\AttendanceController;
+use App\Http\Controllers\Bhr\MovementController;
+use App\Http\Controllers\Bhr\EmployeePositionController;
+use App\Http\Controllers\Bhr\SalaryHistoryController;
+use App\Http\Controllers\Bhr\BranchChangeController;
+use App\Http\Controllers\Bhr\EventController;
+use App\Http\Controllers\Bhr\EmployeeEventController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -55,6 +61,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
 
     Route::post('/save', [EmployeeController::class, 'saveEmployee']);
     Route::post('/list-paginate', [EmployeeController::class, 'getListPaginate']);
+    Route::post('/find', [EmployeeController::class, 'findEmployee']);
     Route::post('/details', [EmployeeController::class, 'getDetails']);
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
     Route::post('/filter-options', [EmployeeController::class, 'getFilterOptions']);
@@ -229,4 +236,58 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('attendances')
     Route::post('/delete', [AttendanceController::class, 'deleteAttendance']);
     Route::post('/form-options', [AttendanceController::class, 'getFormOptions']);
     Route::post('/list-paginate', [AttendanceController::class, 'getStaffAttendanceListPaginate']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('movement')->group(function () {
+
+    Route::post('/save', [MovementController::class, 'saveMovement']);
+    Route::post('/list-paginate', [MovementController::class, 'getMovementListPaginate']);
+    Route::post('/details', [MovementController::class, 'getDetails']);
+    Route::post('/delete', [MovementController::class, 'deleteMovement']);
+    Route::post('/form-options', [MovementController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-position')->group(function () {
+
+    Route::post('/save', [EmployeePositionController::class, 'saveEmpPosition']);
+    Route::post('/list-paginate', [EmployeePositionController::class, 'getEmpPositionListPaginate']);
+    Route::post('/details', [EmployeePositionController::class, 'getDetails']);
+    Route::post('/delete', [EmployeePositionController::class, 'deleteEmpPosition']);
+    Route::post('/form-options', [EmployeePositionController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('salary-history')->group(function () {
+
+    Route::post('/save', [SalaryHistoryController::class, 'saveSalaryHistory']);
+    Route::post('/list-paginate', [SalaryHistoryController::class, 'getSalaryHistoryListPaginate']);
+    Route::post('/details', [SalaryHistoryController::class, 'getDetails']);
+    Route::post('/delete', [SalaryHistoryController::class, 'deleteSalaryHistory']);
+    Route::post('/form-options', [SalaryHistoryController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('branch-change')->group(function () {
+
+    Route::post('/save', [BranchChangeController::class, 'saveBranchChange']);
+    Route::post('/list-paginate', [BranchChangeController::class, 'getBranchChangeListPaginate']);
+    Route::post('/details', [BranchChangeController::class, 'getDetails']);
+    Route::post('/delete', [BranchChangeController::class, 'deleteBranchChange']);
+    Route::post('/form-options', [BranchChangeController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('event')->group(function () {
+
+    Route::post('/save', [EventController::class, 'saveEvent']);
+    Route::post('/list-paginate', [EventController::class, 'getEventListPaginate']);
+    Route::post('/details', [EventController::class, 'getDetails']);
+    Route::post('/delete', [EventController::class, 'deleteEvent']);
+    Route::post('/form-options', [EventController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-event')->group(function () {
+
+    Route::post('/save', [EmployeeEventController::class, 'saveEmpEvent']);
+    Route::post('/list-paginate', [EmployeeEventController::class, 'getEmpEventListPaginate']);
+    Route::post('/details', [EmployeeEventController::class, 'getDetails']);
+    Route::post('/delete', [EmployeeEventController::class, 'deleteEmpEvent']);
+    Route::post('/form-options', [EmployeeEventController::class, 'getFormOptions']);
 });

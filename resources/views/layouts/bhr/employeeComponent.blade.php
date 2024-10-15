@@ -139,26 +139,29 @@
 
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
     <div id="sub_content">
-        <div class="d-flex  p-3 justify-content-between w-100">
-            <div class="d-flex w-25">
-                <button type="button" class="btn text-white" style="background-color:hwb(231.76deg 16.86% 43.14%);"
-                    id="_btnAddEmployee">
-                    <i class="fas fa-plus"></i>
-                    <span>Add Employee</span>
-                </button>
+        <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter_emp">
+            <div class="d-flex align-items-center w-100 gap-2">
+                <div class="d-flex align-items-center w-100 gap-2">
+                    <input type="text" class="form-control filter-field" id="_sdl_search_employee" placeholder="Search Employee">
+
+                    <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
+                        <i class="la la-search"></i>
+                    </button>
+                    <div class="d-flex align-items-center w-50 gap-2form-group w-50">
+                        <label for="" class="form-label  p-2" vslang="titles.Status"></label>
+                        <select type="id" id="el_status" class="data-input filter-field" data-field="status"></select>
+                    </div>
+                    <div class="d-flex align-items-center w-50 gap-2form-group w-50">
+                        <label for="" class="form-label  p-2" vslang="titles.Role"></label>
+                        <select type="id" id="el_role" class="data-input filter-field" data-field="role"></select>
+                    </div>
+                </div>
             </div>
-            <div class="d-flex align-items-center justify-content-end gap-2 w-75" id="_divFilter_emp">
-                <div class="d-flex align-items-center w-50">
-
-                    <input type="text" class="form-control filter-field" id="_sdl_search_employee"
-                        placeholder="Search Employee">
-                </div>
-
-                <div class="d-flex align-items-center">
-                    <!-- <label for="" class="form-label trans-text p-2" data-langprop="titles.Status"></label> -->
-                    <select type="id" id="el_status" class="data-input filter-field" data-field="status_id"></select>
-                </div>
-
+            <div class="d-flex align-items-center justify-content-end gap-2 w-100">
+                <button type="button" class="btn btn-primary" id="_btnAddEmployee">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Employee </span>
+                </button>
             </div>
         </div>
         <div id="_employee_list" class="bg-white"></div>
@@ -519,7 +522,13 @@
                             <select class="form-control data-input" id="_sdl_role_id"
                                 data-field="emp_role_id"></select>
                         </div>
-
+                        <div class="form-group col-6">
+                            <label for="work_shift" class="form-label">
+                                Work Shift
+                            </label>
+                            <select class="form-control data-input" id="_sdl_work_shift_id"
+                                data-field="work_shift_id"></select>
+                        </div>
 
 
                         <div class="form-group col-6">
@@ -528,7 +537,7 @@
                             </label>
                             <input type="text" class="form-control data-input" data-field="nssf_id" />
                         </div>
-                        <div class="form-group col-12">
+                        <div class="form-group col-6">
                             <label for="address" class="form-label">
                                 Address
                             </label>
@@ -542,12 +551,50 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
-                    <span class="trans-text" data-langprop="titles.Cancel"></span>
+                    <span class="" vslang="titles.Cancel"></span>
                 </button>
                 <button id="dlg_sdl_add_employee_btn_save" type="button" class="btn btn-sm btn-primary">
-                    <span class="trans-text" data-langprop="titles.Save"></span>
+                    <span class="" vslang="titles.Save"></span>
                 </button>
             </div>
         </div>
     </div>
 </div>
+
+
+
+<!-- <div class="modal fade" id="addEducation_dlg" tabindex="-1" role="dialog" aria-labelledby="addEducation_dlgTitle" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addEducation_dlgTitle">Create Education</h5>
+        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="row">
+          <div class="form-group col-lg-12">
+            <span class="simple-label">Price list name</span>
+            <input type="text" class="form-control" id="ps-newpl_name">
+          </div>
+          <div class="form-group col-lg-12">
+            <span class="simple-label">Marker Weight (kg)</span>
+            <input type="number" class="form-control" id="ps-newpl_kg_marker">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <span id="addEducation_dlg_error" class="error_text"></span>
+        <button type="button" class="btn btn-warning height" data-bs-dismiss="modal">
+          <i class="fa fa-times fs-5 text-danger"></i>
+          <span>Cancel</span>
+        </button>
+        <button type="button" class="btn btn-success height" id="addEducation_dlg_btnOK">
+          <i class="fa fa-check fs-5 text-success"></i>
+          <span>Add</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div> -->

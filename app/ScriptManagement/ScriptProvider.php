@@ -23,7 +23,7 @@ class ScriptProvider
             'single_file' => 1,
             'output_file' => '/dist/js/priority-one.min.js?v=13',
             'files' => [
-                '/assets/js/LocaleManager.js',
+                '/assets/js/LocaleManager.v2.js',
                 '/assets/js/vsapi_bhr.js',
                 '/assets/js/priority-load.js',
             ]
@@ -89,10 +89,8 @@ class ScriptProvider
             'output_file' => '/dist/js/abm.components.js',
             'files' => [
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
-                '/assets/js/VSRoute.js',
+                '/assets/js/VSRoute.v2.js',
                 '/js/layout/bhr/main.js',
-                '/assets/js/formUtils.js',
-
                 //'/js/components/bhr/PDFReport.js',
                 '/assets/js/ImageBox.js',
                 '/assets/js/ImageHelper.js',
@@ -101,6 +99,7 @@ class ScriptProvider
                 '/assets/js/InputBoxes.bs5.js',
                 '/assets/js/xlsx/xlsx.full.min.js',
                 'assets/js/pusher/pusher.min.js',
+                '/js/components/common/FindPersonDialog.js',
                 // '/js/components/abm/pusher_client_houxpress.js',
                 '/js/components/common/pusher_client_dms.js',
                 '/js/components/bhr/DashboardComponent.js',
@@ -111,9 +110,9 @@ class ScriptProvider
                 '/js/components/bhr/PayrollComponent.js',
                 '/js/components/bhr/DepartmentComponent.js',
                 '/js/components/bhr/PositionComponent.js',
-                '/js/components/bhr/LeaveRequestComponent.js',
+                '/js/components/bhr/LeaveComponent.js',
                 '/js/components/bhr/ReportComponent.js',
-                'js/components/bhr/EmployeeMovementComponent.js',
+                'js/components/bhr/WarningComponent.js',
                 '/js/components/bhr/EmployeeSeniorityComponent.js',
                 '/js/components/bhr/EmployeeBonusComponent.js',
                 '/js/components/bhr/AttendanceComponent.js',
