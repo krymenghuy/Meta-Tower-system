@@ -10,7 +10,7 @@ use App\Services\Umt\AuthService;
 
 class EmployeeController extends Controller
 {
-    
+
     function saveEmployee(Request $req){
        $ss = AuthService::verifyAuth($req,-1);
        if($ss->status_code !==200) return JDV::raw($ss);
@@ -75,8 +75,8 @@ class EmployeeController extends Controller
        if ($ss->status_code !== 200) {
            return JDV::raw($ss);
        }
-
-       return JDV::result($this->senderModel->getDetails($req->id, $ss));
+       $emp = new Employee();
+       return JDV::result($emp->getDetails($req->id, $ss));
 
    }
 

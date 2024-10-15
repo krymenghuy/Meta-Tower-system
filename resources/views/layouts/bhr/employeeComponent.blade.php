@@ -453,12 +453,12 @@
                                         <input type="text" class="form-control data-input" data-field="name_kh" />
                                     </div>
                                     <div class="form-group col-4">
-                                        <label for="gender" class="form-label">
-                                            Gender <span class="text-danger">*</span>
+                                        <label for="sex" class="form-label">
+                                            Sex <span class="text-danger">*</span>
                                         </label>
                                         <div class="min-width-select custom-modal-select">
-                                            <select class="modal-select data-input" data-field="gender">
-                                                <option value="">(Gender)</option>
+                                            <select class="modal-select data-input" data-field="sex">
+                                                <option value="">(Select Sex)</option>
                                                 <option value="M">Male</option>
                                                 <option value="F">Female</option>
                                                 <option value="O">Other</option>

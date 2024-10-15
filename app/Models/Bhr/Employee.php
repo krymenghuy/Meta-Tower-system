@@ -37,7 +37,7 @@ class Employee//extends Model
             'name_kh' => '1|string|0-100',
             'email' => '1|email',
             'phone_number' => '1|phone|0-20',
-            'gender' => '1|string|0-6',
+            'sex' => '1|string|0-6',
             'nationality' => '1|string|0-150',
             'date_of_birth' => '1|date',
             'address' => '0|string|0-250',
@@ -47,7 +47,7 @@ class Employee//extends Model
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
             'nid'=> '0|number',
-            'status_id' => '1|number|default = 1',
+            'status_id' => '1|number|default = 10',
             'photo' => '0|image',
         ];
 
@@ -106,7 +106,7 @@ class Employee//extends Model
 
         return DV::error('Failed to save employee');
     }
-  
+
     function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -118,9 +118,9 @@ class Employee//extends Model
           PublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'image',$employee->photo_file_name);
           DB::table('employees')->where('id',$id)->update(['photo_file_name'=>null]);
         }
-        return PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'dir'=> self::$img_dir] ,null,$photo_data,null,['id'=>$id,'store'=>'employees.photo_file_name']);  
+        return PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'dir'=> self::$img_dir] ,null,$photo_data,null,['id'=>$id,'store'=>'employees.photo_file_name']);
       }
-  
+
       function deleteProfilePicture($id=null,$ss=null){
           $id = $id ?? $this->id;
           $ss = $ss ?? $this->userInfo;
@@ -130,14 +130,14 @@ class Employee//extends Model
           DB::table('sender')->where('id',$id)->update(['photo_file_name'=>null]);
           return DV::success();
       }
-  
+
     static function profilePicture($id){
         $col_subs_id = DBX::getHex('e.subs_id','subs_id');
         $row = DB::table('employees as e')->where('e.id',$id)->selectRaw($col_subs_id.',e.branch_id,e.photo_file_name')->first();
         $def_image = self::defaultPhoto($row? $row->subs_id: null);
         $url = '';
         if($row){
-          $url = PublicStorage::getUrl(['subs_id'=>$row->subs_id,'dir'=>self::$img_dir],'image').$row->photo_file_name; 
+          $url = PublicStorage::getUrl(['subs_id'=>$row->subs_id,'dir'=>self::$img_dir],'image').$row->photo_file_name;
           return validateUrl($url,$def_image);
         }else return $def_image;
     }
@@ -222,7 +222,7 @@ class Employee//extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
- 
+
     function find($arr, $ss)
     {
         $subs_id = $ss->subs_id;
@@ -265,7 +265,7 @@ class Employee//extends Model
             emp.name_kh,
             emp.email,
             emp.phone_number,
-            emp.gender,
+            emp.sex,
             emp.nationality,
             emp.date_of_birth,
             emp.address,
@@ -312,7 +312,7 @@ class Employee//extends Model
                 emp.name_kh,
                 emp.email,
                 emp.phone_number,
-                emp.gender,
+                emp.sex,
                 emp.nationality,
                 emp.date_of_birth,
                 emp.address,

@@ -72,7 +72,7 @@ var EmployeeComponent = new (function () {
             e.preventDefault();
             mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
         });
-        
+
 
 
         mThis.initAlready = true;
@@ -225,9 +225,9 @@ var EmployeeComponent = new (function () {
                                     <p class="text-nowrap text-capitalize">${data.name_kh}</p>
                                 </div>
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Gender</p>
+                                    <p class="text-nowrap text-muted width-p">Sex</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.gender == 'M' ? 'Male' : ''}${data.gender == 'F' ? 'Female' : ''}${data.gender == 'O' ? 'Other' : ''}</p>
+                                    <p class="text-nowrap">${data.sex == 'M' ? 'Male' : ''}${data.sex == 'F' ? 'Female' : ''}${data.sex == 'O' ? 'Other' : ''}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Position</p>
@@ -365,7 +365,7 @@ var EmployeeComponent = new (function () {
                             <a href="javascript:void(0)" data="id" id="lnk_add_education">
                             <i class="fa fa-plus-circle fs-5 text-success"></i>
                             </a>
-                            
+
                         </div>
                     </div>
                     <div class="card-body">
@@ -448,7 +448,7 @@ var EmployeeComponent = new (function () {
                 }
             };
             console.log(op);
-            
+
             AddEducation.show(op);
         // Action for adding new education
         });
@@ -649,10 +649,10 @@ var EmployeeComponent = new (function () {
 //     this.btnOK = this.self.querySelector('#addEducation_dlg_btnOK');
 //     this.elError = this.self.querySelector('#addEducation_dlg_error');
 //     this.elTitle = this.self.querySelector('#addEducation_dlgTitle');
-  
+
 //     this.elName = this.self.querySelector('#ps-newpl_name');
 //     this.elWeightMarker = this.self.querySelector('#ps-newpl_kg_marker');
-  
+
 //     this.btnOK.onclick = e => {
 //       e.preventDefault();
 //       let p = mThis.getData();
@@ -660,12 +660,12 @@ var EmployeeComponent = new (function () {
 //         mThis.elError.innerHTML = ('Name cannot be empty');
 //         return;
 //       }
-  
+
 //       if (!$.isNumeric(p.kg_marker)) {
 //         mThis.elError.innerHTML = ('Weight Marker is not valid');
 //         return;
 //       }
-  
+
 //       vsapi.call([mThis.base_url, '/abm/createSupplierPriceList'].join(''), p).then(res => {
 //         if (res.status_code === 200) {
 //           let d = res.data;
@@ -673,25 +673,25 @@ var EmployeeComponent = new (function () {
 //           mThis.modal.hide();
 //         } else mThis.elError.innerHTML(res.error_message);
 //       });
-  
+
 //     };
-  
-    
-  
+
+
+
 //     this.getData = () => {
 //       let p = {};
 //       p.name = mThis.elName.value;
 //       p.kg_marker = mThis.elWeightMarker.value;
-  
+
 //       return p;
 //     }
-  
+
 //     this.show = (option, onClose) => {
 //       mThis.elError.innerHTML = (null);
 //       mThis.elTitle.innerHTML = (option.title)
 //       mThis.onClose = onClose;
 //       mThis.modal.show();
-  
+
 //     }
 //   }
 const AddEducation = (() => {
@@ -728,12 +728,12 @@ const AddEducation = (() => {
         <label class="form-label" vslang="titles.End Year">End Year</label>
         <div><input name="end_year" class="form-control data-input" data-field="end_year"/></div>
     </div>
-   
+
     <div class="form-group col-md-12">
         <label class="form-label" vslang="titles.Diploma">Diploma</label>
         <div><input name="diploma" class="form-control data-input" data-field="diploma"/></div>
     </div></div>`
-                    
+
                 ].join('');
             },
             buttons:[
@@ -779,7 +779,7 @@ const AddEducation = (() => {
                     endpoint: `${main_view.base_url}/hr/seniorities/form-options`,
                     params: (op) => {
                         console.log(9090,op);
-                        
+
                         return { id: op.id };  // Pass ID to fetch data for edit
                     },
                     onResponse: (me, res) => {
