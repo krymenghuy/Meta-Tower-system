@@ -1,852 +1,963 @@
-'use strict';
-var EmployeeComponent = new function(){
-    const mThis = this;
-    this.title_prop = "Employee";
+"use strict";
+
+var EmployeeComponent = new (function () {
+    let mThis = this;
     this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children('#_main_employeeComponent');
+    this.jm = main_view.appContent.children("#_main_employeeComponent");
     this.self = this.jm[0];
-    //this.elFilter_business_type = mThis.self.find('#_sdl_filter_business_type');
-    // this.elFilter_employee_status = mThis.self.querySelector('#_sdl_filter_employee_status');
-    this.div_filter_fields = mThis.self.querySelector('#_sdl_filter_fields');
+    this.title_prop = "Employee management";
+    this.elStatus = this.self.querySelector('#el_status');
+    this.elRole = this.self.querySelector('#el_role');
+    this.btnAdd = this.self.querySelector("#_btnAddEmployee");
+    this.btnBack = this.self.querySelector('#_btn_backTo_employee');
+    this.divFilter = this.self.querySelector("#_divFilter_emp");
+    this.elSearch = this.self.querySelector("#_sdl_search_employee");
+    this.containerPagination = mThis.self.querySelector('#container_pagination');
+    this.profile_card_detail = mThis.self.querySelector('#profile_card_detail');
+    this.profile_info_emp = mThis.self.querySelector('#profile_info_emp');
 
-    this.btnNewSender = mThis.self.querySelector('#_sdl_btnNewSender');
-    this.btnFilter = mThis.self.querySelector('#_sdl_btnFilter');
-    this.elSearch = mThis.self.querySelector('#_sdl_search_sender');
-    this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
+    let div = mThis.self.querySelector('#_employee_list');
+    this.init= () => {
+        if(mThis.initAlready) return;
 
-    this.form_data = {};
+        mThis.EmployeeListView = new ListView('_employee_list', {
+            fetchApi: `${main_view.base_url}/hr/employee/list-paginate`,
+            perPage: 8,
+            paginationContainer: mThis.containerPagination,
+            apiCluster: main_view.apiCluster,
+            processResponse:(res)=>{
+                return res.data;
+            },
+            renderItems: (data,list_container) => {
 
-    this.renderMerchant = (container, data) => {
-        let html = '';
-        let cnt = 0;
-        container.style.display = 'none';
-        mThis.store_senders = {};
-        (data || []).map(item => {
-            mThis.store_senders[item.id] = {
-                code: item.code,
-                name: item.name,
-                phone_number: item.phone_number
+                mThis.renderEmployeeList(list_container, data);
+            },
+            listContainerClass: null
+        });
+        this.listContainer = mThis.EmployeeListView.getListContainer();
+
+
+        let content = mThis.self.querySelector('#_employee_list');
+        console.log(2222,content);
+        mThis.initDropdownMenus(content);
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+
+            let op = {
+                id: null,
+                // id: 1,
+                btn: e.target,
+                onClose: () => {
+                    // content.parentElement.classList.remove('d-none');
+                    mThis.EmployeeListView.showPage();
+                }
             };
-            let bank_account_html = `<span class="fw-semibold text-danger">គ្មាន</span>`;
-            let created_by = `<span class="d-block fw-sembold">${item.create_user}</span>
-            <pan class="d-block">
-                <small>${item.created_at}</small>
-            </span>`;
+            // content.parentElement.classList.add('d-none');
 
-            (item.bank_accounts || []).map(ac => {
-                if(ac.is_primary == 1 || !item.bank_accounts[1])
-                    bank_account_html = `<span class="fw-semibold d-block">${ac.bank_name} (${ac.account_number})</span>
-                    <span>${ac.account_name}</span`;
-            });
+            EmployeeDialog.show(op);
+        };
+        mThis.btnBack.onclick = function (e) {
+            e.preventDefault();
+            // let view_profile_info = mThis.self.querySelector('#sub_view_profile');
+            // view_profile_info.classList.add('d-none');
+            let btnBack = mThis.self.querySelector('#btn_back');
+            btnBack.classList.add('d-none');
+            let sub_content = mThis.self.querySelector('#sub_content');
+            sub_content.classList.remove('d-none');
 
-            let status_class = (item.status_code || '').toLowerCase() === 'active' ? 'text-capitalize p-2 text-center border border-success rounded-5 text-success' : 'text-capitalize p-2 text-center border border-danger rounded-5 text-danger';
-            let mobile_login = '';
-            if(item.mobile_login){
-                if(item.mobile_login.status.toLowerCase() == 'active'){
-                    mobile_login = `<span class="text-success">${item.mobile_login.login_name}  (${item.mobile_login.status})</span>`;
-                }
-                else{
-                    mobile_login = `<span class="text-dark p-1">${item.mobile_login.login_name}</span>
-                    <span class="text-capitalize p-2 bg-danger rounded-5 text-white">${item.mobile_login.status}</span>`;
-                }
-            }
-            else{
-                mobile_login = `<span class="p-2 text-danger">គ្មាន</span>
-                <span>
-                    <a href="javascript:void(0)" data-id="${item.id}" class="btn-app-login btn btn-sm btn-outline-primary">
-                        <i class="la la-mobile fs-4"></i>
-                        <span>Create</span>
-                    </a>
-                </span>`;
-            }
+        }
 
-            // let price_list_html = item.price_list_name ? `<span class="merchant-price-list">${item.price_list_name}</span>` : `គ្មាន <a href="javascript:void(0)" data-id="${item.id}" data-merchantname="${item.name}" class="set-price-list">
-            //     <i class="fa fa-pencil"></i>
-            // </a>`;
 
-            let price_list_html = [`<span class="merchant-price-list">${item.price_list_name ||'មិនទាន់មាន' }</span>`,`<a href="javascript:void(0)" data-pricelistid="`,item.price_list_id,`"  data-id="${item.id}" data-merchantname="${item.name}" class="set-price-list">
-            <i class="fa fa-pencil"></i>
-        </a>`].join('');
+        mThis.divFilter.addEventListener('change', (e) => {
+            e.preventDefault();
+            mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
+        });
 
-            html += `<div class="merchant-card d-flex p-3 bg-white h-info-student mb-2" data-id="${item.id}" data-merchantname="${item.name}" data-pricelistid="${item.price_list_id}">
-                <div class="div-img" data-id="${item.id}" data-imageurl="${item.image_url}"></div>
-                <div class="d-block ms-3 w-100">
-                    <div class="row row-cols-3 mb-0">
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted   width-p" vslang="titles.Merchant ID"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize data-get" data-field="official_id">${item.code}</p>
+
+
+        mThis.initAlready = true;
+    }
+    this.renderEmployeeList = (div,data) => {
+        data = data ?? [];
+        if(!AuthManager)
+        {
+            console.error('Authentication Management does not seems to work properly. You may need to refresh page');
+            return;
+        }
+
+        AuthManager.init().then(user => {
+           mThis.renderEmployee(data,user)
+        });
+    }
+    this.renderEmployee = (data) => {
+        let html = '';
+        html += `<div id="_scroll_emp" class="row px-3">`;
+        let cmt = 0;
+
+        if (Array.isArray(data) && data.length > 0) {
+            data.forEach(d => {
+                const status = d.status || 'Active';
+                const statusColor = status === 'Inactive' ? 'background-color: #dc3545;' : 'background-color: #2B3991;';
+
+                html += `
+                    <div class="col-md-3 mt-5 mb-3 employee-card" data-employee-id="${d.id}">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="status_employee" style="${statusColor} color: white; padding: 3px; border-radius: 20px;">
+                                    <span>${status}</span>
+                                </div>
+                                <div class="dropdown">
+                                    <a href="javascript:void(0)" class="btn_employee_action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
+                                        <img src="${main_view.asset_url}/images/bhr/more_vert.svg">
+                                    </a>
+                                </div>
                             </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted   width-p" vslang="titles.Name"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize data-get" data-field="full_name">${item.name}</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted   width-p" vslang="titles.Phone Number"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize data-get" data-field="phone_number">${item.phone_number}</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted   width-p" vslang="titles.Client Type"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.sender_type}</p>
-                           </div>
-                        </div>
-                        <div class="col">
-                           <div class="d-flex">
-                                <p class="text-nowrap text-muted   width-p" vslang="titles.Business"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.business_type ? item.business_type : 'NA'}</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted   width-p" vslang="titles.Price List"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${price_list_html}</p>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <p class="text-nowrap text-muted   width-bp" vslang="titles.COD"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.cod == 1 ? 'Yes' : 'No'}</p>
-                            </div>
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted   width-p" vslang="titles.Referred By"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize"><a href="javascript:void(0)" data-referrerid ="${item.referrer_id}">${item.referrer_name ? item.referrer_name : 'គ្មាន'}</a></p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="flex-nowrap text-muted  width-p" vslang="titles.Bank Account"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-capitalize">${bank_account_html}</p>
-                            </div>
-                            <div class="d-flex align-items-center">
-                                <p class="text-nowrap text-muted   width-bp" vslang="titles.App Account"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${mobile_login}</p>
-                            </div>
-                        </div>
-                        <div class="col position-relative">
-                            <div class="d-flex align-items-start justify-content-end gap-2">
-                                <button class="btn_merchant_action btn btn-sm btn-danger rounded-3 btn-options position-relative text-nowrap" data-loginname="${item.mobile_login ? item.mobile_login.login_name :''}" data-userid="${item.mobile_login? item.mobile_login.id : ''}" data-id="${item.id}" data-pricelistid="${item.price_list_id}" data-status ="${item.status_code}" type="button">
-                                    <span class="text-nowrap  " vslang="buttons.Action"></span>
-                                    <i class="fa-solid fa-caret-down ps-2"></i>
-                                </button>
-                            </div>
-                            <div class="d-flex justify-content-end align-items-center h-100">
-                                <div class="d-block position-relative">
-                                    <span class="${status_class}" data-id="${item.id}" data-status="${item.status_code}">${item.status_code}</span>
+                            <div class="card-body text-center">
+                                <img src="${d.image_url || '../uploads/public/1_data/default/images/mr.avif'}" class="rounded-circle mb-3"
+                                    alt="Profile Picture" style="width: 100px; height: 100px;">
+                                <div class="card-title">
+                                    <h5>${d.name}</h5>
+                                </div>
+                                <div class="card_container">
+                                    <div class="employee_id">#: ${d.code || ''}</div>
+                                    <div class="container_top">
+                                        <div class="position">
+                                            <i class="fa-solid fa-dashboard"></i> <span>${d.position || 'Web Developer'}</span>
+                                        </div>
+                                        <div class="me-3">
+                                            <i class="fa-solid fa-clock"></i> <span>${d.role || ' Staff'}</span>
+                                        </div>
+                                    </div>
+                                    <div class="container_bottom">
+                                        <div class="email">
+                                            <i class="fas fa-envelope"></i> <span>${d.email || 'email@example.com'}</span>
+                                        </div>
+                                        <div class="phone">
+                                            <i class="fas fa-phone"></i> <span>${d.phone_number || '012345678'}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card_bottom pt-3">
+                                    <div class="joining">Joining Date: ${d.joining_date || '01/Aug/2024'}</div>
+                                    <a href="javascript:void(0)" class="see-detail" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">view info</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <hr class="bg-dark m-1 p-0"/>
-                    <div class="row row-cols-5 mt-2">
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted   width-bp" vslang="titles.Address"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${item.address ? item.address : 'គ្មាន'}</p>
-                            </div>
-                        </div>
-                        <div class="col">
-                            <div class="d-flex">
-                                <p class="text-nowrap text-muted   width-bp" vslang="titles.Created By"></p>
-                                <p class="px-2">:</p>
-                                <p class="text-nowrap text-capitalize">${created_by}</p>
-                            </div>
-                       </div>
-                    </div>
+                `;
+                cmt++;
+            });
+        }
+
+        if (cmt === 0) {
+            html += `<div class="w-100 rounded-3 border-start text-center border-5 border-danger-custom p-3 shadow bg-white mb-3 position-relative">
+                <div class="row">
+                    <div class="col">No Data Found</div>
                 </div>
             </div>`;
-            cnt++;
-        });
-
-        if(cnt == 0){
-            html = `<div class="d-flex bg-white p-3 rounded-3 align-items-center">
-                <h5>${LocaleManager.trans('No data to display!','titles')}</h5>
-            </div>`;
         }
 
-        container.innerHTML = html;
-        const merchant_cards = container.querySelectorAll('.merchant-card');
-        mThis.initCardEvents(merchant_cards);
-        /** Display profile photos for all displayed merchants */
-        mThis.initImageBoxes(merchant_cards);
-        // mThis.initDropdownMenus(merchant_cards);///
-        // mThis.jmContainer = mThis.jmContainer || $(container);
-        // mThis.setEvents(mThis.jmContainer);
-        LocaleManager.translateZone(container,{"hide":true},()=>{
-            container.style.display= 'block';
-        });
+        html += `</div>`;
+        div.innerHTML = html;
 
-        const parent = container.parentElement;
-        parent.style.height = (window.innerHeight - 210)+'px';
-        parent.classList.add('overflow-y-auto');
-        window.onresize = () => {
-            parent.style.height = (window.innerHeight - 210)+'px';
-        }
+        const sh_parent = div.querySelector('#_scroll_emp');
+        sh_parent.style.height = (window.innerHeight - 195) + 'px';
+        sh_parent.classList.add('overflow-y-auto');
+        sh_parent.classList.add('overflow-x-hidden');
+
+        // Handle resize
+        window.onresize = function(e) {
+            e.preventDefault();
+            sh_parent.style.height = (window.innerHeight - 100) + 'px';
+        };
+
+        const seeProfileInfo = div.querySelectorAll('.see-detail');
+        seeProfileInfo.forEach(link => {
+
+            link.addEventListener('click', (e) => {
+                const employeeId = e.target.dataset.id;
+
+                // Find the employee data by id
+                const employeeData = data.find(emp => emp.id == employeeId);
+
+                if (employeeData) {
+                    // Hide the main content and show the profile view
+                    let sub_content = mThis.self.querySelector('#sub_content');
+                    sub_content.classList.add('d-none');
+                    let btnBack = mThis.self.querySelector('#btn_back');
+                    btnBack.classList.remove('d-none');
+
+
+                    // Show the profile section
+                    mThis.renderProfile(employeeData);
+                    mThis.renderCardDetail();
+                } else {
+                    console.error('Employee data not found for ID:', employeeId);
+                }
+            });
+        });
     };
 
 
-    this.deleteMerchant =(id,lnk)=>{
-        let status_code = lnk.dataset.status;
-        let p = {
-            id: id,
-            status_code: status_code
-        };
-        cv_interact.confirm('Delete this merchant?',{
-            title: 'Delete Merchant',
-            context: 'delete'
-        },function(e){
-            if(e){
-                // vsapi.call(`${mThis.base_url}/dms/merchant/delete`,{
-                //     id: id
-                // },null).then(res => {
-                //     if(res.status_code === 200){
-                //         mThis.listView.showPage(mThis.getFitlerData());
-                //     }
-                //     else
-                //         cv_interact.error(res.error_message);
-                // });
-            }
-        });
-    }
+    this.renderProfile = (data) => {
+        let html = `
+                    <div class="d-block ms-3 w-100">
+                        <div class="row row-cols-3 mb-0">
+                            <div class="col-2">
+                                <div class="div-img">
+                                    <img src="${data.image_url || '../uploads/public/1_data/default/images/mr.avif'}" alt="Employee Image">
+                                </div>
+                                <div class="social-icons d-flex justify-content-start mt-3">
+                                    <a href="#" class="mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
+                                    <a href="#" class="mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>
+                                    <a href="#" class="mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Name</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${data.name}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">KH Name</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${data.name_kh}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Sex</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.sex == 'M' ? 'Male' : ''}${data.sex == 'F' ? 'Female' : ''}${data.sex == 'O' ? 'Other' : ''}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Position</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.position || ''}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Email</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-primary">${data.email || ''}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Tel</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.phone_number || ''}</p>
+                                </div>
+                                  <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">ID</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.code || ''}</p>
+                                </div>
 
-    this.deleteMerchantSpecial = (id,lnk)=>{
-        let status_code = lnk.dataset.status;
-        let p = {
-            id: id,
-            status_code: status_code
-        };
-        let confirm_count = 0;
+                            </div>
+                            <div class="col">
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Role</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.role || ''}</p>
+                                </div>
+                                                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Work Shift</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.work_shift || ''}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Nationality</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.nationality || ''}</p>
+                                </div>
 
-        const confirmDelete = () => {
-            cv_interact.confirm([
-                'html:Are you sure to delete this merchant <span class="text-danger fw-semibold">permanently?</span>',
-                '<span class="d-block text-black mt-2">You will need to confirm 7 times before deleting. <span class="d-block fs-4 fw-semibold text-danger">',
-                (confirm_count + 1 ==7? 'This you LAST confirmation!': ['Confirm Count: ',(confirm_count +1)].join('')),
-                '</span></span>'
-            ].join(''), {
-                title: 'Delete Merchant Special',
-                context: 'delete'
-            }, e => {
-                if (e) {
-                    confirm_count++;
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Date of Birth</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.date_of_birth || ''}</p>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <p class="text-nowrap text-muted   width-bp" vslang="titles.Address">Address</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${data.address}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted   width-p" vslang="titles.NSSF">NSSF</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${data.nssf_id}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted   width-p" vslang="titles.Identity Card">Identity Card</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${data.nid}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+        `;
 
-                    if (confirm_count === 7) {
-                        // vsapi.call(`${mThis.base_url}/dms/merchant/delete-special`, {
-                        //     id: id
-                        // }, null).then(res => {
-                        //     if (res.status_code === 200) {
-                        //         mThis.listView.showPage(mThis.getFitlerData());
-                        //     } else {
-                        //         cv_interact.error(res.error_message);
-                        //     }
-                        // });
-                    } else {
-                        confirmDelete();
-                    }
-                } else {
-                    confirm_count = 0;
-                }
-            });
-        };
+        this.profile_info_emp.innerHTML = html;
+    };
+    this.renderCardDetail = () => {
+        let html = '';
+        html = [
+            `
+            <div class="col-md-4">
+                <div class="card" style="height:487px;">
+                    <div class="card-header">
+                        <h4>Skills</h4>
+                        <span class="ellipsis">...</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <p>PHP</p>
+                            <div class="progress" style="width: 60%;">
+                                <div class="progress-bar" style="width: 85%;"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <p>JavaScript</p>
+                            <div class="progress" style="width: 60%;">
+                                <div class="progress-bar" style="width: 70%;"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <p>Node.Js</p>
+                            <div class="progress" style="width: 60%;">
+                                <div class="progress-bar" style="width: 50%;"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <p>Vue.Js</p>
+                            <div class="progress" style="width: 60%;">
+                                <div class="progress-bar" style="width: 65%;"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <p>Laravel</p>
+                            <div class="progress" style="width: 60%;">
+                                <div class="progress-bar" style="width: 60%;"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <p>OOP</p>
+                            <div class="progress" style="width: 60%;">
+                                <div class="progress-bar" style="width: 80%;"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <p>Next.Js</p>
+                            <div class="progress" style="width: 60%;">
+                                <div class="progress-bar" style="width: 40%;"></div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <p>React.Js</p>
+                            <div class="progress" style="width: 60%;">
+                                <div class="progress-bar" style="width: 60%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card" style="height:487px;">
+                    <div class="card-header">
+                        <h4>Education</h4>
+                        <div class="d-flex gap-2">
+                            <a href="javascript:void(0)" data="id" id="lnk_add_education">
+                            <i class="fa fa-plus-circle fs-5 text-success"></i>
+                            </a>
 
-        confirmDelete();
-    }
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="">
+                            <h5>2022-2024</h5>
+                            <div class="d-flex justify-content-between">
+                                <p class="w-50">Associate Degree</p>
+                                <p class="text-primary w-75">University of Oxford</p>
+                                <div class="d-flex gap-2"><a href="javascript:void(0)" id="ps-lnk_delete_education" style="">
+                            <i class="fa fa-trash fs-8 text-danger"></i>
+                            </a>
+                            <a href="javascript:void(0)" id="ps-lnk_edit_education" style="">
+                            <i class="fa fa-edit fs-8 text-warning"></i>
+                            </a></div>
+                            </div>
+                            <span class="text-muted">Web Development</span>
+                        </div>
+                        <div class="mt-3">
+                            <h5>2022-2024</h5>
+                            <div class="d-flex justify-content-between">
+                                <p class="w-50">Associate Degree</p>
+                                <p class="text-primary w-75">University of Cambridge</p>
+                            </div>
+                            <span class="text-muted">Web Development</span>
+                        </div>
+                        <div class="mt-3">
+                            <h5>2022-2024</h5>
+                            <div class="d-flex justify-content-between">
+                                <p class="w-50">Associate Degree</p>
+                                <p class="text-primary w-75">Royal University of Phnom penh</p>
+                            </div>
+                            <span class="text-muted">Web Development</span>
+                        </div>
+                        <div class="mt-3">
+                            <h5>2022-2024</h5>
+                            <div class="d-flex justify-content-between">
+                                <p class="w-50">Associate Degree</p>
+                                <p class="text-primary w-75">Massachusetts Institute of Technology</p>
+                            </div>
+                            <span class="text-muted">Web Development</span>
+                        </div>
 
-    mThis.reverseToLead = (id,lnk = null)=>{
-        //let status_code = lnk.dataset.status;
-        let p = {
-            id: id
-            //status_code: status_code
-        };
-        cv_interact.confirm('Are you sure to reverse this client back to be a lead or prospect?',{'context':'update','title':'Reverse To Lead',confirmButtonText:'Reverse Now'},e =>{
-             if(e){
-                 vsapi.call([main_view.base_url,'/dms/merchant/reverse-to-lead'].join(''),p,null,null).then(res =>{
-                     if(res.status_code ==200){
-                        cv_interact.success('Now the merchant has been reversed back to be a lead with status "in Review"');
-                        mThis.listView.showPage(mThis.getFitlerData());
-                     }else cv_interact.error(res.error_message);
-                 });
-             }
-        });
-    }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card" style="height:487px;">
+                    <div class="card-header">
+                        <h4>Experience</h4>
+                        <span class="ellipsis">...</span>
+                    </div>
+                    <div class="card-body">
+                     <div class="">
+                        <h6>02-02-2023 - 14-11-2024</h6>
+                        <h5>Web Developer</h5>
+                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Expedita.</p>
+                        <p class="experience-company">Vectorasoft Company</p>
+                        <hr class="border border-warning">
+                     </div>
+                     <div class="">
+                        <h6>02-02-2023 - 14-11-2024</h6>
+                        <h5>Web Developer</h5>
+                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Expedita.</p>
+                        <p class="experience-company">Vectorasoft Company</p>
+                     </div>
 
-    //Set event handlers for some clickable elements on each Merchant Card
-    this.initCardEvents = (cards)=>{
-       cards.forEach(card =>{
-        card.addEventListener('click',e=>{
-            e.preventDefault();
-             //Click on Set Price List shortcut icon
-             let btn = VSUtil.closestLimited(e.target,'a.set-price-list');
-             if(btn){
-                mThis.setMerchantPriceList(btn.dataset.id,card);
-                return;
-             }
-
-           });
-
-       });
-
-    }
-
-    this.initImageBoxes = (cards)=>{
-        //const elements = container.querySelectorAll('.div-img');
-        cards.forEach(card =>{
-            const divImg = card.querySelector('.div-img');
-            if(divImg){
-                let imgBox = new ImageBox(divImg,{
-                    containerClass:null,
-                    cssClass:"border border-secondary rounded-3",
-                    //emptyClass:"border border-secondary rounded-3",
-                    saveAPI:{
-                      endPoint:`${main_view.base_url}/dms/merchant/save-profile-picture`,
-                      params:(photo)=>{
-                        return { "id": divImg.dataset.id,"photo":photo};
-                      }
-                    },
-                    deleteAPI:{
-                      endPoint:`${main_view.base_url}/dms/merchant/delete-profile-picture`,
-                      params:()=>{
-                         return {"id": divImg.dataset.id};
-                      }
-                    },
-                    onLoadImage:null,
-                    onDeleteImage:null,
-                    onImageLoaded:(img)=>{
-                       return;
-                    }
-                });
-
-                imgBox.setImage(divImg.dataset.imageurl);
-            }
-        });
-
-
-    }
-
-    /** initDropdown menus , merchant's dropdown menus */
-    this.initDropdownMenus = (cards)=>{
-        mThis.storeMenus = null;
-        //let elements = container.querySelectorAll('.btn_merchant_action');
-        cards.forEach(card =>{
-
-          const actionButton = card.querySelector('.btn_merchant_action');
-          let storeMenu =  new VSDropdownButton(actionButton,{
-             menus:[
-                {
-                    label:` <i class="fa-regular fa-pen-to-square fs-5"></i><span class="ps-2  " vslang="titles.Modify Merchant"></span>`,
-                    name:"edit_merchant"
-                },
-                {
-                    label:'<i class="fa-regular fa-list-alt fs-5"></i><span class="ps-2 menu-text" vslang="titles.Set Price List"></span>',
-                    name:"set_price_list"
-                },
-                {
-                    label:' <i class="fa-regular fa-trash-can fs-5 text-warning"></i><span class="ps-2  " vslang="titles.Delete Merchant"></span>',
-                    name:"delete_merchant"
-                },
-                {
-                    label:' <i class="fa-regular fa-refresh fs-5 text-warning"></i><span class="ps-2  " vslang="titles.Reverse to Prospect"></span>',
-                    name:"reverse_to_lead"
-                },
-                {
-                    label:' <i class="fa-regular fa-trash-can fs-5 text-danger"></i><span class="ps-2  " vslang="titles.Delete Special"></span>',
-                    name:'delete_merchant_special'
-                },
-                {
-                    label:'<i class="fa-regular fa-circle-stop fs-5"></i><span class="menu-text ps-2" vslang="titles.Change Status"></span>',
-                    name:'set_status'
-                },
-                {
-                    label:'<i class="fa-solid fa-mobile fs-5"></i><span class="menu-text ps-2" vslang="titles.Create App Account"></span>',
-                    name:'create_login'
-                },
-                {
-                    label:'<i class="fa fa-times text-danger fs-5"></i><span class="menu-text ps-2  " vslang="titles.Delete Login"></span>',
-                    name:'delete_login'
-                },
-                {
-                    label:'<i class="fa fa-key text-primary fs-5"></i><span class="menu-text ps-2" vslang="titles.Change Password"></span>',
-                    name:'change_password'
-                },
-                {
-                    label:'<i class="fa fa-user fs-5"></i><span class="menu-text ps-2  " vslang="titles.Change Login Name"></span>',
-                    name:'change_login_name'
-                }
-             ],
-             click: (me, action, btn) =>{
-                 switch(action){
-                    case "edit_merchant":{
-                        let op = {
-                            id: btn.dataset.id,
-                            onClose:()=>{
-                                mThis.listView.showPage(mThis.getFitlerData());
-                            }
-                        };
-                        SenderDialog.show(op);
-                        break;
-                    }
-                    case "set_price_list":{
-                        let sender_id = btn.dataset.id;
-                        // let span = card.querySelector('.merchant-price-list');
-                        mThis.setMerchantPriceList(sender_id,card);
-                        break;
-                    }
-                    case "reverse_to_lead":{
-                        mThis.reverseToLead(btn.dataset.id, btn);
-                        break;
-                    }
-                    case "delete_merchant":{
-                        mThis.deleteMerchant(btn.dataset.id,btn);
-                        break;
-                    }
-                    case "delete_merchant_special":{
-                        mThis.deleteMerchantSpecial(btn.dataset.id,btn);
-                        break;
-                    }
-                    case "set_status":{
-                        mThis.setMerchantStatus(btn.dataset.id, btn);
-                        break;
-                    }
-                    case 'delete_login':{
-                        mThis.deleteLogin(btn.dataset.id,btn,()=>{
-                            let elements = card.querySelectorAll([data-userid]);
-                            elements.forEach(el =>{
-                                el.dataset.userid = "";
-                            });
-                            elements = card.querySelectorAll([data-loginname]);
-                            elements.forEach(el =>{
-                                el.dataset.loginname ="";
-                            });
-
-                        });
-                        break;
-                    }
-
-                    case 'change_password':{
-                        let op = {
-                            id:btn.dataset.userid,
-                            login_name:btn.dataset.loginname,
-                            onClose:(p)=>{
-                              return;
-                            }
-                        };
-                        if(!op.id){
-                            cv_interact.warning('User ID is unepectedly missing!');
-                            return;
-                        }
-                        SetPasswordDialog.show(op);
-                        break;
-                    }
-                    case 'change_login_name':{
-                        let user_id = btn.dataset.userid;
-                        let prev_login_name = btn.dataset.loginname;
-                        let op = {
-                            id : user_id,
-                            login_name: prev_login_name,
-                            onClose:(p)=>{
-                               //NOTE: only if p.login_name is a phone number of merchant, so the search will result correctly
-                               mThis.elSearch.value = p.login_name;
-                               mThis.listView.showPage({"search_value":p.login_name});
-                               if(!p.login_name){
-                                    let elements = card.querySelectorAll('[data-loginname]');
-                                      elements.forEach(e =>{
-                                      e.dataset.loginname = p.login_name;
-                                    });
-                               }
-
-                            }
-                        }
-                        ChangeLoginNameDialog.show(op);
-                        break;
-                    }
-                    default:{
-                        break;
-                    }
-                 }
-             },
-             onOpen:(me,dataset,dropdownContainer)=>{
-                 //let d =dropdownContainer;
-                 const menus = me.getMenus();
-                 let set_price_menu = menus.set_price_list.querySelector('.menu-text');
-                 if (dataset.pricelistid > 0 && set_price_menu){
-                    set_price_menu.textContent ='Change Price List';
-                 }else set_price_menu.textContent ='Set Price List';
-
-                 menus.create_login.style.display = showIt(!dataset.loginname);
-                 menus.delete_login.style.display = showIt(dataset.loginname);
-                 menus.change_password.style.display = showIt(dataset.loginname);
-                 menus.change_login_name.style.display = showIt(dataset.loginname);
-             }
-
-           });
-
-            //This storeMenus object need to be disposed when reload Merchant listView
-            mThis.storeMenus = mThis.storeMenus || [];
-            mThis.storeMenus.push(storeMenu);
-        });
-
-
-    }
-
-    //Hide/Show menu Item for Merchant Action Menus
-    function showIt(yes){
-       if(yes) return 'flex';
-       else return 'none';
-    }
-
-    this.loadFilterData = (onFinish) => {
-        mThis.def_filter = mThis.def_filter || {};
-        mThis.def_filter.status_code = mThis.def_filter.status_code || 'Active';
-
-        //Do not allow filter to be applied yet. I means that filter SELECT's change event wont refresh the merchant list
-        mThis.allow_filter = false;
-        // vsapi.call(`${mThis.base_url}/bhr/merchant/form-options`, null,null,main_view.apiCluster).then(res => {
-        //     let d = res.status_code === 200 ? StringSanitizer.sanitizeObject(res.data) : {};
-        //     VSUtil.setComboItems(mThis.elFilter_employee_status, d.sender_statuses, 'status_code', 'status_name', true, '(All Status)', mThis.def_filter.status_code);
-        //     //VSUtil.setComboItems(mThis.elFilter_business_type, d.business_types, 'business_type', 'business_type', true, '(All Business Types)', 0);
-        //     VSUtil.setComboItems(SenderDialog.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(No referral)', null);
-        //     onFinish();
-
-        //     (d.sales_agents || []).unshift({"id":-1,"agent_name":"(No Agent)"});
-        //     (d.sales_agents || []).unshift({"id":null,"agent_name":"(All Sales Agents)"});
-
-        //     (d.business_types || []).unshift({"code":null,"business_type":"(All Business Types)"});
-        //     (d.sender_statuses || []).unshift({"status_code":null,"status_name":"(All Statuses)"});
-        //     mThis.form_data = d;
-        //     mThis.allow_filter = true;
-        // });
-    }
-
-    this.getPriceListItems = (onFinish) => {
-        //getComboItems_price_list
-        // vsapi.call(`${mThis.base_url}/dms/price-list/options-price-list`,null,false).then(res => {
-        //     let items = res.status_code ===200? res.data: [];
-        //     onFinish(items);
-        // });
-    }
-
-    this.initOnce = () => {
-        if(mThis.initAlready) return;
-
-        mThis.listView = new ListView('_sdl_employee_list', {
-            fetchApi: `${main_view.base_url}/hr/employee/list`,
-            apiCluster: main_view.apiCluster,
-            perPage: 3,
-            renderItems: (items, list_container) => {
-                mThis.renderMerchant(list_container, items);
-            },
-            listContainerClass: null
-        });
-
-        mThis.tblSenders = mThis.listView.getListContainer();
-
-        this.div_filter_fields.querySelectorAll('.filter-field').forEach(el =>{
-            el.onchange = e => {
-                e.preventDefault();
-                if(mThis.allow_filter){
-                    mThis.listView.showPage(mThis.getFitlerData());
-                }
-            };
-        });
-
-        this.btnFilter.addEventListener('click', e=>{
-            const options = {
-                "title":"Filter Merchants",
-                "filterButton":mThis.btnFilter,
-                "fields": {
-                    "branch_id": {
-                        "label": "Branch",
-                        "type": "select",
-                        "required": 1,
-                        "value_field": "id",
-                        "text_field": "branch_name",
-                        "data": mThis.form_data.branches,
-                        //"defaultValue": mThis.last_filter.branch_id || 1
-                    },
-                    "status_code": {
-                        "label": "Status",
-                        "type": "select",
-                        "required": 0,
-                        "value_field": "status_code",
-                        "text_field": "status_name",
-                        "data": mThis.form_data.sender_statuses,
-                        //"defaultValue": mThis.last_filter.status_code || mThis.elFilter_employee_status.value
-                    },
-                    "business_type": {
-                        "label": "Business Type",
-                        "type": "select",
-                        "value_field": "code",
-                        "text_field": "business_type",
-                        "data":mThis.form_data.business_types,
-                        //"defaultValue": mThis.last_filter.business_type
-                    },
-                    "sales_agent_id": {
-                        "label": "Referred By",
-                        "type": "select",
-                        "value_field": "id",
-                        "text_field": "agent_name",
-                        "data": mThis.form_data.sales_agents,
-                        //"defaultValue": mThis.last_filter.sales_agent_id
-                    }
-                },
-                'onClose': d => {
-                    //mThis.last_filter = d.data;
-                    // mThis.elFilter_employee_status.value =  d.data.status_code;
-                    // mThis.elFilter_employee_status.dispatchEvent(new Event('change'));
-                }
-            };
-            DMSFilterDialog.show(options);
-        });
-
-        this.btnNewSender.addEventListener('click', function(e){
+                    </div>
+                </div>
+            </div>`
+        ].join('');
+        this.profile_card_detail.innerHTML = html;
+        document.getElementById('lnk_add_education').addEventListener('click', function (e)  {
             e.preventDefault();
             let op = {
                 id: null,
-                onClose: (d) =>{
-                    mThis.listView.showPage(mThis.getFitlerData());
+                btn: e.target,
+                title:"New Education",
+                onClose: () => {
+                    mThis.EmployeeListView.showPage();
+                }
+            };
+            console.log(op);
+
+            AddEducation.show(op);
+        // Action for adding new education
+        });
+    }
+
+
+    mThis.elSearch.addEventListener('keyup', (e) => {
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.EmployeeListView) {
+                mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
+            } else {
+                console.error("EmployeeListView is not defined");
+            }
+        }, 200);
+    });
+
+
+
+    this.getDataFormFilter = () => {
+        let p = {};
+        p.status_id = mThis.elStatus.value;
+        p.role_id = mThis.elRole.value;
+        p.search_value = mThis.elSearch.value;
+        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
+        main_filters.forEach(el => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+        console.log(222, p);
+
+        return p;
+    };
+
+    this.initDropdownMenus = (table)=>{
+        console.log(3333,table);
+
+        const menuOptopns = {
+            containerElement: table,
+            actionButtonClass:"btn_employee_action",
+            cssClass:"bg-white shadow",
+            //menuItemClass:"",
+            menus:[
+                {
+                    html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                    icon:`<i class="fa-regular fa-exchange fs-5"></i>`,
+
+                    cssClass:"border-bottom pb-2",
+                    name:"change_employee_status"
+                },
+
+                {
+                    html:'<span class="ps-2  " vslang="titles.Modify Employee">Modify Employee</span>',
+                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"edit_employee"
+                },
+                {
+                    html:'<span class="ps-2  " vslang="titles.Delete Employee">Delete Employee</span>',
+                    icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"delete_employee"
+                },
+
+            ],
+            onClick:(menuLink, id, name)=>{
+                switch(name){
+
+                    case 'change_employee_status':{
+                        mThis.changeStatus(id,menuLink);
+                        break;
+                    }
+                    case 'edit_employee':{
+                      mThis.editEmployee(id, menuLink);
+                      break;
+                    }
+                    case 'delete_employee':{
+                        mThis.deleteEmployee(id, menuLink);
+                        break;
+                      }
+
+                    default:{
+                      break;
+                    }
                 }
             }
-            // if (mThis.form_data && op.fields){
-            //     op.fields['business_type'].data = mThis.form_data.business_types;
-            //     op.fields['sales_agent_id'].data = mThis.form_data.sales_agents;
-            // }
-            SenderDialog.show(op);
-        });
+        }
+        new VSDropdownMenu(menuOptopns);
+    }
 
-        mThis.elSearch.addEventListener('keyup',(e) => {
-            clearTimeout(mThis.search_timeout);
-            mThis.search_timeout = setTimeout(() => {
-                mThis.listView.showPage(mThis.getFitlerData());
-            }, 200);
-        });
-
-        mThis.btnSearch.onclick = e =>{
-            mThis.listView.showPage(mThis.getFitlerData());
+    this.changeStatus = (id, lnk)=>{
+        // if(!AuthManager.allowed(337,false))
+        //         return;
+        //let status_code = Validator.properCase(lnk.dataset.status);
+        let tr = lnk.closest('tr');
+        let status_id = Validator.properCase(tr? tr.dataset.status_id: "");
+        let inputOptions = {
+            title: 'Set Employee Status',
+            dataLabel: "Employee status",
+            valueMember: "status_id",
+            textMember: "name",
+            confirmButtonText:"Save",
+            blankErrorMessage: "Status is not correct!",
+            data: [{
+                status_id: "1",
+                name: "Active"
+            },
+            {
+                status_id: "2",
+                name: "Inactive"
+            }],
+            defaultValue: status_id
         };
 
-        mThis.initAlready = true;
-    }
+        InputBox2.show(inputOptions,(d)=>{
+            if(d){
+                let p = {
+                    id: id,
+                    status_id: d.value
+                };
+                console.log(123,p);
 
-    this.getFitlerData = () => {
-        // let p = DMSFilterDialog.getData();
-        let p={};
-        p.search_value = mThis.elSearch.value;
-        // p.status_code = mThis.elFilter_employee_status.value;
-        let main_filters = mThis.div_filter_fields.querySelectorAll('.filter-field');
-        main_filters.forEach(el=>{
-            const f= el.dataset.field;
-            p[f] = el.value;
-            //Remember last selected filter that is the combition between filter fields on SenderListComponent and the filter fields on DMSFilterDialog as well;
-            //mThis.last_filter[f] = el.value;
+                vsapi.call(`${mThis.base_url}/hr/employee/update-status`,p).then(res => {
+                    if(res.status_code === 200){
+
+                        InputBox2.close();
+                        cv_interact.success('The Employee status has been updated');
+                        mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
+                    }
+                    else
+                        cv_interact.error(res.error_message);
+                });
+            }
         });
-        return p;
+    }
+    this.editEmployee = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.EmployeeListView.showPage();
+            }
+        };
+        EmployeeDialog.show(op);
     }
 
-    this.show = (option) => {
-        mThis.initOnce();
-        mThis.option = option;
+    this.deleteEmployee = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.EmployeeListView.showPage();
+            }
+        };
+        cv_interact.confirm('Delete this Employee?',{
+            title: 'Delete Employee',
+            context: 'delete',
+            confirmButtonText:"Delete"
+        },function(e){
+            if(e){
+                vsapi.call(`${main_view.base_url}/hr/employee/delete`,op,false,false,false).then(res => {
+                    if(res.status_code == 200){
+                        cv_interact.success('Deleted Successfully');
+                        mThis.EmployeeListView.showPage();
+                    }
+                })
+            }
+        });
+
+    }
+
+    this.prepareFormOptions = () => {
+
+        vsapi.call(`${main_view.base_url}/hr/employee/form-options`,null,null,null).then(res => {
+            const d = res.status_code == 200 ? res.data : {};
+
+            VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',true,'All',null);
+            VSUtil.setComboItems(mThis.elRole,d.roles,'id','name',true,'All',null);
+        })
+    }
+
+    this.show = function () {
+        mThis.init();
         main_view.setTitle(mThis.title_prop);
-        // mThis.loadFilterData(() => {
-            mThis.listView.showPage(mThis.getFitlerData(),null,() => {
-                mThis.jm.siblings().hide();
-                mThis.jm.hide().fadeIn(300);
-            });
-        // });
-    }
+        mThis.prepareFormOptions();
+            mThis.EmployeeListView.showPage();
+                $(mThis.self).siblings().hide();
+                $(mThis.self).fadeIn(250);
+            };
 
-    this.hide = () => {
-        mThis.self.style.display = 'none';
-    }
-}
 
-const SenderDialog = new function(){
+});
+// const AddEducation = new function () {
+//     let mThis = this;
+//     this.base_url = main_view.base_url;
+//     this.self = main_view.appContent.children('#addEducation_dlg')[0];
+//     this.modal = new bootstrap.Modal(this.self);
+//     this.btnOK = this.self.querySelector('#addEducation_dlg_btnOK');
+//     this.elError = this.self.querySelector('#addEducation_dlg_error');
+//     this.elTitle = this.self.querySelector('#addEducation_dlgTitle');
+
+//     this.elName = this.self.querySelector('#ps-newpl_name');
+//     this.elWeightMarker = this.self.querySelector('#ps-newpl_kg_marker');
+
+//     this.btnOK.onclick = e => {
+//       e.preventDefault();
+//       let p = mThis.getData();
+//       if (!p.name) {
+//         mThis.elError.innerHTML = ('Name cannot be empty');
+//         return;
+//       }
+
+//       if (!$.isNumeric(p.kg_marker)) {
+//         mThis.elError.innerHTML = ('Weight Marker is not valid');
+//         return;
+//       }
+
+//       vsapi.call([mThis.base_url, '/abm/createSupplierPriceList'].join(''), p).then(res => {
+//         if (res.status_code === 200) {
+//           let d = res.data;
+//           if (typeof mThis.onClose === 'function') mThis.onClose(d.id);
+//           mThis.modal.hide();
+//         } else mThis.elError.innerHTML(res.error_message);
+//       });
+
+//     };
+
+
+
+//     this.getData = () => {
+//       let p = {};
+//       p.name = mThis.elName.value;
+//       p.kg_marker = mThis.elWeightMarker.value;
+
+//       return p;
+//     }
+
+//     this.show = (option, onClose) => {
+//       mThis.elError.innerHTML = (null);
+//       mThis.elTitle.innerHTML = (option.title)
+//       mThis.onClose = onClose;
+//       mThis.modal.show();
+
+//     }
+//   }
+const AddEducation = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        dialog = dialog || new GeneralDialog({
+            title: op.id ? "Edit Employee Seniority" : "New Employee Seniority",  // Dynamically set title
+            cssClass: "modal-md d-flex justify-content-center",
+            createContent: () => {
+                return [
+                    `<div class="row"><div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.Employee">Employee</label>
+        <div><select name="emp_id" class="data-input" data-field="emp_id"></select></div>
+    </div>
+    <div class=" form-group col-md-6">
+        <label class="form-label" vslang="titles.School">School</label>
+        <div><select name="school_id" class="data-input" data-field="school_id"></select></div>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.Period">Period</label>
+        <div><input name="period" class="form-control data-input" data-field="period"/></div>
+    </div>
+     <div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.Major">Major</label>
+        <div><input name="major" class="form-control data-input" data-field="major"/></div>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.Start Year">Start Year</label>
+        <div><input name="start_year" class="form-control data-input" data-field="start_year"/></div>
+    </div>
+    <div class="form-group col-md-6">
+        <label class="form-label" vslang="titles.End Year">End Year</label>
+        <div><input name="end_year" class="form-control data-input" data-field="end_year"/></div>
+    </div>
+
+    <div class="form-group col-md-12">
+        <label class="form-label" vslang="titles.Diploma">Diploma</label>
+        <div><input name="diploma" class="form-control data-input" data-field="diploma"/></div>
+    </div></div>`
+
+                ].join('');
+            },
+            buttons:[
+                {
+                   label:"<span>Cancel</span>",
+                   cssClass:"btn btn-warning",
+                   click:(me)=>{
+                      me.hide(false);
+                   }
+                },
+                {
+                   label:"<span>Save</span>",
+                   cssClass:"btn btn-primary",
+                   click:(me)=>{
+                      let p = me.getData();
+                    //   p.image = me.userImageBox? me.userImageBox.getImage(): '';
+                      console.log(222,p);
+                      vsapi.call([main_view.base_url,'/hr/seniorities/save'].join(''),p,false,false).then(res =>{
+                          if(res.status_code ==200){
+                              me.modal.hide(true,p);
+                          }else cv_interact.error(res.error_message);
+                      });
+                   }
+                }
+             ],
+            configSelect: [
+                {
+                    name: "emp_id",
+                    data: "employees",
+                    valueField: "id",
+                    textField: "name",
+                    filterData: (data, res) => {
+
+                        return data;
+                    }
+                }
+            ],
+            prepareFormOptions: {
+                createTitle: "New Employee Seniority",
+                modifyTitle: "Edit Employee Seniority",
+                targetProp: "seniority",
+                api: {
+                    endpoint: `${main_view.base_url}/hr/seniorities/form-options`,
+                    params: (op) => {
+                        console.log(9090,op);
+
+                        return { id: op.id };  // Pass ID to fetch data for edit
+                    },
+                    onResponse: (me, res) => {
+                        if (op.id) {
+                            // Populate form with existing data for edit mode
+                            // me.setValue('emp_id', res.data.emp_id);
+                            // me.setValue('period', res.data.period);
+                            // me.setValue('description', res.data.description);
+                            // me.setValue('amount', res.data.amount);
+                        }
+                    }
+                }
+            },
+            onShow: (me) => {
+                // Any additional actions on dialog show can be placed here
+            }
+        });
+
+        dialog.show(op);
+    }
+    return self;
+})();
+
+const EmployeeDialog = new function() {
     const mThis = this;
-    this.self = main_view.VSAppContent.querySelector('#_sdl_dlgSender');
+    this.self = main_view.VSAppContent.querySelector('#dlg_sdl_add_employee');
     this.modal = new bootstrap.Modal(this.self);
     this.base_url = main_view.base_url;
     this.options = {};
 
-    this.elTitle = this.self.querySelector('#_sdl_dlgSenderTitle');
-    this.btnSave =  this.self.querySelector('#_sdl_sender_btnSave');
-    this.elSenderType =  this.self.querySelector('#_sdl_sender_sendertype');
-    this.elBusinessType =  this.self.querySelector('#_sdl_sender_businesstype');
-    this.elSalesAgent =  this.self.querySelector('#_sdl_sales_agent');
-
-    this.elPriceList =  this.self.querySelector('#_sdl_price_list');
-    this.elCOD =  this.self.querySelector('#_sdl_cod');
-    this.elCODFee =  this.self.querySelector('#_sdl_cod_fee');
-
-    this.onClose = null;
-    this.elError =  this.self.querySelector('#_sdl_sender_error');
-
-    this.body =  this.self.querySelector('.modal-body');
-    this.div_sender_info =  this.body.querySelector('#div_merchant_info');
-    this.div_bank_account = this.body.querySelector('#div_bank_account');
-
-    this.prepareData = (id,def, onFinish) => {
-        if(!def) def = {};
-
-        // vsapi.call(`${mThis.base_url}/bhr/merchant/form-options`,{
-        //     id: id
-        // },null).then(res => {
-        //     let d = res.status_code === 200 ?  StringSanitizer.sanitizeObject(res.data) : {};
-        //     d.bank_accounts = d.bank_accounts || [];
-
-        //     VSUtil.setComboItems(mThis.elSenderType, d.sender_types, 'id', 'sender_type', true, '(Select Merchant Type)', def.sender_type_id);
-        //     VSUtil.setComboItems(mThis.elBusinessType, d.business_types, 'business_type', 'business_type', true, '(Select Business Type)', def.business_type);
-        //     VSUtil.setComboItems(mThis.elPriceList, d.price_list, 'id', 'name', true, '(Price List)', def.price_list_id);
-        //     VSUtil.setComboItems(mThis.elSalesAgent, d.sales_agents, 'id', 'agent_name', true, '(referral)', def.sales_agent_id);
-
-        //     mThis.form_data = d;
-        //     onFinish(d);
-        // });
-    }
+    this.btnSave =  this.self.querySelector('#dlg_sdl_add_employee_btn_save');
+    this.elPositionId =  this.self.querySelector('#_sdl_position_id');
+    this.elRoleId =  this.self.querySelector('#_sdl_role_id');
+    this.elWorkShiftId =  this.self.querySelector('#_sdl_work_shift_id');
+    this.elTitle = mThis.self.querySelector('.modal-title');
+    this.div_employee_info = mThis.self.querySelector('#_sdl_employee_info');
+    this.btnChooser = mThis.self.querySelector('#dlg_image_chooser');
 
     this.btnSave.onclick =  e =>{
         e.preventDefault();
-        let p = mThis.getData();
-        // vsapi.call(`${mThis.base_url}/dms/merchant/save`, p,mThis.btnSave,false).then(res => {
-        //     if(res.status_code === 200){
-        //         mThis.modal.hide();
-        //         const d = res.data ?? {};
-        //         if(d.info_message) cv_interact.info(d.info_message);
-        //         if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
-        //     }
-        //     else
-        //         cv_interact.error(res.error_message);
-        // });
+        let p = mThis.getDataForm();
+        // console.log(77777,p);
+
+        vsapi.call(`${mThis.base_url}/hr/employee/save`, p,mThis.btnSave,false).then(res => {
+            if(res.status_code === 200){
+                mThis.modal.hide();
+                const d = res.data ?? {};
+                cv_interact.success('Employee Saved Success!');
+                if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
+            }
+            else
+                cv_interact.error(res.error_message);
+        });
     };
+
+
+    this.prepareData = (id,def, onFinish) => {
+        if(!def) def = {};
+        console.log(555555);
+        vsapi.call(`${mThis.base_url}/hr/employee/form-options`,{
+            id: id
+        },null).then(res => {
+            let d = res.status_code === 200 ?  res.data : {};
+
+
+            VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'title', true, '(Select Position)', null);
+            VSUtil.setComboItems(mThis.elRoleId, d.roles, 'id', 'name', true, '(Select Role)', null);
+            VSUtil.setComboItems(mThis.elWorkShiftId, d.work_shifts, 'id', 'name', true, '(Select Work Shift)', null);
+            console.log(33333,d);
+            onFinish(d);
+        });
+    }
+
 
     this.show = (options) => {
         if (!options) options = {};
         mThis.options = options;
+        let id = options.id??null;
 
-        mThis.prepareData(mThis.options.id,{},data => {
-            if(data.sender){
-                mThis.elTitle.textContent =  "Modify Merchant Information";
+        mThis.prepareData(id,{},data => {
+            if(data.employee){
+                mThis.elTitle.textContent =  "Modify Employee Information";
             }
             else{
-                mThis.elTitle.textContent =  "Create Merchant";
+                mThis.elTitle.textContent =  "Create Employee ";
             }
-            mThis.setData(data.sender);
-            mThis.modal.show({backdrop:true});
+            console.log(6666);
+
+            mThis.setData(data.employee);
+            mThis.modal.show();
         });
     }
 
-    this.setData = (d) => {
-        d =d ?? {};
-        let elements = mThis.body.querySelectorAll('.data-input');
-        elements.forEach(el =>{
-            el.value = null;
-        });
-        if(!d) return;
-
-        let bank_accounts = d.bank_accounts;
-        d.bank_accounts = null;
-
-        elements = mThis.div_sender_info.querySelectorAll('.data-input');
-        elements.forEach(el =>{
-            const data_member = el.dataset.field;
-            if(el.tagName.toLowerCase() === 'select'){
-                el.value = d[data_member];
-                let event = new Event('change',{
-                    bubbles: true,
-                    cancelable: true
-                });
-                el.dispatchEvent(event);
-            } else if (el.tagName ==='IMG'){
-                el.setAttribute('src',d[f] || '');
-            }
-            else{
-                el.value = d[data_member] || '';
+        mThis.btnChooser.onclick = function(e){
+        e.preventDefault();
+        FileChooser.chooseFile(null,(d) => {
+            if(d){
+                const parent = this.parentElement;
+                mThis.setImage(parent,d.dataUrl);
             }
         });
+    }
 
-        let i = 0, c = null;
-        bank_accounts = bank_accounts ?? [];
-        do{
-            c = bank_accounts[i];
-            if(!c) break;
-            let css_class = 'primary_bank_panel';
-            if(c.is_primary == 0) css_class = 'secondary_bank_panel';
-            let div = mThis.body.querySelector('div.'+css_class);
-            div.dataset.id = c.id;
-            div.querySelectorAll('.data-input').forEach(el => {
-                let dataMember = el.dataset.field;
-                el.value = c[dataMember];
+    this.setImage = (div,image=null) => {
+        if(image){
+            const html = `<image class="w-100 h-100 object-fit-scale data-input" src="${image}" alt="social-icon" data-field="photo"/>
+            <div class="position-absolute top-0 end-0 p-2 rounded-2 bg-dark" role="button">
+                <i class="fa-regular fa-trash-can text-danger fs-5"></i>
+            </div>`;
+            div.innerHTML = html;
+            mThis.deleteImage(div);
+        }
+        else{
+            const html = `<div id="dlg_image_chooser"
+                                class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
+                                <i class="fa-regular fa-image fs-4 text-muted"></i>
+                            </div>`;
+            div.innerHTML = html;
+            mThis.chooseImage(div);
+        }
+    }
+
+    this.deleteImage = (div) => {
+        const btnDelete = div.querySelector('[role=\'button\']');
+        btnDelete.onclick = function(e){
+            e.preventDefault();
+            const html = `<div id="dlg_image_chooser"
+                                class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
+                                <i class="fa-regular fa-image fs-4 text-muted"></i>
+                            </div>`;
+            div.innerHTML = html;
+            mThis.chooseImage(div);
+        }
+    }
+
+    this.chooseImage = (div) => {
+        const btnChoose = div.querySelector('#dlg_image_chooser');
+        btnChoose.onclick = function(e){
+            e.preventDefault();
+            FileChooser.chooseFile(null,(d) => {
+                if(d){
+                    mThis.setImage(div,d.dataUrl);
+                }
             });
-            i++;
-        }while(c);
-
-        //if (d.id > 0){
-            mThis.remember_original_bank_info(d); /** remember original bank account info and will compare this value with the last update values before user click Save button */
-        //}
+        }
     }
 
-    this.getData = () => {
-        let p = {};
-        p.id = mThis.options.id;
-        mThis.div_sender_info.querySelectorAll('.data-input').forEach(el => {
-            let data_member = el.dataset.field;
-            p[data_member] = el.value;
+    this.getDataForm = () => {
+        const div = mThis.self;
+        let p = {
+            id: mThis.options.id
+        };
+
+        div.querySelectorAll('.data-input').forEach(el => {
+            const data_member = el.dataset.field;
+            if(el.tagName === 'IMG'){
+                p[data_member] = el.src;
+            }
+            else{
+                p[data_member] = el.value;
+            }
         });
-        p.banks = mThis.getBanks();
-        p.bank_account_changed = (mThis.org_bank_account_info && mThis.org_bank_account_info != mThis.new_bank_account_info);
-        p.bank_account_changed =  p.bank_account_changed? 1:0;
+
         return p;
     }
+    this.setData = (d) => {
+        d =d ?? {};
+        const div = mThis.self,
+    containerImage = div.querySelector('[aria-label=\'image\']');
+        let elements = div.querySelectorAll('.data-input');
+        mThis.setImage(containerImage,d.image_url);
 
-    /** d is bank_accounts */
-    this.remember_original_bank_info = (d) => {
-        mThis.org_bank_account_info = null;
-        //pernission 285 to change bank account
-        let readOnly =true;
-        if (!d) readOnly =false;
-        else if (AuthManager.allowed(285)) readOnly = false;
-        let div = mThis.div_bank_account.querySelector('div.primary_bank_panel');
-        div.querySelectorAll('.data-input').forEach(el => {
-            mThis.org_bank_account_info = [mThis.org_bank_account_info,el.value].join('');
-            el.readOnly = readOnly;
-        });
+        elements.forEach(el =>{
+            const data_member = el.dataset.field;
+            el.value = d[data_member] ? d[data_member] : '';
 
-        div = mThis.div_bank_account.querySelector('div.secondary_bank_panel');
 
-        div.querySelectorAll('.data-input').forEach(el =>{
-            mThis.org_bank_account_info = [mThis.org_bank_account_info,el.value].join('');
-            el.readOnly = readOnly;
-        });
-    }
+    });
+}
 
-    this.getBanks = () => {
-        let ps = [];
-        let p = {};
-        p.is_primary = 1;
-        mThis.new_bank_account_info = null;
-        let div = mThis.div_bank_account.querySelector('div.primary_bank_panel');
-        div.querySelectorAll('.data-input').forEach(el => {
-            let f = el.dataset.field;
-            p[f] = el.value;
-            mThis.new_bank_account_info = [mThis.new_bank_account_info,el.value].join('');
-        });
-        p.id = div.dataset.id;
-        ps.push(p);
-
-        div = mThis.div_bank_account.querySelector('div.secondary_bank_panel');
-        let p1 = {};
-        p1.is_primary = 0;
-        div.querySelectorAll('.data-input').forEach(el =>{
-            let f = el.dataset.field;
-            p1[f] = el.value;
-            mThis.new_bank_account_info = [mThis.new_bank_account_info,el.value].join('');
-        });
-        p1.id = div.dataset.id;
-        ps.push(p1);
-        return ps;
-    }
 }

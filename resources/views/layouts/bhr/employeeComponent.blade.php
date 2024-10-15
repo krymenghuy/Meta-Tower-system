@@ -415,7 +415,7 @@
 </div>
 
 {{-- end h --}}
-<div class="modal fade" id="dlg_sdl_add_employee" tabindex="-1" aria-labelledby="dlg_sdl_add_employee_title"
+{{-- <div class="modal fade" id="dlg_sdl_add_employee" tabindex="-1" aria-labelledby="dlg_sdl_add_employee_title"
     aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
         <div class="modal-content">
@@ -559,7 +559,7 @@
             </div>
         </div>
     </div>
-</div>
+</div> --}}
 
 
 

@@ -803,161 +803,173 @@ const AddEducation = (() => {
     return self;
 })();
 
-const EmployeeDialog = new function() {
-    const mThis = this;
-    this.self = main_view.VSAppContent.querySelector('#dlg_sdl_add_employee');
-    this.modal = new bootstrap.Modal(this.self);
-    this.base_url = main_view.base_url;
-    this.options = {};
+const EmployeeDialog = (()=>{
 
-    this.btnSave =  this.self.querySelector('#dlg_sdl_add_employee_btn_save');
-    this.elPositionId =  this.self.querySelector('#_sdl_position_id');
-    this.elRoleId =  this.self.querySelector('#_sdl_role_id');
-    this.elWorkShiftId =  this.self.querySelector('#_sdl_work_shift_id');
-    this.elTitle = mThis.self.querySelector('.modal-title');
-    this.div_employee_info = mThis.self.querySelector('#_sdl_employee_info');
-    this.btnChooser = mThis.self.querySelector('#dlg_image_chooser');
+    const self = {};
+    let dialog = null;
+     self.show = (op)=>{
 
-    this.btnSave.onclick =  e =>{
-        e.preventDefault();
-        let p = mThis.getDataForm();
-        // console.log(77777,p);
+        dialog = dialog || new GeneralDialog({
+            cssClass:'modal-lg',
+            backdrop: 'static', //User click outside form, do not close form
+            keyboard:true, //prevent user from using ESC key
+            createContent:()=>{
+                 return [`<div class="row">
+                            <div class="col-3">
+                                <div class="width-height-social-icon d-flex align-items-center justify-content-center border rounded-3 position-relative"
+                                    style="height: 170px;" aria-label="image">
+                                    <div id=""
+                                        class="d-flex align-items-center justify-content-center w-100 h-100"
+                                        role="button">
+                                        <i class="fa-regular fa-image fs-4"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-9">
+                                <div class="row">
+                                    <div class="form-group col-6">
+                                        <label for="name" class="form-label" vslang="titles.Name"></label>
+                                        <input name="name" class="form-control data-input" data-field="name" />
+                                    </div>
 
-        vsapi.call(`${mThis.base_url}/hr/employee/save`, p,mThis.btnSave,false).then(res => {
-            if(res.status_code === 200){
-                mThis.modal.hide();
-                const d = res.data ?? {};
-                cv_interact.success('Employee Saved Success!');
-                if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
-            }
-            else
-                cv_interact.error(res.error_message);
-        });
-    };
+                                    <div class="form-group col-6">
+                                        <label for="name_kh" class="form-label" vslang="titles.Name Kh"></label>
+                                        <input name="name_kh" class="form-control data-input" data-field="name_kh" />
+                                    </div>
+                                    <div class="form-group col-4">
+                                       <label for="sex" class="form-label" vslang="titles.Sex"></label>
+                                            <select class="modal-select data-input" data-field="sex">
+                                                <option value="">(Select Sex)</option>
+                                                <option value="M">Male</option>
+                                                <option value="F">Female</option>
+                                                <option value="O">Other</option>
+                                            </select>
 
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="date_of_birth" class="form-label" vslang="titles.Date Of Birth"></label>
+                                        <input name="date_of_birth" class="form-control data-input" data-field="date_of_birth" />
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="nationality" class="form-label" vslang="titles.Nationality"></label>
+                                        <input name="nationality" class="form-control data-input" data-field="nationality" />
+                                    </div>
 
-    this.prepareData = (id,def, onFinish) => {
-        if(!def) def = {};
-        console.log(555555);
-        vsapi.call(`${mThis.base_url}/hr/employee/form-options`,{
-            id: id
-        },null).then(res => {
-            let d = res.status_code === 200 ?  res.data : {};
+                                </div>
+                            </div>
+                           <div class="form-group col-3">
+                                    <label for="nid" class="form-label" vslang="titles.Identity Card"></label>
+                                    <input name="nid" class="form-control data-input" data-field="nid" />
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
+                                <input name="phone_number" class="form-control data-input" data-field="phone_number" />
+                            </div>
+                            <div class="form-group col-5">
+                                <label for="email" class="form-label" vslang="titles.Email"></label>
+                                <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="joining_date" class="form-label" vslang="titles.Joining Date"></label>
+                                <input name="joining_date" class="form-control data-input" data-field="joining_date" />
+                            </div>
+                        <div class="form-group col-6">
+                            <label for="position" class="form-label" vslang="titles.Position"></label>
+                            <select name="position" class=" data-input"  data-field="positions_id"></select>
+                        </div>
 
+                        <div class="form-group col-6">
+                           <label for="role" class="form-label" vslang="titles.Role"></label>
+                            <select name="role" class=" data-input"  data-field="emp_role_id"></select>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="work_shift" class="form-label" vslang="titles.Work Shift"></label>
+                            <select name="work_shift" class=" data-input"  data-field="work_shift_id"></select>
+                        </div>
 
-            VSUtil.setComboItems(mThis.elPositionId, d.positions, 'id', 'title', true, '(Select Position)', null);
-            VSUtil.setComboItems(mThis.elRoleId, d.roles, 'id', 'name', true, '(Select Role)', null);
-            VSUtil.setComboItems(mThis.elWorkShiftId, d.work_shifts, 'id', 'name', true, '(Select Work Shift)', null);
-            console.log(33333,d);
-            onFinish(d);
-        });
-    }
+                        <div class="form-group col-6">
+                            <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
+                            <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="address" class="form-label" vslang="titles.Address"></label>
+                            <input name="address" class="form-control data-input" data-field="address" />
+                        </div>
 
+              </div>`].join('');
+            },
+            contentCreated:(me)=>{
+               //Convert field to be DatePicker : start_date and end_date
+               DateTimePicker.init(me.controls.date_of_birth);
+               DateTimePicker.init(me.controls.joining_date);
 
-    this.show = (options) => {
-        if (!options) options = {};
-        mThis.options = options;
-        let id = options.id??null;
+            },
+            configSelect:[
+               {
+                 name:"position",
+                 data:'positions',
+                 textField:"title",
+                 valueField:'id'
+               },
+               {
+                name:"role",
+                data:'roles',
+                textField:"name",
+                valueField:'id'
+               },
+               {
+                name:"work_shift",
+                data:'work_shifts',
+                textField:"name",
+                valueField:'id'
+               },
 
-        mThis.prepareData(id,{},data => {
-            if(data.employee){
-                mThis.elTitle.textContent =  "Modify Employee Information";
-            }
-            else{
-                mThis.elTitle.textContent =  "Create Employee ";
-            }
-            console.log(6666);
-
-            mThis.setData(data.employee);
-            mThis.modal.show();
-        });
-    }
-
-        mThis.btnChooser.onclick = function(e){
-        e.preventDefault();
-        FileChooser.chooseFile(null,(d) => {
-            if(d){
-                const parent = this.parentElement;
-                mThis.setImage(parent,d.dataUrl);
-            }
-        });
-    }
-
-    this.setImage = (div,image=null) => {
-        if(image){
-            const html = `<image class="w-100 h-100 object-fit-scale data-input" src="${image}" alt="social-icon" data-field="photo"/>
-            <div class="position-absolute top-0 end-0 p-2 rounded-2 bg-dark" role="button">
-                <i class="fa-regular fa-trash-can text-danger fs-5"></i>
-            </div>`;
-            div.innerHTML = html;
-            mThis.deleteImage(div);
-        }
-        else{
-            const html = `<div id="dlg_image_chooser"
-                                class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
-                                <i class="fa-regular fa-image fs-4 text-muted"></i>
-                            </div>`;
-            div.innerHTML = html;
-            mThis.chooseImage(div);
-        }
-    }
-
-    this.deleteImage = (div) => {
-        const btnDelete = div.querySelector('[role=\'button\']');
-        btnDelete.onclick = function(e){
-            e.preventDefault();
-            const html = `<div id="dlg_image_chooser"
-                                class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
-                                <i class="fa-regular fa-image fs-4 text-muted"></i>
-                            </div>`;
-            div.innerHTML = html;
-            mThis.chooseImage(div);
-        }
-    }
-
-    this.chooseImage = (div) => {
-        const btnChoose = div.querySelector('#dlg_image_chooser');
-        btnChoose.onclick = function(e){
-            e.preventDefault();
-            FileChooser.chooseFile(null,(d) => {
-                if(d){
-                    mThis.setImage(div,d.dataUrl);
+            ],
+            buttons:[
+               {
+                label:'<span class="text-warning">Cancel</span>',
+                cssClass:'btn btn-default',
+                click:(me,btn)=>{
+                    //Close with Cancel button
+                    me.hide(false);
                 }
-            });
-        }
-    }
+               },
+               {
+                label:'<span>Save</span>',
+                cssClass:'btn btn-primary',
+                click:(me,btn)=>{
+                    const p = me.getData();
+                    vsapi.call( [main_view.base_url,'hr/employee/save'].join(''), p,btn,null).then(res=>{
+                       if(res.status_code ==200){
+                         me.hide(true,p);
+                       }else cv_interact.error(res.error_message);
+                    });
+                }
+               }
+            ],
+            prepareFormOptions:{
+               createTitle:'Add Employee',
+               modifyTitle:'Edit Employee',
+               targetProp: 'employee',
+               api:{
+                 endpoint: [main_view.base_url,'/hr/employee/form-options`'].join(''),
+                 params:(op)=>{
+                    return {'id':op.id};
+                 }
+               },
+            //    onResponse: (me, res)=>{
+            //      console.log('result from api "/form-options": ', res);
+            //    }
+            },
 
-    this.getDataForm = () => {
-        const div = mThis.self;
-        let p = {
-            id: mThis.options.id
-        };
+            onPrepareForm:(me, data)=>{
+                 LocaleManager.translateZone(me.divModal);
+            }
 
-        div.querySelectorAll('.data-input').forEach(el => {
-            const data_member = el.dataset.field;
-            if(el.tagName === 'IMG'){
-                p[data_member] = el.src;
-            }
-            else{
-                p[data_member] = el.value;
-            }
         });
 
-        return p;
-    }
-    this.setData = (d) => {
-        d =d ?? {};
-        const div = mThis.self,
-    containerImage = div.querySelector('[aria-label=\'image\']');
-        let elements = div.querySelectorAll('.data-input');
-        mThis.setImage(containerImage,d.image_url);
+        dialog.show(op);
+     }
 
-        elements.forEach(el =>{
-            const data_member = el.dataset.field;
-            el.value = d[data_member] ? d[data_member] : '';
-
-
-    });
-}
-
-}
+    return self;
+})();
