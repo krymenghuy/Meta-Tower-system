@@ -70,10 +70,11 @@
     </div>
 </div>
 <style>
-    #_main_departmentComponent{
+    #_main_departmentComponent {
         height: 600px;
         padding: 0px;
     }
+
     #_dep_list {
         overflow-y: auto;
         overflow-x: hidden;
@@ -81,11 +82,13 @@
         justify-content: center;
 
     }
-    #_dep_list_paginator{
+
+    #_dep_list_paginator {
         display: flex;
         position: fixed;
-        margin-top: -60px;
+        bottom: 0;
     }
+
     th,
     td {
         padding: 10px;

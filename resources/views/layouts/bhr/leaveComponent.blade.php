@@ -23,4 +23,10 @@
     <div id="_leave_request_list" class="p-3"></div>
 </div>
 
-
+<style>
+    #_leave_request_list_paginator{
+        display: flex;
+        position: fixed;
+        bottom: 0;
+    }   
+</style>

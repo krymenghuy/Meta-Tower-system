@@ -28,8 +28,8 @@ class Leave
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '0|number|exists=employees.id',
-            'leave_date' => '1|date',
-            'return_date' => '1|date',
+            'start_date' => '1|date',
+            'end_date' => '1|date',
             'leave_type_id' => '1|number',
             'remarks' => '0|string|250',
             // 'has_returned' =>'number|default=0',
@@ -104,7 +104,7 @@ class Leave
             ->whereRaw($str_search)
             ->whereRaw($str_status)
             ->whereRaw($str_dates)
-            ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.leave_date, l.return_date, ls.name as status, l.remarks, l.update_user, l.update_date,l.status_id')
+            ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.start_date, l.end_date, ls.name as status, l.remarks, l.update_user, l.update_date,l.status_id')
             ->orderBy('l.id', 'DESC');
 
         // Apply search logic with grouping to avoid conflicts with other filters
@@ -136,7 +136,7 @@ class Leave
         ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
         ->where('l.id', $id)
         //->where('l.status_id',2
-        ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.leave_date, l.return_date, ls.name as status, l.remarks, l.update_user,'.$col_update_date)
+        ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type, l.start_date, l.end_date, ls.name as status, l.remarks, l.update_user,'.$col_update_date)
         ->first();
         return $leave;
     }
@@ -156,8 +156,8 @@ class Leave
         return (object) [
             'employees' => GeneralSettings::options_employee(10,$ss),
             'leave_types' =>GeneralSettings::options_leave_type($ss),
-            'status' =>GeneralSettings::options_leave_status($ss),
-            'leave_request' => $leave,
+            'leave_statuses' =>GeneralSettings::options_leave_status($ss),
+            'leave' => $leave,
         ];
 
     }
