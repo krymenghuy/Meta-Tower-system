@@ -48,7 +48,7 @@ class AttendanceController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->attandanceModel->getDetails($req->id, $ss));
+        return JDV::result($this->attendance->getDetails($req->id, $ss));
     }
 
     public function deleteAttendance(Request $req)
@@ -61,15 +61,22 @@ class AttendanceController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->attandanceModel->deleteAttendance($req->id, $ss));
+        return JDV::result($this->attendance->deleteAttendance($req->id, $ss));
     }
-
+    public function getStaffAttendanceListPaginate(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->attendance->getStaffAttendanceListPaginate($req->all(), $ss));
+    }
     public function getFormOptions(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->attandanceModel->getFormOptions($req->id, $ss));
+        return JDV::result($this->attendance->getFormOptions($req->id, $ss));
     }
 }

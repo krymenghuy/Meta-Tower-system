@@ -71,9 +71,11 @@ var JobsLevelComponent = new (function () {
     // Define table columns
     this.cols = [
         {
-            title: "#",
-            className: "align-middle",
-            data: "id",
+            title: "No",
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data, index, i) => {
+                return index + 1;
+            },
         },
         {
             title: "Job Name",
@@ -112,13 +114,17 @@ var JobsLevelComponent = new (function () {
             data: (data) => `
             <div class="d-flex justify-content-start align-items-center">
                 <div class="text-center gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${ data.action_id > 0 ? "d-none" : "btn_jobLevel_action"}" data-id="${data.id}"aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="${
+                        data.action_id > 0 ? "d-none" : "btn_jobLevel_action"
+                    }" data-id="${
+                data.id
+            }"aria-haspopup="true" aria-expanded="false">
                         <img src="${
                             main_view.asset_url
                         }/images/icons/more_vert (3).svg" />
                     </a>
                 </div>
-            </div>`,               
+            </div>`,
         },
     ];
 

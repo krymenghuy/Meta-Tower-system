@@ -228,4 +228,5 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('attendances')
     Route::post('/details', [AttendanceController::class, 'getDetails']);
     Route::post('/delete', [AttendanceController::class, 'deleteAttendance']);
     Route::post('/form-options', [AttendanceController::class, 'getFormOptions']);
+    Route::post('/list-paginate', [AttendanceController::class, 'getStaffAttendanceListPaginate']);
 });

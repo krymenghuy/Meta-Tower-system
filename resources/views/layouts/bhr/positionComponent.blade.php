@@ -1,4 +1,4 @@
-<div id="_main_positionComponent"  style="display:none;padding:20px 0 0">
+<div id="_main_positionComponent" style="display:none;padding:20px 0 0">
     <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter">
         <div class="d-flex align-items-center justify-content-start gap-2 w-100">
             <button type="button" class="btn btn-primary" id="_btnAddPosition">
@@ -16,10 +16,11 @@
                 </button>
                 <div class="d-flex align-items-center">
                     <!-- <label for="" class="form-label trans-text p-2" data-langprop="titles.Status"></label> -->
-                    <select type="id" id="el_status" class="data-input filter-field" data-field="status_id"></select>
+                    <select type="id" id="el_status" class="data-input filter-field"
+                        data-field="status_id"></select>
                 </div>
             </div>
-        </div>  
+        </div>
     </div>
     <div id="_position_list" class="p-3"></div>
 </div>
@@ -44,7 +45,8 @@
                         <div class="form-group">
                             <label for="name" class="form-label trans-text"
                                 data-langprop="titles.Name Of Department">Name</label>
-                            <select class=" data-input w-100" id="_sdl_department_id" data-field="department_id"></select>
+                            <select class=" data-input w-100" id="_sdl_department_id"
+                                data-field="department_id"></select>
                         </div>
                     </div>
                 </div>
@@ -61,12 +63,13 @@
     </div>
 </div>
 <style>
-    #_position_list_paginator{
+    #_position_list_paginator {
         display: flex;
         position: fixed;
-        margin-top: 60px;
+        bottom: 0;
     }
-    #_position_list{
+
+    #_position_list {
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
@@ -75,6 +78,7 @@
         justify-content: center;
         padding: 20px;
     }
+
     th,
     td {
         padding: 10px;

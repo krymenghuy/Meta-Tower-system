@@ -13,9 +13,11 @@ var EmployeeMovementComponent = new (function () {
     // Define the columns for the warning list view
     this.cols = [
         {
-            title: "NO",
-            className: "align-middle",
-            data: "id",
+            title: "No",
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data, index, i) => {
+                return index + 1;
+            },
         },
         {
             title: "Name",
@@ -27,7 +29,8 @@ var EmployeeMovementComponent = new (function () {
                     }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                     <div>
                         <span style="font-size: 14px; font-weight: bold;">${
-                            data.name ?? ""}</span><br/>
+                            data.name ?? ""
+                        }</span><br/>
                         <span style="font-size: 12px; color: gray;">${
                             data.email ?? ""
                         }</span>
@@ -233,8 +236,8 @@ var EmployeeMovementComponent = new (function () {
         return new Promise((resolve, reject) => {
             // Get form values
             let employeeId = document.getElementById("employeeId").value;
-            let employeePosition =
-                document.getElementById("employeePositions").value;
+            let position =
+                document.getElementById("positions").value;
             let warningIssues = document.getElementById("warningIssues").value;
             let warningPromises =
                 document.getElementById("warningPromises").value;
@@ -245,7 +248,7 @@ var EmployeeMovementComponent = new (function () {
             // Validate the inputs
             if (
                 !employeeId ||
-                !employeePosition ||
+                !position ||
                 !warningIssues ||
                 !warningPromises ||
                 !warningQuantity
@@ -255,7 +258,7 @@ var EmployeeMovementComponent = new (function () {
 
             let warningData = {
                 emp_id: employeeId,
-                position: employeePosition,
+                position: position,
                 issues: warningIssues,
                 promises: warningPromises,
                 warning: warningQuantity,
@@ -302,8 +305,8 @@ const WarningDialog = (() => {
                                 <input type="number" class="form-control data-input" data-field="id" id="employeeId" placeholder="Input Employee Id" required>
                             </div>
                             <div class="mb-3">
-                                <label for="employeePosition" class="form-label">Position</label>
-                                <select type="number" class="form-control" id="employeePositions" placeholder="Input position id"></select>
+                                <label for="position" class="form-label">Position</label>
+                                <input type="number" class="form-control" id="positions" placeholder="Input position id"></input>
                             </div>
                             <div class="mb-3">
                                 <label for="warningIssues" class="form-label">Issues</label>
@@ -350,7 +353,7 @@ const WarningDialog = (() => {
                             }
 
                             // Call saveWarning function to save data to the database
-                            WarningComponent.saveWarning();
+                            EmployeeMovementComponent.saveWarning();
 
                             // Hide dialog after saving
                             me.hide(true);
