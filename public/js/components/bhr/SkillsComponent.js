@@ -239,7 +239,7 @@ const SkillDailog = (() => {
     createContent: () => {
         return [
             `<div class="w-100 d-flex flex-wrap flex-row align-items-center justify-content-center gap-2">
-                 <div name="div_skill_photo" class="data-input" data-field="image_url" role="button">></div>
+                 <div name="div_skill_photo" class="data-input" data-field="image_url" role="button"></div>
             </div>`,
 
             `<div class="form-group col-md-12">`,
