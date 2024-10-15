@@ -1,16 +1,16 @@
-'use strict';
+"use strict";
 
-var PositionComponent = new function() {
+var PositionComponent = new (function () {
     let mThis = this;
     this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children('#_main_positionComponent');
+    this.jm = main_view.appContent.children("#_main_positionComponent");
     this.self = this.jm[0];
-    this.title_prop = 'Position';
+    this.title_prop = "Position";
     this.btnAdd = this.self.querySelector("#_btnAddPosition");
     this.divFilter = this.self.querySelector("#_divFilter");
-    this.elStatus = this.self.querySelector('#el_status');
+    this.elStatus = this.self.querySelector("#el_status");
     this.elSearch = this.self.querySelector("#_sdl_search_position");
-    this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
+    this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
 
     this.cols = [
         {
@@ -65,16 +65,17 @@ var PositionComponent = new function() {
     this.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.PositionListView = new ListView('_position_list', {
+        mThis.PositionListView = new ListView("_position_list", {
             fetchApi: `${main_view.base_url}/hr/position/list-paginate`,
             perPage: 8,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
-            listContainerClass: null
+            tableClass:
+                "table table--white rounded-2 overflow-hidden header-uppercase",
+            listContainerClass: null,
         });
 
-        mThis.divFilter.addEventListener('change', (e) => {
+        mThis.divFilter.addEventListener("change", (e) => {
             e.preventDefault();
             mThis.PositionListView.showPage(mThis.getDataFormFilter());
         });
@@ -85,17 +86,17 @@ var PositionComponent = new function() {
                 btn: e.target,
                 onClose: () => {
                     mThis.PositionListView.showPage();
-                }
+                },
             };
             PositionDilog.show(op);
         };
         const pr_tbl = mThis.PositionListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 275) + 'px';
-        sh_parent.classList.add('overflow-y-auto');
-        sh_parent.classList.add('overflow-x-hidden');
+        sh_parent.style.height = window.innerHeight - 275 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
 
-        mThis.elSearch.addEventListener('keyup', (e) => {
+        mThis.elSearch.addEventListener("keyup", (e) => {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
                 if (mThis.PositionListView) {
@@ -106,7 +107,7 @@ var PositionComponent = new function() {
             }, 200);
         });
 
-        mThis.btnSearch.onclick = e => {
+        mThis.btnSearch.onclick = (e) => {
             if (mThis.PositionListView) {
                 mThis.PositionListView.showPage(mThis.getDataFormFilter());
             } else {
@@ -119,13 +120,12 @@ var PositionComponent = new function() {
         mThis.initAlready = true;
     };
 
-
     this.getDataFormFilter = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
         p.status_id = mThis.elStatus.value;
-        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
-        main_filters.forEach(el => {
+        let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
@@ -134,62 +134,59 @@ var PositionComponent = new function() {
         return p;
     };
 
-    this.initDropdownMenus = (table)=>{
+    this.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass:"btn_payroll_action",
-            cssClass:"bg-white shadow",
+            actionButtonClass: "btn_payroll_action",
+            cssClass: "bg-white shadow",
             //menuItemClass:"",
-            menus:[
-
+            menus: [
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Position">Modify Position</span>',
-                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"edit_position"
+                    html: '<span class="ps-2  " vslang="titles.Modify Position">Modify Position</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_position",
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete Position">Delete Position</span>',
-                    icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"delete_position"
+                    html: '<span class="ps-2  " vslang="titles.Delete Position">Delete Position</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_position",
                 },
-
             ],
 
-            onClick:(menuLink, id, name)=>{
-                switch(name){
-
-                    case 'edit_position':{
-                      mThis.editposition(id, menuLink);
-                      break;
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "edit_position": {
+                        mThis.editposition(id, menuLink);
+                        break;
                     }
-                    case 'delete_position':{
+                    case "delete_position": {
                         mThis.deleteposition(id, menuLink);
                         break;
-                      }
+                    }
 
-                    default:{
-                      break;
+                    default: {
+                        break;
                     }
                 }
-            }
-        }
+            },
+        };
         new VSDropdownMenu(menuOptopns);
-    }
+    };
 
     this.editposition = (id, menuLink) => {
-        console.log(234,id );
+        console.log(234, id);
 
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
                 mThis.PositionListView.showPage();
-            }
+            },
         };
         PositionDilog.show(op);
-    }
+    };
 
     this.deleteposition = (id, menuLink) => {
         let op = {
@@ -197,86 +194,127 @@ var PositionComponent = new function() {
             btn: menuLink,
             onClose: () => {
                 mThis.PositionListView.showPage();
-            }
+            },
         };
-        cv_interact.confirm('Delete this Position?',{
-            title: 'Delete Position',
-            context: 'delete',
-            confirmButtonText:"Delete"
-        },function(e){
-            if(e){
-                vsapi.call(`${main_view.base_url}/hr/position/delete`,op,false,false,false).then(res => {
-                    if(res.status_code == 200){
-                        cv_interact.success('Deleted Successfully');
-                        mThis.PositionListView.showPage();
-                    }
-                })
+        cv_interact.confirm(
+            "Delete this Position?",
+            {
+                title: "Delete Position",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/hr/position/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("Deleted Successfully");
+                                mThis.PositionListView.showPage();
+                            }
+                        });
+                }
             }
-        });
-
-    }
+        );
+    };
     this.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/position/form-options`,
+                null,
+                null,
+                null
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                console.log(1111, this.elStatus);
 
-        vsapi.call(`${main_view.base_url}/hr/position/form-options`,null,null,null).then(res => {
-            const d = res.status_code == 200 ? res.data : {};
-            console.log(1111,this.elStatus);
-
-            VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',true,'All',null);
-        })
-    }
+                VSUtil.setComboItems(
+                    mThis.elStatus,
+                    d.status,
+                    "id",
+                    "name",
+                    true,
+                    "All",
+                    null
+                );
+            });
+    };
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-            mThis.PositionListView.showPage();
-                $(mThis.self).siblings().hide();
-                $(mThis.self).fadeIn(200);
-            };
-};
+        mThis.PositionListView.showPage();
+        $(mThis.self).siblings().hide();
+        $(mThis.self).fadeIn(200);
+    };
+})();
 
-const PositionDilog = new function() {
+const PositionDilog = new (function () {
     const mThis = this;
-    this.self = main_view.VSAppContent.querySelector('#dlg_sdl_add_Position');
+    this.self = main_view.VSAppContent.querySelector("#dlg_sdl_add_Position");
     this.modal = new bootstrap.Modal(this.self);
     this.base_url = main_view.base_url;
     this.options = {};
 
-    this.btnSave = this.self.querySelector('#dlg_sdl_add_position_btn_save');
-    this.elStatusId = this.self.querySelector('#_sdl_status_id');
-    this.elDepartmentId = this.self.querySelector('#_sdl_department_id');
-    this.elTitle = mThis.self.querySelector('.modal-title');
-    this.div_position_info = mThis.self.querySelector('#_sdl_position_info');
+    this.btnSave = this.self.querySelector("#dlg_sdl_add_position_btn_save");
+    this.elStatusId = this.self.querySelector("#_sdl_status_id");
+    this.elDepartmentId = this.self.querySelector("#_sdl_department_id");
+    this.elTitle = mThis.self.querySelector(".modal-title");
+    this.div_position_info = mThis.self.querySelector("#_sdl_position_info");
 
-
-    this.btnSave.onclick = e => {
+    this.btnSave.onclick = (e) => {
         e.preventDefault();
         let p = mThis.getDataForm();
         console.log(77777, p);
 
-        vsapi.call(`${mThis.base_url}/hr/position/save`, p, mThis.btnSave, false).then(res => {
-            if (res.status_code === 200) {
-                mThis.modal.hide();
-                const d = res.data ?? {};
-                cv_interact.success('Position Saved Success!');
-                if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
-            } else {
-                cv_interact.error(res.error_message);
-            }
-        });
+        vsapi
+            .call(`${mThis.base_url}/hr/position/save`, p, mThis.btnSave, false)
+            .then((res) => {
+                if (res.status_code === 200) {
+                    mThis.modal.hide();
+                    const d = res.data ?? {};
+                    cv_interact.success("Position Saved Success!");
+                    if (typeof mThis.options.onClose === "function")
+                        mThis.options.onClose(p);
+                } else {
+                    cv_interact.error(res.error_message);
+                }
+            });
     };
 
     this.prepareData = (id, def, onFinish) => {
         if (!def) def = {};
         console.log(5555556352, id);
-        vsapi.call(`${mThis.base_url}/hr/position/form-options`, { id: id }, null).then(res => {
-            let d = res.status_code === 200 ? res.data : {};
+        vsapi
+            .call(
+                `${mThis.base_url}/hr/position/form-options`,
+                { id: id },
+                null
+            )
+            .then((res) => {
+                let d = res.status_code === 200 ? res.data : {};
 
-            // VSUtil.setComboItems(mThis.elStatusId, d.status, 'id', 'title', true, '(Select Status)', null);
-            VSUtil.setComboItems(mThis.elDepartmentId, d.departments, 'id', 'name', true, '(Select Department)', null);
-            console.log(33333, d);
-            onFinish(d);
-        });
+                // VSUtil.setComboItems(mThis.elStatusId, d.status, 'id', 'title', true, '(Select Status)', null);
+                VSUtil.setComboItems(
+                    mThis.elDepartmentId,
+                    d.departments,
+                    "id",
+                    "name",
+                    true,
+                    "(Select Department)",
+                    null
+                );
+                console.log(33333, d);
+                onFinish(d);
+            });
     };
 
     this.show = (options = {}) => {
@@ -295,13 +333,11 @@ const PositionDilog = new function() {
         });
     };
 
-
-
     this.getDataForm = () => {
         const div = mThis.self;
         let p = { id: mThis.options.id };
 
-        div.querySelectorAll('.data-input').forEach(el => {
+        div.querySelectorAll(".data-input").forEach((el) => {
             const data_member = el.dataset.field;
             p[data_member] = el.value;
         });
@@ -311,21 +347,20 @@ const PositionDilog = new function() {
 
     this.setData = (d = {}) => {
         const div = mThis.self;
-        div.querySelectorAll('.data-input').forEach(el => {
+        div.querySelectorAll(".data-input").forEach((el) => {
             const data_member = el.dataset.field;
-            console.log(7777,data_member,'|',el);
-            el.value ='';
+            console.log(7777, data_member, "|", el);
+            el.value = "";
         });
 
-        console.log(4444,d);
-        if(!d) return;
+        console.log(4444, d);
+        if (!d) return;
 
-        div.querySelectorAll('.data-input').forEach(el => {
+        div.querySelectorAll(".data-input").forEach((el) => {
             const data_member = el.dataset.field;
-            console.log(7777,data_member,'|',el);
+            console.log(7777, data_member, "|", el);
 
-            el.value = d[data_member] || '';
+            el.value = d[data_member] || "";
         });
-
     };
-};
+})();

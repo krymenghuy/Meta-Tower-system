@@ -37,7 +37,7 @@ class Employee//extends Model
             'name_kh' => '1|string|0-100',
             'email' => '1|email',
             'phone_number' => '1|phone|0-20',
-            'gender' => '1|string|0-6',
+            'sex' => '1|string|0-6',
             'nationality' => '1|string|0-150',
             'date_of_birth' => '1|date',
             'address' => '0|string|0-250',
@@ -47,7 +47,7 @@ class Employee//extends Model
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
             'nid'=> '0|number',
-            'status_id' => '1|number|default = 1',
+            'status_id' => '1|number|default = 10',
             'photo' => '0|image',
         ];
 
@@ -106,7 +106,7 @@ class Employee//extends Model
 
         return DV::error('Failed to save employee');
     }
-  
+
     function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -118,8 +118,9 @@ class Employee//extends Model
           PublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'image',$employee->photo_file_name);
           DB::table('employees')->where('id',$id)->update(['photo_file_name'=>null]);
         }
-        return PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'dir'=> self::$img_dir] ,null,$photo_data,null,['id'=>$id,'store'=>'employees.photo_file_name']);  
+        return PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'dir'=> self::$img_dir] ,null,$photo_data,null,['id'=>$id,'store'=>'employees.photo_file_name']);
       }
+ 
   
       static function isOnLeave($id){
         $today = date('Y-m-d');
@@ -139,6 +140,7 @@ class Employee//extends Model
         $col_update_date = DBX::formatDate('l.updated_at','update_date');
         return DB::table('leaves as l')->join('leave_types as t','t.id','=','l.leave_type_id')->where('l.id',$id)->whereRaw($str_dates)->selectRaw("l.id,$col_start_date, $col_end_date, l.leave_type_id, t.name AS leave_type, remarks, update_user, $col_update_date")->first();
       }
+ 
 
       function deleteProfilePicture($id=null,$ss=null){
           $id = $id ?? $this->id;
@@ -149,14 +151,14 @@ class Employee//extends Model
           DB::table('sender')->where('id',$id)->update(['photo_file_name'=>null]);
           return DV::success();
       }
-    
+
     static function profilePicture($id){
         $col_subs_id = DBX::getHex('e.subs_id','subs_id');
         $row = DB::table('employees as e')->where('e.id',$id)->selectRaw($col_subs_id.',e.branch_id,e.photo_file_name')->first();
         $def_image = self::defaultPhoto($row? $row->subs_id: null);
         $url = '';
         if($row){
-          $url = PublicStorage::getUrl(['subs_id'=>$row->subs_id,'dir'=>self::$img_dir],'image').$row->photo_file_name; 
+          $url = PublicStorage::getUrl(['subs_id'=>$row->subs_id,'dir'=>self::$img_dir],'image').$row->photo_file_name;
           return validateUrl($url,$def_image);
         }else return $def_image;
     }
@@ -237,14 +239,15 @@ class Employee//extends Model
             }
             unset($row->photo_file_name);
         }
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+ 
     static function props($id, $cols){
         if(!$id) return null;
         return DB::table('employees as e')->where('e.id',$id)->selectRaw($cols)->first();
     }
+ 
 
     function find($arr, $ss)
     {
@@ -276,7 +279,7 @@ class Employee//extends Model
         }
         $query = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
-            ->join('employee_status as es', 'es.id', '=', 'emp.status_id')
+            ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->whereRaw($str_srch)
@@ -288,7 +291,7 @@ class Employee//extends Model
             emp.name_kh,
             emp.email,
             emp.phone_number,
-            emp.gender,
+            emp.sex,
             emp.nationality,
             emp.date_of_birth,
             emp.address,
@@ -325,7 +328,7 @@ class Employee//extends Model
 
         $row =DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
-            ->join('employee_status as es', 'es.id', '=', 'emp.status_id')
+            ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->selectRaw('
@@ -335,7 +338,7 @@ class Employee//extends Model
                 emp.name_kh,
                 emp.email,
                 emp.phone_number,
-                emp.gender,
+                emp.sex,
                 emp.nationality,
                 emp.date_of_birth,
                 emp.address,
@@ -415,7 +418,7 @@ class Employee//extends Model
         }
         return (object) [
 
-            'status' => DB::table('employee_status')->selectRaw('id,name')->get(),
+            'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,title')->get(),
             'roles' => DB::table('emp_roles')->selectRaw('id,name')->get(),
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),

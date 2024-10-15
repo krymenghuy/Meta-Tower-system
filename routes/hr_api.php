@@ -27,6 +27,8 @@ use App\Http\Controllers\Bhr\MovementController;
 use App\Http\Controllers\Bhr\EmployeePositionController;
 use App\Http\Controllers\Bhr\SalaryHistoryController;
 use App\Http\Controllers\Bhr\BranchChangeController;
+use App\Http\Controllers\Bhr\EventController;
+use App\Http\Controllers\Bhr\EmployeeEventController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -233,6 +235,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('attendances')
     Route::post('/details', [AttendanceController::class, 'getDetails']);
     Route::post('/delete', [AttendanceController::class, 'deleteAttendance']);
     Route::post('/form-options', [AttendanceController::class, 'getFormOptions']);
+    Route::post('/list-paginate', [AttendanceController::class, 'getStaffAttendanceListPaginate']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('movement')->group(function () {
@@ -269,4 +272,22 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('branch-change
     Route::post('/details', [BranchChangeController::class, 'getDetails']);
     Route::post('/delete', [BranchChangeController::class, 'deleteBranchChange']);
     Route::post('/form-options', [BranchChangeController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('event')->group(function () {
+
+    Route::post('/save', [EventController::class, 'saveEvent']);
+    Route::post('/list-paginate', [EventController::class, 'getEventListPaginate']);
+    Route::post('/details', [EventController::class, 'getDetails']);
+    Route::post('/delete', [EventController::class, 'deleteEvent']);
+    Route::post('/form-options', [EventController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-event')->group(function () {
+
+    Route::post('/save', [EmployeeEventController::class, 'saveEmpEvent']);
+    Route::post('/list-paginate', [EmployeeEventController::class, 'getEmpEventListPaginate']);
+    Route::post('/details', [EmployeeEventController::class, 'getDetails']);
+    Route::post('/delete', [EmployeeEventController::class, 'deleteEmpEvent']);
+    Route::post('/form-options', [EmployeeEventController::class, 'getFormOptions']);
 });

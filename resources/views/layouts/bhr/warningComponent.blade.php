@@ -7,7 +7,6 @@
             <div class="btnAddWarning" data-bs-toggle="modal" data-bs-target="#addWarningModal" id="_btnAddWarning">
                 <i class="fa fa-plus"></i>Add Warning
             </div>
-            <div class="btnExportWarning"><i class="fa fa-download"></i>Export Warning</div>
         </div>
     </div>
     <div id="_warning_list"></div>
@@ -17,7 +16,7 @@
     #_warning_list_paginator{
         display: flex;
         position: fixed;
-        margin-top: 50px;
+        bottom: 0;
     }
     #_warning_list {
         max-width: 100%;
@@ -50,8 +49,7 @@
         gap: 20px;
     }
 
-    .btnAddWarning,
-    .btnExportWarning {
+    .btnAddWarning{
         padding: 10px 20px;
         background-color: #2b5f92;
         color: #fff;
@@ -63,8 +61,7 @@
         cursor: pointer;
     }
 
-    .btnAddWarning:hover,
-    .btnExportWarning:hover {
+    .btnAddWarning:hover{
         background-color: #2989b8;
     }
 

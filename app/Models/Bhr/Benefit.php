@@ -70,14 +70,15 @@ class Benefit
         $str_search = '1=1';
 
         $query = DB::table('benefits as b')
-        ->selectRaw('b.id, b.category_id, b.amount, b.description');
+        ->join('benefit_categories as bc', 'bc.id', '=', 'bc.emp_id')
+        ->selectRaw('b.id, b.category_id,bc.name, b.amount, b.remark');
 
         if ($search_id) {
             $query->whereRaw('b.id =' . $search_id);
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "b.category like '%" . $search_value . "%' or b.description like '%" . $search_value . "%'";
+            $str_search = "b.category like '%" . $search_value . "%' or b.remark like '%" . $search_value . "%'";
             $query->whereRaw($str_search);
         }
 

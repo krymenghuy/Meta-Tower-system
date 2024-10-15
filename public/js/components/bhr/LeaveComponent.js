@@ -56,6 +56,7 @@ var LeaveComponent = new (function () {
             data: (data, index, tr) => {
                 //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
                 return `<p class="p-0 m-0">${data.start_date} to ${data.end_date}</p>`;
+
             }
         },
         {
@@ -188,7 +189,7 @@ var LeaveComponent = new (function () {
 
         return p;
     };
- 
+
 
     this.initDropdownMenus = (table)=>{
         const menuOptopns = {
@@ -355,17 +356,17 @@ var LeaveComponent = new (function () {
 
 
 });
- 
+
 //begin::LeaveRequestDialog using GeneralDialog
 const LeaveRequestDailog = (()=>{
 
     const self = {};
     let dialog = null;
      self.show = (op)=>{
-   
+
         dialog = dialog || new GeneralDialog({
             cssClass:'modal-lg',
-            backdrop: 'static', //User click outside form, do not close form 
+            backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
                  return [`<div class="row">
@@ -393,11 +394,11 @@ const LeaveRequestDailog = (()=>{
                      vslang="titles.Reason"></label>
                      <textarea  type="text" class="form-control data-input" data-field="remarks"></textarea>
                  </div>
-                
+
               </div>`].join('');
             },
             contentCreated:(me)=>{
-               //Convert field to be DatePicker : start_date and end_date 
+               //Convert field to be DatePicker : start_date and end_date
                DateTimePicker.init(me.controls.start_date);
                DateTimePicker.init(me.controls.end_date);
 
@@ -407,6 +408,7 @@ const LeaveRequestDailog = (()=>{
                  name:"employee",
                  data:'employees',
                  textField:(me, d)=> {return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.phone_number}</span></div></div>`; },
+                // textField:"name",
                  valueField:'id'
                },
                {
@@ -430,7 +432,9 @@ const LeaveRequestDailog = (()=>{
                 cssClass:'btn btn-primary',
                 click:(me,btn)=>{
                     const p = me.getData();
+
                     p.id = me.dataOptions.id; //get "id" from op
+
                     vsapi.call( [main_view.base_url,'/hr/leaves/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          me.hide(true,p);
@@ -442,16 +446,16 @@ const LeaveRequestDailog = (()=>{
             prepareFormOptions:{
                createTitle:'Add Leave Request',
                modifyTitle:'Edit Leave Request',
-               targetProp: 'leave_request', 
+               targetProp: 'leave_request',
                api:{
                  endpoint: [main_view.base_url,'/hr/leaves/form-options'].join(''),
                  params:(op)=>{
                     return {'id':op.id};
                  }
-               }, 
-               onResponse: (me, res)=>{
-                 console.log('result from api "/form-options": ', res);
-               }  
+               },
+            //    onResponse: (me, res)=>{
+            //      console.log('result from api "/form-options": ', res);
+            //    }
             },
 
             onPrepareForm:(me, data)=>{

@@ -112,7 +112,9 @@ class Leave
             ->whereRaw($str_search)
             ->whereRaw($str_status)
             ->whereRaw($str_dates)
+ 
             ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$col_dates.', ls.name as status, l.remarks, l.update_user, l.update_date,l.status_id')
+ 
             ->orderBy('l.id', 'DESC');
 
         // Apply search logic with grouping to avoid conflicts with other filters
@@ -132,12 +134,14 @@ class Leave
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
- 
+
 
     function getDetails($id ,$ss =null)
     {
+ 
         $leave_dates = DBX::formatDate('l.start_date','start_date').','.DBX::formatDate('l.end_date','end_date');
         $col_update_date = DBX::formatDate('l.updated_at','update_date'); 
+ 
         $leave = DB::table('leaves as l')
         ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
         ->join('positions as p', 'p.id', '=', 'emp.positions_id')
@@ -145,7 +149,9 @@ class Leave
         ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
         ->where('l.id', $id)
         //->where('l.status_id',2
+ 
         ->selectRaw('l.id AS emp_id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user,'.$col_update_date)
+ 
         ->first();
         return $leave;
     }
@@ -153,7 +159,7 @@ class Leave
     function delete($id, $ss)
     {
         $id = $id ?? $this->id;
-         
+
         $delete = DB::table('leaves')->where('id',$id)->delete();
         return DV::depends($delete,['action','deleted']);
     }
@@ -167,6 +173,7 @@ class Leave
             'leave_types' =>GeneralSettings::options_leave_type($ss),
             'status' =>GeneralSettings::options_leave_status($ss),
             'leave_request' => $leave,
+ 
         ];
 
     }

@@ -169,7 +169,7 @@ class Warning extends Model
     {
         return (object)[
             "warning" => self::details($id),
-            "warning_types" => GeneralSettings::options_warning_types($ss)
+            // "warning_types" => GeneralSettings::options_warning_types($ss)
         ];
     }
 }
