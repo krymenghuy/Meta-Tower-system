@@ -13,7 +13,6 @@ var LeaveComponent = new (function () {
     this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
 
     this.cols = [
-
         {
             title: "No",
             className: 'align-middle text-capitalize text-nowrap',
