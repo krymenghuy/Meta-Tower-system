@@ -253,7 +253,7 @@ class Employee//extends Model
         }
         $query = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
-            ->join('employee_status as es', 'es.id', '=', 'emp.status_id')
+            ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->whereRaw($str_srch)
@@ -302,7 +302,7 @@ class Employee//extends Model
 
         $row =DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.positions_id')
-            ->join('employee_status as es', 'es.id', '=', 'emp.status_id')
+            ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->selectRaw('
@@ -392,7 +392,7 @@ class Employee//extends Model
         }
         return (object) [
 
-            'status' => DB::table('employee_status')->selectRaw('id,name')->get(),
+            'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,title')->get(),
             'roles' => DB::table('emp_roles')->selectRaw('id,name')->get(),
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
