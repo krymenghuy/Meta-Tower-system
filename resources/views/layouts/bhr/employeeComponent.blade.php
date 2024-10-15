@@ -148,11 +148,11 @@
                         <i class="la la-search"></i>
                     </button>
                     <div class="d-flex align-items-center w-50 gap-2form-group w-50">
-                        <label for="" class="form-label trans-text p-2" data-langprop="titles.Status"></label>
+                        <label for="" class="form-label  p-2" vslang="titles.Status"></label>
                         <select type="id" id="el_status" class="data-input filter-field" data-field="status"></select>
                     </div>
                     <div class="d-flex align-items-center w-50 gap-2form-group w-50">
-                        <label for="" class="form-label trans-text p-2" data-langprop="titles.Role"></label>
+                        <label for="" class="form-label  p-2" vslang="titles.Role"></label>
                         <select type="id" id="el_role" class="data-input filter-field" data-field="role"></select>
                     </div>
                 </div>
@@ -551,10 +551,10 @@
 
             <div class="modal-footer">
                 <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
-                    <span class="trans-text" data-langprop="titles.Cancel"></span>
+                    <span class="" vslang="titles.Cancel"></span>
                 </button>
                 <button id="dlg_sdl_add_employee_btn_save" type="button" class="btn btn-sm btn-primary">
-                    <span class="trans-text" data-langprop="titles.Save"></span>
+                    <span class="" vslang="titles.Save"></span>
                 </button>
             </div>
         </div>

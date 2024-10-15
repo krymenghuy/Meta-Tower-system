@@ -10,11 +10,7 @@ use App\Services\Umt\AuthService;
 
 class EmployeeController extends Controller
 {
-    protected $employeeModel;
-    public function __construct(){
-        $this->senderModel = new Employee();
-    }
-
+    
     function saveEmployee(Request $req){
        $ss = AuthService::verifyAuth($req,-1);
        if($ss->status_code !==200) return JDV::raw($ss);
@@ -23,14 +19,25 @@ class EmployeeController extends Controller
        $res = $employee->save($req->all());
        return JDV::raw($res);
     }
+
+    function findEmployee(Request $req){
+        $ss = AuthService::verifyAuth($req,-1);
+        if($ss->status_code !==200) return JDV::raw($ss);
+        $id = $req->employee_id?$req->employee_id:$req->id;
+        $employee = new Employee($id,$ss);
+        $data = $employee->find($req->all(),$ss);
+        return JDV::result($data);
+     }
+
     public function deleteEmployee(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        return JDV::result($this->senderModel->delete($req->id, $ss));
+        $id = $req->id ?? $req->emp_id;
+        $emp = new Employee($id,$ss);
+        return JDV::result($emp->delete($req->id, $ss));
     }
 
    function deleteSenderSpecial(Request $req){
@@ -88,7 +95,8 @@ class EmployeeController extends Controller
     if ($ss->status_code !== 200) {
         return JDV::raw($ss);
     }
-    return JDV::result($this->senderModel->getListPaginate($req->all(), $ss));
+    $emp = new Employee();
+    return JDV::result($emp->getListPaginate($req->all(), $ss));
    }
 
    public function getFormOptions(Request $req)
@@ -97,7 +105,8 @@ class EmployeeController extends Controller
        if ($ss->status_code !== 200) {
            return JDV::raw($ss);
        }
-       return JDV::result($this->senderModel->getFormOptions($req->id,$ss));
+       $emp = new Employee();
+       return JDV::result($emp->getFormOptions($req->id,$ss));
    }
 
    public function updateStatus(Request $req)

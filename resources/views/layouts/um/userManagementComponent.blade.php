@@ -9,7 +9,7 @@
         <div class="d-flex gap-2">
             <button id="_um_btn_new" class="btn btn-sm btn-primary shadow text-nowrap" type="button">
                 <i class="fa-solid fa-plus"></i>
-                <span class="trans-text text-nowrap" data-langprop="buttons.New User"></span>
+                <span class=" text-nowrap" vslang="buttons.New User"></span>
             </button>
             <div class="input-group input-group-sm flex-nowrap width--search-inner shadow">
                 <input type="search" class="form-control form-control-sm" placeholder="Search user" id="_um_search_user"/>
@@ -23,7 +23,7 @@
         </div>
         <div class="d-flex justify-content-end w-100">
             <button id="_um_btn_pdf" class="btn btn-sm btn-danger" type="button">
-                <span class="trans-text" data-langprop="buttons.PDF"></span>
+                <span class="" vslang="buttons.PDF"></span>
             </button>
         </div>
     </div>
@@ -43,10 +43,10 @@
             <div class="modal-body"></div>
             <div class="modal-footer">
                 <button id="dlg_um_btn_close" type="button" class="btn btn-sm btn-secondary" data-dismiss="modal">
-                    <span class="trans-text" data-langprop="buttons.Cancel"></span>
+                    <span class="" vslang="buttons.Cancel"></span>
                 </button>
                 <button id="dlg_um_btn_save" type="button" class="btn btn-sm btn-primary">
-                    <span class="trans-text" data-langprop="buttons.Save"></span>
+                    <span class="" vslang="buttons.Save"></span>
                 </button>
             </div>
         </div>

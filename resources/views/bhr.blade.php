@@ -265,7 +265,7 @@ echo $user->lang ?? 'en'; ?>">
                             @include('layouts.bhr.payrollComponent')
                             @include('layouts.bhr.departmentComponent')
                             @include('layouts.bhr.positionComponent')
-                            @include('layouts.bhr.leaveRequestComponent')
+                            @include('layouts.bhr.leaveComponent')
                             @include('layouts.bhr.warningComponent')
                             @include('layouts.bhr.employeebonusComponent')
                             @include('layouts.bhr.employeeseniorityComponent')
