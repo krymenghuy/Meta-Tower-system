@@ -939,7 +939,7 @@ const EmployeeDialog = (()=>{
                 cssClass:'btn btn-primary',
                 click:(me,btn)=>{
                     const p = me.getData();
-                    vsapi.call( [main_view.base_url,'hr/employee/save'].join(''), p,btn,null).then(res=>{
+                    vsapi.call( [main_view.base_url,'/hr/employee/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          me.hide(true,p);
                        }else cv_interact.error(res.error_message);
@@ -950,16 +950,16 @@ const EmployeeDialog = (()=>{
             prepareFormOptions:{
                createTitle:'Add Employee',
                modifyTitle:'Edit Employee',
-               targetProp: 'employee',
+               targetProp: 'data',
                api:{
                  endpoint: [main_view.base_url,'/hr/employee/form-options`'].join(''),
                  params:(op)=>{
                     return {'id':op.id};
                  }
                },
-            //    onResponse: (me, res)=>{
-            //      console.log('result from api "/form-options": ', res);
-            //    }
+               onResponse: (me, res)=>{
+                 console.log('result from api "/form-options": ', res);
+               }
             },
 
             onPrepareForm:(me, data)=>{
