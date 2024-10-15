@@ -120,6 +120,27 @@ class Employee//extends Model
         }
         return PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'dir'=> self::$img_dir] ,null,$photo_data,null,['id'=>$id,'store'=>'employees.photo_file_name']);
       }
+ 
+  
+      static function isOnLeave($id){
+        $today = date('Y-m-d');
+        $start_date = DBX::convertToDate('l.start_date');
+        $end_date = DBX::convertToDate('l.end_date');
+        $str_dates = $today." BETWEEN $start_date AND $end_date";
+         return DB::table('leaves as l')->where('l.id',$id)->whereRaw($str_dates)->value('id');
+      }
+
+      static function getCurrentLeaveInfo($id){
+        $today = date('Y-m-d');
+        $start_date = DBX::convertToDate('l.start_date');
+        $end_date = DBX::convertToDate('l.end_date');
+        $str_dates = $today." BETWEEN $start_date AND $end_date";
+        $col_start_date = DBX::formatDate('l.start_date','start_date');
+        $col_end_date = DBX::formatDate('l.end_date','end_date');
+        $col_update_date = DBX::formatDate('l.updated_at','update_date');
+        return DB::table('leaves as l')->join('leave_types as t','t.id','=','l.leave_type_id')->where('l.id',$id)->whereRaw($str_dates)->selectRaw("l.id,$col_start_date, $col_end_date, l.leave_type_id, t.name AS leave_type, remarks, update_user, $col_update_date")->first();
+      }
+ 
 
       function deleteProfilePicture($id=null,$ss=null){
           $id = $id ?? $this->id;
@@ -221,6 +242,12 @@ class Employee//extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+ 
+    static function props($id, $cols){
+        if(!$id) return null;
+        return DB::table('employees as e')->where('e.id',$id)->selectRaw($cols)->first();
+    }
+ 
 
     function find($arr, $ss)
     {
