@@ -6,9 +6,11 @@ var LeaveComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_leave_component");
     this.self = this.jm[0];
     this.title_prop = "Leave Requests";
-    this.elStatus = this.self.querySelector('#el_status');
+
     this.btnAdd = this.self.querySelector("#_btnAddLeave");
     this.divFilter = this.self.querySelector("#_divFilter_leave");
+    this.elFilter_leaveType = this.self.querySelector('#el_leave_type');
+    this.elFilter_status = this.self.querySelector('#el_status');
     this.elSearch = this.self.querySelector("#_sdl_search_leave");
     this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
 
@@ -52,7 +54,8 @@ var LeaveComponent = new (function () {
             title: "Duration",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
+                //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.start_date} to ${data.end_date}</p>`;
             }
         },
         {
@@ -164,16 +167,24 @@ var LeaveComponent = new (function () {
         }
     };
 
+    this.setFilterPeriod = (p,name, start_date,end_date) =>{
+        return p ;
+    };
+
     this.getDataFormFilter = () => {
-        let p = {};
-        p.status_id = mThis.elStatus.value;
-        p.search_value = mThis.elSearch.value;
-        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
-        main_filters.forEach(el => {
-            const f = el.dataset.field;
-            p[f] = el.value;
-        });
-        console.log(222, p);
+        let p = {
+            status_id: mThis.elFilter_status.value,
+            leave_type_id: mThis.elFilter_leaveType.value,
+            search_value:mThis.elSearch.value,
+             
+        };
+        p = mThis.setFilterPeriod(p, periodName, null,null);
+        // let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
+        // main_filters.forEach(el => {
+        //     const f = el.dataset.field;
+        //     p[f] = el.value;
+        // });
+        
 
         return p;
     };
@@ -290,6 +301,7 @@ var LeaveComponent = new (function () {
                 mThis.LeaveRequestListView.showPage();
             }
         };
+    
         LeaveRequestDailog.show(op);
     }
 
@@ -327,7 +339,7 @@ var LeaveComponent = new (function () {
             const d = res.status_code == 200 ? res.data : {};
             console.log(1111,this.elSortBy);
 
-            VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',true,'All',null);
+            VSUtil.setComboItems(mThis.elStatus,d.status,'id','leave_status',true,'All Statuses',null);
         })
     }
 
@@ -377,9 +389,9 @@ const LeaveRequestDailog = (()=>{
                      <select name="leave_type" class=" data-input"  data-field="leave_type_id"></select>
                  </div>
                  <div class="form-group col-12">
-                     <label for="reason" class="form-label"
+                     <label for="remarks" class="form-label"
                      vslang="titles.Reason"></label>
-                     <textarea  type="text" class="form-control data-input" data-field="reason"></textarea>
+                     <textarea  type="text" class="form-control data-input" data-field="remarks"></textarea>
                  </div>
                 
               </div>`].join('');
@@ -418,7 +430,8 @@ const LeaveRequestDailog = (()=>{
                 cssClass:'btn btn-primary',
                 click:(me,btn)=>{
                     const p = me.getData();
-                    vsapi.call( [main_view.base_url,'hr/leaves/save'].join(''), p,btn,null).then(res=>{
+                    p.id = me.dataOptions.id; //get "id" from op
+                    vsapi.call( [main_view.base_url,'/hr/leaves/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          me.hide(true,p);
                        }else cv_interact.error(res.error_message);
@@ -453,124 +466,4 @@ const LeaveRequestDailog = (()=>{
     return self;
 })();
 //end:: LeaveRequestDialog
-
-// ////Previous LeaveRequestDialog to be removed
-// const LeaveRequestDailog_old = new function() {
-//     const mThis = this;
-//     this.self = main_view.VSAppContent.querySelector('#dlg_sdl_add_Leave_Request');
-//     this.modal = new bootstrap.Modal(this.self);
-//     this.base_url = main_view.base_url;
-//     this.options = {};
-
-//     this.btnSave = this.self.querySelector('#dlg_sdl_add_Leave_Request_btn_save');
-//     this.elEmployee = this.self.querySelector('#_sdl_name_id');
-//     this.elLeaveType = this.self.querySelector('#_sdl_leave_type_id');
-//     this.elInfo = this.self.querySelector('#info');
-//     this.elTitle = mThis.self.querySelector('.modal-title');
-//     this.div_Leave_Request_info = mThis.self.querySelector('#_sdl_Leave_Request_info');
-
-
-//     this.btnSave.onclick = e => {
-//         e.preventDefault();
-//         let p = mThis.getDataForm();
-         
-//         vsapi.call(`${mThis.base_url}/hr/leaves/save`, p, mThis.btnSave, false).then(res => {
-//             if (res.status_code === 200) {
-//                 mThis.modal.hide();
-//                 const d = res.data ?? {};
-//                 cv_interact.success('Leave Request Saved Success!');
-//                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
-//             } else {
-//                 cv_interact.error(res.error_message);
-//             }
-//         });
-//     };
-
-//     this.prepareData = (id, def, onFinish) => {
-//         if (!def) def = {};
-//         console.log(555555, id);
-//         vsapi.call(`${mThis.base_url}/hr/leaves/form-options`, { id: id }, null).then(res => {
-//             let d = res.status_code === 200 ? res.data : {};
-//             mThis.elInfo.parentElement.classList.add('d-none');
-//             VSUtil.setComboItems(mThis.elEmployee, d.employees, 'id', 'name', true, '(Select Employee)', null);
-//             VSUtil.setComboItems(mThis.elLeaveType, d.leave_types, 'id', 'name', true, '(Select Leave Type)', null);
-//             console.log(33333, d);
-//             mThis.elEmployee.addEventListener('change', () => {
-//                 let id = mThis.elEmployee.value;
-//                 console.log(22222,id);
-
-//                 vsapi.call(`${mThis.base_url}/hr/employee/details`, { id: id }, null).then(res => {
-//                     let d = res.data || {};
-//                     console.log(33344, d);
-
-//                     if(d){
-//                         mThis.elInfo.parentElement.classList.remove('d-none');
-//                         mThis.elInfo.innerHTML =`<div class="d-block border border-info p-2">
-//                                                     <div class="d-block ">
-//                                                         <span >name :</span>
-//                                                         <span >${ d.name }</span>
-//                                                     </div>
-//                                                     <div class="d-block ">
-//                                                         <span >Position :</span>
-//                                                         <span >${ d.position}</span>
-//                                                     </div>
-//                                                 </div>  `;
-//                     }
-
-//                 });
-//             })
-//             onFinish(d);
-//         });
-//     };
-
-//     this.show = (options = {}) => {
-//         mThis.options = options;
-//         let id = options.id ?? null;
-//         console.log(123);
-
-//         mThis.prepareData(id, {}, (data) => {
-//             if (data.leave) {
-//                 mThis.elTitle.textContent = "Modify Leave Request Information";
-//             } else {
-//                 mThis.elTitle.textContent = "Create Leave Request";
-//             }
-//             mThis.setData(data.leave);
-//             mThis.modal.show();
-//         });
-//     };
-
-
-
-//     this.getDataForm = () => {
-//         const div = mThis.self;
-//         let p = { id: mThis.options.id };
-
-//         div.querySelectorAll('.data-input').forEach(el => {
-//             const data_member = el.dataset.field;
-//             p[data_member] = el.value;
-//         });
-
-//         return p;
-//     };
-
-//     this.setData = (d = {}) => {
-//         const div = mThis.self;
-//         div.querySelectorAll('.data-input').forEach(el => {
-//             const data_member = el.dataset.field;
-//             console.log(7777,data_member,'|',el);
-//             el.value ='';
-//         });
-
-      
-//         if(!d) return;
-
-//         div.querySelectorAll('.data-input').forEach(el => {
-//             const data_member = el.dataset.field;
-//             console.log(7777,data_member,'|',el);
-
-//             el.value = d[data_member] || '';
-//         });
-
-//     };
-// };
-
+ 

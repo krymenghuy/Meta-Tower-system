@@ -2,14 +2,15 @@
     <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter_leave">
         <div class="d-flex align-items-center w-100 gap-2">
             <div class="d-flex align-items-center w-100 gap-2">
-                <input type="text" class="form-control filter-field" id="_sdl_search_leave" placeholder="Search Leave">
+                <input type="text" class="form-control filter-field" id="_sdl_search_leave" placeholder="Search">
 
                 <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
                     <i class="la la-search"></i>
                 </button>
-                <div class="d-flex align-items-center w-50 gap-2form-group w-50">
-                    <label for="" class="form-label  p-2" vslang="titles.Status"></label>
+                <div class="d-flex align-items-center w-50 gap-2 form-group w-50">
+                    <!-- <label for="" class="form-label  p-2" vslang="titles.Status"></label> -->
                     <select type="id" id="el_status" class="data-input filter-field" data-field="status"></select>
+                    <select type="id" id="el_leave_type" class="data-input filter-field" data-field="leave_type"></select>
                 </div>
             </div>
         </div>
