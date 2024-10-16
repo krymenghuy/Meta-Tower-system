@@ -301,7 +301,7 @@ const PositionDilog = (()=>{
                     //Close with Cancel button
                     me.hide(false);
                 }
-               },
+            },
                {
                 label:'<span>Save</span>',
                 cssClass:'btn btn-primary',
