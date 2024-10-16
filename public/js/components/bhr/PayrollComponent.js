@@ -358,137 +358,244 @@ var PayrollComponent = new (function () {
 
 });
 
-const PayRollDailog = new function() {
-    const mThis = this;
-    this.self = main_view.VSAppContent.querySelector('#dlg_sdl_add_Payroll');
-    this.modal = new bootstrap.Modal(this.self);
-    this.base_url = main_view.base_url;
-    this.options = {};
+const PayRollDailog = (()=>{
 
-    this.btnSave =  this.self.querySelector('#dlg_sdl_add_payroll_btn_save');
-    this.elEmployee = this.self.querySelector('#_sdl_name_id');
-    this.elPositionId =  this.self.querySelector('#_sdl_position_id');
-    this.elStatusId =  this.self.querySelector('#_sdl_status_id');
-    this.elInfo = this.self.querySelector('#info');
-    this.elTitle = mThis.self.querySelector('.modal-title');
-    this.div_payroll_info = mThis.self.querySelector('#_sdl_payroll_info');
+    const self = {};
+    let dialog = null;
+     self.show = (op)=>{
 
+        dialog = dialog || new GeneralDialog({
+            cssClass:'modal-lg',
+            backdrop: 'static', //User click outside form, do not close form
+            keyboard:true, //prevent user from using ESC key
+            createContent:()=>{
+                 return [`<div class="row">
+                 <div class="form-group col-12">
+                     <label for="employee" class="form-label" vslang="titles.Name"></label>
+                     <select name="employee" class=" data-input"  data-field="emp_id"></select>
+                 </div>
+                 <div class="form-group  col-12 d.none">
+                     <div id="info"></div>
+                 </div>
+                 <div class="form-group col-6">
+                    <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
+                    <input name="start_date" class="form-control data-input" data-field="start_date" />
+                </div>
+                <div class="form-group col-6">
+                  <label for="end_date" class="form-label" vslang="titles.End Date"></label>
+                  <input name="end_date" class="form-control data-input" data-field="end_date" />
+                </div>
+                <div class="form-group col-6">
+                     <label for="rate" class="form-label"
+                     vslang="titles.Rate"></label>
+                     <textarea  type="text" class="form-control data-input" data-field="rate"></textarea>
+                 </div>
+                 <div class="form-group col-6">
+                     <label for="salary" class="form-label"
+                     vslang="titles.Salary"></label>
+                     <textarea  type="text" class="form-control data-input" data-field="salary"></textarea>
+                 </div>
 
-    this.btnSave.onclick =  e =>{
-        e.preventDefault();
-        let p = mThis.getDataForm();
-        console.log(77777,p);
+              </div>`].join('');
+            },
+            contentCreated:(me)=>{
+               //Convert field to be DatePicker : start_date and end_date
+               DateTimePicker.init(me.controls.start_date);
+               DateTimePicker.init(me.controls.end_date);
 
-        vsapi.call(`${mThis.base_url}/hr/payroll/save`, p,mThis.btnSave,false).then(res => {
-            if(res.status_code === 200){
-                mThis.modal.hide();
-                const d = res.data ?? {};
-                cv_interact.success('Payroll Saved Success!');
-                if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
+            },
+            configSelect:[
+               {
+                 name:"employee",
+                 data:'employees',
+                 textField:(me, d)=> {return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> <span>${d.email}</span><span>${d.phone_number}</span><span> ${d.position} </span> </div></div>`; },
+                // textField:"name",
+                 valueField:'id'
+               },
+            ],
+            buttons:[
+               {
+                label:'<span class="text-warning">Cancel</span>',
+                cssClass:'btn btn-default',
+                click:(me,btn)=>{
+                    //Close with Cancel button
+                    me.hide(false);
+                }
+               },
+               {
+                label:'<span>Save</span>',
+                cssClass:'btn btn-primary',
+                click:(me,btn)=>{
+                    const p = me.getData();
+
+                    p.id = me.dataOptions.id; //get "id" from op
+
+                    vsapi.call( [main_view.base_url,'/hr/payroll/save'].join(''), p,btn,null).then(res=>{
+                       if(res.status_code ==200){
+                         me.hide(true,p);
+                       }else cv_interact.error(res.error_message);
+                    });
+                }
+               }
+            ],
+            prepareFormOptions:{
+               createTitle:'Add Payroll',
+               modifyTitle:'Edit Payroll',
+               targetProp: 'payrolls',
+               api:{
+                 endpoint: [main_view.base_url,'/hr/payroll/form-options'].join(''),
+                 params:(op)=>{
+                    return {'id':op.id};
+                 }
+               },
+            //    onResponse: (me, res)=>{
+            //      console.log('result from api "/form-options": ', res);
+            //    }
+            },
+
+            onPrepareForm:(me, data)=>{
+                 LocaleManager.translateZone(me.divModal);
             }
-            else
-                cv_interact.error(res.error_message);
-        });
-    };
-    this.prepareData = (id, def = {}, onFinish) => {
-        console.log(555555, id);
 
-        vsapi.call(`${mThis.base_url}/hr/payroll/form-options`, { id: id }, null).then(res => {
-            let d = res.status_code === 200 ? res.data : {};
-            // mThis.elInfo.parentElement.classList.add('d-none');
-            VSUtil.setComboItems(mThis.elEmployee, d.employees, 'id', 'name', true, '(Select Employee)', null);
-
-
-            mThis.elEmployee.addEventListener('change', () => {
-                let id = mThis.elEmployee.value;
-                console.log(22222, id);
-
-                vsapi.call(`${mThis.base_url}/hr/employee/details`, { id: id }, null).then(res => {
-                    let d = res.data || {};
-                    console.log(1111, d);
-
-                    if (d) {
-                        mThis.elInfo.parentElement.classList.remove('d-none');
-                        mThis.elInfo.innerHTML = `
-                            <div class="d-block border border-info p-2">
-                                <div class="d-block">
-                                    <span>Name:</span>
-                                    <span>${d.name} </span>
-                                </div>
-                                <div>
-                                    <span>Email:</span><span>${d.email}</span>
-                                </div>
-                                <div>
-                                    <span>Phone:</span><span>${d.phone_number}</span>
-                                </div>
-                                <div class="d-block">
-                                    <span>Position:</span>
-                                    <span>${d.position}</span>
-                                </div>
-                                 <div>
-                                    <span>Role:</span><span>${d.role}</span>
-                                </div>
-
-                            </div>`;
-                    }
-                    console.log(33333, d);
-                });
-            });
-            onFinish(d);
-        });
-    };
-
-
-
-
-    this.show = (options) => {
-        if (!options) options = {};
-        mThis.options = options;
-        let id = options.id ??null;
-
-        mThis.prepareData(id,{},data => {
-            if(data.payrolls){
-                mThis.elTitle.textContent =  "Modify payroll Information";
-            }
-            else{
-                mThis.elTitle.textContent =  "Create Payroll";
-            }
-            console.log(6666);
-
-            mThis.setData(data.payrolls);
-            mThis.modal.show();
-        });
-    }
-
-  this.getDataForm = () => {
-        const div = mThis.self;
-        let p = { id: mThis.options.id };
-
-        div.querySelectorAll('.data-input').forEach(el => {
-            const data_member = el.dataset.field;
-            p[data_member] = el.value;
         });
 
-        return p;
-    };
+        dialog.show(op);
+     }
 
-    this.setData = (d = {}) => {
-        const div = mThis.self;
-        div.querySelectorAll('.data-input').forEach(el => {
-            const data_member = el.dataset.field;
-            console.log(7777,data_member,'|',el);
-            el.value ='';
-        });
+    return self;
+})();
 
-        console.log(4444,d);
-        if(!d) return;
+// const PayRollDailog = new function() {
+//     const mThis = this;
+//     this.self = main_view.VSAppContent.querySelector('#dlg_sdl_add_Payroll');
+//     this.modal = new bootstrap.Modal(this.self);
+//     this.base_url = main_view.base_url;
+//     this.options = {};
 
-        div.querySelectorAll('.data-input').forEach(el => {
-            const data_member = el.dataset.field;
-            console.log(7777,data_member,'|',el);
+//     this.btnSave =  this.self.querySelector('#dlg_sdl_add_payroll_btn_save');
+//     this.elEmployee = this.self.querySelector('#_sdl_name_id');
+//     this.elPositionId =  this.self.querySelector('#_sdl_position_id');
+//     this.elStatusId =  this.self.querySelector('#_sdl_status_id');
+//     this.elInfo = this.self.querySelector('#info');
+//     this.elTitle = mThis.self.querySelector('.modal-title');
+//     this.div_payroll_info = mThis.self.querySelector('#_sdl_payroll_info');
 
-            el.value = d[data_member] || '';
-        });
 
-    };
-};
+//     this.btnSave.onclick =  e =>{
+//         e.preventDefault();
+//         let p = mThis.getDataForm();
+//         console.log(77777,p);
+
+//         vsapi.call(`${mThis.base_url}/hr/payroll/save`, p,mThis.btnSave,false).then(res => {
+//             if(res.status_code === 200){
+//                 mThis.modal.hide();
+//                 const d = res.data ?? {};
+//                 cv_interact.success('Payroll Saved Success!');
+//                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
+//             }
+//             else
+//                 cv_interact.error(res.error_message);
+//         });
+//     };
+//     this.prepareData = (id, def = {}, onFinish) => {
+//         console.log(555555, id);
+
+//         vsapi.call(`${mThis.base_url}/hr/payroll/form-options`, { id: id }, null).then(res => {
+//             let d = res.status_code === 200 ? res.data : {};
+//             // mThis.elInfo.parentElement.classList.add('d-none');
+//             VSUtil.setComboItems(mThis.elEmployee, d.employees, 'id', 'name', true, '(Select Employee)', null);
+
+
+//             mThis.elEmployee.addEventListener('change', () => {
+//                 let id = mThis.elEmployee.value;
+//                 console.log(22222, id);
+
+//                 vsapi.call(`${mThis.base_url}/hr/employee/details`, { id: id }, null).then(res => {
+//                     let d = res.data || {};
+//                     console.log(1111, d);
+
+//                     if (d) {
+//                         mThis.elInfo.parentElement.classList.remove('d-none');
+//                         mThis.elInfo.innerHTML = `
+//                             <div class="d-block border border-info p-2">
+//                                 <div class="d-block">
+//                                     <span>Name:</span>
+//                                     <span>${d.name} </span>
+//                                 </div>
+//                                 <div>
+//                                     <span>Email:</span><span>${d.email}</span>
+//                                 </div>
+//                                 <div>
+//                                     <span>Phone:</span><span>${d.phone_number}</span>
+//                                 </div>
+//                                 <div class="d-block">
+//                                     <span>Position:</span>
+//                                     <span>${d.position}</span>
+//                                 </div>
+//                                  <div>
+//                                     <span>Role:</span><span>${d.role}</span>
+//                                 </div>
+
+//                             </div>`;
+//                     }
+//                     console.log(33333, d);
+//                 });
+//             });
+//             onFinish(d);
+//         });
+//     };
+
+
+
+
+//     this.show = (options) => {
+//         if (!options) options = {};
+//         mThis.options = options;
+//         let id = options.id ??null;
+
+//         mThis.prepareData(id,{},data => {
+//             if(data.payrolls){
+//                 mThis.elTitle.textContent =  "Modify payroll Information";
+//             }
+//             else{
+//                 mThis.elTitle.textContent =  "Create Payroll";
+//             }
+//             console.log(6666);
+
+//             mThis.setData(data.payrolls);
+//             mThis.modal.show();
+//         });
+//     }
+
+//   this.getDataForm = () => {
+//         const div = mThis.self;
+//         let p = { id: mThis.options.id };
+
+//         div.querySelectorAll('.data-input').forEach(el => {
+//             const data_member = el.dataset.field;
+//             p[data_member] = el.value;
+//         });
+
+//         return p;
+//     };
+
+//     this.setData = (d = {}) => {
+//         const div = mThis.self;
+//         div.querySelectorAll('.data-input').forEach(el => {
+//             const data_member = el.dataset.field;
+//             console.log(7777,data_member,'|',el);
+//             el.value ='';
+//         });
+
+//         console.log(4444,d);
+//         if(!d) return;
+
+//         div.querySelectorAll('.data-input').forEach(el => {
+//             const data_member = el.dataset.field;
+//             console.log(7777,data_member,'|',el);
+
+//             el.value = d[data_member] || '';
+//         });
+
+//     };
+// };
