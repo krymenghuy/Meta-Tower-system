@@ -13,11 +13,16 @@
                 <span>Add Seniority</span>
             </button>
         </div>
-
-
     </div>
 
     <div class="p-3">
         <div id="_seniority_list"></div>
     </div>
 </div>
+<style>
+    #_seniority_list_paginator{
+        display: flex;
+        position: fixed;
+        bottom: 0;
+    }
+</style>

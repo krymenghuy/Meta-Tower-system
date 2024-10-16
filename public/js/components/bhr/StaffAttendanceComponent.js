@@ -86,16 +86,6 @@ var StaffAttendanceComponent = new (function () {
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",
             listContainerClass: null,
-            rowCreated: (data, index, tr) => {
-                console.log(123, data);
-
-                tr.dataset.id = data.id; // recode data
-            },
-            renderComplete: () => {
-                mThis.initDropdownMenus(
-                    mThis.StaffAttendanceListView.getTable()
-                );
-            },
         });
 
         mThis.btnAdd.onclick = function (e) {
@@ -109,6 +99,18 @@ var StaffAttendanceComponent = new (function () {
             };
             StaffAttendanceDialog.show(op);
         };
+        const pr_tbl = mThis.StaffAttendanceListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = window.innerHeight - 225 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+
+        mThis.initDropdownMenus(pr_tbl);
+
+        mThis._searchAttendance.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.StaffAttendanceListView.showPage(mThis.getDataFormFilter());
+        });
         mThis.initAlready = true;
     };
     mThis.elSearch.addEventListener("keyup", (e) => {
@@ -130,6 +132,9 @@ var StaffAttendanceComponent = new (function () {
         } else {
             console.error("Staff  is not defined");
         }
+    };
+    this.setFilterPeriod = (p, name, start_date, end_date) => {
+        return p;
     };
 
     this.getDataFormFilter = () => {
@@ -155,7 +160,6 @@ var StaffAttendanceComponent = new (function () {
                 {
                     html: '<span class="ps-2  " vslang="titles.Edit StaffAttendance">Edit Staff Attendance</span>',
                     icon: `<i class="fa-regular fa-exchange fs-5"></i>`,
-
                     cssClass: "border-bottom pb-2",
                     name: "edit_staff_attendance",
                 },
@@ -186,8 +190,6 @@ var StaffAttendanceComponent = new (function () {
     };
 
     this.editStaffAttendance = (id, menuLink) => {
-        console.log(234, id);
-
         let op = {
             id: id,
             btn: menuLink,
@@ -226,7 +228,9 @@ var StaffAttendanceComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Attendances Delete Successfully");
+                                cv_interact.success(
+                                    "Attendances Delete Successfully"
+                                );
                                 mThis.StaffAttendanceListView.showPage();
                             }
                         });
@@ -245,6 +249,7 @@ var StaffAttendanceComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
+                console.log(1111, this.elSortBy);
             });
     };
 
@@ -256,122 +261,97 @@ var StaffAttendanceComponent = new (function () {
         $(mThis.self).siblings().hide();
         $(mThis.self).fadeIn(200);
     };
-
-    // Save attendances function
-    this.saveStaffAttendance = function () {
-        return new Promise((resolve, reject) => {
-            // Get form values
-            let emp_id = document.getElementById("emp_id").value;
-            let attendance_date =
-                document.getElementById("attendance_date").value;
-            let check_in_time = document.getElementById("check_in_time").value;
-            let check_out_time =
-                document.getElementById("check_out_time").value;
-            let remark = document.getElementById("remark").value;
-            // Validate the inputs
-            if (
-                !emp_id ||
-                !attendance_date ||
-                check_in_time ||
-                check_out_time ||
-                !remark
-            );
-            let staffAttendance = {
-                emp_id: emp_id,
-                attendance_date: attendance_date,
-                check_in_time: check_in_time,
-                check_out_time: check_out_time,
-                remark: remark,
-            };
-
-            // API call to save the attendances to the database
-            vsapi
-                .call(`${mThis.base_url}/hr/attendances/save`, staffAttendance)
-                .then((response) => {
-                    if (response.status_code === 200) {
-                        cv_interact.success(
-                            "New attendances saved successfully."
-                        );
-                        resolve(true);
-                    } else {
-                        cv_interact.error(response.error_message);
-                        // reject(response.error_message);
-                    }
-                })
-                .catch((error) => {
-                    console.error("API error:", error);
-                    cv_interact.error(
-                        "Failed to save attendances. Please try again."
-                    );
-                    reject(error);
-                });
-        });
-    };
 })();
 
 const StaffAttendanceDialog = (() => {
     const self = {};
     let dialog = null;
-
     self.show = (op) => {
         dialog =
             dialog ||
             new GeneralDialog({
-                title: "Add Staff Attendance",
+                cssClass: "modal-lg",
+                backdrop: "static", //User click outside form, do not close form
+                keyboard: true, //prevent user from using ESC key
                 createContent: () => {
                     return [
-                        `<form id="staffAttendanceForm">    
-                            <div class="mb-3">
-                                <label for="emp_id" class="form-label">Employee Id</label>
-                                <input type="number" class="form-control data-input" data-field="id" id="emp_id" placeholder="Input Employee Id" required>
+                        `<div class="row">
+                            <div class="form-group col-12">
+                                <label for="employee" class="form-label" vslang="titles.Name"></label>
+                                <select name="employee" class=" data-input"  data-field="emp_id"></select>
                             </div>
-                            <div class="mb-3">
-                                <label for="check_in_time" class="form-label">Check In Time</label>
-                                <input type="time" class="form-control data-input" data-field="check_in_time" id="check_in_time" placeholder="Input Check In Time" required>
+                            <div class="form-group  col-12 d.none">
+                               <div id="info"></div>
                             </div>
-                            <div class="mb-3">
-                                <label for="check_out_time" class="form-label">Check Out Time</label>
-                                <input type="time" class="form-control data-input" data-field="check_out_time" id="check_out_time" placeholder="Input Check Out Time" required>
+                            <div class="form-group col-6">
+                                <label for="check_in_time" class="form-label" vslang="titles.Check In Time">Check In Time</label>
+                                <input type="time" name="check_in_time" class="form-control data-input" data-field="check_in_time" />
                             </div>
-                            <div class="mb-3">
+                            <div class="form-group col-6">
+                                <label for="check_out_time" class="form-label" vslang="titles.Check Out Time">Check Out Time</label>
+                                <input type="time" name="check_out_time" class="form-control data-input" data-field="check_out_time" />
+                            </div>
+                            <div class="form-group col-12">
                                 <label for="attendance_date" class="form-label">Attendance Date</label>
                                 <input type="date" class="form-control data-input" data-field="attendance_date" id="attendance_date" placeholder="Select Attendance Date" required>
                             </div>
-                            <div class="mb-3">
-                                <label for="remark" class="form-label">Remark</label>
-                                <textarea class="form-control data-input" data-field="remark" id="remark" rows="2" placeholder="Input remark" required></textarea>
-                            </div>     
-                        </form>`,
+                            <div class="form-group col-12">
+                                <label for="remark" class="form-label" vslang="titles.Reason"></label>
+                                <textarea  type="text" class="form-control data-input" data-field="remark"></textarea>
+                            </div>
+
+                         </div>`,
                     ].join("");
                 },
+                contentCreated: (me) => {
+                    //Convert field to be DatePicker : check_in_time and check_out_time
+                    DateTimePicker.init(me.controls.check_in_time);
+                    DateTimePicker.init(me.controls.check_out_time);
+                },
+                configSelect: [
+                    {
+                        name: "employee",
+                        data: "employees",
+                        textField: (me, d) => {
+                            return `<div class="d-flex gap-2"><div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.email}</span></div></div>`;
+                        },
+                        // textField:"name",
+                        valueField: "id",
+                    },
+                ],
                 buttons: [
                     {
-                        name: "cancel",
-                        label: "Cancel",
-                        click: (me, btn, divModal) => {
-                            me.hide(true);
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
                         },
                     },
                     {
-                        name: "save",
-                        label: "Save",
-                        click: (me, btn, divModal) => {
-                            // Validate form before saving
-                            const staffAttendanceForm = document.getElementById(
-                                "staffAttendanceForm"
-                            );
-                            if (!staffAttendanceForm.checkValidity()) {
-                                staffAttendanceForm
-                                    .reportValidity()
-                                    .then((result) => {});
-                                // return;
-                            }
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
 
-                            // Call JobLevel function to save data to the database
-                            StaffAttendanceComponent.saveStaffAttendance();
+                            p.id = me.dataOptions.id; //get "id" from op
 
-                            // Hide dialog after saving
-                            me.hide(true);
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/attendances/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                    } else cv_interact.error(res.error_message);
+                                    StaffAttendanceComponent.saveStaffAttendance();
+                                });
                         },
                     },
                 ],
@@ -381,23 +361,30 @@ const StaffAttendanceDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add Staff Attendance",
-                    modifyTitle: "Edit Staff Attendance",
-                    targetProp: "staff_attendance",
+                    createTitle: "Add Attendance",
+                    modifyTitle: "Edit Attendance",
+                    targetProp: "attendance",
                     api: {
-                        endpoint:
-                            main_view.base_url + "/hr/attendances/form-options",
+                        endpoint: [
+                            main_view.base_url,
+                            "/hr/attendances/form-options",
+                        ].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (res) => {
-                        console.log(2355777, res);
+                    onResponse: (me, res) => {
+                        console.log('result from api "/form-options": ', res);
                     },
+                },
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
                 },
             });
 
         dialog.show(op);
     };
+
     return self;
 })();

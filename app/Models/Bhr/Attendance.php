@@ -197,10 +197,7 @@ class Attendance
         return $query;
     }
     // Other functions...
-    function getFormOptions(
-        $id,
-        $ss
-    ) {
+    function getFormOptions($id,$ss) {
         $attendance = null;
         if ($id) {
             $attendance = self::getDetails($id, $ss);

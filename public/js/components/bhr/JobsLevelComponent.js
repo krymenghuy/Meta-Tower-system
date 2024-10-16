@@ -466,7 +466,7 @@ const JobLevelDialog = (() => {
                 prepareFormOptions: {
                     createTitle: "Add Job Level",
                     modifyTitle: "Edit Job Level",
-                    targetProp: "job_level",
+                    targetProp: "job_levels",
                     api: {
                         endpoint:
                             main_view.base_url + "/hr/job_Level/form-options",

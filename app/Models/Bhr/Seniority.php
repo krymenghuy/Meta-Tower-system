@@ -85,7 +85,7 @@ class Seniority
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->emp_photo) {
-                $row->image_url = Employee::getProfilePicture($row->emp_id);
+                // $row->image_url = Employee::getProfilePicture($row->emp_id);
             }
             unset($row->emp_photo);
         }
@@ -99,7 +99,7 @@ class Seniority
             ->selectRaw('s.id, s.emp_id, e.name as emp_name, s.period, s.description, s.amount,e.photo_file_name as emp_photo')
             ->where('s.id', $id)->first();
         if ($row) {
-            $row->image_url = Employee::getProfilePicture($row->emp_id);
+            // $row->image_url = Employee::getProfilePicture($row->emp_id);
             unset($row->emp_photo);
         } else {
             $row = null;
