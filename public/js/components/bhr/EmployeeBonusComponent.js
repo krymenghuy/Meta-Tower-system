@@ -24,11 +24,11 @@ var EmployeeBonusComponent = new (function () {
             title: "Category",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.category_id ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.name ?? ''}</p>`;
             }
         },
         {
-            title: "Description",
+            title: "Remark",
             className: "align-middle text-start",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.remark ?? ''}</p>`;
@@ -209,13 +209,13 @@ const BenefitDailog = (() => {
     createContent:()=>{
       return [
        `<div class="form-group col-md-12">`,
-          `<label class="form-label" vslang="titles.Category">Category</label>`,
-          `<div><input name="category" class="form-control data-input" data-field="category"/></div>`,
+          `<label class="form-label" vslang="titles.Category_id">Category</label>`,
+          `<div><select name="category_id" class="form-control data-input" data-field="category_id"/></div>`,
        `</div>`,
 
         `<div class="form-group col-md-12">`,
-          `<label class="form-label" vslang="titles.Description"> Description </label>`,
-          `<div><input name="description" class="form-control data-input" data-field="description"/></div>`,
+          `<label class="form-label" vslang="titles.Remark"> Remark </label>`,
+          `<div><input name="remark" class="form-control data-input" data-field="remark"/></div>`,
        `</div>`,
 
        `<div class="form-group col-md-12">`,

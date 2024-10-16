@@ -359,7 +359,7 @@ const DepartmentDilog = new (function () {
 
         mThis.prepareData(id, {}, (data) => {
             if (data.departments) {
-                mThis.elTitle.textContent = "Modify Department Information";
+                mThis.elTitle.textContent = "Edit Department Information";
             } else {
                 mThis.elTitle.textContent = "Create Department";
             }

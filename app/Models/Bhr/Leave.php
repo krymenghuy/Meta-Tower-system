@@ -115,7 +115,7 @@ class Leave
  
             ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$col_dates.', ls.name as status, l.remarks, l.update_user, l.update_date,l.status_id')
  
-            ->orderBy('l.id', 'DESC');
+            ->orderBy('l.id', 'ASC');
 
         // Apply search logic with grouping to avoid conflicts with other filters
         if ($search_value) {

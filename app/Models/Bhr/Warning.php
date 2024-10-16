@@ -165,11 +165,35 @@ class Warning extends Model
     {
         return DB::table('warnings')->where('id', $id)->selectRaw('id, position, issues, promises, warning')->first();
     }
+    function getDetails($id, $ss)
+    {
+        $branch_id = $ss->branch_id;
+        if (empty($id)) {
+            return response()->json([
+                'message' => 'Warning ID is required.',
+                'status' => 400
+            ], 400);
+        }
+        $row = DB::table('warnings as w')->selectRaw('w.id,w.emp_id,w.position,w.issues,w.promises,w.warning')->where('w.branch_id', $branch_id)->where('w.id', $id)->first();
+        if (!$row) {
+            return response()->json([
+                'message' => 'Warning ID not found.',
+                'status' => 404
+            ], 404);
+        }
+        return $row;
+    }
     static function getFormOptions($id, $ss)
     {
-        return (object)[
-            "warning" => self::details($id),
-            // "warning_types" => GeneralSettings::options_warning_types($ss)
+        $warning = null;
+        if ($id) {
+            $warning = self::getDetails($id, $ss);
+        }
+        return (object) [
+
+            'employees' => GeneralSettings::options_employee(10, $ss),
+            'positions' => GeneralSettings::options_position($ss),
+            'warning' => $warning,
         ];
     }
 }

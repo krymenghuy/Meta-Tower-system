@@ -126,7 +126,7 @@ class Payroll
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->emp_photo) {
-                $row->image_url = Employee::getProfilePicture($row->emp_id);
+                // $row->image_url = Employee::getProfilePicture($row->emp_id);
             }
             unset($row->emp_photo);
         }

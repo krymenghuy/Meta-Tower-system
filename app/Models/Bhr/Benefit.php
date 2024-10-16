@@ -23,14 +23,14 @@ class Benefit
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'category' => '1|string|0-100',
+            'category_id' => '1|number=1',
             'amount' => '1|number',
             'description' => '0|string|0-100',
         ];
 
-        // $checkUnque = ["$branch_id|benefits|category|id=id|text=Benefit already exists."];
+        $checkUnque = ["$branch_id|benefits|category_id|id=id|text=Benefit already exists."];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -52,7 +52,8 @@ class Benefit
 
     }
 
-    function getBenefitListPaginate($arr, $ss) {
+    function getBenefitListPaginate($arr, $ss)
+    {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
 
@@ -67,29 +68,34 @@ class Benefit
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
 
-        $str_search = '1=1';
-
+        // Initialize query
         $query = DB::table('benefits as b')
-        ->join('benefit_categories as bc', 'bc.id', '=', 'bc.emp_id')
-        ->selectRaw('b.id, b.category_id,bc.name, b.amount, b.remark');
+        ->join('benefit_categories as bc', 'bc.id', '=', 'b.category_id') // Assuming this is the correct join
+        ->selectRaw('b.id, b.category_id, bc.name, b.amount, b.remark');
 
+        // Apply search filters
         if ($search_id) {
-            $query->whereRaw('b.id =' . $search_id);
+            $query->where('b.id', $search_id);
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "b.category like '%" . $search_value . "%' or b.remark like '%" . $search_value . "%'";
-            $query->whereRaw($str_search);
+            $query->where(function ($q) use ($search_value) {
+                $q->where('b.category', 'like', "%{$search_value}%")
+                ->orWhere('b.remark', 'like', "%{$search_value}%");
+            });
         }
 
-        $query->skip($skip_rows)->take($per_page);
+        // Clone the query for counting total rows without skip and take
         $count_query = clone $query;
         $count = $count_query->count('b.id');
-        $rows = $query->get();
 
+        // Fetch paginated results with skip and take
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
+        // Return paginated result
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
 
     function getDetails($id, $ss){
          // Ensure $id is numeric and valid
