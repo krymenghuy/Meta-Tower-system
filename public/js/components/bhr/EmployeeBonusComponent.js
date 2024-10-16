@@ -24,7 +24,15 @@ var EmployeeBonusComponent = new (function () {
             title: "Category",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.name ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.category ?? ''}</p>`;
+            }
+        },
+
+        {
+            title: "Amount",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.amount ?? ''}</p>`;
             }
         },
         {
@@ -32,13 +40,6 @@ var EmployeeBonusComponent = new (function () {
             className: "align-middle text-start",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.remark ?? ''}</p>`;
-            }
-        },
-        {
-            title: "Amount",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.amount ?? ''}</p>`;
             }
         },
         {
@@ -186,110 +187,92 @@ var EmployeeBonusComponent = new (function () {
                 })
             }
         });
-
     }
+
+    this.prepareFormOptions = () => {
+
+        vsapi.call(`${main_view.base_url}/hr/benefit/form-options`,null,null,null).then(res => {
+            const d = res.status_code == 200 ? res.data : {};
+
+            // VSUtil.setComboItems(mThis.elStatus,d.status,'id','leave_status',true,'All Statuses',null);
+        })
+    }
+
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        // mThis.prepareFormOptions();
+        mThis.prepareFormOptions();
             mThis.BenefitListView.showPage();
                 $(mThis.self).siblings().hide();
                 $(mThis.self).fadeIn(200);
             };
 })
 
-const BenefitDailog = (() => {
+const BenefitDailog = (()=>{
+
     const self = {};
     let dialog = null;
+     self.show = (op)=>{
 
-    self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-    cssClass:"",
-    createContent:()=>{
-      return [
-       `<div class="form-group col-md-12">`,
-          `<label class="form-label" vslang="titles.Category_id">Category</label>`,
-          `<div><select name="category_id" class="form-control data-input" data-field="category_id"/></div>`,
-       `</div>`,
+            cssClass:'modal-lg',
+            backdrop: 'static', //User click outside form, do not close form
+            keyboard:true, //prevent user from using ESC key
+            createContent:()=>{
+                return [`<div class="row">
+                <div class="form-group col-12">
+                    <label for="category" class="form-label" vslang="titles.Category"></label>
+                    <select name="category" class=" data-input"  data-field="category_id"></select>
+                </div>
+                <div class="form-group  col-12 d.none">
+                    <div id="info"></div>
+                </div>
+                <div class="form-group col-12">
+                    <label for="amount" class="form-label" vslang="titles.Amount"></label>
+                    <textarea  type="text" class="form-control data-input" data-field="amount"></textarea>
+                </div>
+                <div class="form-group col-12">
+                    <label for="remark" class="form-label" vslang="titles.Remark"></label>
+                    <textarea  type="text" class="form-control data-input" data-field="remark"></textarea>
+                </div>
 
-        `<div class="form-group col-md-12">`,
-          `<label class="form-label" vslang="titles.Remark"> Remark </label>`,
-          `<div><input name="remark" class="form-control data-input" data-field="remark"/></div>`,
-       `</div>`,
+             </div>`].join('');
+           },
+        configSelect:[
+            {
+              name:"category",
+              data:'categories',
+              textField:"name",
+              valueField:'id'
+            },
+         ],
+         buttons:[
+            {
+             label:'<span class="text-warning">Cancel</span>',
+             cssClass:'btn btn-default',
+             click:(me,btn)=>{
+                 //Close with Cancel button
+                 me.hide(false);
+             }
+         },
+            {
+             label:'<span>Save</span>',
+             cssClass:'btn btn-primary',
+             click:(me,btn)=>{
+                 const p = me.getData();
 
-       `<div class="form-group col-md-12">`,
-       `<label class="form-label" vslang="titles.Amount ">Amount</label>`,
-       `<div><input name="amount" class="form-control data-input" data-field="amount"/></div>`,
-    `</div>`,
-     ].join('');
-    },
-    buttons:[
-        {
-           label:"<span>Cancel</span>",
-           cssClass:"btn btn-warning",
-           click:(me)=>{
-              me.hide(false);
-           }
-        },
-        {
-           label:"<span>Save</span>",
-           cssClass:"btn btn-primary",
-           click:(me)=>{
-              let p = me.getData();
-              p.image = me.userImageBox? me.userImageBox.getImage(): '';
-              console.log(222,p);
-              vsapi.call([main_view.base_url,'/hr/benefit/save'].join(''),p,false,false).then(res =>{
-                  if(res.status_code ==200){
-                      me.modal.hide(true,p);
-                  }else cv_interact.error(res.error_message);
-              });
-           }
-        }
-     ],
-    // configSelect:[
-    //    {
-    //        name: "app",
-    //        data:"apps",
-    //        filterData:(data,res)=>{
-    //            return data.options;
-    //        }
-    //    },
-    //    {
-    //      name:"category",
-    //      data:"categories",
-    //      textField:"category",
-    //      valueField:"category"
-    //    },
-    //    {
-    //        name:"module",
-    //        data:"modules",
-    //        filterOptions:{
-    //            triggerBy:"app",
-    //            filter:(me,data,controls)=>{
-    //              return data.filter(x =>{
-    //                 return x.app_id === controls.app.value;
-    //              });
-    //            }
-    //        },
+                 p.id = me.dataOptions.id; //get "id" from op
 
-    //        valueField:"id",
-    //        textField:"name",
-    //        depends:{
-    //            triggerBy:"app",
-    //            api:{
-    //                endpoint:`${main_view.base_url}/api/module/list`,
-    //                params: (me,dataOptions,controls)=>{
-    //                    return {"app_id": controls.app.value};
-    //                },
-    //                onResponse:(me,res)=>{
-    //                     console.log(111,res.data);
-    //                }
-    //            }
+                 vsapi.call( [main_view.base_url,'/hr/benefit/save'].join(''), p,btn,null).then(res=>{
+                    if(res.status_code ==200){
+                      me.hide(true,p);
+                    }else cv_interact.error(res.error_message);
+                 });
+             }
+            }
+         ],
 
-    //        }
-    //    }
-    // ],
     prepareFormOptions:{
        createTitle:"New Employee Benefit",
        modifyTitle:"Edit Employee Benefit",
@@ -297,18 +280,20 @@ const BenefitDailog = (() => {
        api:{
            endpoint:`${main_view.base_url}/hr/benefit/form-options`,
            params:(op)=>{
-               return {id: op.id};
+               return {'id': op.id};
            },
-           onResponse:(me,res)=>{
-           }
+        //    onResponse:(me,res)=>{
+        //    }
        }
     },
-    onShow:(me)=>{
-    //   me.controls.name.focus();
-    //   me.controls.name.select();
-    }
+    onPrepareForm:(me, data)=>{
+        LocaleManager.translateZone(me.divModal);
+   }
+
 });
+
 dialog.show(op);
-    }
-    return self;
+}
+
+return self;
 })();

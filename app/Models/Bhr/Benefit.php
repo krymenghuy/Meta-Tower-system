@@ -23,14 +23,12 @@ class Benefit
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'category_id' => '1|number=1',
+            'category_id' => '1|number',
             'amount' => '1|number',
-            'description' => '0|string|0-100',
+            'remark' => '0|string|0-100',
         ];
 
-        $checkUnque = ["$branch_id|benefits|category_id|id=id|text=Benefit already exists."];
-
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, $checkUnque);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -38,18 +36,12 @@ class Benefit
         $id = $res->id;
         $inputs = $res->values;
 
-        $id = saveData($ss,'benefits', ['id' => $id], $inputs, [], 1);
+        $id = saveData($ss, 'benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['benefits' => $inputs, 'id' => $id]);
         }
 
         return DV::error('Error saving benefit');
-
-    }
-
-    function getBenefitList($ss ){
-        return DB::table('benefits')->selectRaw('id,category,amount,description')->get();
-
     }
 
     function getBenefitListPaginate($arr, $ss)
@@ -71,7 +63,7 @@ class Benefit
         // Initialize query
         $query = DB::table('benefits as b')
         ->join('benefit_categories as bc', 'bc.id', '=', 'b.category_id') // Assuming this is the correct join
-        ->selectRaw('b.id, b.category_id, bc.name, b.amount, b.remark');
+        ->selectRaw('b.id, b.category_id, bc.name as category, b.amount, b.remark');
 
         // Apply search filters
         if ($search_id) {
@@ -98,24 +90,14 @@ class Benefit
 
 
     function getDetails($id, $ss){
-         // Ensure $id is numeric and valid
-         if (!is_numeric($id)) {
-            return DV::error('Invalid ID');
-        }
-
-        // Assuming $ss contains branch_id or other necessary info
         $branch_id = $ss->branch_id;
 
-        // Build and execute the query
-        $query = DB::table('benefits as b')
-        ->selectRaw('b.id, b.category, b.amount, b.description')
-        ->where('b.id', $id)
-        ->first();
-        if (!$query) {
-            return DV::error('Benefit not found');
-        }
-        // Return the query result
-        return $query;
+        $rows = DB::table('benefits as b')
+            ->join('benefit_categories as bc', 'bc.id', '=', 'b.category_id')
+            ->selectRaw('b.id, b.category_id, bc.name as category, b.amount, b.remark')
+            ->where('b.id', $id)
+            ->first();
+        return $rows;
 
     }
 
@@ -140,11 +122,17 @@ class Benefit
     }
 
     function getFormOptions($id, $ss){
-        if($id)
+
+        $benifit = null;
+        if ($id) {
+            $benifit = self::getDetails($id, $ss);
+        }
         return $data = (object) [
-            'benefit' => $this->getDetails($id, $ss)
+
+            'categories' => DB::table('benefit_categories')->selectRaw('id,name')->get(),
+            'benefit' => $benifit
         ];
-        else return $data = (object) [];
+        
     }
 
 }
