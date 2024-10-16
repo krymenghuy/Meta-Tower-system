@@ -23,43 +23,6 @@
     </div>
     <div id="_position_list" class="p-3"></div>
 </div>
-
-
-<div class="modal fade" id="dlg_sdl_add_Position" tabindex="-1" aria-labelledby="dlg_sdl_add_positon_title"
-    aria-hidden="true">
-    <div class="modal-dialog modal-md modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title " vslang="titles.Create Position List"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row gap-0" id="_sdl_position_info">
-                    <div class="col p-5">
-                        <div class="form-group">
-                            <label for="name" class="form-label "
-                                vslang="titles.Title Of Position">Name</label>
-                            <input type="text" class="form-control data-input w-100" data-field="title" />
-                        </div>
-                        <div class="form-group">
-                            <label for="name" class="form-label "
-                                vslang="titles.Name Of Department">Name</label>
-                            <select class=" data-input w-100" id="_sdl_department_id" data-field="department_id"></select>
-                        </div>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
-                        <span class="" vslang="titles.Cancel"></span>
-                    </button>
-                    <button id="dlg_sdl_add_position_btn_save" type="button" class="btn btn-sm btn-primary">
-                        <span class="" vslang="titles.Save"></span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <style>
     #_position_list_paginator {
         display: flex;

@@ -126,7 +126,7 @@ class Payroll
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->emp_photo) {
-                $row->image_url = Employee::getProfilePicture($row->emp_id);
+                $row->image_url = Employee::profilePicture($row->emp_id);
             }
             unset($row->emp_photo);
         }
@@ -160,7 +160,7 @@ class Payroll
                     e.photo_file_name as emp_photo')
             ->where('pay.id', $id)->first();
             if ($row) {
-                $row->image_url = Employee::getProfilePicture($id);
+                $row->image_url = Employee::profilePicture($id);
             } else {
                 $row = null;
             }
@@ -208,11 +208,7 @@ class Payroll
                 ['id' => 'pay.rate', 'name' => 'By  Rate'],
 
             ],
-            'employees' => DB::table('employees')->selectRaw('id,CONCAT(name) as name')->get(),
-            'status' => DB::table('statuses')->selectRaw('id,name')->get(),
-            'positions' => DB::table('positions')->selectRaw('id,title')->get(),
-
-
+            'employees' => GeneralSettings::options_employee(10,$ss),
             'payrolls' => $payroll,
         ];
 
