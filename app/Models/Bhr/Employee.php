@@ -107,20 +107,35 @@ class Employee//extends Model
         return DV::error('Failed to save employee');
     }
 
-    function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-        $col_subs_id = DBX::getHex('e.subs_id','subs_id');
-        $employee = DB::table('employees as e')->where('e.id',$id)->selectRaw($col_subs_id.',e.id,e.branch_id,e.photo_file_name')->first();
+    // function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
+    //     $id = $id ?? $this->id;
+    //     $ss = $ss ?? $this->userInfo;
+    //     $col_subs_id = DBX::getHex('e.subs_id','subs_id');
+    //     $employee = DB::table('employees as e')->where('e.id',$id)->selectRaw($col_subs_id.',e.id,e.branch_id,e.photo_file_name')->first();
+    //     $delete_image = (!$photo_data || isImage($photo_data));
+    //     if(!$employee)return DV::error('Emplyee identity is not correct!');
+    //     if($delete_image){
+    //       PublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'image',$employee->photo_file_name);
+    //       DB::table('employees')->where('id',$id)->update(['photo_file_name'=>null]);
+    //     }
+    //     return PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'dir'=> self::$img_dir] ,null,$photo_data,null,['id'=>$id,'store'=>'employees.photo_file_name']);
+    //   }
+    static function saveProfilePicture($photo_data, $file_type = null, $id = null, $ss = null)
+    {
+        $id = $id ?? $id; // Remove the reference to $this->id
+        $ss = $ss ?? $ss;
+        $col_subs_id = DBX::getHex('e.subs_id', 'subs_id');
+        $employee = DB::table('employees as e')->where('e.id', $id)->selectRaw($col_subs_id . ',e.id,e.branch_id,e.photo_file_name')->first();
         $delete_image = (!$photo_data || isImage($photo_data));
-        if(!$employee)return DV::error('Emplyee identity is not correct!');
-        if($delete_image){
-          PublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'image',$employee->photo_file_name);
-          DB::table('employees')->where('id',$id)->update(['photo_file_name'=>null]);
+        if (!$employee) {
+            return DV::error('Employee identity is not correct!');
         }
-        return PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'dir'=> self::$img_dir] ,null,$photo_data,null,['id'=>$id,'store'=>'employees.photo_file_name']);
-      }
-
+        if ($delete_image) {
+            PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $employee->photo_file_name);
+            DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
+        }
+        return PublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'employees.photo_file_name']);
+    }
 
       static function isOnLeave($id){
         $today = date('Y-m-d');

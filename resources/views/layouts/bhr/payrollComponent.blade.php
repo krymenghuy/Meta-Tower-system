@@ -33,55 +33,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="dlg_sdl_add_Payroll" tabindex="-1" aria-labelledby="dlg_sdl_add_payroll_title"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title " vslang="titles.Create Payroll List"></h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <div class="row gap-0" id="_sdl_payroll_info">
-                    <div class="form-group col-12">
-                        <label for="name" class="form-label " vslang="titles.Name"></label>
-                        <select class=" data-input" id="_sdl_name_id" data-field="emp_id"></select>
-                    </div>
-                    <div class="form-group  col-12 d.none">
-
-                        <div id="info"></div>
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label for="name" class="form-label " vslang="titles.Rate"></label>
-                        <input type="text" class="form-control data-input" data-field="rate" />
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label for="name" class="form-label " vslang="titles.Salary"></label>
-                        <input type="text" class="form-control data-input" data-field="salary" />
-                    </div>
-
-                    <div class="form-group col-lg-6">
-                        <label for="name" class="form-label " vslang="titles.Start Date"></label>
-                        <input type="date" class="form-control data-input" data-field="start_date" />
-                    </div>
-                    <div class="form-group col-lg-6">
-                        <label for="name" class="form-label " vslang="titles.End Date"></label>
-                        <input type="date" class="form-control data-input" data-field="end_date" />
-                    </div>
-
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">
-                    <span class="" vslang="titles.Cancel"></span>
-                </button>
-                <button id="dlg_sdl_add_payroll_btn_save" type="button" class="btn btn-sm btn-primary">
-                    <span class="" vslang="titles.Save"></span>
-                </button>
-            </div>
-        </div>
-    </div>
-</div>
 <style>
     th,
     td {

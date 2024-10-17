@@ -339,16 +339,21 @@ class GeneralSettings //extends Model
     static function options_leave_type($ss){
         return DB::table('leave_types')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS leave_type')->get();
     }
-
+    static function options_position($ss){
+        return DB::table('positions')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,title AS position')->get();
+    }
+    
     /** $emp_status_id = {1o: Active, 20: Resigned, 21: Terminiated}*/
     static function options_employee($emp_status_id, $ss){
-       $q = DB::table('employees as e')->where('e.subs_id',hex2bin($ss->subs_id))->selectRaw('id,name, sex, name_kh, photo_file_name');
+       $q = DB::table('employees as e')->where('e.subs_id',hex2bin($ss->subs_id))->selectRaw('id,name, sex, name_kh,phone_number,email,positions_id,photo_file_name');
        if($emp_status_id) $q->where('e.status_id',$emp_status_id);
        $rows = $q->get();
        foreach($rows as $row){
          $row->image_url = Employee::profilePicture($row->id);
+         $position_title = DB::table('positions')->where('id',$row->positions_id)->value('title');
+         $row->position = $position_title;
          unset($row->photo_file_name);
-       } 
+       }
        return $rows;
     }
 

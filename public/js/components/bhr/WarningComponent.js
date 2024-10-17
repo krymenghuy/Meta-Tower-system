@@ -7,9 +7,10 @@ var WarningComponent = new (function () {
     this.self = this.jm[0];
     this.initAlready = false;
     this.title_prop = "Warning";
-    this.btnAddWarning = this.self.querySelector("#_btnAddWarning");
+    this.btnAdd = this.self.querySelector("#_btnAddWarning");
     this.elSearch = this.self.querySelector("#_warning_search");
-
+    this._searchWarning = this.self.querySelector("#_warning_component");
+    this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
     // Define the columns for the warning list view
     this.cols = [
         {
@@ -75,8 +76,6 @@ var WarningComponent = new (function () {
                 </div>`,
         },
     ];
-
-    // Initialize component
     this.init = function () {
         if (mThis.initAlready) return;
 
@@ -87,43 +86,70 @@ var WarningComponent = new (function () {
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",
             listContainerClass: null,
-            rowCreated: (data, index, tr) => {
-                tr.dataset.id = data.id; // recode data
-            },
-            renderComplete: () => {
-                mThis.initDropdownMenus(mThis.WarningListView.getTable());
-            },
         });
 
-        // Event binding for add warning button
-        mThis.btnAddWarning.onclick = () => {
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
             let op = {
                 id: null,
-                onClose: (p) => {
-                    mThis.WarningListView.showPage(mThis.getFilterData());
+                btn: e.target,
+                onClose: () => {
+                    mThis.WarningListView.showPage();
                 },
             };
             WarningDialog.show(op);
         };
-        mThis.elSearch.addEventListener("keyup", (e) => {
-            clearTimeout(mThis.search_timeout);
-            mThis.search_timeout = setTimeout(() => {
-                if (mThis.WarningListView) {
-                    mThis.WarningListView.showPage(mThis.getDataFormFilter());
-                } else {
-                    console.error("WarningListView is not defined");
-                }
-            }, 200);
-        });
+        const pr_tbl = mThis.WarningListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = window.innerHeight - 225 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
 
-        this.getDataFormFilter = () => {
-            let p = {};
-            p.search_value = mThis.elSearch.value;
-            return p;
-        };
+        mThis.initDropdownMenus(pr_tbl);
+
+        mThis._searchWarning.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.WarningListView.showPage(mThis.getDataFormFilter());
+        });
         mThis.initAlready = true;
     };
+    mThis.elSearch.addEventListener("keyup", (e) => {
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.WarningListView) {
+                mThis.WarningListView.showPage(
+                    mThis.getDataFormFilter()
+                );
+            } else {
+                console.error("warning is not defined");
+            }
+        }, 200);
+    });
 
+    mThis.btnSearch.onclick = (e) => {
+        if (mThis.WarningListView) {
+            mThis.WarningListView.showPage(mThis.getDataFormFilter());
+        } else {
+            console.error("warning  is not defined");
+        }
+    };
+    this.setFilterPeriod = (p, name, start_date, end_date) => {
+        return p;
+    };
+
+    this.getDataFormFilter = () => {
+        let p = {};
+        p.search_value = mThis.elSearch.value;
+        let main_filters =
+            mThis._searchWarning.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+        console.log(222, p.search_value, main_filters);
+
+        return p;
+    };
     this.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
@@ -145,15 +171,7 @@ var WarningComponent = new (function () {
                     name: "delete_warning",
                 },
             ],
-            // adjustPosition:{
-            //         top:-90
-            // },
-            //onShow:(instance, menuContainer)=>{
-            //     console.log('open: ', instance.getMenus());
-            // },
-            // onClose:(instance, menus)=>{
-            // },
-            onClick: (menuLink, id, name) => {
+            onClick: (menulink, id, name) => {
                 switch (name) {
                     case "edit_warning": {
                         mThis.editWarning(id, menuLink);
@@ -172,20 +190,7 @@ var WarningComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     };
 
-    this.getFilterData = () => {
-        return {};
-    };
-
-    this.editWarning = (id) => {
-        let op = {
-            id: id,
-            onClose: (p) => {
-                mThis.WarningListView.showPage(mThis.getFilterData());
-            },
-        };
-        WarningDialog.show(op);
-    };
-    this.deleteWarning = (id, menuLink) => {
+    this.editWarning = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -193,10 +198,22 @@ var WarningComponent = new (function () {
                 mThis.WarningListView.showPage();
             },
         };
+        WarningDialog.show(op);
+    };
+    this.deleteWarning = (id, menulink) => {
+        console.log(13456, id, menulink);
+
+        let op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.WarningListView.showPage();
+            },
+        };
         cv_interact.confirm(
-            "Do you want to delete this Warning?",
+            "Delete this Warning?",
             {
-                title: "Delete Warning",
+                title: "Delete this Warning?",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -212,7 +229,9 @@ var WarningComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success(
+                                    "Warning Delete Successfully"
+                                );
                                 mThis.WarningListView.showPage();
                             }
                         });
@@ -220,143 +239,119 @@ var WarningComponent = new (function () {
             }
         );
     };
+    this.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/warning/form-options`,
+                null,
+                null,
+                null
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                console.log(1111, this.elSortBy);
+            });
+    };
 
-    // Show component
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.WarningListView.showPage(mThis.getFilterData(), null, () => {
-            mThis.jm.siblings().hide();
-            mThis.jm.fadeIn(200);
-        });
-    };
-
-    // Save warning function
-    this.saveWarning = function () {
-        return new Promise((resolve, reject) => {
-            // Get form values
-            let employeeId = document.getElementById("employeeId").value;
-            let position =
-                document.getElementById("positions").value;
-            let warningIssues = document.getElementById("warningIssues").value;
-            let warningPromises =
-                document.getElementById("warningPromises").value;
-            let warningQuantity =
-                document.getElementById("c").value;
-            let subs_id = document.getElementById("subs_id").value;
-
-            // Validate the inputs
-            if (
-                !employeeId ||
-                !position ||
-                !warningIssues ||
-                !warningPromises ||
-                !warningQuantity
-            ) {
-                return cv_interact.error("Please fill all required fields.");
-            }
-
-            let warningData = {
-                emp_id: employeeId,
-                position: position,
-                issues: warningIssues,
-                promises: warningPromises,
-                warning: warningQuantity,
-                subs_id: subs_id,
-            };
-
-            // API call to save the warning to the database
-            vsapi
-                .call(`${mThis.base_url}/hr/warning/save`, warningData)
-                .then((response) => {
-                    if (response.status_code === 200) {
-                        cv_interact.success("New warning saved successfully.");
-                        resolve();
-                    } else {
-                        cv_interact.error(response.error_message);
-                        reject(response.error_message);
-                    }
-                })
-                .catch((error) => {
-                    console.error("API error:", error); 	
-                    cv_interact.error(
-                        "Failed to save warning. Please try again."
-                    );
-                    reject(error);
-                });
-        });
+        mThis.prepareFormOptions();
+        mThis.WarningListView.showPage();
+        $(mThis.self).siblings().hide();
+        $(mThis.self).fadeIn(200);
     };
 })();
 
 const WarningDialog = (() => {
     const self = {};
     let dialog = null;
-
     self.show = (op) => {
         dialog =
             dialog ||
             new GeneralDialog({
-                title: "Add Warning",
+                cssClass: "modal-lg",
+                backdrop: "static", //User click outside form, do not close form
+                keyboard: true, //prevent user from using ESC key
                 createContent: () => {
                     return [
-                        `<form id="warningForm">
-                            <div class="mb-3">
-                                <label for="empId" class="form-label">Employee Id</label>
-                                <input type="number" class="form-control data-input" data-field="id" id="employeeId" placeholder="Input Employee Id" required>
+                        `<div class="row">
+                            <div class="form-group col-12">
+                                <label for="employee" class="form-label" vslang="titles.EmployeeName"></label>
+                                <select name="employee" class=" data-input"  data-field="emp_id"></select>
                             </div>
-                            <div class="mb-3">
-                                <label for="position" class="form-label">Position</label>
-                                <input type="number" class="form-control" id="positions" placeholder="Input position id"></input>
+                            <div class="form-group col-12">
+                                <label for="position" class="form-label" vslang="titles.Position"></label>
+                                <select name="position" class=" data-input"  data-field="position"></select>
                             </div>
-                            <div class="mb-3">
+                            <div class="form-group  col-12 d.none">
+                               <div id="info"></div>
+                            </div>
+                            <div class="form-group col-6">
                                 <label for="warningIssues" class="form-label">Issues</label>
                                 <textarea class="form-control data-input" data-field="issues" id="warningIssues" rows="2" placeholder="Input issues here" required></textarea>
                             </div>
-                            <div class="mb-3">
+                            <div class="form-group col-6">
                                 <label for="warningPromises" class="form-label">Promises</label>
-                                <textarea class="form-control data-input" data-field="promises" id="warningPromises" rows="2" placeholder="Input promises here" required></textarea>
-                            </div>
-                            <div class="mb-3">
+                                <textarea class="form-control data-input" data-field="promises" id="warningPromises" rows="2" placeholder="Input promises here" required></textarea>                            </div>
+                            <div class="form-group col-12">
                                 <label for="c" class="form-label">Warning</label>
-                                <select class="form-select" id="c" aria-label="Warning select" required>
-                                    <option value="" disabled selected>Select Warning</option>
-                                    <option value="1">Warning 1</option>
-                                    <option value="2">Warning 2</option>
-                                    <option value="3">Warning 3</option>
-                                </select>
+                                <input class="form-control data-input" data-field="warning" id="warning" rows="2" placeholder="Input warning here" required></input>                            </div>
+
                             </div>
-                            <div class="mb-3">
-                                <label for="subs_id" class="form-label">Subs ID</label>
-                                <input type="number" class="form-control" id="subs_id" placeholder="Input Subs ID">
-                            </div>
-                        </form>`,
+                         </div>`,
                     ].join("");
                 },
+                configSelect: [
+                    {
+                        name: "employee",
+                        data: "employees",
+                        textField: (me, d) => {
+                            return `<div class="d-flex gap-2"><span> ${d.name} </span></div>`;
+                        },
+                        // textField:"name",
+                        valueField: "id",
+                    },
+                    {
+                        name: "position",
+                        data: "positions",
+                        textField: "position",
+                        valueField: "id",
+                    },
+                ],
                 buttons: [
                     {
-                        name: "cancel",
-                        label: "Cancel",
-                        click: (me, btn, divModal) => {
-                            me.hide(true);
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
                         },
                     },
                     {
-                        name: "save",
-                        label: "Save",
-                        click: (me, btn, divModal) => {
-                            // Validate form before saving
-                            const warningForm =
-                                document.getElementById("warningForm");
-                            if (!warningForm.checkValidity()) {
-                                warningForm.reportValidity();
-                                return;
-                            }
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
 
-                            // Call saveWarning function to save data to the database
-                            EmployeeMovementComponent.saveWarning();
+                            p.id = me.dataOptions.id; //get "id" from op
 
-                            // Hide dialog after saving
-                            me.hide(true);
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/warning/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                    } else cv_interact.error(res.error_message);
+                                    WarningComponent.saveWarning();
+                                });
                         },
                     },
                 ],
@@ -366,23 +361,30 @@ const WarningDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add warning",
-                    modifyTitle: "Edit warning",
+                    createTitle: "Add Warning",
+                    modifyTitle: "Edit Warning",
                     targetProp: "warning",
                     api: {
-                        endpoint:
-                            main_view.base_url + "/hr/warning/form-options",
+                        endpoint: [
+                            main_view.base_url,
+                            "/hr/warning/form-options",
+                        ].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (res) => {
-                        console.log(2355, res);
+                    onResponse: (me, res) => {
+                        console.log('result from api "/form-options": ', res);
                     },
+                },
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
                 },
             });
 
         dialog.show(op);
     };
+
     return self;
 })();
