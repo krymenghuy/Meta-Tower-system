@@ -30,7 +30,7 @@ class Job_Level //extends Model
             'id' => '0|identify=1',
             'name' => '1|string|0-100',
             'description' => '1|string|0-250',
-            'rank' => '1|number'
+            'rank' => '1|number|0-100',
         ];
 
         $checkUnque = ["$branch_id|job_levels|name|id=id|text= job name already exists."];
@@ -89,31 +89,37 @@ class Job_Level //extends Model
     }
     function getJobLevelListPaginate($arr, $ss)
     {
-        $branch_id = $ss->branch_id;
         $d = (object) $arr;
+        $branch_id = $ss->branch_id;
 
         $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 5;
+        $per_page = $d->per_page ?? 20;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
 
-
-        $search_value = $d->search_value ?? null;
-        $str_search = '1=1';
-        if ($search_value) {
-            $skip_rows = 0;
-            $str_search = "(j.name LIKE \'%" .$search_value. "%' OR j.rank = '" .$search_value . "')";
-          
-        }
         $skip_rows = ($current_page - 1) * $per_page;
 
+        $search_value = $d->search_value ?? null;
+        $search_id = $d->id ?? null;
+        $search_status_id = $d->status_id ?? null;
 
+        $str_search = '1=1';
 
         $query = DB::table('job_levels as j')
         ->whereRaw($str_search)
-        ->selectRaw('j.id, j.name, j.description, j.rank, j.updated_at,j.update_user')->orderBy('j.id','ASC');
-     
+        ->selectRaw('j.id, j.name, j.description, j.rank, j.updated_at,j.update_user')->orderBy('j.id','DESC');
+        if ($search_id) {
+            $query->where('j.id', $search_id);
+        }
+        if ($search_status_id) {
+            $query->where('j.description', $search_status_id);
+        }
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $str_search = "j.name like '%{$search_value}%' or j.description like '%{$search_value}%' or j.name like '%{$search_value}%'";
+            $query->whereRaw($str_search);
+        }
        $clone_query = clone $query;
        $count = $clone_query->count('j.id');
        $rows = $query->skip($skip_rows)->take($per_page)->get();

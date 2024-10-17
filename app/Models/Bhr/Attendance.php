@@ -137,7 +137,7 @@ class Attendance
             $formatted_attendance_date = date('Y-m-d', strtotime($attendance_date));  // Ensure the date is in 'Y-m-d' format
             $str_search .= " AND a.attendance_date = '$formatted_attendance_date'";
         }
-        $selectCols = 'a.id,emp.id as employee_id,emp.gender,emp.name,emp.name_kh,emp.email,emp.code,emp.date_of_birth as dob,a.attendance_date,a.check_in_time,a.check_out_time, a.remark, a.status_id';
+        $selectCols = 'a.id,emp.id as employee_id,emp.gender,emp.name,emp.name_kh,emp.email,emp.code,emp.date_of_birth as dob,a.attendance_date,a.check_in_time,a.check_out_time, a.remark, a.status_id,e.photo_file_name as emp_photo';
         $query = DB::table('employees as emp')
             ->join('attendances as a', 'a.emp_id', '=', 'emp.id')
             // ->join('enrollments as e','e.id','=','sa.enrollment_id')

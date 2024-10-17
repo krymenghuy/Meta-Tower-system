@@ -7,7 +7,7 @@ namespace App\Models\Bhr;
 use App\Models\Bhr\GeneralSettings;
 use App\Models\DV;
 use App\Models\PublicStorage;
-use DB;
+use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 

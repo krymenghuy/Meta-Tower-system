@@ -29,4 +29,8 @@
         position: fixed;
         bottom: 0;
     }
+    .choices__list{
+        max-height: 400px;
+        overflow-y: auto;
+    }
 </style>
