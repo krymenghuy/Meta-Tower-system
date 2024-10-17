@@ -94,12 +94,24 @@ var EmployeeComponent = new (function () {
         let html = '';
         html += `<div id="_scroll_emp" class="row px-3">`;
         let cmt = 0;
-
+    
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
                 const status = d.status || 'Active';
-                const statusColor = status === 'Inactive' ? 'background-color: #dc3545;' : 'background-color: #2B3991;';
-
+                let statusColor;
+    
+                switch (status) {
+                    case 'Terminated':
+                        statusColor = 'background-color: #dc3545;'; // Red for Terminated
+                        break;
+                    case 'Resigned':
+                        statusColor = 'background-color: #ffc107;'; // Yellow for Resigned
+                        break;
+                    default:
+                        statusColor = 'background-color: #2B3991;'; // Blue for Active
+                        break;
+                }
+    
                 html += `
                     <div class="col-md-3 mt-5 mb-3 employee-card" data-employee-id="${d.id}">
                         <div class="card">
@@ -149,7 +161,7 @@ var EmployeeComponent = new (function () {
                 cmt++;
             });
         }
-
+    
         if (cmt === 0) {
             html += `<div class="w-100 rounded-3 border-start text-center border-5 border-danger-custom p-3 shadow bg-white mb-3 position-relative">
                 <div class="row">
@@ -157,37 +169,35 @@ var EmployeeComponent = new (function () {
                 </div>
             </div>`;
         }
-
+    
         html += `</div>`;
         div.innerHTML = html;
-
+    
         const sh_parent = div.querySelector('#_scroll_emp');
         sh_parent.style.height = (window.innerHeight - 195) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
-
+    
         // Handle resize
         window.onresize = function(e) {
             e.preventDefault();
             sh_parent.style.height = (window.innerHeight - 100) + 'px';
         };
-
+    
         const seeProfileInfo = div.querySelectorAll('.see-detail');
         seeProfileInfo.forEach(link => {
-
+    
             link.addEventListener('click', (e) => {
                 const employeeId = e.target.dataset.id;
-
+    
                 const employeeData = data.find(emp => emp.id == employeeId);
-                
-
+    
                 if (employeeData) {
                     let sub_content = mThis.self.querySelector('#sub_content');
                     sub_content.classList.add('d-none');
                     let btnBack = mThis.self.querySelector('#btn_back');
                     btnBack.classList.remove('d-none');
-
-
+    
                     mThis.renderProfile(employeeData);
                     mThis.renderCardCenter(employeeId);
                     mThis.renderCardLeft(employeeId);
@@ -197,6 +207,7 @@ var EmployeeComponent = new (function () {
             });
         });
     };
+    
 
 
     this.renderProfile = (data) => {
@@ -527,13 +538,18 @@ var EmployeeComponent = new (function () {
             confirmButtonText:"Save",
             blankErrorMessage: "Status is not correct!",
             data: [{
-                status_id: "1",
+                status_id: "10",
                 name: "Active"
             },
             {
-                status_id: "2",
-                name: "Inactive"
-            }],
+                status_id: "20",
+                name: "Resigned"
+            },
+            {
+                status_id: "21",
+                name: "Terminated"
+            }
+        ],
             defaultValue: status_id
         };
 

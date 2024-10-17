@@ -43,7 +43,7 @@
         align-items: center;
         text-align: center;
         justify-content: center;
-        width: 30%;
+        width: 40%;
         border-radius: 20px;
         /* background-color: #2B3991; */
         color: #fff;
