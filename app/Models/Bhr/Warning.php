@@ -34,54 +34,32 @@ class Warning extends Model
 
         // Validation rules
         $v_rule = [
-            'id' => 'nullable|numeric', // Allow id for update
-            'emp_id' => '1|numeric',
-            'position' => '1|numeric',
-            'issues' => '1|string|max:250',
-            'promises' => '1|string|max:250',
-            'warning' => '1|string|max:100',
-            'subs_id' => '0|numeric',
+            'id' => '0|identity=1', // Allow id for update
+            'emp_id' => '1|number|exits.employees.id',
+            'position' => '0|string|0-100',
+            'issues' => '0|string|max:250',
+            'promises' => '0|string|max:250',
+            'warning' => '0|string|max:100',
+            'remarks' => '0|string|0-300',
         ];
+        // $checkUnque = ["$branch_id|warnings|emp_id|warning|id=id|text=Employee has already warning "];
 
         // Validate inputs
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);//,$checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
+        $id = $res->id;
 
         $inputs = $res->values;
 
-        // Check if the employee exists in the database
-        $employee = DB::table('employees')->where('id', $inputs['emp_id'])->first();
-        if (!$employee) {
-            return DV::error('Employee not found for the provided employee ID.');
+        $warning = saveData($ss, 'warnings', ['id' => $id], $inputs, [], 1);
+        if ($warning > 0) {
+            return DV::depends(1, ['warnings' => $inputs, 'id' => $id]);
         }
 
-        // Check if the position exists in the database
-        $position = DB::table('positions')->where('id', $inputs['position'])->first();
-        if (!$position) {
-            return DV::error('Position not found for the provided position ID.');
-        }
-
-        // Check if we're updating or creating
-        if (isset($inputs['id'])) {
-            // Update existing warning
-            $warning = self::find($inputs['id']);
-            if ($warning) {
-                $warning->update($inputs);
-                return DV::depends(1, ['warnings' => $warning]);
-            } else {
-                return DV::error('Warning not found for the provided ID.');
-            }
-        } else {
-            // Create a new warning
-            $warning = self::create($inputs);
-            if ($warning) {
-                return DV::depends(1, ['warnings' => $warning]);
-            }
-        }
-
-        return DV::error('Error saving warnings.');
+        return DV::depends($warning, ['warnings' => $inputs, 'id' => $id]);
+        
     }
 
     function getWarningsListPaginate($arr, $ss)
@@ -105,9 +83,8 @@ class Warning extends Model
 
         $query = DB::table('warnings as war')
             ->join('employees as e', 'e.id', '=', 'war.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
-            ->selectRaw('war.id, e.id as emp_id, e.name, e.name_kh, e.positions_id as emp_position_id,e.email as email, pos.title as position, war.issues, war.promises, war.warning, e.photo_file_name as emp_photo');
-
+            ->selectRaw('war.id, e.id as emp_id, e.name, e.name_kh,war.position,war.remarks,e.email as email, war.issues, war.promises, war.warning, e.photo_file_name as emp_photo')
+            ->orderBy('war.id', 'DESC');
         if ($search_id) {
             $query->where('war.id', $search_id);
         }
@@ -118,7 +95,7 @@ class Warning extends Model
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "e.name like '%{$search_value}%' or e.name_kh like '%{$search_value}%' or war.promises like '%{$search_value}%' or pos.title like '%{$search_value}%'";
+            $str_search = "e.name like '%{$search_value}%' or e.name_kh like '%{$search_value}%' or war.promises like '%{$search_value}%'";
             $query->whereRaw($str_search);
         }
 
@@ -128,7 +105,7 @@ class Warning extends Model
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->emp_photo) {
-                $row->image_url = Employee::getProfilePicture($row->emp_id);
+                $row->image_url = Employee::ProfilePicture($row->emp_id);
             }
             unset($row->emp_photo);
         }
@@ -161,26 +138,10 @@ class Warning extends Model
 
         return DV::error('Error deleting the warning');
     }
-    static function details($id)
-    {
-        return DB::table('warnings')->where('id', $id)->selectRaw('id, position, issues, promises, warning')->first();
-    }
-    function getDetails($id, $ss)
+    static function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
-        if (empty($id)) {
-            return response()->json([
-                'message' => 'Warning ID is required.',
-                'status' => 400
-            ], 400);
-        }
-        $row = DB::table('warnings as w')->selectRaw('w.id,w.emp_id,w.position,w.issues,w.promises,w.warning')->where('w.branch_id', $branch_id)->where('w.id', $id)->first();
-        if (!$row) {
-            return response()->json([
-                'message' => 'Warning ID not found.',
-                'status' => 404
-            ], 404);
-        }
+        $row = DB::table('warnings as w')->selectRaw('w.id,w.emp_id,w.remarks,w.position,w.issues,w.promises,w.warning')->where('w.branch_id', $branch_id)->where('w.id', $id)->take(1)->first();
         return $row;
     }
     static function getFormOptions($id, $ss)
@@ -190,10 +151,15 @@ class Warning extends Model
             $warning = self::getDetails($id, $ss);
         }
         return (object) [
+            'sort_by' => [
+                ['id' => 'e.name', 'name' => 'By Name'],
+                ['id' => 'pay.salary', 'name' => 'By Salary'],
+                ['id' => 'e.phone_number', 'name' => 'By Phone Number'],
+                ['id' => 'pay.rate', 'name' => 'By  Rate'],
 
+            ],
             'employees' => GeneralSettings::options_employee(10, $ss),
-            'positions' => GeneralSettings::options_position($ss),
-            'warning' => $warning,
+            'warnings' => $warning,
         ];
     }
 }
