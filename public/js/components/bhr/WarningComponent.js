@@ -54,6 +54,11 @@ var WarningComponent = new (function () {
             data: "promises",
         },
         {
+            title: "Remarks",
+            className: "align-middle",
+            data: "remarks",
+        },
+        {
             title: "WARNING",
             className: "align-middle",
             data: (data) => `Warning: ${data.warning}`,
@@ -160,7 +165,6 @@ var WarningComponent = new (function () {
                 {
                     html: '<span class="ps-2  " vslang="titles.Edit Warning">Edit Warning</span>',
                     icon: `<i class="fa-regular fa-exchange fs-5"></i>`,
-
                     cssClass: "border-bottom pb-2",
                     name: "edit_warning",
                 },
@@ -174,11 +178,13 @@ var WarningComponent = new (function () {
             onClick: (menulink, id, name) => {
                 switch (name) {
                     case "edit_warning": {
-                        mThis.editWarning(id, menuLink);
+                        console.log(98787653,id);
+                        
+                        mThis.editWarning(id, menulink);
                         break;
                     }
                     case "delete_warning": {
-                        mThis.deleteWarning(id, menuLink);
+                        mThis.deleteWarning(id, menulink);
                         break;
                     }
                     default: {
@@ -190,10 +196,11 @@ var WarningComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     };
 
-    this.editWarning = (id, menuLink) => {
+    this.editWarning = (id, menulink) => {
+        
         let op = {
             id: id,
-            btn: menuLink,
+            btn: menulink,
             onClose: () => {
                 mThis.WarningListView.showPage();
             },
@@ -201,8 +208,6 @@ var WarningComponent = new (function () {
         WarningDialog.show(op);
     };
     this.deleteWarning = (id, menulink) => {
-        console.log(13456, id, menulink);
-
         let op = {
             id: id,
             btn: menulink,
@@ -230,7 +235,7 @@ var WarningComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Warning Delete Successfully"
+                                    "Warnings Delete Successfully"
                                 );
                                 mThis.WarningListView.showPage();
                             }
@@ -277,28 +282,33 @@ const WarningDialog = (() => {
                     return [
                         `<div class="row">
                             <div class="form-group col-12">
-                                <label for="employee" class="form-label" vslang="titles.EmployeeName"></label>
+                                <label for="employee" class="form-label" vslang="titles.Employee"></label>
                                 <select name="employee" class=" data-input"  data-field="emp_id"></select>
                             </div>
                             <div class="form-group col-12">
-                                <label for="position" class="form-label" vslang="titles.Position"></label>
-                                <select name="position" class=" data-input"  data-field="position"></select>
+                                <label for="position" class="form-label">Position</label>
+                                <input type="text" class="form-control data-input" data-field= "position" id="position" placeholder="Input position here"></input>
                             </div>
                             <div class="form-group  col-12 d.none">
                                <div id="info"></div>
                             </div>
                             <div class="form-group col-6">
+                                <label for="warningPromises" class="form-label">Promises</label>
+                                <input class="form-control data-input" data-field="promises" id="warningPromises" rows="2" placeholder="Input promises here" required></input>                            
+                            </div>
+                            <div class="form-group col-6">
+                                <label for="warning" class="form-label">Warning</label>
+                                <input class="form-control data-input" data-field="warning" id="warning" rows="2"></input>                            
+                            </div>
+                            <div class="form-group col-6">
                                 <label for="warningIssues" class="form-label">Issues</label>
                                 <textarea class="form-control data-input" data-field="issues" id="warningIssues" rows="2" placeholder="Input issues here" required></textarea>
                             </div>
-                            <div class="form-group col-6">
-                                <label for="warningPromises" class="form-label">Promises</label>
-                                <textarea class="form-control data-input" data-field="promises" id="warningPromises" rows="2" placeholder="Input promises here" required></textarea>                            </div>
-                            <div class="form-group col-12">
-                                <label for="c" class="form-label">Warning</label>
-                                <input class="form-control data-input" data-field="warning" id="warning" rows="2" placeholder="Input warning here" required></input>                            </div>
-
+                             <div class="form-group col-6">
+                                <label for="remarks" class="form-label">Remarks</label>
+                                <textarea class="form-control data-input" data-field="remarks" id="remarks"></textarea>
                             </div>
+                           
                          </div>`,
                     ].join("");
                 },
@@ -307,15 +317,9 @@ const WarningDialog = (() => {
                         name: "employee",
                         data: "employees",
                         textField: (me, d) => {
-                            return `<div class="d-flex gap-2"><span> ${d.name} </span></div>`;
+                            return `<div class="d-flex gap-2"><img style="width:80px;height:50px margin-top:100px;margin-right:10px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> <span>${d.email}</span><span>${d.phone_number}</span><span> ${d.position} </span> </div></div>`;
                         },
                         // textField:"name",
-                        valueField: "id",
-                    },
-                    {
-                        name: "position",
-                        data: "positions",
-                        textField: "position",
                         valueField: "id",
                     },
                 ],
@@ -350,7 +354,6 @@ const WarningDialog = (() => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                     } else cv_interact.error(res.error_message);
-                                    WarningComponent.saveWarning();
                                 });
                         },
                     },
@@ -363,13 +366,13 @@ const WarningDialog = (() => {
                 prepareFormOptions: {
                     createTitle: "Add Warning",
                     modifyTitle: "Edit Warning",
-                    targetProp: "warning",
+                    targetProp: "warnings",
                     api: {
                         endpoint: [
                             main_view.base_url,
                             "/hr/warning/form-options",
                         ].join(""),
-                        params: (op) => {
+                        params: (op) => {                           
                             return { id: op.id };
                         },
                     },
