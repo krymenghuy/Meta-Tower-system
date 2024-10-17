@@ -5,69 +5,12 @@ var JobsLevelComponent = new (function () {
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_jobsLevelComponent");
     this.self = this.jm[0];
-    this.btnAddJobLevel = this.self.querySelector("#_btnAddJobLevel");
-    this.elSearch = this.self.querySelector("#_job_level_search");
+    this.initAlready = false;
     this.title_prop = "Job Level";
-
-    // Action menu (view, edit, delete) functionality
-    this.setupActions = function () {
-        $("#_job_level_list").on("click", ".actions", function (e) {
-            e.stopPropagation(); // Prevent click event from bubbling up
-
-            let actionMenu = $(this).siblings(".action-menu");
-
-            // Remove any open action menu, except for the current one
-            if (actionMenu.length) {
-                actionMenu.remove();
-            } else {
-                $(".action-menu").remove();
-
-                let newActionMenu = `
-                <div class="action-menu">
-                    <button class="btn-edit">Edit</button>
-                    <button class="btn-delete">Delete</button>
-                </div>
-            `;
-
-                // Append the action menu near the clicked icon
-                $(this).closest("td").append(newActionMenu);
-
-                // Action menu click handlers
-                $(".btn-view").on("click", function () {
-                    let row = $(this).closest("tr");
-                    let jobName = row.find("td:nth-child(2)").text();
-                    let level = row
-                        .find("td:nth-child(3)")
-                        .text()
-                        .toLowerCase();
-                    alert("Job Title: " + jobName + "\n" + "Level: " + level);
-                });
-
-                $(".btn-edit").on("click", function () {
-                    let row = $(this).closest("tr");
-                    let jobName = row.find("td:nth-child(2)").text();
-                    let newJobTitle = prompt("Edit Job Title", jobName);
-                    if (newJobTitle) {
-                        row.find("td:nth-child(2)").text(newJobTitle);
-                    }
-                });
-
-                $(".btn-delete").on("click", function () {
-                    if (confirm("Are you sure you want to delete this job?")) {
-                        $(this).closest("tr").remove();
-                    }
-                });
-            }
-        });
-
-        // Close the action menu if clicking outside
-        $(document).on("click", function (e) {
-            if (!$(e.target).closest(".actions").length) {
-                $(".action-menu").remove();
-            }
-        });
-    };
-
+    this.btnAdd = this.self.querySelector("#_btnAddJobLevel");
+    this.elSearch = this.self.querySelector("#_job_level_search");
+    this._searchJobLevel = this.self.querySelector("#container_jobLevel");
+    this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
     // Define table columns
     this.cols = [
         {
@@ -109,139 +52,94 @@ var JobsLevelComponent = new (function () {
             },
         },
         {
-            title: "Action",
             className: "col_action align-middle",
             data: (data) => `
-            <div class="d-flex justify-content-start align-items-center">
-                <div class="text-center gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${
-                        data.action_id > 0 ? "d-none" : "btn_jobLevel_action"
-                    }" data-id="${
-                data.id
-            }"aria-haspopup="true" aria-expanded="false">
-                        <img src="${
-                            main_view.asset_url
-                        }/images/icons/more_vert (3).svg" />
-                    </a>
-                </div>
-            </div>`,
+                <div class="d-flex justify-content-end align-items-end">
+                    <div class="text-end gap-2 d-flex flex-wrap">
+                        <a href="javascript:void(0)" class="${ data.action_id > 1 ? "d-none": "btn_joblevel_action" }" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                            <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                        </a>
+                    </div>
+                </div>`,
         },
     ];
 
-    // Modal handling for adding a job
-    this.setupModal = function () {
-        const modal = $("#addJobModal");
-        const btnAdd = $("#btnAdd");
-        const spanClose = $(".close");
-
-        // Show the modal when 'Add' button is clicked
-        btnAdd.on("click", function () {
-            modal.show();
-        });
-
-        // Close the modal when the close button is clicked
-        spanClose.on("click", function () {
-            modal.hide();
-        });
-
-        // Close the modal when clicking outside the modal content
-        $(window).on("click", function (e) {
-            if (e.target === modal[0]) {
-                modal.hide();
-            }
-        });
-
-        // Handle adding a new job to the table
-        $("#addJobForm").on("click", function (e) {
-            e.preventDefault(); // Prevent form submission
-            const jobName = $("#name").val();
-            const jobDescription = $("#description").val();
-            const jobRanking = $("#rank").val();
-
-            // Ensure all fields are filled
-            if (!jobName || !jobDescription || !jobRanking) {
-                alert("Please fill out all fields.");
-                return;
-            }
-
-            // Create a new row
-            const newRow = `
-                <tr>
-                    <td>${jobName}</td>
-                    <td>${jobDescription}</td>
-                    <td>${
-                        "★".repeat(jobRanking) + "☆".repeat(5 - jobRanking)
-                    }</td>
-                    <td><i class="fa fa-ellipsis-v actions"></i></td>
-                </tr>
-            `;
-
-            // Append the new row to the table
-            $("#_job_level_list tbody").append(newRow);
-
-            // Clear the form and hide the modal
-            $("#addJobForm")[0].reset();
-            modal.hide();
-        });
-    };
-
-    console.log(document.getElementById("btnAdd"));
-
     this.init = function () {
-        mThis.setupModal();
-        mThis.setupActions();
-
         if (mThis.initAlready) return;
+
         mThis.JobLevelListView = new ListView("_job_level_list", {
             fetchApi: `${mThis.base_url}/hr/job_level/list-paginate`,
             perPage: 5,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",
-            rowCreated: (data, index, tr) => {
-                tr.dataset.id = data.id; // recode data
-            },
-            renderComplete: () => {
-                mThis.initDropdownMenus(mThis.JobLevelListView.getTable());
-            },
+            listContainerClass: null,
         });
 
-        // Apply style to the table
-        $(".table--blue").css("width", "97%");
-        $(".table--blue").css("margin", "20px");
-
-        mThis.btnAddJobLevel.onclick = () => {
+        mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
             let op = {
                 id: null,
-                onClose: (p) => {
-                    mThis.JobLevelListView.showPage(mThis.getFilterData());
+                btn: e.target,
+                onClose: () => {
+                    mThis.JobLevelListView.showPage();
                 },
             };
             JobLevelDialog.show(op);
         };
-        mThis.elSearch.addEventListener("keyup", (e) => {
-            clearTimeout(mThis.search_timeout);
-            mThis.search_timeout = setTimeout(() => {
-                if (mThis.JobLevelListView) {
-                    mThis.JobLevelListView.showPage(mThis.getDataFormFilter());
-                } else {
-                    console.error("JobLevelListView is not defined");
-                }
-            }, 200);
+        const pr_tbl = mThis.JobLevelListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = window.innerHeight - 225 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+
+        mThis.initDropdownMenus(pr_tbl);
+
+        mThis._searchJobLevel.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.JobLevelListView.showPage(mThis.getDataFormFilter());
         });
-
-        this.getDataFormFilter = () => {
-            let p = {};
-            p.search_value = mThis.elSearch.value;
-            return p;
-        };
-
         mThis.initAlready = true;
+    };
+    mThis.elSearch.addEventListener("keyup", (e) => {
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.JobLevelListView) {
+                mThis.JobLevelListView.showPage(mThis.getDataFormFilter());
+            } else {
+                console.error("jobLevel is not defined");
+            }
+        }, 200);
+    });
+
+    mThis.btnSearch.onclick = (e) => {
+        if (mThis.JobLevelListView) {
+            mThis.JobLevelListView.showPage(mThis.getDataFormFilter());
+        } else {
+            console.error("jobLevel  is not defined");
+        }
+    };
+    this.setFilterPeriod = (p, name, start_date, end_date) => {
+        return p;
+    };
+
+    this.getDataFormFilter = () => {
+        let p = {};
+        p.search_value = mThis.elSearch.value;
+        let main_filters =
+            mThis._searchJobLevel.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+        console.log(222, p.search_value, main_filters);
+
+        return p;
     };
     this.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass: "btn_jobLevel_action",
+            actionButtonClass: "btn_joblevel_action",
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
@@ -258,22 +156,16 @@ var JobsLevelComponent = new (function () {
                     name: "delete_jobLevel",
                 },
             ],
-            // adjustPosition:{
-            //         top:-90
-            // },
-            //onShow:(instance, menuContainer)=>{
-            //     console.log('open: ', instance.getMenus());
-            // },
-            // onClose:(instance, menus)=>{
-            // },
-            onClick: (menuLink, id, name) => {
+            onClick: (menulink, id, name) => {
                 switch (name) {
-                    case "edit_jobLevel": {                       
-                        mThis.editJobLevel(id, menuLink);
+                    case "edit_jobLevel": {
+                        console.log(98787653, id);
+
+                        mThis.editJobLevel(id, menulink);
                         break;
                     }
                     case "delete_jobLevel": {
-                        mThis.deleteJobLevel(id, menuLink);
+                        mThis.deleteJobLevel(id, menulink);
                         break;
                     }
                     default: {
@@ -284,42 +176,28 @@ var JobsLevelComponent = new (function () {
         };
         new VSDropdownMenu(menuOptopns);
     };
-
-    this.getFilterData = () => {
-        return {};
-    };
-
-    // Handling edit functionality
-    // this.editJobLevel = (id) => {
-    //     let op = {
-    //         id: id,
-    //         onClose: (p) => {                
-    //             mThis.JobLevelListView.showPage();
-    //         },
-    //     };
-    //     JobLevelDialog.show(op);
-    // };
-    this.editJobLevel = (id) => {
+    this.editJobLevel = (id, menulink) => {
         let op = {
             id: id,
-            onClose: (p) => {
-                mThis.JobLevelListView.showPage(mThis.getFilterData());
+            btn: menulink,
+            onClose: () => {
+                mThis.JobLevelListView.showPage();
             },
         };
         JobLevelDialog.show(op);
     };
-    this.deleteJobLevel = (id, menuLink) => {
+    this.deleteJobLevel = (id, menulink) => {
         let op = {
             id: id,
-            btn: menuLink,
+            btn: menulink,
             onClose: () => {
                 mThis.JobLevelListView.showPage();
             },
         };
         cv_interact.confirm(
-            "Do you want to delete this Job Level?",
+            "Delete this Job level?",
             {
-                title: "Delete Job Level",
+                title: "Delete this Job level?",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -335,13 +213,29 @@ var JobsLevelComponent = new (function () {
                         )
                         .then((res) => {
                             if (res.status_code == 200) {
-                                cv_interact.success("Deleted Successfully");
+                                cv_interact.success(
+                                    "Job level Delete Successfully"
+                                );
                                 mThis.JobLevelListView.showPage();
                             }
                         });
                 }
             }
         );
+    };
+
+    this.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/job_level/form-options`,
+                null,
+                null,
+                null
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                console.log(1111, this.elSortBy);
+            });
     };
     // Show component
     this.show = function () {
@@ -352,46 +246,13 @@ var JobsLevelComponent = new (function () {
             $(mThis.self).fadeIn(200);
         });
     };
-    this.saveJobLevel = function () {
-        return new Promise((resolve, reject) => {
-            // Get form values
-            let name = document.getElementById("name").value;
-            let description = document.getElementById("description").value;
-            let rank = document.getElementById("rank").value;
-
-            // Validate the inputs
-            if (!name || !description || !rank) {
-                return cv_interact.error("Please fill all required fields.");
-            }
-
-            let jobLevelData = {
-                name: name,
-                description: description,
-                rank: rank,
-            };
-
-            // API call to save the job_level to the database
-            vsapi
-                .call(`${mThis.base_url}/hr/job_level/save`, jobLevelData)
-                .then((response) => {
-                    if (response.status_code === 200) {
-                        cv_interact.success(
-                            "New job level saved successfully."
-                        );
-                        resolve();
-                    } else {
-                        cv_interact.error(response.error_message);
-                        reject(response.error_message);
-                    }
-                })
-                .catch((error) => {
-                    console.error("API error:", error);
-                    cv_interact.error(
-                        "Failed to save job level. Please try again."
-                    );
-                    reject(error);
-                });
-        });
+    this.show = function () {
+        mThis.init();
+        main_view.setTitle(mThis.title_prop);
+        mThis.prepareFormOptions();
+        mThis.JobLevelListView.showPage();
+        $(mThis.self).siblings().hide();
+        $(mThis.self).fadeIn(200);
     };
 })();
 
@@ -399,67 +260,72 @@ var JobsLevelComponent = new (function () {
 const JobLevelDialog = (() => {
     const self = {};
     let dialog = null;
-
     self.show = (op) => {
         dialog =
             dialog ||
             new GeneralDialog({
-                title: "Add Job Level",
+                cssClass: "modal-lg",
+                backdrop: "static", //User click outside form, do not close form
+                keyboard: true, //prevent user from using ESC key
                 createContent: () => {
                     return [
-                        `<form id="jobLevelForm">
-                            <div class="mb-3">
+                        `<div class="row">
+                            <div class="form-group col-12">
                                 <label for="name" class="form-label">Name</label>
-                                <input type="text" class="form-control data-input" data-field="id" id="name" placeholder="job name" required>
+                                <input type="text" class="form-control data-input" data-field="name" id="name" placeholder="job name" required>
                             </div>
-                            <div class="mb-3">
+                            <div class="form-group col-12">
                                 <label for="description" class="form-label">Description</label>
-                                <input type="text" class="form-control" id="description" placeholder="job description">
+                                <input type="text" class="form-control data-input" data-field="description" id="description" placeholder="job description">
                             </div>
-                            <div class="mb-3">
-                                <label for="rank" class="form-label">ranking</label>
-                                <select class="form-select" id="rank" aria-label="rank" required>
-                                    <option value="" disabled selected>ranking</option>
-                                    <option value="1">1</option>
-                                    <option value="2">2</option>
-                                    <option value="3">3</option>
-                                    <option value="4">4</option>
-                                    <option value="5">5</option>
-                                </select>
+                            <div class="form-group  col-12 d.none">
+                               <div id="info"></div>
                             </div>
-                        </form>`,
+                            <div class="form-group col-6">
+                                <label for="rank" class="form-label">Ranking</label>
+                                <input type="number" class="form-control data-input" data-field="rank" id="job_ranking" rows="2" placeholder="Input ranking here" required></input>                            
+                            </div>
+                           
+                         </div>`,
                     ].join("");
                 },
                 buttons: [
                     {
-                        name: "cancel",
-                        label: "Cancel",
-                        click: (me, btn, divModal) => {
-                            me.hide(true);
+                        label: '<span class="text-jobLevel">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
                         },
                     },
                     {
-                        name: "save",
-                        label: "Save",
-                        click: (me, btn, divModal) => {
-                            // Validate form before saving
-                            const jobLevelForm =
-                                document.getElementById("jobLevelForm");
-                            if (!jobLevelForm.checkValidity()) {
-                                jobLevelForm.reportValidity();
-                                return;
-                            }
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const jl = me.getData();
 
-                            // Call JobLevel function to save data to the database
-                            JobsLevelComponent.saveJobLevel();
+                            jl.id = me.dataOptions.id; //get "id" from op
 
-                            // Hide dialog after saving
-                            me.hide(true);
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/job_level/save",
+                                    ].join(""),
+                                    jl,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, jl);
+                                    } else cv_interact.error(res.error_message);
+                                });
                         },
                     },
                 ],
                 contentCreated: (me, divModal) => {
-                    me.saveWarning = (p) => {
+                    me.saveJobLevel = (jl) => {
                         alert("Data saved.");
                     };
                 },
@@ -468,19 +334,26 @@ const JobLevelDialog = (() => {
                     modifyTitle: "Edit Job Level",
                     targetProp: "job_levels",
                     api: {
-                        endpoint:
-                            main_view.base_url + "/hr/job_Level/form-options",
+                        endpoint: [
+                            main_view.base_url,
+                            "/hr/job_level/form-options",
+                        ].join(""),
                         params: (op) => {
                             return { id: op.id };
                         },
                     },
-                    onResponse: (res) => {
-                        console.log(2355, res);
+                    onResponse: (me, res) => {
+                        console.log('result from api "/form-options": ', res);
                     },
+                },
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
                 },
             });
 
         dialog.show(op);
     };
+
     return self;
 })();

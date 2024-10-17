@@ -50,13 +50,21 @@
             </div>
         </div>
     </div>
-    <div class="container">
-        <button type="button" class="btn" id="_btnAddJobLevel">
-            <i class="fas fa-plus"></i>
-            <span>Add</span>
-        </button>
-        <div class="input-group">
-            <input class="_job_level_search" type="text" id="_job_level_search" placeholder="Search here.....">
+    <div class="d-flex justify-content-between w-200 " id="container_jobLevel">
+        <div class="d-flex align-items-center w-100 gap-2 ml-4">
+            <div class="d-flex align-items-center w-50 gap-2">
+                <input type="text" class="form-control filter-field" id="_job_level_search" placeholder="Search job level ...">
+
+                <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
+                    <i class="la la-search"></i>
+                </button>
+            </div>
+        </div>
+        <div class="d-flex align-items-center justify-content-end gap-2 w-100 mr-4">
+            <button type="button" class="btn btn-primary" id="_btnAddJobLevel">
+                <i class="fas fa-plus"></i>
+                <span>Add Job level </span>
+            </button>
         </div>
     </div>
     <div id="_job_level_list">
@@ -72,38 +80,9 @@
     }
 
     /* form */
-    .container {
+    #container_jobLevel {
         display: flex;
-        gap: 20px;
-        margin-top: -100px;
-    }
-
-    #_btnAddJobLevel {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-    }
-
-    #_btnAddJobLevel i {
-        margin-right: 10px;
-    }
-
-    #btnAdd:hover {
-        background-color: #0056b3;
-        color: white;
-    }
-
-    ._job_level_search {
-        padding: 10px;
-        border: 1px solid #e2e0e0;
-        border-radius: 50px;
-        width: 500px;
-        background-color: #f8f9fa;
+        height: 50px;
     }
 
     /* endform */
@@ -112,7 +91,7 @@
     .top_level_card {
         display: flex;
         flex-direction: column;
-        height: 300px;
+        height: 190px;
         width: 100%;
         overflow-y: auto;
         overflow-x: hidden;
@@ -160,7 +139,6 @@
     }
 
     .card_right {
-        /* width: 100px; */
         display: flex;
         flex-direction: column;
         align-items: flex-start;
@@ -173,44 +151,15 @@
     }
 
     #_job_level_list {
-        height: 300px;
         padding: 10px 20px 0px 20px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
     }
-
-    .actions {
-        cursor: pointer;
-        font-size: 18px;
-        margin-left: 10px;
-    }
-
-    .action-menu {
-        display: flex;
-        flex-direction: column;
-        background-color: white;
-        border: 1px solid #ccc;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        font-size: 14px;
-        border-radius: 4px;
-        width: 50px;
-        align-items: center;
-        padding: 10px;
-        margin-left: 10px;
-        gap: 1rem;
-
-    }
-
-    .action-menu i:hover {
-        color: #007bff;
-        cursor: pointer;
-        transition: color 0.3s;
-        scale: 1.1;
-    }
     #_job_level_list_paginator{
         display: flex;
         position: fixed;
         bottom: 0;
+        margin: 0.5px;
     }
 </style>

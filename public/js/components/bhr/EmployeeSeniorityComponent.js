@@ -9,6 +9,7 @@ var EmployeeSeniorityComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnAddseniority");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_seniority");
+    this.elSortBy = this.self.querySelector('#el_sort_by');
     this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
 
     this.cols = [
@@ -27,6 +28,8 @@ var EmployeeSeniorityComponent = new (function () {
                             <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
                                 <span style="font-size: 14px; font-weight: bold;">${data.emp_name ?? ''}</span>
+                                <br/>
+                                <span style="font-size: 12px; color: gray;">${data.position ?? ''}</span>
                             </div>
                         </div>`;
             }
@@ -135,6 +138,7 @@ var EmployeeSeniorityComponent = new (function () {
     this.getDataFormFilter = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
+        p.sort_by = mThis.elSortBy.value;
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {
             const f = el.dataset.field;
@@ -228,11 +232,21 @@ var EmployeeSeniorityComponent = new (function () {
         });
 
     }
+    this.prepareFormOptions = () => {
+
+        vsapi.call(`${main_view.base_url}/hr/seniorities/form-options`,null,null,null).then(res => {
+            const d = res.status_code == 200 ? res.data : {};
+            console.log(1111,this.elSortBy);
+
+            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'All', null);
+            // VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',true,'All',null);
+        })
+    }
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        // mThis.prepareFormOptions();
+        mThis.prepareFormOptions();
             mThis.SeniorityListView.showPage();
                 $(mThis.self).siblings().hide();
                 $(mThis.self).fadeIn(200);
@@ -240,35 +254,39 @@ var EmployeeSeniorityComponent = new (function () {
 })
 
 
-const SeniorityDialog = (() => {
+const SeniorityDialog = (()=>{
+
     const self = {};
     let dialog = null;
+     self.show = (op)=>{
 
-    self.show = (op) => {
         dialog = dialog || new GeneralDialog({
-            title: op.id ? "Edit Employee Seniority" : "New Employee Seniority",  // Dynamically set title
-            cssClass: "",
-            createContent: () => {
-                return [
-                    `<div class="form-group col-md-12">`,
-                    `<label class="form-label" vslang="titles.Employee">Employee</label>`,
-                    `<div><select name="emp_id" class="data-input" data-field="emp_id"></select></div>`,
-                    `</div>`,
+            cssClass:'modal-lg',
+            backdrop: 'static', //User click outside form, do not close form
+            keyboard:true, //prevent user from using ESC key
+            createContent:()=>{
+                return [`<div class="row">
+                    <div class="form-group col-md-12">
+                    <label class="form-label" vslang="titles.Employee">Employee</label>
+                    <div><select name="emp_id" class="data-input" data-field="emp_id"></select></div>
+                    </div>
 
-                    `<div class="form-group col-md-12">`,
-                    `<label class="form-label" vslang="titles.Period"> Period </label>`,
-                    `<div><input name="period" class="form-control data-input" data-field="period"/></div>`,
-                    `</div>`,
+                    <div class="form-group col-md-12">
+                    <label class="form-label" vslang="titles.Period"> Period </label>
+                    <div><input name="period" class="form-control data-input" data-field="period"/></div>
+                    </div>
 
-                    `<div class="form-group col-md-12">`,
-                    `<label class="form-label" vslang="titles.Description"> Description </label>`,
-                    `<div><input name="description" class="form-control data-input" data-field="description"/></div>`,
-                    `</div>`,
+                    <div class="form-group col-md-12">
+                    <label class="form-label" vslang="titles.Description"> Description </label>
+                    <div><input name="description" class="form-control data-input" data-field="description"/></div>
+                    </div>
 
-                    `<div class="form-group col-md-12">`,
-                    `<label class="form-label" vslang="titles.Amount">Amount</label>`,
-                    `<div><input name="amount" class="form-control data-input" data-field="amount"/></div>`,
-                    `</div>`
+                    <div class="form-group col-md-12">
+                    <label class="form-label" vslang="titles.Amount">Amount</label>
+                    <div><input name="amount" class="form-control data-input" data-field="amount"/></div>
+                    </div>
+
+                    </div>`
                 ].join('');
             },
             buttons:[
@@ -299,7 +317,7 @@ const SeniorityDialog = (() => {
                     name: "emp_id",
                     data: "employees",
                     valueField: "id",
-                    textField: "name",
+                    textField:(me, d)=> {return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`; },
                     filterData: (data, res) => {
 
                         return data;
@@ -314,12 +332,12 @@ const SeniorityDialog = (() => {
                     endpoint: `${main_view.base_url}/hr/seniorities/form-options`,
                     params: (op) => {
                         console.log(4444,op);
-                        
+
                         return { id: op.id };  // Pass ID to fetch data for edit
                     },
                     onResponse: (me, res) => {
                         console.log(1111111111,me,1,res);
-                        
+
                         if (op.id) {
                             // Populate form with existing data for edit mode
                             // me.setValue('emp_id', res.data.emp_id);
