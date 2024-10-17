@@ -278,9 +278,9 @@
 
                     </div>
                 </div>
-                <div class="row mt-3 p-3" id="profile_card_detail">
-                    <div class="col-md-4">
-                        <div class="card" style="height:487px;">
+                <div class="row mt-3 p-3" >
+                    <div class="col-md-4" id="profile_card_left">
+                        <!-- <div class="card" style="height:487px;">
                             <div class="card-header">
                                 <h4>Skills</h4>
                                 <span class="ellipsis">...</span>
@@ -335,10 +335,11 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
-                    <div class="col-md-4">
-                        <div class="card" style="height:487px;">
+                    <div class="col-md-4" id="profile_card_center">
+                        
+                        <!-- <div class="card" style="height:487px;">
                             <div class="card-header">
                                 <h4>Education</h4>
                                 <span class="ellipsis">...</span>
@@ -378,9 +379,9 @@
                                 </div>
 
                             </div>
-                        </div>
+                        </div> -->
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" id="profile_card_right">
                         <div class="card" style="height:487px;">
                             <div class="card-header">
                                 <h4>Experience</h4>
