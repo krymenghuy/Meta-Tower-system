@@ -12,7 +12,6 @@ var LeaveComponent = new (function () {
     this.elFilter_leaveType = this.self.querySelector('#el_leave_type');
     this.elFilter_status = this.self.querySelector('#el_status');
     this.elSearch = this.self.querySelector("#_sdl_search_leave");
-    this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
 
     this.cols = [
         {
@@ -23,10 +22,11 @@ var LeaveComponent = new (function () {
         },
 
         {
-            title: "Name",
+            title: "Employee",
             className: "align-middle text-start",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
+                         <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
                                 <span style="font-size: 14px; font-weight: bold;">${data.employee ??''}</span>
                                 <br/>
@@ -136,41 +136,31 @@ var LeaveComponent = new (function () {
         sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
-
         mThis.initDropdownMenus(pr_tbl);
 
-        mThis.divFilter.addEventListener('change', (e) => {
-            e.preventDefault();
-            mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
-        })
 
-
-        mThis.initAlready = true;
 
     };
+    mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
+
+        el.onchange =  (e) => {
+       e.preventDefault();
+       mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
+       console.log(777777, mThis.getDataFormFilter());
+        }
+   });
 
     mThis.elSearch.addEventListener('keyup', (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
-            if (mThis.LeaveRequestListView) {
-                mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
-            } else {
-                console.error("LeaveRequestListView is not defined");
-            }
+            mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
+
         }, 200);
     });
 
-    mThis.btnSearch.onclick = e => {
-        if (mThis.LeaveRequestListView) {
-            mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
-        } else {
-            console.error("listView is not defined");
-        }
-    };
-
-    this.setFilterPeriod = (p,name, start_date,end_date) =>{
-        return p ;
-    };
+    // this.setFilterPeriod = (p,name, start_date,end_date) =>{
+    //     return p ;
+    // };
 
     this.getDataFormFilter = () => {
         let p = {
@@ -178,13 +168,15 @@ var LeaveComponent = new (function () {
             leave_type_id: mThis.elFilter_leaveType.value,
             search_value:mThis.elSearch.value,
 
+
         };
-        p = mThis.setFilterPeriod(p, periodName, null,null);
-        // let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
-        // main_filters.forEach(el => {
-        //     const f = el.dataset.field;
-        //     p[f] = el.value;
-        // });
+        console.log(9090,p);
+
+        // p = mThis.setFilterPeriod(p, periodName, null,null);
+    mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
 
 
         return p;
@@ -340,7 +332,8 @@ var LeaveComponent = new (function () {
             const d = res.status_code == 200 ? res.data : {};
             console.log(1111,this.elSortBy);
 
-            VSUtil.setComboItems(mThis.elStatus,d.status,'id','leave_status',true,'All Statuses',null);
+            VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',true,'All Statuses',null);
+            VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All Leave Types',null);
         })
     }
 

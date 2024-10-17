@@ -6,7 +6,7 @@ use App\Models\DV;
 use App\Models\Bhr\Employee;
 use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use App\Models\DBX; 
+use App\Models\DBX;
 
 class Leave
 {
@@ -35,11 +35,11 @@ class Leave
             // 'has_returned' =>'number|default=0',
             'status_id' => '1|number|default = 2',
         ];
-       
+
         // $checkUnque = ["$branch_id|leaves|emp_id|id=id|text=Employee has already Leave "];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,null);
-          
+
         if ($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
@@ -49,8 +49,8 @@ class Leave
         if(!$emp) return DV::error('Employee ID does not exist');
         if (!$id && Employee::isOnleave($d->emp_id)){
             return DV::error('Staff named ?? is already on leave::'.$emp->name);
-        } 
- 
+        }
+
 
         $id = saveData($ss,'leaves', ['id' => $id], $inputs, [], 1,false);
         return DV::depends($id,null, 'Failed to save Leave Information');
@@ -63,7 +63,7 @@ class Leave
 
     function getLeaveListPaginate($arr, $ss)
     {
-        
+
         $subs_id = $ss->subs_id;
         $d = (object) $arr;
         $branch_id = $d->branch_id ?? null;
@@ -75,55 +75,52 @@ class Leave
         }
 
         $status_id = $d->status_id ?? null;
+        $leave_type_id = $d->leave_type_id ?? null;
         $search_value = $d->search_value ?? null;
         $start_date = $d->start_date ?? null;
         $end_date = $d->end_date ?? null;
         $str_search = '1=1';
         $str_status = '1=1';
         $str_dates = '1=1';
-        
+        $str_leave_type = '1=1';
+
         $str_branch = $branch_id > 0 ? 'l.branch_id ='.$branch_id : '3=3';
         $search_value = $d->search_value ?? null;
         if ($search_value){
              $search_value = escape_like_str($search_value);
-             $str_search = "e.email = '$search_value' OR e.name LIKE '%$search_value%' OR e.phone_number LIKE '%$search_value%'";
+             $str_search = "emp.email = '$search_value' OR emp.name LIKE '%$search_value%' OR emp.phone_number LIKE '%$search_value%' OR l.remarks LIKE '%$search_value%'";
         } else{
             $status_id = $d->status_id ?? null;
             $str_status = $status_id > 0? 'l.status_id = \'' . $status_id . '\'' : '1=1';
+            $str_leave_type = $leave_type_id > 0? 'l.leave_type_id = \'' . $leave_type_id . '\'' : '1=1';
             $end_date = convertDate($end_date);
             $start_date = convertDate($start_date);
-    
+
             if (strtotime($start_date) && strtotime($end_date)) {
                 $str_dates = DBX::convertToDate('l.end_date') ." BETWEEN '$start_date' AND '$end_date'";
             }
         }
- 
+
 
         $skip_rows = ($current_page - 1) * $per_page;
         $col_dates = DBX::formatDate('l.start_date','start_date').','.DBX::formatDate('l.end_date','end_date');
         $query = DB::table('leaves as l')
-            ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
-            ->join('positions as p', 'p.id', '=', 'emp.positions_id')
-            ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
-            ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
-            //->where('l.status_id',10)
-            ->where('l.subs_id',hex2bin($ss->subs_id))
-            ->whereRaw($str_branch)
-            ->whereRaw($str_search)
-            ->whereRaw($str_status)
-            ->whereRaw($str_dates)
- 
-            ->selectRaw('l.id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$col_dates.', ls.name as status, l.remarks, l.update_user, l.update_date,l.status_id')
- 
-            ->orderBy('l.id', 'ASC');
+        ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
+        ->join('positions as p', 'p.id', '=', 'emp.positions_id')
+        ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
+        ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
+        ->where('l.subs_id', hex2bin($ss->subs_id))
+        ->whereRaw($str_branch)
+        ->whereRaw($str_search)
+        ->whereRaw($str_status)
+        ->whereRaw($str_leave_type)
+        ->whereRaw($str_dates)
+        ->selectRaw('l.id, emp.id as emp_id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'
+            . $col_dates
+            . ', ls.name as status, l.remarks, l.update_user, l.update_date, l.status_id, emp.photo_file_name as emp_photo')
+        ->orderBy('l.id', 'DESC');
 
-        // Apply search logic with grouping to avoid conflicts with other filters
-        if ($search_value) {
-            $query->where(function ($q) use ($search_value) {
-                $q->where('emp.name', 'like', '%' . $search_value . '%')
-                    ->orWhere('l.remarks', 'like', '%' . $search_value . '%');
-            });
-        }
+
 
         // Clone the query to get the total count
         $clone_query = clone $query;
@@ -132,16 +129,25 @@ class Leave
         // Paginate the results
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
+        foreach ($rows as $row) {
+            $row->image_url = '';
+            if (isset($row->emp_id) && $row->emp_photo) {
+                $row->image_url = Employee::profilePicture($row->emp_id);
+            }
+            unset($row->emp_photo);  // Clean up unnecessary data
+        }
+
+
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
 
     function getDetails($id ,$ss =null)
     {
- 
+
         $leave_dates = DBX::formatDate('l.start_date','start_date').','.DBX::formatDate('l.end_date','end_date');
-        $col_update_date = DBX::formatDate('l.updated_at','update_date'); 
- 
+        $col_update_date = DBX::formatDate('l.updated_at','update_date');
+
         $leave = DB::table('leaves as l')
         ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
         ->join('positions as p', 'p.id', '=', 'emp.positions_id')
@@ -149,9 +155,9 @@ class Leave
         ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
         ->where('l.id', $id)
         //->where('l.status_id',2
- 
-        ->selectRaw('l.id AS emp_id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user,'.$col_update_date)
- 
+
+        ->selectRaw('l.id AS emp_id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,'.$col_update_date)
+
         ->first();
         return $leave;
     }
@@ -173,7 +179,7 @@ class Leave
             'leave_types' =>GeneralSettings::options_leave_type($ss),
             'status' =>GeneralSettings::options_leave_status($ss),
             'leave_request' => $leave,
- 
+
         ];
 
     }
