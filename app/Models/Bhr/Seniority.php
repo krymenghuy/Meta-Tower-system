@@ -50,7 +50,7 @@ class Seniority
         $branch_id = $ss->branch_id;
 
         $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 5;
+        $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
@@ -58,16 +58,17 @@ class Seniority
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
+        $sort_by = $d->sort_by ?? 's.id';
+        $sort_order = $d->sort_order ?? 'asc';
         $search_id = $d->id ?? null;
 
         $str_search = '1=1';
 
         $query = DB::table('seniorities as s')
             ->join('employees as e', 'e.id', 's.emp_id')
-            ->selectRaw('s.id, s.emp_id, e.name as emp_name, s.period, s.description, s.amount,e.photo_file_name as emp_photo')
-            ->where('s.branch_id', $branch_id)
-            ->whereRaw($str_search)
-            ->orderby('s.id', 'asc');
+            ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
+            ->selectRaw('s.id, s.emp_id, e.name as emp_name, pos.title as position, s.period, s.description, s.amount,e.photo_file_name as emp_photo')
+            ->where('s.branch_id', $branch_id);
 
         if ($search_id) {
             $query->where('s.id', $search_id);
@@ -75,9 +76,12 @@ class Seniority
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "s.description like '%" . $search_value . "%' or e.name like '%" . $search_value . "%' or s.period like '%" . $search_value . "%' or s.amount like '%" . $search_value . "%'";
-            $query->whereRaw($str_search);
+            $str_search = "e.name like '%" . $search_value . "%' or s.period like '%" . $search_value . "%' or s.amount like '%" . $search_value . "%'";
+
         }
+        $query->whereRaw($str_search);
+
+        $query->orderBy($sort_by, $sort_order);
 
         $count = $query->count('s.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -85,7 +89,7 @@ class Seniority
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->emp_photo) {
-                // $row->image_url = Employee::getProfilePicture($row->emp_id);
+                $row->image_url = Employee::profilePicture($row->emp_id);
             }
             unset($row->emp_photo);
         }
@@ -93,13 +97,14 @@ class Seniority
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+
     function getDetails($id, $ss) {
         $row = DB::table('seniorities as s')
             ->join('employees as e', 'e.id', 's.emp_id')
             ->selectRaw('s.id, s.emp_id, e.name as emp_name, s.period, s.description, s.amount,e.photo_file_name as emp_photo')
             ->where('s.id', $id)->first();
         if ($row) {
-            // $row->image_url = Employee::getProfilePicture($row->emp_id);
+            $row->image_url = Employee::profilePicture($row->emp_id);
             unset($row->emp_photo);
         } else {
             $row = null;
@@ -136,10 +141,14 @@ class Seniority
         }
         return (object) [
 
-            'employees' => DB::table('employees')->selectRaw('id, name')->get(),
+            'sort_by' => [
+                ['id' => 'e.name', 'name' => 'By Name'],
+                ['id' => 's.period', 'name' => 'By Period'],
+                ['id' => 's.amount', 'name' => 'By Amount'],
 
+            ],
 
-
+          'employees' => GeneralSettings::options_employee(10,$ss),
             'seniority' => $seniority,
         ];
 

@@ -11,7 +11,7 @@ var PayrollComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnAddSalary");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_payroll");
-    this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
+
     this.cols = [
 
         {
@@ -21,7 +21,7 @@ var PayrollComponent = new (function () {
 
         },
         {
-            title: "Name",
+            title: "Employee",
             className: "align-middle text-start",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
@@ -141,7 +141,7 @@ var PayrollComponent = new (function () {
 
         const pr_tbl = mThis.PayrollListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 275) + 'px';
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
 
@@ -165,14 +165,6 @@ var PayrollComponent = new (function () {
             }
         }, 200);
     });
-
-    mThis.btnSearch.onclick = e => {
-        if (mThis.PayrollListView) {
-            mThis.PayrollListView.showPage(mThis.getDataFormFilter());
-        } else {
-            console.error("listView is not defined");
-        }
-    };
 
     this.getDataFormFilter = () => {
         let p = {};
@@ -340,8 +332,8 @@ var PayrollComponent = new (function () {
             const d = res.status_code == 200 ? res.data : {};
             console.log(1111,this.elSortBy);
 
-            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'All', null);
-            VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',true,'All',null);
+            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'All Sort', null);
+            VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',true,'All Status',null);
         })
     }
 
@@ -465,137 +457,3 @@ const PayRollDailog = (()=>{
     return self;
 })();
 
-// const PayRollDailog = new function() {
-//     const mThis = this;
-//     this.self = main_view.VSAppContent.querySelector('#dlg_sdl_add_Payroll');
-//     this.modal = new bootstrap.Modal(this.self);
-//     this.base_url = main_view.base_url;
-//     this.options = {};
-
-//     this.btnSave =  this.self.querySelector('#dlg_sdl_add_payroll_btn_save');
-//     this.elEmployee = this.self.querySelector('#_sdl_name_id');
-//     this.elPositionId =  this.self.querySelector('#_sdl_position_id');
-//     this.elStatusId =  this.self.querySelector('#_sdl_status_id');
-//     this.elInfo = this.self.querySelector('#info');
-//     this.elTitle = mThis.self.querySelector('.modal-title');
-//     this.div_payroll_info = mThis.self.querySelector('#_sdl_payroll_info');
-
-
-//     this.btnSave.onclick =  e =>{
-//         e.preventDefault();
-//         let p = mThis.getDataForm();
-//         console.log(77777,p);
-
-//         vsapi.call(`${mThis.base_url}/hr/payroll/save`, p,mThis.btnSave,false).then(res => {
-//             if(res.status_code === 200){
-//                 mThis.modal.hide();
-//                 const d = res.data ?? {};
-//                 cv_interact.success('Payroll Saved Success!');
-//                 if (typeof mThis.options.onClose === 'function') mThis.options.onClose(p);
-//             }
-//             else
-//                 cv_interact.error(res.error_message);
-//         });
-//     };
-//     this.prepareData = (id, def = {}, onFinish) => {
-//         console.log(555555, id);
-
-//         vsapi.call(`${mThis.base_url}/hr/payroll/form-options`, { id: id }, null).then(res => {
-//             let d = res.status_code === 200 ? res.data : {};
-//             // mThis.elInfo.parentElement.classList.add('d-none');
-//             VSUtil.setComboItems(mThis.elEmployee, d.employees, 'id', 'name', true, '(Select Employee)', null);
-
-
-//             mThis.elEmployee.addEventListener('change', () => {
-//                 let id = mThis.elEmployee.value;
-//                 console.log(22222, id);
-
-//                 vsapi.call(`${mThis.base_url}/hr/employee/details`, { id: id }, null).then(res => {
-//                     let d = res.data || {};
-//                     console.log(1111, d);
-
-//                     if (d) {
-//                         mThis.elInfo.parentElement.classList.remove('d-none');
-//                         mThis.elInfo.innerHTML = `
-//                             <div class="d-block border border-info p-2">
-//                                 <div class="d-block">
-//                                     <span>Name:</span>
-//                                     <span>${d.name} </span>
-//                                 </div>
-//                                 <div>
-//                                     <span>Email:</span><span>${d.email}</span>
-//                                 </div>
-//                                 <div>
-//                                     <span>Phone:</span><span>${d.phone_number}</span>
-//                                 </div>
-//                                 <div class="d-block">
-//                                     <span>Position:</span>
-//                                     <span>${d.position}</span>
-//                                 </div>
-//                                  <div>
-//                                     <span>Role:</span><span>${d.role}</span>
-//                                 </div>
-
-//                             </div>`;
-//                     }
-//                     console.log(33333, d);
-//                 });
-//             });
-//             onFinish(d);
-//         });
-//     };
-
-
-
-
-//     this.show = (options) => {
-//         if (!options) options = {};
-//         mThis.options = options;
-//         let id = options.id ??null;
-
-//         mThis.prepareData(id,{},data => {
-//             if(data.payrolls){
-//                 mThis.elTitle.textContent =  "Modify payroll Information";
-//             }
-//             else{
-//                 mThis.elTitle.textContent =  "Create Payroll";
-//             }
-//             console.log(6666);
-
-//             mThis.setData(data.payrolls);
-//             mThis.modal.show();
-//         });
-//     }
-
-//   this.getDataForm = () => {
-//         const div = mThis.self;
-//         let p = { id: mThis.options.id };
-
-//         div.querySelectorAll('.data-input').forEach(el => {
-//             const data_member = el.dataset.field;
-//             p[data_member] = el.value;
-//         });
-
-//         return p;
-//     };
-
-//     this.setData = (d = {}) => {
-//         const div = mThis.self;
-//         div.querySelectorAll('.data-input').forEach(el => {
-//             const data_member = el.dataset.field;
-//             console.log(7777,data_member,'|',el);
-//             el.value ='';
-//         });
-
-//         console.log(4444,d);
-//         if(!d) return;
-
-//         div.querySelectorAll('.data-input').forEach(el => {
-//             const data_member = el.dataset.field;
-//             console.log(7777,data_member,'|',el);
-
-//             el.value = d[data_member] || '';
-//         });
-
-//     };
-// };

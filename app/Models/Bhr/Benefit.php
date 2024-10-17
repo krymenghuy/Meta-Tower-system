@@ -59,6 +59,7 @@ class Benefit
 
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
+        $category = $d->category ?? null;
 
         // Initialize query
         $query = DB::table('benefits as b')
@@ -71,10 +72,14 @@ class Benefit
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $query->where(function ($q) use ($search_value) {
-                $q->where('b.category', 'like', "%{$search_value}%")
-                ->orWhere('b.remark', 'like', "%{$search_value}%");
-            });
+            $str_search = "b.amount like '%" . $search_value . "%' or bc.name like '%" . $search_value . "%' or b.remark like '%" . $search_value . "%'";
+            $query->whereRaw($str_search);
+
+        }
+
+
+        if ($category) {
+            $query->where('b.category_id', $category);
         }
 
         // Clone the query for counting total rows without skip and take
@@ -132,7 +137,7 @@ class Benefit
             'categories' => DB::table('benefit_categories')->selectRaw('id,name')->get(),
             'benefit' => $benifit
         ];
-        
+
     }
 
 }

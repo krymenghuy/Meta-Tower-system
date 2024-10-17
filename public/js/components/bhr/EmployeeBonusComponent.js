@@ -9,6 +9,7 @@ var EmployeeBonusComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnAddBonus");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_bonus");
+    this.elCategory = this.self.querySelector("#el_category");
     this.btnSearch = mThis.self.querySelector('#_sdl_btnSearch');
 
 
@@ -140,6 +141,7 @@ var EmployeeBonusComponent = new (function () {
     this.getDataFormFilter = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
+        p.category = mThis.elCategory.value;
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {
             const f = el.dataset.field;
@@ -194,7 +196,7 @@ var EmployeeBonusComponent = new (function () {
         vsapi.call(`${main_view.base_url}/hr/benefit/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
 
-            // VSUtil.setComboItems(mThis.elStatus,d.status,'id','leave_status',true,'All Statuses',null);
+            VSUtil.setComboItems(mThis.elCategory,d.categories,'id','name',true,'All',null);
         })
     }
 

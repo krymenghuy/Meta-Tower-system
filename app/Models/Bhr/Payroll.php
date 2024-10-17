@@ -4,6 +4,7 @@ namespace App\Models\Bhr;
 
 use App\Models\DV;
 use DB;
+use App\Models\DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class Payroll
@@ -67,8 +68,11 @@ class Payroll
         $sort_order = $d->sort_order ?? 'asc';
         $search_position_id = $d->position_id ?? null;
         $search_status_id = $d->status_id ?? null;
+        $start_date = $d->start_date ?? null;
+        $end_date = $d->end_date ?? null;
 
         $str_search = '1=1';
+
          $query = DB::table('payrolls as pay')
             ->join('employees as e', 'e.id', '=', 'pay.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
@@ -101,6 +105,13 @@ class Payroll
         }
         if ($search_status_id) {
             $query->where('pay.status_id', $search_status_id);
+        }
+
+        if ($start_date) {
+            $query->where('pay.start_date', '>=', $start_date);
+        }
+        if ($end_date) {
+            $query->where('pay.end_date', '<=', $end_date);
         }
 
 
@@ -204,11 +215,11 @@ class Payroll
                 ['id' => 'e.name', 'name' => 'By Name'],
                 ['id' => 'pos.title', 'name' => 'By Position'],
                 ['id' => 'pay.salary', 'name' => 'By Salary'],
-                ['id' => 'e.phone_number', 'name' => 'By Phone Number'],
                 ['id' => 'pay.rate', 'name' => 'By  Rate'],
 
             ],
             'employees' => GeneralSettings::options_employee(10,$ss),
+            'status' => DB::table('statuses')->selectRaw('id,name')->get(),
             'payrolls' => $payroll,
         ];
 
