@@ -51,7 +51,7 @@ class Education //extends Model
         $branch_id = $ss->branch_id;
         $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 4;
+        $per_page = $d->per_page ?? 10;
         if(!is_numeric($current_page)){
             $current_page = 1;
         }
