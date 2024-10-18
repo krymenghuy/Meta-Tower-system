@@ -29,6 +29,7 @@ use App\Http\Controllers\Bhr\SalaryHistoryController;
 use App\Http\Controllers\Bhr\BranchChangeController;
 use App\Http\Controllers\Bhr\EventController;
 use App\Http\Controllers\Bhr\EmployeeEventController;
+use App\Http\Controllers\Bhr\EducationController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -78,6 +79,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')-
     Route::post('/details', [DepartmentController::class, 'getDetails']);
     Route::post('/delete', [DepartmentController::class, 'deleteDepartment']);
     Route::post('/form-options', [DepartmentController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('education')->group(function () {
+
+    Route::post('/save', [EducationController::class, 'save']);
+    Route::post('/list-all', [EducationController::class, 'listAll']);
+    Route::post('/details', [EducationController::class, 'getDetails']);
+    Route::post('/delete', [EducationController::class, 'delete']);
+    Route::post('/form-options', [EducationController::class, 'getFormOptions']);
 });
 
 

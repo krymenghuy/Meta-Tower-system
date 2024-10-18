@@ -20,6 +20,7 @@ class Department
 
     function save($arr,$ss = null){
         $ss = $ss ?? $this->userInfo;
+        
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
