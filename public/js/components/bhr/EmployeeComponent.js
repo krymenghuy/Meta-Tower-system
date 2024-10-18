@@ -694,8 +694,10 @@ const AddEducation = (() => {
                       vsapi.call([main_view.base_url,'/hr/education/save'].join(''),p,false,false).then(res =>{
                           if(res.status_code ==200){
                               me.modal.hide(true,p);
-
-                          }else cv_interact.error(res.error_message);
+                              console.log(111,me.dataOptions);
+                              EmployeeComponent.renderCardCenter(me.dataOptions.emp_id);
+                          }else 
+                          cv_interact.error(res.error_message);
                       });
                    }
                 }

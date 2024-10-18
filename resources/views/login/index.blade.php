@@ -3,8 +3,9 @@
     <head>
         <meta charset="UTF-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
-        <link rel="icon" type="image/png" href="background-image.png"/>
-        <title>DELIVERY HOUEXPRESS</title>
+        <link rel="icon" type="image/png" href="{{'assets/images/logo/lc_logo.svg'}}"/>
+        <?php StyleManager::render('login-styles',1); ?>
+        <title>BHR System</title>
         <script>
             function checkDevice(){
                 if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
@@ -19,7 +20,7 @@
                 //return true;
             }
         </script>
-        <style type="text/css">
+        <!-- <style type="text/css">
             *{
                 padding:0;
                 margin:0;
@@ -184,20 +185,20 @@
                     width:84vw;
                 }
             } */
-        </style>
+        </style> -->
     </head>
     <body onload="checkDevice()">
         <div class="vs-container-login">
             <div>
-                <img class="img-background" src="{{ asset('assets/images/logo/background_1.png') }}"/>
+                <img class="img-background" src="{{ asset('assets/images/bhr/book1.png') }}"/>
                 <div class="overlay-blur"></div>
             </div>
             <div class="login-frame">
                 <div class="vs-container-front-img">
-                    <img class="img-front" src="{{ asset('assets/images/logo/login_1.png') }}"/>
+                    <img class="img-front" src="{{ asset('assets/images/bhr/book1.png') }}"/>
                     <div class="vs-login">
                         <div class="vs-form-login">
-                            <h1 class="vs-title">WELCOME</h1>
+                            <h3 class="vs-title">Sign in to your account</h3>
                             <div class="vs-form-group">
                             <form action="{{ url('/processLogin') }}" method="POST">
 
@@ -222,10 +223,10 @@
                                 </form>
                             </div>
                         </div>
-                        <div class="vs-d-flex-copyright">
+                        <!-- <div class="vs-d-flex-copyright">
                             <p>Vectorasoft Co.,LTD.</p>
                             <p>Copyright &copy 2023. All rights reserved</p>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
