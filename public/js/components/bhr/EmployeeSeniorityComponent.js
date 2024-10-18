@@ -57,6 +57,7 @@ var EmployeeSeniorityComponent = new (function () {
             }
         },
         {
+            title: "Action",
             className: 'col_action align-middle',
             data: function (data, row, display) {
                 return `
