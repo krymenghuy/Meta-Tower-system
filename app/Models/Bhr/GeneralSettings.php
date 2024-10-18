@@ -342,6 +342,9 @@ class GeneralSettings //extends Model
     static function options_position($ss){
         return DB::table('positions')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,title AS position')->get();
     }
+    static function options_organization($ss){
+        return DB::table('organizations')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS organization')->get();
+    }
     
     /** $emp_status_id = {1o: Active, 20: Resigned, 21: Terminiated}*/
     static function options_employee($emp_status_id, $ss){

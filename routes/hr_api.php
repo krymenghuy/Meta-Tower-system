@@ -30,6 +30,7 @@ use App\Http\Controllers\Bhr\BranchChangeController;
 use App\Http\Controllers\Bhr\EventController;
 use App\Http\Controllers\Bhr\EmployeeEventController;
 use App\Http\Controllers\Bhr\EducationController;
+use App\Http\Controllers\Bhr\ExperienceController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -87,6 +88,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('education')->
     Route::post('/details', [EducationController::class, 'getDetails']);
     Route::post('/delete', [EducationController::class, 'delete']);
     Route::post('/form-options', [EducationController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('experience')->group(function () {
+
+    Route::post('/save', [ExperienceController::class, 'save']);
+    Route::post('/list-all', [ExperienceController::class, 'listAll']);
+    Route::post('/details', [ExperienceController::class, 'getDetails']);
+    Route::post('/delete', [ExperienceController::class, 'delete']);
+    Route::post('/form-options', [ExperienceController::class, 'getFormOptions']);
 });
 
 
