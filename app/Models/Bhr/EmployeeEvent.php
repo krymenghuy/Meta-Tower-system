@@ -24,8 +24,8 @@ class EmployeeEvent
             'id' => '0|identity=1',
             'emp_id' => '1|number',
             'event_id' => '1|number',
+            'date' => '1|date',
             'remarks' => '0|string|250',
-            'impact_id' => '1|number|default = 1',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -57,38 +57,72 @@ class EmployeeEvent
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
+        $sort_by = $d->sort_by ?? 'ee.id';
+        $sort_order = $d->sort_order ?? 'asc';
         $search_id = $d->id ?? null;
+        $search_status_id = $d->status_id ?? null;
+        $search_event_id = $d->event_id ?? null;
+
 
         $str_search = '1=1';
 
         $query = DB::table('emp_events as ee')
+            ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
+            ->join('positions as p', 'p.id', '=', 'emp.positions_id')
             ->join('events as e', 'e.id', '=', 'ee.event_id')
-            ->join('event_impacts as ei', 'ei.id', '=', 'ee.impact_id')
-            ->selectRaw('ee.id, ee.emp_id, ee.event_id, ee.impact_id, e.name, ei.name as impact, ee.remarks')
+            ->selectRaw('ee.id, ee.emp_id, ee.event_id, e.name as event,e.impact,formatDate(ee.date) as date, ee.remarks, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
             ->where('ee.branch_id', $ss->branch_id);
 
         if ($search_id) {
             $query->where('ee.id', $search_id);
         }
         if ($search_value) {
-            $query->where('ee.event_id', $search_value);
+            $search_value = escape_like_str($search_value);
+            $str_search = "e.name like '%" . $search_value . "%' or ee.remarks like '%" . $search_value . "%' or emp.name like '%" . $search_value . "%' or p.title like '%" . $search_value . "%'";
         }
-        $query->skip($skip_rows)->take($per_page);
-        $count_query = clone $query;
-        $count = $count_query->count('e.id');
-        $rows = $query->get();
+        if ($search_status_id) {
+            $query->where('ee.impact_id', $search_status_id);
+        }
+        if ($search_event_id) {
+            $query->where('ee.event_id', $search_event_id);
+        }
+        $query->whereRaw($str_search);
+
+        $query->orderBy($sort_by, $sort_order);
+
+        $count = $query->count('ee.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        foreach ($rows as $row) {
+            $row->image_url = '';
+            if ($row->emp_photo) {
+                $row->image_url = Employee::profilePicture($row->emp_id);
+            }
+            unset($row->emp_photo);
+        }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     function getDetails($id, $ss) {
         $query = DB::table('emp_events as ee')
+            ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
+            ->join('positions as p', 'p.id', '=', 'emp.positions_id')
             ->join('events as e', 'e.id', '=', 'ee.event_id')
-            ->join('event_impacts as ei', 'ei.id', '=', 'ee.impact_id')
-            ->selectRaw('ee.id, ee.emp_id, ee.event_id, ee.impact_id, e.name, ei.name as impact, ee.remarks')
+            ->selectRaw('ee.id, ee.emp_id, ee.event_id, e.name as event,e.impact,ee.date, ee.remarks, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
             ->where('ee.branch_id', $ss->branch_id)
             ->where('ee.id', $id)
             ->first();
+
+        if ($query) {
+            $query->image_url = '';
+            if ($query->emp_photo) {
+                $query->image_url = Employee::profilePicture($query->emp_id);
+            }
+            unset($query->emp_photo);
+        } else {
+            $query = null;
+        }
         return $query;
     }
 
@@ -110,12 +144,19 @@ class EmployeeEvent
         }
         return (object) [
 
+            'sort_by' => [
+                ['id' => 'emp.name', 'name' => 'By Name'],
+                ['id' => 'ee.date', 'name' => 'By Date'],
+
+            ],
+
             'employees' => GeneralSettings::options_employee(10,$ss),
-            'impacts' => GeneralSettings::options_event_impact($ss),
-            'events' => GeneralSettings::options_event($ss),
+            'events' => DB::table('events')->selectRaw('id,name')->get(),
+
 
             'emp_event' => $emp_event,
         ];
 
     }
+
 }

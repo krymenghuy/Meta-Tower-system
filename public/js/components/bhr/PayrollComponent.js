@@ -57,9 +57,10 @@ var PayrollComponent = new (function () {
             title: "Period",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.start_date.replace(/-/g, '/') ?? ''} - ${data.end_date.replace(/-/g, '/') ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.start_date ?? ''} - ${data.end_date ?? ''}</p>`;
             }
         },
+
         {
             title: "Salary",
             className: "align-middle",
@@ -147,10 +148,14 @@ var PayrollComponent = new (function () {
 
         mThis.initDropdownMenus(pr_tbl);///
 
-        mThis.divFilter.addEventListener('change', (e) => {
-            e.preventDefault();
-            mThis.PayrollListView.showPage(mThis.getDataFormFilter());
-        })
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
+
+            el.onchange =  (e) => {
+           e.preventDefault();
+           mThis.PayrollListView.showPage(mThis.getDataFormFilter());
+           console.log(777777, mThis.getDataFormFilter());
+            }
+       });
 
         mThis.initAlready = true;
 
@@ -167,20 +172,23 @@ var PayrollComponent = new (function () {
     });
 
     this.getDataFormFilter = () => {
-        let p = {};
-        p.status_id = mThis.elStatus.value;
-        p.sort_by = mThis.elSortBy.value;
-        p.search_value = mThis.elSearch.value;
-        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
-        main_filters.forEach(el => {
+        let p = {
+        status_id : mThis.elStatus.value,
+        sort_by : mThis.elSortBy.value,
+        search_value : mThis.elSearch.value,
+
+        };
+        console.log(9090,p);
+
+        // p = mThis.setFilterPeriod(p, periodName, null,null);
+    mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(222, p);
+
 
         return p;
     };
-
 
 
 
