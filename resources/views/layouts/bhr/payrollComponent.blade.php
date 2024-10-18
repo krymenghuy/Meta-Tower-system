@@ -16,23 +16,20 @@
         </div>
         <div class="d-flex align-items-center w-50 gap-2 pl-5 ">
 
-            <div>
+            <div class="d-flex align-items-center justify-content-end gap-2 w-50">
                 <input data-select="datepicker" class="form-control filter-field" data-field="start_date"
                     placeholder="Start Date" id="_payroll_filter_start_date" />
             </div>
-            <div>
+            <div class="d-flex align-items-center justify-content-end gap-2 w-50">
                 <input data-select="datepicker" class="form-control filter-field" data-field="end_date"
                     placeholder="End Date" id="_payroll_fliter_end_date" />
             </div>
-            <div class="d-flex align-items-center justify-content-end gap-2 w-50 pr-4">
+            <div class="d-flex align-items-center justify-content-start gap-2 w-50 text-nowrap">
                 <button type="button" class="btn btn-primary" id="_btnAddSalary">
                     <i class="fas fa-plus"></i>
                     <span>Add Salary</span>
                 </button>
-                <button type="button" class="btn btn-primary" id="_btnpayslip">
-                    <i class="fas fa-print"></i>
-                    <span>Payslip</span>
-                </button>
+
             </div>
         </div>
     </div>

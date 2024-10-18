@@ -68,8 +68,8 @@ class Payroll
         $sort_order = $d->sort_order ?? 'asc';
         $search_position_id = $d->position_id ?? null;
         $search_status_id = $d->status_id ?? null;
-        $start_date = $d->start_date ?? null;
-        $end_date = $d->end_date ?? null;
+        $start_date =isset($d->start_date) ?  convertDate($d->start_date) : null;
+        $end_date = isset($d->end_date) ? convertDate($d->end_date) : null;
 
         $str_search = '1=1';
 
