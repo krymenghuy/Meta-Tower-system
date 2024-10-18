@@ -57,9 +57,10 @@ var PayrollComponent = new (function () {
             title: "Period",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.start_date.replace(/-/g, '/') ?? ''} - ${data.end_date.replace(/-/g, '/') ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.start_date ?? ''} - ${data.end_date ?? ''}</p>`;
             }
         },
+
         {
             title: "Salary",
             className: "align-middle",

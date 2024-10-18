@@ -364,7 +364,7 @@ const LeaveRequestDailog = (()=>{
             createContent:()=>{
                  return [`<div class="row">
                  <div class="form-group col-12">
-                     <label for="employee" class="form-label" vslang="titles.Name"></label>
+                     <label for="employee" class="form-label" vslang="titles.Employee"></label>
                      <select name="employee" class=" data-input"  data-field="emp_id"></select>
                  </div>
                  <div class="form-group  col-12 d.none">

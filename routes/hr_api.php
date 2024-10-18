@@ -299,4 +299,5 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-event')->
     Route::post('/details', [EmployeeEventController::class, 'getDetails']);
     Route::post('/delete', [EmployeeEventController::class, 'deleteEmpEvent']);
     Route::post('/form-options', [EmployeeEventController::class, 'getFormOptions']);
+
 });
