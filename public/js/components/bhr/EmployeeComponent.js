@@ -13,7 +13,8 @@ var EmployeeComponent = new (function () {
     this.divFilter = this.self.querySelector("#_divFilter_emp");
     this.elSearch = this.self.querySelector("#_sdl_search_employee");
     this.containerPagination = mThis.self.querySelector('#container_pagination');
-    this.profile_card_detail = mThis.self.querySelector('#profile_card_detail');
+    this.profile_card_center = mThis.self.querySelector('#profile_card_center');
+    this.profile_card_left = mThis.self.querySelector('#profile_card_left');
     this.profile_info_emp = mThis.self.querySelector('#profile_info_emp');
 
     let div = mThis.self.querySelector('#_employee_list');
@@ -93,12 +94,24 @@ var EmployeeComponent = new (function () {
         let html = '';
         html += `<div id="_scroll_emp" class="row px-3">`;
         let cmt = 0;
-
+    
         if (Array.isArray(data) && data.length > 0) {
             data.forEach(d => {
                 const status = d.status || 'Active';
-                const statusColor = status === 'Inactive' ? 'background-color: #dc3545;' : 'background-color: #2B3991;';
-
+                let statusColor;
+    
+                switch (status) {
+                    case 'Terminated':
+                        statusColor = 'background-color: #dc3545;'; // Red for Terminated
+                        break;
+                    case 'Resigned':
+                        statusColor = 'background-color: #ffc107;'; // Yellow for Resigned
+                        break;
+                    default:
+                        statusColor = 'background-color: #2B3991;'; // Blue for Active
+                        break;
+                }
+    
                 html += `
                     <div class="col-md-3 mt-5 mb-3 employee-card" data-employee-id="${d.id}">
                         <div class="card">
@@ -148,7 +161,7 @@ var EmployeeComponent = new (function () {
                 cmt++;
             });
         }
-
+    
         if (cmt === 0) {
             html += `<div class="w-100 rounded-3 border-start text-center border-5 border-danger-custom p-3 shadow bg-white mb-3 position-relative">
                 <div class="row">
@@ -156,47 +169,45 @@ var EmployeeComponent = new (function () {
                 </div>
             </div>`;
         }
-
+    
         html += `</div>`;
         div.innerHTML = html;
-
+    
         const sh_parent = div.querySelector('#_scroll_emp');
         sh_parent.style.height = (window.innerHeight - 195) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
-
+    
         // Handle resize
         window.onresize = function(e) {
             e.preventDefault();
             sh_parent.style.height = (window.innerHeight - 100) + 'px';
         };
-
+    
         const seeProfileInfo = div.querySelectorAll('.see-detail');
         seeProfileInfo.forEach(link => {
-
+    
             link.addEventListener('click', (e) => {
                 const employeeId = e.target.dataset.id;
-
-                // Find the employee data by id
+    
                 const employeeData = data.find(emp => emp.id == employeeId);
-
+    
                 if (employeeData) {
-                    // Hide the main content and show the profile view
                     let sub_content = mThis.self.querySelector('#sub_content');
                     sub_content.classList.add('d-none');
                     let btnBack = mThis.self.querySelector('#btn_back');
                     btnBack.classList.remove('d-none');
-
-
-                    // Show the profile section
+    
                     mThis.renderProfile(employeeData);
-                    mThis.renderCardDetail();
+                    mThis.renderCardCenter(employeeId);
+                    mThis.renderCardLeft(employeeId);
                 } else {
                     console.error('Employee data not found for ID:', employeeId);
                 }
             });
         });
     };
+    
 
 
     this.renderProfile = (data) => {
@@ -295,164 +306,138 @@ var EmployeeComponent = new (function () {
 
         this.profile_info_emp.innerHTML = html;
     };
-    this.renderCardDetail = () => {
+
+
+
+
+    this.renderCardLeft = (employeeId) => {
         let html = '';
-        html = [
-            `
-            <div class="col-md-4">
-                <div class="card" style="height:487px;">
-                    <div class="card-header">
-                        <h4>Skills</h4>
-                        <span class="ellipsis">...</span>
-                    </div>
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between">
-                            <p>PHP</p>
-                            <div class="progress" style="width: 60%;">
-                                <div class="progress-bar" style="width: 85%;"></div>
+        
+        html = [`
+             <div class="card" style="height:487px;">
+                            <div class="card-header">
+                                <h4>Skills</h4>
+                                <span class="ellipsis">...</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between">
+                                    <p>PHP</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 85%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>JavaScript</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 70%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>Node.Js</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 50%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>Vue.Js</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 65%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>Laravel</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 60%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>OOP</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 80%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>Next.Js</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 40%;"></div>
+                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <p>React.Js</p>
+                                    <div class="progress" style="width: 60%;">
+                                        <div class="progress-bar" style="width: 60%;"></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="d-flex justify-content-between">
-                            <p>JavaScript</p>
-                            <div class="progress" style="width: 60%;">
-                                <div class="progress-bar" style="width: 70%;"></div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <p>Node.Js</p>
-                            <div class="progress" style="width: 60%;">
-                                <div class="progress-bar" style="width: 50%;"></div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <p>Vue.Js</p>
-                            <div class="progress" style="width: 60%;">
-                                <div class="progress-bar" style="width: 65%;"></div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <p>Laravel</p>
-                            <div class="progress" style="width: 60%;">
-                                <div class="progress-bar" style="width: 60%;"></div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <p>OOP</p>
-                            <div class="progress" style="width: 60%;">
-                                <div class="progress-bar" style="width: 80%;"></div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <p>Next.Js</p>
-                            <div class="progress" style="width: 60%;">
-                                <div class="progress-bar" style="width: 40%;"></div>
-                            </div>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <p>React.Js</p>
-                            <div class="progress" style="width: 60%;">
-                                <div class="progress-bar" style="width: 60%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card" style="height:487px;">
-                    <div class="card-header">
-                        <h4>Education</h4>
-                        <div class="d-flex gap-2">
-                            <a href="javascript:void(0)" data="id" id="lnk_add_education">
+            `].join('');
+            this.profile_card_left.innerHTML = html;
+
+
+    }
+    this.renderCardCenter = (employeeId) => {
+        let p = {
+            'emp_id': employeeId,
+        };
+        console.log(1, p);
+    
+        vsapi.call(`${main_view.base_url}/hr/education/list-all`, p, null, false, false).then(res => {
+            let data = (res.status_code === 200) ? res.data.data : [];
+            console.log(123456, data);
+            let html = `<div class="card" style="height:487px;">
+                <div class="card-header">
+                    <h4>Education</h4>
+                    <div class="d-flex gap-2">
+                        <a href="javascript:void(0)" data="id" id="lnk_add_education">
                             <i class="fa fa-plus-circle fs-5 text-success"></i>
-                            </a>
-
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="">
-                            <h5>2022-2024</h5>
-                            <div class="d-flex justify-content-between">
-                                <p class="w-50">Associate Degree</p>
-                                <p class="text-primary w-75">University of Oxford</p>
-                                <div class="d-flex gap-2"><a href="javascript:void(0)" id="ps-lnk_delete_education" style="">
-                            <i class="fa fa-trash fs-8 text-danger"></i>
-                            </a>
-                            <a href="javascript:void(0)" id="ps-lnk_edit_education" style="">
-                            <i class="fa fa-edit fs-8 text-warning"></i>
-                            </a></div>
-                            </div>
-                            <span class="text-muted">Web Development</span>
-                        </div>
-                        <div class="mt-3">
-                            <h5>2022-2024</h5>
-                            <div class="d-flex justify-content-between">
-                                <p class="w-50">Associate Degree</p>
-                                <p class="text-primary w-75">University of Cambridge</p>
-                            </div>
-                            <span class="text-muted">Web Development</span>
-                        </div>
-                        <div class="mt-3">
-                            <h5>2022-2024</h5>
-                            <div class="d-flex justify-content-between">
-                                <p class="w-50">Associate Degree</p>
-                                <p class="text-primary w-75">Royal University of Phnom penh</p>
-                            </div>
-                            <span class="text-muted">Web Development</span>
-                        </div>
-                        <div class="mt-3">
-                            <h5>2022-2024</h5>
-                            <div class="d-flex justify-content-between">
-                                <p class="w-50">Associate Degree</p>
-                                <p class="text-primary w-75">Massachusetts Institute of Technology</p>
-                            </div>
-                            <span class="text-muted">Web Development</span>
-                        </div>
-
+                        </a>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card" style="height:487px;">
-                    <div class="card-header">
-                        <h4>Experience</h4>
-                        <span class="ellipsis">...</span>
-                    </div>
-                    <div class="card-body">
-                     <div class="">
-                        <h6>02-02-2023 - 14-11-2024</h6>
-                        <h5>Web Developer</h5>
-                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Expedita.</p>
-                        <p class="experience-company">Vectorasoft Company</p>
-                        <hr class="border border-warning">
-                     </div>
-                     <div class="">
-                        <h6>02-02-2023 - 14-11-2024</h6>
-                        <h5>Web Developer</h5>
-                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Expedita.</p>
-                        <p class="experience-company">Vectorasoft Company</p>
-                     </div>
+                <div class="card-body">
+            `;
+            data.map(d => {
+                html += `
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h5>${d.period}</h5>
+                            <p class="text-warning">${d.edu_level}</p>
+                            <p class="text-nowrap">${d.major}</p>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="d-flex justify-content-end">
+                                <div class="d-flex gap-2 mt-4">
+                                    <span class="text-muted">${d.school}</span>
 
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </div>`
-        ].join('');
-        this.profile_card_detail.innerHTML = html;
-        document.getElementById('lnk_add_education').addEventListener('click', function (e)  {
-            e.preventDefault();
-            let op = {
-                id: null,
-                btn: e.target,
-                title:"New Education",
-                onClose: () => {
-                    mThis.EmployeeListView.showPage();
-                }
-            };
-            console.log(op);
-
-            AddEducation.show(op);
-        // Action for adding new education
+                `;
+            });
+    
+            html += `</div></div>`;
+            this.profile_card_center.innerHTML = html;
+    
+            document.getElementById('lnk_add_education').addEventListener('click', function (e) {
+                e.preventDefault();
+                let op = {
+                    id: null,
+                    emp_id: employeeId,
+                    btn: e.target,
+                    title: "New Education",
+                    onClose: () => {
+                        mThis.EmployeeListView.showPage();
+                    }
+                };
+                console.log(op);
+                AddEducation.show(op);
+            });
+    
+          
         });
     }
+    
 
 
     mThis.elSearch.addEventListener('keyup', (e) => {
@@ -553,13 +538,18 @@ var EmployeeComponent = new (function () {
             confirmButtonText:"Save",
             blankErrorMessage: "Status is not correct!",
             data: [{
-                status_id: "1",
+                status_id: "10",
                 name: "Active"
             },
             {
-                status_id: "2",
-                name: "Inactive"
-            }],
+                status_id: "20",
+                name: "Resigned"
+            },
+            {
+                status_id: "21",
+                name: "Terminated"
+            }
+        ],
             defaultValue: status_id
         };
 
@@ -641,59 +631,7 @@ var EmployeeComponent = new (function () {
 
 
 });
-// const AddEducation = new function () {
-//     let mThis = this;
-//     this.base_url = main_view.base_url;
-//     this.self = main_view.appContent.children('#addEducation_dlg')[0];
-//     this.modal = new bootstrap.Modal(this.self);
-//     this.btnOK = this.self.querySelector('#addEducation_dlg_btnOK');
-//     this.elError = this.self.querySelector('#addEducation_dlg_error');
-//     this.elTitle = this.self.querySelector('#addEducation_dlgTitle');
 
-//     this.elName = this.self.querySelector('#ps-newpl_name');
-//     this.elWeightMarker = this.self.querySelector('#ps-newpl_kg_marker');
-
-//     this.btnOK.onclick = e => {
-//       e.preventDefault();
-//       let p = mThis.getData();
-//       if (!p.name) {
-//         mThis.elError.innerHTML = ('Name cannot be empty');
-//         return;
-//       }
-
-//       if (!$.isNumeric(p.kg_marker)) {
-//         mThis.elError.innerHTML = ('Weight Marker is not valid');
-//         return;
-//       }
-
-//       vsapi.call([mThis.base_url, '/abm/createSupplierPriceList'].join(''), p).then(res => {
-//         if (res.status_code === 200) {
-//           let d = res.data;
-//           if (typeof mThis.onClose === 'function') mThis.onClose(d.id);
-//           mThis.modal.hide();
-//         } else mThis.elError.innerHTML(res.error_message);
-//       });
-
-//     };
-
-
-
-//     this.getData = () => {
-//       let p = {};
-//       p.name = mThis.elName.value;
-//       p.kg_marker = mThis.elWeightMarker.value;
-
-//       return p;
-//     }
-
-//     this.show = (option, onClose) => {
-//       mThis.elError.innerHTML = (null);
-//       mThis.elTitle.innerHTML = (option.title)
-//       mThis.onClose = onClose;
-//       mThis.modal.show();
-
-//     }
-//   }
 const AddEducation = (() => {
     const self = {};
     let dialog = null;
@@ -704,42 +642,44 @@ const AddEducation = (() => {
             cssClass: "modal-md d-flex justify-content-center",
             createContent: () => {
                 return [
-                    `<div class="row"><div class="form-group col-md-6">
-        <label class="form-label" vslang="titles.Employee">Employee</label>
-        <div><select name="emp_id" class="data-input" data-field="emp_id"></select></div>
-    </div>
-    <div class=" form-group col-md-6">
-        <label class="form-label" vslang="titles.School">School</label>
-        <div><select name="school_id" class="data-input" data-field="school_id"></select></div>
-    </div>
-    <div class="form-group col-md-6">
-        <label class="form-label" vslang="titles.Period">Period</label>
-        <div><input name="period" class="form-control data-input" data-field="period"/></div>
-    </div>
-     <div class="form-group col-md-6">
-        <label class="form-label" vslang="titles.Major">Major</label>
-        <div><input name="major" class="form-control data-input" data-field="major"/></div>
-    </div>
-    <div class="form-group col-md-6">
-        <label class="form-label" vslang="titles.Start Year">Start Year</label>
-        <div><input name="start_year" class="form-control data-input" data-field="start_year"/></div>
-    </div>
-    <div class="form-group col-md-6">
-        <label class="form-label" vslang="titles.End Year">End Year</label>
-        <div><input name="end_year" class="form-control data-input" data-field="end_year"/></div>
-    </div>
+                    `<div class="row">
+                        <div class=" form-group col-md-6">
+                            <label class="form-label" vslang="titles.School">School</label>
+                            <div><select name="school_id" class="data-input" data-field="school_id"></select></div>
+                        </div>
+                        <div class=" form-group col-md-6">
+                            <label class="form-label" vslang="titles.Level">Level</label>
+                            <div><select name="edu_level_id" class="data-input" data-field="edu_level_id"></select></div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Period">Period</label>
+                            <div><input name="period" class="form-control data-input" data-field="period"/></div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Major">Major</label>
+                            <div><input name="major" class="form-control data-input" data-field="major"/></div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Start Year">Start Year</label>
+                            <div><input name="start_year" class="form-control data-input" data-field="start_year"/></div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.End Year">Finish Year</label>
+                            <div><input name="end_year" class="form-control data-input" data-field="end_year"/></div>
+                        </div>
 
-    <div class="form-group col-md-12">
-        <label class="form-label" vslang="titles.Diploma">Diploma</label>
-        <div><input name="diploma" class="form-control data-input" data-field="diploma"/></div>
-    </div></div>`
+                        <div class="form-group col-md-12">
+                            <label class="form-label" vslang="titles.Diploma">Diploma</label>
+                            <div><input name="diploma" class="form-control data-input" data-field="diploma"/></div>
+                        </div>
+                    </div>`
 
                 ].join('');
             },
             buttons:[
                 {
                    label:"<span>Cancel</span>",
-                   cssClass:"btn btn-warning",
+                   cssClass:"btn btn-warning text-white",
                    click:(me)=>{
                       me.hide(false);
                    }
@@ -748,12 +688,13 @@ const AddEducation = (() => {
                    label:"<span>Save</span>",
                    cssClass:"btn btn-primary",
                    click:(me)=>{
+
                       let p = me.getData();
-                    //   p.image = me.userImageBox? me.userImageBox.getImage(): '';
-                      console.log(222,p);
-                      vsapi.call([main_view.base_url,'/hr/seniorities/save'].join(''),p,false,false).then(res =>{
+                          p.emp_id = op.emp_id; 
+                      vsapi.call([main_view.base_url,'/hr/education/save'].join(''),p,false,false).then(res =>{
                           if(res.status_code ==200){
                               me.modal.hide(true,p);
+
                           }else cv_interact.error(res.error_message);
                       });
                    }
@@ -761,8 +702,18 @@ const AddEducation = (() => {
              ],
             configSelect: [
                 {
-                    name: "emp_id",
-                    data: "employees",
+                    name: "school_id",
+                    data: "schools",
+                    valueField: "id",
+                    textField: "name",
+                    filterData: (data, res) => {
+
+                        return data;
+                    }
+                },
+                {
+                    name: "edu_level_id",
+                    data: "edu_levels",
                     valueField: "id",
                     textField: "name",
                     filterData: (data, res) => {
@@ -776,10 +727,8 @@ const AddEducation = (() => {
                 modifyTitle: "Edit Employee Seniority",
                 targetProp: "seniority",
                 api: {
-                    endpoint: `${main_view.base_url}/hr/seniorities/form-options`,
+                    endpoint: `${main_view.base_url}/hr/education/form-options`,
                     params: (op) => {
-                        console.log(9090,op);
-
                         return { id: op.id };  // Pass ID to fetch data for edit
                     },
                     onResponse: (me, res) => {
