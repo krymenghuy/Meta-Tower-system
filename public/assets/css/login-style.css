@@ -1,188 +1,160 @@
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    user-select: none;
-    -webkit-user-drag: none;
-    -webkit-user-select: none;
+*{
+    padding:0;
+    margin:0;
+    box-sizing:border-box;
 }
 
-.vs-container {
-    width: 100vw;
-    height: 100vh;
+.vs-container-login{
+    width:100vw;
+    height:100vh;
+    position: absolute;
+    overflow:hidden;
+    background-color: #66676f;
+}
+
+.vs-container-login .img-background{
+    width:100vw;
+    height:100vh;
+    position:absolute;
+    background-size: cover;
+    background-repeat: no-repeat;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    filter:blur(2px);
 }
 
-.vs-contain-imgFront-form {
-    width: 80%;
-    max-height: 600px;
-    max-width: 1020px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-family: Poppins;
-    box-shadow: 0 0.5rem 1rem #00000026;
-    border-radius: var(--bs-border-radius-lg);
-}
-
-.sub-vs-contain-imgFront-form {
-    border-radius: var(--bs-border-radius-lg);
-    background-color: #ffffffd3;
-    padding:1rem;
-    color:#000;
-    width:50%;
-    height:600px;
-}
-
-.form-size {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: var(--bs-border-radius-2xl);
-    flex-direction: column;
-}
-
-.vs-form-group,
-.vs-btn-group {
-    width: 100%;
-}
-
-.vs-btn-group {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.form-inside {
-    width: 100%;
-}
-
-.form-inside form {
-    width: 100%;
+.login-frame{
+    width:100vw;
+    height:100vh;
+    position: absolute;
     display:flex;
-    align-items: center;
-    flex-direction: column;
-    row-gap: 2rem;
+    align-items:center;
+    justify-content:center;
 }
 
-.vs-form-group .vs-form-label {
-    font-size: calc(1.175rem + 0.1vw);
+.login-frame .vs-container-front-img{
+    width:70vw;
+    height:80vh;
+    background-color:#4a57c1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+    position: absolute;
 }
 
-.vs-form-group .vs-form-control:focus,
-.vs-form-group .vs-form-control:focus-visible,
-.vs-form-group .vs-form-control {
-    padding: 1rem 0.5rem;
-    border: none;
-    outline: none;
-    border-radius: var(--bs-border-radius-lg);
-    background-color: #f5f5f5;
-}
-
-input::placeholder {
-    padding: 0 0.5rem;
-    background-color: transparent;
-    font-size:1.15rem;
-}
-
-.vs-form-control{
-    width: 100%;
-}
-
-.vs-btn-group .vs-btn {
-    width: 80%;
-    border-radius: var(--bs-border-radius-lg);
-    outline: none;
-    background-color:#f5bb1a;
-    border: none;
-    font-size: calc(1.275rem + 0.3vw);
-    color: #ffffff;
-    padding:0.3rem 0;
-}
-
-.vs-logo{
-    display: flex;
-    justify-content: center;
-    width: 100%;
-}
-
-.logo-img{
-    position: relative;
-}
-
-.logo-img img{
-    width: calc(100px + 5vw);
-    border-radius: 50%;
-}
-
-.sub-vs-contain-imgBack-from{
+.login-frame .vs-container-front-img .img-front{
+    height:100%;
     width:50%;
-    overflow: hidden;
-    height: 600px;
-    border-radius: 0 var(--bs-border-radius-lg) var(--bs-border-radius-lg) 0;
+    border-radius:60px 0 0 60px;
+    padding: 50px;
 }
 
-.sub-vs-contain-imgBack-from .img-background{
-    object-fit: contain;
-    transform: translate(-35%,0) scaleX(-1);
+.login-frame .vs-container-front-img .vs-login{
+    height:100%;
+    width:50%;
+    border-radius:0 10px 10px 0;
+    display:flex;
+    background-color: #F4F4F4;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+}
+.vs-login .vs-title{
+    font-size:30px;
+    /* margin-bottom:3vh; */
+    /* color:#fff; */
 }
 
-@media screen and (max-width: 650px){
-    .vs-contain-imgFront-form {
-        width: 80%;
-        max-height: 650px;
-        max-width: 1020px;
-        display: flex;
-        flex-direction: column-reverse;
-        align-items: center;
-        justify-content: center;
-        font-family: Poppins;
-        box-shadow: 0 0.5rem 1rem #00000026;
-        border-radius: var(--bs-border-radius-lg);
-        position: relative;
-    }
+.vs-login .vs-form-group{
+    width:80%;
+}
 
-    .sub-vs-contain-imgFront-form {
-        border-radius: var(--bs-border-radius-lg);
-        background-color: #ffffffd3;
-        padding:1rem;
-        color:#000;
-        width:100%;
-        height:600px;
-    }
+.vs-login .vs-form-group .vs-d-flex{
+    width:100%;
+    display:flex;
+    flex-direction: column;
+}
 
-    .sub-vs-contain-imgBack-from{
-        width:100%;
-        overflow: hidden;
-        height: 600px;
-        border-radius: var(--bs-border-radius-lg) var(--bs-border-radius-lg) 0 0;
-    }
+.vs-login .vs-form-group .vs-d-flex .vs-form-label{
+    /* color:#fff; */
+    font-size:20px;
+    padding:25px 10px  10px;
+}
 
-    .sub-vs-contain-imgBack-from .img-background{
-        object-fit: contain;
-        transform:translate(-35%,-30%) scaleX(-1);
-    }
+.vs-login .vs-form-group .vs-d-flex .vs-form-control{
+    width:100%;
+    height:50px;
+    border-radius:60px;
+    border:none;
+    outline:none;
+    padding:5px 15px;
+    font-size:16px;
+    /* background: #F4F4F4; */
+}
 
-    .vs-logo{
-        width: 100%;
-        display: flex;
-        justify-content: flex-start;
-        position: absolute;
-        top:0;
-        left:0;
-        z-index: 10;
-    }
+::placeholder{
+    font-size:18px;
+    padding:5px 10px;
+}
 
-    .logo-img{
-        position: relative;
-        padding:0.5rem;
-    }
+.vs-login .vs-form-group .vs-d-flex-btn{
+    padding:10px;
+    width:100%;
+    margin-top:20px;
+    display:flex;
+    justify-content:center;
+}
 
-    .logo-img img{
-        width: calc(80px + 1vw);
-        border-radius: 50%;
+.vs-login .vs-form-group .vs-d-flex-btn .btn-login{
+    width:80%;
+    height:50px;
+    border-radius:10px;
+    border:2px solid #4a57c1;
+    background-color:#4a57c1;
+    font-size:20px;
+    color:#fff;
+    cursor:pointer;
+}
+
+.vs-login .vs-d-flex-copyright{
+    width:100%;
+    /* display:none; */
+    display:flex;
+    height:20%;
+    align-items:center;
+    justify-content:center;
+    flex-direction: column;
+    /* color:#fff; */
+    font-size:18px;
+}
+
+.vs-login .vs-form-login{
+    height:80%;
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction: column;
+}
+
+.vs-container-front-img .vs-d-flex-copyright p{
+    padding:10px 0;
+}
+
+.error_text{
+    color:#ff0000;
+    font-size:18px;
+}
+
+.overlay-blur{
+    width:100vw;
+    height:100vh;
+    position: absolute;
+    /* background-color: #00000073; */
+}
+
+@media screen and (max-width:820px){
+    .login-frame .vs-container-front-img{
+        width:96vw;
     }
 }

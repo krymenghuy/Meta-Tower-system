@@ -229,7 +229,7 @@ class Employee//extends Model
             emp.date_of_birth,
             emp.address,
             emp.photo_file_name,
-            emp.joining_date,
+            formatDate(emp.joining_date) as joining_date,
             emp.nssf_id,
             emp.nid,
             emp.positions_id,

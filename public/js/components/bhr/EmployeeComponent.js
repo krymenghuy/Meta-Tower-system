@@ -867,6 +867,8 @@ const AddEducation = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
+                                        EmployeeComponent.renderCardCenter(me.dataOptions.emp_id);
+
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
@@ -977,7 +979,7 @@ const AddExperience = (() => {
                         click: (me, btn) => {
                             let p = me.getData();
                             p.emp_id = op.emp_id;
-                            console.log(928762, p);
+                            // console.log(928762, p);
 
                             vsapi
                                 .call(
