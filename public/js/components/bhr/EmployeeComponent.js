@@ -1001,7 +1001,7 @@ const AddExperience = (() => {
                 ],
                 configSelect: [
                     {
-                        name: "position",
+                        name: "position_id",
                         data: "positions",
                         textField: "title",
                         valueField: "id",
