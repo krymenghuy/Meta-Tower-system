@@ -38,15 +38,15 @@ class Employee//extends Model
             'email' => '1|email',
             'phone_number' => '1|phone|0-20',
             'sex' => '1|string|0-6',
-            'nationality' => '1|string|0-150',
+            'nationality' => '0|string|0-150',
             'date_of_birth' => '1|date',
             'address' => '0|string|0-250',
-            'positions_id' => '1|number',
-            'emp_role_id' => '1|number',
+            'position_id' => '1|number',
+            'emp_type_id' => '1|number',
             'work_shift_id' => '1|number',
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
-            'nid'=> '0|number',
+            'nid'=> '1|string|1-100',
             'status_id' => '1|number|default = 10',
             'photo' => '0|image',
         ];
@@ -182,6 +182,7 @@ class Employee//extends Model
         return url('').'/assets/images/default/default-staff.png';
     }
 
+  
     function getListPaginate($arr, $ss)
     {
         $subs_id = $ss->subs_id;
@@ -193,69 +194,74 @@ class Employee//extends Model
             $current_page = 1;
         }
         $skip_rows = ($current_page - 1) * $per_page;
-        $status = $d->status_id ?? null;
-        $role = $d->role_id ?? null;
+        $status = $d->status_id ?? 10; 
+        $type = $d->emp_type_id ?? 3;  
         $search_value = $d->search_value ?? null;
         $str_srch = '1=1';
         $str_where = '2=2';
+    
         if($search_value){
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_srch = "(emp.name LIKE '%".$search_value."%' OR emp.name_kh = '".$search_value."' OR emp.nid = '".$search_value."' OR emp.phone_number = '".$search_value."')";
+            $str_srch = "(emp.name LIKE '%".$search_value."%' OR emp.code = '".$search_value."' OR emp.nid = '".$search_value."' OR emp.phone_number = '".$search_value."')";
         }
+    
         if($status){
             $str_where = 'emp.status_id =\'' . $status . '\'';
-
         }
-        if($role){
-            $str_where = 'emp.emp_role_id =\'' . $role . '\'';
+    
+        if($type){
+            $str_where .= ' AND emp.emp_type_id =\'' . $type . '\'';
         }
+    
         $query = DB::table('employees as emp')
-            ->join('positions as p', 'p.id', '=', 'emp.positions_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
-            ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
+            ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->whereRaw($str_srch)
             ->whereRaw($str_where)
             ->selectRaw('
-            emp.code,
-            emp.id,
-            emp.name,
-            emp.name_kh,
-            emp.email,
-            emp.phone_number,
-            emp.sex,
-            emp.nationality,
-            emp.date_of_birth,
-            emp.address,
-            emp.photo_file_name,
-            formatDate(emp.joining_date) as joining_date,
-            emp.nssf_id,
-            emp.nid,
-            emp.positions_id,
-            p.title as position,
-            emp.emp_role_id,
-            el.name as role,
-            emp.work_shift_id,
-            ws.name as work_shift,
-            emp.status_id,
-            es.name as status
-        ')
-        ->orderBy('emp.id', 'ASC');
-
+                emp.code,
+                emp.id,
+                emp.name,
+                emp.name_kh,
+                emp.email,
+                emp.phone_number,
+                emp.sex,
+                emp.nationality,
+                emp.date_of_birth,
+                emp.address,
+                emp.photo_file_name,
+                formatDate(emp.joining_date) as joining_date,
+                emp.nssf_id,
+                emp.nid,
+                emp.position_id,
+                p.title as position,
+                emp.emp_type_id,
+                el.name as type,
+                emp.work_shift_id,
+                ws.name as work_shift,
+                emp.status_id,
+                es.name as status
+            ')
+            ->orderBy('emp.id', 'DESC');
+    
         $clone_query = clone $query;
         $count = $clone_query->count('emp.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
+    
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->photo_file_name) {
-              $row->image_url = self::profilePicture($row->id);
+                $row->image_url = self::profilePicture($row->id);
             }
             unset($row->photo_file_name);
         }
+    
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+    
 
 
     static function props($id, $cols){
@@ -276,7 +282,7 @@ class Employee//extends Model
         }
         $skip_rows = ($current_page - 1) * $per_page;
         $status = $d->status_id ?? null;
-        $role = $d->role_id ?? null;
+        $type = $d->emp_type_id ?? null;
         $search_value = $d->search_value ?? null;
         $str_srch = '1=1';
         $str_where = '2=2';
@@ -289,13 +295,13 @@ class Employee//extends Model
             $str_where = 'emp.status_id =\'' . $status . '\'';
 
         }
-        if($role){
-            $str_where = 'emp.emp_role_id =\'' . $role . '\'';
+        if($type){
+            $str_where = 'emp.emp_type_id =\'' . $type . '\'';
         }
         $query = DB::table('employees as emp')
-            ->join('positions as p', 'p.id', '=', 'emp.positions_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
-            ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
+            ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->whereRaw($str_srch)
             ->whereRaw($str_where)
@@ -314,7 +320,7 @@ class Employee//extends Model
             emp.joining_date,
             emp.nssf_id,
             emp.nid,
-            emp.positions_id,
+            emp.position_id,
             p.title as position,
             ws.name as work_shift,
             emp.status_id,
@@ -342,9 +348,9 @@ class Employee//extends Model
         $branch_id = $ss->branch_id;
 
         $row =DB::table('employees as emp')
-            ->join('positions as p', 'p.id', '=', 'emp.positions_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
-            ->join('emp_roles as el', 'el.id', '=', 'emp.emp_role_id')
+            ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->selectRaw('
                 emp.code,
@@ -361,10 +367,10 @@ class Employee//extends Model
                 emp.joining_date,
                 emp.nssf_id,
                 emp.nid,
-                emp.positions_id,
+                emp.position_id,
                 p.title as position,
-                emp.emp_role_id,
-                el.name as role,
+                emp.emp_type_id,
+                el.name as type,
                 emp.work_shift_id,
                 ws.name as work_shift,
                 emp.status_id,
@@ -435,7 +441,7 @@ class Employee//extends Model
 
             'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,title')->get(),
-            'roles' => DB::table('emp_roles')->selectRaw('id,name')->get(),
+            'types' => DB::table('emp_types')->selectRaw('id,name')->get(),
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
             'employee' => $employee,
         ];

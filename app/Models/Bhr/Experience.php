@@ -26,7 +26,7 @@ class Experience //extends Model
         $v_rule = [
             'id' => '0|identify=1',
             'emp_id' => '1|number|exists=employees.id',
-            'position_id' => '1|number|exists=position.id',
+            'position_id' => '1|number|exists=positions.id',
             'organization_id' => '1|number|exists=organizations.id',
             'description' => '0|string|0-300',
             'period_type' => '0|string|0-150',

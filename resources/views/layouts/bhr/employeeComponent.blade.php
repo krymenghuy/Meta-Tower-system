@@ -89,7 +89,7 @@
     .email span,
     .phone span {
         background-color: #DADADA;
-        padding: 2px 5px;
+        padding: 2px 15px;
         border-radius: 10px;
         width: 100%;
         color: #2B3991;
@@ -104,9 +104,7 @@
 
     }
 
-    .joining {
-        font-size: 10px;
-    }
+  
 
     .bg-secondary-custom {
         background-color: red;
@@ -149,39 +147,40 @@
 
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
     <div id="sub_content">
-        <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter_emp">
-            <div class="d-flex align-items-center w-100 gap-2">
-                <div class="d-flex align-items-center w-100 gap-2">
-                    <input type="text" class="form-control filter-field" id="_sdl_search_employee" placeholder="Search Employee">
-
-                    <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
-                        <i class="la la-search"></i>
-                    </button>
-                    <div class="d-flex align-items-center w-50 gap-2form-group w-50">
-                        <label for="" class="form-label  p-2" vslang="titles.Status"></label>
-                        <select type="id" id="el_status" class="data-input filter-field" data-field="status"></select>
-                    </div>
-                    <div class="d-flex align-items-center w-50 gap-2form-group w-50">
-                        <label for="" class="form-label  p-2" vslang="titles.Role"></label>
-                        <select type="id" id="el_role" class="data-input filter-field" data-field="role"></select>
-                    </div>
-                </div>
-            </div>
-            <div class="d-flex align-items-center justify-content-end gap-2 w-100">
-                <button type="button" class="btn btn-primary" id="_btnAddEmployee">
+        <div class="d-flex p-3 justify-content-between w-100" id="div_filter_filed">
+            <div class="d-flex align-items-start justify-content-start gap-2 w-25">
+                <button type="button" class="btn text-white" style="background-color:#2b3991;" id="_btnAddEmployee">
                     <i class="fas fa-plus"></i>
                     <span>Add Employee </span>
                 </button>
             </div>
+            <div class="d-flex align-items-center justify-content-end px-3 w-100 gap-2">
+                
+                <div class="d-flex  w-50 gap-2">
+                    <div class="d-flex align-items-end w-100">
+                        <input type="text" class="form-control filter-field rounded-5" id="_sdl_search_employee" placeholder="Search Employee">
+                    </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <select type="id" id="el_status" class="data-input filter-field" data-field="status"></select>
+                </div>
+                <div class="d-flex align-items-center">
+                    <select type="id" id="el_type" class="data-input filter-field" data-field="emp_type"></select>
+                </div>
+
+               
+                
+            </div>
         </div>
-        <div id="_employee_list" class="bg-white"></div>
-        <div id="container_pagination" class="px-3 bg-white"></div>
+        <div id="_employee_list" class=""></div>
+        <div id="container_pagination" class="px-3 d-flex justify-content-end"></div>
 
     </div>
     <div class="p-3">
         <div class=" mb-2" id="btn_back">
-            <button id="_btn_backTo_employee" style="background-color:rgba(236, 29, 39, 1); width:100px;"
+            <button id="_btn_backTo_employee" style="background-color:#2b3991; width:100px;"
                 class="btn text-white shadow rounded-4 m-2 p-2" type="button">
+                <i class="fa-solid fa-angles-left "></i>
                 <span class="" vslang="buttons.Back">Back</span>
             </button>
         </div>
