@@ -32,4 +32,9 @@
         position: fixed;
         bottom: 0;
     }
+    #_seniority_list{
+        overflow-y: auto;
+        max-height: 420px;
+        margin-bottom: 30px;
+    }
 </style>
