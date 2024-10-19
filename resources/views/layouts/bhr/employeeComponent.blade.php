@@ -135,6 +135,16 @@
         width: 100%;
         height: auto;
     }
+    #_view_profile_container{
+        padding-bottom: 20%;
+    }
+    #profile_card_left,
+    #profile_card_center,
+    #profile_card_right {
+        display: flex;
+        flex-direction: column;
+        margin-bottom: 20px;
+    }
 </style>
 
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
@@ -382,28 +392,6 @@
                         </div> -->
                     </div>
                     <div class="col-md-4" id="profile_card_right">
-                        <div class="card" style="height:487px;">
-                            <div class="card-header">
-                                <h4>Experience</h4>
-                                <span class="ellipsis">...</span>
-                            </div>
-                            <div class="card-body">
-                            <div class="">
-                                <h6>02-02-2023 - 14-11-2024</h6>
-                                <h5>Web Developer</h5>
-                                <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Expedita.</p>
-                                <p class="experience-company">Vectorasoft Company</p>
-                                <hr class="border border-warning">
-                            </div>
-                            <div class="">
-                                <h6>02-02-2023 - 14-11-2024</h6>
-                                <h5>Web Developer</h5>
-                                <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Expedita.</p>
-                                <p class="experience-company">Vectorasoft Company</p>
-                            </div>
-
-                            </div>
-                        </div>
                     </div>
 
                 </div>

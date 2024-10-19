@@ -1,0 +1,62 @@
+<?php
+
+namespace App\Http\Controllers\Bhr;
+
+use App\Http\Controllers\Controller;
+use App\Models\Bhr\Experience;
+use Illuminate\Http\Request;
+use App\Models\JDV;
+use App\Services\Umt\AuthService;
+use Auth;
+class ExperienceController extends Controller
+{
+    protected $experience = null;
+    public function __construct()
+    {
+        $this->experience = new Experience();
+    }
+    public function save(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, 1);
+        if ($ss->status_code != 200) return JDV::raw($ss);
+        $id = $req->id ?? $req->id;
+        $edu = $this->experience->saveExperience($req->all(), $id, $ss);
+        return JDV::raw($edu);
+    }
+
+    public function ListAll(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $edu = $this->experience->getListAll($req->all(), $ss);
+
+        return JDV::result($edu);
+    }
+
+    public function getDetails(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+
+        $edu = $this->experience->details($req->id, $ss);
+
+        return JDV::result($edu);
+    }
+
+
+    public function getFormOptions(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $edu = $this->experience->formOptions($req->id, $ss);
+        return JDV::result($edu);
+    }
+
+    public function delete(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+
+        return JDV::result($this->experience->delete($req->id, $ss));
+    }
+}
