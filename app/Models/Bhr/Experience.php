@@ -26,12 +26,12 @@ class Experience //extends Model
         $v_rule = [
             'id' => '0|identify=1',
             'emp_id' => '1|number|exists=employees.id',
-            'position_id' => '0|number',
+            'position_id' => '1|number|exists=position.id',
+            'organization_id' => '1|number|exists=organizations.id',
             'description' => '0|string|0-300',
             'period_type' => '0|string|0-150',
             'start_date' => '0|date',
-            'end_date' => '0|date',
-            'organization_id' => '1|number|exists=organizations.id'
+            'end_date' => '0|date'
 
         ];
         $exp_char = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
@@ -78,7 +78,7 @@ class Experience //extends Model
             ->where('exp.branch_id', $branch_id)
             ->whereRaw($str_search)
             ->where('exp.emp_id', $emp_id)
-            ->selectRaw('exp.id, exp.description, pos.id, pos.title as position,org.id as organization_id, org.name as organization_id, exp.period_type, exp.end_date, start_date')
+            ->selectRaw('exp.id, exp.description, pos.id, pos.title as position,org.id as organization_id, org.name as organization_id, exp.period_type, formatDate(exp.end_date) as end_date, formatDate(exp.start_date) as start_date')
             ->orderBy('exp.id', 'DESC');
 
         $clone_query = clone $query;

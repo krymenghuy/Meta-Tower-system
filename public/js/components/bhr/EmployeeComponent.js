@@ -459,18 +459,17 @@ var EmployeeComponent = new (function () {
             `;
                 data.map((d) => {
                     html += `
-                    <div class="row mt-3 border-bottom">
+                    <div class="row mt-2 py-4 border-bottom">
                         <div class="col-md-6">
-                            <h5>${d.period}</h5>
-                            <p class="text-warning">${d.edu_level}</p>
-                            <p class="text-nowrap">${d.major}</p>
+                            <h6 style="width:180px; height:20px overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap">${d.period}</h6>
+                            <p class="text-success" style="width:180px; height:20px">${d.edu_level}</p>
+                            <p class="text-nowrap" style="width:180px; height:20px">${d.major}</p>
                         </div>
                         
                         <div class="col-md-6">
                             <div class="d-flex justify-content-end">
                                 <div class="d-flex gap-2 mt-4">
                                     <span class="text-muted">${d.school}</span>
-
                                 </div>
                             </div>
                         </div>
@@ -517,40 +516,104 @@ var EmployeeComponent = new (function () {
                 let data = res.status_code === 200 ? res.data.data : [];
                 console.log(123456, data);
                 let html = `<div class="card" style="height:487px;">
-                <div class="card-header">
-                    <h4>Experience</h4>
-                    <div class="d-flex gap-2">
-                        <a href="javascript:void(0)" data="id" id="lnk_add_experience">
-                            <i class="fa fa-plus-circle fs-5 text-success"></i>
-                        </a>
-                    </div>
+            <div class="card-header">
+                <h4>Experience</h4>
+                <div class="d-flex gap-2">
+                    <a href="javascript:void(0)" data="id" id="lnk_add_experience">
+                        <i class="fa fa-plus-circle fs-5 text-warning"></i>
+                    </a>
                 </div>
-                <div class="card-body" style=" overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
-            `;
+            </div>
+            <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+        `;
+
                 data.map((d) => {
                     html += `
-                    <div class="row mt-3 border-bottom border-info">
-                        <div class="col-md-6">
-                            <div style="display:flex; width:300px;">
-                                <strong>Join Date: </strong> 
-                                <p class="text-muted ml-2 mr-2"></p>
-                                <p>${d.start_date}</p>
-                                <p class="text-danger ml-2 mr-2">to</p>
-                                <p>${d.end_date}</p>
+                <div class="row py-3 border-bottom border-info">
+                    <div class="col-md-6" style="display: flex; flex-direction: column; gap:10px">
+                        <div class="experience-toggle" data-experience-id="${d.id}" 
+                            style="display:flex; justify-content:space-between; width:350px; cursor: pointer;">
+                            <div style="display:flex; width:350px; justify-content:space-between">
+                                <p class="text-primary" style="font-size:14px;width:125px;display:flex;justify-content:start; overflow-y: hidden; overflow-x: auto; scrollbar-width: none; align-items: flex-start; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap;">
+                                    📢${d.position}
+                                </p>
+                                <div class="date_join" style="width:200px;display:flex;justify-content:end;align-items:end;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
+                                    <p>: (${d.start_date}</p>
+                                    <p class="text-danger ml-2 mr-2">-</p>
+                                    <p>${d.end_date})</p>
                                 </div>
-                                <p class="text-warning">Position:  ${d.position}</p>
-                                <p class="text-nowrap">Detail:  ${d.description}</p>
-                                
-                                <p class="text-nowrap">Duration:  ${d.period_type}</p>
-                                <p class="text-nowrap text-primary">Company:  ${d.organization_id}</p>
+                            </div>
+                        </div>
+                        <div class="experience-details" id="details_${d.id}" 
+                            style="display: none; flex-direction: column; gap:10px; transition: all 0.3s ease;">
+                            <p class="text-success">Position: ${d.position}</p>
+                            <div style="display:flex">
+                                <p class="text-nowrap mr-2">Detail: </p>
+                                <p class="text-nowrap"> ${d.description}</p>
+                            </div>
+                            <p class="text-nowrap">Duration: ${d.period_type}</p>
+                            <p class="text-nowrap text-primary">Company: ${d.organization_id}</p>
                         </div>
                     </div>
-                `;
+                </div>
+            `;
                 });
 
                 html += `</div></div>`;
                 this.profile_card_right.innerHTML = html;
 
+                let activeExperienceId = null; // Track currently active experience
+
+                // Add event listeners for toggle functionality
+                document
+                    .querySelectorAll(".experience-toggle")
+                    .forEach((element) => {
+                        element.addEventListener("click", function () {
+                            let experienceId =
+                                this.getAttribute("data-experience-id");
+                            let detailsDiv = document.getElementById(
+                                `details_${experienceId}`
+                            );
+                            let isVisible = detailsDiv.style.display === "flex";
+
+                            // If there's an active experience and it's not the same one, close it
+                            if (
+                                activeExperienceId &&
+                                activeExperienceId !== experienceId
+                            ) {
+                                let activeDetailsDiv = document.getElementById(
+                                    `details_${activeExperienceId}`
+                                );
+                                if (activeDetailsDiv) {
+                                    activeDetailsDiv.style.display = "none";
+                                    let activeIcon = document.querySelector(
+                                        `[data-experience-id="${activeExperienceId}"] i`
+                                    );
+                                    activeIcon.classList.remove(
+                                        "fa-chevron-up"
+                                    );
+                                    activeIcon.classList.add("fa-chevron-down");
+                                }
+                            }
+
+                            // Toggle the current clicked experience
+                            if (isVisible) {
+                                detailsDiv.style.display = "none"; // Hide details
+                                activeExperienceId = null; // Clear active experience
+                                let icon = this.querySelector("i");
+                                icon.classList.remove("fa-chevron-up");
+                                icon.classList.add("fa-chevron-down");
+                            } else {
+                                detailsDiv.style.display = "flex"; // Show details
+                                activeExperienceId = experienceId; // Set active experience
+                                let icon = this.querySelector("i");
+                                icon.classList.remove("fa-chevron-down");
+                                icon.classList.add("fa-chevron-up");
+                            }
+                        });
+                    });
+
+                // Add click event listener for "Add Experience"
                 document
                     .getElementById("lnk_add_experience")
                     .addEventListener("click", function (e) {
@@ -867,6 +930,9 @@ const AddEducation = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
+                                        EmployeeComponent.renderCardCenter(
+                                            me.dataOptions.emp_id
+                                        );
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
@@ -929,7 +995,7 @@ const AddExperience = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static", //User click outside form, do not close form
                 keyboard: true,
                 createContent: () => {
@@ -992,6 +1058,9 @@ const AddExperience = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
+                                        EmployeeComponent.renderCardRight(
+                                            me.dataOptions.emp_id
+                                        );
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
@@ -999,7 +1068,7 @@ const AddExperience = (() => {
                 ],
                 configSelect: [
                     {
-                        name: "position",
+                        name: "position_id",
                         data: "positions",
                         textField: "title",
                         valueField: "id",
