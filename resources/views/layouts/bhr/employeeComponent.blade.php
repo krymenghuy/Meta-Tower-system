@@ -178,8 +178,9 @@
     </div>
     <div class="p-3">
         <div class=" mb-2" id="btn_back">
-            <button id="_btn_backTo_employee" style="background-color:rgba(236, 29, 39, 1); width:100px;"
+            <button id="_btn_backTo_employee" style="background-color:#2b3991; width:100px;"
                 class="btn text-white shadow rounded-4 m-2 p-2" type="button">
+                <i class="fa-solid fa-angles-left "></i>
                 <span class="" vslang="buttons.Back">Back</span>
             </button>
         </div>

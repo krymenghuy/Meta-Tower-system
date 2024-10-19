@@ -66,9 +66,12 @@ var EmployeeComponent = new (function () {
             sub_content.classList.remove("d-none");
         };
 
-        mThis.divFilter.addEventListener("change", (e) => {
-            e.preventDefault();
-            mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
+        this.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            el.onchange = e =>{
+                e.preventDefault();
+                mThis.EmployeeListView.showPage(mThis.getFilterData());
+
+            }
         });
 
         mThis.initAlready = true;
@@ -593,14 +596,14 @@ var EmployeeComponent = new (function () {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
             if (mThis.EmployeeListView) {
-                mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
+                mThis.EmployeeListView.showPage(mThis.getFilterData());
             } else {
                 console.error("EmployeeListView is not defined");
             }
         }, 200);
     });
 
-    this.getDataFormFilter = () => {
+    this.getFilterData = () => {
         let p = {};
         p.status_id = mThis.elStatus.value;
         p.emp_type_id = mThis.elType.value;
@@ -711,17 +714,14 @@ var EmployeeComponent = new (function () {
                     .call(`${mThis.base_url}/hr/employee/update-status`, p)
                     .then((res) => {
                         if (res.status_code === 200) {
-                            mThis.elStatus.value = d.value;
+                            mThis.elStatus.value = parseInt(d.value);
                             InputBox2.close();
-                        mThis.elStatus.dispatchEvent ( new Event('change'));
-
-                            cv_interact.success(
-                                "The Employee status has been updated"
-                            );
-                        if(tr) tr.dataset.status_id = d.value;
-
-                                mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
-                        } else cv_interact.error(res.error_message);
+                            mThis.elStatus.dispatchEvent ( new Event('change'));
+                            cv_interact.success("The Employee status has been updated");
+                            // if(tr) tr.dataset.status_id = d.value;
+                            // mThis.EmployeeListView.showPage(mThis.getFilterData());
+                        } else 
+                        cv_interact.error(res.error_message);
                     });
             }
         });
