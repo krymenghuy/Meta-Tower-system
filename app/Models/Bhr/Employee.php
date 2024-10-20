@@ -27,6 +27,24 @@ class Employee//extends Model
         $this->userInfo = $userInfo;
     }
 
+    function checkUniqueEmployeeByPhone($phone_number,$id=null){
+        $str_id = "1=1";
+        if(!$phone_number) return 'Phone number cannot be empty';
+        if($id > 0 ) $str_id = "emp.id <> $id";
+        $x = DB::table('employees as emp')->where('emp.phone_number',$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+        if($x) return 'phone number"'.$phone_number.'" has been used by another employee';
+        return null;
+    }
+
+    function checkUniqueEmployeeByNID($nid,$id=null){
+        $str_id = '1=1';
+        if(!$nid) return 'National ID cannot be empty';
+        if($id > 0) $str_id = "emp.id <> $id";
+        $x = DB::table('employees as emp')->where('emp.nid',$nid)->whereRaw($str_id)->select('id')->take(1)->exists();
+        if($x) return 'National ID "' .$nid. '" has been used by another employee';
+        return null;
+    }
+
     function save($arr = [], $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
@@ -34,7 +52,7 @@ class Employee//extends Model
         $v_rule = [
             'id' => '0|identity=1',
             'name' => '1|string|0-100',
-            'name_kh' => '1|string|0-100',
+            'name_kh' => '0|string|0-100',
             'email' => '1|email',
             'phone_number' => '1|phone|0-20',
             'sex' => '1|string|0-6',
@@ -52,38 +70,39 @@ class Employee//extends Model
         ];
 
 
-        $checkUnque = [
-            "$branch_id|employees|phone_number|id=id|text=employee already exists by phone number",
-            "$branch_id|employees|email|id=id|text=employee already exists by email",
-        ];
+        $checkUnique = null;
 
-        $res = validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnque);
+        $res = validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
         if ($res->error) {
-            error_log('Validation error: ' . json_encode($res->error));
             return DV::error($res->error);
         }
 
-        $id = $res->id;
-
+        $emp_id = $res->id;
         $inputs = $res->values;
-
-
-
         $d = (object) $inputs;
         $photo = $d->photo;
         $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
         $inputs['phone_number'] = $d->phone_number;
-        if (!$d->phone_number) {
-            error_log('Phone number is required for valid  employee');
-            return DV::error('Phone number is required for valid  employee');
+        $phone_check = $this->checkUniqueEmployeeByPhone($d->phone_number,$emp_id);
+        if($phone_check) return DV::error($phone_check);
+        // if (!$d->phone_number) {
+        //     error_log('Phone number is required for valid  employee');
+        //     return DV::error('Phone number is required for valid  employee');
+        // }
+        $nid_check = $this->checkUniqueEmployeeByNID($d->nid,$emp_id);
+        if($nid_check) return DV::error($nid_check);
+        
+        if(!$d->name_kh){
+            $d->name_kh = $d->name;
+            $inputs['name_kh'] = $d->name_kh;
         }
         unset($inputs['photo']);
-        $employee_created = !$id;
-        $delete_prev_image = ($id > 0 && (!$photo || isImage($photo)));
+        $employee_created = !$emp_id;
+        $delete_prev_image = ($emp_id > 0 && (!$photo || isImage($photo)));
 
         error_log('Saving data: ' . json_encode($inputs));
-        $save = !$id;
-        $id = saveData($ss, 'employees', ['id' => $id], $inputs, [], 1);
+        $save = !$emp_id;
+        $id = saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1);
         if($save){
             $prefix = 'LC';
             $res = setOfficialCode($branch_id,'employee_code_control','employees',['id'=>$id],$prefix,5,null);
