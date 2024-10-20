@@ -1097,8 +1097,8 @@ const EmployeeDialog = (() => {
                                     </div>
 
                                     <div class="form-group col-6">
-                                        <label for="name_kh" class="form-label" vslang="titles.Name Kh"></label>
-                                        <input name="name_kh" class="form-control data-input" data-field="name_kh" />
+                                        <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
+                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
                                     </div>
                                     <div class="form-group col-4">
                                        <label for="sex" class="form-label" vslang="titles.Sex"></label>
@@ -1159,14 +1159,12 @@ const EmployeeDialog = (() => {
                             <select name="work_shift" class=" data-input"  data-field="work_shift_id"></select>
                         </div>
 
-                        <div class="form-group col-6">
-                            <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
-                            <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                        
+                        <div class="form-group col-12">
+                            <label for="address" class="form-label" vslang="titles.Address">Address</label>
+                            <textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>
                         </div>
-                        <div class="form-group col-6">
-                            <label for="address" class="form-label" vslang="titles.Address"></label>
-                            <input name="address" class="form-control data-input" data-field="address" />
-                        </div>
+
 
               </div>`,
                     ].join("");
