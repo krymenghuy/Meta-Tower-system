@@ -197,9 +197,7 @@ function v_display($mod_id, $module_ids = null)
                 </a>
             </li>
 
-
-
-            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
+            {{-- <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
                 data-ktmenu-submenu-toggle="hover"<?php v_display(null, [100, 101]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
@@ -234,6 +232,16 @@ function v_display($mod_id, $module_ids = null)
                         </li>
                     </ul>
                 </div>
+            </li> --}}
+
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
+                <a href="EmployeeBenefitComponent" modid="105" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/User_check.svg') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color "
+                        vslang="menus.Employee Benefits"></span>
+                </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                 <a href="EmployeeMovementComponent" modid="105" class="menu-item kt-menu__link">

@@ -36,9 +36,9 @@ class Benefit
         $id = $res->id;
         $inputs = $res->values;
 
-        $id = saveData($ss, 'benefits', ['id' => $id], $inputs, [], 1);
+        $id = saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            return DV::depends(1, ['benefits' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['emp_benefits' => $inputs, 'id' => $id]);
         }
 
         return DV::error('Error saving benefit');
@@ -62,7 +62,7 @@ class Benefit
         $category = $d->category ?? null;
 
         // Initialize query
-        $query = DB::table('benefits as b')
+        $query = DB::table('emp_benefits as b')
         ->join('benefit_categories as bc', 'bc.id', '=', 'b.category_id') // Assuming this is the correct join
         ->selectRaw('b.id, b.category_id, bc.name as category, b.amount, b.remark');
 
@@ -97,7 +97,7 @@ class Benefit
     function getDetails($id, $ss){
         $branch_id = $ss->branch_id;
 
-        $rows = DB::table('benefits as b')
+        $rows = DB::table('emp_benefits as b')
             ->join('benefit_categories as bc', 'bc.id', '=', 'b.category_id')
             ->selectRaw('b.id, b.category_id, bc.name as category, b.amount, b.remark')
             ->where('b.id', $id)
@@ -116,7 +116,7 @@ class Benefit
         $branch_id = $ss->branch_id;
 
         // Build and execute the query
-        $query = DB::table('benefits')
+        $query = DB::table('emp_benefits')
         ->where('id', $id)
         ->delete();
         if (!$query) {

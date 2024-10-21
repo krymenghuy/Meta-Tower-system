@@ -66,7 +66,7 @@ class Payroll
         $search_id = $d->id ?? null;
         $sort_by = $d->sort_by ?? 'pay.id';
         $sort_order = $d->sort_order ?? 'asc';
-        $search_position_id = $d->position_id ?? null;
+        $search_position_id = $d->positions_id ?? null;
         $search_status_id = $d->status_id ?? null;
         $start_date =isset($d->start_date) ?  convertDate($d->start_date) : null;
         $end_date = isset($d->end_date) ? convertDate($d->end_date) : null;
@@ -75,7 +75,7 @@ class Payroll
 
          $query = DB::table('payrolls as pay')
             ->join('employees as e', 'e.id', '=', 'pay.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
             ->join('statuses as s', 's.id', '=', 'pay.status_id')
             // ->join('emp_roles as er', 'er.id', '=', 'e.emp_role_id')
             ->selectRaw('pay.id,
@@ -84,7 +84,7 @@ class Payroll
                         e.name_kh,
                         e.email,
                         e.phone_number,
-                        e.position_id as emp_position_id,
+                        e.positions_id as emp_position_id,
                         pos.title as position,
                         pay.rate,
                         formatDate(pay.start_date) as start_date,
@@ -100,7 +100,7 @@ class Payroll
             $query->where('pay.id', $search_id);
         }
         if ($search_position_id) {
-            $query->where('e.position_id', $search_position_id);
+            $query->where('e.positions_id', $search_position_id);
         }
         if ($search_status_id) {
             $query->where('pay.status_id', $search_status_id);
@@ -149,7 +149,7 @@ class Payroll
     {
         $row =  DB::table('payrolls as pay')
         ->join('employees as e', 'e.id', '=', 'pay.emp_id')
-        ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+        ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
         ->join('statuses as s', 's.id', '=', 'pay.status_id')
         // ->join('emp_roles as er', 'er.id', '=', 'e.emp_role_id')
         ->selectRaw('pay.id,
@@ -158,7 +158,7 @@ class Payroll
                     e.name_kh,
                     e.email,
                     e.phone_number,
-                    e.position_id as emp_position_id,
+                    e.positions_id as emp_position_id,
                     pos.title as position,
                     pay.rate,
                     pay.start_date,
