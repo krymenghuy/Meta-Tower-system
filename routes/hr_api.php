@@ -97,7 +97,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('experience')-
     Route::post('/delete', [ExperienceController::class, 'delete']);
     Route::post('/form-options', [ExperienceController::class, 'getFormOptions']);
 });
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leaves')->group(function () {
 
+    Route::post('/save', [LeaveController::class, 'save']);
+    Route::post('/list-paginate', [LeaveController::class, 'getLeaveListPaginate']);
+    Route::post('/details', [LeaveController::class, 'getDetails']);
+    Route::post('/delete', [LeaveController::class, 'delete']);
+    Route::post('/form-options', [LeaveController::class, 'getFormOptions']);
+    Route::post('/update-status', [LeaveController::class, 'updateStatus']);
+});
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('staff')->group(function () {
 
@@ -166,15 +174,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list'
     Route::post('/delete', [PayrollListController::class, 'deletePayrollList']);
 });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leaves')->group(function () {
 
-    Route::post('/save', [LeaveController::class, 'save']);
-    Route::post('/list-paginate', [LeaveController::class, 'getLeaveListPaginate']);
-    Route::post('/details', [LeaveController::class, 'getDetails']);
-    Route::post('/delete', [LeaveController::class, 'delete']);
-    Route::post('/form-options', [LeaveController::class, 'getFormOptions']);
-    Route::post('/update-status', [LeaveController::class, 'updateStatus']);
-});
 
 // Job Level routes
 

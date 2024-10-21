@@ -66,7 +66,7 @@ class Seniority
 
         $query = DB::table('seniorities as s')
             ->join('employees as e', 'e.id', 's.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->selectRaw('s.id, s.emp_id, e.name as emp_name, pos.title as position, s.period, s.description, s.amount,e.photo_file_name as emp_photo')
             ->where('s.branch_id', $branch_id);
 
