@@ -18,14 +18,15 @@ class Benefit
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    function save($arr, $ss = null) {
+    function save($arr, $ss = null)
+    {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $id = $this->id ?? null;
         $d = (object) $arr;
         $emp_id = $d->emp_id ?? null;
         if (!$emp_id) return DV::error('Employee is required for saving benefit!');
-        
+
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number|exists=employees.id',
@@ -33,13 +34,13 @@ class Benefit
             'amount' => '0|number',
             'remarks' => '0|string|1-255'
         ];
-    
+
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
-    
+
         $id = $res->id;
         $inputs = $res->values;
-    
+
         $id = saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1, false);
         if ($id > 0) {
             if ($d->benefit_type_id == 1) {
@@ -50,13 +51,12 @@ class Benefit
                 ];
                 $bonus_res = validateObject($bonus_arr, $bonus_v_rule, true, [], $ss->lang, false, null);
                 if ($bonus_res->error) return DV::error($bonus_res->error);
-    
+
                 $bonus_inputs = $bonus_res->values;
                 $bonus_id = saveData($ss, 'emp_bonuses', ['id' => null], $bonus_inputs, [], 1, false);
-    
+
                 return DV::depends($bonus_id, ['Bonuses data saved']);
-            } 
-            else if ($d->benefit_type_id == 2) {
+            } else if ($d->benefit_type_id == 2) {
                 $seniority_arr = [
                     'benefit_id' => $id,
                     'start_date' => $d->start_date ?? null,
@@ -71,26 +71,26 @@ class Benefit
                 ];
                 $seniority_res = validateObject($seniority_arr, $seniority_v_rule, true, [], $ss->lang, false, null);
                 if ($seniority_res->error) return DV::error($seniority_res->error);
-    
+
                 $seniority_inputs = $seniority_res->values;
                 $seniority_id = saveData($ss, 'emp_seniorities', ['id' => null], $seniority_inputs, [], 1, false);
-    
+
                 return DV::depends($seniority_id, ['Seniority data saved']);
             }
-    
+
             return DV::depends(1, ['Benefits saved' => $inputs, 'Benefit ID' => $id]);
         }
-    
+
         return DV::error('Error saving benefit');
     }
-    
-    
 
-    
 
-    function getBonusList($arr, $ss=null)
+
+
+
+    function getBonusList($arr, $ss = null)
     {
-        
+
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
 
@@ -107,19 +107,18 @@ class Benefit
         $benefit_type_id = $d->benefit_type_id ?? null;
         $str_bonus_type = '1=1';
         $str_search = '2=2';
-        if($search_value){
+        if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = '(emp.name LIKE \'%'.$search_value.'\')';
-
-        }else{
-            $str_bonus_type = $benefit_type_id ? 'b.benefit_type_id =\''.$benefit_type_id.'\'':'1=1';
+            $str_search = '(emp.name LIKE \'%' . $search_value . '\')';
+        } else {
+            $str_bonus_type = $benefit_type_id ? 'b.benefit_type_id =\'' . $benefit_type_id . '\'' : '1=1';
         }
 
-       $query = DB::table('emp_bonuses as bs')
-            ->join('emp_benefits as b', 'b.id', '=', 'bs.benefit_id') 
-            ->join('employees as emp','emp.id','=','b.emp_id')
+        $query = DB::table('emp_bonuses as bs')
+            ->join('emp_benefits as b', 'b.id', '=', 'bs.benefit_id')
+            ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
 
-            ->Where('bs.branch_id',$branch_id)
+            ->Where('bs.branch_id', $branch_id)
             ->whereRaw($str_search)
             ->whereRaw($str_bonus_type)
             ->selectRaw('bs.id,bs.benefit_id,emp.name as employee,b.benefit_type_id,bs.bonus_type,b.amount,b.remarks');
@@ -130,9 +129,9 @@ class Benefit
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getSeniorityList($arr, $ss=null)
+    function getSeniorityList($arr, $ss = null)
     {
-        
+
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
 
@@ -149,22 +148,22 @@ class Benefit
         $benefit_type_id = $d->benefit_type_id ?? null;
         $str_seniority_type = '1=1';
         $str_search = '2=2';
-        if($search_value){
+        if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = '(emp.name LIKE \'%'.$search_value.'\')';
-
-        }else{
-            $str_seniority_type = $benefit_type_id ? 'b.benefit_type_id =\''.$benefit_type_id.'\'':'1=1';
+            $str_search = '(emp.name LIKE \'%' . $search_value . '\')';
+        } else {
+            $str_seniority_type = $benefit_type_id ? 'b.benefit_type_id =\'' . $benefit_type_id . '\'' : '1=1';
         }
 
-       $query = DB::table('emp_seniorities as se')
-            ->join('emp_benefits as b', 'b.id', '=', 'se.benefit_id') 
-            ->join('employees as emp','emp.id','=','b.emp_id')
+        $query = DB::table('emp_seniorities as se')
+            ->join('emp_benefits as b', 'b.id', '=', 'se.benefit_id')
+            ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
 
-            ->Where('se.branch_id',$branch_id)
+            ->Where('se.branch_id', $branch_id)
             ->whereRaw($str_search)
             ->whereRaw($str_seniority_type)
-            ->selectRaw('se.id,se.benefit_id,emp.name as employee, b.benefit_type_id,se.seniority_type,b.amount,se.start_date,se.end_date,b.remarks');
+            // ->selectRaw('se.id,se.benefit_id,emp.name as employee, b.benefit_type_id,se.seniority_type,b.amount,se.start_date,se.end_date,b.remarks');
+            ->selectRaw('se.id,se.benefit_id,emp.name as employee, b.benefit_type_id,se.seniority_type,b.amount');
         $count_query = clone $query;
         $count = $count_query->count('se.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -173,35 +172,32 @@ class Benefit
     }
 
 
-    function getDetails($benefit_type_id,$id, $ss){
+    function getDetails($benefit_type_id, $id, $ss)
+    {
         $branch_id = $ss->branch_id;
         $row = null;
-        if($benefit_type_id == 1){
+        if ($benefit_type_id == 1) {
             $row = DB::table('emp_benefits as b')
-                ->join('employees as emp','emp.id','=','b.emp_id')
-                ->join('emp_bonuses as bs','bs.benefit_id','=','b.id')
-                ->where('b.id',$id)
+                ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
+                ->join('emp_bonuses as bs', 'bs.benefit_id', '=', 'b.id')
+                ->where('b.id', $id)
                 ->selectRaw('b.id,b.emp_id,b.benefit_type_id,b.amount,b.remarks,bs.benefit_id,bs.bonus_type,emp.name as employee')->take(1)->first();
-
-
-        }else{
+        } else {
             $row = DB::table('emp_benefits as b')
-            ->join('employees as emp','emp.id','=','b.emp_id')
-            ->join('emp_seniorities as se','se.benefit_id','=','b.id')
-            ->where('b.id',$id)
-            ->selectRaw('b.id,b.emp_id,b.benefit_type_id,b.amount,b.remarks,se.benefit_id,se.seniority_type,emp.name as employee,se.start_date,se.end_date')->take(1)->first();
-
-
+                ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
+                ->join('emp_seniorities as se', 'se.benefit_id', '=', 'b.id')
+                ->where('b.id', $id)
+                ->selectRaw('b.id,b.emp_id,b.benefit_type_id,b.amount,b.remarks,se.benefit_id,se.seniority_type,emp.name as employee,se.start_date,se.end_date')->take(1)->first();
         }
-        if(!$row) return null;
-       
-        return $row;
+        if (!$row) return null;
 
+        return $row;
     }
 
-    function deleteBenefit($id, $ss){
-         // Ensure $id is numeric and valid
-         if (!is_numeric($id)) {
+    function deleteBenefit($id, $ss)
+    {
+        // Ensure $id is numeric and valid
+        if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }
 
@@ -209,9 +205,9 @@ class Benefit
         $branch_id = $ss->branch_id;
 
         // Build and execute the query
-        $query = DB::table('benefits')
-        ->where('id', $id)
-        ->delete();
+        $query = DB::table('emp_benefits')
+            ->where('id', $id)
+            ->delete();
         if (!$query) {
             return DV::error('Benefit not found');
         }
@@ -219,18 +215,17 @@ class Benefit
         return $query;
     }
 
-    function getFormOptions($id, $ss){
+    function getFormOptions($id, $ss)
+    {
 
         $benifit = null;
         if ($id) {
-            $benifit = self::getDetails($id, $ss);
+            $benifit = self::getDetails($benefit_type_id = null, $id, $ss);
         }
         return $data = (object) [
 
             'categories' => DB::table('benefit_categories')->selectRaw('id,name')->get(),
             'benefit' => $benifit
         ];
-
     }
-
 }

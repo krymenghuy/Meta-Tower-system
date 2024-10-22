@@ -103,10 +103,10 @@ class Leave
 
 
         $skip_rows = ($current_page - 1) * $per_page;
-        $col_dates = DBX::formatDate('l.leave_date','start_date').','.DBX::formatDate('l.return_date','end_date');
+        $col_dates = DBX::formatDate('l.start_date','start_date').','.DBX::formatDate('l.end_date','end_date');
         $query = DB::table('leaves as l')
         ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
-        ->join('positions as p', 'p.id', '=', 'emp.position_id')
+        ->join('positions as p', 'p.id', '=', 'emp.positions_id')
         ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
         ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
         ->where('l.subs_id', hex2bin($ss->subs_id))
@@ -150,7 +150,7 @@ class Leave
 
         $leave = DB::table('leaves as l')
         ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
-        ->join('positions as p', 'p.id', '=', 'emp.position_id')
+        ->join('positions as p', 'p.id', '=', 'emp.positions_id')
         ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
         ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
         ->where('l.id', $id)

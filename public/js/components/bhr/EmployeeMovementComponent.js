@@ -61,7 +61,7 @@ var EmployeeMovementComponent = new (function () {
             title: "Impact",
             className: 'status text-nowrap align-middle',
             data: function (data, index, tr) {
-                let cls_class = 'text-danger text-center';
+                let cls_class = "text-white text-center border rounded-5";
                 let bg_color = ''; // Default background color
 
                 if ((data.impact || '').toLowerCase() === 'positive') {
@@ -78,7 +78,7 @@ var EmployeeMovementComponent = new (function () {
                 }
 
                 return `<div><a class="d-block" data-status="${data.impact}" data-id="${data.id}" href="javascript:void(0)">
-                            <span style="display:block;width:80px; background: ${bg_color}" class="p-1 ${cls_class}">
+                            <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
                                 ${data.impact}
                             </span>
                         </a></div>`;
@@ -86,11 +86,10 @@ var EmployeeMovementComponent = new (function () {
         },
 
         {
-            title: "Action",
             className: "col_action align-middle",
             data: (data) => `
-            <div class="d-flex justify-content-center align-items-center">
-                <div class="text-center gap-2 d-flex flex-wrap">
+            <div class="d-flex justify-content-end align-items-end">
+                <div class="text-end gap-2 d-flex flex-wrap">
                     <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_movement_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                         <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
                     </a>
