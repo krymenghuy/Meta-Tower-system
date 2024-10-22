@@ -132,8 +132,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('skills')->gro
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->group(function () {
 
     Route::post('/save', [BenefitController::class, 'saveBenefit']);
-    Route::post('/list', [BenefitController::class, 'getBenefitList']);
-    Route::post('/list-paginate', [BenefitController::class, 'getBenefitListPaginate']);
+    Route::post('/bonus-list', [BenefitController::class, 'getBonusList']);
+    Route::post('/seniority-list', [BenefitController::class, 'getSeniorityList']);
     Route::post('/details', [BenefitController::class, 'getDetails']);
     Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
     Route::post('/form-options', [BenefitController::class, 'getFormOptions']);
