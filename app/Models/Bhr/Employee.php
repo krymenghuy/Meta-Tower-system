@@ -61,6 +61,7 @@ class Employee//extends Model
             'address' => '0|string|0-250',
             'position_id' => '1|number',
             'emp_type_id' => '1|number',
+            'salary_base' => '1|number',
             'work_shift_id' => '1|number',
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
@@ -91,7 +92,7 @@ class Employee//extends Model
         // }
         $nid_check = $this->checkUniqueEmployeeByNID($d->nid,$emp_id);
         if($nid_check) return DV::error($nid_check);
-        
+
         if(!$d->name_kh){
             $d->name_kh = $d->name;
             $inputs['name_kh'] = $d->name_kh;
@@ -201,38 +202,38 @@ class Employee//extends Model
         return url('').'/assets/images/default/default-staff.png';
     }
 
-  
+
     function getListPaginate($arr, $ss)
     {
         $subs_id = $ss->subs_id;
         //$branch_id = $ss->branch_id;
         $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 5;
+        $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
         $skip_rows = ($current_page - 1) * $per_page;
-        $status = $d->status_id ?? 10; 
-        $type = $d->emp_type_id ?? 3;  
+        $status = $d->status_id ?? 10;
+        $type = $d->emp_type_id ?? 3;
         $search_value = $d->search_value ?? null;
         $str_srch = '1=1';
         $str_where = '2=2';
-    
+
         if($search_value){
             $skip_rows = 0;
             // $search_value = escape_like_str($search_value);
             $str_srch = "(emp.name LIKE '%".$search_value."%' OR emp.code = '".$search_value."' OR emp.nid = '".$search_value."' OR emp.phone_number = '".$search_value."')";
         }
-    
+
         if($status){
             $str_where = 'emp.status_id =\'' . $status . '\'';
         }
-    
+
         if($type){
             $str_where .= ' AND emp.emp_type_id =\'' . $type . '\'';
         }
-    
+
         $query = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
@@ -265,11 +266,11 @@ class Employee//extends Model
                 es.name as status
             ')
             ->orderBy('emp.id', 'DESC');
-    
+
         $clone_query = clone $query;
         $count = $clone_query->count('emp.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-    
+
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->photo_file_name) {
@@ -277,10 +278,10 @@ class Employee//extends Model
             }
             unset($row->photo_file_name);
         }
-    
+
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-    
+
 
 
     static function props($id, $cols){
@@ -388,6 +389,7 @@ class Employee//extends Model
                 emp.nid,
                 emp.position_id,
                 p.title as position,
+                emp.salary_base,
                 emp.emp_type_id,
                 el.name as type,
                 emp.work_shift_id,

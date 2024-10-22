@@ -68,7 +68,7 @@ class EmployeeEvent
 
         $query = DB::table('emp_events as ee')
             ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
-            ->join('positions as p', 'p.id', '=', 'emp.positions_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('events as e', 'e.id', '=', 'ee.event_id')
             ->selectRaw('ee.id, ee.emp_id, ee.event_id, e.name as event,e.impact,formatDate(ee.date) as date, ee.remarks, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
             ->where('ee.branch_id', $ss->branch_id);
@@ -107,7 +107,7 @@ class EmployeeEvent
     function getDetails($id, $ss) {
         $query = DB::table('emp_events as ee')
             ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
-            ->join('positions as p', 'p.id', '=', 'emp.positions_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('events as e', 'e.id', '=', 'ee.event_id')
             ->selectRaw('ee.id, ee.emp_id, ee.event_id, e.name as event,e.impact,ee.date, ee.remarks, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
             ->where('ee.branch_id', $ss->branch_id)
