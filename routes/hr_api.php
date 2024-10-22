@@ -98,7 +98,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('experience')-
     Route::post('/delete', [ExperienceController::class, 'delete']);
     Route::post('/form-options', [ExperienceController::class, 'getFormOptions']);
 });
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leaves')->group(function () {
 
+    Route::post('/save', [LeaveController::class, 'save']);
+    Route::post('/list-paginate', [LeaveController::class, 'getLeaveListPaginate']);
+    Route::post('/details', [LeaveController::class, 'getDetails']);
+    Route::post('/delete', [LeaveController::class, 'delete']);
+    Route::post('/form-options', [LeaveController::class, 'getFormOptions']);
+    Route::post('/update-status', [LeaveController::class, 'updateStatus']);
+});
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('staff')->group(function () {
 
@@ -125,8 +133,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('skills')->gro
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->group(function () {
 
     Route::post('/save', [BenefitController::class, 'saveBenefit']);
-    Route::post('/list', [BenefitController::class, 'getBenefitList']);
-    Route::post('/list-paginate', [BenefitController::class, 'getBenefitListPaginate']);
+    Route::post('/bonus-list', [BenefitController::class, 'getBonusList']);
+    Route::post('/seniority-list', [BenefitController::class, 'getSeniorityList']);
     Route::post('/details', [BenefitController::class, 'getDetails']);
     Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
     Route::post('/form-options', [BenefitController::class, 'getFormOptions']);
@@ -170,15 +178,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list'
     Route::post('calculate', [PayrollListController::class, 'calculatePayrollList']);
 });
 
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leaves')->group(function () {
 
-    Route::post('/save', [LeaveController::class, 'save']);
-    Route::post('/list-paginate', [LeaveController::class, 'getLeaveListPaginate']);
-    Route::post('/details', [LeaveController::class, 'getDetails']);
-    Route::post('/delete', [LeaveController::class, 'delete']);
-    Route::post('/form-options', [LeaveController::class, 'getFormOptions']);
-    Route::post('/update-status', [LeaveController::class, 'updateStatus']);
-});
 
 // Job Level routes
 

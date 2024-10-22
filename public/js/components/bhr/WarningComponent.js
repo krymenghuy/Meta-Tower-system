@@ -86,7 +86,7 @@ var WarningComponent = new (function () {
 
         mThis.WarningListView = new ListView("_warning_list", {
             fetchApi: `${mThis.base_url}/hr/warning/list-paginate`,
-            perPage: 6,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",

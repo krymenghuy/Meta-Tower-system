@@ -7,14 +7,12 @@ var EmployeeComponent = new (function () {
     this.self = this.jm[0];
     this.title_prop = "Employee management";
     this.elStatus = this.self.querySelector("#el_status");
-    this.elRole = this.self.querySelector("#el_role");
+    this.elType = this.self.querySelector("#el_type");
     this.btnAdd = this.self.querySelector("#_btnAddEmployee");
     this.btnBack = this.self.querySelector("#_btn_backTo_employee");
-    this.divFilter = this.self.querySelector("#_divFilter_emp");
+    this.divFilter = this.self.querySelector("#div_filter_filed");
     this.elSearch = this.self.querySelector("#_sdl_search_employee");
-    this.containerPagination = mThis.self.querySelector(
-        "#container_pagination"
-    );
+    this.containerPagination = mThis.self.querySelector("#container_pagination");
     this.profile_card_center = mThis.self.querySelector("#profile_card_center");
     this.profile_card_left = mThis.self.querySelector("#profile_card_left");
     this.profile_card_right = mThis.self.querySelector("#profile_card_right");
@@ -68,9 +66,12 @@ var EmployeeComponent = new (function () {
             sub_content.classList.remove("d-none");
         };
 
-        mThis.divFilter.addEventListener("change", (e) => {
-            e.preventDefault();
-            mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
+        this.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            el.onchange = e =>{
+                e.preventDefault();
+                mThis.EmployeeListView.showPage(mThis.getFilterData());
+
+            }
         });
 
         mThis.initAlready = true;
@@ -111,8 +112,7 @@ var EmployeeComponent = new (function () {
                 }
 
                 html += `
-                    <div class="col-md-3 mt-5 mb-3 employee-card" data-employee-id="${
-                        d.id
+                    <div class="col-md-3 mt-2 mb-3 employee-card" data-employee-id="${d.id
                     }">
                         <div class="card">
                             <div class="card-header">
@@ -120,62 +120,39 @@ var EmployeeComponent = new (function () {
                                     <span>${status}</span>
                                 </div>
                                 <div class="dropdown">
-                                    <a href="javascript:void(0)" class="btn_employee_action" data-id="${
-                                        d.id
-                                    }" data-statusid="${
-                    d.status_id
-                }" aria-haspopup="true" aria-expanded="false">
-                                        <img src="${
-                                            main_view.asset_url
-                                        }/images/bhr/more_vert.svg">
+                                    <a href="javascript:void(0)" class="btn_employee_action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
+                                        <img src="${main_view.asset_url}/images/bhr/more_vert.svg">
                                     </a>
                                 </div>
                             </div>
                             <div class="card-body text-center">
-                                <img src="${
-                                    d.image_url ||
-                                    "../uploads/public/1_data/default/images/mr.avif"
-                                }" class="rounded-circle mb-3"
+                                <img src="${d.image_url || "../assets/images/logo/default_image_user.avif" }" class="rounded-circle mb-3"
                                     alt="Profile Picture" style="width: 100px; height: 100px;">
                                 <div class="card-title">
-                                    <h5>${d.name}</h5>
+                                    <h5 class="text-success">${d.name}</h5>
                                 </div>
                                 <div class="card_container">
-                                    <div class="employee_id">#: ${
-                                        d.code || ""
-                                    }</div>
+                                    <div class="employee_id text-primary">#: <span class="ms-1">${d.code || "null"}</span></div>
                                     <div class="container_top">
                                         <div class="position">
-                                            <i class="fa-solid fa-dashboard"></i> <span>${
-                                                d.position || "Web Developer"
-                                            }</span>
+                                            <i class="text-danger  fa-solid fa-dashboard"></i> <span class="ms-1"> ${d.position || "null"}</span>
                                         </div>
                                         <div class="me-3">
-                                            <i class="fa-solid fa-clock"></i> <span>${
-                                                d.role || " Staff"
-                                            }</span>
+                                            <i class=" text-primary fa-solid fa-clock"></i> <span>${d.type || "null"}</span>
                                         </div>
                                     </div>
                                     <div class="container_bottom">
                                         <div class="email">
-                                            <i class="fas fa-envelope"></i> <span>${
-                                                d.email || "email@example.com"
-                                            }</span>
+                                            <i class="text-warning fas fa-envelope"></i> <span>${d.email || "null"}</span>
                                         </div>
                                         <div class="phone">
-                                            <i class="fas fa-phone"></i> <span>${
-                                                d.phone_number || "012345678"
-                                            }</span>
+                                            <i class="text-primary fas fa-phone"></i> <span>${d.phone_number || "null"}</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card_bottom pt-3">
-                                    <div class="joining">Joining Date: ${
-                                        d.joining_date || "01/Aug/2024"
-                                    }</div>
-                                    <a href="javascript:void(0)" class="see-detail" data-id="${
-                                        d.id
-                                    }" aria-haspopup="true" aria-expanded="false">view info</a>
+                                    <div class="text-muted" style="font-size:11px;">Joining Date: <span class="text-dark">${d.joining_date || "null"}</span></div>
+                                    <a href="javascript:void(0)" class="see-detail" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">view info</a>
                                 </div>
                             </div>
                         </div>
@@ -186,10 +163,8 @@ var EmployeeComponent = new (function () {
         }
 
         if (cmt === 0) {
-            html += `<div class="w-100 rounded-3 border-start text-center border-5 border-danger-custom p-3 shadow bg-white mb-3 position-relative">
-                <div class="row">
-                    <div class="col">No Data Found</div>
-                </div>
+            html += `<div class="w-100 rounded-3  text-center mt-3 mb-3 position-relative">
+                    <div class="d-flex bg-grey shadow rounded-5 p-3"><span class="d-flex align-items-center justify-content-center p-2 w-100 text-danger">Employee not found! </span></div>
             </div>`;
         }
 
@@ -240,10 +215,9 @@ var EmployeeComponent = new (function () {
                         <div class="row row-cols-3 mb-0">
                             <div class="col-2">
                                 <div class="div-img">
-                                    <img src="${
-                                        data.image_url ||
-                                        "../uploads/public/1_data/default/images/mr.avif"
-                                    }" alt="Employee Image">
+                                    <img src="${data.image_url ||
+            "../uploads/public/1_data/default/images/mr.avif"
+            }" alt="Employee Image">
                                 </div>
                                 <div class="social-icons d-flex justify-content-start mt-3">
                                     <a href="https://www.facebook.com" class="mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
@@ -255,106 +229,91 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Name</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${
-                                        data.name
-                                    }</p>
+                                    <p class="text-nowrap text-capitalize">${data.name
+            }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">KH Name</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${
-                                        data.name_kh
-                                    }</p>
+                                    <p class="text-nowrap text-capitalize">${data.name_kh
+            }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Sex</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${
-                                        data.sex == "M" ? "Male" : ""
-                                    }${data.sex == "F" ? "Female" : ""}${
-            data.sex == "O" ? "Other" : ""
-        }</p>
+                                    <p class="text-nowrap">${data.sex == "M" ? "Male" : ""
+            }${data.sex == "F" ? "Female" : ""}${data.sex == "O" ? "Other" : ""
+            }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Position</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${
-                                        data.position || ""
-                                    }</p>
+                                    <p class="text-nowrap">${data.position || ""
+            }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Email</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-primary">${
-                                        data.email || ""
-                                    }</p>
+                                    <p class="text-primary">${data.email || ""
+            }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Tel</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${
-                                        data.phone_number || ""
-                                    }</p>
+                                    <p class="text-nowrap">${data.phone_number || ""
+            }</p>
                                 </div>
                                   <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">ID</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${
-                                        data.code || ""
-                                    }</p>
+                                    <p class="text-nowrap">${data.code || ""
+            }</p>
                                 </div>
 
                             </div>
                             <div class="col">
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Role</p>
+                                    <p class="text-nowrap text-muted width-p">Employee Type</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${
-                                        data.role || ""
-                                    }</p>
+                                    <p class="text-nowrap">${data.emp_type || ""
+            }</p>
                                 </div>
                                                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Work Shift</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${
-                                        data.work_shift || ""
-                                    }</p>
+                                    <p class="text-nowrap">${data.work_shift || ""
+            }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Nationality</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${
-                                        data.nationality || ""
-                                    }</p>
+                                    <p class="text-nowrap">${data.nationality || ""
+            }</p>
                                 </div>
 
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Date of Birth</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${
-                                        data.date_of_birth || ""
-                                    }</p>
+                                    <p class="text-nowrap">${data.date_of_birth || ""
+            }</p>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <p class="text-nowrap text-muted   width-bp" vslang="titles.Address">Address</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${
-                                        data.address
-                                    }</p>
+                                    <p class="text-nowrap text-capitalize">${data.address
+            }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted   width-p" vslang="titles.NSSF">NSSF</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${
-                                        data.nssf_id
-                                    }</p>
+                                    <p class="text-nowrap text-capitalize">${data.nssf_id
+            }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted   width-p" vslang="titles.Identity Card">Identity Card</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${
-                                        data.nid
-                                    }</p>
+                                    <p class="text-nowrap text-capitalize">${data.nid
+            }</p>
                                 </div>
                             </div>
                         </div>
@@ -459,18 +418,17 @@ var EmployeeComponent = new (function () {
             `;
                 data.map((d) => {
                     html += `
-                    <div class="row mt-3 border-bottom">
+                    <div class="row mt-2 py-4 border-bottom">
                         <div class="col-md-6">
-                            <h5>${d.period}</h5>
-                            <p class="text-warning">${d.edu_level}</p>
-                            <p class="text-nowrap">${d.major}</p>
+                            <h6 style="width:180px; height:20px overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap">${d.period}</h6>
+                            <p class="text-success" style="width:180px; height:20px">${d.edu_level}</p>
+                            <p class="text-nowrap" style="width:180px; height:20px">${d.major}</p>
                         </div>
                         
                         <div class="col-md-6">
                             <div class="d-flex justify-content-end">
                                 <div class="d-flex gap-2 mt-4">
                                     <span class="text-muted">${d.school}</span>
-
                                 </div>
                             </div>
                         </div>
@@ -517,40 +475,104 @@ var EmployeeComponent = new (function () {
                 let data = res.status_code === 200 ? res.data.data : [];
                 console.log(123456, data);
                 let html = `<div class="card" style="height:487px;">
-                <div class="card-header">
-                    <h4>Experience</h4>
-                    <div class="d-flex gap-2">
-                        <a href="javascript:void(0)" data="id" id="lnk_add_experience">
-                            <i class="fa fa-plus-circle fs-5 text-success"></i>
-                        </a>
-                    </div>
+            <div class="card-header">
+                <h4>Experience</h4>
+                <div class="d-flex gap-2">
+                    <a href="javascript:void(0)" data="id" id="lnk_add_experience">
+                        <i class="fa fa-plus-circle fs-5 text-warning"></i>
+                    </a>
                 </div>
-                <div class="card-body" style=" overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
-            `;
+            </div>
+            <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+        `;
+
                 data.map((d) => {
                     html += `
-                    <div class="row mt-3 border-bottom border-info">
-                        <div class="col-md-6">
-                            <div style="display:flex; width:300px;">
-                                <strong>Join Date: </strong> 
-                                <p class="text-muted ml-2 mr-2"></p>
-                                <p>${d.start_date}</p>
-                                <p class="text-danger ml-2 mr-2">to</p>
-                                <p>${d.end_date}</p>
+                <div class="row py-3 border-bottom border-info">
+                    <div class="col-md-6" style="display: flex; flex-direction: column; gap:10px">
+                        <div class="experience-toggle" data-experience-id="${d.id}" 
+                            style="display:flex; justify-content:space-between; width:350px; cursor: pointer;">
+                            <div style="display:flex; width:350px; justify-content:space-between">
+                                <p class="text-primary" style="font-size:14px;width:125px;display:flex;justify-content:start; overflow-y: hidden; overflow-x: auto; scrollbar-width: none; align-items: flex-start; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap;">
+                                    📢${d.position}
+                                </p>
+                                <div class="date_join" style="width:200px;display:flex;justify-content:end;align-items:end;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
+                                    <p>: (${d.start_date}</p>
+                                    <p class="text-danger ml-2 mr-2">-</p>
+                                    <p>${d.end_date})</p>
                                 </div>
-                                <p class="text-warning">Position:  ${d.position}</p>
-                                <p class="text-nowrap">Detail:  ${d.description}</p>
-                                
-                                <p class="text-nowrap">Duration:  ${d.period_type}</p>
-                                <p class="text-nowrap text-primary">Company:  ${d.organization_id}</p>
+                            </div>
+                        </div>
+                        <div class="experience-details" id="details_${d.id}" 
+                            style="display: none; flex-direction: column; gap:10px; transition: all 0.3s ease;">
+                            <p class="text-success">Position: ${d.position}</p>
+                            <div style="display:flex">
+                                <p class="text-nowrap mr-2">Detail: </p>
+                                <p class="text-nowrap"> ${d.description}</p>
+                            </div>
+                            <p class="text-nowrap">Duration: ${d.period_type}</p>
+                            <p class="text-nowrap text-primary">Company: ${d.organization_id}</p>
                         </div>
                     </div>
-                `;
+                </div>
+            `;
                 });
 
                 html += `</div></div>`;
                 this.profile_card_right.innerHTML = html;
 
+                let activeExperienceId = null; // Track currently active experience
+
+                // Add event listeners for toggle functionality
+                document
+                    .querySelectorAll(".experience-toggle")
+                    .forEach((element) => {
+                        element.addEventListener("click", function () {
+                            let experienceId =
+                                this.getAttribute("data-experience-id");
+                            let detailsDiv = document.getElementById(
+                                `details_${experienceId}`
+                            );
+                            let isVisible = detailsDiv.style.display === "flex";
+
+                            // If there's an active experience and it's not the same one, close it
+                            if (
+                                activeExperienceId &&
+                                activeExperienceId !== experienceId
+                            ) {
+                                let activeDetailsDiv = document.getElementById(
+                                    `details_${activeExperienceId}`
+                                );
+                                if (activeDetailsDiv) {
+                                    activeDetailsDiv.style.display = "none";
+                                    let activeIcon = document.querySelector(
+                                        `[data-experience-id="${activeExperienceId}"] i`
+                                    );
+                                    activeIcon.classList.remove(
+                                        "fa-chevron-up"
+                                    );
+                                    activeIcon.classList.add("fa-chevron-down");
+                                }
+                            }
+
+                            // Toggle the current clicked experience
+                            if (isVisible) {
+                                detailsDiv.style.display = "none"; // Hide details
+                                activeExperienceId = null; // Clear active experience
+                                let icon = this.querySelector("i");
+                                icon.classList.remove("fa-chevron-up");
+                                icon.classList.add("fa-chevron-down");
+                            } else {
+                                detailsDiv.style.display = "flex"; // Show details
+                                activeExperienceId = experienceId; // Set active experience
+                                let icon = this.querySelector("i");
+                                icon.classList.remove("fa-chevron-down");
+                                icon.classList.add("fa-chevron-up");
+                            }
+                        });
+                    });
+
+                // Add click event listener for "Add Experience"
                 document
                     .getElementById("lnk_add_experience")
                     .addEventListener("click", function (e) {
@@ -574,24 +596,22 @@ var EmployeeComponent = new (function () {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
             if (mThis.EmployeeListView) {
-                mThis.EmployeeListView.showPage(mThis.getDataFormFilter());
+                mThis.EmployeeListView.showPage(mThis.getFilterData());
             } else {
                 console.error("EmployeeListView is not defined");
             }
         }, 200);
     });
 
-    this.getDataFormFilter = () => {
+    this.getFilterData = () => {
         let p = {};
         p.status_id = mThis.elStatus.value;
-        p.role_id = mThis.elRole.value;
+        p.emp_type_id = mThis.elType.value;
         p.search_value = mThis.elSearch.value;
-        let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
-        main_filters.forEach((el) => {
-            const f = el.dataset.field;
+        mThis.divFilter.querySelectorAll('.filter-field').forEach( el => {
+            let f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(222, p);
 
         return p;
     };
@@ -651,6 +671,8 @@ var EmployeeComponent = new (function () {
     };
 
     this.changeStatus = (id, lnk) => {
+        console.log(1111,id,2222,lnk);
+        
         // if(!AuthManager.allowed(337,false))
         //         return;
         //let status_code = Validator.properCase(lnk.dataset.status);
@@ -692,14 +714,14 @@ var EmployeeComponent = new (function () {
                     .call(`${mThis.base_url}/hr/employee/update-status`, p)
                     .then((res) => {
                         if (res.status_code === 200) {
+                            mThis.elStatus.value = parseInt(d.value);
                             InputBox2.close();
-                            cv_interact.success(
-                                "The Employee status has been updated"
-                            );
-                            mThis.EmployeeListView.showPage(
-                                mThis.getDataFormFilter()
-                            );
-                        } else cv_interact.error(res.error_message);
+                            mThis.elStatus.dispatchEvent ( new Event('change'));
+                            cv_interact.success("The Employee status has been updated");
+                            // if(tr) tr.dataset.status_id = d.value;
+                            // mThis.EmployeeListView.showPage(mThis.getFilterData());
+                        } else 
+                        cv_interact.error(res.error_message);
                     });
             }
         });
@@ -752,6 +774,9 @@ var EmployeeComponent = new (function () {
     };
 
     this.prepareFormOptions = () => {
+        // mThis.def_filter = mThis.def_filter || {};
+        // mThis.def_filter.id = 10;
+        // mThis.allow_filter = false;
         vsapi
             .call(
                 `${main_view.base_url}/hr/employee/form-options`,
@@ -767,18 +792,18 @@ var EmployeeComponent = new (function () {
                     d.status,
                     "id",
                     "name",
-                    true,
-                    "All",
-                    null
+                    null,
+                    null,
+                    10
                 );
                 VSUtil.setComboItems(
-                    mThis.elRole,
-                    d.roles,
+                    mThis.elType,
+                    d.types,
                     "id",
                     "name",
-                    true,
-                    "All",
-                    null
+                    false,
+                    null,
+                    3
                 );
             });
     };
@@ -810,10 +835,12 @@ const AddEducation = (() => {
                         `<div class="row">
                         <div class=" form-group col-md-6">
                             <label class="form-label" vslang="titles.School">School</label>
+                            <span class="text-danger" >*</span>          
                             <div><select name="school_id" class="data-input" data-field="school_id"></select></div>
                         </div>
                         <div class=" form-group col-md-6">
                             <label class="form-label" vslang="titles.Level">Level</label>
+                            <span class="text-danger" >*</span>
                             <div><select name="edu_level_id" class="data-input" data-field="edu_level_id"></select></div>
                         </div>
                         <div class="form-group col-md-6">
@@ -824,10 +851,7 @@ const AddEducation = (() => {
                             <label class="form-label" vslang="titles.Major">Major</label>
                             <div><input name="major" class="form-control data-input" data-field="major"/></div>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label class="form-label" vslang="titles.Start Year">Start Year</label>
-                            <div><input name="start_year" class="form-control data-input" data-field="start_year"/></div>
-                        </div>
+                       
                         <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.End Year">Finish Year</label>
                             <div><input name="end_year" class="form-control data-input" data-field="end_year"/></div>
@@ -867,6 +891,11 @@ const AddEducation = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
+                                        EmployeeComponent.renderCardCenter(me.dataOptions.emp_id);
+
+                                        EmployeeComponent.renderCardCenter(
+                                            me.dataOptions.emp_id
+                                        );
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
@@ -893,9 +922,9 @@ const AddEducation = (() => {
                     },
                 ],
                 prepareFormOptions: {
-                    createTitle: "New Employee Seniority",
-                    modifyTitle: "Edit Employee Seniority",
-                    targetProp: "seniority",
+                    createTitle: "New Education",
+                    modifyTitle: "Edit Education",
+                    targetProp: "Education",
                     api: {
                         endpoint: `${main_view.base_url}/hr/education/form-options`,
                         params: (op) => {
@@ -913,7 +942,6 @@ const AddEducation = (() => {
                     },
                 },
                 onShow: (me) => {
-                    // Any additional actions on dialog show can be placed here
                 },
             });
 
@@ -929,7 +957,7 @@ const AddExperience = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static", //User click outside form, do not close form
                 keyboard: true,
                 createContent: () => {
@@ -977,7 +1005,7 @@ const AddExperience = (() => {
                         click: (me, btn) => {
                             let p = me.getData();
                             p.emp_id = op.emp_id;
-                            console.log(928762, p);
+                            // console.log(928762, p);
 
                             vsapi
                                 .call(
@@ -992,6 +1020,9 @@ const AddExperience = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
+                                        EmployeeComponent.renderCardRight(
+                                            me.dataOptions.emp_id
+                                        );
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
@@ -999,7 +1030,7 @@ const AddExperience = (() => {
                 ],
                 configSelect: [
                     {
-                        name: "position",
+                        name: "position_id",
                         data: "positions",
                         textField: "title",
                         valueField: "id",
@@ -1061,12 +1092,13 @@ const EmployeeDialog = (() => {
                                 <div class="row">
                                     <div class="form-group col-6">
                                         <label for="name" class="form-label" vslang="titles.Name"></label>
+                                        <span class="text-danger" >*</span>
                                         <input name="name" class="form-control data-input" data-field="name" />
                                     </div>
 
                                     <div class="form-group col-6">
-                                        <label for="name_kh" class="form-label" vslang="titles.Name Kh"></label>
-                                        <input name="name_kh" class="form-control data-input" data-field="name_kh" />
+                                        <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
+                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
                                     </div>
                                     <div class="form-group col-4">
                                        <label for="sex" class="form-label" vslang="titles.Sex"></label>
@@ -1080,10 +1112,12 @@ const EmployeeDialog = (() => {
                                     </div>
                                     <div class="form-group col-4">
                                         <label for="date_of_birth" class="form-label" vslang="titles.Date Of Birth"></label>
+                                        <span class="text-danger" >*</span>
                                         <input name="date_of_birth" class="form-control data-input" data-field="date_of_birth" />
                                     </div>
                                     <div class="form-group col-4">
                                         <label for="nationality" class="form-label" vslang="titles.Nationality"></label>
+                                        <span class="text-danger" >*</span>
                                         <input name="nationality" class="form-control data-input" data-field="nationality" />
                                     </div>
 
@@ -1091,14 +1125,17 @@ const EmployeeDialog = (() => {
                             </div>
                            <div class="form-group col-3">
                                     <label for="nid" class="form-label" vslang="titles.Identity Card"></label>
+                                    <span class="text-danger" >*</span>
                                     <input name="nid" class="form-control data-input" data-field="nid" />
                             </div>
                             <div class="form-group col-4">
                                 <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
+                                <span class="text-danger" >*</span>
                                 <input name="phone_number" class="form-control data-input" data-field="phone_number" />
                             </div>
                             <div class="form-group col-5">
                                 <label for="email" class="form-label" vslang="titles.Email"></label>
+                                <span class="text-danger" >*</span>
                                 <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
                             </div>
                             <div class="form-group col-6">
@@ -1107,26 +1144,27 @@ const EmployeeDialog = (() => {
                             </div>
                         <div class="form-group col-6">
                             <label for="position" class="form-label" vslang="titles.Position"></label>
-                            <select name="position" class=" data-input"  data-field="positions_id"></select>
+                            <span class="text-danger" >*</span>
+                            <select name="position" class=" data-input"  data-field="position_id"></select>
                         </div>
 
                         <div class="form-group col-6">
-                           <label for="role" class="form-label" vslang="titles.Role"></label>
-                            <select name="role" class=" data-input"  data-field="emp_role_id"></select>
+                           <label for="type" class="form-label" vslang="titles.Employee Type"></label>
+                           <span class="text-danger" >*</span>
+                            <select name="type" class=" data-input"  data-field="emp_type_id"></select>
                         </div>
                         <div class="form-group col-6">
                             <label for="work_shift" class="form-label" vslang="titles.Work Shift"></label>
+                            <span class="text-danger" >*</span>
                             <select name="work_shift" class=" data-input"  data-field="work_shift_id"></select>
                         </div>
 
-                        <div class="form-group col-6">
-                            <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
-                            <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                        
+                        <div class="form-group col-12">
+                            <label for="address" class="form-label" vslang="titles.Address">Address</label>
+                            <textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>
                         </div>
-                        <div class="form-group col-6">
-                            <label for="address" class="form-label" vslang="titles.Address"></label>
-                            <input name="address" class="form-control data-input" data-field="address" />
-                        </div>
+
 
               </div>`,
                     ].join("");
@@ -1176,9 +1214,8 @@ const EmployeeDialog = (() => {
                                             el.value = d[f] || "";
                                         } else if (f === "image_url") {
                                             if (me.dataOptions.id)
-                                                el.innerHTML = `<img name="div_emp_photo" class="w-100" src="${
-                                                    d[f] || ""
-                                                }"/>`;
+                                                el.innerHTML = `<img name="div_emp_photo" class="w-100" src="${d[f] || ""
+                                                    }"/>`;
                                         }
                                     });
                             });
@@ -1214,8 +1251,8 @@ const EmployeeDialog = (() => {
                         valueField: "id",
                     },
                     {
-                        name: "role",
-                        data: "roles",
+                        name: "type",
+                        data: "types",
                         textField: "name",
                         valueField: "id",
                     },
