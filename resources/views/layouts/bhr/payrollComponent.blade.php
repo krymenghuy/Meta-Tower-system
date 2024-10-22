@@ -9,28 +9,16 @@
                 <select type="id" id="el_sort_by" class="data-input filter-field"></select>
             </div>
 
-            <div class="d-flex align-items-center justify-content-end gap-2 w-50">
-                <select type="id" id="el_status" class="data-input filter-field" data-field="status"></select>
-            </div>
-
         </div>
-        <div class="d-flex align-items-center w-50 gap-2 pl-5 ">
-
-            <div class="d-flex align-items-center justify-content-end gap-2 w-50">
-                <input data-select="datepicker" class="form-control filter-field" data-field="start_date"
-                    placeholder="Start Date" id="_payroll_filter_start_date" />
-            </div>
-            <div class="d-flex align-items-center justify-content-end gap-2 w-50">
-                <input data-select="datepicker" class="form-control filter-field" data-field="end_date"
-                    placeholder="End Date" id="_payroll_fliter_end_date" />
-            </div>
-            <div class="d-flex align-items-center justify-content-start gap-2 w-50 text-nowrap">
-                <button type="button" class="btn btn-primary" id="_btnAddSalary">
-                    <i class="fas fa-plus"></i>
-                    <span>Add Salary</span>
-                </button>
-
-            </div>
+        <div class="d-flex align-items-center justify-content-end w-50 gap-2 pl-5 ">
+            <button type="button" class="btn btn-primary" id="_btnImport">
+                <i class="fas fa-plus"></i>
+                <span>Import Payroll</span>
+            </button>
+            <button type="button" class="btn btn-primary" id="_btnAddSalary">
+                <i class="fas fa-plus"></i>
+                <span>Add Payroll</span>
+            </button>
         </div>
     </div>
 
