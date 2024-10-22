@@ -51,12 +51,21 @@ class Benefit
                 ];
                 $bonus_res = validateObject($bonus_arr, $bonus_v_rule, true, [], $ss->lang, false, null);
                 if ($bonus_res->error) return DV::error($bonus_res->error);
-
+        
                 $bonus_inputs = $bonus_res->values;
-                $bonus_id = saveData($ss, 'emp_bonuses', ['id' => null], $bonus_inputs, [], 1, false);
-
+        
+                $existing_bonus = DB::table('emp_bonuses')->where('benefit_id', $id)->first();
+        
+                if ($existing_bonus) {
+                    $bonus_id = saveData($ss, 'emp_bonuses', ['id' => $existing_bonus->id], $bonus_inputs, [], 1, false);
+                } else {
+                    $bonus_id = saveData($ss, 'emp_bonuses', ['id' => null], $bonus_inputs, [], 1, false);
+                }
+        
                 return DV::depends($bonus_id, ['Bonuses data saved']);
-            } else if ($d->benefit_type_id == 2) {
+            } 
+            
+            else if ($d->benefit_type_id == 2) {
                 $seniority_arr = [
                     'benefit_id' => $id,
                     'start_date' => $d->start_date ?? null,
@@ -71,17 +80,25 @@ class Benefit
                 ];
                 $seniority_res = validateObject($seniority_arr, $seniority_v_rule, true, [], $ss->lang, false, null);
                 if ($seniority_res->error) return DV::error($seniority_res->error);
-
+        
                 $seniority_inputs = $seniority_res->values;
-                $seniority_id = saveData($ss, 'emp_seniorities', ['id' => null], $seniority_inputs, [], 1, false);
-
+        
+                $existing_seniority = DB::table('emp_seniorities')->where('benefit_id', $id)->first();
+        
+                if ($existing_seniority) {
+                    $seniority_id = saveData($ss, 'emp_seniorities', ['id' => $existing_seniority->id], $seniority_inputs, [], 1, false);
+                } else {
+                    $seniority_id = saveData($ss, 'emp_seniorities', ['id' => null], $seniority_inputs, [], 1, false);
+                }
+        
                 return DV::depends($seniority_id, ['Seniority data saved']);
             }
-
+        
             return DV::depends(1, ['Benefits saved' => $inputs, 'Benefit ID' => $id]);
         }
+        
 
-        return DV::error('Error saving benefit');
+        return DV::depends($id,['id'=>$id],'Save failed');
     }
 
 
