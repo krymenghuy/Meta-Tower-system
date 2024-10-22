@@ -43,33 +43,30 @@ class BenefitController extends Controller
 
     public function getDetails(Request $req)
     {
+        $id =$req->id;
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $id =$req->id;
-        $benefit_type_id = $req->benefit_type_id;
+        // $benefit_type_id = $req->id;
        
-        return JDV::result($this->benefitModel->getDetails($benefit_type_id,$id, $ss));
+        return JDV::result($this->benefitModel->getDetails($id, $ss));
     }
 
     public function deleteBenefit(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        // Assuming id is passed in the request (POST body), access it like this
-        if (!isset($req->id) || !is_numeric($req->id)) {
-            return JDV::error('Invalid ID');
-        }
-        return JDV::result($this->benefitModel->deleteBenefit($req->id, $ss));
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+
+        $id = $req->id ? :null;
+        $as = $req->as;
+       
+        return JDV::result($this->benefitModel->deleteBenefit($id,$as, $ss));
     }
 
     public function getFormOptions(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        return JDV::result($this->benefitModel->getFormOptions($req->id, $ss));
+        if ($ss->status_code !== 200) return JDV::raw($ss);
+        $id = $req->id;
+        return JDV::result($this->benefitModel->getFormOptions($id, $ss));
     }
 }

@@ -59,7 +59,7 @@ class Employee//extends Model
             'nationality' => '0|string|0-150',
             'date_of_birth' => '1|date',
             'address' => '0|string|0-250',
-            'postion_id' => '1|number',
+            'position_id' => '1|number',
             'emp_type_id' => '1|number',
             'salary_base' => '1|number',
             'work_shift_id' => '1|number',
@@ -235,7 +235,7 @@ class Employee//extends Model
         }
 
         $query = DB::table('employees as emp')
-            ->join('positions as p', 'p.id', '=', 'emp.postion_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
@@ -256,8 +256,7 @@ class Employee//extends Model
                 formatDate(emp.joining_date) as joining_date,
                 emp.nssf_id,
                 emp.nid,
-                emp.postion_id,
-                emp.salary_base,
+                emp.position_id,
                 p.title as position,
                 emp.emp_type_id,
                 el.name as type,
@@ -320,7 +319,7 @@ class Employee//extends Model
             $str_where = 'emp.emp_type_id =\'' . $type . '\'';
         }
         $query = DB::table('employees as emp')
-            ->join('positions as p', 'p.id', '=', 'emp.postion_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
@@ -341,8 +340,7 @@ class Employee//extends Model
             emp.joining_date,
             emp.nssf_id,
             emp.nid,
-            emp.postion_id,
-            emp.salary_base,
+            emp.position_id,
             p.title as position,
             ws.name as work_shift,
             emp.status_id,
@@ -370,7 +368,7 @@ class Employee//extends Model
         $branch_id = $ss->branch_id;
 
         $row =DB::table('employees as emp')
-            ->join('positions as p', 'p.id', '=', 'emp.postion_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
@@ -389,7 +387,7 @@ class Employee//extends Model
                 emp.joining_date,
                 emp.nssf_id,
                 emp.nid,
-                emp.postion_id,
+                emp.position_id,
                 p.title as position,
                 emp.salary_base,
                 emp.emp_type_id,
@@ -451,7 +449,7 @@ class Employee//extends Model
         return DV::depends(1, ['id' => $id, 'deleted' => $file_name ?? 'No file found']);
     }
     static function currentPosition($id){
-        return DB::table('employees as e')->join('positions as p', 'p.id', '=', 'e.postion_id')->selectRaw('p.title , p.id')->first();
+        return DB::table('employees as e')->join('positions as p', 'p.id', '=', 'e.position_id')->selectRaw('p.title , p.id')->first();
     }
 
     function getFormOptions($id, $ss)

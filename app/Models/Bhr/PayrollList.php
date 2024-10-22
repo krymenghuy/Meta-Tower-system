@@ -72,7 +72,7 @@ class PayrollList
 
         $query = DB::table('payroll_lists as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.postion_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->selectRaw('
@@ -123,7 +123,7 @@ class PayrollList
         $branch_id = $ss->branch_id;
         $query = DB::table('payroll_lists as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.postion_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->selectRaw('
