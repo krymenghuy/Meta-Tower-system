@@ -20,15 +20,6 @@ var EmployeeBenefitComponent = new (function () {
                             <img class="image-student-tbl" src="${
                                 data.image_url
                             }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
-                            <div>
-                                <span style="font-size: 14px; font-weight: bold;">${
-                                    data.emp_name ?? ""
-                                }</span>
-                                <br/>
-                                <span style="font-size: 12px; color: gray;">${
-                                    data.position ?? ""
-                                }</span>
-                            </div>
                         </div>`;
             },
         },
@@ -146,10 +137,11 @@ var EmployeeBenefitComponent = new (function () {
         };
         new VSDropdownMenu(menuOptopns);
     };
-    this.editEmployeeBenefit = (id, menuLink) => {
+    this.editEmployeeBenefit = (id, menulink) => {
+        console.log(134569273, id, menulink);
         let op = {
             id: id,
-            btn: menuLink,
+            btn: menulink,
             onClose: () => {
                 mThis.EmployeeBenefitListView.showPage();
             },

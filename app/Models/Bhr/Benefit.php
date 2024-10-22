@@ -43,6 +43,7 @@ class Benefit
 
         $id = saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1, false);
         if ($id > 0) {
+            
             if ($d->benefit_type_id == 1) {
                 $bonus_arr = ['benefit_id' => $id, 'remarks' => $d->remarks];
                 $bonus_v_rule = [
@@ -78,7 +79,7 @@ class Benefit
                 return DV::depends($seniority_id, ['Seniority data saved']);
             }
 
-            return DV::depends(1, ['Benefits saved' => $inputs, 'Benefit ID' => $id]);
+            return DV::depends(1, ['Benefits saved' => $inputs,'emp_benefits'=> $inputs, 'Benefit ID' => $id]);
         }
 
         return DV::error('Error saving benefit');
@@ -117,6 +118,7 @@ class Benefit
         $query = DB::table('emp_bonuses as bs')
             ->join('emp_benefits as b', 'b.id', '=', 'bs.benefit_id')
             ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
+            ->join('benefit_categories as bc', 'bc.id', '=', 'b.benefit_type_id')
 
             ->Where('bs.branch_id', $branch_id)
             ->whereRaw($str_search)
@@ -172,60 +174,66 @@ class Benefit
     }
 
 
-    function getDetails($benefit_type_id, $id, $ss)
+    function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
-        $row = null;
-        if ($benefit_type_id == 1) {
-            $row = DB::table('emp_benefits as b')
-                ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
-                ->join('emp_bonuses as bs', 'bs.benefit_id', '=', 'b.id')
-                ->where('b.id', $id)
-                ->selectRaw('b.id,b.emp_id,b.benefit_type_id,b.amount,b.remarks,bs.benefit_id,bs.bonus_type,emp.name as employee,emp.photo_file_name as emp_photo')->take(1)->first();
+    
+        $benefit = DB::table('emp_benefits as b')
+                     ->where('b.id', $id)
+                     ->select('b.id', 'b.emp_id', 'b.benefit_type_id', 'b.amount', 'b.remarks')
+                     ->first();
+    
+        if (!$benefit) {
+            return null;
+        }
+    
+       
+        $query = DB::table('emp_benefits as b')
+                   ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
+                   ->where('b.id', $id);
+    
+        if ($benefit->benefit_type_id == 1) {
+            $query->join('emp_bonuses as bs', 'bs.benefit_id', '=', 'b.id')
+                  ->selectRaw('b.id, b.emp_id, b.benefit_type_id, b.amount, b.remarks, bs.benefit_id, bs.bonus_type, emp.name as employee');
+        } elseif ($benefit->benefit_type_id == 2) {
+            $query->join('emp_seniorities as se', 'se.benefit_id', '=', 'b.id')
+                  ->selectRaw('b.id, b.emp_id, b.benefit_type_id, b.amount, b.remarks, se.benefit_id, se.seniority_type, emp.name as employee, se.start_date, se.end_date');
         } else {
-            $row = DB::table('emp_benefits as b')
-                ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
-                ->join('emp_seniorities as se', 'se.benefit_id', '=', 'b.id')
-                ->where('b.id', $id)
-                ->selectRaw('b.id,b.emp_id,b.benefit_type_id,b.amount,b.remarks,se.benefit_id,se.seniority_type,emp.name as employee,se.start_date,se.end_date,emp.photo_file_name as emp_photo')->take(1)->first();
+            return null; 
         }
-        if (!$row) return null;
-
-        return $row;
+        $row = $query->take(1)->first();
+        
+        return $row ?: null;
     }
+    
+    
 
-    function deleteBenefit($id, $ss)
+    function deleteBenefit($id, $as,$ss)
     {
-        // Ensure $id is numeric and valid
-        if (!is_numeric($id)) {
-            return DV::error('Invalid ID');
-        }
-
-        // Assuming $ss contains branch_id or other necessary info
+        $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
 
-        // Build and execute the query
-        $query = DB::table('emp_benefits')
-            ->where('id', $id)
-            ->delete();
-        if (!$query) {
-            return DV::error('Benefit not found');
-        }
-        // Return the query result
-        return $query;
+        $delete = DB::table('emp_benefits')->where('id',$id)->delete();
+        if($as =='bonus'){
+            DB::table('emp_bonuses')->where('benefit_id',$id)->delete();
+
+        }else 
+            DB::table('emp_seniorities')->where('benefit_id',$id)->delete();
+        return DV::depends($delete,['action','deleted']);
     }
 
     function getFormOptions($id, $ss)
     {
 
-        $benifit = null;
+
+        $benefit = null;
         if ($id) {
-            $benifit = self::getDetails( $benefit_type_id=null,$id, $ss);
+            $benefit = self::getDetails($id, $ss);
         }
         return $data = (object) [
             'employees' => GeneralSettings::options_employee(10, $ss),
             'categories' => DB::table('benefit_categories')->selectRaw('id,name')->get(),
-            'benefit' => $benifit
+            'benefit' => $benefit
         ];
     }
 }

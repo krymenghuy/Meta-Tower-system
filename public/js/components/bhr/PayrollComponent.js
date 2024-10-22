@@ -6,8 +6,9 @@ var PayrollComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_payrollComponent");
     this.self = this.jm[0];
     this.title_prop = "Payroll";
-    this.elSortBy = this.self.querySelector('#el_sort_by');
-    this.btnAdd = this.self.querySelector("#_btnAddSalary");
+    this.elFilter = this.self.querySelector('#el_filter_payroll');
+    this.btnAdd = this.self.querySelector("#_btnAddPayroll");
+    this.btnInsert = this.self.querySelector("#_btnInsert");
     this.btnImport = this.self.querySelector("#_btnImport");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_payroll");
@@ -112,8 +113,24 @@ var PayrollComponent = new (function () {
             tableClass: 'table  table--white rounded-2   overflow-hidden  header-uppercase',
             listContainerClass: null
         });
-
         mThis.btnAdd.onclick = function (e) {
+            e.preventDefault();
+            // let content = mThis.bookingListView.getListContainer();
+
+            let op = {
+                id: null,
+                // id: 1,
+                btn: e.target,
+                onClose: () => {
+                    // content.parentElement.classList.remove('d-none');
+                    mThis.PayrollListView.showPage();
+                }
+            };
+            // content.parentElement.classList.add('d-none');
+
+            AddPayRollDailog.show(op);
+        };
+        mThis.btnInsert.onclick = function (e) {
             e.preventDefault();
             // let content = mThis.bookingListView.getListContainer();
 
@@ -180,19 +197,16 @@ var PayrollComponent = new (function () {
     });
 
     this.getDataFormFilter = () => {
-        let p = {
-        status_id : mThis.elStatus.value,
-        sort_by : mThis.elSortBy.value,
-        search_value : mThis.elSearch.value,
+        let p = {};
+        p.search_value = mThis.elSearch.value;
+        p.payroll_id = mThis.elFilter.value;
 
-        };
-        console.log(9090,p);
-
-    mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
+        main_filters.forEach(el => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-
+        console.log(222, p);
 
         return p;
     };
@@ -283,9 +297,8 @@ var PayrollComponent = new (function () {
 
         vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
-            console.log(1111,this.elSortBy);
 
-            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'All Sort', null);
+            VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','name',true,'All',null);
 
         })
     }
@@ -497,3 +510,151 @@ console.log(999,op);
     return self;
 })();
 
+const AddPayRollDailog = (()=>{
+
+    const self = {};
+    let dialogAdd = null;
+     self.show = (op)=>{
+    console.log(999,op);
+
+    dialogAdd = dialogAdd || new GeneralDialog({
+            cssClass:'modal-lg',
+            backdrop: 'static', //User click outside form, do not close form
+            keyboard:true, //prevent user from using ESC key
+            createContent:()=>{
+                 return [`<div class="row">
+                 <div class="form-group col-12">
+                    <label for="name" class="form-label" vslang="titles.Name "></label>
+                    <input name="name" class="form-control data-input" data-field="name" />
+                </div>
+                <div class="form-group col-6">
+                    <label for="p_month" class="form-label" vslang="titles.Payroll Month"></label>
+                        <select class="modal-select data-input" data-field="p_month">
+                            <option value="">(Select Month)</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                </div>
+                <div class="form-group col-6">
+                    <label for="p_year" class="form-label" vslang="titles.Payroll Year "></label>
+                    <input name="p_year" class="form-control data-input" data-field="p_year" />
+                </div>
+                 <div class="form-group col-6">
+                    <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
+                    <input name="start_date" class="form-control data-input" data-field="start_date" />
+                </div>
+                <div class="form-group col-6">
+                  <label for="end_date" class="form-label" vslang="titles.End Date"></label>
+                  <input name="end_date" class="form-control data-input" data-field="end_date" />
+                </div>
+                <div class="form-group col-4">
+                    <label for="p_number" class="form-label" vslang="titles.Payroll Number "></label>
+                    <input type="number" name="p_number" class="form-control data-input" data-field="p_number" />
+                </div>
+                <div class="form-group col-4">
+                    <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
+                        <select class="modal-select data-input" data-field="currency_code">
+                            <option value="">(Select Currency)</option>
+                            <option value="USD">USD</option>
+                            <option value="KHR">KHR</option>
+                        </select>
+                </div>
+                <div class="form-group col-4">
+                    <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate "></label>
+                    <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
+                </div>
+                <div class="form-group col-4">
+                    <label for="authorized" class="form-label" vslang="titles.Authorized"></label>
+                        <select class="modal-select data-input" data-field="authorized">
+                            <option value="0">Panding</option>
+                            <option value="1">Approved</option>
+                        </select>
+                </div>
+                <div class="form-group col-4">
+                    <label for="disbursed" class="form-label" vslang="titles.Disbursed"></label>
+                        <select class="modal-select data-input" data-field="disbursed">
+                            <option value="0">Panding</option>
+                            <option value="1">Success</option>
+                        </select>
+                </div>
+                <div class="form-group col-4">
+                    <label for="total" class="form-label" vslang="titles.Total "></label>
+                    <input name="total" class="form-control data-input" data-field="total" />
+                </div>
+              </div>`].join('');
+            },
+            contentCreated:(me)=>{
+                //Convert field to be DatePicker : start_date and end_date
+                DateTimePicker.init(me.controls.start_date);
+                DateTimePicker.init(me.controls.end_date);
+
+             },
+            // configSelect:[
+            //    {
+            //      name:"payroll_name",
+            //      data:'payrolls',
+            //      textField:"name",
+            //      valueField:'id'
+            //    },
+            // ],
+            buttons:[
+               {
+                label:'<span class="text-warning">Cancel</span>',
+                cssClass:'btn btn-default',
+                click:(me,btn)=>{
+                    //Close with Cancel button
+                    me.hide(false);
+                }
+               },
+               {
+                label:'<span>Save</span>',
+                cssClass:'btn btn-primary',
+                click:(me,btn)=>{
+                    const p = me.getData();
+
+                    p.id = me.dataOptions.id; //get "id" from op
+
+                    vsapi.call( [main_view.base_url,'/hr/payroll/save'].join(''), p,btn,null).then(res=>{
+                       if(res.status_code ==200){
+                         me.hide(true,p);
+                       }else cv_interact.error(res.error_message);
+                    });
+                }
+               }
+            ],
+            prepareFormOptions:{
+               createTitle:'Add Payroll',
+               modifyTitle:'Edit Payroll',
+               targetProp: 'payrolls',
+               api:{
+                 endpoint: [main_view.base_url,'/hr/payroll/form-options'].join(''),
+                 params:(op)=>{
+                    return {'id':op.id};
+                 }
+               },
+            //    onResponse: (me, res)=>{
+            //      console.log('result from api "/form-options": ', res);
+            //    }
+            },
+
+            onPrepareForm:(me, data)=>{
+                 LocaleManager.translateZone(me.divModal);
+            }
+
+        });
+
+        dialogAdd.show(op);
+     }
+
+    return self;
+})();
