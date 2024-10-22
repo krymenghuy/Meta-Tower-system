@@ -181,13 +181,13 @@ class Benefit
                 ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
                 ->join('emp_bonuses as bs', 'bs.benefit_id', '=', 'b.id')
                 ->where('b.id', $id)
-                ->selectRaw('b.id,b.emp_id,b.benefit_type_id,b.amount,b.remarks,bs.benefit_id,bs.bonus_type,emp.name as employee')->take(1)->first();
+                ->selectRaw('b.id,b.emp_id,b.benefit_type_id,b.amount,b.remarks,bs.benefit_id,bs.bonus_type,emp.name as employee,emp.photo_file_name as emp_photo')->take(1)->first();
         } else {
             $row = DB::table('emp_benefits as b')
                 ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
                 ->join('emp_seniorities as se', 'se.benefit_id', '=', 'b.id')
                 ->where('b.id', $id)
-                ->selectRaw('b.id,b.emp_id,b.benefit_type_id,b.amount,b.remarks,se.benefit_id,se.seniority_type,emp.name as employee,se.start_date,se.end_date')->take(1)->first();
+                ->selectRaw('b.id,b.emp_id,b.benefit_type_id,b.amount,b.remarks,se.benefit_id,se.seniority_type,emp.name as employee,se.start_date,se.end_date,emp.photo_file_name as emp_photo')->take(1)->first();
         }
         if (!$row) return null;
 
@@ -220,10 +220,10 @@ class Benefit
 
         $benifit = null;
         if ($id) {
-            $benifit = self::getDetails($benefit_type_id = null, $id, $ss);
+            $benifit = self::getDetails( $benefit_type_id=null,$id, $ss);
         }
         return $data = (object) [
-
+            'employees' => GeneralSettings::options_employee(10, $ss),
             'categories' => DB::table('benefit_categories')->selectRaw('id,name')->get(),
             'benefit' => $benifit
         ];

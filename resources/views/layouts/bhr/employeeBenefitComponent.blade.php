@@ -121,4 +121,23 @@
         text-align: center;
         cursor: pointer;
     }
+    #_employee_benefit_list{
+        padding: 20px;
+        width: 100%;
+        height: 400px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+    }
+    #_employee_benefit_list_paginator{
+        display: flex;
+        position: fixed;
+        bottom: 0;
+    }
+    .choices__list{
+        max-height: 320px;
+        overflow-y: auto;
+        margin-bottom: 30px;
+        width: 100%;
+    }
 </style>
