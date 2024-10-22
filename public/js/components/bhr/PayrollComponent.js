@@ -7,8 +7,8 @@ var PayrollComponent = new (function () {
     this.self = this.jm[0];
     this.title_prop = "Payroll";
     this.elSortBy = this.self.querySelector('#el_sort_by');
-    this.elStatus = this.self.querySelector('#el_status');
     this.btnAdd = this.self.querySelector("#_btnAddSalary");
+    this.btnImport = this.self.querySelector("#_btnImport");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_payroll");
 
@@ -27,73 +27,64 @@ var PayrollComponent = new (function () {
                 return `<div style="display: flex; align-items: center;">
                             <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
-                                <span style="font-size: 14px; font-weight: bold;">${data.name ?? ''}</span>
+                                <span style="font-size: 14px; font-weight: bold;">${data.emp_name ?? ''}</span>
                                 <br/>
-                                <span style="font-size: 12px">${data.email ?? ''}</span><br/>
-                                <span style="font-size: 12px">${data.phone_number ?? ''}</span>
+                                <span style="font-size: 12px">${data.emp_position ?? ''}</span>
+
                             </div>
                         </div>`;
             }
         },
-        {
-            title: "Position",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                // Add custom styling or logic here
-                let position = data.position ? data.position : 'N/A';
-                return `<p style=" background: linear-gradient(97.44deg, #FFFFFF -6.65%, rgba(199, 231, 1, 0.66) 18.08%, rgba(199, 231, 1, 0.66) 32.5%);" class="p-0 m-0 text-primary text-center border border-primary rounded-5 p-1">${position}</p>`;
-            }
-        },
-
 
         {
-            title: "Rate",
+            title: "Salary Base",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.rate ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.salary_base ?? ''}</p>`;
             }
         },
         {
-            title: "Period",
+            title: "Benefit",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.start_date ?? ''} - ${data.end_date ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.benefit ?? ''}</p>`;
             }
         },
 
         {
-            title: "Salary",
+            title: "Desuction",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + data.salary ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.desuction ?? ''}</p>`;
             }
         },
 
         {
-            title: "Status",
-            className: 'status text-nowrap align-middle',
-            data: function (data, index, tr) {
-                let cls_class = 'text-danger text-center';
-                let bg_color = ''; // Default background color
-
-                if ((data.status || '').toLowerCase() === 'success') {
-                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#28a745'; // Green background for success
-                } else if ((data.status || '').toLowerCase() === 'panding') {
-                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
-                    bg_color = '#ffc107'; // Yellow background for pending
-                } else if ((data.status || '').toLowerCase() === 'in progress') {
-                    cls_class = 'text-white text-center border border-danger rounded-5 p-1';
-                    bg_color = '#dc3545'; // Red background for in progress
-                } else {
-                    bg_color = '#6c757d'; // Default gray background for other statuses
-                }
-
-                return `<div><a class="d-block" data-status="${data.status}" data-id="${data.id}" href="javascript:void(0)">
-                            <span style="display:block;width:80px; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${data.status}
-                            </span>
-                        </a></div>`;
+            title: "Tax Base",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_base ?? ''}</p>`;
+            }
+        },
+        {
+            title: "Tax Allowance",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_allowance ?? ''}</p>`;
+            }
+        },
+        {
+            title: "Tax Rate",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.tax_rate ?? ''} %</p>`;
+            }
+        },
+        {
+            title: "Total",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.total_salary ?? ''}</p>`;
             }
         },
         {
@@ -114,7 +105,7 @@ var PayrollComponent = new (function () {
         if (mThis.initAlready) return;
 
         mThis.PayrollListView = new ListView('_payroll_list',{
-            fetchApi : `${main_view.base_url}/hr/payroll/list-paginate`,
+            fetchApi : `${main_view.base_url}/hr/payroll-list/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -138,6 +129,23 @@ var PayrollComponent = new (function () {
             // content.parentElement.classList.add('d-none');
 
             PayRollDailog.show(op);
+        };
+        mThis.btnImport.onclick = function (e) {
+            e.preventDefault();
+            // let content = mThis.bookingListView.getListContainer();
+
+            let op = {
+                id: null,
+                // id: 1,
+                // btn: e.target,
+                onClose: () => {
+                    // content.parentElement.classList.remove('d-none');
+                    mThis.PayrollListView.showPage();
+                }
+            };
+            // content.parentElement.classList.add('d-none');
+
+            PayRollImportDailog.show(op);
         };
 
         const pr_tbl = mThis.PayrollListView.getListContainer();
@@ -180,7 +188,6 @@ var PayrollComponent = new (function () {
         };
         console.log(9090,p);
 
-        // p = mThis.setFilterPeriod(p, periodName, null,null);
     mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             const f = el.dataset.field;
             p[f] = el.value;
@@ -201,13 +208,6 @@ var PayrollComponent = new (function () {
             menus:[
 
                 {
-                    html:'<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
-                    icon:`<i class="fa-regular fa-exchange fs-5"></i>`,
-
-                    cssClass:"border-bottom pb-2",
-                    name:"change_payroll_status"
-                },
-                {
                     html:'<span class="ps-2  " vslang="titles.Modify Payroll">Modify Payroll</span>',
                     icon:`<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
@@ -221,20 +221,10 @@ var PayrollComponent = new (function () {
                 },
 
             ],
-            // adjustPosition:{
-            //         top:-90
-            // },
-            //onShow:(instance, menuContainer)=>{
-            //     console.log('open: ', instance.getMenus());
-            // },
-            // onClose:(instance, menus)=>{
-            // },
+
             onClick:(menuLink, id, name)=>{
                 switch(name){
-                    case 'change_payroll_status':{
-                        mThis.changeStatus(id,menuLink);
-                        break;
-                    }
+
                     case 'edit_payroll':{
                       mThis.editPayroll(id, menuLink);
                       break;
@@ -253,51 +243,6 @@ var PayrollComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    this.changeStatus = (id, lnk)=>{
-        // if(!AuthManager.allowed(337,false))
-        //         return;
-        //let status_code = Validator.properCase(lnk.dataset.status);
-        let tr = lnk.closest('tr');
-        let status_id = Validator.properCase(tr? tr.dataset.status_id: "");
-        let inputOptions = {
-            title: 'Set Payroll Status',
-            dataLabel: "Payroll status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText:"Save",
-            blankErrorMessage: "Status is not correct!",
-            data: [{
-                status_id: "3",
-                name: "Success"
-            },
-            {
-                status_id: "2",
-                name: "Inprogress"
-            }],
-            defaultValue: status_id
-        };
-
-        InputBox2.show(inputOptions,(d)=>{
-            if(d){
-                let p = {
-                    id: id,
-                    status_id: d.value
-                };
-                console.log(123,p);
-
-                vsapi.call(`${mThis.base_url}/hr/payroll/update-status`,p).then(res => {
-                    if(res.status_code === 200){
-
-                        InputBox2.close();
-                        cv_interact.success('The Payroll status has been updated');
-                        mThis.PayrollListView.showPage(mThis.getDataFormFilter());
-                    }
-                    else
-                        cv_interact.error(res.error_message);
-                });
-            }
-        });
-    }
 
     this.editPayroll = (id, menuLink) => {
         let op = {
@@ -324,7 +269,7 @@ var PayrollComponent = new (function () {
             confirmButtonText:"Delete"
         },function(e){
             if(e){
-                vsapi.call(`${main_view.base_url}/hr/payroll/delete`,op,false,false,false).then(res => {
+                vsapi.call(`${main_view.base_url}/hr/payroll-list/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted Successfully');
                         mThis.PayrollListView.showPage();
@@ -336,12 +281,12 @@ var PayrollComponent = new (function () {
     }
     this.prepareFormOptions = () => {
 
-        vsapi.call(`${main_view.base_url}/hr/payroll/form-options`,null,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
             console.log(1111,this.elSortBy);
 
             VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'All Sort', null);
-            VSUtil.setComboItems(mThis.elStatus,d.status,'id','name',true,'All Status',null);
+
         })
     }
 
@@ -377,39 +322,126 @@ const PayRollDailog = (()=>{
                  <div class="form-group  col-12 d.none">
                      <div id="info"></div>
                  </div>
-                 <div class="form-group col-6">
-                    <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
-                    <input name="start_date" class="form-control data-input" data-field="start_date" />
-                </div>
                 <div class="form-group col-6">
-                  <label for="end_date" class="form-label" vslang="titles.End Date"></label>
-                  <input name="end_date" class="form-control data-input" data-field="end_date" />
-                </div>
-                <div class="form-group col-6">
-                     <label for="rate" class="form-label"
-                     vslang="titles.Rate"></label>
-                     <textarea  type="text" class="form-control data-input" data-field="rate"></textarea>
+                     <label for="payroll_name" class="form-label" vslang="titles.Payroll Name"></label>
+                     <select name="payroll_name" class=" data-input"  data-field="payroll_id"></select>
                  </div>
                  <div class="form-group col-6">
-                     <label for="salary" class="form-label"
-                     vslang="titles.Salary"></label>
-                     <textarea  type="text" class="form-control data-input" data-field="salary"></textarea>
-                 </div>
+                    <label for="salary_base" class="form-label" vslang="titles.Salary Base"></label>
+                    <input name="salary_base" class="form-control data-input" data-field="salary_base" />
+                </div>
+                <div class="form-group col-6">
+                  <label for="benefit" class="form-label" vslang="titles.Benefit"></label>
+                  <input name="benefit" class="form-control data-input" data-field="benefit" />
+                </div>
+                <div class="form-group col-6">
+                  <label for="desuction" class="form-label" vslang="titles.Desuction"></label>
+                  <input name="desuction" class="form-control data-input" data-field="desuction" />
+                </div>
+                 <div class="form-group col-6">
+                  <label for="tax_allowance" class="form-label" vslang="titles.Tax Allowance"></label>
+                  <input name="tax_allowance" class="form-control data-input" data-field="tax_allowance" />
+                </div>
+                <div class="form-group col-6">
+                  <label for="tax_rate" class="form-label" vslang="titles.Tax Rate"></label>
+                  <input name="tax_rate" class="form-control data-input" data-field="tax_rate" />
+                </div>
 
               </div>`].join('');
             },
-            contentCreated:(me)=>{
-               //Convert field to be DatePicker : start_date and end_date
-               DateTimePicker.init(me.controls.start_date);
-               DateTimePicker.init(me.controls.end_date);
 
-            },
             configSelect:[
                {
                  name:"employee",
                  data:'employees',
                  textField:(me, d)=> {return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> <span>${d.email}</span><span>${d.phone_number}</span><span> ${d.position} </span> </div></div>`; },
                 // textField:"name",
+                 valueField:'id'
+               },
+               {
+                 name:"payroll_name",
+                 data:'payrolls',
+                 textField:"name",
+                 valueField:'id'
+               }
+            ],
+            buttons:[
+               {
+                label:'<span class="text-warning">Cancel</span>',
+                cssClass:'btn btn-default',
+                click:(me,btn)=>{
+                    //Close with Cancel button
+                    me.hide(false);
+                }
+               },
+               {
+                label:'<span>Save</span>',
+                cssClass:'btn btn-primary',
+                click:(me,btn)=>{
+                    const p = me.getData();
+
+                    p.id = me.dataOptions.id; //get "id" from op
+
+                    vsapi.call( [main_view.base_url,'/hr/payroll-list/save'].join(''), p,btn,null).then(res=>{
+                       if(res.status_code ==200){
+                         me.hide(true,p);
+                       }else cv_interact.error(res.error_message);
+                    });
+                }
+               }
+            ],
+            prepareFormOptions:{
+               createTitle:'Add Payroll ',
+               modifyTitle:'Edit Payroll',
+               targetProp: 'payroll_lists',
+               api:{
+                 endpoint: [main_view.base_url,'/hr/payroll-list/form-options'].join(''),
+                 params:(op)=>{
+                    return {'id':op.id};
+                 }
+               },
+            //    onResponse: (me, res)=>{
+            //      console.log('result from api "/form-options": ', res);
+            //    }
+            },
+
+            onPrepareForm:(me, data)=>{
+                 LocaleManager.translateZone(me.divModal);
+            }
+
+        });
+
+        dialog.show(op);
+     }
+
+    return self;
+})();
+
+const PayRollImportDailog = (()=>{
+
+    const self = {};
+    let dialogImport = null;
+     self.show = (op)=>{
+console.log(999,op);
+
+        dialogImport = dialogImport || new GeneralDialog({
+            cssClass:'modal-md',
+            backdrop: 'static', //User click outside form, do not close form
+            keyboard:true, //prevent user from using ESC key
+            createContent:()=>{
+                 return [`<div class="row">
+                 <div class="form-group col-12">
+                     <label for="payroll_name" class="form-label" vslang="titles.Payroll"></label>
+                     <select name="payroll_name" class=" data-input"  data-field="payroll_id"></select>
+                 </div>
+
+              </div>`].join('');
+            },
+            configSelect:[
+               {
+                 name:"payroll_name",
+                 data:'payrolls',
+                 textField:"name",
                  valueField:'id'
                },
             ],
@@ -430,7 +462,7 @@ const PayRollDailog = (()=>{
 
                     p.id = me.dataOptions.id; //get "id" from op
 
-                    vsapi.call( [main_view.base_url,'/hr/payroll/save'].join(''), p,btn,null).then(res=>{
+                    vsapi.call( [main_view.base_url,'/hr/payroll-list/import'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          me.hide(true,p);
                        }else cv_interact.error(res.error_message);
@@ -439,11 +471,11 @@ const PayRollDailog = (()=>{
                }
             ],
             prepareFormOptions:{
-               createTitle:'Add Payroll',
-               modifyTitle:'Edit Payroll',
-               targetProp: 'payrolls',
+               createTitle:'Add Payroll By Import Employee',
+               modifyTitle:'Edit Payroll By Import Payroll',
+               targetProp: 'payroll_lists',
                api:{
-                 endpoint: [main_view.base_url,'/hr/payroll/form-options'].join(''),
+                 endpoint: [main_view.base_url,'/hr/payroll-list/form-options'].join(''),
                  params:(op)=>{
                     return {'id':op.id};
                  }
@@ -459,7 +491,7 @@ const PayRollDailog = (()=>{
 
         });
 
-        dialog.show(op);
+        dialogImport.show(op);
      }
 
     return self;

@@ -31,6 +31,7 @@ use App\Http\Controllers\Bhr\EventController;
 use App\Http\Controllers\Bhr\EmployeeEventController;
 use App\Http\Controllers\Bhr\EducationController;
 use App\Http\Controllers\Bhr\ExperienceController;
+use App\Http\Controllers\Bhr\AccountController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -172,6 +173,9 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list'
     Route::post('/list-paginate', [PayrollListController::class, 'getPayrollListPaginate']);
     Route::post('/details', [PayrollListController::class, 'getDetails']);
     Route::post('/delete', [PayrollListController::class, 'deletePayrollList']);
+    Route::post('/form-options', [PayrollListController::class, 'getFormOptions']);
+    Route::post('/import', [PayrollListController::class, 'importPayrollList']);
+    Route::post('calculate', [PayrollListController::class, 'calculatePayrollList']);
 });
 
 
@@ -309,4 +313,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-event')->
     Route::post('/delete', [EmployeeEventController::class, 'deleteEmpEvent']);
     Route::post('/form-options', [EmployeeEventController::class, 'getFormOptions']);
 
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->group(function () {
+
+    Route::post('/save', [AccountController::class, 'saveAccount']);
+    Route::post('/list-paginate', [AccountController::class, 'getAccountListPaginate']);
+    Route::post('/details', [AccountController::class, 'getDetails']);
+    Route::post('/delete', [AccountController::class, 'deleteAccount']);
+    Route::post('/form-options', [AccountController::class, 'getFormOptions']);
 });

@@ -273,6 +273,7 @@ echo $user->lang ?? 'en'; ?>">
                             @include('layouts.bhr.staffAttendanceComponent')
                             @include(' layouts.bhr.employeemovementComponent')
                             @include('layouts.bhr.employeeBenefitComponent')
+                            @include('layouts.bhr.accountComponent')
                         </div>
                     </div>
                 </div>
