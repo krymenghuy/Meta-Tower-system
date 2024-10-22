@@ -248,8 +248,12 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Position</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.position || ""
-            }</p>
+                                    <p class="text-nowrap">${data.position || ""}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Salary Base</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.salary_base || ""}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Email</p>
@@ -275,10 +279,9 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Employee Type</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.emp_type || ""
-            }</p>
+                                    <p class="text-nowrap">${data.type || ""}</p>
                                 </div>
-                                                                <div class="d-flex">
+                                <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Work Shift</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${data.work_shift || ""
@@ -424,7 +427,7 @@ var EmployeeComponent = new (function () {
                             <p class="text-success" style="width:180px; height:20px">${d.edu_level}</p>
                             <p class="text-nowrap" style="width:180px; height:20px">${d.major}</p>
                         </div>
-                        
+
                         <div class="col-md-6">
                             <div class="d-flex justify-content-end">
                                 <div class="d-flex gap-2 mt-4">
@@ -490,7 +493,7 @@ var EmployeeComponent = new (function () {
                     html += `
                 <div class="row py-3 border-bottom border-info">
                     <div class="col-md-6" style="display: flex; flex-direction: column; gap:10px">
-                        <div class="experience-toggle" data-experience-id="${d.id}" 
+                        <div class="experience-toggle" data-experience-id="${d.id}"
                             style="display:flex; justify-content:space-between; width:350px; cursor: pointer;">
                             <div style="display:flex; width:350px; justify-content:space-between">
                                 <p class="text-primary" style="font-size:14px;width:125px;display:flex;justify-content:start; overflow-y: hidden; overflow-x: auto; scrollbar-width: none; align-items: flex-start; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap;">
@@ -503,7 +506,7 @@ var EmployeeComponent = new (function () {
                                 </div>
                             </div>
                         </div>
-                        <div class="experience-details" id="details_${d.id}" 
+                        <div class="experience-details" id="details_${d.id}"
                             style="display: none; flex-direction: column; gap:10px; transition: all 0.3s ease;">
                             <p class="text-success">Position: ${d.position}</p>
                             <div style="display:flex">
@@ -672,7 +675,7 @@ var EmployeeComponent = new (function () {
 
     this.changeStatus = (id, lnk) => {
         console.log(1111,id,2222,lnk);
-        
+
         // if(!AuthManager.allowed(337,false))
         //         return;
         //let status_code = Validator.properCase(lnk.dataset.status);
@@ -720,7 +723,7 @@ var EmployeeComponent = new (function () {
                             cv_interact.success("The Employee status has been updated");
                             // if(tr) tr.dataset.status_id = d.value;
                             // mThis.EmployeeListView.showPage(mThis.getFilterData());
-                        } else 
+                        } else
                         cv_interact.error(res.error_message);
                     });
             }
@@ -835,7 +838,7 @@ const AddEducation = (() => {
                         `<div class="row">
                         <div class=" form-group col-md-6">
                             <label class="form-label" vslang="titles.School">School</label>
-                            <span class="text-danger" >*</span>          
+                            <span class="text-danger" >*</span>
                             <div><select name="school_id" class="data-input" data-field="school_id"></select></div>
                         </div>
                         <div class=" form-group col-md-6">
@@ -851,7 +854,7 @@ const AddEducation = (() => {
                             <label class="form-label" vslang="titles.Major">Major</label>
                             <div><input name="major" class="form-control data-input" data-field="major"/></div>
                         </div>
-                       
+
                         <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.End Year">Finish Year</label>
                             <div><input name="end_year" class="form-control data-input" data-field="end_year"/></div>
@@ -987,7 +990,7 @@ const AddExperience = (() => {
                             <label class="form-label" vslang="titles.Description">Description</label>
                             <div><input type="text" name="description" class="form-control data-input" data-field="description"/></div>
                         </div>
-                        
+
                     </div>`,
                     ].join("");
                 },
@@ -1123,11 +1126,6 @@ const EmployeeDialog = (() => {
 
                                 </div>
                             </div>
-                           <div class="form-group col-3">
-                                    <label for="nid" class="form-label" vslang="titles.Identity Card"></label>
-                                    <span class="text-danger" >*</span>
-                                    <input name="nid" class="form-control data-input" data-field="nid" />
-                            </div>
                             <div class="form-group col-4">
                                 <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
                                 <span class="text-danger" >*</span>
@@ -1138,15 +1136,24 @@ const EmployeeDialog = (() => {
                                 <span class="text-danger" >*</span>
                                 <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
                             </div>
-                            <div class="form-group col-6">
+                            <div class="form-group col-3">
+                                    <label for="nid" class="form-label" vslang="titles.Identity Card"></label>
+                                    <span class="text-danger" >*</span>
+                                    <input name="nid" class="form-control data-input" data-field="nid" />
+                            </div>
+                            <div class="form-group col-5">
                                 <label for="joining_date" class="form-label" vslang="titles.Joining Date"></label>
                                 <input name="joining_date" class="form-control data-input" data-field="joining_date" />
                             </div>
-                        <div class="form-group col-6">
+                        <div class="form-group col-4">
                             <label for="position" class="form-label" vslang="titles.Position"></label>
                             <span class="text-danger" >*</span>
-                            <select name="position" class=" data-input"  data-field="position_id"></select>
+                            <select name="position" class=" data-input"  data-field="positions_id"></select>
                         </div>
+                            <div class="form-group col-3">
+                                <label for="salary_base" class="form-label" vslang="titles.Salary Base"></label>
+                                <input name="salary_base" class="form-control data-input" data-field="salary_base" />
+                            </div>
 
                         <div class="form-group col-6">
                            <label for="type" class="form-label" vslang="titles.Employee Type"></label>
@@ -1159,7 +1166,7 @@ const EmployeeDialog = (() => {
                             <select name="work_shift" class=" data-input"  data-field="work_shift_id"></select>
                         </div>
 
-                        
+
                         <div class="form-group col-12">
                             <label for="address" class="form-label" vslang="titles.Address">Address</label>
                             <textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>
