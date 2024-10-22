@@ -32,6 +32,7 @@ use App\Http\Controllers\Bhr\EmployeeEventController;
 use App\Http\Controllers\Bhr\EducationController;
 use App\Http\Controllers\Bhr\ExperienceController;
 use App\Http\Controllers\Bhr\AccountController;
+use App\Http\Controllers\Bhr\TaxAllowanceController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -322,4 +323,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->gr
     Route::post('/details', [AccountController::class, 'getDetails']);
     Route::post('/delete', [AccountController::class, 'deleteAccount']);
     Route::post('/form-options', [AccountController::class, 'getFormOptions']);
+});
+
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance')->group(function () {
+
+    Route::post('/save', [TaxAllowanceController::class, 'saveTaxAllowance']);
+    Route::post('/list-paginate', [TaxAllowanceController::class, 'getTaxAllowanceListPaginate']);
+    Route::post('/details', [TaxAllowanceController::class, 'getDetails']);
+    Route::post('/delete', [TaxAllowanceController::class, 'deleteTaxAllowance']);
+    Route::post('/form-options', [TaxAllowanceController::class, 'getFormOptions']);
 });

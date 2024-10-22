@@ -6,18 +6,22 @@
                     placeholder="Search Payroll">
             </div>
             <div class="d-flex align-items-center justify-content-end gap-2 w-50 ">
-                <select type="id" id="el_sort_by" class="data-input filter-field"></select>
+                <select type="id" id="el_filter_payroll" class="data-input filter-field"></select>
             </div>
 
         </div>
         <div class="d-flex align-items-center justify-content-end w-50 gap-2 pl-5 ">
+            <button type="button" class="btn btn-primary" id="_btnAddPayroll">
+                <i class="fas fa-plus"></i>
+                <span>Add Payroll</span>
+            </button>
             <button type="button" class="btn btn-primary" id="_btnImport">
                 <i class="fas fa-plus"></i>
                 <span>Import Payroll</span>
             </button>
-            <button type="button" class="btn btn-primary" id="_btnAddSalary">
+            <button type="button" class="btn btn-primary" id="_btnInsert">
                 <i class="fas fa-plus"></i>
-                <span>Add Payroll</span>
+                <span>Insert Payroll</span>
             </button>
         </div>
     </div>

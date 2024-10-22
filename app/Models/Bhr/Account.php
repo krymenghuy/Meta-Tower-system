@@ -67,7 +67,7 @@ class Account
 
         $query = DB::table('accounts as a')
             ->join('employees as e', 'e.id', 'a.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position, a.payroll, a.ballance, a.wallet_account,e.photo_file_name as emp_photo')
             ->where('a.branch_id', $branch_id);
         if ($search_id) {
@@ -98,7 +98,7 @@ class Account
     {
         $row = DB::table('accounts as a')
             ->join('employees as e', 'e.id', 'a.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position, a.payroll, a.ballance, a.wallet_account,e.photo_file_name as emp_photo')
             ->where('a.id', $id)->first();
         if ($row) {

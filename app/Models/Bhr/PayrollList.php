@@ -67,13 +67,13 @@ class PayrollList
 
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
-
+        $filter_by = $d->payroll_id ?? null;
         $str_search = '1=1';
 
         $query = DB::table('payroll_lists as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
-            ->join('emp_roles as el', 'el.id', '=', 'e.emp_role_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.postion_id')
+            ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->selectRaw('
                         pl.id,
@@ -95,7 +95,12 @@ class PayrollList
             $query->where('pl.id', $search_id);
         }
         if ($search_value) {
-            $query->where('e.name', 'like', '%' . $search_value . '%');
+            $search_value = escape_like_str($search_value);
+            $query->whereRaw("e.name like '%{$search_value}%' or pos.title like '%{$search_value}%' or el.name like '%{$search_value}%'");
+        }
+
+        if ($filter_by) {
+            $query->where('pl.payroll_id', $filter_by);
         }
         $clone_query = clone  $query;
         $count = $clone_query->count('p.id');
@@ -118,8 +123,8 @@ class PayrollList
         $branch_id = $ss->branch_id;
         $query = DB::table('payroll_lists as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.positions_id')
-            ->join('emp_roles as el', 'el.id', '=', 'e.emp_role_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.postion_id')
+            ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->selectRaw('
                         pl.id,
