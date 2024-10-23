@@ -5,7 +5,7 @@ const main_view = new function(){
     this.onLayoutLoad = null;
     this.elScreenTitle = document.querySelector('#screen_title');
     this.elScreenTitle_mobile =  document.querySelector('#mobile_screen_title');
-    this.currency = {symbol: '$', name :'USD'};
+    this.currency = {symbol: '៛', name :'KHR'};
     this.base_url = document.querySelector('meta[name="base_url"]').getAttribute('content'); //$('#__base_url').val();
     //this.mainRoute = document.querySelector('meta[name="main_route"]').getAttribute('content');
     this.asset_url =document.querySelector('meta[name="asset_url"]').getAttribute('content');

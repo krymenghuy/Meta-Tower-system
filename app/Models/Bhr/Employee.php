@@ -66,6 +66,7 @@ class Employee//extends Model
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
             'nid'=> '1|string|1-100',
+            'apply_payroll_tax' => '1|number|default = 0',
             'status_id' => '1|number|default = 10',
             'photo' => '0|image',
         ];
@@ -260,10 +261,12 @@ class Employee//extends Model
                 emp.nid,
                 emp.position_id,
                 p.title as position,
+                emp.salary_base,
                 emp.emp_type_id,
                 el.name as type,
                 emp.work_shift_id,
                 ws.name as work_shift,
+                emp.apply_payroll_tax,
                 emp.status_id,
                 es.name as status
             ')
@@ -344,8 +347,10 @@ class Employee//extends Model
             emp.nid,
             emp.position_id,
             p.title as position,
+            emp.salary_base,
             ws.name as work_shift,
             emp.status_id,
+            emp.apply_payroll_tax,
             es.name as status
         ')
         ->orderBy('emp.id', 'ASC');
@@ -396,6 +401,7 @@ class Employee//extends Model
                 el.name as type,
                 emp.work_shift_id,
                 ws.name as work_shift,
+                emp.apply_payroll_tax,
                 emp.status_id,
                 es.name as status
             ')

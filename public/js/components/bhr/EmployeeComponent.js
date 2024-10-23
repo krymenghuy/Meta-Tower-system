@@ -229,21 +229,17 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Name</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${data.name
-            }</p>
+                                    <p class="text-nowrap text-capitalize">${data.name}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">KH Name</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${data.name_kh
-            }</p>
+                                    <p class="text-nowrap text-capitalize">${data.name_kh}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Sex</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.sex == "M" ? "Male" : ""
-            }${data.sex == "F" ? "Female" : ""}${data.sex == "O" ? "Other" : ""
-            }</p>
+                                    <p class="text-nowrap">${data.sex == "M" ? "Male" : ""}${data.sex == "F" ? "Female" : ""}${data.sex == "O" ? "Other" : ""}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Position</p>
@@ -258,20 +254,17 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Email</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-primary">${data.email || ""
-            }</p>
+                                    <p class="text-primary">${data.email || ""}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Tel</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.phone_number || ""
-            }</p>
+                                    <p class="text-nowrap">${data.phone_number || ""}</p>
                                 </div>
                                   <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">ID</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.code || ""
-            }</p>
+                                    <p class="text-nowrap">${data.code || ""}</p>
                                 </div>
 
                             </div>
@@ -284,39 +277,38 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Work Shift</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.work_shift || ""
-            }</p>
+                                    <p class="text-nowrap">${data.work_shift || "" }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Nationality</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.nationality || ""
-            }</p>
+                                    <p class="text-nowrap">${data.nationality || ""}</p>
                                 </div>
 
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted width-p">Date of Birth</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.date_of_birth || ""
-            }</p>
+                                    <p class="text-nowrap">${data.date_of_birth || ""}</p>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <p class="text-nowrap text-muted   width-bp" vslang="titles.Address">Address</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${data.address
-            }</p>
+                                    <p class="text-nowrap text-capitalize">${data.address}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted   width-p" vslang="titles.NSSF">NSSF</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${data.nssf_id
-            }</p>
+                                    <p class="text-nowrap text-capitalize">${data.nssf_id}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap text-muted   width-p" vslang="titles.Identity Card">Identity Card</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${data.nid
-            }</p>
+                                    <p class="text-nowrap text-capitalize">${data.nid}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap text-muted width-p">Payroll Tax</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.apply_payroll_tax == "0" ? "Have Tax" : ""}${data.apply_payroll_tax == "1" ? "Non Tax" : ""}</p>
                                 </div>
                             </div>
                         </div>
