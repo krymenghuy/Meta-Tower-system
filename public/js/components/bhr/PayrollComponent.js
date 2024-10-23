@@ -12,6 +12,8 @@ var PayrollComponent = new (function () {
     this.btnImport = this.self.querySelector("#_btnImport");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_payroll");
+    this.elSortBy = this.self.querySelector("#el_sort_by");
+    this.btnCalculate = this.self.querySelector("#_btnCalculate");
 
     this.cols = [
 
@@ -23,7 +25,7 @@ var PayrollComponent = new (function () {
         },
         {
             title: "Employee",
-            className: "align-middle text-start",
+            className: "align-middle text-start w-15",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
                             <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
@@ -41,14 +43,14 @@ var PayrollComponent = new (function () {
             title: "Salary Base",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.salary_base ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.salary_base ?? '0.00'}</p>`;
             }
         },
         {
             title: "Benefit",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.benefit ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.benefit ?? '0.00'}</p>`;
             }
         },
 
@@ -56,7 +58,7 @@ var PayrollComponent = new (function () {
             title: "Desuction",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.desuction ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.deduction ?? '0.00'}</p>`;
             }
         },
 
@@ -64,14 +66,14 @@ var PayrollComponent = new (function () {
             title: "Tax Base",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_base ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_base ?? '0.00'}</p>`;
             }
         },
         {
             title: "Tax Allowance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_allowance ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_allowance ?? '0.00'}</p>`;
             }
         },
         {
@@ -85,7 +87,7 @@ var PayrollComponent = new (function () {
             title: "Total",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.total_salary ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.total_salary ?? '0.00'}</p>`;
             }
         },
         {
@@ -122,13 +124,31 @@ var PayrollComponent = new (function () {
                 // id: 1,
                 btn: e.target,
                 onClose: () => {
-                    // content.parentElement.classList.remove('d-none');
+                    cv_interact.success('Added Payroll Successfully');
                     mThis.PayrollListView.showPage();
                 }
             };
             // content.parentElement.classList.add('d-none');
 
             AddPayRollDailog.show(op);
+        };
+        mThis.btnCalculate.onclick = function (e) {
+
+            e.preventDefault();
+
+
+
+            let op = {
+                payroll_id : mThis.getDataFormFilter().payroll_id,
+
+            }
+            console.log(444, op);
+            vsapi.call( [main_view.base_url,'/hr/payroll-list/calculate'].join(''), op,null,null).then(res=>{
+               if(res.status_code ==200){
+                 mThis.PayrollListView.showPage();
+                 alert(res.data);
+               }else cv_interact.error(res.error_message);
+            });
         };
         mThis.btnInsert.onclick = function (e) {
             e.preventDefault();
@@ -139,7 +159,7 @@ var PayrollComponent = new (function () {
                 // id: 1,
                 btn: e.target,
                 onClose: () => {
-                    // content.parentElement.classList.remove('d-none');
+                    cv_interact.success('Inserted Successfully');
                     mThis.PayrollListView.showPage();
                 }
             };
@@ -156,7 +176,7 @@ var PayrollComponent = new (function () {
                 // id: 1,
                 // btn: e.target,
                 onClose: () => {
-                    // content.parentElement.classList.remove('d-none');
+                    cv_interact.success('Import Payroll Successfully');
                     mThis.PayrollListView.showPage();
                 }
             };
@@ -167,13 +187,14 @@ var PayrollComponent = new (function () {
 
         const pr_tbl = mThis.PayrollListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.style.height = (window.innerHeight - 275) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
 
         mThis.initDropdownMenus(pr_tbl);///
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
+
 
             el.onchange =  (e) => {
            e.preventDefault();
@@ -195,23 +216,6 @@ var PayrollComponent = new (function () {
             }
         }, 200);
     });
-
-    this.getDataFormFilter = () => {
-        let p = {};
-        p.search_value = mThis.elSearch.value;
-        p.payroll_id = mThis.elFilter.value;
-
-        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
-        main_filters.forEach(el => {
-            const f = el.dataset.field;
-            p[f] = el.value;
-        });
-        console.log(222, p);
-
-        return p;
-    };
-
-
 
     this.initDropdownMenus = (table)=>{
         const menuOptopns = {
@@ -263,7 +267,9 @@ var PayrollComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
+                cv_interact.success('Edited Successfully');
                 mThis.PayrollListView.showPage();
+
             }
         };
         PayRollDailog.show(op);
@@ -293,12 +299,29 @@ var PayrollComponent = new (function () {
         });
 
     }
+
+    this.getDataFormFilter = () => {
+        let p = {};
+        p.search_value = mThis.elSearch.value;
+        p.payroll_id = mThis.elFilter.value;
+        p.sort_by = mThis.elSortBy.value;
+
+        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
+        main_filters.forEach(el => {
+            const f = el.dataset.field;
+            p[f] = el.value;
+        });
+        console.log(222, p);
+
+        return p;
+    };
     this.prepareFormOptions = () => {
 
         vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
-
+            console.log(1111,this.elSortBy);
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','name',true,'All',null);
+            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'All', null);
 
         })
     }
@@ -339,27 +362,14 @@ const PayRollDailog = (()=>{
                      <label for="payroll_name" class="form-label" vslang="titles.Payroll Name"></label>
                      <select name="payroll_name" class=" data-input"  data-field="payroll_id"></select>
                  </div>
-                 <div class="form-group col-6">
-                    <label for="salary_base" class="form-label" vslang="titles.Salary Base"></label>
-                    <input name="salary_base" class="form-control data-input" data-field="salary_base" />
-                </div>
                 <div class="form-group col-6">
                   <label for="benefit" class="form-label" vslang="titles.Benefit"></label>
                   <input name="benefit" class="form-control data-input" data-field="benefit" />
                 </div>
                 <div class="form-group col-6">
                   <label for="desuction" class="form-label" vslang="titles.Desuction"></label>
-                  <input name="desuction" class="form-control data-input" data-field="desuction" />
+                  <input name="desuction" class="form-control data-input" data-field="deduction" />
                 </div>
-                 <div class="form-group col-6">
-                  <label for="tax_allowance" class="form-label" vslang="titles.Tax Allowance"></label>
-                  <input name="tax_allowance" class="form-control data-input" data-field="tax_allowance" />
-                </div>
-                <div class="form-group col-6">
-                  <label for="tax_rate" class="form-label" vslang="titles.Tax Rate"></label>
-                  <input name="tax_rate" class="form-control data-input" data-field="tax_rate" />
-                </div>
-
               </div>`].join('');
             },
 
