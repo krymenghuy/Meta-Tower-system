@@ -1148,7 +1148,7 @@ const EmployeeDialog = (() => {
                         <div class="form-group col-4">
                             <label for="position" class="form-label" vslang="titles.Position"></label>
                             <span class="text-danger" >*</span>
-                            <select name="position" class=" data-input"  data-field="positions_id"></select>
+                            <select name="position" class=" data-input"  data-field="position_id"></select>
                         </div>
                             <div class="form-group col-3">
                                 <label for="salary_base" class="form-label" vslang="titles.Salary Base"></label>

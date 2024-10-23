@@ -59,7 +59,7 @@ class Employee//extends Model
             'nationality' => '0|string|0-150',
             'date_of_birth' => '1|date',
             'address' => '0|string|0-250',
-            'position_id' => '1|number',
+            'position_id' => '0|number',
             'emp_type_id' => '1|number',
             'salary_base' => '1|number',
             'work_shift_id' => '1|number',
@@ -164,6 +164,8 @@ class Employee//extends Model
         $str_dates = $today." BETWEEN $start_date AND $end_date";
          return DB::table('leaves as l')->where('l.id',$id)->whereRaw($str_dates)->value('id');
       }
+
+
 
       static function getCurrentLeaveInfo($id){
         $today = date('Y-m-d');

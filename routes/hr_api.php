@@ -99,7 +99,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('experience')-
     Route::post('/delete', [ExperienceController::class, 'delete']);
     Route::post('/form-options', [ExperienceController::class, 'getFormOptions']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leaves')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave')->group(function () {
 
     Route::post('/save', [LeaveController::class, 'save']);
     Route::post('/list-paginate', [LeaveController::class, 'getLeaveListPaginate']);

@@ -67,13 +67,10 @@ class LeaveController extends Controller
    public function updateStatus(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
+        if ($ss->status_code !== 200) return JDV::raw($ss);
 
-        $id = $req->id ? $req->id : $req->id;
-        $leave = new Leave($id, $ss);
-        $res = $leave->updateStatus($req->action_id, $id);
+        $id = $req->id;
+        $res = $this->leave->updateStatus($req->status_id, $id,$ss);
 
         return JDV::raw($res);
     }
