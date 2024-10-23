@@ -51,11 +51,23 @@ class Leave
         if(!$emp) return DV::error('It seems the employee information does not exists');
         
         if(!$emp) return DV::error('Employee ID does not exist');
+
+        if (!$id) {
+            $existingLeave = DB::table('leaves')
+                ->where('emp_id', $d->emp_id)
+                ->where('start_date', $d->start_date)
+                ->where('end_date', $d->end_date)
+                ->exists();
+            
+            if ($existingLeave) {
+                return DV::error('The employee already has leave for the specified date range.');
+            }
+        }
         if (!$id && Employee::isOnLeave($d->emp_id)){
             return DV::error('Staff named ?? is already on leave::'.$emp->name);
         }
         if($emp->status_id !==10) return DV::error('The Employee is not active');
-        
+
 
 
         $id = saveData($ss,'leaves', ['id' => $id], $inputs, [], 1,false);
