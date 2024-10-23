@@ -80,4 +80,13 @@ class PayrollListController extends Controller
         }
         return JDV::result($this->payrollListModel->importPayrollList($req->all(), $ss));
     }
+
+    public function calculatePayrollList(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return $this->payrollListModel->calculatePayrollList($req->all(), $ss);
+    }
 }
