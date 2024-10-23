@@ -91,7 +91,7 @@ class Benefit
                     $seniority_id = saveData($ss, 'emp_seniorities', ['id' => null], $seniority_inputs, [], 1, false);
                 }
         
-                return DV::depends($seniority_id, ['Seniority data saved']);
+                return DV::depends($seniority_id, ['emp_seniorities'=>$inputs]);
             }
         
             return DV::depends(1, ['Benefits saved' => $inputs, 'Benefit ID' => $id]);
