@@ -9,7 +9,7 @@
                         </a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="tab-button view_seniority nav-link pt-2 pb-2 border border-0 rounded-5" data-view="seniority" id="seniority-tab" data-bs-toggle="tab" data-bs-target="#seniority-pane" type="button" role="tab" aria-controls="seniority-pane" aria-selected="false">
+                        <a class="tab-button view_seniority nav-link pt-2 pb-2 border border-0 rounded-5" data-view="view_seniority" id="seniority-tab" data-bs-toggle="tab" data-bs-target="#seniority-pane" type="button" role="tab" aria-controls="seniority-pane" aria-selected="false">
                             Seniorities
                         </a>
                     </li>
@@ -45,7 +45,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="_employee_bonus_list" class="mt-5"></div>
+                <div id="_bonus_list" class="mt-5"></div>
             </div>
 
             <div class="tab-pane fade" id="seniority-pane" role="tabpanel" aria-labelledby="seniority-tab" tabindex="0">

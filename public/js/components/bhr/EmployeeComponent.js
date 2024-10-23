@@ -28,7 +28,10 @@ var EmployeeComponent = new (function () {
             paginationContainer: mThis.containerPagination,
             apiCluster: main_view.apiCluster,
             processResponse: (res) => {
+                console.log(1234,res.data.data);
+
                 return res.data;
+                
             },
             renderItems: (data, list_container) => {
                 mThis.renderEmployeeList(list_container, data);
