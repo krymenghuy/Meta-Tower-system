@@ -134,11 +134,12 @@ class Benefit
         $query = DB::table('emp_bonuses as bs')
             ->join('emp_benefits as b', 'b.id', '=', 'bs.benefit_id')
             ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
+            ->join('benefit_categories as bc', 'bc.id', '=', 'b.benefit_type_id')
 
             ->Where('bs.branch_id', $branch_id)
             ->whereRaw($str_search)
             ->whereRaw($str_bonus_type)
-            ->selectRaw('bs.id,bs.benefit_id,emp.name as employee,b.benefit_type_id,bs.bonus_type,b.amount,b.remarks');
+            ->selectRaw('bs.id,bs.benefit_id,emp.name as employee,b.benefit_type_id,bs.bonus_type,b.amount,b.remarks,b.create_date, b.update_user,emp.photo_file_name as emp_photo');
         $count_query = clone $query;
         $count = $count_query->count('bs.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -240,14 +241,15 @@ class Benefit
     function getFormOptions($id, $ss)
     {
 
-        $benifit = null;
+
+        $benefit = null;
         if ($id) {
-            $benifit = self::getDetails( $id, $ss);
+            $benefit = self::getDetails($id, $ss);
         }
         return $data = (object) [
-
+            'employees' => GeneralSettings::options_employee(10, $ss),
             'categories' => DB::table('benefit_categories')->selectRaw('id,name')->get(),
-            'benefit' => $benifit
+            'benefit' => $benefit
         ];
     }
 }
