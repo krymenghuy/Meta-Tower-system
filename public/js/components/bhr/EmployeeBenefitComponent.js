@@ -8,18 +8,16 @@ var EmployeeBenefitComponent = new (function () {
     );
     this.self = this.jm[0];
     this.title_prop = "Employee Benefits";
-    let div = mThis.self.querySelector("#_employee_benefit_list");
+    let div = mThis.self.querySelector("#_employee_bonus_list");
     this.btnAdd = this.self.querySelector("#_btn_add_benefit");
 
-    this.cols = [
+    this.bonus_cols = [
         {
             title: "Photo",
             className: "align-middle text-capitalize text-nowrap",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
-                            <img class="image-student-tbl" src="${
-                                data.image_url
-                            }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                            <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                         </div>`;
             },
         },
@@ -64,16 +62,84 @@ var EmployeeBenefitComponent = new (function () {
         },
     ];
 
+    this.seniority_cols = [
+        {
+            title: "Photo",
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data, index, tr) => {
+                return `<div style="display: flex; align-items: center;">
+                            <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                        </div>`;
+            },
+        },
+        {
+            title: "Seniority",
+            className: "align-middle",
+            data: "benefit_id",
+        },
+        {
+            title: "Remarks",
+            className: "align-middle",
+            data: "remarks",
+        },
+        {
+            title: "Start date",
+            className: "align-middle",
+            data: "start_date",
+        },
+        {
+            title: "End date",
+            className: "align-middle",
+            data: "create_date",
+        },
+        {
+            title: "Create By",
+            className: "align-middle",
+            data: "update_user",
+        },
+        {
+            className: "col_action align-middle",
+            data: (data) => `
+                <div class="d-flex justify-content-end align-items-end">
+                    <div class="text-end gap-2 d-flex flex-wrap">
+                        <a href="javascript:void(0)" class="${
+                            data.action_id > 1
+                                ? "d-none"
+                                : "btn_employee_benefit_action"
+                        }" data-id="${data.id}" data-statusid="${
+                data.status_id
+            }" aria-haspopup="true" aria-expanded="false">
+                            <img src="${
+                                main_view.asset_url
+                            }/images/icons/more_vert (3).svg" />
+                        </a>
+                    </div>
+                </div>`,
+        },
+    ];
+
     this.init = function () {
         if (mThis.initAlready) return;
 
-        mThis.EmployeeBenefitListView = new ListView("_employee_benefit_list", {
+        mThis.EmployeeBenefitListView = new ListView("_employee_bonus_list", {
             fetchApi: `${mThis.base_url}/hr/benefit/bonus-list`,
             perPage: 6,
             apiCluster: main_view.apiCluster,
-            columns: mThis.cols,
+            columns: mThis.bonus_cols,
             tableClass: "table table--white header-uppercase",
             listContainerClass: null,
+        });
+
+        // Handle tab switching between Bonuses and Seniorities
+        const bonusTab = document.getElementById("bonus-tab");
+        const seniorityTab = document.getElementById("seniority-tab");
+
+        bonusTab.addEventListener("click", function () {
+            mThis.switchView("bonus");
+        });
+
+        seniorityTab.addEventListener("click", function () {
+            mThis.switchView("seniority");
         });
 
         mThis.btnAdd.onclick = function (e) {
@@ -87,6 +153,7 @@ var EmployeeBenefitComponent = new (function () {
             };
             EmployeeBenefitDialog.show(op);
         };
+
         const pr_tbl = mThis.EmployeeBenefitListView.getListContainer();
         const sh_parent = pr_tbl;
         sh_parent.style.height = window.innerHeight - 225 + "px";
@@ -99,21 +166,43 @@ var EmployeeBenefitComponent = new (function () {
         };
         mThis.initAlready = true;
     };
+
+    this.switchView = function (viewType) {
+        const apiUrl =
+            viewType === "bonus"
+                ? `${mThis.base_url}/hr/benefit/bonus-list`
+                : `${mThis.base_url}/hr/benefit/seniority-list`;
+
+        const columns =
+            viewType === "bonus" ? mThis.bonus_cols : mThis.seniority_cols;
+
+        // Reinitialize the list view based on the selected tab
+        mThis.EmployeeBenefitListView = new ListView("_employee_bonus_list", {
+            fetchApi: apiUrl,
+            perPage: 6,
+            apiCluster: main_view.apiCluster,
+            columns: columns,
+            tableClass: "table table--white header-uppercase",
+            listContainerClass: null,
+        });
+
+        mThis.EmployeeBenefitListView.showPage();
+    };
+
     this.initDropdownMenus = (table) => {
-        const menuOptopns = {
+        const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_employee_benefit_action",
             cssClass: "bg-white shadow",
-            //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Edit Employee Benefit">Edit Employee Benefit</span>',
+                    html: '<span class="ps-2" vslang="titles.Edit Employee Benefit">Edit Employee Benefit</span>',
                     icon: `<i class="fa-regular fa-pen-to-square fs-5 text-success"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_employee_benefit",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete Benefit">Delete Employee Benefit</span>',
+                    html: '<span class="ps-2" vslang="titles.Delete Benefit">Delete Employee Benefit</span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_employee_benefit",
@@ -129,16 +218,13 @@ var EmployeeBenefitComponent = new (function () {
                         mThis.deleteEmployeeBenefit(id, menulink);
                         break;
                     }
-                    default: {
-                        break;
-                    }
                 }
             },
         };
-        new VSDropdownMenu(menuOptopns);
+        new VSDropdownMenu(menuOptions);
     };
+
     this.editEmployeeBenefit = (id, menulink) => {
-        console.log(134569273, id, menulink);
         let op = {
             id: id,
             btn: menulink,
@@ -148,9 +234,8 @@ var EmployeeBenefitComponent = new (function () {
         };
         EmployeeBenefitDialog.show(op);
     };
-    this.deleteEmployeeBenefit = (id, menulink) => {
-        console.log(13456, id, menulink);
 
+    this.deleteEmployeeBenefit = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -178,7 +263,7 @@ var EmployeeBenefitComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Employee Benefits Delete Successfully"
+                                    "Employee Benefits Deleted Successfully"
                                 );
                                 mThis.EmployeeBenefitListView.showPage();
                             }
@@ -211,6 +296,7 @@ var EmployeeBenefitComponent = new (function () {
         $(mThis.self).fadeIn(200);
     };
 })();
+
 const EmployeeBenefitDialog = (() => {
     const self = {};
     let dialog = null;
@@ -219,8 +305,8 @@ const EmployeeBenefitDialog = (() => {
             dialog ||
             new GeneralDialog({
                 cssClass: "modal-md",
-                backdrop: "static", //User click outside form, do not close form
-                keyboard: true, //prevent user from using ESC key
+                backdrop: "static",
+                keyboard: true,
                 createContent: () => {
                     return [
                         `<div class="row">
@@ -291,16 +377,10 @@ const EmployeeBenefitDialog = (() => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                     } else cv_interact.error(res.error_message);
-                                    // EmployeeBenefitComponent.saveEmployeeBenefit();
                                 });
                         },
                     },
                 ],
-                // contentCreated: (me, divModal) => {
-                //     me.saveEmployeeBenefit = (p) => {
-                //         alert("Data saved.");
-                //     };
-                // },
                 prepareFormOptions: {
                     createTitle: "Add Employee Benefits",
                     modifyTitle: "Edit Employee Benefits",
