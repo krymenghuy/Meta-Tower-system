@@ -15,6 +15,10 @@
                     </li>
                 </ul>
             </div>
+            <div class="btn btn-primary rounded-5 btnAddBenefitType">
+                <i class="fa fa-plus"></i>
+                <span>Benefit Type</span>
+            </div>
         </div>
         <div class="d-flex gap-1">
             <input type="text" class="form-control filter-field" id="_search_benefit" placeholder="Search benefit here ........." aria-label="Search">
