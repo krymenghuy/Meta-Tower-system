@@ -63,9 +63,11 @@ class Leave
                 return DV::error('The employee already has leave for the specified date range.');
             }
         }
+        
         if (!$id && Employee::isOnLeave($d->emp_id)){
             return DV::error('Staff named ?? is already on leave::'.$emp->name);
         }
+
         if($emp->status_id !==10) return DV::error('The Employee is not active');
 
 

@@ -18,7 +18,7 @@ var LeaveComponent = new (function () {
             title: "Employee ID",
             className: 'align-middle text-capitalize text-nowrap',
             data: (data, index, tr) => { 
-                return `<p class="p-0 m-0">${data.emp_code ?? 'null'}</p>`;
+                return `<p style="font-size: 12px; class="p-0 m-0">${data.emp_code ?? 'null'}</p>`;
              }
 
         },
@@ -30,9 +30,9 @@ var LeaveComponent = new (function () {
                 return `<div style="display: flex; align-items: center;">
                          <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
-                                <span style="font-size: 14px; font-weight: bold;">${data.employee ??''}</span>
+                                <span style="font-size: 12px; font-weight: bold;">${data.employee ??''}</span>
                                 <br/>
-                                <span class="text-muted" style="font-size: 12px; ">${data.title ?? ''}</span>
+                                <span class="text-muted" style="font-size: 11px; ">${data.title ?? ''}</span>
                             </div>
                         </div>`;
             }
@@ -42,7 +42,7 @@ var LeaveComponent = new (function () {
             title: "Leave Type",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.leave_type ?? ''}</p>`;
+                return `<p style="font-size: 12px; class="p-0 m-0">${data.leave_type ?? ''}</p>`;
             }
         },
        
@@ -62,7 +62,7 @@ var LeaveComponent = new (function () {
             title: "Remarks",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.remarks ?? 'No remarks'}</p>`;
+                return `<p style="font-size: 12px; class="p-0 m-0">${data.remarks ?? 'No remarks'}</p>`;
             }
         },
         {
