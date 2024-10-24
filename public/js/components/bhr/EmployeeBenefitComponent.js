@@ -13,7 +13,7 @@ var EmployeeBenefitComponent = new (function () {
 
     this.bonus_cols = [
         {
-            title: "Photo",
+            title: "Employee",
             className: "align-middle text-capitalize text-nowrap",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
@@ -22,15 +22,33 @@ var EmployeeBenefitComponent = new (function () {
             },
         },
         {
-            title: "Benefit",
+            title: "Name",
             className: "align-middle",
-            data: "benefit_id",
+            data: (data, index, tr) => {
+                return `<div style="display: block;; align-items: center;">
+                                <span style="font-size: 14px; font-weight: bold;">${
+                                    data.name ?? ""
+                                }</span>
+                                <br/>
+                                <span style="font-size: 12px; color: gray;">${
+                                    data.email ?? ""
+                                }</span>
+                            </div>
+                        </div>`;
+            },
         },
         {
             title: "Remarks",
             className: "align-middle",
             data: "remarks",
         },
+        // {
+        //     title: "benefit types",
+        //     className: "align-middle",
+        //     data: (data, index, tr) => {
+        //         return `<p class="p-0 m-0">${data.benefit_type ?? ""}</p>`;
+        //     },
+        // },
         {
             title: "Create date",
             className: "align-middle",
