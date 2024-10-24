@@ -2,14 +2,14 @@
     <div class="d-flex justify-content-between rounded-3 pt-2">
         <div class="d-flex gap-2">
             <div class="card-header shadow border border-1 rounded-5 p-1 bg-light-gray">
-                <ul class="nav nav-tabs border border-0 m-0 tab-header" id="benefit-tabs" role="tablist">
+                <ul class="nav nav-tabs border border-0 m-0 tab-header" id="custom-tabs-one-tab" role="tablist">
                     <li class="nav-item" role="presentation">
                         <a class="tab-button view_bonus nav-link pt-2 pb-2 border border-0 rounded-5 active" data-view="view_bonus" id="bonus-tab" data-bs-toggle="tab" data-bs-target="#bonus-pane" type="button" role="tab" aria-controls="bonus-pane" aria-selected="true">
                             Bonuses
                         </a>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <a class="tab-button view_seniority nav-link pt-2 pb-2 border border-0 rounded-5" data-view="seniority" id="seniority-tab" data-bs-toggle="tab" data-bs-target="#seniority-pane" type="button" role="tab" aria-controls="seniority-pane" aria-selected="false">
+                        <a class="tab-button view_seniority nav-link pt-2 pb-2 border border-0 rounded-5" data-view="view_seniority" id="seniority-tab" data-bs-toggle="tab" data-bs-target="#seniority-pane" type="button" role="tab" aria-controls="seniority-pane" aria-selected="false">
                             Seniorities
                         </a>
                     </li>
@@ -22,7 +22,7 @@
     </div>
 
     <div class="shadow rounded-3 mt-4">
-        <div class="tab-content" id="benefit-tabs-content">
+        <div class="tab-content" id="custom-tabs-one-tabContent">
             <div class="tab-pane fade show active" id="bonus-pane" role="tabpanel" aria-labelledby="bonus-tab" tabindex="0">
                 <div class="d-flex justify-content-between rounded-3 p-0 mt-3">
                     <div class="d-flex gap-2">
