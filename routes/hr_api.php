@@ -140,6 +140,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/bene
     Route::post('/details', [BenefitController::class, 'getDetails']);
     Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
     Route::post('/form-options', [BenefitController::class, 'getFormOptions']);
+    Route::post('/all-list', [BenefitController::class, 'getAllBenefitList']);
 });
 
 // Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('seniorities')->group(function () {
