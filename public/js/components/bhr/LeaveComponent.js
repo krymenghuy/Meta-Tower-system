@@ -9,28 +9,44 @@ var LeaveComponent = new (function () {
 
     this.btnAdd = this.self.querySelector("#_btnAddLeave");
     this.divFilter = this.self.querySelector("#_divFilter_leave");
-    this.elFilter_leaveType = this.self.querySelector('#el_leave_type');
+    // this.elFilter_leaveType = this.self.querySelector('#el_leave_type');
     this.elFilter_status = this.self.querySelector('#el_status');
     this.elSearch = this.self.querySelector("#_sdl_search_leave");
 
     this.cols = [
         {
-            title: "No",
-            className: 'align-middle text-capitalize text-nowrap',
-            data: (data, index, i) => { return (index + 1) },
+            className: 'col_action align-middle',
+            data: function (data, row, display) {
+                return `
+                   <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        },
+        {
+            title: "Employee ID",
+            className: 'align-middle text-capitalize',
+            data: (data, index, tr) => { 
+                return `<p style="font-size: 12px; class="p-0 m-0 "><span class="text-warning">${data.emp_code ?? 'null'}</span></p>`;
+             }
 
         },
 
         {
-            title: "Employee",
+            title: "Employee Info",
             className: "align-middle text-start",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
                          <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
-                                <span style="font-size: 14px; font-weight: bold;">${data.employee ??''}</span>
+                                <span style="font-size: 12px; font-weight: bold;">${data.employee ??''}</span>
                                 <br/>
-                                <span style="font-size: 12px; color: gray;">${data.title ?? ''}</span>
+                                <span class="text-muted" style="font-size: 11px; ">${data.title ?? ''}</span>
                             </div>
                         </div>`;
             }
@@ -40,28 +56,47 @@ var LeaveComponent = new (function () {
             title: "Leave Type",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.leave_type ?? ''}</p>`;
+                return `<p style="font-size: 12px; class="p-0 m-0">${data.leave_type ?? ''}</p>`;
+            }
+        },
+       
+        {
+            title: "Duration",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
+                return `<div class="d-flex flex-column">
+                            <small class="p-0 m-0 text-primary" style="font-size:11px;">${data.start_date} - ${data.end_date}</small>
+                            <span class="text-success" style="font-size:11px;">(${data.leave_days} day)</span>
+                        </div>`;
+
             }
         },
         {
             title: "Remarks",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.remarks ?? ''}</p>`;
+                return `<p style="font-size: 12px; class="p-0 m-0">${data.remarks ?? 'No remarks'}</p>`;
             }
         },
         {
-            title: "Duration",
+            title: "Created By",
             className: "align-middle",
             data: (data, index, tr) => {
                 //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
-                return `<p class="p-0 m-0">${data.start_date} to ${data.end_date}</p>`;
+                return `<div class="d-flex flex-column">
+                    <span class="fw-semibold">${data.update_user}</span>
+                    <span>
+                        <small class="text-muted">${data.update_date}</small>
+                    </span>
+                </div>`;
 
             }
         },
+        
         {
             title: "Status",
-            className: 'status text-nowrap align-middle',
+            className: 'status text-nowrap text-center align-middle',
             data: function (data, index, tr) {
                 let cls_class = 'text-danger text-center';
                 let bg_color = ''; // Default background color
@@ -79,41 +114,27 @@ var LeaveComponent = new (function () {
                     bg_color = '#6c757d'; // Default gray background for other statuses
                 }
 
-                return `<div><a class="d-flex justify-content-left" data-status="${data.status}" data-id="${data.id}" href="javascript:void(0)">
+                return `<a class="d-flex justify-content-center" data-status="${data.status}" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:80px; background: ${bg_color}" class="p-1 ${cls_class}">
                                 ${data.status}
                             </span>
-                        </a></div>`;
+                        </a>`;
             }
         },
-        {
-            className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class="${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
-        }
+        
 
     ];
 
 
-    // Initialize
     this.init = () => {
         if (mThis.initAlready) return;
 
         mThis.LeaveRequestListView = new ListView('_leave_request_list',{
-            fetchApi : `${main_view.base_url}/hr/leaves/list-paginate`,
+            fetchApi : `${main_view.base_url}/hr/leave/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white overflow-hidden  header-uppercase',
+            tableClass: 'table table--white overflow-hidden rounded-2 header-uppercase',
             listContainerClass: null
         });
 
@@ -128,12 +149,12 @@ var LeaveComponent = new (function () {
                 }
             };
 
-            LeaveRequestDailog.show(op);
+            LeaveRequestDialog.show(op);
         };
 
         const pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.style.height = (window.innerHeight - 260) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
         mThis.initDropdownMenus(pr_tbl);
@@ -145,15 +166,15 @@ var LeaveComponent = new (function () {
 
         el.onchange =  (e) => {
        e.preventDefault();
-       mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
-       console.log(777777, mThis.getDataFormFilter());
+       mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+       console.log(777777, mThis.getFilterData());
         }
    });
 
     mThis.elSearch.addEventListener('keyup', (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
-            mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
+            mThis.LeaveRequestListView.showPage(mThis.getFilterData());
 
         }, 200);
     });
@@ -162,10 +183,10 @@ var LeaveComponent = new (function () {
     //     return p ;
     // };
 
-    this.getDataFormFilter = () => {
+    this.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
-            leave_type_id: mThis.elFilter_leaveType.value,
+            // leave_type_id: mThis.elFilter_leaveType.value,
             search_value:mThis.elSearch.value,
 
 
@@ -270,14 +291,14 @@ var LeaveComponent = new (function () {
                 };
                 console.log(123,p);
 
-                vsapi.call(`${mThis.base_url}/hr/leaves/update-status`,p).then(res => {
+                vsapi.call(`${mThis.base_url}/hr/leave/update-status`,p).then(res => {
                     if(res.status_code === 200){
                         // mThis.elFilter_leave_request_status.value = d.value;
                         InputBox2.close();
                         // mThis.elFilter_leave_request_status.dispatchEvent ( new Event('change'));
                         cv_interact.success('The leave request status has been updated');
                         // if(tr) tr.dataset.statuscode = d.value;
-                        mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
+                        mThis.LeaveRequestListView.showPage(mThis.getFilterData());
                     }
                     else
                         cv_interact.error(res.error_message);
@@ -295,7 +316,7 @@ var LeaveComponent = new (function () {
             }
         };
 
-        LeaveRequestDailog.show(op);
+        LeaveRequestDialog.show(op);
     }
 
     this.deleteLeaveRequest = (id, menuLink) => {
@@ -312,7 +333,7 @@ var LeaveComponent = new (function () {
             confirmButtonText:"Delete"
         },function(e){
             if(e){
-                vsapi.call(`${main_view.base_url}/hr/leaves/delete`,op,false,false,false).then(res => {
+                vsapi.call(`${main_view.base_url}/hr/leave/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted Successfully');
                         mThis.LeaveRequestListView.showPage();
@@ -328,12 +349,12 @@ var LeaveComponent = new (function () {
     // Show the component
     this.prepareFormOptions = () => {
 
-        vsapi.call(`${main_view.base_url}/hr/leaves/form-options`,null,null,null).then(res => {
+        vsapi.call(`${main_view.base_url}/hr/leave/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
             console.log(1111,this.elSortBy);
 
             VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',true,'All Statuses',null);
-            VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All Leave Types',null);
+            // VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All Leave Types',null);
         })
     }
 
@@ -351,21 +372,21 @@ var LeaveComponent = new (function () {
 });
 
 //begin::LeaveRequestDialog using GeneralDialog
-const LeaveRequestDailog = (()=>{
+const LeaveRequestDialog = (()=>{
 
     const self = {};
     let dialog = null;
      self.show = (op)=>{
 
         dialog = dialog || new GeneralDialog({
-            cssClass:'modal-lg',
+            cssClass:'modal-md',
             backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
                  return [`<div class="row">
                  <div class="form-group col-12">
                      <label for="employee" class="form-label" vslang="titles.Employee"></label>
-                     <select name="employee" class=" data-input"  data-field="emp_id"></select>
+                     <select name="employee" class="form-control data-input"  data-field="emp_id"></select>
                  </div>
                  <div class="form-group  col-12 d.none">
                      <div id="info"></div>
@@ -382,11 +403,7 @@ const LeaveRequestDailog = (()=>{
                      <label for="leave_type" class="form-label" vslang="titles.Leave Type"></label>
                      <select name="leave_type" class=" data-input"  data-field="leave_type_id"></select>
                  </div>
-                 <div class="form-group col-12">
-                     <label for="remarks" class="form-label"
-                     vslang="titles.Reason"></label>
-                     <textarea  type="text" class="form-control data-input" data-field="remarks"></textarea>
-                 </div>
+               
 
               </div>`].join('');
             },
@@ -428,7 +445,7 @@ const LeaveRequestDailog = (()=>{
 
                     p.id = me.dataOptions.id; //get "id" from op
 
-                    vsapi.call( [main_view.base_url,'/hr/leaves/save'].join(''), p,btn,null).then(res=>{
+                    vsapi.call( [main_view.base_url,'/hr/leave/save'].join(''), p,btn,null).then(res=>{
                        if(res.status_code ==200){
                          me.hide(true,p);
                        }else cv_interact.error(res.error_message);
@@ -441,7 +458,7 @@ const LeaveRequestDailog = (()=>{
                modifyTitle:'Edit Leave Request',
                targetProp: 'leave_request',
                api:{
-                 endpoint: [main_view.base_url,'/hr/leaves/form-options'].join(''),
+                 endpoint: [main_view.base_url,'/hr/leave/form-options'].join(''),
                  params:(op)=>{
                     return {'id':op.id};
                  }

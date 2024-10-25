@@ -1,16 +1,124 @@
 "use strict";
 
 var EmployeeBenefitComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children(
-        "#_main_employee_benefit_component"
-    );
-    this.self = this.jm[0];
+    const mThis = this;
     this.title_prop = "Employee Benefits";
-    let div = mThis.self.querySelector("#_employee_bonus_list");
-    this.btnAdd = this.self.querySelector("#_btn_add_benefit");
+    this.base_url = main_view.base_url;
+    this.jm = main_view.appContent.children("#_main_employee_benefit_component");
+    this.self = this.jm[0];
 
+    this.btnAdd = this.self.querySelector("#_btn_add_benefit");
+    this.form_data={};
+    this.store_agents = {};
+    this.listViewConfig = {};
+    this.last_view_name = 'view_bonus';
+    this.tabs = mThis.self.querySelector('ul#benefit-tabs');
+    this.tabHeader = this.tabs;
+
+    this.initListView = (view_name = null)=>{
+        view_name = view_name || mThis.last_view_name;
+        
+        
+        this.listViewConfig[view_name] =  new ListView(mThis.getContentList(view_name),{
+            'fetchApi': `${main_view.base_url}/hr/employee/benefit/bonus-list`,
+            'apiCluster': main_view.apiCluster,
+            'columns': mThis.getColumns(view_name),
+            'tableClass':"table  header-light-blue header-uppercase  bg-white ",
+            // 'tableClass':"table styled-table ",
+            listContainerClass: null,
+            'processResponse':(res)=>{
+               console.log(1,res.data.data);
+                return res.data;    
+            },
+            'rowCreated':(data, index, tr) => {
+                tr.dataset.id = data.id;
+                mThis.setTrClassList(tr,view_name);
+                // tr.classList.add("table-primary");
+                // tr.classList.add("shadow");
+                mThis.store_agents[data.id] = {
+                    code: data.code,
+                    name: data.name,
+                    user_id: data.user_id,
+                    phone_number: data.phone_number
+                };
+            },
+            // renderItems: (items, list_container) => {
+            //     // console.log(items);
+            //     mThis.displaySalesAgents(list_container, items);
+            // },
+            'beforeRender':()=>{}
+        });
+
+        this.listViewConfig[view_name].showPage();
+        const tbl = mThis.listViewConfig[view_name].getTable();
+
+
+        this.container = mThis.listViewConfig[view_name].getListContainer();
+
+        // mThis.setEvents(tbl,view_name);
+
+        // // console.log('container',mThis.container.parentElement); 
+        // const sh_parent = mThis.container.parentElement;
+        // sh_parent.style.height = (window.innerHeight - 250)+'px';
+        // sh_parent.classList.add('overflow-y-auto');
+        // window.onresize = () => {
+        //     sh_parent.style.height = (window.innerHeight - 250)+'px';
+        // }
+    }
+
+
+
+    this.init = function () {
+        if (mThis.initAlready) return;
+        this.tabHeader.addEventListener('click', e=>{
+            e.preventDefault();
+            const lnk = VSUtil.closestLimited(e.target,'a.tab-button');
+            
+            if(lnk){
+
+                let view_name = lnk.dataset.target || lnk.dataset.view;
+            console.log(90,view_name);
+                
+                mThis.initListView(view_name);
+                return;
+            }
+            
+        });
+       
+        mThis.initListView(mThis.last_view_name);
+      
+        mThis.initAlready = true;
+    };
+
+    this.setTrClassList = (tr,view_name)=>{
+        if(view_name == 'view_seniority'){
+            // tr.classList.add("table");
+            // tr.classList.add("shadow");
+        }
+        else{
+            // tr.classList.add("table");
+            // tr.classList.add("shadow");
+        }
+    }
+    this.getEndPoint = (view_name) =>{
+        if(view_name == 'view_seniority')
+            return `${main_view.base_url}/hr/employee/benefit/seniority-list`;
+        else 
+            return `${main_view.base_url}/hr/employee/benefit/bonus-list`;
+    }
+
+   
+    this.getContentList = (view_name) => {
+        if(view_name == 'view_seniority')
+            return '_seniority_list';
+        else 
+            return '_bonus_list'
+    }
+    this.getColumns = (view_name) =>{
+        if(view_name == 'view_seniority')
+            return mThis.seniority_cols;
+        else return mThis.bonus_cols;
+    }
     this.bonus_cols = [
         {
             title: "Employee",
@@ -136,180 +244,15 @@ var EmployeeBenefitComponent = new (function () {
         },
     ];
 
-    this.init = function () {
-        if (mThis.initAlready) return;
 
-        mThis.EmployeeBenefitListView = new ListView("_employee_bonus_list", {
-            fetchApi: `${mThis.base_url}/hr/benefit/bonus-list`,
-            perPage: 6,
-            apiCluster: main_view.apiCluster,
-            columns: mThis.bonus_cols,
-            tableClass: "table table--white header-uppercase",
-            listContainerClass: null,
-        });
-
-        // Handle tab switching between Bonuses and Seniorities
-        const bonusTab = document.getElementById("bonus-tab");
-        const seniorityTab = document.getElementById("seniority-tab");
-
-        bonusTab.addEventListener("click", function () {
-            mThis.switchView("bonus");
-        });
-
-        seniorityTab.addEventListener("click", function () {
-            mThis.switchView("seniority");
-        });
-
-        mThis.btnAdd.onclick = function (e) {
-            e.preventDefault();
-            let op = {
-                id: null,
-                btn: e.target,
-                onClose: () => {
-                    mThis.EmployeeBenefitListView.showPage();
-                },
-            };
-            EmployeeBenefitDialog.show(op);
-        };
-
-        const pr_tbl = mThis.EmployeeBenefitListView.getListContainer();
-        const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 225 + "px";
-        sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
-
-        mThis.initDropdownMenus(pr_tbl);
-        this.setFilterPeriod = (p, name, start_date, end_date) => {
-            return p;
-        };
-        mThis.initAlready = true;
-    };
-
-    this.switchView = function (viewType) {
-        const apiUrl =
-            viewType === "bonus"
-                ? `${mThis.base_url}/hr/benefit/bonus-list`
-                : `${mThis.base_url}/hr/benefit/seniority-list`;
-
-        const columns =
-            viewType === "bonus" ? mThis.bonus_cols : mThis.seniority_cols;
-
-        // Reinitialize the list view based on the selected tab
-        mThis.EmployeeBenefitListView = new ListView("_employee_bonus_list", {
-            fetchApi: apiUrl,
-            perPage: 6,
-            apiCluster: main_view.apiCluster,
-            columns: columns,
-            tableClass: "table table--white header-uppercase",
-            listContainerClass: null,
-        });
-
-        mThis.EmployeeBenefitListView.showPage();
-    };
-
-    this.initDropdownMenus = (table) => {
-        const menuOptions = {
-            containerElement: table,
-            actionButtonClass: "btn_employee_benefit_action",
-            cssClass: "bg-white shadow",
-            menus: [
-                {
-                    html: '<span class="ps-2" vslang="titles.Edit Employee Benefit">Edit Employee Benefit</span>',
-                    icon: `<i class="fa-regular fa-pen-to-square fs-5 text-success"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "edit_employee_benefit",
-                },
-                {
-                    html: '<span class="ps-2" vslang="titles.Delete Benefit">Delete Employee Benefit</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_employee_benefit",
-                },
-            ],
-            onClick: (menulink, id, name) => {
-                switch (name) {
-                    case "edit_employee_benefit": {
-                        mThis.editEmployeeBenefit(id, menulink);
-                        break;
-                    }
-                    case "delete_employee_benefit": {
-                        mThis.deleteEmployeeBenefit(id, menulink);
-                        break;
-                    }
-                }
-            },
-        };
-        new VSDropdownMenu(menuOptions);
-    };
-
-    this.editEmployeeBenefit = (id, menulink) => {
-        let op = {
-            id: id,
-            btn: menulink,
-            onClose: () => {
-                mThis.EmployeeBenefitListView.showPage();
-            },
-        };
-        EmployeeBenefitDialog.show(op);
-    };
-
-    this.deleteEmployeeBenefit = (id, menulink) => {
-        let op = {
-            id: id,
-            btn: menulink,
-            onClose: () => {
-                mThis.EmployeeBenefitListView.showPage();
-            },
-        };
-        cv_interact.confirm(
-            "Delete this Employee Benefit?",
-            {
-                title: "Delete this Employee Benefit?",
-                context: "delete",
-                confirmButtonText: "Delete",
-            },
-            function (e) {
-                if (e) {
-                    vsapi
-                        .call(
-                            `${main_view.base_url}/hr/benefit/delete`,
-                            op,
-                            false,
-                            false,
-                            false
-                        )
-                        .then((res) => {
-                            if (res.status_code == 200) {
-                                cv_interact.success(
-                                    "Employee Benefits Deleted Successfully"
-                                );
-                                mThis.EmployeeBenefitListView.showPage();
-                            }
-                        });
-                }
-            }
-        );
-    };
-
-    this.prepareFormOptions = () => {
-        vsapi
-            .call(
-                `${main_view.base_url}/hr/benefit/form-options`,
-                null,
-                null,
-                null
-            )
-            .then((res) => {
-                const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, this.elSortBy);
-            });
-    };
-
-    this.show = function () {
+    this.show = (options) => {
         mThis.init();
+        if (!options) options = {};
+        mThis.options = options;
         main_view.setTitle(mThis.title_prop);
-        mThis.prepareFormOptions();
-        mThis.EmployeeBenefitListView.showPage();
+        mThis.initListView(mThis.last_view_name);
+        console.log(123,this.last_view_name);
+        
         $(mThis.self).siblings().hide();
         $(mThis.self).fadeIn(200);
     };
