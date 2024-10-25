@@ -108,6 +108,7 @@ class ScriptProvider
                 '/js/components/bhr/EmployeeComponent.js',
 
                 '/js/components/bhr/PayrollComponent.js',
+                '/js/components/bhr/PayrollListComponent.js',
                 '/js/components/bhr/DepartmentComponent.js',
                 '/js/components/bhr/PositionComponent.js',
                 '/js/components/bhr/LeaveComponent.js',

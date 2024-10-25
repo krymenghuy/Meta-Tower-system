@@ -104,7 +104,7 @@
 
     }
 
-  
+
 
     .bg-secondary-custom {
         background-color: red;
@@ -155,7 +155,7 @@
                 </button>
             </div>
             <div class="d-flex align-items-center justify-content-end px-3 w-100 gap-2">
-                
+
                 <div class="d-flex  w-50 gap-2">
                     <div class="d-flex align-items-end w-100">
                         <input type="text" class="form-control filter-field rounded-5" id="_sdl_search_employee" placeholder="Search Employee">
@@ -168,8 +168,8 @@
                     <select type="id" id="el_type" class="data-input filter-field" data-field="emp_type"></select>
                 </div>
 
-               
-                
+
+
             </div>
         </div>
         <div id="_employee_list" class=""></div>
@@ -347,7 +347,7 @@
                         </div> -->
                     </div>
                     <div class="col-md-4" id="profile_card_center">
-                        
+
                         <!-- <div class="card" style="height:487px;">
                             <div class="card-header">
                                 <h4>Education</h4>
@@ -394,6 +394,26 @@
                     </div>
 
                 </div>
+
+
+                    <div class="col-md-4" id="tax_allownce_card">
+                        {{-- <div class="card" style="height:487px;">
+                            <div class="card-header">
+                                <h4>Tax Allowance</h4>
+                                <span class="ellipsis">...</span>
+                            </div>
+                            <div class="card-body">
+                               <div class="d-flex justify-content-between">
+                                   <p class="w-50">Amount = 100.000 VND</p>
+
+                               </div>
+                               <div class="d-flex justify-content-between">
+                                <p class=" w-75">Remarks : 1 Wife 2 children</p>
+                               </div>
+                            </div>
+                        </div> --}}
+                    </div>
+
 
 
             </div>

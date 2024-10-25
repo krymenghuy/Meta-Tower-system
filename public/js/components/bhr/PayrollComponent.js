@@ -6,114 +6,126 @@ var PayrollComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_payrollComponent");
     this.self = this.jm[0];
     this.title_prop = "Payroll";
-    this.elFilter = this.self.querySelector('#el_filter_payroll');
-    this.btnAdd = this.self.querySelector("#_btnAddPayroll");
-    this.btnInsert = this.self.querySelector("#_btnInsert");
-    this.btnImport = this.self.querySelector("#_btnImport");
+    this.elStatus = this.self.querySelector('#el_status');
+    this.btnAdd = this.self.querySelector("#_btnAddpayroll");
     this.divFilter = this.self.querySelector("#_divFilter");
-    // this.elSortBy = this.self.querySelector("#el_sort_by");
-    this.btnCalculate = this.self.querySelector("#_btnCalculate");
+    this.elSearch = this.self.querySelector("#_sdl_search_payroll");
 
     this.cols = [
-
         {
             title: "No",
             className: 'align-middle text-capitalize text-nowrap',
-            data: (data, index, i) => { return (index + 1) },
-
+            data: (data, index) => index + 1,
+        },
+        {
+            title: "Name",
+            className: "align-middle",
+            data: (data) => `<p class="p-0 m-0">${data.name ?? ''}</p>`
+        },
+        {
+            title: "Month",
+            className: "align-middle",
+            data: (data) => `<p class="p-0 m-0">${data.p_month ?? ''}</p>`
+        },
+        {
+            title: "Year",
+            className: "align-middle",
+            data: (data) => `<p class="p-0 m-0">${data.p_year ?? ''}</p>`
+        },
+        {
+            title: "Duration",
+            className: "align-middle w-15",
+            data: (data) => `<p class="p-0 m-0">${data.start_date?? ''}​ - ${data.end_date ?? ''}</p>`
         },
         {
             title: "Employee",
-            className: "align-middle text-start w-15",
-            data: (data, index, tr) => {
-                return `<div style="display: flex; align-items: center;">
-                            <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
-                            <div>
-                                <span style="font-size: 14px; font-weight: bold;">${data.emp_name ?? ''}</span>
-                                <br/>
-                                <span style="font-size: 12px">${data.emp_position ?? ''}</span>
-
-                            </div>
-                        </div>`;
-            }
-        },
-
-        {
-            title: "Salary Base",
             className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.salary_base ?? '0.00'}</p>`;
-            }
-        },
-        {
-            title: "Benefit",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.benefit ?? '0.00'}</p>`;
-            }
-        },
-
-        {
-            title: "Desuction",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.deduction ?? '0.00'}</p>`;
-            }
-        },
-
-        {
-            title: "Tax Base",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_base ?? '0.00'}</p>`;
-            }
-        },
-        {
-            title: "Tax Allowance",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_allowance ?? '0.00'}</p>`;
-            }
-        },
-        {
-            title: "Tax Rate",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.tax_rate ?? ''} %</p>`;
-            }
+            data: (data) => `<p class="p-0 m-0">${data.p_number ?? ''}</p>`
         },
         {
             title: "Total",
             className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.total_salary ?? '0.00'}</p>`;
+            data: (data) => `<p class="p-0 m-0">${data.total ?? ''}</p>`
+        },
+        {
+            title: "Currency",
+            className: "align-middle",
+            data: (data) => `<p class="p-0 m-0">${data.currency_code ?? ''}</p>`
+        },
+        {
+            title: "Exchange Rate",
+            className: "align-middle",
+            data: (data) => `<p class="p-0 m-0">${data.exchange_rate ?? ''}</p>`
+        },
+          {
+            title: "Authorize",
+            className: 'status text-nowrap align-middle',
+            data: function (data, index, tr) {
+                let cls_class = "text-white text-center border rounded-5";
+                let bg_color = ''; // Default background color
+
+                if ((data.authorized || '').toLowerCase() === 'approved') {
+                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
+                    bg_color = '#28a745'; // Green background for success
+                } else if ((data.authorized || '').toLowerCase() === 'pending') {
+                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
+                    bg_color = '#ffc107'; // Yellow background for pending
+                }
+
+                return `<div><a class="d-block" data-status="${data.authorized}" data-id="${data.id}" href="javascript:void(0)">
+                            <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
+                                ${data.authorized}
+                            </span>
+                        </a></div>`;
             }
         },
         {
+            title: "Disbursed",
+            className: 'status text-nowrap align-middle',
+            data: function (data, index, tr) {
+                let cls_class = "text-white text-center border rounded-5";
+                let bg_color = ''; // Default background color
+
+                if ((data.disbursed || '').toLowerCase() === 'success') {
+                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
+                    bg_color = '#28a745'; // Green background for success
+                } else if ((data.disbursed || '').toLowerCase() === 'pending') {
+                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
+                    bg_color = '#ffc107'; // Yellow background for pending
+                }
+
+                return `<div><a class="d-block" data-status="${data.disbursed}" data-id="${data.id}" href="javascript:void(0)">
+                            <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
+                                ${data.disbursed}
+                            </span>
+                        </a></div>`;
+            }
+        },
+        {
+            title: "",
             className: "col_action align-middle",
             data: (data) => `
-            <div class="d-flex justify-content-center align-items-center">
-                <div class="text-center gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_payroll_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                <div class="d-flex justify-content-center align-items-center">
+                    <a href="javascript:void(0)"
+                       class="${data.action_id > 1 ? "d-none" : "btn_payroll_action"}"
+                       data-id="${data.id}" data-statusid="${data.status_id}">
                         <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
                     </a>
-                </div>
-            </div>`,
+                </div>`
         },
-
     ];
 
     this.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.PayrollListView = new ListView('_payroll_list',{
-            fetchApi : `${main_view.base_url}/hr/payroll-list/list-paginate`,
+        mThis.PayrollListView = new ListView('_payroll_list', {
+            fetchApi: `${main_view.base_url}/hr/payroll/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table  table--white rounded-2   overflow-hidden  header-uppercase',
-            listContainerClass: null
+            tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
         });
+
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             // let content = mThis.bookingListView.getListContainer();
@@ -129,196 +141,83 @@ var PayrollComponent = new (function () {
             };
             // content.parentElement.classList.add('d-none');
 
-            AddPayRollDailog.show(op);
-        };
-        mThis.btnCalculate.onclick = function (e) {
-
-            e.preventDefault();
-
-
-
-            let op = {
-                payroll_id : mThis.getDataFormFilter().payroll_id,
-
-            }
-            console.log(444, op);
-            vsapi.call( [main_view.base_url,'/hr/payroll-list/calculate'].join(''), op,null,null).then(res=>{
-               if(res.status_code ==200){
-                 mThis.PayrollListView.showPage();
-                 alert(res.data);
-               }else cv_interact.error(res.error_message);
-            });
-        };
-        mThis.btnInsert.onclick = function (e) {
-            e.preventDefault();
-            // let content = mThis.bookingListView.getListContainer();
-
-            let op = {
-                id: null,
-                // id: 1,
-                btn: e.target,
-                onClose: () => {
-                    cv_interact.success('Inserted Successfully');
-                    mThis.PayrollListView.showPage();
-                }
-            };
-            // content.parentElement.classList.add('d-none');
-
-            PayRollDailog.show(op);
-        };
-        mThis.btnImport.onclick = function (e) {
-            e.preventDefault();
-            // let content = mThis.bookingListView.getListContainer();
-
-            let op = {
-                id: null,
-                // id: 1,
-                // btn: e.target,
-                onClose: () => {
-                    cv_interact.success('Import Payroll Successfully');
-                    mThis.PayrollListView.showPage();
-                }
-            };
-            // content.parentElement.classList.add('d-none');
-
-            PayRollImportDailog.show(op);
+            AddPayRollListDailog.show(op);
         };
 
         const pr_tbl = mThis.PayrollListView.getListContainer();
-        const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 200) + 'px';
-        sh_parent.classList.add('overflow-y-auto');
-        sh_parent.classList.add('overflow-x-hidden');
+        pr_tbl.style.height = `${window.innerHeight - 225}px`;
+        pr_tbl.classList.add('overflow-y-auto', 'overflow-x-hidden');
 
-        mThis.initDropdownMenus(pr_tbl);///
+        mThis.initDropdownMenus(pr_tbl);
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            el.onchange = () => mThis.PayrollListView.showPage(mThis.getDataFormFilter());
+        });
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
-
-
-            el.onchange =  (e) => {
-           e.preventDefault();
-           mThis.PayrollListView.showPage(mThis.getDataFormFilter());
-           console.log(777777, mThis.getDataFormFilter());
-            }
-       });
+        mThis.elSearch.addEventListener('keyup', (e) => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.PayrollListView.showPage(mThis.getDataFormFilter());
+            }, 200);
+        });
 
         mThis.initAlready = true;
-
     };
-
-    this.initDropdownMenus = (table)=>{
-        const menuOptopns = {
-            containerElement: table,
-            actionButtonClass:"btn_payroll_action",
-            cssClass:"bg-white shadow",
-            //menuItemClass:"",
-            menus:[
-
-                {
-                    html:'<span class="ps-2  " vslang="titles.Modify Payroll">Modify Payroll</span>',
-                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"edit_payroll"
-                },
-                {
-                    html:'<span class="ps-2  " vslang="titles.Delete Payroll">Delete Payroll</span>',
-                    icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"delete_payroll"
-                },
-
-            ],
-
-            onClick:(menuLink, id, name)=>{
-                switch(name){
-
-                    case 'edit_payroll':{
-                      mThis.editPayroll(id, menuLink);
-                      break;
-                    }
-                    case 'delete_payroll':{
-                        mThis.deletePayroll(id, menuLink);
-                        break;
-                      }
-
-                    default:{
-                      break;
-                    }
-                }
-            }
-        }
-        new VSDropdownMenu(menuOptopns);
-    }
-
-
-    this.editPayroll = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                cv_interact.success('Edited Successfully');
-                mThis.PayrollListView.showPage();
-
-            }
-        };
-        PayRollDailog.show(op);
-    }
-
-    this.deletePayroll = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.PayrollListView.showPage();
-            }
-        };
-        cv_interact.confirm('Delete this Payroll?',{
-            title: 'Delete Payroll',
-            context: 'delete',
-            confirmButtonText:"Delete"
-        },function(e){
-            if(e){
-                vsapi.call(`${main_view.base_url}/hr/payroll-list/delete`,op,false,false,false).then(res => {
-                    if(res.status_code == 200){
-                        cv_interact.success('Deleted Successfully');
-                        mThis.PayrollListView.showPage();
-                    }
-                })
-            }
-        });
-
-    }
 
     this.getDataFormFilter = () => {
-        let p = {};
-        p.payroll_id = mThis.elFilter.value;
-        // p.sort_by = mThis.elSortBy.value;
-
-        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
-        main_filters.forEach(el => {
-            const f = el.dataset.field;
-            p[f] = el.value;
+        let filters = {
+            status_id: mThis.elStatus.value,
+            sort_by: mThis.elSortBy.value,
+            search_value: mThis.elSearch.value,
+        };
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            filters[el.dataset.field] = el.value;
         });
-        console.log(222, p);
-
-        return p;
+        return filters;
     };
-    this.prepareFormOptions = () => {
 
-        vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`,null,null,null).then(res => {
-            const d = res.status_code == 200 ? res.data : {};
-            console.log(1111,this.elSortBy);
-            VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','name',true,'All',null);
-            // VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'All', null);
-
-        })
-    }
-
+    this.initDropdownMenus = (table) => {
+        const menuOptions = {
+            containerElement: table,
+            actionButtonClass: "btn_payroll_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html: '<span class="ps-2">Change Status</span>',
+                    icon: '<i class="fa-regular fa-exchange fs-5"></i>',
+                    name: "change_payroll_status"
+                },
+                {
+                    html: '<span class="ps-2">Modify Payroll</span>',
+                    icon: '<i class="fa-regular fa-edit fs-5"></i>',
+                    name: "edit_payroll"
+                },
+                {
+                    html: '<span class="ps-2">Delete Payroll</span>',
+                    icon: '<i class="fa-regular fa-trash-can fs-5"></i>',
+                    name: "delete_payroll"
+                },
+            ],
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case 'change_payroll_status':
+                        mThis.changeStatus(id, menuLink);
+                        break;
+                    case 'edit_payroll':
+                        mThis.editPayroll(id, menuLink);
+                        break;
+                    case 'delete_payroll':
+                        mThis.deletePayroll(id, menuLink);
+                        break;
+                }
+            },
+        };
+        new VSDropdownMenu(menuOptions);
+    };
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.prepareFormOptions();
+        // mThis.prepareFormOptions();
             mThis.PayrollListView.showPage();
                 $(mThis.self).siblings().hide();
                 $(mThis.self).fadeIn(200);
@@ -327,188 +226,7 @@ var PayrollComponent = new (function () {
 
 });
 
-const PayRollDailog = (()=>{
-
-    const self = {};
-    let dialog = null;
-     self.show = (op)=>{
-
-        dialog = dialog || new GeneralDialog({
-            cssClass:'modal-lg',
-            backdrop: 'static', //User click outside form, do not close form
-            keyboard:true, //prevent user from using ESC key
-            createContent:()=>{
-                 return [`<div class="row">
-                 <div class="form-group col-12">
-                     <label for="employee" class="form-label" vslang="titles.Name"></label>
-                     <select name="employee" class=" data-input"  data-field="emp_id"></select>
-                 </div>
-                 <div class="form-group  col-12 d.none">
-                     <div id="info"></div>
-                 </div>
-                <div class="form-group col-6">
-                     <label for="payroll_name" class="form-label" vslang="titles.Payroll Name"></label>
-                     <select name="payroll_name" class=" data-input"  data-field="payroll_id"></select>
-                 </div>
-                <div class="form-group col-6">
-                  <label for="benefit" class="form-label" vslang="titles.Benefit"></label>
-                  <input name="benefit" class="form-control data-input" data-field="benefit" />
-                </div>
-                <div class="form-group col-6">
-                  <label for="desuction" class="form-label" vslang="titles.Desuction"></label>
-                  <input name="desuction" class="form-control data-input" data-field="deduction" />
-                </div>
-              </div>`].join('');
-            },
-
-            configSelect:[
-               {
-                 name:"employee",
-                 data:'employees',
-                 textField:(me, d)=> {return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> <span>${d.email}</span><span>${d.phone_number}</span><span> ${d.position} </span> </div></div>`; },
-                // textField:"name",
-                 valueField:'id'
-               },
-               {
-                 name:"payroll_name",
-                 data:'payrolls',
-                 textField:"name",
-                 valueField:'id'
-               }
-            ],
-            buttons:[
-               {
-                label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
-                click:(me,btn)=>{
-                    //Close with Cancel button
-                    me.hide(false);
-                }
-               },
-               {
-                label:'<span>Save</span>',
-                cssClass:'btn btn-primary',
-                click:(me,btn)=>{
-                    const p = me.getData();
-
-                    p.id = me.dataOptions.id; //get "id" from op
-
-                    vsapi.call( [main_view.base_url,'/hr/payroll-list/save'].join(''), p,btn,null).then(res=>{
-                       if(res.status_code ==200){
-                         me.hide(true,p);
-                       }else cv_interact.error(res.error_message);
-                    });
-                }
-               }
-            ],
-            prepareFormOptions:{
-               createTitle:'Insert Payroll ',
-               modifyTitle:'Edit Payroll',
-               targetProp: 'payroll_lists',
-               api:{
-                 endpoint: [main_view.base_url,'/hr/payroll-list/form-options'].join(''),
-                 params:(op)=>{
-                    return {'id':op.id};
-                 }
-               },
-            //    onResponse: (me, res)=>{
-            //      console.log('result from api "/form-options": ', res);
-            //    }
-            },
-
-            onPrepareForm:(me, data)=>{
-                 LocaleManager.translateZone(me.divModal);
-            }
-
-        });
-
-        dialog.show(op);
-     }
-
-    return self;
-})();
-
-const PayRollImportDailog = (()=>{
-
-    const self = {};
-    let dialogImport = null;
-     self.show = (op)=>{
-console.log(999,op);
-
-        dialogImport = dialogImport || new GeneralDialog({
-            cssClass:'modal-md',
-            backdrop: 'static', //User click outside form, do not close form
-            keyboard:true, //prevent user from using ESC key
-            createContent:()=>{
-                 return [`<div class="row">
-                 <div class="form-group col-12">
-                     <label for="payroll_name" class="form-label" vslang="titles.Payroll"></label>
-                     <select name="payroll_name" class=" data-input"  data-field="payroll_id"></select>
-                 </div>
-
-              </div>`].join('');
-            },
-            configSelect:[
-               {
-                 name:"payroll_name",
-                 data:'payrolls',
-                 textField:"name",
-                 valueField:'id'
-               },
-            ],
-            buttons:[
-               {
-                label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
-                click:(me,btn)=>{
-                    //Close with Cancel button
-                    me.hide(false);
-                }
-               },
-               {
-                label:'<span>Save</span>',
-                cssClass:'btn btn-primary',
-                click:(me,btn)=>{
-                    const p = me.getData();
-
-                    p.id = me.dataOptions.id; //get "id" from op
-
-                    vsapi.call( [main_view.base_url,'/hr/payroll-list/import'].join(''), p,btn,null).then(res=>{
-                       if(res.status_code ==200){
-                         me.hide(true,p);
-                       }else cv_interact.error(res.error_message);
-                    });
-                }
-               }
-            ],
-            prepareFormOptions:{
-               createTitle:'Add Payroll By Import Employee',
-               modifyTitle:'Edit Payroll By Import Payroll',
-               targetProp: 'payroll_lists',
-               api:{
-                 endpoint: [main_view.base_url,'/hr/payroll-list/form-options'].join(''),
-                 params:(op)=>{
-                    return {'id':op.id};
-                 }
-               },
-            //    onResponse: (me, res)=>{
-            //      console.log('result from api "/form-options": ', res);
-            //    }
-            },
-
-            onPrepareForm:(me, data)=>{
-                 LocaleManager.translateZone(me.divModal);
-            }
-
-        });
-
-        dialogImport.show(op);
-     }
-
-    return self;
-})();
-
-const AddPayRollDailog = (()=>{
+const AddPayRollListDailog = (()=>{
 
     const self = {};
     let dialogAdd = null;

@@ -331,6 +331,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance
 
     Route::post('/save', [TaxAllowanceController::class, 'saveTaxAllowance']);
     Route::post('/list-paginate', [TaxAllowanceController::class, 'getTaxAllowanceListPaginate']);
+    Route::post('/list-all', [TaxAllowanceController::class, 'listAll']);
     Route::post('/details', [TaxAllowanceController::class, 'getDetails']);
     Route::post('/delete', [TaxAllowanceController::class, 'deleteTaxAllowance']);
     Route::post('/form-options', [TaxAllowanceController::class, 'getFormOptions']);
