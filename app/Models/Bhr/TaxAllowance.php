@@ -24,9 +24,8 @@ class TaxAllowance
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
-            'name' => '1|string',
-            'qty' => '1|number',
-            'allowance_per_unit'=> '1|number',
+            'amount' => '1|number',
+            'remarks' => '0|string|250',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -55,6 +54,7 @@ class TaxAllowance
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
+        $emp_id = $d->emp_id ?? null;
 
         $skip_rows = ($current_page - 1) * $per_page;
 
@@ -65,14 +65,16 @@ class TaxAllowance
 
         $query = DB::table('tax_allowances as ta')
             ->join('employees as em', 'em.id', '=', 'ta.emp_id')
-            ->selectRaw('ta.id, em.name as emp_name, ta.name, ta.qty, ta.allowance_per_unit,ta.amount')
-            ->where('ta.branch_id', $ss->branch_id);
+            ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.remarks')
+            ->where('ta.branch_id', $ss->branch_id)
+            ->where('ta.emp_id', $emp_id);
 
         if ($search_id) {
             $query->where('ta.id', $search_id);
         }
         if ($search_value) {
-            $query->where('ta.name', 'like', '%' . $search_value . '%' . 'or' . 'ta.emp_id', 'like', '%' . $search_value . '%');
+            $search_value = escape_like_str($search_value);
+            $query->where('em.name', 'like', '%' . $search_value . '%');
         }
         $query->skip($skip_rows)->take($per_page);
         $count_query = clone $query;
@@ -82,12 +84,13 @@ class TaxAllowance
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+
     function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
         $query = DB::table('tax_allowances as ta')
             ->join('employees as em', 'em.id', '=', 'ta.emp_id')
-            ->selectRaw('ta.id, em.name as emp_name, ta.name, ta.qty, ta.allowance_per_unit,ta.amount')
+            ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.remarks')
             ->where('ta.branch_id', $ss->branch_id)
             ->where('ta.id', $id)
             ->first();

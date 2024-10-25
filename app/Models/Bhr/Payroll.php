@@ -73,7 +73,7 @@ class Payroll
         $str_search = '1=1';
 
         $query = DB::table('payrolls as p')
-            ->selectRaw('p.id, p.name, p.p_month, p.p_year, p.start_date, p.end_date, p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
+            ->selectRaw('p.id, p.name, p.p_month, p.p_year,formatDate(p.start_date) as start_date,formatDate(p.end_date) as end_date, p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
             ->where('p.branch_id', $ss->branch_id);
         if ($search_id) {
             $query->where('p.id', $search_id);

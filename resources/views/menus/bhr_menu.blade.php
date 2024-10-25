@@ -266,7 +266,15 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/Credit card.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.Payroll"></span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Payroll Management"></span>
+                </a>
+            </li>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
+                <a href="PayrollListComponent" modid="105" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/Credit card.svg') }}" />
+                    </span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Payroll list"></span>
                 </a>
             </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>

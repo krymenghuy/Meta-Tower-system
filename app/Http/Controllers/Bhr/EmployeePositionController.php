@@ -13,7 +13,7 @@ class EmployeePositionController extends Controller
     protected $employeePosition;
     public function __construct(EmployeePosition $employeePosition)
     {
-        
+
         $this->employeePosition = $employeePosition;
     }
 

@@ -38,6 +38,15 @@ class TaxAllowanceController extends Controller
         return JDV::result($this->tax_allowance->getTaxAllowanceListPaginate($req, $ss));
     }
 
+    public function listAll(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->tax_allowance->listAll($req, $ss));
+    }
+
     public function getDetails(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);

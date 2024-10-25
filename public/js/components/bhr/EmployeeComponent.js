@@ -16,6 +16,7 @@ var EmployeeComponent = new (function () {
     this.profile_card_center = mThis.self.querySelector("#profile_card_center");
     this.profile_card_left = mThis.self.querySelector("#profile_card_left");
     this.profile_card_right = mThis.self.querySelector("#profile_card_right");
+    this.tax_allownce_card = mThis.self.querySelector("#tax_allownce_card");
     this.profile_info_emp = mThis.self.querySelector("#profile_info_emp");
 
     let div = mThis.self.querySelector("#_employee_list");
@@ -64,6 +65,7 @@ var EmployeeComponent = new (function () {
             btnBack.classList.add("d-none");
             let sub_content = mThis.self.querySelector("#sub_content");
             sub_content.classList.remove("d-none");
+            mThis.EmployeeListView.showPage(mThis.getFilterData());
         };
 
         this.divFilter.querySelectorAll('.filter-field').forEach(el => {
@@ -199,6 +201,7 @@ var EmployeeComponent = new (function () {
                     mThis.renderCardCenter(employeeId);
                     mThis.renderCardLeft(employeeId);
                     mThis.renderCardRight(employeeId);
+                    mThis.renderCardTaxAllowance(employeeId);
                 } else {
                     console.error(
                         "Employee data not found for ID:",
@@ -585,6 +588,146 @@ var EmployeeComponent = new (function () {
                         AddExperience.show(op);
                     });
             });
+    };
+    this.renderCardTaxAllowance = (employeeId) => {
+        let p = { emp_id: employeeId };
+        console.log(1122, p);
+
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/tax-allowance/list-paginate`,
+                p,
+                null,
+                false,
+                false
+            )
+            .then((res) => {
+                let data = res.status_code === 200 ? res.data.data : [];
+                console.log(1212, data);
+
+                let html = `
+                    <div class="card" style="height:487px;">
+                        <div class="card-header">
+                            <h4>Tax Allowance</h4>
+                            <div class="d-flex gap-2">
+                                <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-tax-allowance">
+                                    <i class="fa fa-plus-circle fs-5 text-success"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+                `;
+
+                data.map((d) => {
+                    html += `
+                        <div class="row mt-2 py-4 border-bottom">
+                            <div class="col-md-8">
+                                <p class="text-success" style="width:180px; height:20px">Amount: ${d.amount}</p>
+                                <p class="text-nowrap" style="width:180px; height:20px">Remarks: ${d.remarks}</p>
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-tax-allowance">
+                                    <i class="fa fa-edit fs-5 text-primary"></i>
+                                </a>
+                                <a href="javascript:void(0)" data-id="${d.id}" data-emp-id="${employeeId}" class="lnk-delete-tax-allowance">
+                                    <i class="fa fa-trash fs-5 text-danger"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `</div></div>`;
+                this.tax_allownce_card.innerHTML = html;
+
+                // Add event listener for "Add" button
+                document.querySelector(".lnk-add-tax-allowance").addEventListener("click", function (e) {
+                    e.preventDefault();
+
+                    let btn = document.querySelector(".lnk-add-tax-allowance");
+                    console.log(333, btn.dataset);
+
+                    let op = {
+                        id: null,
+                        emp_id: btn.dataset.empid,
+
+                        btn: e.target,
+                        title: "New Tax Allowance",
+                        onClose: () => {
+                            mThis.EmployeeListView.showPage();
+                        },
+                    };
+                    console.log(op);
+                    AddTaxAllowance.show(op);
+                });
+
+                // Add event listeners for all "Edit" buttons
+                document.querySelectorAll(".lnk-edit-tax-allowance").forEach((btn) => {
+                    btn.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        const id = e.target.closest('a').getAttribute("data-id");
+
+                        let op = {
+                            id: id,
+                            emp_id: employeeId,
+                            btn: e.target,
+                            title: "Edit Tax Allowance",
+                            onClose: () => {
+                                mThis.renderCardTaxAllowance.showPage();
+                            },
+                        };
+                        console.log("Edit operation:", op);
+                        AddTaxAllowance.show(op);
+                    });
+                });
+
+                document.querySelectorAll(".lnk-delete-tax-allowance").forEach((btn) => {
+                    btn.addEventListener("click", function (e) {
+                        e.preventDefault();
+                        const id = e.target.closest('a').getAttribute("data-id");
+                        const emp_id = e.target.closest('a').getAttribute("data-emp-id");
+                        let op ={
+                            id: id,
+                            btn: e.target,
+                            onClose: () => {
+
+                            },
+                        };
+                        cv_interact.confirm(
+                            "Delete this Employee?",
+                            {
+                                title: "Delete Employee",
+                                context: "delete",
+                                confirmButtonText: "Delete",
+                            },
+                            function (e) {
+                                if (e) {
+                                    vsapi
+                                        .call(
+                                            `${main_view.base_url}/hr/tax-allowance/delete`,
+                                            op,
+                                            false,
+                                            false,
+                                            false
+                                        )
+                                        .then((res) => {
+                                            if (res.status_code == 200) {
+                                                cv_interact.success("Deleted Successfully");
+                                                // EmployeeComponent.EmployeeListView.showPage();
+                                                EmployeeComponent.renderCardTaxAllowance(emp_id);
+
+                                            }
+                                        });
+                                }
+                            }
+                        );
+
+
+                    });
+                });
+            });
+
+
     };
 
     mThis.elSearch.addEventListener("keyup", (e) => {
@@ -1059,6 +1202,104 @@ const AddExperience = (() => {
                 },
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
+                },
+            });
+
+        dialog.show(op);
+    };
+    return self;
+})();
+
+const AddTaxAllowance = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+        console.log(9999,op);
+
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                title: op.id
+                    ? "Add Tax Allowance"
+                    : " Edit Tax Allowance ",
+                cssClass: "modal-md d-flex justify-content-center",
+                createContent: () => {
+                    return [
+                        `<div class="row">
+
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Amount">Amount</label>
+                            <div><input name="amount" class="form-control data-input" data-field="amount"/></div>
+                        </div>
+                        <div class="form-group col-12">
+                            <label for="remarks" class="form-label"
+                            vslang="titles.Remarks">Remarks</label>
+                            <textarea  type="text" class="form-control data-input" data-field="remarks"></textarea>
+                        </div>
+
+                    </div>`,
+                    ].join("");
+                },
+                buttons: [
+                    {
+                        label: "<span>Cancel</span>",
+                        cssClass: "btn btn-warning text-white",
+                        click: (me) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me) => {
+                            let p = me.getData();
+                            p.emp_id = me.dataOptions.emp_id;
+                            console.log(7777,p);
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/tax-allowance/save",
+                                    ].join(""),
+                                    p,
+                                    false,
+                                    false
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.modal.hide(true, p);
+                                        EmployeeComponent.renderCardTaxAllowance(me.dataOptions.emp_id);
+
+
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+
+                prepareFormOptions: {
+                    createTitle: "New Tax Allowance",
+                    modifyTitle: "Edit Tax Allowance",
+                    targetProp: "tax_allowance",
+                    api: {
+                        endpoint: `${main_view.base_url}/hr/tax-allowance/form-options`,
+                        params: (op) => {
+                            return { id: op.id }; // Pass ID to fetch data for edit
+                        },
+                        onResponse: (me, res) => {
+                            if (op.id) {
+                                // Populate form with existing data for edit mode
+                                // me.setValue('emp_id', res.data.emp_id);
+                                // me.setValue('period', res.data.period);
+                                // me.setValue('description', res.data.description);
+                                // me.setValue('amount', res.data.amount);
+                            }
+                        },
+                    },
+                },
+                onShow: (me) => {
                 },
             });
 

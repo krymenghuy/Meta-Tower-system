@@ -74,7 +74,7 @@ class PayrollList
 
         $query = DB::table('payroll_lists as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-            ->join('tax_allowances as ta', 'ta.id', '=', 'e.id')
+            ->join('tax_allowances as ta', 'ta.emp_id', '=', 'e.id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
@@ -124,7 +124,7 @@ class PayrollList
             $row->tax_allowance = ($row->tax_allowance ?? 0);
 
 
-            // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_bracket <=' . $row->salary_base . ' and upper_bracket >=' . $row->salary_base)->take(1)->value('rate');
+            // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_amount <=' . $row->salary_base . ' and upper_amount >=' . $row->salary_base)->take(1)->value('rate');
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -161,7 +161,7 @@ class PayrollList
             $row->image_url = Employee::profilePicture($row->emp_id);
         }
         unset($row->emp_photo);
-        // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_bracket <=' . $row->salary_base . ' and upper_bracket >=' . $row->salary_base)->take(1)->value('rate');
+        // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_amount <=' . $row->salary_base . ' and upper_amount >=' . $row->salary_base)->take(1)->value('rate');
         return $row;
     }
     function deletePayrollList($id, $ss)
@@ -211,7 +211,7 @@ class PayrollList
         foreach ($get_employee as $emp) {
             if($emp->apply_payroll_tax == 0){
                 $emp->tax_rate = DB::table('tax_brackets')
-                    ->whereRaw('lower_bracket <=' . $emp->salary_base . ' and upper_bracket >=' . $emp->salary_base)
+                    ->whereRaw('lower_amount <=' . $emp->salary_base . ' and upper_amount >=' . $emp->salary_base)
                     ->take(1)->value('rate');
 
             }else
@@ -299,8 +299,8 @@ class PayrollList
 
                 if ($payroll->apply_payroll_tax == 0) {
                     $payroll->tax_rate = DB::table('tax_brackets')
-                        ->where('lower_bracket', '<=', $salary_base)
-                        ->where('upper_bracket', '>=', $salary_base)
+                        ->where('lower_amount', '<=', $salary_base)
+                        ->where('upper_amount', '>=', $salary_base)
                         ->value('rate');
 
                     $tax_rate = $payroll->tax_rate;
