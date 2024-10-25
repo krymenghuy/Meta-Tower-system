@@ -607,6 +607,14 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-text font-color " vslang="menus.Job Level"></span>
                             </a>
                         </li>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+                            <a href="TaxBracketComponent" modid="-1" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <i class="fas fa-tasks icons opacity-icons"></i>
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Tax Bracket"></span>
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </li>

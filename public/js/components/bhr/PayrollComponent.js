@@ -11,8 +11,7 @@ var PayrollComponent = new (function () {
     this.btnInsert = this.self.querySelector("#_btnInsert");
     this.btnImport = this.self.querySelector("#_btnImport");
     this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_sdl_search_payroll");
-    this.elSortBy = this.self.querySelector("#el_sort_by");
+    // this.elSortBy = this.self.querySelector("#el_sort_by");
     this.btnCalculate = this.self.querySelector("#_btnCalculate");
 
     this.cols = [
@@ -187,7 +186,7 @@ var PayrollComponent = new (function () {
 
         const pr_tbl = mThis.PayrollListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 275) + 'px';
+        sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
 
@@ -206,16 +205,6 @@ var PayrollComponent = new (function () {
         mThis.initAlready = true;
 
     };
-    mThis.elSearch.addEventListener('keyup', (e) => {
-        clearTimeout(mThis.search_timeout);
-        mThis.search_timeout = setTimeout(() => {
-            if (mThis.PayrollListView) {
-                mThis.PayrollListView.showPage(mThis.getDataFormFilter());
-            } else {
-                console.error("PayrollListView is not defined");
-            }
-        }, 200);
-    });
 
     this.initDropdownMenus = (table)=>{
         const menuOptopns = {
@@ -302,9 +291,8 @@ var PayrollComponent = new (function () {
 
     this.getDataFormFilter = () => {
         let p = {};
-        p.search_value = mThis.elSearch.value;
         p.payroll_id = mThis.elFilter.value;
-        p.sort_by = mThis.elSortBy.value;
+        // p.sort_by = mThis.elSortBy.value;
 
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {
@@ -321,7 +309,7 @@ var PayrollComponent = new (function () {
             const d = res.status_code == 200 ? res.data : {};
             console.log(1111,this.elSortBy);
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','name',true,'All',null);
-            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'All', null);
+            // VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'All', null);
 
         })
     }
@@ -414,7 +402,7 @@ const PayRollDailog = (()=>{
                }
             ],
             prepareFormOptions:{
-               createTitle:'Add Payroll ',
+               createTitle:'Insert Payroll ',
                modifyTitle:'Edit Payroll',
                targetProp: 'payroll_lists',
                api:{
