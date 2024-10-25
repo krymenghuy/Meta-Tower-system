@@ -20,60 +20,113 @@ class Leave
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-
-    function save($arr, $id=null, $ss = null)
-    {
+    function save($arr, $id = null, $ss = null) {
         $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
+        
         $v_rule = [
             'id' => '0|identity=1',
-            'emp_id' => '0|number|exists=employees.id',
+            'emp_id' => '1|number|exists=employees.id',
             'start_date' => '1|date',
             'end_date' => '1|date',
             'leave_type_id' => '1|number',
             'remarks' => '0|string|250',
-            // 'has_returned' =>'number|default=0',
-            'status_id' => '1|number|default = 2',
+            'status_id' => '0|choice|1,2,3|default=2',
         ];
-
-        // $checkUnque = ["$branch_id|leaves|emp_id|id=id|text=Employee has already Leave "];
-
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,null);
-
+    
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
-
         $inputs = $res->values;
         $d = (object) $inputs;
-        if(!$d->emp_id) return DV::error('Employee ID is missing');
-        $emp = Employee::props($d->emp_id, 'id,name,code');
-        if(!$emp) return DV::error('Employee ID does not exist');
-        if (!$id && Employee::isOnleave($d->emp_id)){
-            return DV::error('Staff named ?? is already on leave::'.$emp->name);
+        $emp_id = $inputs['emp_id'];
+        if (!$d->emp_id) return DV::error('Employee ID is missing');
+        $employee_info = DB::table('employees as emp')
+                            ->where('emp.id', $emp_id)
+                            ->selectRaw('id, status_id, name, code')
+                            ->first();
+        if (!$employee_info) return DV::error('It seems the employee information does not exist');
+        if ($employee_info->status_id !== 10) return DV::error('The Employee is not active');
+        $today = date('Y-m-d');
+        $start_date = $inputs['start_date'] ?? $today;
+        $end_date = $inputs['end_date'];
+        $remarks = $inputs['remarks'];
+
+        if ($start_date < $today || $end_date < $today) {
+            return DV::error('It seems your date request leave in the past. Please check start date and end date!');
+        }  
+        if (strtotime($start_date) > strtotime($end_date)) {
+            return DV::error('It seems your request start date later end date. Please check start date and end date!');
         }
-
-
-        $id = saveData($ss,'leaves', ['id' => $id], $inputs, [], 1,false);
-        return DV::depends($id,null, 'Failed to save Leave Information');
-        // if ($id > 0) {
-        //     return DV::depends(1, ['leaves' => $inputs, 'id' => $id]);
-        // }
-
-        // return DV::error('Error saving leave management');
+        if (!$id) {
+            $existingLeave = DB::table('leaves')
+                ->where('emp_id', $d->emp_id)
+                ->where('start_date', $start_date)
+                ->where('end_date', $end_date)
+                ->exists();
+            if ($existingLeave) {
+                return DV::error('The employee already has leave for the specified date range.');
+            }
+        }
+        if (Employee::isOnLeave($d->emp_id)) {
+            return DV::error('Staff named ' . $employee_info->name . ' is already on leave.');
+        }
+      
+    
+        $id = saveData($ss, 'leaves', ['id' => $id], $inputs, [], 1, false);
+        return DV::depends($id, ['action', 'leave saved'], 'Failed to save Leave Information');
     }
+    
 
+   
+
+    // static function checkLeaveError($id,$start_date, $end_date, $remarks) {
+    //     $leave = DB::table('leaves as l')->where('l.id',$id)->selectRaw('id,formatDate(start_date) as start_date, formatDate(end_date) as end_date,status_id')->first();
+    //     if(!$leave) return 'Failed to identify employee leave';
+    //     $today = date('Y-m-d');
+    //     $start_date = convertDate($start_date);
+    //     $end_date = convertDate($end_date);
+    
+    //     if ($start_date > $end_date) {
+    //         return 'The start date cannot be later than '.$end_date;
+    //     }
+        
+    //     if ($start_date < $today) {
+    //         return 'The start date cannot be earlier than '.$today;
+    //     }
+        
+    //     if ($end_date < $today) {
+    //         return 'The end date cannot be earlier than '.$today;
+    //     }
+        
+    //     if ($start_date < $today && $end_date < $today) {
+    //         return 'Both the start date and end date are incorrect.';
+    //     }
+        
+    //     if ($start_date && $end_date && strtotime($start_date) > strtotime($end_date)) {
+    //         return 'Leave Date and End Date are not reasonable.';
+    //     }
+        
+    //     if (!$remarks) {
+    //         return'Remarks are required for Dropout or Suspend.';
+    //     }
+    
+    //     return null;
+    // }
+    
+   
     function getLeaveListPaginate($arr, $ss)
     {
-
         $subs_id = $ss->subs_id;
         $d = (object) $arr;
         $branch_id = $d->branch_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
-
+    
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
-
+    
         $status_id = $d->status_id ?? null;
         $leave_type_id = $d->leave_type_id ?? null;
         $search_value = $d->search_value ?? null;
@@ -83,52 +136,53 @@ class Leave
         $str_status = '1=1';
         $str_dates = '1=1';
         $str_leave_type = '1=1';
-
+    
         $str_branch = $branch_id > 0 ? 'l.branch_id ='.$branch_id : '3=3';
         $search_value = $d->search_value ?? null;
         if ($search_value){
-             $search_value = escape_like_str($search_value);
-             $str_search = "emp.email = '$search_value' OR emp.name LIKE '%$search_value%' OR emp.phone_number LIKE '%$search_value%' OR l.remarks LIKE '%$search_value%'";
+            $search_value = escape_like_str($search_value);
+            $str_search = "emp.email = '$search_value' OR emp.name LIKE '%$search_value%' OR emp.phone_number LIKE '%$search_value%' OR l.remarks LIKE '%$search_value%'";
         } else{
             $status_id = $d->status_id ?? null;
             $str_status = $status_id > 0? 'l.status_id = \'' . $status_id . '\'' : '1=1';
             $str_leave_type = $leave_type_id > 0? 'l.leave_type_id = \'' . $leave_type_id . '\'' : '1=1';
             $end_date = convertDate($end_date);
             $start_date = convertDate($start_date);
-
+    
             if (strtotime($start_date) && strtotime($end_date)) {
                 $str_dates = DBX::convertToDate('l.end_date') ." BETWEEN '$start_date' AND '$end_date'";
             }
         }
-
-
+    
         $skip_rows = ($current_page - 1) * $per_page;
         $col_dates = DBX::formatDate('l.start_date','start_date').','.DBX::formatDate('l.end_date','end_date');
+        
+        $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
+        
         $query = DB::table('leaves as l')
-        ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
-        ->join('positions as p', 'p.id', '=', 'emp.position_id')
-        ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
-        ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
-        ->where('l.subs_id', hex2bin($ss->subs_id))
-        ->whereRaw($str_branch)
-        ->whereRaw($str_search)
-        ->whereRaw($str_status)
-        ->whereRaw($str_leave_type)
-        ->whereRaw($str_dates)
-        ->selectRaw('l.id, emp.id as emp_id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'
-            . $col_dates
-            . ', ls.name as status, l.remarks, l.update_user, l.update_date, l.status_id, emp.photo_file_name as emp_photo')
-        ->orderBy('l.id', 'DESC');
-
-
-
+            ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
+            ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
+            ->where('l.subs_id', hex2bin($ss->subs_id))
+            ->whereRaw($str_branch)
+            ->whereRaw($str_search)
+            ->whereRaw($str_status)
+            ->whereRaw($str_leave_type)
+            ->whereRaw($str_dates)
+            ->selectRaw('l.id, emp.id as emp_id, emp.code as emp_code, emp.name as employee, emp.sex, p.title, l.leave_type_id, lt.name as leave_type,'
+                . $col_dates
+                . ', ls.name as status, l.remarks, l.update_user, l.update_date, l.status_id, emp.photo_file_name as emp_photo,'
+                . $leave_days_calc)  // Include leave days in the result
+            ->orderBy('l.id', 'DESC');
+    
         // Clone the query to get the total count
         $clone_query = clone $query;
         $count = $clone_query->count('l.id');
-
+    
         // Paginate the results
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
+    
         foreach ($rows as $row) {
             $row->image_url = '';
             if (isset($row->emp_id) && $row->emp_photo) {
@@ -136,11 +190,10 @@ class Leave
             }
             unset($row->emp_photo);  // Clean up unnecessary data
         }
-
-
+    
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
+    
 
     function getDetails($id ,$ss =null)
     {
@@ -156,7 +209,7 @@ class Leave
         ->where('l.id', $id)
         //->where('l.status_id',2
 
-        ->selectRaw('l.id AS emp_id, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,'.$col_update_date)
+        ->selectRaw('l.id AS emp_id,emp.code as emp_code, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,'.$col_update_date)
 
         ->first();
         return $leave;
@@ -183,7 +236,18 @@ class Leave
         ];
 
     }
+    function updateStatus($status_id, $id = null, $ss = null)
+    {
 
+        $ss = $ss ? $ss : $this->userInfo;
+        $x = DB::table('leaves')->where('id', $id)->update([
+            'status_id' => $status_id,
+            'update_user'=>$ss->full_name,
+            'update_date'=>getNowTime(),
+            'update_uid'=>$ss->user_id
+        ]);
+        return DV::depends($x, ['Leave  status', 'updated']);
+    }
 
 
 

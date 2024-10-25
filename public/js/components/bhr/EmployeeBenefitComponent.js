@@ -337,7 +337,7 @@ const EmployeeBenefitDailog = (() => {
                     },
                 },
                 onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);   
+                    LocaleManager.translateZone(me.divModal);
                 },
             });
 

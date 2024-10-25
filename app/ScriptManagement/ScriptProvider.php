@@ -120,6 +120,7 @@ class ScriptProvider
                 '/js/components/bhr/EmployeeMovementComponent.js',
                 '/js/components/bhr/EmployeeBenefitComponent.js',
                 '/js/components/bhr/AccountComponent.js',
+                '/js/components/bhr/TaxBracketComponent.js',
 
             ]
         ],

@@ -33,6 +33,7 @@ use App\Http\Controllers\Bhr\EducationController;
 use App\Http\Controllers\Bhr\ExperienceController;
 use App\Http\Controllers\Bhr\AccountController;
 use App\Http\Controllers\Bhr\TaxAllowanceController;
+use App\Http\Controllers\Bhr\TaxBracketController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -99,7 +100,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('experience')-
     Route::post('/delete', [ExperienceController::class, 'delete']);
     Route::post('/form-options', [ExperienceController::class, 'getFormOptions']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leaves')->group(function () {
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave')->group(function () {
 
     Route::post('/save', [LeaveController::class, 'save']);
     Route::post('/list-paginate', [LeaveController::class, 'getLeaveListPaginate']);
@@ -334,4 +335,13 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance
     Route::post('/details', [TaxAllowanceController::class, 'getDetails']);
     Route::post('/delete', [TaxAllowanceController::class, 'deleteTaxAllowance']);
     Route::post('/form-options', [TaxAllowanceController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-bracket')->group(function () {
+
+    Route::post('/save', [TaxBracketController::class, 'saveTaxBracket']);
+    Route::post('/list-paginate', [TaxBracketController::class, 'getTaxBracketListPaginate']);
+    Route::post('/details', [TaxBracketController::class, 'getDetails']);
+    Route::post('/delete', [TaxBracketController::class, 'deleteTaxBracket']);
+    Route::post('/form-options', [TaxBracketController::class, 'getFormOptions']);
 });
