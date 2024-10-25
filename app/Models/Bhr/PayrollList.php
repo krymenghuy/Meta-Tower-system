@@ -86,6 +86,7 @@ class PayrollList
                         pos.title as emp_position,
                         el.name as emp_role,
                         e.salary_base,
+                        e.apply_payroll_tax,
                         pl.benefit, pl.deduction,
                         pl.tax_rate,
                         pl.tax_base,
@@ -209,7 +210,9 @@ class PayrollList
         $exist = 0;
         foreach ($get_employee as $emp) {
             if($emp->apply_payroll_tax == 0){
-                $emp->tax_rate = DB::table('tax_brackets')->whereRaw('lower_bracket <=' . $emp->salary_base . ' and upper_bracket >=' . $emp->salary_base)->take(1)->value('rate');
+                $emp->tax_rate = DB::table('tax_brackets')
+                    ->whereRaw('lower_bracket <=' . $emp->salary_base . ' and upper_bracket >=' . $emp->salary_base)
+                    ->take(1)->value('rate');
 
             }else
             {
