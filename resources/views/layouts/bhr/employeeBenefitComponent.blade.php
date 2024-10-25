@@ -15,6 +15,10 @@
                     </li>
                 </ul>
             </div>
+            <div class="btn btn-primary rounded-5 btnAddBenefitType">
+                <i class="fa fa-plus"></i>
+                <span>Benefit Type</span>
+            </div>
         </div>
         <div class="d-flex gap-1">
             <input type="text" class="form-control filter-field" id="_search_benefit" placeholder="Search benefit here ........." aria-label="Search">
@@ -22,7 +26,7 @@
     </div>
 
     <div class="shadow rounded-3 mt-4">
-        <div class="tab-content" id="benefit-tabs-content">
+        <div class="tab-content" id="custom-tabs-one-tabContent">
             <div class="tab-pane fade show active" id="bonus-pane" role="tabpanel" aria-labelledby="bonus-tab" tabindex="0">
                 <div class="d-flex justify-content-between rounded-3 p-0 mt-3">
                     <div class="d-flex gap-2">

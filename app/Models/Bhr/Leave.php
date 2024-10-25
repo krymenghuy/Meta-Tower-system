@@ -20,67 +20,100 @@ class Leave
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-
-    function save($arr, $id=null, $ss = null)
-    {
+    function save($arr, $id = null, $ss = null) {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
+        
         $v_rule = [
             'id' => '0|identity=1',
-            'emp_id' => '0|number|exists=employees.id',
+            'emp_id' => '1|number|exists=employees.id',
             'start_date' => '1|date',
             'end_date' => '1|date',
             'leave_type_id' => '1|number',
             'remarks' => '0|string|250',
-            'status_id' => '0|choice|1,2,3|default = 2',
+            'status_id' => '0|choice|1,2,3|default=2',
         ];
-
-        // $checkUnque = ["$branch_id|leaves|emp_id|id=id|text=Employee has already Leave "];
-
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang,false,null);
-
+    
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
-
         $inputs = $res->values;
         $d = (object) $inputs;
         $emp_id = $inputs['emp_id'];
-        if(!$d->emp_id) return DV::error('Employee ID is missing');
-        // $emp = Employee::props($d->emp_id, 'id,name,code');
-        $emp  = DB::table('employees as emp')->where('emp.id',$emp_id)->selectRaw('id,status_id,name,code')->first();
-        if(!$emp) return DV::error('It seems the employee information does not exists');
-        
-        if(!$emp) return DV::error('Employee ID does not exist');
+        if (!$d->emp_id) return DV::error('Employee ID is missing');
+        $employee_info = DB::table('employees as emp')
+                            ->where('emp.id', $emp_id)
+                            ->selectRaw('id, status_id, name, code')
+                            ->first();
+        if (!$employee_info) return DV::error('It seems the employee information does not exist');
+        if ($employee_info->status_id !== 10) return DV::error('The Employee is not active');
+        $today = date('Y-m-d');
+        $start_date = $inputs['start_date'] ?? $today;
+        $end_date = $inputs['end_date'];
+        $remarks = $inputs['remarks'];
 
+        if ($start_date < $today || $end_date < $today) {
+            return DV::error('It seems your date request leave in the past. Please check start date and end date!');
+        }  
+        if (strtotime($start_date) > strtotime($end_date)) {
+            return DV::error('It seems your request start date later end date. Please check start date and end date!');
+        }
         if (!$id) {
             $existingLeave = DB::table('leaves')
                 ->where('emp_id', $d->emp_id)
-                ->where('start_date', $d->start_date)
-                ->where('end_date', $d->end_date)
+                ->where('start_date', $start_date)
+                ->where('end_date', $end_date)
                 ->exists();
-            
             if ($existingLeave) {
                 return DV::error('The employee already has leave for the specified date range.');
             }
         }
-        
-        if (!$id && Employee::isOnLeave($d->emp_id)){
-            return DV::error('Staff named ?? is already on leave::'.$emp->name);
+        if (Employee::isOnLeave($d->emp_id)) {
+            return DV::error('Staff named ' . $employee_info->name . ' is already on leave.');
         }
-
-        if($emp->status_id !==10) return DV::error('The Employee is not active');
-
-
-
-        $id = saveData($ss,'leaves', ['id' => $id], $inputs, [], 1,false);
-        return DV::depends($id,['action','leave saved'], 'Failed to save Leave Information');
-        // if ($id > 0) {
-        //     return DV::depends(1, ['leaves' => $inputs, 'id' => $id]);
-        // }
-
-        // return DV::error('Error saving leave management');
+      
+    
+        $id = saveData($ss, 'leaves', ['id' => $id], $inputs, [], 1, false);
+        return DV::depends($id, ['action', 'leave saved'], 'Failed to save Leave Information');
     }
+    
 
+   
+
+    // static function checkLeaveError($id,$start_date, $end_date, $remarks) {
+    //     $leave = DB::table('leaves as l')->where('l.id',$id)->selectRaw('id,formatDate(start_date) as start_date, formatDate(end_date) as end_date,status_id')->first();
+    //     if(!$leave) return 'Failed to identify employee leave';
+    //     $today = date('Y-m-d');
+    //     $start_date = convertDate($start_date);
+    //     $end_date = convertDate($end_date);
+    
+    //     if ($start_date > $end_date) {
+    //         return 'The start date cannot be later than '.$end_date;
+    //     }
+        
+    //     if ($start_date < $today) {
+    //         return 'The start date cannot be earlier than '.$today;
+    //     }
+        
+    //     if ($end_date < $today) {
+    //         return 'The end date cannot be earlier than '.$today;
+    //     }
+        
+    //     if ($start_date < $today && $end_date < $today) {
+    //         return 'Both the start date and end date are incorrect.';
+    //     }
+        
+    //     if ($start_date && $end_date && strtotime($start_date) > strtotime($end_date)) {
+    //         return 'Leave Date and End Date are not reasonable.';
+    //     }
+        
+    //     if (!$remarks) {
+    //         return'Remarks are required for Dropout or Suspend.';
+    //     }
+    
+    //     return null;
+    // }
+    
    
     function getLeaveListPaginate($arr, $ss)
     {
