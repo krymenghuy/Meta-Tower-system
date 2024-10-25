@@ -15,10 +15,24 @@ var LeaveComponent = new (function () {
 
     this.cols = [
         {
+            className: 'col_action align-middle',
+            data: function (data, row, display) {
+                return `
+                   <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        },
+        {
             title: "Employee ID",
-            className: 'align-middle text-capitalize text-nowrap',
+            className: 'align-middle text-capitalize',
             data: (data, index, tr) => { 
-                return `<p style="font-size: 12px; class="p-0 m-0">${data.emp_code ?? 'null'}</p>`;
+                return `<p style="font-size: 12px; class="p-0 m-0 "><span class="text-warning">${data.emp_code ?? 'null'}</span></p>`;
              }
 
         },
@@ -107,20 +121,7 @@ var LeaveComponent = new (function () {
                         </a>`;
             }
         },
-        {
-            className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class="${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
-        }
+        
 
     ];
 
@@ -148,12 +149,12 @@ var LeaveComponent = new (function () {
                 }
             };
 
-            LeaveRequestDailog.show(op);
+            LeaveRequestDialog.show(op);
         };
 
         const pr_tbl = mThis.LeaveRequestListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.style.height = (window.innerHeight - 260) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
         mThis.initDropdownMenus(pr_tbl);
@@ -165,15 +166,15 @@ var LeaveComponent = new (function () {
 
         el.onchange =  (e) => {
        e.preventDefault();
-       mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
-       console.log(777777, mThis.getDataFormFilter());
+       mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+       console.log(777777, mThis.getFilterData());
         }
    });
 
     mThis.elSearch.addEventListener('keyup', (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
-            mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
+            mThis.LeaveRequestListView.showPage(mThis.getFilterData());
 
         }, 200);
     });
@@ -182,7 +183,7 @@ var LeaveComponent = new (function () {
     //     return p ;
     // };
 
-    this.getDataFormFilter = () => {
+    this.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
             // leave_type_id: mThis.elFilter_leaveType.value,
@@ -297,7 +298,7 @@ var LeaveComponent = new (function () {
                         // mThis.elFilter_leave_request_status.dispatchEvent ( new Event('change'));
                         cv_interact.success('The leave request status has been updated');
                         // if(tr) tr.dataset.statuscode = d.value;
-                        mThis.LeaveRequestListView.showPage(mThis.getDataFormFilter());
+                        mThis.LeaveRequestListView.showPage(mThis.getFilterData());
                     }
                     else
                         cv_interact.error(res.error_message);
@@ -315,7 +316,7 @@ var LeaveComponent = new (function () {
             }
         };
 
-        LeaveRequestDailog.show(op);
+        LeaveRequestDialog.show(op);
     }
 
     this.deleteLeaveRequest = (id, menuLink) => {
@@ -371,7 +372,7 @@ var LeaveComponent = new (function () {
 });
 
 //begin::LeaveRequestDialog using GeneralDialog
-const LeaveRequestDailog = (()=>{
+const LeaveRequestDialog = (()=>{
 
     const self = {};
     let dialog = null;
