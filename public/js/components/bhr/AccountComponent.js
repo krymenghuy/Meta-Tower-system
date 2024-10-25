@@ -5,10 +5,10 @@ var AccountMenagmentComponent = new (function () {
     this.self = this.jm[0];
     this.title_prop = "Account Management";
 
-    this.btnAdd = this.self.querySelector("#_btnAddAccount");
-    this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSearch = this.self.querySelector("#_sdl_search_account");
-    this.elSortBy = this.self.querySelector('#el_sort_by');
+    // this.btnAdd = this.self.querySelector("#_btnAddAccount");
+    // this.divFilter = this.self.querySelector("#_divFilter");
+    // this.elSearch = this.self.querySelector("#_sdl_search_account");
+    // this.elSortBy = this.self.querySelector('#el_sort_by');
 
     this.init= () => {
         if(mThis.initAlready) return;

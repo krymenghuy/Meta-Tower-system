@@ -2,7 +2,7 @@
     <div class="d-flex justify-content-between rounded-3 pt-2">
         <div class="d-flex gap-2">
             <div class="card-header shadow border border-1 rounded-5 p-1 bg-light-gray">
-                <ul class="nav nav-tabs border border-0 m-0 tab-header" id="custom-tabs-one-tab" role="tablist">
+                <ul class="nav nav-tabs border border-0 m-0 tab-header" id="benefit-tabs" role="tablist">
                     <li class="nav-item" role="presentation">
                         <a class="tab-button view_bonus nav-link pt-2 pb-2 border border-0 rounded-5 active" data-view="view_bonus" id="bonus-tab" data-bs-toggle="tab" data-bs-target="#bonus-pane" type="button" role="tab" aria-controls="bonus-pane" aria-selected="true">
                             Bonuses
@@ -49,7 +49,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="_employee_bonus_list" class="mt-5"></div>
+                <div id="_bonus_list" class="mt-5"></div>
             </div>
 
             <div class="tab-pane fade" id="seniority-pane" role="tabpanel" aria-labelledby="seniority-tab" tabindex="0">
