@@ -6,7 +6,8 @@ var PayrollComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_payrollComponent");
     this.self = this.jm[0];
     this.title_prop = "Payroll";
-    this.elStatus = this.self.querySelector('#el_status');
+    this.elAuthorized = this.self.querySelector('#el_authorized');
+    this.elDisbursed = this.self.querySelector('#el_disbursed');
     this.btnAdd = this.self.querySelector("#_btnAddpayroll");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_payroll");
@@ -23,15 +24,11 @@ var PayrollComponent = new (function () {
             data: (data) => `<p class="p-0 m-0">${data.name ?? ''}</p>`
         },
         {
-            title: "Month",
+            title: "Month Year",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.p_month ?? ''}</p>`
+            data: (data) => `<p class="p-0 m-0">${data.month_year ?? ''}</p>`
         },
-        {
-            title: "Year",
-            className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.p_year ?? ''}</p>`
-        },
+
         {
             title: "Duration",
             className: "align-middle w-15",
@@ -64,17 +61,18 @@ var PayrollComponent = new (function () {
                 let cls_class = "text-white text-center border rounded-5";
                 let bg_color = ''; // Default background color
 
-                if ((data.authorized || '').toLowerCase() === 'approved') {
+                if (data.authorized === 1) {
                     cls_class = 'text-white text-center border border-success rounded-5 p-1';
                     bg_color = '#28a745'; // Green background for success
-                } else if ((data.authorized || '').toLowerCase() === 'pending') {
+                } else if (data.authorized === 0) {
                     cls_class = 'text-white text-center border border-warning rounded-5 p-1';
                     bg_color = '#ffc107'; // Yellow background for pending
                 }
+                console.log(2222,data.authorized);
 
-                return `<div><a class="d-block" data-status="${data.authorized}" data-id="${data.id}" href="javascript:void(0)">
+                return `<div><a class="d-block" data-status="${data.authorized }" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${data.authorized}
+                                ${data.authorized == 0 ? 'Pending' : 'Approved'}
                             </span>
                         </a></div>`;
             }
@@ -86,17 +84,17 @@ var PayrollComponent = new (function () {
                 let cls_class = "text-white text-center border rounded-5";
                 let bg_color = ''; // Default background color
 
-                if ((data.disbursed || '').toLowerCase() === 'success') {
+                if (data.disbursed === 1) {
                     cls_class = 'text-white text-center border border-success rounded-5 p-1';
                     bg_color = '#28a745'; // Green background for success
-                } else if ((data.disbursed || '').toLowerCase() === 'pending') {
+                } else if (data.disbursed === 0) {
                     cls_class = 'text-white text-center border border-warning rounded-5 p-1';
                     bg_color = '#ffc107'; // Yellow background for pending
                 }
 
                 return `<div><a class="d-block" data-status="${data.disbursed}" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${data.disbursed}
+                                ${data.disbursed == 0 ? 'Pending' : 'Success'}
                             </span>
                         </a></div>`;
             }
@@ -163,18 +161,6 @@ var PayrollComponent = new (function () {
         mThis.initAlready = true;
     };
 
-    this.getDataFormFilter = () => {
-        let filters = {
-            status_id: mThis.elStatus.value,
-            sort_by: mThis.elSortBy.value,
-            search_value: mThis.elSearch.value,
-        };
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            filters[el.dataset.field] = el.value;
-        });
-        return filters;
-    };
-
     this.initDropdownMenus = (table) => {
         const menuOptions = {
             containerElement: table,
@@ -214,10 +200,68 @@ var PayrollComponent = new (function () {
         new VSDropdownMenu(menuOptions);
     };
 
+    this.editPayroll = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                cv_interact.success('Updated Payroll Successfully');
+                mThis.PayrollListView.showPage();
+            }
+        };
+        AddPayRollListDailog.show(op);
+    };
+    this.deletePayroll = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.PayrollListView.showPage();
+            }
+        };
+        cv_interact.confirm('Delete this Payroll?',{
+            title: 'Delete Payroll',
+            context: 'delete',
+            confirmButtonText:"Delete"
+        },function(e){
+            if(e){
+                vsapi.call(`${main_view.base_url}/hr/payroll/delete`,op,false,false,false).then(res => {
+                    if(res.status_code == 200){
+                        cv_interact.success('Deleted Successfully');
+                        mThis.PayrollListView.showPage();
+                    }
+                })
+            }
+        });
+
+    }
+
+    this.getDataFormFilter = () => {
+        let filters = {
+
+            search_value: mThis.elSearch.value,
+        };
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            filters[el.dataset.field] = el.value;
+        });
+        return filters;
+    };
+    this.prepareFormOptions = () => {
+
+        vsapi.call(`${main_view.base_url}/hr/payroll/form-options`,null,null,null).then(res => {
+            const d = res.status_code == 200 ? res.data : {};
+            console.log(1111,mThis.elAuthorized);
+
+            VSUtil.setComboItems(mThis.elAuthorized,d.authorized,'id','name',true,'All',null);
+            VSUtil.setComboItems(mThis.elDisbursed,d.disbursed,'id','name',true,'All',null);
+
+
+        })
+    }
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        // mThis.prepareFormOptions();
+        mThis.prepareFormOptions();
             mThis.PayrollListView.showPage();
                 $(mThis.self).siblings().hide();
                 $(mThis.self).fadeIn(200);
@@ -239,35 +283,17 @@ const AddPayRollListDailog = (()=>{
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
                  return [`<div class="row">
-                 <div class="form-group col-12">
+                 <div class="form-group col-6">
                     <label for="name" class="form-label" vslang="titles.Name "></label>
                     <input name="name" class="form-control data-input" data-field="name" />
                 </div>
                 <div class="form-group col-6">
-                    <label for="p_month" class="form-label" vslang="titles.Payroll Month"></label>
-                        <select class="modal-select data-input" data-field="p_month">
-                            <option value="">(Select Month)</option>
-                            <option value="1">January</option>
-                            <option value="2">February</option>
-                            <option value="3">March</option>
-                            <option value="4">April</option>
-                            <option value="5">May</option>
-                            <option value="6">June</option>
-                            <option value="7">July</option>
-                            <option value="8">August</option>
-                            <option value="9">September</option>
-                            <option value="10">October</option>
-                            <option value="11">November</option>
-                            <option value="12">December</option>
-                        </select>
+                    <label for="month_year" class="form-label" vslang="titles.Month Year"></label>
+                    <input name="month_year" type="month" class="form-control data-input" data-field="month_year" />
                 </div>
                 <div class="form-group col-6">
-                    <label for="p_year" class="form-label" vslang="titles.Payroll Year "></label>
-                    <input name="p_year" class="form-control data-input" data-field="p_year" />
-                </div>
-                 <div class="form-group col-6">
-                    <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
-                    <input name="start_date" class="form-control data-input" data-field="start_date" />
+                  <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
+                  <input name="start_date" class="form-control data-input" data-field="start_date" />
                 </div>
                 <div class="form-group col-6">
                   <label for="end_date" class="form-label" vslang="titles.End Date"></label>

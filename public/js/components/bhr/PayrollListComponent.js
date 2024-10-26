@@ -93,7 +93,7 @@ var PayrollListComponent = new (function () {
             data: (data) => `
             <div class="d-flex justify-content-center align-items-center">
                 <div class="text-center gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_payroll_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_payroll_list_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                         <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
                     </a>
                 </div>
@@ -191,22 +191,22 @@ var PayrollListComponent = new (function () {
     this.initDropdownMenus = (table)=>{
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass:"btn_payroll_action",
+            actionButtonClass:"btn_payroll_list_action",
             cssClass:"bg-white shadow",
             //menuItemClass:"",
             menus:[
 
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Payroll">Modify Payroll</span>',
+                    html:'<span class="ps-2  " vslang="titles.Modify Payroll List">Modify Payroll List</span>',
                     icon:`<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
-                    name:"edit_payroll"
+                    name:"edit_payroll_list"
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete Payroll">Delete Payroll</span>',
+                    html:'<span class="ps-2  " vslang="titles.Delete Payroll List">Delete Payroll List</span>',
                     icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
-                    name:"delete_payroll"
+                    name:"delete_payroll_list"
                 },
 
             ],
@@ -214,12 +214,12 @@ var PayrollListComponent = new (function () {
             onClick:(menuLink, id, name)=>{
                 switch(name){
 
-                    case 'edit_payroll':{
-                      mThis.editPayroll(id, menuLink);
+                    case 'edit_payroll_list':{
+                      mThis.editPayrollList(id, menuLink);
                       break;
                     }
-                    case 'delete_payroll':{
-                        mThis.deletePayroll(id, menuLink);
+                    case 'delete_payroll_list':{
+                        mThis.deletePayrollList(id, menuLink);
                         break;
                       }
 
@@ -233,7 +233,7 @@ var PayrollListComponent = new (function () {
     }
 
 
-    this.editPayroll = (id, menuLink) => {
+    this.editPayrollList = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -246,7 +246,7 @@ var PayrollListComponent = new (function () {
         PayRollListDailog.show(op);
     }
 
-    this.deletePayroll = (id, menuLink) => {
+    this.deletePayrollList = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -254,8 +254,8 @@ var PayrollListComponent = new (function () {
                 mThis.PayrollList_ListView.showPage();
             }
         };
-        cv_interact.confirm('Delete this Payroll?',{
-            title: 'Delete Payroll',
+        cv_interact.confirm('Delete this Payroll List?',{
+            title: 'Delete Payroll List',
             context: 'delete',
             confirmButtonText:"Delete"
         },function(e){
