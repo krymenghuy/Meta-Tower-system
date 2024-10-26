@@ -112,7 +112,8 @@ class Benefit
         $benefit_type_id = $d->benefit_type_id ?? null;
 
         $str_benefit_type = $benefit_type_id ? 'b.benefit_type_id = \'' . $benefit_type_id . '\'' : '1=1';
-        $str_search = $search_value ? "(emp.name LIKE '%" . addslashes($search_value) . "%')" : '1=1';
+        $str_search = $search_value ? "(emp.name LIKE '%" . addslashes($search_value) . "%' OR b.remarks LIKE '%" . addslashes($search_value) . "%' OR b.amount LIKE '%" . addslashes($search_value) . "%')" : '1=1';
+
 
         // Query for bonuses
         $bonusQuery = DB::table('emp_bonuses as bs')
@@ -122,7 +123,7 @@ class Benefit
             ->whereRaw($str_search)
             ->whereRaw($str_benefit_type)
             ->selectRaw('bs.id, b.id as benefit_id, emp.id as emp_id, emp.name as name, emp.email as email, 
-                     b.benefit_type_id, b.amount, b.remarks, bs.bonus_type as type, b.create_date, emp.photo_file_name as emp_photo')
+                     b.benefit_type_id, b.amount, b.remarks, bs.bonus_type as type, b.create_date, emp.photo_file_name as emp_photo, bs.update_user')
             ->addSelect(DB::raw("'bonus' as benefit_category"));
 
         // Query for seniorities
@@ -133,7 +134,7 @@ class Benefit
             ->whereRaw($str_search)
             ->whereRaw($str_benefit_type)
             ->selectRaw('se.id, b.id as benefit_id, emp.id as emp_id, emp.name as name, emp.email as email, 
-                     b.benefit_type_id, b.amount, b.remarks, se.seniority_type as type, b.create_date, emp.photo_file_name as emp_photo')
+                     b.benefit_type_id, b.amount, b.remarks, se.seniority_type as type, b.create_date, emp.photo_file_name as emp_photo, se.update_user')
             ->addSelect(DB::raw("'seniority' as benefit_category"));
 
         // Combine the results with a union and paginate
