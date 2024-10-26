@@ -56,7 +56,7 @@ var PayrollComponent = new (function () {
         },
           {
             title: "Authorize",
-            className: 'status text-nowrap align-middle',
+            className: 'authorized text-nowrap align-middle',
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
                 let bg_color = ''; // Default background color
@@ -70,7 +70,7 @@ var PayrollComponent = new (function () {
                 }
                 console.log(2222,data.authorized);
 
-                return `<div><a class="d-block" data-status="${data.authorized }" data-id="${data.id}" href="javascript:void(0)">
+                return `<div><a class="d-block" data-authorized="${data.authorized}" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
                                 ${data.authorized == 0 ? 'Pending' : 'Approved'}
                             </span>
@@ -168,9 +168,14 @@ var PayrollComponent = new (function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2">Change Status</span>',
-                    icon: '<i class="fa-regular fa-exchange fs-5"></i>',
-                    name: "change_payroll_status"
+                    html: '<span class="ps-2"> Authorize </span>',
+                    icon: '<i class="fa-regular fa-circle-check"></i>',
+                    name: "change_authorize"
+                },
+                {
+                    html: '<span class="ps-2"> Disburse </span>',
+                    icon: '<i class="fa-solid fa-square-check"></i>',
+                    name: "change_disbursed"
                 },
                 {
                     html: '<span class="ps-2">Modify Payroll</span>',
@@ -185,8 +190,11 @@ var PayrollComponent = new (function () {
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case 'change_payroll_status':
-                        mThis.changeStatus(id, menuLink);
+                    case 'change_authorize':
+                        mThis.changeAuthorize(id, menuLink);
+                        break;
+                    case 'change_disbursed':
+                        mThis.changeDisbursed(id, menuLink);
                         break;
                     case 'edit_payroll':
                         mThis.editPayroll(id, menuLink);
@@ -199,6 +207,43 @@ var PayrollComponent = new (function () {
         };
         new VSDropdownMenu(menuOptions);
     };
+    this.changeAuthorize = (id, menuLink)=>{
+        let p={
+            id:id,
+            btn:menuLink,
+            onClose: () => {
+                mThis.PayrollListView.showPage();
+            }
+
+        }
+        vsapi.call(`${mThis.base_url}/hr/payroll/update-authorize`,p).then(res => {
+            if(res.status_code === 200){
+                cv_interact.success('The payroll has been updated by authorize');
+                mThis.PayrollListView.showPage();
+            }
+            else
+                cv_interact.error(res.error_message);
+        });
+    }
+    this.changeDisbursed = (id, menuLink)=>{
+        let p={
+            id:id,
+            btn:menuLink,
+            onClose: () => {
+                mThis.PayrollListView.showPage();
+            }
+
+        }
+        vsapi.call(`${mThis.base_url}/hr/payroll/update-disburse`,p).then(res => {
+            if(res.status_code === 200){
+                cv_interact.success('The payroll has been updated by disbursed');
+                mThis.PayrollListView.showPage();
+            }
+            else
+                cv_interact.error(res.error_message);
+        });
+    }
+
 
     this.editPayroll = (id, menuLink) => {
         let op = {
@@ -299,11 +344,7 @@ const AddPayRollListDailog = (()=>{
                   <label for="end_date" class="form-label" vslang="titles.End Date"></label>
                   <input name="end_date" class="form-control data-input" data-field="end_date" />
                 </div>
-                <div class="form-group col-4">
-                    <label for="p_number" class="form-label" vslang="titles.Payroll Number "></label>
-                    <input type="number" name="p_number" class="form-control data-input" data-field="p_number" />
-                </div>
-                <div class="form-group col-4">
+                <div class="form-group col-6">
                     <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
                         <select class="modal-select data-input" data-field="currency_code">
                             <option value="">(Select Currency)</option>
@@ -311,23 +352,13 @@ const AddPayRollListDailog = (()=>{
                             <option value="KHR">KHR</option>
                         </select>
                 </div>
-                <div class="form-group col-4">
+                <div class="form-group col-6">
                     <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate "></label>
                     <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
                 </div>
-                <div class="form-group col-4">
-                    <label for="authorized" class="form-label" vslang="titles.Authorized"></label>
-                        <select class="modal-select data-input" data-field="authorized">
-                            <option value="0">Panding</option>
-                            <option value="1">Approved</option>
-                        </select>
-                </div>
-                <div class="form-group col-4">
-                    <label for="disbursed" class="form-label" vslang="titles.Disbursed"></label>
-                        <select class="modal-select data-input" data-field="disbursed">
-                            <option value="0">Panding</option>
-                            <option value="1">Success</option>
-                        </select>
+                <div class="form-group col-6">
+                    <label for="p_number" class="form-label" vslang="titles.Payroll Number "></label>
+                    <input type="number" name="p_number" class="form-control data-input" data-field="p_number" />
                 </div>
                 <div class="form-group col-4">
                     <label for="total" class="form-label" vslang="titles.Total "></label>
@@ -339,6 +370,8 @@ const AddPayRollListDailog = (()=>{
                 //Convert field to be DatePicker : start_date and end_date
                 DateTimePicker.init(me.controls.start_date);
                 DateTimePicker.init(me.controls.end_date);
+                // DateTimePicker.init(me.controls.month_year);
+
 
              },
             // configSelect:[

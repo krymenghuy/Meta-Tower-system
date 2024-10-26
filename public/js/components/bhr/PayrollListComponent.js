@@ -7,6 +7,7 @@ var PayrollListComponent = new (function () {
     this.self = this.jm[0];
     this.title_prop = "Payroll List";
     this.elFilter = this.self.querySelector('#el_filter_payrollList');
+    this.elFilterBranch = this.self.querySelector('#el_filter_branch');
     this.btnInsert = this.self.querySelector("#_btnInsert");
     this.btnImport = this.self.querySelector("#_btnImport");
     this.divFilter = this.self.querySelector("#_divFilter");
@@ -274,6 +275,7 @@ var PayrollListComponent = new (function () {
     this.getDataFormFilter = () => {
         let p = {};
         p.payroll_id = mThis.elFilter.value;
+        p.branch_id = mThis.elFilterBranch.value;
         // p.sort_by = mThis.elSortBy.value;
 
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
@@ -290,7 +292,8 @@ var PayrollListComponent = new (function () {
         vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
             console.log(1111,this.elSortBy);
-            VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','name',true,'All',null);
+            VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',true,'All',null);
+            VSUtil.setComboItems(mThis.elFilterBranch,d.branches,'id','branch_name',true,'All',null);
             // VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'All', null);
 
         })

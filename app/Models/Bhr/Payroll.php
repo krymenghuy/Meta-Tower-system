@@ -104,8 +104,12 @@ class Payroll
             ->selectRaw('p.id, p.name, p.month_year, p.start_date, p.end_date, p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
             ->where('p.branch_id', $ss->branch_id)
             ->where('p.id', $id)
-            ->take(1)
-            ->first();
+            ->first();  // No need for `take(1)`.
+
+        if ($row) {
+            $row->month_year = date('M Y', strtotime($row->month_year));
+        }
+
         return $row;
     }
 
@@ -150,5 +154,29 @@ class Payroll
             'payrolls' => $payroll,
         ];
 
+    }
+    function updateAuthorize($id = null, $ss = null)
+    {
+
+        $ss = $ss ? $ss : $this->userInfo;
+        $x = DB::table('payrolls')->where('id', $id)->update([
+            'authorized' => 1,
+            'update_user'=>$ss->full_name,
+            'update_date'=>getNowTime(),
+            'update_uid'=>$ss->user_id
+        ]);
+        return DV::depends($x, ['Payroll  authorize', 'updated']);
+    }
+    function updateDisburse($id = null, $ss = null)
+    {
+
+        $ss = $ss ? $ss : $this->userInfo;
+        $x = DB::table('payrolls')->where('id', $id)->update([
+            'disbursed' => 1,
+            'update_user'=>$ss->full_name,
+            'update_date'=>getNowTime(),
+            'update_uid'=>$ss->user_id
+        ]);
+        return DV::depends($x, ['Payroll  disbursed', 'updated']);
     }
 }

@@ -79,7 +79,7 @@ class PayrollController extends Controller
         return JDV::result($this->payrollModel->getFormOptions($req->id,$ss));
     }
 
-    public function updateStatus(Request $req)
+    public function updateAuthorize(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -88,7 +88,21 @@ class PayrollController extends Controller
 
         $id = $req->id ? $req->id : $req->id;
         $payroll = new Payroll($id, $ss);
-        $res = $payroll->updateStatus($req->status_id, $id);
+        $res = $payroll->updateAuthorize($id,$ss);
+
+        return JDV::raw($res);
+    }
+
+    public function updateDisburse(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+
+        $id = $req->id ? $req->id : $req->id;
+        $payroll = new Payroll($id, $ss);
+        $res = $payroll->updateDisburse($id,$ss);
 
         return JDV::raw($res);
     }
