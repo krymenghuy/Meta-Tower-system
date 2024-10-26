@@ -1,12 +1,11 @@
 "use strict";
 
-var LeaveComponent = new (function () {
+var LeaveComponent = new function () {
     let mThis = this;
+    this.title_prop = "Leave Requests";
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_leave_component");
     this.self = this.jm[0];
-    this.title_prop = "Leave Requests";
-
     this.btnAdd = this.self.querySelector("#_btnAddLeave");
     this.divFilter = this.self.querySelector("#_divFilter_leave");
     // this.elFilter_leaveType = this.self.querySelector('#el_leave_type');
@@ -32,7 +31,7 @@ var LeaveComponent = new (function () {
             title: "Employee ID",
             className: 'align-middle text-capitalize',
             data: (data, index, tr) => { 
-                return `<p style="font-size: 12px; class="p-0 m-0 "><span class="text-warning">${data.emp_code ?? 'null'}</span></p>`;
+                return `<span style="font-size: 12px; class=""><span class="text-primary-custom">${data.emp_code ?? 'null'}</span></span>`;
              }
 
         },
@@ -56,7 +55,7 @@ var LeaveComponent = new (function () {
             title: "Leave Type",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p style="font-size: 12px; class="p-0 m-0">${data.leave_type ?? ''}</p>`;
+                return `<span style="font-size: 12px; class="p-0 m-0">${data.leave_type ?? ''}</span>`;
             }
         },
        
@@ -76,7 +75,7 @@ var LeaveComponent = new (function () {
             title: "Remarks",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p style="font-size: 12px; class="p-0 m-0">${data.remarks ?? 'No remarks'}</p>`;
+                return `<span style="font-size: 12px; class="p-0 m-0">${data.remarks ?? 'No remarks'}</span>`;
             }
         },
         {
@@ -134,7 +133,7 @@ var LeaveComponent = new (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white overflow-hidden rounded-2 header-uppercase',
+            tableClass: 'table table--white rounded-3 overflow-hidden header-uppercase',
             listContainerClass: null
         });
 
@@ -152,51 +151,53 @@ var LeaveComponent = new (function () {
             LeaveRequestDialog.show(op);
         };
 
-        const pr_tbl = mThis.LeaveRequestListView.getListContainer();
-        const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 260) + 'px';
-        sh_parent.classList.add('overflow-y-auto');
-        sh_parent.classList.add('overflow-x-hidden');
-        mThis.initDropdownMenus(pr_tbl);
 
+        mThis.tblLeaves = mThis.LeaveRequestListView.getTable();
+        mThis.initDropdownMenus(mThis.tblLeaves);
+        this.sh_container = mThis.LeaveRequestListView.getListContainer();
+
+        const sh_parent = mThis.sh_container.parentElement;
+        sh_parent.style.height = (window.innerHeight - 245) + 'px';
+        sh_parent.classList.add('overflow-y-auto');
+        window.onresize = () => {
+            sh_parent.style.height = (window.innerHeight - 190) + 'px';
+        }
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
+
+            el.onchange =  (e) => {
+           e.preventDefault();
+           mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+            }
+       });
+    
+        mThis.elSearch.addEventListener('keyup', (e) => {
+            e.preventDefault();
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.LeaveRequestListView.showPage(mThis.getFilterData());
+    
+            }, 250);
+        });
+
+        mThis.initAlready = true;
 
 
     };
-    mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
-
-        el.onchange =  (e) => {
-       e.preventDefault();
-       mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-       console.log(777777, mThis.getFilterData());
-        }
-   });
-
-    mThis.elSearch.addEventListener('keyup', (e) => {
-        clearTimeout(mThis.search_timeout);
-        mThis.search_timeout = setTimeout(() => {
-            mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-
-        }, 200);
-    });
-
-    // this.setFilterPeriod = (p,name, start_date,end_date) =>{
-    //     return p ;
-    // };
+    
+   
+  
 
     this.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
-            // leave_type_id: mThis.elFilter_leaveType.value,
-            search_value:mThis.elSearch.value,
+            search_value: mThis.elSearch.value,
 
 
         };
-        console.log(9090,p);
 
-        // p = mThis.setFilterPeriod(p, periodName, null,null);
-    mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            const f = el.dataset.field;
-            p[f] = el.value;
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+                const f = el.dataset.field;
+                p[f] = el.value;
         });
 
 
@@ -233,8 +234,14 @@ var LeaveComponent = new (function () {
                 },
 
             ],
+            adjustPosition:{
+                top:-200 ,
+                left:-300
+           },
 
             onClick:(menuLink, id, name)=>{
+                console.log(90,menuLink,80,id,70,name);
+                
                 switch(name){
 
                     case 'change_leave_request_status':{
@@ -308,6 +315,7 @@ var LeaveComponent = new (function () {
     }
 
     this.editLeaveRequest = (id, menuLink) => {
+        
         let op = {
             id: id,
             btn: menuLink,
@@ -346,15 +354,12 @@ var LeaveComponent = new (function () {
 
 
 
-    // Show the component
     this.prepareFormOptions = () => {
 
         vsapi.call(`${main_view.base_url}/hr/leave/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
-            console.log(1111,this.elSortBy);
 
             VSUtil.setComboItems(mThis.elFilter_status,d.status,'id','leave_status',true,'All Statuses',null);
-            // VSUtil.setComboItems(mThis.elFilter_leaveType,d.leave_types,'id','leave_type',true,'All Leave Types',null);
         })
     }
 
@@ -363,13 +368,15 @@ var LeaveComponent = new (function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-            mThis.LeaveRequestListView.showPage();
-                $(mThis.self).siblings().hide();
-                $(mThis.self).fadeIn(200);
-            };
+            mThis.LeaveRequestListView.showPage(mThis.getFilterData(), null,()=>{
+                mThis.jm.siblings().hide();
+                mThis.jm.hide().fadeIn(250);
+            });
+                
+    }
 
 
-});
+};
 
 //begin::LeaveRequestDialog using GeneralDialog
 const LeaveRequestDialog = (()=>{

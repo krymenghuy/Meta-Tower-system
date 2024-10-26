@@ -38,7 +38,12 @@
             
         </div>
     </div>
-    <div id="_leave_request_list" class="px-3"></div>
+    <div class="shadow mt-2 overflow-hidden">
+        <div id="_leave_request_list" class="px-3"></div>
+    </div>
 </div>
 
 
+<style>
+  
+</style>
