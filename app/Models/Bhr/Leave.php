@@ -4,7 +4,7 @@ namespace App\Models\Bhr;
 
 use App\Models\DV;
 use App\Models\Bhr\Employee;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
 
@@ -119,37 +119,34 @@ class Leave
     {
         $subs_id = $ss->subs_id;
         $d = (object) $arr;
-        $branch_id = $d->branch_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
     
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
-    
+        $search_value = $d->search_value ?? null;
         $status_id = $d->status_id ?? null;
         $leave_type_id = $d->leave_type_id ?? null;
-        $search_value = $d->search_value ?? null;
         $start_date = $d->start_date ?? null;
         $end_date = $d->end_date ?? null;
+
         $str_search = '1=1';
-        $str_status = '1=1';
-        $str_dates = '1=1';
-        $str_leave_type = '1=1';
-    
-        $str_branch = $branch_id > 0 ? 'l.branch_id ='.$branch_id : '3=3';
-        $search_value = $d->search_value ?? null;
+        $str_status = '2=2';
+        $str_dates = '3=3';
+        $str_leave_type_id = '4=4';
         if ($search_value){
+            $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = "emp.email = '$search_value' OR emp.name LIKE '%$search_value%' OR emp.phone_number LIKE '%$search_value%' OR l.remarks LIKE '%$search_value%'";
-        } else{
-            $status_id = $d->status_id ?? null;
-            $str_status = $status_id > 0? 'l.status_id = \'' . $status_id . '\'' : '1=1';
-            $str_leave_type = $leave_type_id > 0? 'l.leave_type_id = \'' . $leave_type_id . '\'' : '1=1';
+            $str_search = '(emp.name LIKE \'%' .$search_value. '%\' OR emp.code LIKE \'%' .$search_value. '%\')';
+        } 
+        if($status_id){
+            $str_status = 'l.status_id = \'' .$status_id. '\'' ;
+        }
+        else{
             $end_date = convertDate($end_date);
             $start_date = convertDate($start_date);
-    
-            if (strtotime($start_date) && strtotime($end_date)) {
+            if ((bool) strtotime($start_date) && (bool) strtotime($end_date)) {
                 $str_dates = DBX::convertToDate('l.end_date') ." BETWEEN '$start_date' AND '$end_date'";
             }
         }
@@ -164,11 +161,9 @@ class Leave
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
             ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
-            ->where('l.subs_id', hex2bin($ss->subs_id))
-            ->whereRaw($str_branch)
+            // ->where('l.subs_id', hex2bin($ss->subs_id))
             ->whereRaw($str_search)
             ->whereRaw($str_status)
-            ->whereRaw($str_leave_type)
             ->whereRaw($str_dates)
             ->selectRaw('l.id, emp.id as emp_id, emp.code as emp_code, emp.name as employee, emp.sex, p.title, l.leave_type_id, lt.name as leave_type,'
                 . $col_dates
@@ -209,7 +204,7 @@ class Leave
         ->where('l.id', $id)
         //->where('l.status_id',2
 
-        ->selectRaw('l.id AS emp_id,emp.code as emp_code, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,'.$col_update_date)
+        ->selectRaw('l.id as emp_id,emp.code as emp_code, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,'.$col_update_date)
 
         ->first();
         return $leave;
