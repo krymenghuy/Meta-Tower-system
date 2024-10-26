@@ -359,7 +359,12 @@ class GeneralSettings //extends Model
        }
        return $rows;
     }
-
+    static function options_branch($ss){
+        return DB::table('um_branches')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS branch_name')->get();
+    }
+    static function options_payroll($ss){
+        return DB::table('payrolls')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS payroll_name')->get();
+    }
     function deleteProductType($d){
         $ss = UM::getUserInfoByToken($d);
         if($ss->status_code !==200) return $ss; //user not authenticated

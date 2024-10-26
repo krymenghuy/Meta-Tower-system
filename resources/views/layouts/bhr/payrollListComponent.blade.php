@@ -4,6 +4,9 @@
                 <div class="d-flex align-items-center justify-content-end gap-2 w-50 pl-2">
                     <select type="id" id="el_filter_payrollList" class="data-input filter-field"></select>
                 </div>
+                <div class="d-flex align-items-center justify-content-end gap-2 w-25 pl-2">
+                    <select type="id" id="el_filter_branch" class="data-input filter-field"></select>
+                </div>
 
         </div>
 

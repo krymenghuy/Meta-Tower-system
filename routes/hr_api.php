@@ -167,7 +167,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->gr
     Route::post('/details', [PayrollController::class, 'getDetails']);
     Route::post('/delete', [PayrollController::class, 'deletePayroll']);
     Route::post('/form-options', [PayrollController::class, 'getFormOptions']);
-    Route::post('/update-status', [PayrollController::class, 'updateStatus']);
+    Route::post('/update-authorize', [PayrollController::class, 'updateAuthorize']);
+    Route::post('/update-disburse', [PayrollController::class, 'updateDisburse']);
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list')->group(function () {

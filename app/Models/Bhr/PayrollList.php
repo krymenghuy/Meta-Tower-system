@@ -68,6 +68,7 @@ class PayrollList
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
         $filter_by = $d->payroll_id ?? null;
+        $search_branch = $d->branch_id ?? null;
         $sort_by = $d->sort_by ?? 'pl.id';
         $sort_order = $d->sort_order ?? 'asc';
         $str_search = '1=1';
@@ -78,6 +79,7 @@ class PayrollList
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+            ->join('um_branches as b', 'b.id', '=', 'e.branch_id')
             ->selectRaw('pl.id,
                         p.id as payroll_id,
                         p.name as payroll_name,
@@ -85,6 +87,7 @@ class PayrollList
                         e.name as emp_name,
                         pos.title as emp_position,
                         el.name as emp_role,
+                        b.name as branch_name,
                         e.salary_base,
                         e.apply_payroll_tax,
                         pl.benefit, pl.deduction,
@@ -104,6 +107,10 @@ class PayrollList
 
         if ($filter_by) {
             $query->where('pl.payroll_id', $filter_by);
+        }
+
+        if ($search_branch) {
+            $query->where('e.branch_id', $search_branch);
         }
 
         $query->orderBy($sort_by, $sort_order);
@@ -141,6 +148,7 @@ class PayrollList
         ->join('positions as pos', 'pos.id', '=', 'e.position_id')
         ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
         ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+        ->join('um_branches as b', 'b.id', '=', 'e.branch_id')
         ->selectRaw('pl.id,
                     p.id as payroll_id,
                     p.name as payroll_name,
@@ -148,6 +156,7 @@ class PayrollList
                     e.name as emp_name,
                     pos.title as emp_position,
                     el.name as emp_role,
+                    b.name as branch_name,
                     e.salary_base,
                     pl.benefit, pl.deduction,
                     pl.tax_base,
@@ -189,7 +198,8 @@ class PayrollList
             ],
 
           'employees' => GeneralSettings::options_employee(10,$ss),
-          'payrolls' => DB::table('payrolls')->selectRaw('id,name')->get(),
+          'payrolls' => GeneralSettings::options_payroll($ss),
+          'branches' => GeneralSettings::options_branch($ss),
             'payroll_lists' => $payroll_list,
         ];
 
