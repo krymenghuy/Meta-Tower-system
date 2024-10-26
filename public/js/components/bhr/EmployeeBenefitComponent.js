@@ -18,66 +18,71 @@ var EmployeeBenefitComponent = new (function () {
         {
             title: "No",
             className: "align-middle text-capitalize text-nowrap",
-            data: (data, index, i) => {
-                return index + 1;
-            },
+            data: (data, index, i) => index + 1,
         },
         {
             title: "Name",
             className: "align-middle text-start",
             data: (data) => `
-                <div style="display: flex; align-items: center;">
-                    <img class="image-student-tbl" src="${
-                        data.image_url
-                    }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
-                    <div>
-                        <span style="font-size: 14px; font-weight: bold;">${
-                            data.name ?? ""
-                        }</span><br/>
-                        <span style="font-size: 12px; color: gray;">${
-                            data.email ?? ""
-                        }</span>
-                    </div>
-                </div>`,
+            <div style="display: flex; align-items: center;">
+                <img class="image-student-tbl" src="${data.image_url}" alt="" 
+                    style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                <div>
+                    <span style="font-size: 14px; font-weight: bold;">${
+                        data.name ?? ""
+                    }</span><br/>
+                    <span style="font-size: 12px; color: gray;">${
+                        data.email ?? ""
+                    }</span>
+                </div>
+            </div>`,
         },
-
         {
             title: "Amount",
             className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${`$ ` + data.amount ?? ""}</p>`;
-            },
+            data: (data) =>
+                `<p class="p-0 m-0">${`$ ` + (data.amount ?? "")}</p>`,
         },
         {
             title: "Remark",
             className: "align-middle text-start",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.remarks ?? ""}</p>`;
+            data: (data) => `<p class="p-0 m-0">${data.remarks ?? ""}</p>`,
+        },
+        {
+            title: "Create By",
+            className: "align-middle text-start",
+            data: (data) => `<p class="p-0 m-0">${data.update_user ?? ""}</p>`,
+        },
+        {
+            title: "Category",
+            className: "align-middle text-center",
+            data: (data) => {
+                const benefitTypeName =
+                    mThis.benefitTypeMap[data.benefit_type_id] || "Unknown";
+                const backgroundColor =
+                    benefitTypeName === "Bonus" ? "danger" : "info";
+                return `<p class="p-2 rounded-5 m-0 border text-white w-50 bg-${backgroundColor}">${benefitTypeName}</p>`;
             },
         },
-        // {
-        //     title: "Duration",
-        //     className: "align-middle",
-        //     data: (data, index, tr) => {
-        //         return `<p class="p-0 m-0">${data.start_date} <span class="text-danger">~</span> ${data.end_date}</p>`;
-        //     },
-        // },
         {
             title: "Action",
             className: "col_action align-middle",
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-start align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <button class="btn btn-sm btn-primary btn_edit_bonus" data-id="${data.id}"><i class="fa-regular fa-pen-to-square"></i></button>
-                                <button class="btn btn-sm btn-danger btn_delete_bonus" data-id="${data.id}"><i class="fa-regular fa-trash-can"></i></button>
-                            </a>
-                        </div>
-                    </div>
-                `;
-            },
+            data: (data) => `
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="text-center gap-2 d-flex flex-wrap">
+                    <button class="btn btn-sm btn-primary btn_edit_bonus" data-id="${data.id}">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger btn_delete_bonus" data-id="${data.id}">
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>`,
         },
     ];
+
+    // Initialization and event listeners remain the same as in your original code
+
     this.init = function () {
         if (mThis.initAlready) return;
 
@@ -231,6 +236,12 @@ var EmployeeBenefitComponent = new (function () {
                     "All Benefit Type",
                     null
                 );
+
+                // Create benefit type name map for displaying names instead of IDs
+                mThis.benefitTypeMap = d.categories.reduce((map, category) => {
+                    map[category.id] = category.name;
+                    return map;
+                }, {});
             });
     };
 

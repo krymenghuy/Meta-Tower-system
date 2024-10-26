@@ -4,7 +4,7 @@ namespace App\Models\Bhr;
 
 use App\Models\DV;
 use App\Models\Bhr\Employee;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
 
@@ -209,7 +209,7 @@ class Leave
         ->where('l.id', $id)
         //->where('l.status_id',2
 
-        ->selectRaw('l.id AS emp_id,emp.code as emp_code, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,'.$col_update_date)
+        ->selectRaw('l.id as emp_id,emp.code as emp_code, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,'.$col_update_date)
 
         ->first();
         return $leave;
