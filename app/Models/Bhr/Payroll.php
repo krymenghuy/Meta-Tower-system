@@ -25,8 +25,7 @@ class Payroll
         $v_rule = [
             'id' => '0|identity=1',
             'name' => '1|string',
-            'p_month' => '1|number',
-            'p_year' => '1|number',
+            'month_year' => '1|date',
             'start_date' => '1|date',
             'end_date' => '1|date',
             'p_number' => '1|number',
@@ -69,11 +68,13 @@ class Payroll
 
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
+        $search_authorized = $d->authorized ?? null;
+        $search_disbursed = $d->disbursed ?? null;
 
         $str_search = '1=1';
 
         $query = DB::table('payrolls as p')
-            ->selectRaw('p.id, p.name, p.p_month, p.p_year,formatDate(p.start_date) as start_date,formatDate(p.end_date) as end_date, p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
+            ->selectRaw('p.id, p.name, p.month_year,formatDate(p.start_date) as start_date,formatDate(p.end_date) as end_date, p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
             ->where('p.branch_id', $ss->branch_id);
         if ($search_id) {
             $query->where('p.id', $search_id);
@@ -81,18 +82,26 @@ class Payroll
         if ($search_value) {
             $query->where('p.name', 'like', '%' . $search_value . '%');
         }
+        if ($search_authorized) {
+            $query->where('p.authorized', $search_authorized);
+        }
+        if ($search_disbursed) {
+            $query->where('p.disbursed', $search_disbursed);
+        }
         $clone_query = clone  $query;
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-
+        foreach($rows as $row){
+            $row->month_year = date('M Y',strtotime($row->month_year) );
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     function getDetails($id, $ss)
     {
         $row = DB::table('payrolls as p')
-            ->selectRaw('p.id, p.name, p.p_month, p.p_year, p.start_date, p.end_date, p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
+            ->selectRaw('p.id, p.name, p.month_year, p.start_date, p.end_date, p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
             ->where('p.branch_id', $ss->branch_id)
             ->where('p.id', $id)
             ->take(1)
@@ -128,6 +137,16 @@ class Payroll
                 ['id' => 'p.name', 'name' => 'By Name'],
             ],
 
+            'authorized' => [
+                ['id' => '1', 'name' => 'Approved'],
+                ['id' => '0', 'name' => 'Pending'],
+
+            ],
+            'disbursed' => [
+                ['id' => '1', 'name' => 'Success'],
+                ['id' => '0', 'name' => 'Pending'],
+
+            ],
             'payrolls' => $payroll,
         ];
 
