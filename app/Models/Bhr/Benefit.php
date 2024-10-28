@@ -17,11 +17,11 @@ class Benefit
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    function save($arr, $ss = null)
+    function save($arr, $id,$ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-        $id = $this->id ?? null;
+        $id = $id ?? $this->id;
         $d = (object) $arr;
         $emp_id = $d->emp_id ?? null;
         if (!$emp_id) return DV::error('Employee is required for saving benefit!');
