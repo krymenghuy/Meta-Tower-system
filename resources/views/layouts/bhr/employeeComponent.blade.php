@@ -176,7 +176,7 @@
             <div id="_employee_list" class="px-3"></div>
 
         </div>
-        <div id="container_pagination" class="px-3 pb-3"></div>
+        {{-- <div id="container_pagination" class="px-3 pb-3"></div> --}}
 
 
     </div>

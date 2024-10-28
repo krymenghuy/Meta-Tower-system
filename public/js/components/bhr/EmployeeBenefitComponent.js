@@ -41,7 +41,7 @@ var EmployeeBenefitComponent = new (function () {
             title: "Amount",
             className: "align-middle",
             data: (data) =>
-                `<p class="p-0 m-0">${`$ ` + (data.amount ?? "")}</p>`,
+                `<p class="p-0 m-0">${`៛ ` + (data.amount ?? "")}</p>`,
         },
         {
             title: "Remark",
@@ -168,6 +168,7 @@ var EmployeeBenefitComponent = new (function () {
     };
 
     this.editBenefit = (id, menuLink) => {
+        
         let op = {
             id: id,
             btn: menuLink,

@@ -18,21 +18,21 @@ var EmployeeComponent = new function () {
     this.profile_card_right = mThis.self.querySelector("#profile_card_right");
     this.tax_allownce_card = mThis.self.querySelector("#tax_allownce_card");
     this.profile_info_emp = mThis.self.querySelector("#profile_info_emp");
-    this.paginationContainer = mThis.self.querySelector('#container_pagination')
-    let div = mThis.self.querySelector("#_employee_list");
-    this.init = () => {
-        if (mThis.initAlready) return;
+        // this.paginationContainer = mThis.self.querySelector('#container_pagination')
+        let div = mThis.self.querySelector("#_employee_list");
+        this.init = () => {
+            if (mThis.initAlready) return;
 
-        mThis.EmployeeListView = new ListView("_employee_list", {
-            fetchApi: `${main_view.base_url}/hr/employee/list-paginate`,
-            perPage: 8,
-            paginationContainer: mThis.paginationContainer,
-            
-            apiCluster: main_view.apiCluster,
-            processResponse: (res) => {
-                console.log(1234,res.data.data);
+            mThis.EmployeeListView = new ListView("_employee_list", {
+                fetchApi: `${main_view.base_url}/hr/employee/list-paginate`,
+                perPage: 8,
+                // paginationContainer: mThis.paginationContainer,
+                
+                apiCluster: main_view.apiCluster,
+                processResponse: (res) => {
+                    console.log(1234,res.data.data);
 
-                return res.data;
+                    return res.data;
                 
             },
             renderItems: (data, list_container) => {
