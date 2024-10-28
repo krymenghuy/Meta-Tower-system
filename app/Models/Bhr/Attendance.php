@@ -95,7 +95,7 @@ class Attendance
 
         $query = DB::table('attendances as a')
             ->join('employees as e', 'e.id', '=', 'a.emp_id')
-            ->selectRaw('a.id, e.id as emp_id, e.name, e.name_kh,e.email as email, a.emp_id, a.check_in_time, a.check_out_time, a.attendance_date, a.remark, a.status_id');
+            ->selectRaw('a.id, e.id as emp_id,e.photo_file_name as emp_photo, e.name, e.name_kh,e.email as email, a.emp_id, a.check_in_time, a.check_out_time, a.attendance_date, a.remark, a.status_id');
 
         if ($search_id) {
             $query->whereRaw('a.id =' . $search_id);
@@ -110,7 +110,13 @@ class Attendance
         $count_query = clone $query;
         $count = $count_query->count('a.id');
         $rows = $query->get();
-
+        foreach ($rows as $row) {
+            $row->image_url = '';
+            if (isset($row->emp_id) && $row->emp_photo) {
+                $row->image_url = Employee::profilePicture($row->emp_id);
+            }
+            unset($row->emp_photo);  // Remove unnecessary data
+        }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -197,14 +203,15 @@ class Attendance
         return $query;
     }
     // Other functions...
-    function getFormOptions($id,$ss) {
+    function getFormOptions($id, $ss)
+    {
         $attendance = null;
         if ($id) {
             $attendance = self::getDetails($id, $ss);
         }
         return (object) [
 
-            'employees' => DB::table('employees')->selectRaw('id,name,email')->get(),
+            'employees' => GeneralSettings::options_employee(10, $ss),
             'attendance' => $attendance,
         ];
     }
