@@ -1,7 +1,7 @@
 "use strict";
 
 var EmployeeComponent = new function () {
-    const mThis = this;
+    let mThis = this;
     this.title_prop = "Employee management";
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_employeeComponent");
@@ -18,7 +18,7 @@ var EmployeeComponent = new function () {
     this.profile_card_right = mThis.self.querySelector("#profile_card_right");
     this.tax_allownce_card = mThis.self.querySelector("#tax_allownce_card");
     this.profile_info_emp = mThis.self.querySelector("#profile_info_emp");
-
+    this.paginationContainer = mThis.self.querySelector('#container_pagination')
     let div = mThis.self.querySelector("#_employee_list");
     this.init = () => {
         if (mThis.initAlready) return;
@@ -26,7 +26,8 @@ var EmployeeComponent = new function () {
         mThis.EmployeeListView = new ListView("_employee_list", {
             fetchApi: `${main_view.base_url}/hr/employee/list-paginate`,
             perPage: 8,
-            paginationContainer: mThis.containerPagination,
+            paginationContainer: mThis.paginationContainer,
+            
             apiCluster: main_view.apiCluster,
             processResponse: (res) => {
                 console.log(1234,res.data.data);
@@ -39,16 +40,7 @@ var EmployeeComponent = new function () {
             },
             listContainerClass: null,
         });
-        mThis.tblEmployee = mThis.EmployeeListView.getTable();
-        mThis.initDropdownMenus(mThis.tblEmployee);
-        this.listContainer = mThis.EmployeeListView.getListContainer();
-
-        const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.height = (window.innerHeight - 245) + 'px';
-        sh_parent.classList.add('overflow-y-auto');
-        window.onresize = () =>{
-            sh_parent.style.height = (window.innerHeight - 190) + 'px';
-        }
+       
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
@@ -88,6 +80,16 @@ var EmployeeComponent = new function () {
             },250);
            
         };
+         this.listContainer = mThis.EmployeeListView.getListContainer();
+         console.log(12,mThis.listContainer);
+         mThis.initDropdownMenus(div);
+ 
+         const sh_parent = mThis.listContainer.parentElement;
+         sh_parent.style.height = (window.innerHeight - 200) + 'px';
+         sh_parent.classList.add('overflow-y-auto');
+         window.onresize = () =>{
+             sh_parent.style.height = (window.innerHeight - 190) + 'px';
+         }
 
 
         mThis.initAlready = true;
@@ -105,14 +107,16 @@ var EmployeeComponent = new function () {
 
         return p;
     };
-    this.initDropdownMenus = (table) => {
+    this.initDropdownMenus = (listContainer) => {
+        console.log(listContainer);
+        
         const menuOptopns = {
-            containerElement: table,
+            containerElement: listContainer,
             actionButtonClass: "btn_employee_action",
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Change Status">Change Status</span>',
+                    html: '<span class="ps-2" vslang="titles.Change Status">Change Status</span>',
                     icon: `<i class="fa-regular fa-exchange fs-5"></i>`,
 
                     cssClass: "border-bottom pb-2",
@@ -151,10 +155,10 @@ var EmployeeComponent = new function () {
                         break;
                     }
                 }
-            },
-        };
+            }
+        }
         new VSDropdownMenu(menuOptopns);
-    };
+    }
 
     this.renderEmployeeList = (div, data) => {
         data = data ?? [];
@@ -171,7 +175,7 @@ var EmployeeComponent = new function () {
     };
     this.renderEmployee = (data) => {
         let html = "";
-        html += `<div id="_scroll_emp" class="row px-3">`;
+        html += `<div  class="row px-3">`;
         let cmt = 0;
 
         if (Array.isArray(data) && data.length > 0) {
@@ -809,20 +813,13 @@ var EmployeeComponent = new function () {
 
     };
 
-   
-
-   
-
-    
-
     this.changeStatus = (id, lnk) => {
-        console.log(1111,id,2222,lnk);
-
-        // if(!AuthManager.allowed(337,false))
-        //         return;
-        //let status_code = Validator.properCase(lnk.dataset.status);
+       
         let tr = lnk.closest("tr");
+        console.log(1,tr);
         let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
+        console.log(123,status_id);
+        
         let inputOptions = {
             title: "Set Employee Status",
             dataLabel: "Employee status",
@@ -957,10 +954,12 @@ var EmployeeComponent = new function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-        mThis.EmployeeListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(250);
-    };
+        mThis.EmployeeListView.showPage(mThis.getFilterData());
+            mThis.jm.siblings().hide();
+            mThis.jm.hide().fadeIn(250);
+    
+        
+    }
 };
 
 const AddEducation = (() => {

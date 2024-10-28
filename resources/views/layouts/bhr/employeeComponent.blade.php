@@ -174,8 +174,10 @@
         </div>
         <div class="shadow mt-2 overflow-hidden">
             <div id="_employee_list" class="px-3"></div>
+
         </div>
-        <!-- <div id="container_pagination" class="px-3 d-flex justify-content-end"></div> -->
+        <div id="container_pagination" class="px-3 pb-3"></div>
+
 
     </div>
     <div class="d-none" id="view_see_info__">
