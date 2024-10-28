@@ -26,7 +26,9 @@
             </div>
         </div>
     </div>
-    <div class="px-3" id="_emp_movement_list"></div>
+    <div class="shadow mt-2 overflow-hidden">
+        <div class="px-3" id="_emp_movement_list"></div>
+    </div>
 </div>
 <style>
     #_emp_movement_list_paginator {

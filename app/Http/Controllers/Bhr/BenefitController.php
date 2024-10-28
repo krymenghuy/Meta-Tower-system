@@ -20,8 +20,7 @@ class BenefitController extends Controller
         $id = $req->id ?? null;
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $benefit = new Benefit($id, $ss);
-        $res = $benefit->save($req->all());
+        $res = $this->benefitModel->save($req->all(),$id,$ss);
         return JDV::raw($res);
     }
 

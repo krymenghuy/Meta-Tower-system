@@ -345,7 +345,11 @@ const EmployeeBenefitDailog = (() => {
                     targetProp: "benefit",
                     api: {
                         endpoint: `${main_view.base_url}/hr/employee/benefit/form-options`,
-                        params: (op) => ({ id: op.id }),
+                        params: (op) => {
+                            console.log(2020,op,2021,op.id);
+                            
+                            return {'id':op.id};
+                        }
                     },
                 },
                 onPrepareForm: (me, data) => {

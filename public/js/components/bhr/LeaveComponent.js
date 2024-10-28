@@ -153,11 +153,13 @@ var LeaveComponent = new function () {
 
 
         mThis.tblLeaves = mThis.LeaveRequestListView.getTable();
+        console.log(122,mThis.tblLeaves);
+        
         mThis.initDropdownMenus(mThis.tblLeaves);
         this.sh_container = mThis.LeaveRequestListView.getListContainer();
 
         const sh_parent = mThis.sh_container.parentElement;
-        sh_parent.style.height = (window.innerHeight - 245) + 'px';
+        sh_parent.style.height = (window.innerHeight - 230) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         window.onresize = () => {
             sh_parent.style.height = (window.innerHeight - 190) + 'px';
@@ -271,7 +273,10 @@ var LeaveComponent = new function () {
         //         return;
         //let status_code = Validator.properCase(lnk.dataset.status);
         let tr = lnk.closest('tr');
+
         let status_id = Validator.properCase(tr? tr.dataset.status_id: "");
+        console.log(321,tr,123,status_id);
+
         let inputOptions = {
             title: 'Set Leave Request Status',
             dataLabel: "Leave status",
