@@ -123,7 +123,7 @@ var EmployeeMovementComponent = new (function () {
             MovementDialog.show(op);
         };
 
-        mThis. tblMovement = mThis.MovementListView.getTable();
+        mThis.tblMovement = mThis.MovementListView.getTable();
         mThis.initDropdownMenus(mThis.tblMovement);
         this.sh_container  = mThis.MovementListView.getListContainer();
 

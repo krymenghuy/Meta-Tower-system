@@ -149,7 +149,7 @@
     <div id="sub_content">
         <div class="d-flex p-3 justify-content-between w-100" id="div_filter_filed">
             <div class="d-flex align-items-start justify-content-start w-25">
-                <button type="button" class="btn text-white" style="background-color:#2b3991;" id="_btnAddEmployee">
+                <button type="button" class="btn text-white" style="background-color:#2b3991;" id="_btn_add_employee">
                     <i class="fas fa-plus"></i>
                     <span>Add Employee </span>
                 </button>
@@ -158,25 +158,27 @@
 
                 <div class="d-flex  w-50 gap-3">
                     <div class="d-flex align-items-end w-100">
-                        <input type="text" class="form-control filter-field rounded-5" id="_sdl_search_employee" placeholder="Search Employee">
+                        <input type="text" class="form-control filter-field rounded-5" id="_search_employee" placeholder="Search Employee">
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <select type="id" id="el_status" class="data-input filter-field" data-field="status"></select>
+                    <select type="id" id="filter_employee_status" class="data-input filter-field" data-field="status"></select>
                 </div>
                 <div class="d-flex align-items-center">
-                    <select type="id" id="el_type" class="data-input filter-field" data-field="emp_type"></select>
+                    <select type="id" id="filter_employee_type" class="data-input filter-field" data-field="emp_type"></select>
                 </div>
 
 
 
             </div>
         </div>
-        <div id="_employee_list" class=""></div>
-        <div id="container_pagination" class="px-3 d-flex justify-content-end"></div>
+        <div class="shadow mt-2 overflow-hidden">
+            <div id="_employee_list" class="px-3"></div>
+        </div>
+        <!-- <div id="container_pagination" class="px-3 d-flex justify-content-end"></div> -->
 
     </div>
-    <div class="">
+    <div class="d-none" id="view_see_info__">
         <div class="d-flex px-3" id="btn_back">
             <button id="_btn_backTo_employee" style="background-color:#2b3991; width:100px;"
                 class="btn text-white shadow rounded-4 m-2 p-2" type="button">
