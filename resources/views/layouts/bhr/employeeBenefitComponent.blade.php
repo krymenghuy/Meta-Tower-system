@@ -2,7 +2,7 @@
     <div class="d-flex justify-content-between w-100 p-3 " id="_divFilter_emp_benefit">
         <div class="d-flex align-items-center w-50 gap-2">
             <div class="d-flex align-items-center w-50 gap-2">
-                <input type="text" class="form-control filter-field" id="_sdl_search_bonus" placeholder="Search Bonus">
+                <input type="text" class="form-control filter-field" id="_sdl_search_bonus" placeholder="Search Benefits">
             </div>
             <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
                 <i class="la la-search"></i>

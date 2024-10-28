@@ -114,36 +114,21 @@ class Benefit
         $str_benefit_type = $benefit_type_id ? 'b.benefit_type_id = \'' . $benefit_type_id . '\'' : '1=1';
         $str_search = $search_value ? "(emp.name LIKE '%" . addslashes($search_value) . "%' OR b.remarks LIKE '%" . addslashes($search_value) . "%' OR b.amount LIKE '%" . addslashes($search_value) . "%')" : '1=1';
 
-
-        // Query for bonuses
-        $bonusQuery = DB::table('emp_bonuses as bs')
-            ->join('emp_benefits as b', 'b.id', '=', 'bs.benefit_id')
-            ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
-            ->where('bs.branch_id', $branch_id)
+        // Query for emp_benefits
+        $benefitsQuery = DB::table('emp_benefits as b')
+        ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
+        ->where('b.branch_id', $branch_id) // Ensure benefits are filtered by branch
             ->whereRaw($str_search)
             ->whereRaw($str_benefit_type)
-            ->selectRaw('bs.id, b.id as benefit_id, emp.id as emp_id, emp.name as name, emp.email as email, 
-                     b.benefit_type_id, b.amount, b.remarks, bs.bonus_type as type, b.create_date, emp.photo_file_name as emp_photo, bs.update_user')
-            ->addSelect(DB::raw("'bonus' as benefit_category"));
+            ->selectRaw('b.id, emp.id as emp_id, emp.name as name, emp.email as email, 
+                     b.benefit_type_id, b.amount, b.remarks,b.update_user, b.create_date, emp.photo_file_name as emp_photo')
+            ->orderBy('b.create_date', 'desc');
 
-        // Query for seniorities
-        $seniorityQuery = DB::table('emp_seniorities as se')
-            ->join('emp_benefits as b', 'b.id', '=', 'se.benefit_id')
-            ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
-            ->where('se.branch_id', $branch_id)
-            ->whereRaw($str_search)
-            ->whereRaw($str_benefit_type)
-            ->selectRaw('se.id, b.id as benefit_id, emp.id as emp_id, emp.name as name, emp.email as email, 
-                     b.benefit_type_id, b.amount, b.remarks, se.seniority_type as type, b.create_date, emp.photo_file_name as emp_photo, se.update_user')
-            ->addSelect(DB::raw("'seniority' as benefit_category"));
+        // Count the total benefits for pagination
+        $count = $benefitsQuery->count();
 
-        // Combine the results with a union and paginate
-        $allBenefitsQuery = $bonusQuery->unionAll($seniorityQuery);
-        $count_query = clone $allBenefitsQuery;
-        $count = $count_query->count();
-
-        $rows = $allBenefitsQuery->orderBy('create_date', 'desc')
-            ->skip($skip_rows)
+        // Get paginated results
+        $rows = $benefitsQuery->skip($skip_rows)
             ->take($per_page)
             ->get();
 
@@ -156,9 +141,10 @@ class Benefit
             unset($row->emp_photo);  // Remove unnecessary data
         }
 
-        // Paginate the combined results
+        // Paginate the results
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
 
     function getBonusList($arr, $ss = null)
     {
@@ -255,16 +241,16 @@ class Benefit
     }
 
 
-    function deleteBenefit($id, $as, $ss)
+    function deleteBenefit($id, $ss)
     {
         $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
 
         $delete = DB::table('emp_benefits')->where('id', $id)->delete();
-        if ($as == 'bonus') {
+        if ($delete) {
             DB::table('emp_bonuses')->where('benefit_id', $id)->delete();
-        } else
             DB::table('emp_seniorities')->where('benefit_id', $id)->delete();
+        }
         return DV::depends($delete, ['action', 'deleted']);
     }
 
