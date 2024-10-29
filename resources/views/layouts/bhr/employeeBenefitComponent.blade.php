@@ -26,8 +26,6 @@
 </div>
 <style>
     #_employee_bonus_list_paginator {
-        display: flex;
-        position: fixed;
         bottom: 0;
     }
 
@@ -44,7 +42,7 @@
         max-width: 100px;
     }
     #_employee_bonus_list{
-        height: 550px;
+        height: 600px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;

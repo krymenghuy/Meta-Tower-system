@@ -92,8 +92,8 @@ var PayrollListComponent = new (function () {
         {
             className: "col_action align-middle",
             data: (data) => `
-            <div class="d-flex justify-content-center align-items-center">
-                <div class="text-center gap-2 d-flex flex-wrap">
+            <div class="d-flex justify-content-end align-items-end">
+                <div class="text-end gap-2 d-flex flex-wrap">
                     <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_payroll_list_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                         <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
                     </a>
@@ -169,7 +169,7 @@ var PayrollListComponent = new (function () {
 
         const pr_tbl = mThis.PayrollList_ListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 200) + 'px';
+        // sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
 

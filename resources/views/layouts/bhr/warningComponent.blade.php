@@ -1,5 +1,5 @@
 <div id="_main_warningComponent" style="display:none;padding:20px 0 0">
-    <div class="d-flex  p-3 justify-content-between w-200 " id="_warning_component">
+    <div class="d-flex  p-4 justify-content-between w-200 " id="_warning_component">
         <div class="d-flex align-items-center w-100 gap-2">
             <div class="d-flex align-items-center w-50 gap-2">
                 <input type="text" class="form-control filter-field" id="_warning_search" placeholder="Search Warning Here ........">
@@ -16,18 +16,18 @@
             </button>
         </div>
     </div>
-    <div id="_warning_list"></div>
+    <div id="_warning_list" class="m-4"></div>
 </div>
 
 <style>
     #_warning_list_paginator{
-        display: flex;
-        position: fixed;
         bottom: 0;
     }
     #_warning_list {
-        max-width: 100%;
-        margin: 15px;
+        height: 600px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
     }
     th,
     td {
