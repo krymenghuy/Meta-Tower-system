@@ -1,5 +1,5 @@
 <div id="_main_departmentComponent" style="display:none;padding:20px 0 0">
-    <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter">
+    <div class="d-flex  p-4 justify-content-between w-200 " id="_divFilter">
         <div class="d-flex align-items-center justify-content-start gap-2 w-100">
             <button type="button" class="btn btn-primary" id="_btnAddDepartment">
                 <i class="fas fa-plus"></i>
@@ -18,25 +18,18 @@
         </div>
 
     </div>
-    <div id="_dep_list" class="p-3"></div>
+    <div id="_dep_list" class="m-4"></div>
 </div>
 <style>
-    #_main_departmentComponent {
-        height: 600px;
-        padding: 0px;
-    }
-
     #_dep_list {
+        height: 600px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
-        justify-content: center;
 
     }
 
     #_dep_list_paginator {
-        display: flex;
-        position: fixed;
         bottom: 0;
     }
 

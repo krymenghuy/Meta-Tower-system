@@ -128,7 +128,7 @@ var EmployeeMovementComponent = new (function () {
         this.sh_container  = mThis.MovementListView.getListContainer();
 
         const sh_parent = mThis.sh_container.parentElement;
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        // sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
         window.onresize = () => {

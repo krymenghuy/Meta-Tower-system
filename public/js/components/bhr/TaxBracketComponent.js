@@ -33,11 +33,10 @@ var TaxBracketComponent = new (function () {
             data: "rate",
         },
         {
-            title: "Action",
             className: "col_action align-middle",
             data: (data) => `
-            <div class="d-flex justify-content-center align-items-center">
-                <div class="text-center gap-2 d-flex flex-wrap">
+            <div class="d-flex justify-content-end align-items-end">
+                <div class="text-end gap-2 d-flex flex-wrap">
                     <a href="javascript:void(0)" class="${
                         data.action_id > 1 ? "d-none" : "btn_taxBracket_action"
                     }" data-id="${data.id}" data-statusid="${
@@ -58,7 +57,7 @@ var TaxBracketComponent = new (function () {
 
         mThis.TaxBracketListView = new ListView("_taxBracket_list", {
             fetchApi: `${main_view.base_url}/hr/tax-bracket/list-paginate`,
-            perPage: 6,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
@@ -83,7 +82,7 @@ var TaxBracketComponent = new (function () {
         };
         const pr_tbl = mThis.TaxBracketListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 200 + "px";
+        // sh_parent.style.height = window.innerHeight - 200 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
