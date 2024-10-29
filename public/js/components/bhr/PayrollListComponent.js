@@ -11,7 +11,7 @@ var PayrollListComponent = new (function () {
     this.btnInsert = this.self.querySelector("#_btnInsert");
     this.btnImport = this.self.querySelector("#_btnImport");
     this.divFilter = this.self.querySelector("#_divFilter");
-    // this.elSortBy = this.self.querySelector("#el_sort_by");
+    this.elSortBy = this.self.querySelector("#el_sort_by");
     this.btnCalculate = this.self.querySelector("#_btnCalculate");
 
     this.cols = [
@@ -92,13 +92,18 @@ var PayrollListComponent = new (function () {
         {
             className: "col_action align-middle",
             data: (data) => `
-            <div class="d-flex justify-content-center align-items-center">
-                <div class="text-center gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_payroll_list_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                        <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                    </a>
-                </div>
-            </div>`,
+                <div class="d-flex justify-content-center align-items-center">
+                    <div class="text-center gap-2 d-flex flex-wrap">
+                        <a href="javascript:void(0)"
+                           class="${data.disburse === 1 ? "d-none" : "btn_payroll_list_action"}"
+                           data-id="${data.id}"
+                           data-statusid="${data.status_id}"
+                           aria-haspopup="true"
+                           aria-expanded="false">
+                            <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                        </a>
+                    </div>
+                </div>`,
         },
 
     ];
@@ -127,7 +132,7 @@ var PayrollListComponent = new (function () {
             console.log(444, op);
             vsapi.call( [main_view.base_url,'/hr/payroll-list/calculate'].join(''), op,null,null).then(res=>{
                if(res.status_code ==200){
-                 mThis.PayrollList_ListView.showPage();
+                 mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
                  alert(res.data);
                }else cv_interact.error(res.error_message);
             });
@@ -142,7 +147,7 @@ var PayrollListComponent = new (function () {
                 btn: e.target,
                 onClose: () => {
                     cv_interact.success('Inserted Successfully');
-                    mThis.PayrollList_ListView.showPage();
+                    mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
                 }
             };
             // content.parentElement.classList.add('d-none');
@@ -159,7 +164,7 @@ var PayrollListComponent = new (function () {
                 // btn: e.target,
                 onClose: () => {
                     cv_interact.success('Import Payroll Successfully');
-                    mThis.PayrollList_ListView.showPage();
+                    mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
                 }
             };
             // content.parentElement.classList.add('d-none');
@@ -204,6 +209,12 @@ var PayrollListComponent = new (function () {
                     name:"edit_payroll_list"
                 },
                 {
+                    html:'<span class="ps-2  " vslang="titles.Disburse"></span>',
+                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"disburse_payroll_list"
+                },
+                {
                     html:'<span class="ps-2  " vslang="titles.Delete Payroll List">Delete Payroll List</span>',
                     icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass:"border-bottom pb-2",
@@ -217,6 +228,11 @@ var PayrollListComponent = new (function () {
 
                     case 'edit_payroll_list':{
                       mThis.editPayrollList(id, menuLink);
+                      break;
+                    }
+
+                    case 'disburse_payroll_list':{
+                      mThis.disbursePayrollList(id, menuLink);
                       break;
                     }
                     case 'delete_payroll_list':{
@@ -240,11 +256,40 @@ var PayrollListComponent = new (function () {
             btn: menuLink,
             onClose: () => {
                 cv_interact.success('Edited Successfully');
-                mThis.PayrollList_ListView.showPage();
+                mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
 
             }
         };
         PayRollListDailog.show(op);
+    }
+
+    this.disbursePayrollList = (id, menuLink) => {
+        console.log(123, id);
+
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
+            }
+        };
+        cv_interact.confirm('Disburse this Payroll List?',{
+            title: 'Disburse Payroll List',
+            context: 'disburse',
+            confirmButtonText:"Disburse"
+        },function(e){
+            if(e){
+                vsapi.call(`${main_view.base_url}/hr/payroll-list/disburse`,op,false,false,false).then(res => {
+                    console.log(321,res);
+
+                    if(res.status_code == 200){
+                        cv_interact.success('Disbursed Successfully');
+                        mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
+                    }
+                })
+            }
+        });
+
     }
 
     this.deletePayrollList = (id, menuLink) => {
@@ -252,7 +297,7 @@ var PayrollListComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.PayrollList_ListView.showPage();
+                mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
             }
         };
         cv_interact.confirm('Delete this Payroll List?',{
@@ -264,7 +309,7 @@ var PayrollListComponent = new (function () {
                 vsapi.call(`${main_view.base_url}/hr/payroll-list/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted Successfully');
-                        mThis.PayrollList_ListView.showPage();
+                        mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
                     }
                 })
             }
@@ -276,7 +321,7 @@ var PayrollListComponent = new (function () {
         let p = {};
         p.payroll_id = mThis.elFilter.value;
         p.branch_id = mThis.elFilterBranch.value;
-        // p.sort_by = mThis.elSortBy.value;
+        p.sort_by = mThis.elSortBy.value;
 
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {
@@ -291,10 +336,21 @@ var PayrollListComponent = new (function () {
 
         vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
-            console.log(1111,this.elSortBy);
-            VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',true,'All',null);
-            VSUtil.setComboItems(mThis.elFilterBranch,d.branches,'id','branch_name',true,'All',null);
-            // VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'All', null);
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.toLocaleString('default', { month: 'long' }); // "October"
+            const formattedDate = `${month} ${year}`;
+            let payroll_id = null;
+
+            d.payrolls.forEach(payroll => {
+                if(payroll.payroll_name == formattedDate){
+                    payroll_id = payroll.id;
+                }
+            })
+
+            VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
+            VSUtil.setComboItems(mThis.elFilterBranch,d.branches,'id','branch_name',true,'All Branch',null);
+            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
 
         })
     }

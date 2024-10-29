@@ -24,9 +24,11 @@ class Account
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
-            'payroll' => '1|number',
-            'wallet_account' => '1|number',
-            'ballance' => '1|number',
+            'account_number' => '1|number',
+            'ballance' => '0|number',
+            'currency' => '1|string',
+            'account_type_id' => '1|number',
+            'transaction_id' => '1|number',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -62,33 +64,43 @@ class Account
         $sort_by = $d->sort_by ?? 'a.id';
         $sort_order = $d->sort_order ?? 'asc';
         $search_id = $d->id ?? null;
+        $search_account_type_id = $d->account_type_id ?? null;
 
         $str_search = '1=1';
 
         $query = DB::table('accounts as a')
             ->join('employees as e', 'e.id', 'a.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position, a.payroll, a.ballance, a.wallet_account,e.photo_file_name as emp_photo')
+            ->join('account_types as at', 'at.id', '=', 'a.account_type_id')
+            ->join('transactions as t', 't.id', '=', 'a.transaction_id')
+            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type_id,at.name as account_type, a.account_number,t.amount as transaction_amount,t.trx_type,a.currency,a.balance,a.create_date,a.update_date,e.photo_file_name as emp_photo')
             ->where('a.branch_id', $branch_id);
         if ($search_id) {
             $query->where('a.id', $search_id);
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "a.payroll like '%" . $search_value . "%' or e.name like '%" . $search_value . "%' or pos.title like '%" . $search_value . "%'";
+            $str_search = "a.account_number like '%" . $search_value . "%' or e.name like '%" . $search_value . "%' or pos.title like '%" . $search_value . "%'";
             $query->whereRaw($str_search);
+        }
+
+        if ($search_account_type_id) {
+            $query->where('a.account_type_id', $search_account_type_id);
         }
 
         $query->orderBy($sort_by, $sort_order);
         $count = $query->count('a.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
+
         foreach ($rows as $row) {
+
             $row->image_url = '';
             if ($row->emp_photo) {
                 $row->image_url = Employee::profilePicture($row->emp_id);
             }
             unset($row->emp_photo);
+
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -97,9 +109,10 @@ class Account
     function getDetails($id, $ss)
     {
         $row = DB::table('accounts as a')
-            ->join('employees as e', 'e.id', 'a.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position, a.payroll, a.ballance, a.wallet_account,e.photo_file_name as emp_photo')
+        ->join('employees as e', 'e.id', 'a.emp_id')
+        ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+        ->join('account_types as at', 'at.id', '=', 'a.account_type_id')
+        ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type_id,at.name as account_type, a.account_number, a.currency,e.photo_file_name as emp_photo')
             ->where('a.id', $id)->first();
         if ($row) {
             $row->image_url = Employee::profilePicture($row->emp_id);
@@ -142,12 +155,12 @@ class Account
 
             'sort_by' => [
                 ['id' => 'e.name', 'name' => 'By Name'],
-                ['id' => 'a.payroll', 'name' => 'By Payroll'],
-                ['id' => 'a.wallet_account', 'name' => 'By  Wallet Account'],
-                ['id' => 'a.ballance', 'name' => 'By  Ballance'],
+                ['id' => 'a.account_number', 'name' => 'By Account Number'],
+                ['id' => 'a.balance', 'name' => 'By  Ballance'],
             ],
 
           'employees' => GeneralSettings::options_employee(10,$ss),
+          'account_types' => DB::table('account_types')->selectRaw('id,name AS account_type')->get(),
             'accounts' => $account,
         ];
 

@@ -28,6 +28,7 @@ class PayrollList
             // 'salary_base' => '0|number',
             'benefit' => '0|number',
             'deduction' => '0|number',
+            'disburse' => '0|number|default = 0',
             // 'tax_base' => '0|number',
             // 'tax_allowance' => '0|number',
             // 'tax_rate' => '0|number',
@@ -95,6 +96,7 @@ class PayrollList
                         pl.tax_base,
                         ta.amount as tax_allowance,
                         pl.total_salary,
+                        pl.disburse,
                         e.photo_file_name as emp_photo')
             ->whereRaw($str_search);
         if ($search_id) {
@@ -162,6 +164,7 @@ class PayrollList
                     pl.tax_base,
                     ta.amount as tax_allowance,
                     pl.total_salary,
+                    pl.disburse,
                     e.photo_file_name as emp_photo')
         ->where('pl.id', $id)->first();
 
@@ -305,7 +308,7 @@ class PayrollList
                 $salary_base = $payroll->salary_base;
                 $tax_allowance = $payroll->tax_allowance;
                 $benefit = $payroll->benefit;
-                $deduction = $payroll->deduction;  // Fixed spelling
+                $deduction = $payroll->deduction;  
 
                 if ($payroll->apply_payroll_tax == 0) {
                     $payroll->tax_rate = DB::table('tax_brackets')
@@ -342,4 +345,30 @@ class PayrollList
 
 
         }
+
+        function disbursePayrollList($id, $ss)
+        {
+            $ss = $ss ?? $this->userInfo;
+            $branch_id = $ss->branch_id;
+
+
+            $query = DB::table('payroll_lists')
+                ->where('id', $id)
+                ->update(['disburse' => 1]);
+
+            if ($query) {
+
+                $total_salary = DB::table('payroll_lists')
+                    ->where('id', $id)
+                    ->value('total_salary');
+
+
+                DB::table('transactions')
+                    ->where('emp_id', $id)
+                    ->update(['amount' => $total_salary]);
+            }
+
+            return $query;
+        }
+
     }

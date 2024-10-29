@@ -105,7 +105,7 @@ var PayrollComponent = new (function () {
             data: (data) => `
                 <div class="d-flex justify-content-center align-items-center">
                     <a href="javascript:void(0)"
-                       class="${data.action_id > 1 ? "d-none" : "btn_payroll_action"}"
+                       class="${data.disbursed === 1 ? "d-none" : "btn_payroll_action"}"
                        data-id="${data.id}" data-statusid="${data.status_id}">
                         <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
                     </a>
@@ -216,14 +216,22 @@ var PayrollComponent = new (function () {
             }
 
         }
-        vsapi.call(`${mThis.base_url}/hr/payroll/update-authorize`,p).then(res => {
-            if(res.status_code === 200){
-                cv_interact.success('The payroll has been updated by authorize');
-                mThis.PayrollListView.showPage();
-            }
-            else
-                cv_interact.error(res.error_message);
-        });
+       cv_interact.confirm('Authorize this Payroll?',{
+           title: 'Authorize Payroll',
+           context: 'authorize',
+           confirmButtonText:"Authorize"
+       },function(e){
+           if(e){
+               vsapi.call(`${mThis.base_url}/hr/payroll/update-authorize`,p).then(res => {
+                   if(res.status_code === 200){
+                       cv_interact.success('Authorized Successfully');
+                       mThis.PayrollListView.showPage();
+                   }
+                   else
+                       cv_interact.error(res.error_message);
+               });
+           }
+       });
     }
     this.changeDisbursed = (id, menuLink)=>{
         let p={
@@ -232,17 +240,25 @@ var PayrollComponent = new (function () {
             onClose: () => {
                 mThis.PayrollListView.showPage();
             }
-
-        }
-        vsapi.call(`${mThis.base_url}/hr/payroll/update-disburse`,p).then(res => {
-            if(res.status_code === 200){
-                cv_interact.success('The payroll has been updated by disbursed');
-                mThis.PayrollListView.showPage();
+        };
+        cv_interact.confirm('Disburse this Payroll?',{
+            title: 'Disburse Payroll',
+            context: 'disburse',
+            confirmButtonText:"Disburse"
+        },function(e){
+            if(e){
+                vsapi.call(`${mThis.base_url}/hr/payroll/update-disburse`,p).then(res => {
+                    if(res.status_code === 200){
+                        cv_interact.success('Disbursed Successfully');
+                        mThis.PayrollListView.showPage();
+                    }
+                    else
+                        cv_interact.error(res.error_message);
+                });
             }
-            else
-                cv_interact.error(res.error_message);
         });
     }
+
 
 
     this.editPayroll = (id, menuLink) => {
@@ -297,8 +313,8 @@ var PayrollComponent = new (function () {
             const d = res.status_code == 200 ? res.data : {};
             console.log(1111,mThis.elAuthorized);
 
-            VSUtil.setComboItems(mThis.elAuthorized,d.authorized,'id','name',true,'All',null);
-            VSUtil.setComboItems(mThis.elDisbursed,d.disbursed,'id','name',true,'All',null);
+            VSUtil.setComboItems(mThis.elAuthorized,d.authorized,'id','name',true,'All Authorized',null);
+            VSUtil.setComboItems(mThis.elDisbursed,d.disbursed,'id','name',true,'All Disbursed',null);
 
 
         })

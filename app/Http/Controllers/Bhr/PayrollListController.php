@@ -89,4 +89,13 @@ class PayrollListController extends Controller
         }
         return $this->payrollListModel->calculatePayrollList($req->all(), $ss);
     }
+
+    public function disbursePayrollList(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->payrollListModel->disbursePayrollList($req->all(), $ss));
+    }
 }

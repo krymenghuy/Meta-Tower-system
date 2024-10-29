@@ -32,7 +32,7 @@ var EmployeeComponent = new (function () {
                 console.log(1234,res.data.data);
 
                 return res.data;
-                
+
             },
             renderItems: (data, list_container) => {
                 mThis.renderEmployeeList(list_container, data);
@@ -1329,13 +1329,18 @@ const EmployeeDialog = (() => {
                             </div>
                             <div class="col-9">
                                 <div class="row">
-                                    <div class="form-group col-6">
+                                    <div class="form-group col-4">
                                         <label for="name" class="form-label" vslang="titles.Name"></label>
                                         <span class="text-danger" >*</span>
                                         <input name="name" class="form-control data-input" data-field="name" />
                                     </div>
+                                    <div class="form-group col-4">
+                                        <label for="name_kh" class="form-label" vslang="titles.Name KH"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="name_kh" class="form-control data-input" data-field="name_kh" />
+                                    </div>
 
-                                    <div class="form-group col-6">
+                                    <div class="form-group col-4">
                                         <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
                                         <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
                                     </div>
