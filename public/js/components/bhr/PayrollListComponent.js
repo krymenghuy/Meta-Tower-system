@@ -251,6 +251,7 @@ var PayrollListComponent = new (function () {
 
 
     this.editPayrollList = (id, menuLink) => {
+        
         let op = {
             id: id,
             btn: menuLink,
@@ -260,6 +261,7 @@ var PayrollListComponent = new (function () {
 
             }
         };
+        
         PayRollListDialog.show(op);
     }
 
