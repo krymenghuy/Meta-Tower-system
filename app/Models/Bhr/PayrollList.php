@@ -168,11 +168,11 @@ class PayrollList
                     e.photo_file_name as emp_photo')
         ->where('pl.id', $id)->first();
 
-        $row->image_url = '';
-        if ($row->emp_photo) {
-            $row->image_url = Employee::profilePicture($row->emp_id);
-        }
-        unset($row->emp_photo);
+        // $row->image_url = '';
+        // if ($row->emp_photo) {
+        //     $row->image_url = Employee::profilePicture($row->emp_id);
+        // }
+        // unset($row->emp_photo);
         // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_amount <=' . $row->salary_base . ' and upper_amount >=' . $row->salary_base)->take(1)->value('rate');
         return $row;
     }
