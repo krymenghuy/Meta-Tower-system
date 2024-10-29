@@ -413,7 +413,7 @@ const PayRollListDialog = (()=>{
                {
                  name:"payroll_name",
                  data:'payrolls',
-                 textField:"name",
+                 textField:"payroll_name",
                  valueField:'id'
                }
             ],
@@ -493,7 +493,7 @@ console.log(999,op);
                {
                  name:"payroll_name",
                  data:'payrolls',
-                 textField:"name",
+                 textField:"payroll_name",
                  valueField:'id'
                },
             ],
