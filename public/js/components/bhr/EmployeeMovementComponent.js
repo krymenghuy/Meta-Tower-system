@@ -128,16 +128,14 @@ var EmployeeMovementComponent = new (function () {
         sh_parent.style.height = (window.innerHeight - 200) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
-        window.onresize = () => {
-            sh_parent.style.height = (window.innerHeight - 190) + 'px';
-        }
+
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = (e) =>{
                 e.preventDefault();
                 mThis.MovementListView.showPage(mThis.getFilterData());
             }
-            
+
         });
         let timeOut = null;
         mThis.elSearch.onkeyup = function(e) {
@@ -146,15 +144,15 @@ var EmployeeMovementComponent = new (function () {
             timeOut = setTimeout(()=>{
                 mThis.MovementListView.showPage(mThis.getFilterData());
             },250);
-            
+
         };
-    
+
 
         mThis.initAlready = true;
 
     };
 
-   
+
 
     this.getFilterData = () => {
         let p = {
@@ -219,14 +217,14 @@ var EmployeeMovementComponent = new (function () {
 
     this.editMovement = (movement_id, menuLink) => {
         let op = {
-            id: movement_id, 
+            id: movement_id,
             btn: menuLink,
             onClose: () => {
                 mThis.MovementListView.showPage(); // Refresh the list after editing
             }
         };
         console.log(123,op);
-        
+
 
         MovementDialog.show(op);
     }
@@ -272,7 +270,7 @@ var EmployeeMovementComponent = new (function () {
                 mThis.jm.hide().fadeIn(250);
 
             });
-                
+
     }
 
 })()

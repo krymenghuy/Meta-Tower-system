@@ -126,13 +126,13 @@ var PayrollListComponent = new (function () {
 
 
             let op = {
-                payroll_id : mThis.getDataFormFilter().payroll_id,
+                payroll_id : mThis.getFilterData().payroll_id,
 
             }
             console.log(444, op);
             vsapi.call( [main_view.base_url,'/hr/payroll-list/calculate'].join(''), op,null,null).then(res=>{
                if(res.status_code ==200){
-                 mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
+                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                  alert(res.data);
                }else cv_interact.error(res.error_message);
             });
@@ -147,12 +147,12 @@ var PayrollListComponent = new (function () {
                 btn: e.target,
                 onClose: () => {
                     cv_interact.success('Inserted Successfully');
-                    mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
+                    mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                 }
             };
             // content.parentElement.classList.add('d-none');
 
-            PayRollListDailog.show(op);
+            PayRollListDialog.show(op);
         };
         mThis.btnImport.onclick = function (e) {
             e.preventDefault();
@@ -164,7 +164,7 @@ var PayrollListComponent = new (function () {
                 // btn: e.target,
                 onClose: () => {
                     cv_interact.success('Import Payroll Successfully');
-                    mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
+                    mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                 }
             };
             // content.parentElement.classList.add('d-none');
@@ -185,8 +185,8 @@ var PayrollListComponent = new (function () {
 
             el.onchange =  (e) => {
            e.preventDefault();
-           mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
-           console.log(777777, mThis.getDataFormFilter());
+           mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+           console.log(777777, mThis.getFilterData());
             }
        });
 
@@ -256,11 +256,11 @@ var PayrollListComponent = new (function () {
             btn: menuLink,
             onClose: () => {
                 cv_interact.success('Edited Successfully');
-                mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
+                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
 
             }
         };
-        PayRollListDailog.show(op);
+        PayRollListDialog.show(op);
     }
 
     this.disbursePayrollList = (id, menuLink) => {
@@ -270,7 +270,7 @@ var PayrollListComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
+                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             }
         };
         cv_interact.confirm('Disburse this Payroll List?',{
@@ -284,7 +284,7 @@ var PayrollListComponent = new (function () {
 
                     if(res.status_code == 200){
                         cv_interact.success('Disbursed Successfully');
-                        mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
+                        mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                     }
                 })
             }
@@ -297,7 +297,7 @@ var PayrollListComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
+                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             }
         };
         cv_interact.confirm('Delete this Payroll List?',{
@@ -309,7 +309,7 @@ var PayrollListComponent = new (function () {
                 vsapi.call(`${main_view.base_url}/hr/payroll-list/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted Successfully');
-                        mThis.PayrollList_ListView.showPage(mThis.getDataFormFilter());
+                        mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                     }
                 })
             }
@@ -317,7 +317,7 @@ var PayrollListComponent = new (function () {
 
     }
 
-    this.getDataFormFilter = () => {
+    this.getFilterData = () => {
         let p = {};
         p.payroll_id = mThis.elFilter.value;
         p.branch_id = mThis.elFilterBranch.value;
@@ -368,7 +368,7 @@ var PayrollListComponent = new (function () {
 
 });
 
-const PayRollListDailog = (()=>{
+const PayRollListDialog = (()=>{
 
     const self = {};
     let dialog = null;
@@ -413,7 +413,7 @@ const PayRollListDailog = (()=>{
                {
                  name:"payroll_name",
                  data:'payrolls',
-                 textField:"name",
+                 textField:"payroll_name",
                  valueField:'id'
                }
             ],
@@ -493,7 +493,7 @@ console.log(999,op);
                {
                  name:"payroll_name",
                  data:'payrolls',
-                 textField:"name",
+                 textField:"payroll_name",
                  valueField:'id'
                },
             ],
