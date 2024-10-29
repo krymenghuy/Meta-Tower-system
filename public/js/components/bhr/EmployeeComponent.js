@@ -32,8 +32,7 @@ var EmployeeComponent = new function () {
             processResponse: (res) => {
                 console.log(1234,res.data.data);
 
-                return res.data;
-                
+                    return res.data;
             },
             renderItems: (data, list_container) => {
                 mThis.renderEmployeeList(list_container, data);
@@ -41,7 +40,6 @@ var EmployeeComponent = new function () {
             listContainerClass: null,
         });
        
-
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
 
@@ -55,6 +53,7 @@ var EmployeeComponent = new function () {
 
             EmployeeDialog.show(op);
         };
+        
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
             let view_see_info = mThis.self.querySelector("#view_see_info__");

@@ -17,7 +17,7 @@ class BenefitController extends Controller
 
     public function saveBenefit(Request $req)
     {
-        $id = $req->id;
+        $id = $req->id ?? null;
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
         $res = $this->benefitModel->save($req->all(),$id,$ss);
@@ -63,9 +63,9 @@ class BenefitController extends Controller
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
         $id = $req->id ? :null;
-        $as = $req->as;
+        // $as = $req->as;
        
-        return JDV::result($this->benefitModel->deleteBenefit($id,$as, $ss));
+        return JDV::result($this->benefitModel->deleteBenefit($id, $ss));
     }
 
     public function getFormOptions(Request $req)

@@ -11,18 +11,18 @@
                 <div class="d-flex w-50 gap-3">
                     <div class="d-flex align-items-end w-100">
                         <input type="text" class="form-control rounded-5 filter-field" id="_sdl_search_emp_movement"
-                        placeholder="Search Movement">
+                            placeholder="Search Movement">
                     </div>
                 </div>
-
                 <div class="d-flex align-items-center">
-                    <label for="" class="form-label px-2 text-nowrap text-primary-custom" vslang="titles.Sort By"></label>
+                    <label for="" class="form-label px-2 text-nowrap text-primary-custom"
+                        vslang="titles.Sort By"></label>
                     <select type="id" id="el_sort_by" class="data-input filter-field"></select>
                 </div>
                 <div class="d-flex align-items-center">
-                    <select type="id" id="el_event" class="data-input filter-field" data-field="event_id"></select>
+                    <select type="id" id="el_event" class="data-input filter-field"
+                        data-field="event_id"></select>
                 </div>
-            
             </div>
         </div>
     </div>

@@ -118,11 +118,8 @@ var EmployeeMovementComponent = new (function () {
                     mThis.MovementListView.showPage();
                 }
             };
-            
-
             MovementDialog.show(op);
         };
-
         mThis.tblMovement = mThis.MovementListView.getTable();
         mThis.initDropdownMenus(mThis.tblMovement);
         this.sh_container  = mThis.MovementListView.getListContainer();
