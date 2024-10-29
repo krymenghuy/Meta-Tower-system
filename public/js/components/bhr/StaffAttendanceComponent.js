@@ -23,16 +23,18 @@ var StaffAttendanceComponent = new (function () {
             title: "Name",
             className: "align-middle text-start",
             data: (data) => `
-                <div style="display: flex; align-items: center;">
-                    <div>
-                        <span style="font-size: 14px; font-weight: bold;">${
-                            data.name ?? ""
-                        }</span><br/>
-                        <span style="font-size: 12px; color: gray;">${
-                            data.email ?? ""
-                        }</span>
-                    </div>
-                </div>`,
+            <div style="display: flex; align-items: center;">
+                <img class="image-student-tbl" src="${data.image_url}" alt="" 
+                    style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                <div>
+                    <span style="font-size: 14px; font-weight: bold;">${
+                        data.name ?? ""
+                    }</span><br/>
+                    <span style="font-size: 12px; color: gray;">${
+                        data.email ?? ""
+                    }</span>
+                </div>
+            </div>`,
         },
         {
             title: "Check in",
@@ -43,6 +45,11 @@ var StaffAttendanceComponent = new (function () {
             title: "attendance date",
             className: "align-middle",
             data: "attendance_date",
+        },
+        {
+            title: "Check Out",
+            className: "align-middle",
+            data: "check_out_time",
         },
         {
             title: "Status",
@@ -81,7 +88,7 @@ var StaffAttendanceComponent = new (function () {
 
         mThis.StaffAttendanceListView = new ListView("_staff_attendance_list", {
             fetchApi: `${mThis.base_url}/hr/attendances/list-paginate`,
-            perPage: 6,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",
@@ -101,7 +108,7 @@ var StaffAttendanceComponent = new (function () {
         };
         const pr_tbl = mThis.StaffAttendanceListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 225 + "px";
+        // sh_parent.style.height = window.innerHeight - 235 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 

@@ -46,8 +46,8 @@ var PositionComponent = new (function () {
         {
             className: "col_action align-middle",
             data: (data) => `
-            <div class="d-flex justify-content-center align-items-center">
-                <div class="text-center gap-2 d-flex flex-wrap">
+            <div class="d-flex justify-content-end align-items-end">
+                <div class="text-end gap-2 d-flex flex-wrap">
                     <a href="javascript:void(0)" class="${
                         data.action_id > 1 ? "d-none" : "btn_payroll_action"
                     }" data-id="${data.id}" data-statusid="${
@@ -67,7 +67,7 @@ var PositionComponent = new (function () {
 
         mThis.PositionListView = new ListView("_position_list", {
             fetchApi: `${main_view.base_url}/hr/position/list-paginate`,
-            perPage: 8,
+            perPage:10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
@@ -92,7 +92,7 @@ var PositionComponent = new (function () {
         };
         const pr_tbl = mThis.PositionListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 275 + "px";
+        // sh_parent.style.height = window.innerHeight - 275 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 

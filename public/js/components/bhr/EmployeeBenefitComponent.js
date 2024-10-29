@@ -41,29 +41,9 @@ var EmployeeBenefitComponent = new (function () {
             title: "Amount",
             className: "align-middle",
             data: (data) =>
-                `<p class="p-0 m-0">${`$ ` + (data.amount ?? "")}</p>`,
+                `<p class="p-0 m-0">${`៛ ` + (data.amount ?? "")}</p>`,
         },
-        {
-            title: "Remark",
-            className: "align-middle text-start",
-            data: (data) => `<p class="p-0 m-0">${data.remarks ?? ""}</p>`,
-        },
-        {
-            title: "Create By",
-            className: "align-middle text-start",
-            data: (data) => `<p class="p-0 m-0">${data.update_user ?? ""}</p>`,
-        },
-        {
-            title: "Category",
-            className: "align-middle text-center",
-            data: (data) => {
-                const benefitTypeName =
-                    mThis.benefitTypeMap[data.benefit_type_id] || "Unknown";
-                const backgroundColor =
-                    benefitTypeName === "Bonus" ? "danger" : "info";
-                return `<p class="p-2 rounded-5 m-0 border text-white w-50 bg-${backgroundColor}">${benefitTypeName}</p>`;
-            },
-        },
+       
         {
             title: "Action",
             className: "col_action align-middle",
@@ -80,8 +60,132 @@ var EmployeeBenefitComponent = new (function () {
             </div>`,
         },
     ];
+    this.cols_seniority = [
+        {
+            title: "No",
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data, index, i) => index + 1,
+        },
+       
+        {
+            title: "Start Date",
+            className: "align-middle text-start ",
+            data: (data) =>
+                `<p class="p-0 m-0">${data.se_satart_date ?? ""}</p>`,
+        },
+        {
+            title: "End Date",
+            className: "align-middle text-start ",
+            data: (data) =>
+                `<p class="p-0 m-0">${data.se_end_date ?? ""}</p>`,
+        },
+        {
+            title: "Create By",
+            className: "align-middle text-start",
+            data: (data) => `<p class="p-0 m-0">${data.update_user ?? ""}</p>`,
+        },
+        {
+            title: "Category",
+            className: "align-middle text-center",
+            data: (data) => {
+                const benefitTypeName =
+                    mThis.benefitTypeMap[data.benefit_type_id] || "Unknown";
+                const backgroundColor =
+                    benefitTypeName === "Bonus" ? "danger" : "info";
+                return `<p class="p-2 rounded-5 m-0 border text-white w-100 bg-${backgroundColor}">${benefitTypeName}</p>`;
+            },
+        },
+        {
+            title: "Action",
+            className: "col_action align-middle",
+            data: (data) => `
+        <div class="d-flex justify-content-start align-items-center">
+            <div class="text-center gap-2 d-flex flex-wrap">
+                <button class="btn btn-sm btn-primary btn_edit_bonus" data-id="${data.id}">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-danger btn_delete_bonus" data-id="${data.id}">
+                    <i class="fa-regular fa-trash-can"></i>
+                </button>
+            </div>
+        </div>`,
+        },
+    ];
+    this.cols_insurance = [
+        {
+            title: "No",
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data, index, i) => index + 1,
+        },
+        {
+            title: "Name",
+            className: "align-middle text-start",
+            data: (data) => `
+        <div style="display: flex; align-items: center;">
+            <img class="image-student-tbl" src="${data.image_url}" alt="" 
+                style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+            <div>
+                <span style="font-size: 14px; font-weight: bold;">${
+                    data.name ?? ""
+                }</span><br/>
+                <span style="font-size: 12px; color: gray;">${
+                    data.email ?? ""
+                }</span>
+            </div>
+        </div>`,
+        },
+        {
+            title: "Amount",
+            className: "align-middle",
+            data: (data) =>
+                `<p class="p-0 m-0">${`៛ ` + (data.amount ?? "")}</p>`,
+        },
+        {
+            title: "Start Date",
+            className: "align-middle text-start ",
+            data: (data) =>
+                `<p class="p-0 m-0">${data.se_satart_date ?? ""}</p>`,
+        },
+        {
+            title: "End Date",
+            className: "align-middle text-start ",
+            data: (data) =>
+                `<p class="p-0 m-0">${data.se_end_date ?? ""}</p>`,
+        },
+        {
+            title: "Create By",
+            className: "align-middle text-start",
+            data: (data) => `<p class="p-0 m-0">${data.update_user ?? ""}</p>`,
+        },
+        {
+            title: "Category",
+            className: "align-middle text-center",
+            data: (data) => {
+                const benefitTypeName =
+                    mThis.benefitTypeMap[data.benefit_type_id] || "Unknown";
+                const backgroundColor =
+                    benefitTypeName === "Bonus" ? "danger" : "info";
+                return `<p class="p-2 rounded-5 m-0 border text-white w-100 bg-${backgroundColor}">${benefitTypeName}</p>`;
+            },
+        },
+        {
+            title: "Action",
+            className: "col_action align-middle",
+            data: (data) => `
+        <div class="d-flex justify-content-start align-items-center">
+            <div class="text-center gap-2 d-flex flex-wrap">
+                <button class="btn btn-sm btn-primary btn_edit_bonus" data-id="${data.id}">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-danger btn_delete_bonus" data-id="${data.id}">
+                    <i class="fa-regular fa-trash-can"></i>
+                </button>
+            </div>
+        </div>`,
+        },
+    ];
 
-    // Initialization and event listeners remain the same as in your original code
+    
 
     this.init = function () {
         if (mThis.initAlready) return;
@@ -100,13 +204,13 @@ var EmployeeBenefitComponent = new (function () {
             e.preventDefault();
             EmployeeBenefitDailog.show({
                 btn: e.target,
-                onClose: mThis.reloadList,
+                onClose:  mThis.EmployeeBenefitListView.showPage(),
             });
         };
 
         // Apply filter on category selection
         mThis.elCategory.addEventListener("change", () => {
-            mThis.EmployeeBenefitListView.showPage(mThis.getDataFormFilter());
+            mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
         });
 
         // Initialize other event listeners
@@ -134,7 +238,7 @@ var EmployeeBenefitComponent = new (function () {
         mThis.search_timeout = setTimeout(() => {
             if (mThis.EmployeeBenefitListView) {
                 mThis.EmployeeBenefitListView.showPage(
-                    mThis.getDataFormFilter()
+                    mThis.getFilterData()
                 );
             } else {
                 console.error("Employee Benefit is not defined");
@@ -144,17 +248,19 @@ var EmployeeBenefitComponent = new (function () {
 
     mThis.btnSearch.onclick = (e) => {
         if (mThis.EmployeeBenefitListView) {
-            mThis.EmployeeBenefitListView.showPage(mThis.getDataFormFilter());
+            mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
         } else {
             console.error("Employee Benefit  is not defined");
         }
     };
 
-    this.getDataFormFilter = () => {
+    this.getFilterData = () => {
         let p = {
             benefit_type_id: mThis.elCategory.value, // Get the selected category value
             search_value: mThis.elSearch.value,
         };
+        console.log(1234,p);
+        
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const field = el.dataset.field;
@@ -163,11 +269,10 @@ var EmployeeBenefitComponent = new (function () {
 
         return p;
     };
-    this.reloadList = () => {
-        mThis.EmployeeBenefitListView.showPage(mThis.getDataFormFilter());
-    };
+   
 
     this.editBenefit = (id, menuLink) => {
+        
         let op = {
             id: id,
             btn: menuLink,
@@ -244,12 +349,33 @@ var EmployeeBenefitComponent = new (function () {
                 }, {});
             });
     };
+    mThis.elCategory.onchange =()=> {
+        const selectedColumns =
+            mThis.elCategory.value === "1"
+                ? mThis.cols_seniority
+                : mThis.elCategory.value === "2"
+                ? mThis.cols_insurance
+                : mThis.cols; // default columns
+
+        mThis.EmployeeBenefitListView.showPage(mThis.getFilterData(), {
+            columns: selectedColumns,
+        });
+    };
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-        mThis.reloadList();
+        const selectedColumns =
+        mThis.elCategory.value === "1"
+            ? mThis.cols_seniority
+            : mThis.elCategory.value === "2"
+            ? mThis.cols_insurance
+            : mThis.cols;
+
+    mThis.EmployeeBenefitListView.showPage(mThis.getFilterData(), {
+        columns: selectedColumns,
+    });
         $(mThis.self).siblings().hide();
         $(mThis.self).fadeIn(200);
     };
@@ -344,7 +470,11 @@ const EmployeeBenefitDailog = (() => {
                     targetProp: "benefit",
                     api: {
                         endpoint: `${main_view.base_url}/hr/employee/benefit/form-options`,
-                        params: (op) => ({ id: op.id }),
+                        params: (op) => {
+                            console.log(2020,op,2021,op.id);
+                            
+                            return {'id':op.id};
+                        }
                     },
                 },
                 onPrepareForm: (me, data) => {

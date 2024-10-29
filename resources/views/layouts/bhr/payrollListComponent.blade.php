@@ -29,10 +29,8 @@
             </button>
         </div>
     </div>
+    <div id="_payrollList_list" class="m-4"></div>
 
-    <div class="p-3">
-        <div id="_payrollList_list"></div>
-    </div>
 </div>
 
 <style>

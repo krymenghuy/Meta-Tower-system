@@ -103,7 +103,7 @@ var PayrollComponent = new (function () {
             title: "",
             className: "col_action align-middle",
             data: (data) => `
-                <div class="d-flex justify-content-center align-items-center">
+                <div class="d-flex justify-content-end align-items-end">
                     <a href="javascript:void(0)"
                        class="${data.disbursed === 1 ? "d-none" : "btn_payroll_action"}"
                        data-id="${data.id}" data-statusid="${data.status_id}">
@@ -143,7 +143,7 @@ var PayrollComponent = new (function () {
         };
 
         const pr_tbl = mThis.PayrollListView.getListContainer();
-        pr_tbl.style.height = `${window.innerHeight - 225}px`;
+        // pr_tbl.style.height = `${window.innerHeight - 225}px`;
         pr_tbl.classList.add('overflow-y-auto', 'overflow-x-hidden');
 
         mThis.initDropdownMenus(pr_tbl);

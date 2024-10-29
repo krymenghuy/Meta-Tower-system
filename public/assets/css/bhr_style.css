@@ -5,7 +5,12 @@
     -webkit-user-drag: none;
     font-family: 'Poppins';
 }
-
+.text-primary-custom{
+    color: #2b3991;
+}
+.bg-primary-custom{
+    background-color: #2b3991;
+}
 html,
 body {
     margin: 0;

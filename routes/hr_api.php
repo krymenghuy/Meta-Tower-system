@@ -138,6 +138,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/bene
     Route::post('/save', [BenefitController::class, 'saveBenefit']);
     Route::post('/bonus-list', [BenefitController::class, 'getBonusList']);
     Route::post('/seniority-list', [BenefitController::class, 'getSeniorityList']);
+    Route::post('/life_insurance-list', [BenefitController::class, 'getLifeInsurancesList']);
     Route::post('/details', [BenefitController::class, 'getDetails']);
     Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
     Route::post('/form-options', [BenefitController::class, 'getFormOptions']);

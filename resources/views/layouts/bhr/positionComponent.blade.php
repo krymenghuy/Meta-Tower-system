@@ -1,5 +1,5 @@
 <div id="_main_positionComponent" style="display:none;padding:20px 0 0">
-    <div class="d-flex  p-3 justify-content-between w-200 " id="_divFilter">
+    <div class="d-flex  p-4 justify-content-between w-200 " id="_divFilter">
         <div class="d-flex align-items-center justify-content-start gap-2 w-100">
             <button type="button" class="btn btn-primary" id="_btnAddPosition">
                 <i class="fas fa-plus"></i>
@@ -21,23 +21,18 @@
             </div>
         </div>
     </div>
-    <div id="_position_list" class="p-3"></div>
+    <div id="_position_list" class="m-4"></div>
 </div>
 <style>
     #_position_list_paginator {
-        display: flex;
-        position: fixed;
         bottom: 0;
     }
 
     #_position_list {
+        height: 600px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
-        height: 550px;
-        gap: 10px;
-        justify-content: center;
-        padding: 20px;
     }
 
     th,

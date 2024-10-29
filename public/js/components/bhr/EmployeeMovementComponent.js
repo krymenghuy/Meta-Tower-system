@@ -1,10 +1,9 @@
 var EmployeeMovementComponent = new (function () {
     let mThis = this;
+    this.title_prop = "Employee Movement";
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_employeeMovementComponent");
     this.self = this.jm[0];
-    this.title_prop = "Employee Movement";
-
     this.btnAdd = this.self.querySelector("#_btnAddMovement");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_emp_movement");
@@ -101,70 +100,72 @@ var EmployeeMovementComponent = new (function () {
     this.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.EmpMovementListView = new ListView('_emp_movement_list',{
+        mThis.MovementListView = new ListView('_emp_movement_list',{
             fetchApi : `${main_view.base_url}/hr/emp-event/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white overflow-hidden  header-uppercase',
+            tableClass: 'table table--white overflow-hidden rounded-3 header-uppercase',
             listContainerClass: null
         });
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
-
             let op = {
+                id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.EmpMovementListView.showPage();
+                    mThis.MovementListView.showPage();
                 }
             };
-
-            EmpMovementDialog.show(op);
+            MovementDialog.show(op);
         };
+        mThis.tblMovement = mThis.MovementListView.getTable();
+        mThis.initDropdownMenus(mThis.tblMovement);
+        this.sh_container  = mThis.MovementListView.getListContainer();
 
-        const pr_tbl = mThis.EmpMovementListView.getListContainer();
-        const sh_parent = pr_tbl;
-        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        const sh_parent = mThis.sh_container.parentElement;
+        sh_parent.style.height = (window.innerHeight - 170) + 'px';
         sh_parent.classList.add('overflow-y-auto');
         sh_parent.classList.add('overflow-x-hidden');
+        window.onresize = () => {
+            sh_parent.style.height = (window.innerHeight - 190) + 'px';
+        }
 
-        mThis.initDropdownMenus(pr_tbl);
-
-        mThis.divFilter.addEventListener('change', (e) => {
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            el.onchange = (e) =>{
+                e.preventDefault();
+                mThis.MovementListView.showPage(mThis.getFilterData());
+            }
+            
+        });
+        let timeOut = null;
+        mThis.elSearch.onkeyup = function(e) {
             e.preventDefault();
-            mThis.EmpMovementListView.showPage(mThis.getDataFormFilter());
-        })
+            clearTimeout(timeOut);
+            timeOut = setTimeout(()=>{
+                mThis.MovementListView.showPage(mThis.getFilterData());
+            },250);
+            
+        };
+    
 
         mThis.initAlready = true;
 
     };
 
-    mThis.elSearch.addEventListener('keyup', (e) => {
-        clearTimeout(mThis.search_timeout);
-        mThis.search_timeout = setTimeout(() => {
-            if (mThis.EmpMovementListView) {
-                mThis.EmpMovementListView.showPage(mThis.getDataFormFilter());
-            } else {
-                console.error("Employee Movement is not defined");
-            }
-        }, 200);
-    });
+   
 
-
-    this.getDataFormFilter = () => {
-        let p = {};
-        p.search_value = mThis.elSearch.value;
-        p.sort_by = mThis.elSortBy.value;
-        p.event_id = mThis.elFilter_event.value;
-
-        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
-        main_filters.forEach(el => {
-            const f = el.dataset.field;
+    this.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+            sort_by: mThis.elSortBy.value,
+            event_id: mThis.elFilter_event.value,
+        };
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el=>{
+            let f = el.dataset.field;
             p[f] = el.value;
-        });
-        console.log(222, p);
-
+        })
         return p;
     };
 
@@ -195,6 +196,8 @@ var EmployeeMovementComponent = new (function () {
             ],
 
             onClick:(menuLink, id, name)=>{
+                console.log(90,menuLink,80,id,70,name);
+
                 switch(name){
                     case 'edit_movement':{
                       mThis.editMovement(id, menuLink);
@@ -214,24 +217,26 @@ var EmployeeMovementComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
-    this.editMovement = (id, menuLink) => {
+    this.editMovement = (movement_id, menuLink) => {
         let op = {
-            id: id, // Pass the ID to fetch the data
+            id: movement_id, 
             btn: menuLink,
             onClose: () => {
-                mThis.EmpMovementListView.showPage(); // Refresh the list after editing
+                mThis.MovementListView.showPage(); // Refresh the list after editing
             }
         };
+        console.log(123,op);
+        
 
-        EmpMovementDialog.show(op);
+        MovementDialog.show(op);
     }
 
-    this.deleteMovement = (id, menuLink) => {
+    this.deleteMovement = (movement_id, menuLink) => {
         let op = {
-            id: id,
+            id: movement_id,
             btn: menuLink,
             onClose: () => {
-                mThis.EmpMovementListView.showPage();
+                mThis.MovementListView.showPage();
             }
         };
         cv_interact.confirm('Delete this Employee Movement?',{
@@ -243,7 +248,7 @@ var EmployeeMovementComponent = new (function () {
                 vsapi.call(`${main_view.base_url}/hr/emp-event/delete`,op,false,false,false).then(res => {
                     if(res.status_code == 200){
                         cv_interact.success('Deleted Successfully');
-                        mThis.EmpMovementListView.showPage();
+                        mThis.MovementListView.showPage();
                     }
                 })
             }
@@ -254,8 +259,6 @@ var EmployeeMovementComponent = new (function () {
 
         vsapi.call(`${main_view.base_url}/hr/emp-event/form-options`,null,null,null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
-            console.log(1111,this.elSortBy);
-
             VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'All', null);
             VSUtil.setComboItems(mThis.elFilter_event,d.events,'id','name',true,'All Movements',null);
         })
@@ -264,14 +267,17 @@ var EmployeeMovementComponent = new (function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-            mThis.EmpMovementListView.showPage();
-                $(mThis.self).siblings().hide();
-                $(mThis.self).fadeIn(200);
-            };
+            mThis.MovementListView.showPage(mThis.getFilterData(),null,()=>{
+                mThis.jm.siblings().hide();
+                mThis.jm.hide().fadeIn(250);
+
+            });
+                
+    }
 
 })()
 
-const EmpMovementDialog = (()=>{
+const MovementDialog = (()=>{
 
     const self = {};
     let dialog = null;

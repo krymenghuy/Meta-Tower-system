@@ -148,36 +148,40 @@
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
     <div id="sub_content">
         <div class="d-flex p-3 justify-content-between w-100" id="div_filter_filed">
-            <div class="d-flex align-items-start justify-content-start gap-2 w-25">
-                <button type="button" class="btn text-white" style="background-color:#2b3991;" id="_btnAddEmployee">
+            <div class="d-flex align-items-start justify-content-start w-25">
+                <button type="button" class="btn text-white" style="background-color:#2b3991;" id="_btn_add_employee">
                     <i class="fas fa-plus"></i>
                     <span>Add Employee </span>
                 </button>
             </div>
-            <div class="d-flex align-items-center justify-content-end px-3 w-100 gap-2">
+            <div class="d-flex align-items-center justify-content-end w-75 gap-3">
 
-                <div class="d-flex  w-50 gap-2">
+                <div class="d-flex  w-50 gap-3">
                     <div class="d-flex align-items-end w-100">
-                        <input type="text" class="form-control filter-field rounded-5" id="_sdl_search_employee" placeholder="Search Employee">
+                        <input type="text" class="form-control filter-field rounded-5" id="_search_employee" placeholder="Search Employee">
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <select type="id" id="el_status" class="data-input filter-field" data-field="status"></select>
+                    <select type="id" id="filter_employee_status" class="data-input filter-field" data-field="status"></select>
                 </div>
                 <div class="d-flex align-items-center">
-                    <select type="id" id="el_type" class="data-input filter-field" data-field="emp_type"></select>
+                    <select type="id" id="filter_employee_type" class="data-input filter-field" data-field="emp_type"></select>
                 </div>
 
 
 
             </div>
         </div>
-        <div id="_employee_list" class=""></div>
-        <div id="container_pagination" class="px-3 d-flex justify-content-end"></div>
+        <div class="shadow mt-2 overflow-hidden">
+            <div id="_employee_list" class="px-3"></div>
+
+        </div>
+        <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-3 d-flex justify-content-end"></div>
+
 
     </div>
-    <div class="p-3">
-        <div class=" mb-2" id="btn_back">
+    <div class="d-none" id="view_see_info__">
+        <div class="d-flex px-3" id="btn_back">
             <button id="_btn_backTo_employee" style="background-color:#2b3991; width:100px;"
                 class="btn text-white shadow rounded-4 m-2 p-2" type="button">
                 <i class="fa-solid fa-angles-left "></i>
@@ -185,7 +189,7 @@
             </button>
         </div>
         <div id="_view_profile_container">
-            <div class="mt-3 px-3 overflow-y-auto overflow-x-hidden " style="height:550px;" id="sub_view_profile">
+            <div class="px-2 overflow-y-auto overflow-x-hidden " style="height:550px;" id="sub_view_profile">
                 <div id="profile_info_emp" class="employee-card d-flex p-3 bg-secondary h-info-student mb-2" data-id="" data-merchantname="" data-pricelistid="">
                     <div class="d-block ms-3 w-100">
                         <div class="row row-cols-3 mb-0">
