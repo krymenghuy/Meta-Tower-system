@@ -19,9 +19,9 @@
     <div id="_staff_attendance_list"></div>
 </div>
 <style>
-    
+
     #_staff_attendance_list {
-        height: 600px;
+        height: 500px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;

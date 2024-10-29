@@ -167,13 +167,6 @@ class PayrollList
                     pl.disburse,
                     e.photo_file_name as emp_photo')
         ->where('pl.id', $id)->first();
-
-        // $row->image_url = '';
-        // if ($row->emp_photo) {
-        //     $row->image_url = Employee::profilePicture($row->emp_id);
-        // }
-        // unset($row->emp_photo);
-        // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_amount <=' . $row->salary_base . ' and upper_amount >=' . $row->salary_base)->take(1)->value('rate');
         return $row;
     }
     function deletePayrollList($id, $ss)
@@ -308,7 +301,7 @@ class PayrollList
                 $salary_base = $payroll->salary_base;
                 $tax_allowance = $payroll->tax_allowance;
                 $benefit = $payroll->benefit;
-                $deduction = $payroll->deduction;  
+                $deduction = $payroll->deduction;
 
                 if ($payroll->apply_payroll_tax == 0) {
                     $payroll->tax_rate = DB::table('tax_brackets')
@@ -318,8 +311,8 @@ class PayrollList
 
                     $tax_rate = $payroll->tax_rate;
 
-                    $payroll->tax_base = ($salary_base - $tax_allowance) * ($tax_rate / 100);
-                    $payroll->total = $salary_base + $benefit - $deduction - $payroll->tax_base;
+                    $payroll->tax_base = ($salary_base + $benefit - $tax_allowance) * ($tax_rate / 100);
+                    $payroll->total = $salary_base - $deduction - $payroll->tax_base;
                 } else {
                     $payroll->tax_base = 0;  // No tax base for non-taxed employees
                     $payroll->total = $salary_base + $benefit - $deduction;
