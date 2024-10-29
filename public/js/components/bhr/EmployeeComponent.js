@@ -18,7 +18,7 @@ var EmployeeComponent = new function () {
     this.profile_card_right = mThis.self.querySelector("#profile_card_right");
     this.tax_allownce_card = mThis.self.querySelector("#tax_allownce_card");
     this.profile_info_emp = mThis.self.querySelector("#profile_info_emp");
-    this.paginationContainer = mThis.self.querySelector('#container_pagination')
+    this.paginationContainer = mThis.self.querySelector('#container_pagination');
     let div = mThis.self.querySelector("#_employee_list");
     this.init = () => {
         if (mThis.initAlready) return;
