@@ -51,7 +51,7 @@ var EmployeeBenefitComponent = new (function () {
                         : "info";
 
                 return `
-                <p class="p-2 rounded-5 m-0 border text-white w-100 bg-${backgroundColor}">
+                <p class="p-2 rounded-5 m-0 border text-white w-50 bg-${backgroundColor}">
                     ${benefitTypeName}
                 </p>`;
             },
@@ -61,16 +61,6 @@ var EmployeeBenefitComponent = new (function () {
             className: "align-middle",
             data: (data) =>
                 `<p class="p-0 m-0">${`៛ ` + (data.amount ?? "")}</p>`,
-        },
-        {
-            title: "Remark",
-            className: "align-middle text-start ",
-            data: (data) => `<p class="p-0 m-0">${data.remarks ?? ""}</p>`,
-        },
-        {
-            title: "Create By",
-            className: "align-middle text-start",
-            data: (data) => `<p class="p-0 m-0">${data.update_user ?? ""}</p>`,
         },
 
         {
@@ -89,7 +79,6 @@ var EmployeeBenefitComponent = new (function () {
             </div>`,
         },
     ];
-
     this.cols_seniority = [
         {
             title: "No",
@@ -110,8 +99,8 @@ var EmployeeBenefitComponent = new (function () {
                     <span style="font-size: 12px; color: gray;">${
                         data.email ?? ""
                     }</span>
-                </div>
-            </div>`,
+            </div>
+        </div>`,
         },
         {
             title: "Benefity Type",
@@ -133,20 +122,15 @@ var EmployeeBenefitComponent = new (function () {
             },
         },
         {
-            title: "Amount",
-            className: "align-middle",
-            data: (data) =>
-                `<p class="p-0 m-0">${`៛ ` + (data.amount ?? "")}</p>`,
-        },
-        {
             title: "Start Date",
             className: "align-middle text-start ",
             data: (data) =>
-                `<p class="p-0 m-0">${data.se_start_date ?? ""}</p>`,
+                `<p class="p-0 m-0">${data.se_start_date ?? "null"}</p>`,
         },
         {
             title: "End Date",
             className: "align-middle text-start ",
+            data: (data) => `<p class="p-0 m-0">${data.remarks ?? ""}</p>`,
             data: (data) => `<p class="p-0 m-0">${data.se_end_date ?? ""}</p>`,
         },
         {
@@ -158,16 +142,16 @@ var EmployeeBenefitComponent = new (function () {
             title: "Action",
             className: "col_action align-middle",
             data: (data) => `
-            <div class="d-flex justify-content-start align-items-center">
-                <div class="text-center gap-2 d-flex flex-wrap">
-                    <button class="btn btn-sm btn-primary btn_edit_bonus" data-id="${data.id}">
-                        <i class="fa-regular fa-pen-to-square"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger btn_delete_bonus" data-id="${data.id}">
-                        <i class="fa-regular fa-trash-can"></i>
-                    </button>
-                </div>
-            </div>`,
+        <div class="d-flex justify-content-start align-items-center">
+            <div class="text-center gap-2 d-flex flex-wrap">
+                <button class="btn btn-sm btn-primary btn_edit_bonus" data-id="${data.id}">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-danger btn_delete_bonus" data-id="${data.id}">
+                    <i class="fa-regular fa-trash-can"></i>
+                </button>
+            </div>
+        </div>`,
         },
     ];
     this.cols_insurance = [
@@ -180,18 +164,18 @@ var EmployeeBenefitComponent = new (function () {
             title: "Name",
             className: "align-middle text-start",
             data: (data) => `
-            <div style="display: flex; align-items: center;">
-                <img class="image-student-tbl" src="${data.image_url}" alt="" 
-                    style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
-                <div>
-                    <span style="font-size: 14px; font-weight: bold;">${
-                        data.name ?? ""
-                    }</span><br/>
-                    <span style="font-size: 12px; color: gray;">${
-                        data.email ?? ""
-                    }</span>
-                </div>
-            </div>`,
+        <div style="display: flex; align-items: center;">
+            <img class="image-student-tbl" src="${data.image_url}" alt="" 
+                style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+            <div>
+                <span style="font-size: 14px; font-weight: bold;">${
+                    data.name ?? ""
+                }</span><br/>
+                <span style="font-size: 12px; color: gray;">${
+                    data.email ?? ""
+                }</span>
+            </div>
+        </div>`,
         },
         {
             title: "Benefity Type",
@@ -238,20 +222,18 @@ var EmployeeBenefitComponent = new (function () {
             title: "Action",
             className: "col_action align-middle",
             data: (data) => `
-            <div class="d-flex justify-content-start align-items-center">
-                <div class="text-center gap-2 d-flex flex-wrap">
-                    <button class="btn btn-sm btn-primary btn_edit_bonus" data-id="${data.id}">
-                        <i class="fa-regular fa-pen-to-square"></i>
-                    </button>
-                    <button class="btn btn-sm btn-danger btn_delete_bonus" data-id="${data.id}">
-                        <i class="fa-regular fa-trash-can"></i>
-                    </button>
-                </div>
-            </div>`,
+        <div class="d-flex justify-content-start align-items-center">
+            <div class="text-center gap-2 d-flex flex-wrap">
+                <button class="btn btn-sm btn-primary btn_edit_bonus" data-id="${data.id}">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+                <button class="btn btn-sm btn-danger btn_delete_bonus" data-id="${data.id}">
+                    <i class="fa-regular fa-trash-can"></i>
+                </button>
+            </div>
+        </div>`,
         },
     ];
-
-    // Initialization and event listeners remain the same as in your original code
 
     this.init = function () {
         if (mThis.initAlready) return;
@@ -268,10 +250,14 @@ var EmployeeBenefitComponent = new (function () {
         // Event for adding a benefit
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
-            EmployeeBenefitDailog.show({
+            let op = {
+                id: null,
                 btn: e.target,
-                onClose: mThis.EmployeeBenefitListView.showPage(),
-            });
+                onClose: () => {
+                    mThis.EmployeeBenefitListView.showPage();
+                },
+            };
+            EmployeeBenefitDialog.show(op)
         };
 
         // Apply filter on category selection
@@ -343,7 +329,7 @@ var EmployeeBenefitComponent = new (function () {
         };
         console.log(333, op);
 
-        EmployeeBenefitDailog.show(op);
+        EmployeeBenefitDialog.show(op);
     };
 
     this.deleteBenefit = (id, menuLink) => {
@@ -410,22 +396,43 @@ var EmployeeBenefitComponent = new (function () {
                 }, {});
             });
     };
+    mThis.elCategory.onchange = () => {
+        const selectedColumns =
+            mThis.elCategory.value === "1"
+                ? mThis.cols
+                : mThis.elCategory.value === "2"
+                ? mThis.cols_seniority
+                : mThis.elCategory.value === "3"
+                ? mThis.cols_insurance
+                : mThis.cols; // default columns
+
+        mThis.EmployeeBenefitListView.showPage(mThis.getFilterData(), {
+            columns: selectedColumns,
+        });
+    };
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
+        const selectedColumns =
+            mThis.elCategory.value === "1"
+                ? mThis.cols
+                : mThis.elCategory.value === "2"
+                ? mThis.cols_seniority
+                : mThis.elCategory.value === "3"
+                ? mThis.cols_insurance
+                : mThis.cols;
+
         mThis.EmployeeBenefitListView.showPage(mThis.getFilterData(), {
-            columns: this.benefit_type_id === "1" ? mThis.cols : this.cols,
-            columns: this.benefit_type_id === "2" ? mThis.cols_seniority : this.cols_seniority,
-            columns: this.benefit_type_id === "3" ? mThis.cols_insurance : this.cols_insurance,
+            columns: selectedColumns,
         });
         $(mThis.self).siblings().hide();
         $(mThis.self).fadeIn(200);
     };
 })();
 
-const EmployeeBenefitDailog = (() => {
+const EmployeeBenefitDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
