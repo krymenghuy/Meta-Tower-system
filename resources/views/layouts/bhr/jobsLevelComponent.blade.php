@@ -67,7 +67,7 @@
             </button>
         </div>
     </div>
-    <div id="_job_level_list">
+    <div id="_job_level_list" class="m-4">
     </div>
 </div>
 <style>
@@ -151,15 +151,12 @@
     }
 
     #_job_level_list {
-        padding: 10px 20px 0px 20px;
+        height: 450px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
     }
     #_job_level_list_paginator{
-        display: flex;
-        position: fixed;
         bottom: 0;
-        margin: 0.5px;
     }
 </style>

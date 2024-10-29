@@ -97,7 +97,7 @@ var DepartmentComponent = new (function () {
 
         mThis.DepartmentListView = new ListView("_dep_list", {
             fetchApi: `${main_view.base_url}/hr/department/list-paginate`,
-            perPage: 6,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
@@ -142,7 +142,7 @@ var DepartmentComponent = new (function () {
         };
         const pr_tbl = mThis.DepartmentListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 150 + "px";
+        // sh_parent.style.height = window.innerHeight - 150 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 

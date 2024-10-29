@@ -69,7 +69,7 @@ var JobsLevelComponent = new (function () {
 
         mThis.JobLevelListView = new ListView("_job_level_list", {
             fetchApi: `${mThis.base_url}/hr/job_level/list-paginate`,
-            perPage: 5,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",
@@ -89,7 +89,7 @@ var JobsLevelComponent = new (function () {
         };
         const pr_tbl = mThis.JobLevelListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 225 + "px";
+        // sh_parent.style.height = window.innerHeight - 225 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
