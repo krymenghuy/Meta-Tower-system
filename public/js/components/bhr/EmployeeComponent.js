@@ -27,7 +27,7 @@ var EmployeeComponent = new function () {
             fetchApi: `${main_view.base_url}/hr/employee/list-paginate`,
             perPage: 8,
             paginationContainer: mThis.paginationContainer,
-            
+
             apiCluster: main_view.apiCluster,
             processResponse: (res) => {
                 console.log(1234,res.data.data);
@@ -39,7 +39,7 @@ var EmployeeComponent = new function () {
             },
             listContainerClass: null,
         });
-       
+
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
 
@@ -53,7 +53,7 @@ var EmployeeComponent = new function () {
 
             EmployeeDialog.show(op);
         };
-        
+
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
             let view_see_info = mThis.self.querySelector("#view_see_info__");
@@ -77,12 +77,12 @@ var EmployeeComponent = new function () {
             timeOut = setTimeout(()=>{
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },250);
-           
+
         };
          this.listContainer = mThis.EmployeeListView.getListContainer();
          console.log(12,mThis.listContainer);
          mThis.initDropdownMenus(div);
- 
+
          const sh_parent = mThis.listContainer.parentElement;
          sh_parent.style.height = (window.innerHeight - 200) + 'px';
          sh_parent.classList.add('overflow-y-auto');
@@ -108,7 +108,7 @@ var EmployeeComponent = new function () {
     };
     this.initDropdownMenus = (listContainer) => {
         console.log(listContainer);
-        
+
         const menuOptopns = {
             containerElement: listContainer,
             actionButtonClass: "btn_employee_action",
@@ -184,13 +184,13 @@ var EmployeeComponent = new function () {
 
                 switch (status) {
                     case "Terminated":
-                        statusColor = "background-color: #dc3545;"; 
+                        statusColor = "background-color: #dc3545;";
                         break;
                     case "Resigned":
-                        statusColor = "background-color: #ffc107;"; 
+                        statusColor = "background-color: #ffc107;";
                         break;
                     default:
-                        statusColor = "background-color: #2B3991;"; 
+                        statusColor = "background-color: #2B3991;";
                         break;
                 }
 
@@ -277,7 +277,7 @@ var EmployeeComponent = new function () {
                     sub_content.classList.add("d-none");
                     let view_see_info = mThis.self.querySelector("#view_see_info__");
                     view_see_info.classList.remove("d-none");
-                    
+
 
                     mThis.renderProfile(employeeData);
                     mThis.renderCardCenter(employeeId);
@@ -813,12 +813,12 @@ var EmployeeComponent = new function () {
     };
 
     this.changeStatus = (id, lnk) => {
-       
+
         let tr = lnk.closest("tr");
         console.log(1,tr);
         let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
         console.log(123,status_id);
-        
+
         let inputOptions = {
             title: "Set Employee Status",
             dataLabel: "Employee status",
@@ -956,8 +956,8 @@ var EmployeeComponent = new function () {
         mThis.EmployeeListView.showPage(mThis.getFilterData());
             mThis.jm.siblings().hide();
             mThis.jm.hide().fadeIn(250);
-    
-        
+
+
     }
 };
 
@@ -1331,13 +1331,18 @@ const EmployeeDialog = (() => {
                             </div>
                             <div class="col-9">
                                 <div class="row">
-                                    <div class="form-group col-6">
+                                    <div class="form-group col-4">
                                         <label for="name" class="form-label" vslang="titles.Name"></label>
                                         <span class="text-danger" >*</span>
                                         <input name="name" class="form-control data-input" data-field="name" />
                                     </div>
+                                    <div class="form-group col-4">
+                                        <label for="name_kh" class="form-label" vslang="titles.Name KH"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="name_kh" class="form-control data-input" data-field="name_kh" />
+                                    </div>
 
-                                    <div class="form-group col-6">
+                                    <div class="form-group col-4">
                                         <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
                                         <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
                                     </div>
