@@ -165,13 +165,13 @@ var WarningComponent = new (function () {
             menus: [
                 {
                     html: '<span class="ps-2  " vslang="titles.Edit Warning">Edit Warning</span>',
-                    icon: `<i class="fa-regular fa-exchange fs-5"></i>`,
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_warning",
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete Warning">Delete Warning</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_warning",
                 },
@@ -179,8 +179,8 @@ var WarningComponent = new (function () {
             onClick: (menulink, id, name) => {
                 switch (name) {
                     case "edit_warning": {
-                        console.log(98787653,id);
-                        
+                        console.log(98787653, id);
+
                         mThis.editWarning(id, menulink);
                         break;
                     }

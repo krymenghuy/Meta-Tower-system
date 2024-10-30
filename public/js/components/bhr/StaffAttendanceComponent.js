@@ -88,7 +88,11 @@ var StaffAttendanceComponent = new (function () {
 
         mThis.StaffAttendanceListView = new ListView("_staff_attendance_list", {
             fetchApi: `${mThis.base_url}/hr/attendances/list-paginate`,
-            perPage: 10,
+            // processResponse: (res) => {
+            //     console.log(res);
+            //     return res.data;
+            // },
+            perPage:10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",
@@ -168,13 +172,13 @@ var StaffAttendanceComponent = new (function () {
             menus: [
                 {
                     html: '<span class="ps-2  " vslang="titles.Edit StaffAttendance">Edit Staff Attendance</span>',
-                    icon: `<i class="fa-regular fa-exchange fs-5"></i>`,
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_staff_attendance",
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete StafAttendance">Delete Staff Attendance</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_staff_attendance",
                 },

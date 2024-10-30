@@ -159,11 +159,11 @@ var LeaveComponent = new function () {
         this.sh_container = mThis.LeaveRequestListView.getListContainer();
 
         const sh_parent = mThis.sh_container.parentElement;
-        sh_parent.style.height = (window.innerHeight - 230) + 'px';
+        // sh_parent.style.height = (window.innerHeight - 290) + 'px';
         sh_parent.classList.add('overflow-y-auto');
-        window.onresize = () => {
-            sh_parent.style.height = (window.innerHeight - 190) + 'px';
-        }
+        // window.onresize = () => {
+        //     sh_parent.style.height = (window.innerHeight - 190) + 'px';
+        // }
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
 
             el.onchange =  (e) => {
