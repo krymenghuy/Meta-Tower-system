@@ -23,6 +23,7 @@ class Transaction
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
+            'payroll_id' => '1|number',
             'amount' => '1|number',
             'remarks' => '0|string|250',
             'trx_type' => '1|number',
@@ -36,8 +37,8 @@ class Transaction
         $id = $res->id;
         $inputs = $res->values;
 
-        $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1);
-        if ($id > 0) {
+        $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1, 'binary');
+        if ($id) {
             return DV::depends(1, ['transactions' => $inputs, 'id' => $id]);
         }
 
@@ -65,7 +66,8 @@ class Transaction
         $query = DB::table('transactions as t')
             ->join('employees as e', 'e.id', 't.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->selectRaw('t.id, t.emp_id, e.name as emp_name, pos.title as position, t.amount, t.remarks, t.trx_type')
+            ->join('payrolls as p', 'p.id', '=', 't.payroll_id')
+            ->selectRaw('t.id, t.emp_id, e.name as emp_name, pos.title as position, p.name as payroll_name, t.amount, t.remarks, t.trx_type')
             ->where('t.branch_id', $branch_id);
 
         if ($search_id) {
@@ -87,9 +89,10 @@ class Transaction
 
     function getDetails($id) {
         $query = DB::table('transactions as t')
-            ->join('employees as e', 'e.id', 't.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->selectRaw('t.id, t.emp_id, e.name as emp_name, pos.title as position, t.amount, t.remarks, t.trx_type')
+        ->join('employees as e', 'e.id', 't.emp_id')
+        ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+        ->join('payrolls as p', 'p.id', '=', 't.payroll_id')
+        ->selectRaw('t.id, t.emp_id, e.name as emp_name, pos.title as position, p.name as payroll_name, t.amount, t.remarks, t.trx_type')
             ->where('t.id', $id)
             ->first();
         return $query;
