@@ -174,7 +174,7 @@ var EmployeeComponent = new function () {
     };
     this.renderEmployee = (data) => {
         let html = "";
-        html += `<div  class="row px-3">`;
+        html += `<div  class="row mb-5">`;
         let cmt = 0;
 
         if (Array.isArray(data) && data.length > 0) {

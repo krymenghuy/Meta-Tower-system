@@ -44,7 +44,7 @@ var EmployeeMovementComponent = new (function () {
             title: "Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.date ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.event_date ?? ""}</p>`;
             }
         },
 

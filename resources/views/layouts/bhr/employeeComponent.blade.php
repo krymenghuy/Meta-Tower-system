@@ -143,11 +143,22 @@
         flex-direction: column;
         margin-bottom: 20px;
     }
+    #_employee_list {
+       display: flex;
+       flex-direction: column;
+       height:400px;
+       margin-top: 20px;
+       padding: 0;
+       width: 100%;
+       overflow-y: auto;
+       overflow-x: hidden;
+       scrollbar-width: none;
+    }
 </style>
 
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
-    <div id="sub_content">
-        <div class="d-flex p-3 justify-content-between w-100" id="div_filter_filed">
+    <div id="sub_content" class="p-4">
+        <div class="d-flex justify-content-between w-100" id="div_filter_filed">
             <div class="d-flex align-items-start justify-content-start w-25">
                 <button type="button" class="btn text-white" style="background-color:#2b3991;" id="_btn_add_employee">
                     <i class="fas fa-plus"></i>
@@ -155,8 +166,7 @@
                 </button>
             </div>
             <div class="d-flex align-items-center justify-content-end w-75 gap-3">
-
-                <div class="d-flex  w-50 gap-3">
+                <div class="d-flex w-50 gap-3">
                     <div class="d-flex align-items-end w-100">
                         <input type="text" class="form-control filter-field rounded-5" id="_search_employee" placeholder="Search Employee">
                     </div>
@@ -167,19 +177,13 @@
                 <div class="d-flex align-items-center">
                     <select type="id" id="filter_employee_type" class="data-input filter-field" data-field="emp_type"></select>
                 </div>
-
-
-
             </div>
         </div>
-        <div class="shadow mt-2 overflow-hidden">
-            <div id="_employee_list" class="px-3"></div>
-
-        </div>
+        <div id="_employee_list"></div>
         <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-3 d-flex justify-content-end"></div>
-
-
     </div>
+
+
     <div class="d-none" id="view_see_info__">
         <div class="d-flex px-3" id="btn_back">
             <button id="_btn_backTo_employee" style="background-color:#2b3991; width:100px;"
