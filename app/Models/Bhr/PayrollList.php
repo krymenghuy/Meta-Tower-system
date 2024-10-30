@@ -346,26 +346,38 @@ class PayrollList
             $ss = $ss ?? $this->userInfo;
             $branch_id = $ss->branch_id;
 
+            $trx = DB::table('payroll_lists as pl')
+                    ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+                    ->where('pl.id', $id)
+                    ->selectRaw('total_salary as amount,emp_id,payroll_id,p.name as remarks')->first();
+            $trx->trx_type='0';
+            $trx = Transaction::save((array)$trx, $ss);
 
+            $account_id = DB::table('accounts')->where('emp_id', $trx['transactions']['emp_id'])->value('id');
+            $updateBalance = PayrollList::updateBalance($account_id,  $trx['transactions']['amount'], $trx['trx_id'], $ss);
             $query = DB::table('payroll_lists')
-                ->where('id', $id)
-                ->update(['disburse' => 1]);
+            ->where('id', $id)
+            ->update(['disburse' => 1, 'trx_id' => hex2bin($trx['trx_id'])]);
 
-            if ($query) {
-                $total_salary = DB::table('payroll_lists')
-                    ->where('id', $id)
-                    ->value('total_salary');
-
-
-                    DB::table('transactions')
-                    ->where([
-                        ['payroll_id', '=', $id],
-                        ['emp_id', '=', $ss->id], 
-                    ])
-                    ->update(['amount' => $total_salary]);
-            }
             return $query;
         }
 
+        static function updateBalance($account_id, $amount, $trx_id, $ss = null)
+        {
+            if(!$account_id){
+                return DV::error('Invalid account id');
+            }
+            if(!$amount){
+                $amount = 0;
+            }
 
+            $lastBalance = DB::table('accounts')->where('id', $account_id)->value('balance');
+            $newBalance = (float)$lastBalance + (float)$amount;
+
+            $lastBalanceDate = date('Y-m-d');
+            $query = DB::table('accounts')
+                ->where('id', $account_id)
+                ->update(['balance' => $newBalance, 'last_balance_date' => $lastBalanceDate, 'trx_id' => hex2bin($trx_id)]);
+            return $query;
+        }
     }
