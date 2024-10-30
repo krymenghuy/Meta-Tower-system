@@ -22,10 +22,11 @@ class EmployeeEvent
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'emp_id' => '1|number',
-            'event_id' => '1|number',
+            'emp_id' => '1|number|exist=employees.id',
+            'event_id' => '1|number|exist=events.id',
             'event_date' => '1|date',
             'remarks' => '0|string|250',
+            'impact_id'=> '0|number'
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -146,7 +147,7 @@ class EmployeeEvent
 
             'sort_by' => [
                 ['id' => 'emp.name', 'name' => 'By Name'],
-                ['id' => 'ee.date', 'name' => 'By Date'],
+                ['id' => 'ee.event_date', 'name' => 'By Date'],
 
             ],
 

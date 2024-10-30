@@ -16,6 +16,7 @@
     .ellipsis {
         font-size: 18px;
     }
+
     .experience-company {
         font-weight: bold;
         font-size: 16px;
@@ -133,9 +134,11 @@
         width: 100%;
         height: auto;
     }
-    #_view_profile_container{
+
+    #_view_profile_container {
         padding-bottom: 20%;
     }
+
     #profile_card_left,
     #profile_card_center,
     #profile_card_right {
@@ -143,16 +146,35 @@
         flex-direction: column;
         margin-bottom: 20px;
     }
+
     #_employee_list {
-       display: flex;
-       flex-direction: column;
-       height:400px;
-       margin-top: 20px;
-       padding: 0;
-       width: 100%;
-       overflow-y: auto;
-       overflow-x: hidden;
-       scrollbar-width: none;
+        display: flex;
+        flex-direction: column;
+        height: 400px;
+        margin-top: 20px;
+        padding: 0;
+        width: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+    }
+
+    .div-img {
+        background-color: #ffffff;
+        /* White background color */
+        border-radius: 8px;
+        padding: 10px;
+        width: 100%;
+        /* Ensure image takes full width */
+        text-align: center;
+    }
+
+    .div-img img {
+        max-width: 100%;
+        /* Image resizes responsively */
+        height: auto;
+        border-radius: 50%;
+        /* Optional: make it a circle */
     }
 </style>
 
@@ -168,14 +190,17 @@
             <div class="d-flex align-items-center justify-content-end w-75 gap-3">
                 <div class="d-flex w-50 gap-3">
                     <div class="d-flex align-items-end w-100">
-                        <input type="text" class="form-control filter-field rounded-5" id="_search_employee" placeholder="Search Employee">
+                        <input type="text" class="form-control filter-field rounded-5" id="_search_employee"
+                            placeholder="Search Employee">
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <select type="id" id="filter_employee_status" class="data-input filter-field" data-field="status"></select>
+                    <select type="id" id="filter_employee_status" class="data-input filter-field"
+                        data-field="status"></select>
                 </div>
                 <div class="d-flex align-items-center">
-                    <select type="id" id="filter_employee_type" class="data-input filter-field" data-field="emp_type"></select>
+                    <select type="id" id="filter_employee_type" class="data-input filter-field"
+                        data-field="emp_type"></select>
                 </div>
             </div>
         </div>
@@ -194,8 +219,8 @@
         </div>
         <div id="_view_profile_container">
             <div class="px-2 overflow-y-auto overflow-x-hidden " style="height:550px;" id="sub_view_profile">
-                <div id="profile_info_emp" class="employee-card d-flex p-3 bg-secondary h-info-student mb-2" data-id="" data-merchantname="" data-pricelistid="">
-                    <div class="d-block ms-3 w-100">
+                <div id="profile_info_emp">
+                    <!-- <div class="d-block ms-3 w-100">
                         <div class="row row-cols-3 mb-0">
                             <div class="col-2">
                                 <div class="div-img" data-id="" data-imageurl="">
@@ -293,9 +318,9 @@
 
                         </div>
 
-                    </div>
+                    </div> -->
                 </div>
-                <div class="row mt-3 p-3" >
+                <div class="row mt-3 p-3">
                     <div class="col-md-4" id="profile_card_left">
                         <!-- <div class="card" style="height:487px;">
                             <div class="card-header">
@@ -404,8 +429,8 @@
                 </div>
 
 
-                    <div class="col-md-4" id="tax_allownce_card">
-                        {{-- <div class="card" style="height:487px;">
+                <div class="col-md-4" id="tax_allownce_card">
+                    {{-- <div class="card" style="height:487px;">
                             <div class="card-header">
                                 <h4>Tax Allowance</h4>
                                 <span class="ellipsis">...</span>
@@ -420,7 +445,7 @@
                                </div>
                             </div>
                         </div> --}}
-                    </div>
+                </div>
 
 
 
