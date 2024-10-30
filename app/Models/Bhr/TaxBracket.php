@@ -50,7 +50,7 @@ class TaxBracket
         $branch_id = $ss->branch_id;
 
         $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 10;
+        $per_page = $d->per_page ?? 20;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
@@ -59,6 +59,7 @@ class TaxBracket
 
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
+        $search_status_id = $d->status_id ?? null;
 
         $str_search = '1=1';
 
@@ -73,10 +74,8 @@ class TaxBracket
             $search_value = escape_like_str($search_value);
             $query->where('tb.lower_amount', 'like', '%' . $search_value . '%' . 'or' . 'tb.upper_amount', 'like', '%' . $search_value . '%');
         }
-        $query->skip($skip_rows)->take($per_page);
-        $count_query = clone $query;
-        $count = $count_query->count('tb.id');
-        $rows = $query->get();
+        $count = $query->count();
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }

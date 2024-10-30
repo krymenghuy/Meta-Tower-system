@@ -27,13 +27,16 @@
 
 <style>
     #_payroll_list{
-        height: 500px;
+        height: 520px;
+        padding-bottom: 60px;
         overflow-y: scroll;
         overflow-x: hidden;
         scrollbar-width: none;
     }
     #_payroll_list_paginator {
         bottom: 0;
+        display: flex;
+        position: fixed;
     }
     th,
     td {

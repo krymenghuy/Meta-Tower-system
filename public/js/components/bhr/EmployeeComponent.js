@@ -83,6 +83,7 @@ var EmployeeComponent = new function () {
          console.log(12,mThis.listContainer);
          mThis.initDropdownMenus(div);
 
+
          const sh_parent = mThis.listContainer.parentElement;
          sh_parent.style.height = (window.innerHeight - 200) + 'px';
          sh_parent.classList.add('overflow-y-auto');
@@ -174,7 +175,7 @@ var EmployeeComponent = new function () {
     };
     this.renderEmployee = (data) => {
         let html = "";
-        html += `<div  class="row px-3">`;
+        html += `<div  class="row mb-5">`;
         let cmt = 0;
 
         if (Array.isArray(data) && data.length > 0) {
@@ -295,114 +296,180 @@ var EmployeeComponent = new function () {
     };
 
     this.renderProfile = (data) => {
-        let html = `
+        let html = `<div class="employee-card d-flex p-3 bg-primary-custom h-info-student mb-2" data-id="">
                     <div class="d-block ms-3 w-100">
-                        <div class="row row-cols-3 mb-0">
-                            <div class="col-2">
-                                <div class="div-img">
-                                    <img src="${data.image_url ||
-            "../uploads/public/1_data/default/images/mr.avif"
-            }" alt="Employee Image">
+                        <div class="row text-white mb-0">
+                            <div class="col-md-3">
+                                <div class="div-img ms-2">
+                                    <img src="${data.image_url || "../uploads/public/1_data/default/images/mr.avif"}" alt="Employee Image">
                                 </div>
-                                <div class="social-icons d-flex justify-content-start mt-3">
-                                    <a href="https://www.facebook.com" class="mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
-                                    <a href="https://www.linkedin.com" class="mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>
-                                    <a href="https://web.telegram.org/a/" class="mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>
+                                <div class="d-flex mt-3 ms-5 justify-content-start">
+                                    <span class="text-white">ID : ${data.code || ""}</span>
                                 </div>
+                                
                             </div>
-                            <div class="col">
+                            <div class="col-md-3">
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Name</p>
+                                    <p class="text-nowrap  width-p">Name</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap text-capitalize">${data.name}</p>
                                 </div>
+                               
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">KH Name</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${data.name_kh}</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Sex</p>
+                                    <p class="text-nowrap  width-p">Sex</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${data.sex == "M" ? "Male" : ""}${data.sex == "F" ? "Female" : ""}${data.sex == "O" ? "Other" : ""}</p>
                                 </div>
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Position</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.position || ""}</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Salary Base</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.salary_base || ""}</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Email</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-primary">${data.email || ""}</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Tel</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.phone_number || ""}</p>
-                                </div>
-                                  <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">ID</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.code || ""}</p>
-                                </div>
-
-                            </div>
-                            <div class="col">
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Employee Type</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.type || ""}</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Work Shift</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.work_shift || "" }</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Nationality</p>
+                                    <p class="text-nowrap  width-p">Nationality</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${data.nationality || ""}</p>
                                 </div>
-
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Date of Birth</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.date_of_birth || ""}</p>
-                                </div>
-                                <div class="d-flex align-items-center">
-                                    <p class="text-nowrap text-muted   width-bp" vslang="titles.Address">Address</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${data.address}</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted   width-p" vslang="titles.NSSF">NSSF</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${data.nssf_id}</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap text-muted   width-p" vslang="titles.Identity Card">Identity Card</p>
+                                 <div class="d-flex">
+                                    <p class="text-nowrap    width-p" vslang="titles.Identity Card">Identity Card</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap text-capitalize">${data.nid}</p>
                                 </div>
                                 <div class="d-flex">
-                                    <p class="text-nowrap text-muted width-p">Payroll Tax</p>
+                                    <p class="text-nowrap  width-p">Date of Birth</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.date_of_birth || ""}</p>
+                                </div>
+                               
+                                  
+
+                            </div>
+                            <div class="col-md-3">
+                            
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Position</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.position || ""}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Work Shift</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.work_shift || "" }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Employee Type</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.type || ""}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Tel</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${data.phone_number || ""}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Email</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-primary">${data.email || ""}</p>
+                                </div>
+                        
+                               
+                            </div>
+
+                            <div class="col-md-3">
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Salary Base</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">៛​${data.salary_base || ""}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Payroll Tax</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${data.apply_payroll_tax == "0" ? "Have Tax" : ""}${data.apply_payroll_tax == "1" ? "Non Tax" : ""}</p>
                                 </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap    width-p" vslang="titles.NSSF">NSSF</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${data.nssf_id}</p>
+                                </div>
+                               <div class="d-flex align-items-center">
+                                    <p class="text-nowrap    width-bp" vslang="titles.Address">Address</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${data.address}</p>
+                                </div>
+                            
+                            </div>
+                           
+
+                        </div>
+                        <div class="d-flex justify-content-between px-2">
+                            <div class="social-icons d-flex justify-content-start mt-3">
+                                <a href="https://www.facebook.com" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
+                                <a href="https://www.linkedin.com" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>
+                                <a href="https://web.telegram.org/a/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>
+                            </div>
+                            <div>
+                                <button class="btn_movement_action btn btn-light rounded-3 btn-options position-relative text-nowrap" data-id="${data.id}" data-pricelistid="${data.price_list_id}" data-status ="${data.status_id}" type="button">
+                                    <span class="text-nowrap text-primary-custom" vslang="buttons.Movement">Movement</span>
+                                    <i class="fa-solid text-primary-custom fa-caret-down ps-2"></i>
+                                </button>
                             </div>
                         </div>
+                    </div>
+                    
                     </div>
         `;
 
         this.profile_info_emp.innerHTML = html;
-    };
+        mThis.initDropdownMenusInfo(mThis.profile_info_emp);
 
+    };
+    this.initDropdownMenusInfo = (listContainer) => {
+        console.log(listContainer);
+
+        const menuOptopns = {
+            containerElement: listContainer,
+            actionButtonClass: "btn_movement_action",
+            cssClass: "bg-white shadow",
+            menus: [
+                {
+                    html: '<span class="ps-2" vslang="titles.Edit Profile">Edit Profile</span>',
+                    icon: `<i class="fa-regular fa-pencil fs-5"></i>`,
+
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_emp_profile_info",
+                },
+
+                {
+                    html: '<span class="ps-2  " vslang="titles.Promotion Employee">Promotion Employee</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "promotion_employee",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Change Branch Employee">Change Branch Employee</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "branch_transfer",
+                },
+            ],
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "change_employee_status": {
+                        mThis.changeStatus(id, menuLink);
+                        break;
+                    }
+                    case "edit_emp_profile_info": {
+                        mThis.editEmployee(id, menuLink);
+                        break;
+                    }
+                    case "delete_employee": {
+                        mThis.deleteEmployee(id, menuLink);
+                        break;
+                    }
+
+                    default: {
+                        break;
+                    }
+                }
+            }
+        }
+        new VSDropdownMenu(menuOptopns);
+    }
     this.renderCardLeft = (employeeId) => {
         let html = "";
 
@@ -508,7 +575,7 @@ var EmployeeComponent = new function () {
                         <div class="col-md-6">
                             <div class="d-flex justify-content-end">
                                 <div class="d-flex gap-2 mt-4">
-                                    <span class="text-muted">${d.school}</span>
+                                    <span class="">${d.school}</span>
                                 </div>
                             </div>
                         </div>

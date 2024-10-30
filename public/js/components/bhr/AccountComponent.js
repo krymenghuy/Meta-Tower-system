@@ -245,10 +245,10 @@ var AccountMenagmentComponent = new (function () {
 
             VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
 
-            mThis.AccountTypeMap = d.account_types.reduce((map, account_type) => {
-                map[account_type.id] = account_type.account_type;
-                return map;
-            })
+                mThis.AccountTypeMap = d.account_types.reduce((map, account_type) => {
+                    map[account_type.id] = account_type.account_type;
+                    return map;
+                })
         })
     }
 

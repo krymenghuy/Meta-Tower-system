@@ -34,6 +34,15 @@
 </div>
 
 <style>
+    #_payrollList_list{
+        height: 580px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+    }
+    #_payrollList_list_paginator {
+        bottom: 0;
+    }
     th,
     td {
         padding: 10px;
