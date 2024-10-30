@@ -88,7 +88,7 @@ var StaffAttendanceComponent = new (function () {
 
         mThis.StaffAttendanceListView = new ListView("_staff_attendance_list", {
             fetchApi: `${mThis.base_url}/hr/attendances/list-paginate`,
-            perPage: 10,
+            perPage: 5,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",

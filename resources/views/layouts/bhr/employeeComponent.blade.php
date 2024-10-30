@@ -143,6 +143,19 @@
         flex-direction: column;
         margin-bottom: 20px;
     }
+    .div-img {
+    background-color: #ffffff; /* White background color */
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%; /* Ensure image takes full width */
+    text-align: center;
+}
+
+.div-img img {
+    max-width: 100%; /* Image resizes responsively */
+    height: auto;
+    border-radius: 50%; /* Optional: make it a circle */
+}
 </style>
 
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
@@ -190,8 +203,8 @@
         </div>
         <div id="_view_profile_container">
             <div class="px-2 overflow-y-auto overflow-x-hidden " style="height:550px;" id="sub_view_profile">
-                <div id="profile_info_emp" class="employee-card d-flex p-3 bg-secondary h-info-student mb-2" data-id="" data-merchantname="" data-pricelistid="">
-                    <div class="d-block ms-3 w-100">
+                <div id="profile_info_emp">
+                    <!-- <div class="d-block ms-3 w-100">
                         <div class="row row-cols-3 mb-0">
                             <div class="col-2">
                                 <div class="div-img" data-id="" data-imageurl="">
@@ -289,7 +302,7 @@
 
                         </div>
 
-                    </div>
+                    </div> -->
                 </div>
                 <div class="row mt-3 p-3" >
                     <div class="col-md-4" id="profile_card_left">

@@ -300,7 +300,7 @@ const MovementDialog = (()=>{
                     </div>
                     <div class="form-group col-6">
                         <label for="date" class="form-label" vslang="titles.Date"></label>
-                        <input name="date" class="form-control data-input" data-field="date" />
+                        <input name="date" class="form-control data-input" data-field="event_date" />
                     </div>
                     <div class="form-group col-12">
                         <label for="remarks" class="form-label"
