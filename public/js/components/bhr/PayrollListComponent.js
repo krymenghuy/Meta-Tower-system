@@ -210,7 +210,7 @@ var PayrollListComponent = new (function () {
                 },
                 {
                     html:'<span class="ps-2  " vslang="titles.Disburse"></span>',
-                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
+                    icon:`<i class="fa-solid fa-square-check"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"disburse_payroll_list"
                 },
@@ -251,7 +251,7 @@ var PayrollListComponent = new (function () {
 
 
     this.editPayrollList = (id, menuLink) => {
-        
+
         let op = {
             id: id,
             btn: menuLink,
@@ -261,7 +261,7 @@ var PayrollListComponent = new (function () {
 
             }
         };
-        
+
         PayRollListDialog.show(op);
     }
 

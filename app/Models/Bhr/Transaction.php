@@ -17,12 +17,13 @@ class Transaction
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
-        $ss = $ss ?? $this->userInfo;
+    static function save($arr,$ss = null){
+        $ss = $ss ?? Transaction::$userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
+            'payroll_id' => '1|number',
             'amount' => '1|number',
             'remarks' => '0|string|250',
             'trx_type' => '1|number',
@@ -30,18 +31,18 @@ class Transaction
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
-            return DV::error($res->error);
+            return ['error' => $res->error];
         }
 
         $id = $res->id;
         $inputs = $res->values;
 
-        $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1);
-        if ($id > 0) {
-            return DV::depends(1, ['transactions' => $inputs, 'id' => $id]);
+        $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
+        if ($id) {
+            return ( ['transactions' => $inputs,'trx_id'=>bin2hex($id)] );
         }
 
-        return DV::error('Error saving transaction');
+        return ['error' => 'Error saving transaction'];
     }
 
     function getTransactionListPaginate($arr, $ss)
@@ -58,19 +59,16 @@ class Transaction
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
+
 
         $str_search = '1=1';
 
         $query = DB::table('transactions as t')
             ->join('employees as e', 'e.id', 't.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->selectRaw('t.id, t.emp_id, e.name as emp_name, pos.title as position, t.amount, t.remarks, t.trx_type')
+            ->join('payrolls as p', 'p.id', '=', 't.payroll_id')
+            ->selectRaw(' hex(t.id) as id, t.emp_id, e.name as emp_name, pos.title as position, p.name as payroll_name, t.amount, t.remarks, t.trx_type')
             ->where('t.branch_id', $branch_id);
-
-        if ($search_id) {
-            $query->where('t.id', $search_id);
-        }
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
@@ -80,17 +78,18 @@ class Transaction
 
 
         $count = $query->count('t.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
+       return $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
     function getDetails($id) {
         $query = DB::table('transactions as t')
-            ->join('employees as e', 'e.id', 't.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->selectRaw('t.id, t.emp_id, e.name as emp_name, pos.title as position, t.amount, t.remarks, t.trx_type')
-            ->where('t.id', $id)
+        ->join('employees as e', 'e.id', 't.emp_id')
+        ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+        ->join('payrolls as p', 'p.id', '=', 't.payroll_id')
+        ->selectRaw('hex(t.id) as id, t.emp_id, e.name as emp_name, pos.title as position, p.name as payroll_name, t.amount, t.remarks, t.trx_type')
+            ->where('t.id', hex2bin($id))
             ->first();
         return $query;
     }

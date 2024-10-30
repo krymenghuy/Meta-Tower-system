@@ -35,6 +35,7 @@ use App\Http\Controllers\Bhr\AccountController;
 use App\Http\Controllers\Bhr\TaxAllowanceController;
 use App\Http\Controllers\Bhr\TaxBracketController;
 use App\Http\Controllers\Bhr\TransactionController;
+use App\Http\Controllers\Bhr\WalletAccountController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -358,4 +359,14 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('transaction')
     Route::post('/details', [TransactionController::class, 'getDetails']);
     Route::post('/delete', [TransactionController::class, 'deleteTransaction']);
     Route::post('/form-options', [TransactionController::class, 'getFormOptions']);
+});
+
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('wallet-account')->group(function () {
+
+    Route::post('/save', [WalletAccountController::class, 'saveWalletAccount']);
+    Route::post('/list-paginate', [WalletAccountController::class, 'getWalletAccountListPaginate']);
+    Route::post('/details', [WalletAccountController::class, 'getDetails']);
+    Route::post('/delete', [WalletAccountController::class, 'deleteWalletAccount']);
+    Route::post('/form-options', [WalletAccountController::class, 'getFormOptions']);
 });

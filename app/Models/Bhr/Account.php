@@ -25,10 +25,10 @@ class Account
             'id' => '0|identity=1',
             'emp_id' => '1|number',
             'account_number' => '1|number',
-            'ballance' => '0|number',
+            'balance' => '0|number',
             'currency' => '1|string',
             'account_type_id' => '1|number',
-            'transaction_id' => '1|number',
+
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -65,6 +65,8 @@ class Account
         $sort_order = $d->sort_order ?? 'asc';
         $search_id = $d->id ?? null;
         $search_account_type_id = $d->account_type_id ?? null;
+        $last_balance_date = $d->last_balance_date ?? null;
+        $last_balance_date = convertDate($d->last_balance_date ?? null);
 
         $str_search = '1=1';
 
@@ -72,8 +74,8 @@ class Account
             ->join('employees as e', 'e.id', 'a.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('account_types as at', 'at.id', '=', 'a.account_type_id')
-            ->join('transactions as t', 't.id', '=', 'a.transaction_id')
-            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type_id,at.name as account_type, a.account_number,t.amount as transaction_amount,t.trx_type,a.currency,a.balance,a.create_date,a.update_date,e.photo_file_name as emp_photo')
+            ->join('transactions as t', 't.id', '=', 'a.trx_id')
+            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type_id,at.name as account_type, a.account_number,t.amount as transaction_amount,t.trx_type,a.currency,a.balance,formatdate(a.last_balance_date) as last_balance_date,e.photo_file_name as emp_photo')
             ->where('a.branch_id', $branch_id);
         if ($search_id) {
             $query->where('a.id', $search_id);
@@ -86,6 +88,10 @@ class Account
 
         if ($search_account_type_id) {
             $query->where('a.account_type_id', $search_account_type_id);
+        }
+
+        if ($last_balance_date) {
+            $query->where('a.last_balance_date', $last_balance_date);
         }
 
         $query->orderBy($sort_by, $sort_order);
@@ -112,7 +118,8 @@ class Account
         ->join('employees as e', 'e.id', 'a.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'e.position_id')
         ->join('account_types as at', 'at.id', '=', 'a.account_type_id')
-        ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type_id,at.name as account_type, a.account_number, a.currency,e.photo_file_name as emp_photo')
+        ->join('transactions as t', 't.id', '=', 'a.trx_id')
+        ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type_id,at.name as account_type, a.account_number,t.amount as transaction_amount,t.trx_type,a.currency,a.balance,formatdate(a.last_balance_date) as last_balance_date,e.photo_file_name as emp_photo')
             ->where('a.id', $id)->first();
         if ($row) {
             $row->image_url = Employee::profilePicture($row->emp_id);
@@ -125,24 +132,20 @@ class Account
 
     function deleteAccount($id, $ss)
     {
-         // Ensure $id is numeric and valid
          if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }
 
-        // Assuming $ss contains branch_id or other necessary info
         $branch_id = $ss->branch_id;
 
-        // Build and execute the query
         $query = DB::table('accounts')
             ->where('id', $id)
             ->delete();
         if (!$query) {
             return DV::error('Account not found');
         }
-        // Return the query result
-        return $query;
 
+        return $query;
     }
 
     function getFormOptions($id, $ss)
@@ -156,7 +159,7 @@ class Account
             'sort_by' => [
                 ['id' => 'e.name', 'name' => 'By Name'],
                 ['id' => 'a.account_number', 'name' => 'By Account Number'],
-                ['id' => 'a.balance', 'name' => 'By  Ballance'],
+                ['id' => 'a.balance', 'name' => 'By  Balance'],
             ],
 
           'employees' => GeneralSettings::options_employee(10,$ss),
