@@ -254,6 +254,7 @@ var EmployeeBenefitComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
+                    cv_interact.success("Add benefit successfully");
                     mThis.EmployeeBenefitListView.showPage();
                 },
             };

@@ -93,6 +93,7 @@ var StaffAttendanceComponent = new (function () {
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",
             listContainerClass: null,
+            
         });
 
         mThis.btnAdd.onclick = function (e) {
@@ -101,6 +102,7 @@ var StaffAttendanceComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
+                    cv_interact.success("Add attendance successfully");
                     mThis.StaffAttendanceListView.showPage();
                 },
             };
@@ -137,7 +139,7 @@ var StaffAttendanceComponent = new (function () {
         if (mThis.StaffAttendanceListView) {
             mThis.StaffAttendanceListView.showPage(mThis.getDataFormFilter());
         } else {
-            console.error("Staff  is not defined");
+            console.error("Staff is not defined");
         }
     };
     this.setFilterPeriod = (p, name, start_date, end_date) => {

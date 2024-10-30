@@ -99,6 +99,7 @@ var WarningComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
+                    cv_interact.success("Add warning successfully");
                     mThis.WarningListView.showPage();
                 },
             };

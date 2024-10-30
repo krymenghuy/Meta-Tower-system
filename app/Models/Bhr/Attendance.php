@@ -126,6 +126,7 @@ class Attendance
         $d = (object)$filter;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
+        $search_id = $d->id ?? null;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
@@ -134,6 +135,7 @@ class Attendance
         $attendance_date = $d->attendance_date ?? null;
         $skip_rows = ($current_page - 1) * $per_page;
         $str_search = '1=1';
+        
         if ($str_search) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
@@ -155,7 +157,9 @@ class Attendance
         $count_query = clone $query;
         $count = $count_query->count('emp.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
+        if ($search_id) {
+            $query->where('emp.id', $search_id);
+        }
         if ($employee_id) {
             $rows = $rows->where('emp.id', $employee_id);
             $count = $rows->count();
