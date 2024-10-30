@@ -22,10 +22,11 @@ class EmployeeEvent
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'emp_id' => '1|number',
-            'event_id' => '1|number',
+            'emp_id' => '1|number|exist=employees.id',
+            'event_id' => '1|number|exist=events.id',
             'event_date' => '1|date',
             'remarks' => '0|string|250',
+            'impact_id'=> '0|number'
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -109,7 +110,7 @@ class EmployeeEvent
             ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('events as e', 'e.id', '=', 'ee.event_id')
-            ->selectRaw('ee.id, ee.emp_id, ee.event_id, e.name as event,e.impact,ee.date, ee.remarks, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
+            ->selectRaw('ee.id, ee.emp_id, ee.event_id, e.name as event,e.impact,ee.event_date, ee.remarks, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
             ->where('ee.branch_id', $ss->branch_id)
             ->where('ee.id', $id)
             ->first();
@@ -146,7 +147,7 @@ class EmployeeEvent
 
             'sort_by' => [
                 ['id' => 'emp.name', 'name' => 'By Name'],
-                ['id' => 'ee.date', 'name' => 'By Date'],
+                ['id' => 'ee.event_date', 'name' => 'By Date'],
 
             ],
 
