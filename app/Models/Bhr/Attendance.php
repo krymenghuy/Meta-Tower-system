@@ -81,7 +81,7 @@ class Attendance
         $branch_id = $ss->branch_id;
 
         $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 10;
+        $per_page = $d->per_page ?? 20;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
@@ -90,6 +90,7 @@ class Attendance
 
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
+        $search_status_id = $d->status_id ?? null;
 
         $str_search = '1=1';
 
@@ -100,16 +101,17 @@ class Attendance
         if ($search_id) {
             $query->whereRaw('a.id =' . $search_id);
         }
+        if ($search_status_id) {
+            $query->where('a.remarks', $search_status_id);
+        }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $str_search = "e.name like '%" . $search_value . "%' or a.remark like '%" . $search_value . "%'";
             $query->whereRaw($str_search);
         }
 
-        $query->skip($skip_rows)->take($per_page);
-        $count_query = clone $query;
-        $count = $count_query->count('a.id');
-        $rows = $query->get();
+        $count = $query->count();
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach ($rows as $row) {
             $row->image_url = '';
             if (isset($row->emp_id) && $row->emp_photo) {
@@ -126,6 +128,7 @@ class Attendance
         $d = (object)$filter;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
+        $search_id = $d->id ?? null;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
@@ -134,6 +137,7 @@ class Attendance
         $attendance_date = $d->attendance_date ?? null;
         $skip_rows = ($current_page - 1) * $per_page;
         $str_search = '1=1';
+        
         if ($str_search) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
@@ -155,7 +159,9 @@ class Attendance
         $count_query = clone $query;
         $count = $count_query->count('emp.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-
+        if ($search_id) {
+            $query->where('emp.id', $search_id);
+        }
         if ($employee_id) {
             $rows = $rows->where('emp.id', $employee_id);
             $count = $rows->count();

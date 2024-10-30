@@ -145,13 +145,13 @@ var JobsLevelComponent = new (function () {
             menus: [
                 {
                     html: '<span class="ps-2  " vslang="titles.Edit Job Level">Edit Job Level</span>',
-                    icon: `<i class="fa-regular fa-exchange fs-5"></i>`,
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_jobLevel",
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete Job Level">Delete Job Level</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_jobLevel",
                 },

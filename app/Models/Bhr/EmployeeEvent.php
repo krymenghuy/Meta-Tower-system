@@ -24,7 +24,7 @@ class EmployeeEvent
             'id' => '0|identity=1',
             'emp_id' => '1|number',
             'event_id' => '1|number',
-            'date' => '1|date',
+            'event_date' => '1|date',
             'remarks' => '0|string|250',
         ];
 
@@ -70,7 +70,7 @@ class EmployeeEvent
             ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('events as e', 'e.id', '=', 'ee.event_id')
-            ->selectRaw('ee.id, ee.emp_id, ee.event_id, e.name as event,e.impact,formatDate(ee.date) as date, ee.remarks, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
+            ->selectRaw('ee.id, ee.emp_id, ee.event_id, e.name as event,e.impact,formatDate(ee.event_date) as event_date, ee.remarks, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
             ->where('ee.branch_id', $ss->branch_id);
 
         if ($search_id) {

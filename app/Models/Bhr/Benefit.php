@@ -61,6 +61,9 @@ class Benefit
                 } else {
                     $bonus_id = saveData($ss, 'emp_bonuses', ['id' => null], $bonus_inputs, [], 1, false);
                 }
+                if ($bonus_id){
+                    
+                }
 
                 return DV::depends($bonus_id, ['Bonuses data saved']);
             } else if ($d->benefit_type_id == 2) {

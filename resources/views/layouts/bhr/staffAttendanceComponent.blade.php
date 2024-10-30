@@ -16,12 +16,12 @@
             </button>
         </div>
     </div>
-    <div id="_staff_attendance_list"></div>
+    <div id="_staff_attendance_list" class="m-4"></div>
 </div>
 <style>
 
     #_staff_attendance_list {
-        height: 500px;
+        height: 600px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
@@ -30,7 +30,7 @@
         bottom: 0;
     }
     .choices__list{
-        max-height: 400px;
+        max-height: 600px;
         overflow-y: auto;
     }
 </style>

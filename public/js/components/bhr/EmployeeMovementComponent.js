@@ -299,8 +299,8 @@ const MovementDialog = (()=>{
                         <select name="event" class=" data-input"  data-field="event_id"></select>
                     </div>
                     <div class="form-group col-6">
-                        <label for="date" class="form-label" vslang="titles.Date"></label>
-                        <input name="date" class="form-control data-input" data-field="date" />
+                        <label for="event_date" class="form-label" vslang="titles.Date"></label>
+                        <input name="event_date" class="form-control data-input" data-field="event_date" />
                     </div>
                     <div class="form-group col-12">
                         <label for="remarks" class="form-label"
@@ -312,7 +312,7 @@ const MovementDialog = (()=>{
             },
             contentCreated:(me)=>{
                //Convert field to be DatePicker : start_date and end_date
-               DateTimePicker.init(me.controls.date);
+               DateTimePicker.init(me.controls.event_date);
 
             },
             configSelect:[
