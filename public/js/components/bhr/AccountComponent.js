@@ -96,7 +96,6 @@ var AccountMenagmentComponent = new (function () {
             tableClass: 'table table--white overflow-hidden  header-uppercase',
             listContainerClass: null
         });
-
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
 
@@ -106,7 +105,6 @@ var AccountMenagmentComponent = new (function () {
                     mThis.AccountListView.showPage();
                 }
             };
-
             AccountDialog.show(op);
         };
 
