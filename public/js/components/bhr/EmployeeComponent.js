@@ -135,6 +135,30 @@ var EmployeeComponent = new function () {
                     cssClass: "border-bottom pb-2",
                     name: "delete_employee",
                 },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Set On Board">Set On Board</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "set_on_board",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Set Resign">Set Resign</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "set_resign",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Set Renew">Set Renew</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "set_renew",
+                },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Set Terminated">Set Terminated</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "set_terminated",
+                },
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -148,6 +172,10 @@ var EmployeeComponent = new function () {
                     }
                     case "delete_employee": {
                         mThis.deleteEmployee(id, menuLink);
+                        break;
+                    }
+                    case "set_resign":{
+                        mThis.setREsign(id,menuLink);
                         break;
                     }
 
@@ -219,10 +247,10 @@ var EmployeeComponent = new function () {
                                     <div class="employee_id text-primary">#: <span class="ms-1">${d.code || "null"}</span></div>
                                     <div class="container_top">
                                         <div class="position">
-                                            <i class="text-danger  fa-solid fa-dashboard"></i> <span class="ms-1"> ${d.position || "null"}</span>
+                                            <i class="text-danger  fa-solid fa-dashboard"></i> <span class="ms-1"> ${d.department || "null"}</span>
                                         </div>
                                         <div class="me-3">
-                                            <i class=" text-primary fa-solid fa-clock"></i> <span>${d.type || "null"}</span>
+                                            <i class=" text-primary fa-solid fa-clock"></i> <span>${d.position || "null"}</span>
                                         </div>
                                     </div>
                                     <div class="container_bottom">
@@ -878,7 +906,10 @@ var EmployeeComponent = new function () {
 
 
     };
+    this.setResign = (id,menuLink)=>{
 
+
+    }
     this.changeStatus = (id, lnk) => {
 
         let tr = lnk.closest("tr");

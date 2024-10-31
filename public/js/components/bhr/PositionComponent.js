@@ -31,6 +31,13 @@ var PositionComponent = new (function () {
             data: "department",
         },
         {
+            title: "Salary",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data)=>`
+                  <span class="text-primary-custom" style="font-weight: bold;">${data.salary ?? ""}<span class="text-danger"> (រៀល) </span></span>
+            `,
+        },
+        {
             title: "Create By",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data) => `
@@ -38,7 +45,7 @@ var PositionComponent = new (function () {
                 <span style="font-size: 14px; font-weight: bold;">${
                     data.update_user ?? ""
                 }</span><br/>
-                <span style="font-size: 12px; color: gray;">${
+                <span style="font-size: 12px; color: #2b3991;">${
                     data.updated_at ?? ""
                 }</span>
             </div>`,
@@ -276,6 +283,10 @@ const PositionDilog = (()=>{
                  <div class="form-group  col-12 d.none">
                      <div id="info"></div>
                  </div>
+                <div class="form-group col-12">
+                     <label for="salary" class="form-label"
+                     vslang="titles.Salary"></label>
+                     <input  type="number" class="form-control data-input" data-field="salary">               </div>
                  <div class="form-group col-12">
                      <label for="title" class="form-label"
                      vslang="titles.Title"></label>
