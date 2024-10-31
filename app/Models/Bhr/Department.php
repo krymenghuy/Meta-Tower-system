@@ -18,9 +18,9 @@ class Department
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr,$id,$ss = null){
         $ss = $ss ?? $this->userInfo;
-        
+        $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
@@ -40,9 +40,9 @@ class Department
         $id = $res->id;
         $inputs = $res->values;
 
-        $id = saveData($ss,'departments', ['id' => $id], $inputs, [], 1);
+        $id = saveData($ss,'departments', ['id' => $id], $inputs, [], 1,false);
         if ($id > 0) {
-            return DV::depends(1, ['departments' => $inputs, 'id' => $id]);
+            return DV::depends($id, ['departments' => $inputs, 'id' => $id]);
         }
 
         return DV::error('Error saving department');

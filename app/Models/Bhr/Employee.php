@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class Employee//extends Model
+class Employee //extends Model
 {
     //use HasFactory;
 
@@ -27,21 +27,23 @@ class Employee//extends Model
         $this->userInfo = $userInfo;
     }
 
-    function checkUniqueEmployeeByPhone($phone_number,$id=null){
+    function checkUniqueEmployeeByPhone($phone_number, $id = null)
+    {
         $str_id = "1=1";
-        if(!$phone_number) return 'Phone number cannot be empty';
-        if($id > 0 ) $str_id = "emp.id <> $id";
-        $x = DB::table('employees as emp')->where('emp.phone_number',$phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
-        if($x) return 'phone number"'.$phone_number.'" has been used by another employee';
+        if (!$phone_number) return 'Phone number cannot be empty';
+        if ($id > 0) $str_id = "emp.id <> $id";
+        $x = DB::table('employees as emp')->where('emp.phone_number', $phone_number)->whereRaw($str_id)->select('id')->take(1)->exists();
+        if ($x) return 'phone number"' . $phone_number . '" has been used by another employee';
         return null;
     }
 
-    function checkUniqueEmployeeByNID($nid,$id=null){
+    function checkUniqueEmployeeByNID($nid, $id = null)
+    {
         $str_id = '1=1';
-        if(!$nid) return 'National ID cannot be empty';
-        if($id > 0) $str_id = "emp.id <> $id";
-        $x = DB::table('employees as emp')->where('emp.nid',$nid)->whereRaw($str_id)->select('id')->take(1)->exists();
-        if($x) return 'National ID "' .$nid. '" has been used by another employee';
+        if (!$nid) return 'National ID cannot be empty';
+        if ($id > 0) $str_id = "emp.id <> $id";
+        $x = DB::table('employees as emp')->where('emp.nid', $nid)->whereRaw($str_id)->select('id')->take(1)->exists();
+        if ($x) return 'National ID "' . $nid . '" has been used by another employee';
         return null;
     }
 
@@ -61,11 +63,11 @@ class Employee//extends Model
             'address' => '0|string|0-250',
             'position_id' => '0|number',
             'emp_type_id' => '1|number',
-            'salary_base' => '1|number',
+            'salary_base' => '0|number',
             'work_shift_id' => '1|number',
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
-            'nid'=> '1|string|1-100',
+            'nid' => '1|string|1-100',
             'apply_payroll_tax' => '1|number|default = 0',
             'status_id' => '1|number|default = 10',
             'photo' => '0|image',
@@ -85,16 +87,16 @@ class Employee//extends Model
         $photo = $d->photo;
         $d->phone_number = str_replace(' ', '', $inputs['phone_number']);
         $inputs['phone_number'] = $d->phone_number;
-        $phone_check = $this->checkUniqueEmployeeByPhone($d->phone_number,$emp_id);
-        if($phone_check) return DV::error($phone_check);
+        $phone_check = $this->checkUniqueEmployeeByPhone($d->phone_number, $emp_id);
+        if ($phone_check) return DV::error($phone_check);
         // if (!$d->phone_number) {
         //     error_log('Phone number is required for valid  employee');
         //     return DV::error('Phone number is required for valid  employee');
         // }
-        $nid_check = $this->checkUniqueEmployeeByNID($d->nid,$emp_id);
-        if($nid_check) return DV::error($nid_check);
+        $nid_check = $this->checkUniqueEmployeeByNID($d->nid, $emp_id);
+        if ($nid_check) return DV::error($nid_check);
 
-        if(!$d->name_kh){
+        if (!$d->name_kh) {
             $d->name_kh = $d->name;
             $inputs['name_kh'] = $d->name_kh;
         }
@@ -105,11 +107,11 @@ class Employee//extends Model
         error_log('Saving data: ' . json_encode($inputs));
         $save = !$emp_id;
         $id = saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1);
-        if($save){
+        if ($save) {
             $prefix = 'LC';
-            $res = setOfficialCode($branch_id,'employee_code_control','employees',['id'=>$id],$prefix,5,null);
+            $res = setOfficialCode($branch_id, 'employee_code_control', 'employees', ['id' => $id], $prefix, 5, null);
             $new_code = $res->code;
-            }
+        }
         if ($id > 0) {
             $new_code = null;
 
@@ -158,58 +160,62 @@ class Employee//extends Model
         return PublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'employees.photo_file_name']);
     }
 
-      static function isOnLeave($id){
+    static function isOnLeave($id)
+    {
         $today = date('Y-m-d');
         $start_date = DBX::convertToDate('l.start_date');
         $end_date = DBX::convertToDate('l.end_date');
-        $str_dates = $today." BETWEEN $start_date AND $end_date";
-         return DB::table('leaves as l')->where('l.id',$id)->whereRaw($str_dates)->value('id');
-      }
-
-
-
-      static function getCurrentLeaveInfo($id){
-        $today = date('Y-m-d');
-        $start_date = DBX::convertToDate('l.start_date');
-        $end_date = DBX::convertToDate('l.end_date');
-        $str_dates = $today." BETWEEN $start_date AND $end_date";
-        $col_start_date = DBX::formatDate('l.start_date','start_date');
-        $col_end_date = DBX::formatDate('l.end_date','end_date');
-        $col_update_date = DBX::formatDate('l.updated_at','update_date');
-        return DB::table('leaves as l')->join('leave_types as t','t.id','=','l.leave_type_id')->where('l.id',$id)->whereRaw($str_dates)->selectRaw("l.id,$col_start_date, $col_end_date, l.leave_type_id, t.name AS leave_type, remarks, update_user, $col_update_date")->first();
-      }
-
-
-      function deleteProfilePicture($id=null,$ss=null){
-          $id = $id ?? $this->id;
-          $ss = $ss ?? $this->userInfo;
-          $sender = DB::table('employees as s')->where('id',$id)->selectRaw('id,branch_id,photo_file_name')->first();
-          if(!$sender) return DV::error('Employee identity is not correct!');
-          PublicStorage::delete(['subs_id'=>$ss->subs_id,'dir'=>self::$img_dir],'image',$sender->photo_file_name);
-          DB::table('sender')->where('id',$id)->update(['photo_file_name'=>null]);
-          return DV::success();
-      }
-
-    static function profilePicture($id){
-        $col_subs_id = DBX::getHex('e.subs_id','subs_id');
-        $row = DB::table('employees as e')->where('e.id',$id)->selectRaw($col_subs_id.',e.branch_id,e.photo_file_name')->first();
-        $def_image = self::defaultPhoto($row? $row->subs_id: null);
-        $url = '';
-        if($row){
-          $url = PublicStorage::getUrl(['subs_id'=>$row->subs_id,'dir'=>self::$img_dir],'image').$row->photo_file_name;
-          return validateUrl($url,$def_image);
-        }else return $def_image;
+        $str_dates = $today . " BETWEEN $start_date AND $end_date";
+        return DB::table('leaves as l')->where('l.id', $id)->whereRaw($str_dates)->value('id');
     }
 
-    static function defaultPhoto($subs_id){
-        return url('').'/assets/images/default/default-staff.png';
+
+
+    static function getCurrentLeaveInfo($id)
+    {
+        $today = date('Y-m-d');
+        $start_date = DBX::convertToDate('l.start_date');
+        $end_date = DBX::convertToDate('l.end_date');
+        $str_dates = $today . " BETWEEN $start_date AND $end_date";
+        $col_start_date = DBX::formatDate('l.start_date', 'start_date');
+        $col_end_date = DBX::formatDate('l.end_date', 'end_date');
+        $col_update_date = DBX::formatDate('l.updated_at', 'update_date');
+        return DB::table('leaves as l')->join('leave_types as t', 't.id', '=', 'l.leave_type_id')->where('l.id', $id)->whereRaw($str_dates)->selectRaw("l.id,$col_start_date, $col_end_date, l.leave_type_id, t.name AS leave_type, remarks, update_user, $col_update_date")->first();
+    }
+
+
+    function deleteProfilePicture($id = null, $ss = null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $sender = DB::table('employees as s')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
+        if (!$sender) return DV::error('Employee identity is not correct!');
+        PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $sender->photo_file_name);
+        DB::table('sender')->where('id', $id)->update(['photo_file_name' => null]);
+        return DV::success();
+    }
+
+    static function profilePicture($id)
+    {
+        $col_subs_id = DBX::getHex('e.subs_id', 'subs_id');
+        $row = DB::table('employees as e')->where('e.id', $id)->selectRaw($col_subs_id . ',e.branch_id,e.photo_file_name')->first();
+        $def_image = self::defaultPhoto($row ? $row->subs_id : null);
+        $url = '';
+        if ($row) {
+            $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => self::$img_dir], 'image') . $row->photo_file_name;
+            return validateUrl($url, $def_image);
+        } else return $def_image;
+    }
+
+    static function defaultPhoto($subs_id)
+    {
+        return url('') . '/assets/images/default/default-staff.png';
     }
 
 
     function getListPaginate($arr, $ss)
     {
         $subs_id = $ss->subs_id;
-        //$branch_id = $ss->branch_id;
         $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
@@ -223,53 +229,53 @@ class Employee//extends Model
         $str_srch = '1=1';
         $str_where = '2=2';
 
-        if($search_value){
+        if ($search_value) {
             $skip_rows = 0;
-            // $search_value = escape_like_str($search_value);
-            $str_srch = "(emp.name LIKE '%".$search_value."%' OR emp.code = '".$search_value."' OR emp.nid = '".$search_value."' OR emp.phone_number = '".$search_value."')";
+            $str_srch = "(emp.name LIKE '%" . $search_value . "%' OR emp.code = '" . $search_value . "' OR emp.nid = '" . $search_value . "' OR emp.phone_number = '" . $search_value . "')";
         }
 
-        if($status){
+        if ($status) {
             $str_where = 'emp.status_id =\'' . $status . '\'';
         }
 
-        if($type){
+        if ($type) {
             $str_where .= ' AND emp.emp_type_id =\'' . $type . '\'';
         }
 
         $query = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->join('departments as d','d.id','=','p.department_id')
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
             ->whereRaw($str_srch)
             ->whereRaw($str_where)
             ->selectRaw('
-                emp.code,
-                emp.id,
-                emp.name,
-                emp.name_kh,
-                emp.email,
-                emp.phone_number,
-                emp.sex,
-                emp.nationality,
-                emp.date_of_birth,
-                emp.address,
-                emp.photo_file_name,
-                formatDate(emp.joining_date) as joining_date,
-                emp.nssf_id,
-                emp.nid,
-                emp.position_id,
-                p.title as position,
-                emp.salary_base,
-                emp.emp_type_id,
-                el.name as type,
-                emp.work_shift_id,
-                ws.name as work_shift,
-                emp.apply_payroll_tax,
-                emp.status_id,
-                es.name as status
-            ')
+            emp.code,
+            emp.id,
+            emp.name,
+            emp.name_kh,
+            emp.email,
+            emp.phone_number,
+            emp.sex,
+            emp.nationality,
+            emp.date_of_birth,
+            emp.address,
+            emp.photo_file_name,
+            DATE_FORMAT(emp.joining_date, "%d %b %Y") as joining_date,  -- Format using DATE_FORMAT
+            emp.nssf_id,
+            emp.nid,
+            emp.position_id,
+            p.title as position,
+            emp.salary_base,
+            emp.emp_type_id,
+            el.name as type,
+            emp.work_shift_id,
+            ws.name as work_shift,
+            emp.apply_payroll_tax,
+            emp.status_id,
+            es.name as status
+        ')
             ->orderBy('emp.id', 'DESC');
 
         $clone_query = clone $query;
@@ -287,11 +293,10 @@ class Employee//extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-
-
-    static function props($id, $cols){
-        if(!$id) return null;
-        return DB::table('employees as e')->where('e.id',$id)->selectRaw($cols)->first();
+    static function props($id, $cols)
+    {
+        if (!$id) return null;
+        return DB::table('employees as e')->where('e.id', $id)->selectRaw($cols)->first();
     }
 
 
@@ -311,16 +316,15 @@ class Employee//extends Model
         $search_value = $d->search_value ?? null;
         $str_srch = '1=1';
         $str_where = '2=2';
-        if($search_value){
+        if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_srch = "(emp.name LIKE '%".$search_value."%' OR emp.name_kh = '".$search_value."' OR emp.nid = '".$search_value."' OR emp.phone_number = '".$search_value."')";
+            $str_srch = "(emp.name LIKE '%" . $search_value . "%' OR emp.name_kh = '" . $search_value . "' OR emp.nid = '" . $search_value . "' OR emp.phone_number = '" . $search_value . "')";
         }
-        if($status){
+        if ($status) {
             $str_where = 'emp.status_id =\'' . $status . '\'';
-
         }
-        if($type){
+        if ($type) {
             $str_where = 'emp.emp_type_id =\'' . $type . '\'';
         }
         $query = DB::table('employees as emp')
@@ -353,7 +357,7 @@ class Employee//extends Model
             emp.apply_payroll_tax,
             es.name as status
         ')
-        ->orderBy('emp.id', 'ASC');
+            ->orderBy('emp.id', 'ASC');
 
         $clone_query = clone $query;
         $count = $clone_query->count('emp.id');
@@ -362,7 +366,7 @@ class Employee//extends Model
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->photo_file_name) {
-              $row->image_url = self::profilePicture($row->id);
+                $row->image_url = self::profilePicture($row->id);
             }
             unset($row->photo_file_name);
         }
@@ -370,11 +374,11 @@ class Employee//extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getDetails($id,$ss)
+    function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
 
-        $row =DB::table('employees as emp')
+        $row = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
@@ -405,7 +409,7 @@ class Employee//extends Model
                 emp.status_id,
                 es.name as status
             ')
-            ->where('emp.branch_id',$branch_id)
+            ->where('emp.branch_id', $branch_id)
             ->where('emp.id', $id)
             ->first();
 
@@ -456,7 +460,8 @@ class Employee//extends Model
         // Return success response
         return DV::depends(1, ['id' => $id, 'deleted' => $file_name ?? 'No file found']);
     }
-    static function currentPosition($id){
+    static function currentPosition($id)
+    {
         return DB::table('employees as e')->join('positions as p', 'p.id', '=', 'e.position_id')->selectRaw('p.title , p.id')->first();
     }
 
@@ -474,7 +479,6 @@ class Employee//extends Model
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
             'employee' => $employee,
         ];
-
     }
     function updateStatus($status_id, $id = null, $ss = null)
     {
@@ -482,9 +486,9 @@ class Employee//extends Model
         $ss = $ss ? $ss : $this->userInfo;
         $x = DB::table('employees')->where('id', $id)->update([
             'status_id' => $status_id,
-            'update_user'=>$ss->full_name,
-            'update_date'=>getNowTime(),
-            'update_uid'=>$ss->user_id
+            'update_user' => $ss->full_name,
+            'update_date' => getNowTime(),
+            'update_uid' => $ss->user_id
         ]);
         return DV::depends($x, ['Employee  status', 'updated']);
     }

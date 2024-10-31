@@ -178,7 +178,7 @@
     }
 </style>
 
-<div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
+<div id="_main_employeeComponent" style="display:none;padding:10px 0 0">
     <div id="sub_content" class="p-4">
         <div class="d-flex justify-content-between w-100" id="div_filter_filed">
             <div class="d-flex align-items-start justify-content-start w-25">
@@ -205,7 +205,7 @@
             </div>
         </div>
         <div id="_employee_list"></div>
-        <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-3 d-flex justify-content-end"></div>
+        <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-5 d-flex justify-content-end"></div>
     </div>
 
 

@@ -24,6 +24,7 @@ class Position
             'id' => '0|identity=1',
             'title' => '1|string|0-100',
             'department_id' => '1|number',
+            'salary' => '1|number',
             'inactive' => '1|number|default = 0',
         ];
 
@@ -68,7 +69,7 @@ class Position
             ->join('departments as d', 'd.id', '=', 'p.department_id')
             ->where('p.inactive',0)
             ->whereRaw($str_search)
-            ->selectRaw('p.id, p.title, p.department_id, d.name as department,d.updated_at,d.update_user')->orderBy('p.id','DESC');
+            ->selectRaw('p.id, p.title, p.department_id,p.salary, d.name as department,d.updated_at,d.update_user')->orderBy('p.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -83,7 +84,7 @@ class Position
 
         $rows = DB::table('positions as p')
             ->join('departments as d', 'd.id', '=', 'p.department_id')
-            ->selectRaw('p.id, p.title, p.department_id, d.name as department')
+            ->selectRaw('p.id, p.title, p.department_id,p.salary, d.name as department')
             ->where('p.inactive',0)
             ->where('p.branch_id',$branch_id)
             ->where('p.id',$id)->take(1)

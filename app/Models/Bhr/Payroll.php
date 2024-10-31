@@ -74,8 +74,13 @@ class Payroll
         $str_search = '1=1';
 
         $query = DB::table('payrolls as p')
-            ->selectRaw('p.id, p.name, p.month_year,formatDate(p.start_date) as start_date,formatDate(p.end_date) as end_date, p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
-            ->where('p.branch_id', $ss->branch_id);
+        ->selectRaw('p.id, p.name, p.month_year, 
+                     DATE_FORMAT(p.start_date, "%Y-%m-%d") as start_date, 
+                     DATE_FORMAT(p.end_date, "%Y-%m-%d") as end_date, 
+                     p.p_number, p.total, p.authorized, p.disbursed, 
+                     p.currency_code, p.exchange_rate')
+        ->where('p.branch_id', $branch_id);
+
         if ($search_id) {
             $query->where('p.id', $search_id);
         }
@@ -88,13 +93,15 @@ class Payroll
         if ($search_disbursed) {
             $query->where('p.disbursed', $search_disbursed);
         }
-        $clone_query = clone  $query;
+
+        $clone_query = clone $query;
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        foreach($rows as $row){
-            $row->month_year = date('M Y',strtotime($row->month_year) );
+        foreach ($rows as $row) {
+            $row->month_year = date('M Y', strtotime($row->month_year));
         }
+
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
