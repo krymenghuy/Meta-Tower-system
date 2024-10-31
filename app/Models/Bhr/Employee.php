@@ -63,7 +63,7 @@ class Employee //extends Model
             'address' => '0|string|0-250',
             'position_id' => '0|number',
             'emp_type_id' => '1|number',
-            'salary_base' => '1|number',
+            'salary_base' => '0|number',
             'work_shift_id' => '1|number',
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
@@ -244,6 +244,7 @@ class Employee //extends Model
 
         $query = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->join('departments as d','d.id','=','p.department_id')
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')

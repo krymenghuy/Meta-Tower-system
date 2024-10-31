@@ -22,9 +22,9 @@ class DepartmentController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->department_id ?? $req->id;
-        $department = new Department($id, $ss);
-        $res = $department->save($req->all());
+        $id = $req->id ?? null;
+       
+        $res = $this->departmentModel->save($req->all(),$id,$ss);
         return JDV::raw($res);
     }
 
