@@ -64,6 +64,7 @@ class Position
             $str_search = "(p.title LIKE '%" .$search_value."%' OR d.name = '" . $search_value . "')";
         }
 
+        
         $query = DB::table('positions as p')
             ->join('departments as d', 'd.id', '=', 'p.department_id')
             ->where('p.inactive',0)
