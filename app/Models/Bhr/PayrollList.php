@@ -3,7 +3,8 @@
 namespace App\Models\Bhr;
 
 use App\Models\DV;
-use DB;
+use App\Models\JDV;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class PayrollList

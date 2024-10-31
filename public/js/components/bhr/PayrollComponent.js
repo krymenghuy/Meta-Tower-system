@@ -32,7 +32,7 @@ var PayrollComponent = new (function () {
         {
             title: "Duration",
             className: "align-middle w-15",
-            data: (data) => `<p class="p-0 m-0">${data.start_date?? ''}​ - ${data.end_date ?? ''}</p>`
+            data: (data) => `<p class="p-0 m-0">${data.start_date?? ''}​ <span class="text-danger"> - </span> ${data.end_date ?? ''}</p>`
         },
         {
             title: "Employee",

@@ -45,7 +45,8 @@ class EmployeeEvent
         return DV::error('Error saving data');
     }
 
-    function getEventListPaginate($arr, $ss) {
+    function getEventListPaginate($arr, $ss)
+    {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
 
@@ -64,15 +65,14 @@ class EmployeeEvent
         $search_status_id = $d->status_id ?? null;
         $search_event_id = $d->event_id ?? null;
 
-
         $str_search = '1=1';
 
         $query = DB::table('emp_events as ee')
-            ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
-            ->join('positions as p', 'p.id', '=', 'emp.position_id')
-            ->join('events as e', 'e.id', '=', 'ee.event_id')
-            ->selectRaw('ee.id, ee.emp_id, ee.event_id, e.name as event,e.impact,formatDate(ee.event_date) as event_date, ee.remarks, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
-            ->where('ee.branch_id', $ss->branch_id);
+        ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
+        ->join('positions as p', 'p.id', '=', 'emp.position_id')
+        ->join('events as e', 'e.id', '=', 'ee.event_id')
+        ->selectRaw('ee.id, ee.emp_id, ee.event_id, e.name as event, e.impact, DATE_FORMAT(ee.event_date, "%Y-%m-%d") as event_date, ee.remarks, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
+        ->where('ee.branch_id', $branch_id);
 
         if ($search_id) {
             $query->where('ee.id', $search_id);
@@ -88,7 +88,6 @@ class EmployeeEvent
             $query->where('ee.event_id', $search_event_id);
         }
         $query->whereRaw($str_search);
-
         $query->orderBy($sort_by, $sort_order);
 
         $count = $query->count('ee.id');

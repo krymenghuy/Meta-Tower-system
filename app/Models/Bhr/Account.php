@@ -18,17 +18,18 @@ class Account
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr, $ss = null)
+    {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
             'account_number' => '1|number',
-            'ballance' => '0|number',
+            'balance' => '0|number',
             'currency' => '1|string',
             'account_type_id' => '1|number',
-            'transaction_id' => '1|number',
+            'transaction_id' => '0|number',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -39,7 +40,7 @@ class Account
         $id = $res->id;
         $inputs = $res->values;
 
-        $id = saveData($ss,'accounts', ['id' => $id], $inputs, [], 1);
+        $id = saveData($ss, 'accounts', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['accounts' => $inputs, 'id' => $id]);
         }
@@ -69,11 +70,12 @@ class Account
         $str_search = '1=1';
 
         $query = DB::table('accounts as a')
-            ->join('employees as e', 'e.id', 'a.emp_id')
+            ->join('employees as e', 'e.id', '=', 'a.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+            ->join('currencies as cc', 'cc.id', '=', 'a.currency_id')
             ->join('account_types as at', 'at.id', '=', 'a.account_type_id')
             ->join('transactions as t', 't.id', '=', 'a.transaction_id')
-            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type_id,at.name as account_type, a.account_number,t.amount as transaction_amount,t.trx_type,a.currency,a.balance,a.create_date,a.update_date,e.photo_file_name as emp_photo')
+            ->selectRaw('a.id,t.id as transaction_id, e.id as emp_id, e.name as emp_name, pos.title as position,a.account_type_id,at.name as account_type, a.account_number,t.amount as transaction_amount,t.trx_type,a.balance,a.create_date,a.update_date,e.photo_file_name as emp_photo, cc.id as currency_id, cc.code as currency')
             ->where('a.branch_id', $branch_id);
         if ($search_id) {
             $query->where('a.id', $search_id);
@@ -100,7 +102,6 @@ class Account
                 $row->image_url = Employee::profilePicture($row->emp_id);
             }
             unset($row->emp_photo);
-
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -108,25 +109,21 @@ class Account
 
     function getDetails($id, $ss)
     {
+        $branch_id = $ss->branch_id;
         $row = DB::table('accounts as a')
-        ->join('employees as e', 'e.id', 'a.emp_id')
-        ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-        ->join('account_types as at', 'at.id', '=', 'a.account_type_id')
-        ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type_id,at.name as account_type, a.account_number, a.currency,e.photo_file_name as emp_photo')
-            ->where('a.id', $id)->first();
-        if ($row) {
-            $row->image_url = Employee::profilePicture($row->emp_id);
-            unset($row->emp_photo);
-        } else {
-            $row = null;
-        }
+            ->join('account_types as at', 'at.id', '=', 'a.account_type_id')
+            ->join('currencies as cc', 'cc.id', '=', 'a.currency_id')
+            ->selectRaw('a.id,a.emp_id,at.id as account_type_id,a.account_number,a.balance,cc.id as currency_id')
+            ->where('a.branch_id', $branch_id)
+            ->where('a.id', $id)->take(1)
+            ->first();
         return $row;
     }
 
     function deleteAccount($id, $ss)
     {
-         // Ensure $id is numeric and valid
-         if (!is_numeric($id)) {
+        // Ensure $id is numeric and valid
+        if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }
 
@@ -142,7 +139,6 @@ class Account
         }
         // Return the query result
         return $query;
-
     }
 
     function getFormOptions($id, $ss)
@@ -157,12 +153,14 @@ class Account
                 ['id' => 'e.name', 'name' => 'By Name'],
                 ['id' => 'a.account_number', 'name' => 'By Account Number'],
                 ['id' => 'a.balance', 'name' => 'By  Ballance'],
+                ['id' => 'a.account_type', 'name' => 'By Account Type'],
+                ['id' => 'a.currency', 'code' => 'By Currency']
             ],
 
-          'employees' => GeneralSettings::options_employee(10,$ss),
-          'account_types' => DB::table('account_types')->selectRaw('id,name AS account_type')->get(),
+            'employees' => GeneralSettings::options_employee(10, $ss),
+            'account_types' => DB::table('account_types')->selectRaw('id,name')->get(),
+            'currencies' => DB::table('currencies')->selectRaw('id,code')->get(),
             'accounts' => $account,
         ];
-
     }
 }

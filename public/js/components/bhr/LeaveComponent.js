@@ -95,7 +95,7 @@ var LeaveComponent = new function () {
         
         {
             title: "Status",
-            className: 'status text-nowrap text-center align-middle',
+            className: 'status text-nowrap text-center align-start',
             data: function (data, index, tr) {
                 let cls_class = 'text-danger text-center';
                 let bg_color = ''; // Default background color
@@ -113,7 +113,7 @@ var LeaveComponent = new function () {
                     bg_color = '#6c757d'; // Default gray background for other statuses
                 }
 
-                return `<a class="d-flex justify-content-center" data-status="${data.status}" data-id="${data.id}" href="javascript:void(0)">
+                return `<a class="d-flex justify-content-start" data-status="${data.status}" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:80px; background: ${bg_color}" class="p-1 ${cls_class}">
                                 ${data.status}
                             </span>

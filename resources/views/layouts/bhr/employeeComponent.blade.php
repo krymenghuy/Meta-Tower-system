@@ -16,6 +16,7 @@
     .ellipsis {
         font-size: 18px;
     }
+
     .experience-company {
         font-weight: bold;
         font-size: 16px;
@@ -133,9 +134,11 @@
         width: 100%;
         height: auto;
     }
-    #_view_profile_container{
+
+    #_view_profile_container {
         padding-bottom: 20%;
     }
+
     #profile_card_left,
     #profile_card_center,
     #profile_card_right {
@@ -143,24 +146,41 @@
         flex-direction: column;
         margin-bottom: 20px;
     }
-    .div-img {
-    background-color: #ffffff; /* White background color */
-    border-radius: 8px;
-    padding: 10px;
-    width: 100%; /* Ensure image takes full width */
-    text-align: center;
-}
 
-.div-img img {
-    max-width: 100%; /* Image resizes responsively */
-    height: auto;
-    border-radius: 50%; /* Optional: make it a circle */
-}
+    #_employee_list {
+        display: flex;
+        flex-direction: column;
+        height: 400px;
+        margin-top: 20px;
+        padding: 0;
+        width: 100%;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+    }
+
+    .div-img {
+        background-color: #ffffff;
+        /* White background color */
+        border-radius: 8px;
+        padding: 10px;
+        width: 100%;
+        /* Ensure image takes full width */
+        text-align: center;
+    }
+
+    .div-img img {
+        max-width: 100%;
+        /* Image resizes responsively */
+        height: auto;
+        border-radius: 50%;
+        /* Optional: make it a circle */
+    }
 </style>
 
-<div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
-    <div id="sub_content">
-        <div class="d-flex p-3 justify-content-between w-100" id="div_filter_filed">
+<div id="_main_employeeComponent" style="display:none;padding:10px 0 0">
+    <div id="sub_content" class="p-4">
+        <div class="d-flex justify-content-between w-100" id="div_filter_filed">
             <div class="d-flex align-items-start justify-content-start w-25">
                 <button type="button" class="btn text-white" style="background-color:#2b3991;" id="_btn_add_employee">
                     <i class="fas fa-plus"></i>
@@ -168,31 +188,27 @@
                 </button>
             </div>
             <div class="d-flex align-items-center justify-content-end w-75 gap-3">
-
-                <div class="d-flex  w-50 gap-3">
+                <div class="d-flex w-50 gap-3">
                     <div class="d-flex align-items-end w-100">
-                        <input type="text" class="form-control filter-field rounded-5" id="_search_employee" placeholder="Search Employee">
+                        <input type="text" class="form-control filter-field rounded-5" id="_search_employee"
+                            placeholder="Search Employee">
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <select type="id" id="filter_employee_status" class="data-input filter-field" data-field="status"></select>
+                    <select type="id" id="filter_employee_status" class="data-input filter-field"
+                        data-field="status"></select>
                 </div>
                 <div class="d-flex align-items-center">
-                    <select type="id" id="filter_employee_type" class="data-input filter-field" data-field="emp_type"></select>
+                    <select type="id" id="filter_employee_type" class="data-input filter-field"
+                        data-field="emp_type"></select>
                 </div>
-
-
-
             </div>
         </div>
-        <div class="shadow mt-2 overflow-hidden">
-            <div id="_employee_list" class="px-3"></div>
-
-        </div>
-        <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-3 d-flex justify-content-end"></div>
-
-
+        <div id="_employee_list"></div>
+        <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-5 d-flex justify-content-end"></div>
     </div>
+
+
     <div class="d-none" id="view_see_info__">
         <div class="d-flex px-3" id="btn_back">
             <button id="_btn_backTo_employee" style="background-color:#2b3991; width:100px;"
@@ -304,7 +320,7 @@
 
                     </div> -->
                 </div>
-                <div class="row mt-3 p-3" >
+                <div class="row mt-3 p-3">
                     <div class="col-md-4" id="profile_card_left">
                         <!-- <div class="card" style="height:487px;">
                             <div class="card-header">
@@ -413,8 +429,8 @@
                 </div>
 
 
-                    <div class="col-md-4" id="tax_allownce_card">
-                        {{-- <div class="card" style="height:487px;">
+                <div class="col-md-4" id="tax_allownce_card">
+                    {{-- <div class="card" style="height:487px;">
                             <div class="card-header">
                                 <h4>Tax Allowance</h4>
                                 <span class="ellipsis">...</span>
@@ -429,7 +445,7 @@
                                </div>
                             </div>
                         </div> --}}
-                    </div>
+                </div>
 
 
 
