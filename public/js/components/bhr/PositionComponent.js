@@ -26,6 +26,11 @@ var PositionComponent = new (function () {
             data: "title",
         },
         {
+            title: "Salary",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: "salary",
+        },
+        {
             title: "Department Name",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: "department",
