@@ -3,7 +3,7 @@ var AccountMenagmentComponent = new (function () {
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_accountComponent");
     this.self = this.jm[0];
-    this.title_prop = "Account Management";
+    this.title_prop = "Payroll Account ";
 
     this.btnAdd = this.self.querySelector("#_btnAddAccount");
     this.divFilter = this.self.querySelector("#_divFilter");
@@ -20,7 +20,7 @@ var AccountMenagmentComponent = new (function () {
         },
         {
             title: "Employee",
-            className: "align-middle text-capitalize text-nowrap",
+            className: "align-middle text-capitalize text-nowrap w-15",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
                             <img class="image-student-tbl" src="${
@@ -40,29 +40,12 @@ var AccountMenagmentComponent = new (function () {
         },
         {
             title: "Account Type",
-            className: "align-middle text-center",
-            data: (data) => {
-                const accountType =
-                    mThis.AccountTypeMap[data.account_type] || "Payrolls";
-                const backgroundColor =
-                    accountType === "Payrolls"
-                        ? "danger"
-                        : accountType === "Wallet"
-                        ? "success"
-                        : "info";
-
-                return `
-                <p class="p-2 rounded-5 m-0 border text-white w-50 bg-${backgroundColor}">
-                    ${accountType}
-                </p>`;
-            },
-        },
-        {
-            title: "Currency",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.currency ?? ""}</p>`;
-            },
+                const accountType = mThis.AccountTypeMap[data.account_type_id] || "Payroll";
+                const backgroundColor = accountType === "Wallet" ? "info" : "success";
+                return `<p class="p-2 text-center rounded-5 m-0 border text-white w-50 bg-${backgroundColor}">${accountType}</p>`;
+            }
         },
         {
             title: "Account Number",
@@ -78,6 +61,21 @@ var AccountMenagmentComponent = new (function () {
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${data.balance ?? ""}</p>`;
             },
+
+        },
+        {
+            title: "Last Balance Date",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.last_balance_date ?? ''}</p>`;
+            }
+        },
+        {
+            title: "Currency",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.currency ?? ''}</p>`;
+            }
         },
         {
             className: "col_action align-middle",
@@ -109,7 +107,6 @@ var AccountMenagmentComponent = new (function () {
             tableClass: "table table--white overflow-hidden  header-uppercase",
             listContainerClass: null,
         });
-
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
 
@@ -119,7 +116,6 @@ var AccountMenagmentComponent = new (function () {
                     mThis.AccountListView.showPage();
                 },
             };
-
             AccountDialog.show(op);
         };
 
@@ -131,10 +127,13 @@ var AccountMenagmentComponent = new (function () {
 
         mThis.initDropdownMenus(pr_tbl);
 
-        mThis.divFilter.addEventListener("change", (e) => {
-            e.preventDefault();
-            mThis.AccountListView.showPage(mThis.getDataFormFilter());
-        });
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
+
+            el.onchange =  (e) => {
+           e.preventDefault();
+           mThis.AccountListView.showPage(mThis.getDataFormFilter());
+            }
+       });
 
         mThis.initAlready = true;
     };
@@ -145,7 +144,7 @@ var AccountMenagmentComponent = new (function () {
             if (mThis.AccountListView) {
                 mThis.AccountListView.showPage(mThis.getDataFormFilter());
             } else {
-                console.error("Employee Movement is not defined");
+                console.error("Payroll account is not defined");
             }
         }, 200);
     });
@@ -241,15 +240,17 @@ var AccountMenagmentComponent = new (function () {
 
     this.getDataFormFilter = () => {
         let p = {};
-        p.search_value = mThis.elSearch.value;
-        p.sort_by = mThis.elSortBy.value;
+        // p.search_value = mThis.elSearch.value;
+        // p.sort_by = mThis.elSortBy.value;
 
-        let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
-        main_filters.forEach((el) => {
+
+
+        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
+        main_filters.forEach(el => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(222, p);
+        console.log(222, main_filters);
 
         return p;
     };
@@ -265,24 +266,10 @@ var AccountMenagmentComponent = new (function () {
                 const d = res.status_code == 200 ? res.data : {};
                 console.log(1111, this.elSortBy);
 
-                VSUtil.setComboItems(
-                    mThis.elSortBy,
-                    d.sort_by,
-                    "id",
-                    "name",
-                    true,
-                    "All",
-                    null
-                );
+            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
 
-                mThis.AccountTypeMap = d.account_types.reduce(
-                    (map, account_type) => {
-                        map[account_type.id] = account_type.account_type;
-                        return map;
-                    }
-                );
-                mThis.CurrencyType = d.currencies.reduce((map, currency) => {
-                    map[currency.id] = currency.currency;
+                mThis.AccountTypeMap = d.account_types.reduce((map, account_type) => {
+                    map[account_type.id] = account_type.account_type;
                     return map;
                 });
             });
@@ -323,16 +310,16 @@ const AccountDialog = (() => {
                         <select name="account_type" class=" data-input"  data-field="account_type_id"></select>
                     </div>
                     <div class="form-group col-6">
-                        <label for="currency" class="form-label" vslang="titles.Currency"></label>
-                        <select name="currency" class=" data-input"  data-field="currency"></select>
-                    </div>
-                    <div class="form-group col-6">
                         <label for="account_number" class="form-label" vslang="titles.Account Number"></label>
-                        <input name="account_number" class="form-control data-input" data-field="account_number" placeholder="account number" />
+                        <input name="account_number" class="form-control data-input" data-field="account_number" />
                     </div>
                     <div class="form-group col-6">
-                        <label for="balance" class="form-label" vslang="titles.Balance"></label>
-                        <input name="balance" class="form-control data-input" data-field="balance" placeholder="input balance"/>
+                        <label for="ballance" class="form-label" vslang="titles.Balance"></label>
+                        <input name="ballance" class="form-control data-input" data-field="balance" />
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="currency" class="form-label" vslang="titles.Currency"></label>
+                        <input name="currency" class="form-control data-input" data-field="currency" />
                     </div>
                     </div>
 

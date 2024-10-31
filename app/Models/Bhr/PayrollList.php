@@ -168,6 +168,9 @@ class PayrollList
                     pl.disburse,
                     e.photo_file_name as emp_photo')
         ->where('pl.id', $id)->first();
+
+
+        // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_amount <=' . $row->salary_base . ' and upper_amount >=' . $row->salary_base)->take(1)->value('rate');
         return $row;
     }
     function deletePayrollList($id, $ss)
@@ -271,7 +274,7 @@ class PayrollList
 
         $payrolls = DB::table('payroll_lists as pl')
         ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-        ->join('tax_allowances as ta', 'ta.id', '=', 'e.id')
+        ->join('tax_allowances as ta', 'ta.emp_id', '=', 'e.id')
         ->join('positions as pos', 'pos.id', '=', 'e.position_id')
         ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
         ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
@@ -286,14 +289,13 @@ class PayrollList
                     e.salary_base,
                     pl.benefit, pl.deduction,
                     ta.amount as tax_allowance,
-                    e.photo_file_name as emp_photo')->get();
+                    e.photo_file_name as emp_photo')->orderBy('e.id')->get();
 
 
             $success = 0;
             $error = 0;
             $success_ids =[];
             $error_ids = [];
-
             foreach ($payrolls as &$payroll) {
                 $payroll->apply_payroll_tax = DB::table('employees')
                     ->where('id', $payroll->emp_id)
@@ -312,11 +314,11 @@ class PayrollList
 
                     $tax_rate = $payroll->tax_rate;
 
-                    $payroll->tax_base = ($salary_base + $benefit - $tax_allowance) * ($tax_rate / 100);
-                    $payroll->total = $salary_base - $deduction - $payroll->tax_base;
+                    $payroll->tax_base = ($salary_base - $tax_allowance) * ($tax_rate / 100);
+                    $payroll->total = $salary_base + $benefit - $deduction - $payroll->tax_base;
                 } else {
                     $payroll->tax_base = 0;  // No tax base for non-taxed employees
-                    $payroll->total = $salary_base + $benefit - $deduction;
+                    $payroll->total = $salary_base + $benefit - $deduction ;
                 }
                 $row =DB::table('payroll_lists')->where('id',$payroll->id)->update(
                     [
@@ -340,29 +342,43 @@ class PayrollList
 
         }
 
-        function disbursePayrollList($id, $ss)
+        function disbursePayrollList($id, $ss = null)
         {
             $ss = $ss ?? $this->userInfo;
             $branch_id = $ss->branch_id;
 
+            $trx = DB::table('payroll_lists as pl')
+                    ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+                    ->where('pl.id', $id)
+                    ->selectRaw('total_salary as amount,emp_id,payroll_id,p.name as remarks')->first();
+            $trx->trx_type='0';
+            $trx = Transaction::save((array)$trx, $ss);
 
+            $account_id = DB::table('accounts')->where('emp_id', $trx['transactions']['emp_id'])->value('id');
+            $updateBalance = PayrollList::updateBalance($account_id,  $trx['transactions']['amount'], $trx['trx_id'], $ss);
             $query = DB::table('payroll_lists')
-                ->where('id', $id)
-                ->update(['disburse' => 1]);
-
-            if ($query) {
-
-                $total_salary = DB::table('payroll_lists')
-                    ->where('id', $id)
-                    ->value('total_salary');
-
-
-                DB::table('transactions')
-                    ->where('emp_id', $id)
-                    ->update(['amount' => $total_salary]);
-            }
+            ->where('id', $id)
+            ->update(['disburse' => 1, 'trx_id' => hex2bin($trx['trx_id'])]);
 
             return $query;
         }
 
+        static function updateBalance($account_id, $amount, $trx_id, $ss = null)
+        {
+            if(!$account_id){
+                return DV::error('Invalid account id');
+            }
+            if(!$amount){
+                $amount = 0;
+            }
+
+            $lastBalance = DB::table('accounts')->where('id', $account_id)->value('balance');
+            $newBalance = (float)$lastBalance + (float)$amount;
+
+            $lastBalanceDate = date('Y-m-d');
+            $query = DB::table('accounts')
+                ->where('id', $account_id)
+                ->update(['balance' => $newBalance, 'last_balance_date' => $lastBalanceDate, 'trx_id' => hex2bin($trx_id)]);
+            return $query;
+        }
     }
