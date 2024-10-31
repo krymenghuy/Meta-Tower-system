@@ -66,7 +66,7 @@ class WalletAccount
 
 
         $str_search = '1=1';
-        $balance_date = DBX::formatDate('wa.last_balance_date','ast_balance_date');
+        $balance_date = DBX::formatDate('wa.last_balance_date','last_balance_date');
         $query = DB::table('wallet_accounts as wa')
         ->join('employees as e', 'e.id', '=', 'wa.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'e.position_id')
