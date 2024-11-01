@@ -8,6 +8,7 @@ var StaffAttendanceComponent = new (function () {
     this.title_prop = "Staff Attendance";
     this.btnAdd = this.self.querySelector("#_btnAddStaffAttendance");
     this.elSearch = this.self.querySelector("#_staff_attendance_search");
+    this.elFilter_attendance_date = this.self.querySelector("#_filter_attendance_date");
     this._searchAttendance = this.self.querySelector("#search");
     this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
 
@@ -42,7 +43,7 @@ var StaffAttendanceComponent = new (function () {
             data: "check_in_time",
         },
         {
-            title: "attendance date",
+            title: "Attendance Date",
             className: "align-middle",
             data: "attendance_date",
         },
@@ -54,7 +55,10 @@ var StaffAttendanceComponent = new (function () {
         {
             title: "Status",
             className: "align-middle",
-            data: "status_id",
+            data: "formatted_status",
+            render: function (data, type, row) {
+                return data;
+            },
         },
         {
             title: "Remark",
@@ -88,16 +92,11 @@ var StaffAttendanceComponent = new (function () {
 
         mThis.StaffAttendanceListView = new ListView("_staff_attendance_list", {
             fetchApi: `${mThis.base_url}/hr/attendances/list-paginate`,
-            // processResponse: (res) => {
-            //     console.log(res);
-            //     return res.data;
-            // },
-            perPage:10,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",
             listContainerClass: null,
-            
         });
 
         mThis.btnAdd.onclick = function (e) {
@@ -112,90 +111,77 @@ var StaffAttendanceComponent = new (function () {
             };
             StaffAttendanceDialog.show(op);
         };
+
         const pr_tbl = mThis.StaffAttendanceListView.getListContainer();
-        const sh_parent = pr_tbl;
-        // sh_parent.style.height = window.innerHeight - 235 + "px";
-        sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        pr_tbl.classList.add("overflow-y-auto");
+        pr_tbl.classList.add("overflow-x-hidden");
 
         mThis.initDropdownMenus(pr_tbl);
 
-        mThis._searchAttendance.addEventListener("change", (e) => {
-            e.preventDefault();
-            mThis.StaffAttendanceListView.showPage(mThis.getDataFormFilter());
+        // Event listeners for filters
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                if (mThis.StaffAttendanceListView) {
+                    mThis.StaffAttendanceListView.showPage(
+                        mThis.getFilterData()
+                    );
+                }
+            }, 200);
         });
+
+        mThis.elFilter_attendance_date.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
+        });
+
+        mThis.btnSearch.onclick = (e) => {
+            if (mThis.StaffAttendanceListView) {
+                mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
+            }
+        };
+
         mThis.initAlready = true;
     };
-    mThis.elSearch.addEventListener("keyup", (e) => {
-        clearTimeout(mThis.search_timeout);
-        mThis.search_timeout = setTimeout(() => {
-            if (mThis.StaffAttendanceListView) {
-                mThis.StaffAttendanceListView.showPage(
-                    mThis.getDataFormFilter()
-                );
-            } else {
-                console.error("Staff is not defined");
-            }
-        }, 200);
-    });
 
-    mThis.btnSearch.onclick = (e) => {
-        if (mThis.StaffAttendanceListView) {
-            mThis.StaffAttendanceListView.showPage(mThis.getDataFormFilter());
-        } else {
-            console.error("Staff is not defined");
-        }
-    };
-    this.setFilterPeriod = (p, name, start_date, end_date) => {
-        return p;
-    };
-
-    this.getDataFormFilter = () => {
-        let p = {};
-        p.search_value = mThis.elSearch.value;
-        let main_filters =
-            mThis._searchAttendance.querySelectorAll(".filter-field");
-        main_filters.forEach((el) => {
+    this.getFilterData = () => {
+        let p = {
+            attendance_date: mThis.elFilter_attendance_date.value,
+        };
+        
+        
+        mThis._searchAttendance.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(222, p.search_value, main_filters);
-
+console.log(9292, p);
         return p;
     };
+
     this.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_staffAttendance_action",
             cssClass: "bg-white shadow",
-            //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Edit StaffAttendance">Edit Staff Attendance</span>',
+                    html: '<span class="ps-2">Edit Staff Attendance</span>',
                     icon: `<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_staff_attendance",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete StafAttendance">Delete Staff Attendance</span>',
+                    html: '<span class="ps-2">Delete Staff Attendance</span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_staff_attendance",
                 },
             ],
             onClick: (menulink, id, name) => {
-                switch (name) {
-                    case "edit_staff_attendance": {
-                        mThis.editStaffAttendance(id, menulink);
-                        break;
-                    }
-                    case "delete_staff_attendance": {
-                        mThis.deleteStaffAttendance(id, menulink);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
+                if (name === "edit_staff_attendance") {
+                    mThis.editStaffAttendance(id, menulink);
+                } else if (name === "delete_staff_attendance") {
+                    mThis.deleteStaffAttendance(id, menulink);
                 }
             },
         };
@@ -212,9 +198,8 @@ var StaffAttendanceComponent = new (function () {
         };
         StaffAttendanceDialog.show(op);
     };
-    this.deleteStaffAttendance = (id, menulink) => {
-        console.log(13456, id, menulink);
 
+    this.deleteStaffAttendance = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -242,7 +227,7 @@ var StaffAttendanceComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Attendances Delete Successfully"
+                                    "Attendance deleted successfully"
                                 );
                                 mThis.StaffAttendanceListView.showPage();
                             }
@@ -262,7 +247,7 @@ var StaffAttendanceComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, this.elSortBy);
+                console.log("Form options prepared", d);
             });
     };
 
