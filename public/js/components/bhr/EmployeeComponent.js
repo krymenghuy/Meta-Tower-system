@@ -47,7 +47,7 @@ var EmployeeComponent = new function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.EmployeeListView.showPage();
+                    mThis.EmployeeListView.showPage(mThis.getFilterData());
                 },
             };
 
@@ -1495,10 +1495,12 @@ const AddTaxAllowance = (() => {
 const EmployeeDialog = (() => {
     const self = {};
     let dialog = null;
+
     self.show = (op) => {
+    console.log(999, op);
+
         dialog =
-            dialog ||
-            new GeneralDialog({
+                new GeneralDialog({
                 cssClass: "modal-lg",
                 backdrop: "static", //User click outside form, do not close form
                 keyboard: true, //prevent user from using ESC key
@@ -1604,7 +1606,6 @@ const EmployeeDialog = (() => {
                         imgClass: "data-input",
                         dataset: { field: "image_url" },
                     });
-                    console.log(999, op);
 
                     me.showProfile = (code) => {
                         let fields = [];
@@ -1662,23 +1663,9 @@ const EmployeeDialog = (() => {
                     me.deleteImage(div_emp_photo);
                     
                     me.showProfile(me.dataOptions.id);
-                    console.log(13,me.modal);
+                    console.log(13,me.dataOptions.id);
                     
-                    me.divModal.querySelectorAll('.data-input').forEach(el => {
-
-                        const data_member = el.dataset.field;
-                        
-                        if (el.tagName.toLowerCase() === 'select') {
-                            if(data_member == 'position_id' || data_member == 'work_shift_id' || data_member == 'emp_type_id' ){
-                            // el.setAttribute('disabled',true);
-                            el.disabled = true;
-                            }
-                        }
-                        if(data_member == 'salary_base' || data_member == 'nid'){
-                            console.log(12,el);
-                            el.disabled  = true;
-                         }
-                   });
+                  
                 },
                 configSelect: [
                     {
@@ -1731,7 +1718,7 @@ const EmployeeDialog = (() => {
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
-                                        me.hide(true, p);
+                                        me.modal.hide(true, p);
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
@@ -1757,6 +1744,29 @@ const EmployeeDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
+                    me.divModal.querySelectorAll('.data-input').forEach(el => {
+
+                        const data_member = el.dataset.field;
+                        console.log(90,op.id);
+                        
+                        let id = op.id;
+                        
+                        if(id){
+                            if (el.tagName.toLowerCase() === 'select') {
+                                if(data_member == 'position_id' || data_member == 'work_shift_id' || data_member == 'emp_type_id' ){
+                                el.setAttribute('disabled',true);
+                                // el.disabled = true;
+                                }
+                            }
+                            if(data_member == 'salary_base' || data_member == 'nid'){
+                                console.log(12,el);
+                                el.disabled  = true;
+                             }
+                             id=null;
+                        }
+                        
+                   });
+                   
                 },
             });
 
