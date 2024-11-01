@@ -85,7 +85,7 @@ class Account
                     t.trx_type,
                     a.balance,
                     a.currency,
-                    '.$balance_date.',
+                    '.$balance_date.        ',
                     e.photo_file_name as emp_photo
                 ')
 

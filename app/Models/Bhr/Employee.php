@@ -366,14 +366,21 @@ class Employee //extends Model
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->photo_file_name) {
-                $row->image_url = self::profilePicture($row->id);
+                $row->image_url = PublicStorage::getUrl($row->branch_id, 'customer', 'image') . $row->photo_file_name;
+                unset($row->photo_file_name);
+                if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
+
             }
-            unset($row->photo_file_name);
+
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
+    static function defaultImage($branch_id)
+    {
+      return PublicStorage::getUrl(['subs_id'=>$subs_id,'dir'=>'default'],'image').'mr3.jpg';
+      // return PublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
+    }
     function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
@@ -482,14 +489,44 @@ class Employee //extends Model
     }
     function updateStatus($status_id, $id = null, $ss = null)
     {
-
         $ss = $ss ? $ss : $this->userInfo;
+        $id = $id ?? $this->id;
         $x = DB::table('employees')->where('id', $id)->update([
             'status_id' => $status_id,
             'update_user' => $ss->full_name,
             'update_date' => getNowTime(),
             'update_uid' => $ss->user_id
         ]);
-        return DV::depends($x, ['Employee  status', 'updated']);
+    
+        // Check if the status_id indicates a resignation (status_id = 30)
+        if ($status_id == 20) {
+            // Check if a resignation record already exists
+            $existingResignation = DB::table('resignations')->where('emp_id', $id)->first();
+    
+            if ($existingResignation) {
+                // Update the existing resignation record
+                DB::table('resignations')->where('emp_id', $id)->update([
+                    'effective_date' => getNowTime(),  // Adjust to the actual effective date
+                    'resignation_date' => getNowTime(),
+                    'update_user' => $ss->full_name,
+                    'update_date' => getNowTime(),
+                    'update_uid' => $ss->user_id
+                ]);
+            } else {
+                // Insert a new resignation record
+                DB::table('resignations')->insert([
+                    'emp_id' => $id,
+                    'effective_date' => getNowTime(),  // Adjust to the actual effective date
+                    'resignation_date' => getNowTime(),
+                    'remarks' => 'Resignation recorded', // Add remarks as needed
+                    'create_user' => $ss->full_name,
+                    'create_date' => getNowTime(),
+                    'create_uid' => $ss->user_id
+                ]);
+            }
+        }
+    
+        return DV::depends($x, ['Employee status', 'updated']);
     }
+    
 }

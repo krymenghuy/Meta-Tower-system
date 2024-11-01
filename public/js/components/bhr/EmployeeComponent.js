@@ -47,7 +47,7 @@ var EmployeeComponent = new function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.EmployeeListView.showPage();
+                    mThis.EmployeeListView.showPage(mThis.getFilterData());
                 },
             };
 
@@ -116,56 +116,40 @@ var EmployeeComponent = new function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Change Status">Change Status</span>',
-                    icon: `<i class="fa-regular fa-exchange fs-5"></i>`,
-
-                    cssClass: "border-bottom pb-2",
-                    name: "change_employee_status",
-                },
-
-                {
                     html: '<span class="ps-2  " vslang="titles.Modify Employee">Modify Employee</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    icon: `<i class="fa-solid text-success fa-pen-to-square"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_employee",
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete Employee">Delete Employee</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    icon: `<i class="fa-solid text-danger fa-user-xmark"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_employee",
                 },
-                {
-                    html: '<span class="ps-2  " vslang="titles.Set On Board">Set On Board</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "set_on_board",
-                },
+            
                 {
                     html: '<span class="ps-2  " vslang="titles.Set Resign">Set Resign</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    icon: `<i class="fa-solid text-warning fa-pen-nib"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "set_resign",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Set Renew">Set Renew</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    html: '<span class="ps-2" vslang="titles.Set Join">Set Rejoin</span>',
+                    icon: `<i class="fa-solid text-primary fa-rotate-right"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "set_renew",
+                    name: "set_rejoin",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Set Terminated">Set Terminated</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    html: '<span class="ps-2 text-" vslang="titles.Set Terminated">Set Terminated</span>',
+                    icon: `<i class="fa-solid text-dark fa-rocket"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "set_terminated",
                 },
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "change_employee_status": {
-                        mThis.changeStatus(id, menuLink);
-                        break;
-                    }
+                    
                     case "edit_employee": {
                         mThis.editEmployee(id, menuLink);
                         break;
@@ -175,7 +159,15 @@ var EmployeeComponent = new function () {
                         break;
                     }
                     case "set_resign":{
-                        mThis.setREsign(id,menuLink);
+                        mThis.setResign(id,menuLink);
+                        break;
+                    }
+                    case "set_terminated":{
+                        mThis.setTerminated(id,menuLink);
+                        break;
+                    }
+                    case "set_rejoin":{
+                        mThis.setRejoin(id,menuLink);
                         break;
                     }
 
@@ -263,8 +255,8 @@ var EmployeeComponent = new function () {
                                     </div>
                                 </div>
                                 <div class="card_bottom pt-3">
-                                    <div class="text-muted" style="font-size:11px;">Joining Date: <span class="text-dark">${d.joining_date || "null"}</span></div>
-                                    <a href="javascript:void(0)" class="see-detail" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">view info</a>
+                                    <div class="text-muted" style="font-size:11px;">Joining Date : <span class="text-primary-custom">${d.joining_date || "null"}</span></div>
+                                    <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">view info</a>
                                 </div>
                             </div>
                         </div>
@@ -503,10 +495,10 @@ var EmployeeComponent = new function () {
 
         html = [
             `
-             <div class="card" style="height:487px;">
-                            <div class="card-header">
+             <div class="card pb-3" style="height:390px;">
+                            <div class="card-header bg-primary-custom text-white">
                                 <h4>Skills</h4>
-                                <span class="ellipsis">...</span>
+                                
                             </div>
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
@@ -580,12 +572,12 @@ var EmployeeComponent = new function () {
             .then((res) => {
                 let data = res.status_code === 200 ? res.data.data : [];
                 console.log(123456, data);
-                let html = `<div class="card" style="height:487px;">
-                <div class="card-header">
+                let html = `<div class="card pb-3" style="height:390px;">
+                <div class="card-header text-white bg-primary-custom">
                     <h4>Education</h4>
                     <div class="d-flex gap-2">
                         <a href="javascript:void(0)" data="id" id="lnk_add_education">
-                            <i class="fa fa-plus-circle fs-5 text-success"></i>
+                            <i class="fa fa-plus-circle fs-5 text-white"></i>
                         </a>
                     </div>
                 </div>
@@ -593,11 +585,11 @@ var EmployeeComponent = new function () {
             `;
                 data.map((d) => {
                     html += `
-                    <div class="row mt-2 py-4 border-bottom">
+                    <div class="row py-2 border-bottom border-primary">
                         <div class="col-md-6">
-                            <h6 style="width:180px; height:20px overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap">${d.period}</h6>
-                            <p class="text-success" style="width:180px; height:20px">${d.edu_level}</p>
-                            <p class="text-nowrap" style="width:180px; height:20px">${d.major}</p>
+                            <h6 class="text-" style="width:180px; height:22px overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap">${d.period}</h6>
+                            <p class="text-primary-custom" style="width:180px; height:20px"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/graduate.svg" /> ${d.edu_level}</p>
+                            <p class="text-muted" style="width:180px; height:20px"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/radio.svg" /> ${d.major}</p>
                         </div>
 
                         <div class="col-md-6">
@@ -649,12 +641,12 @@ var EmployeeComponent = new function () {
             .then((res) => {
                 let data = res.status_code === 200 ? res.data.data : [];
                 console.log(123456, data);
-                let html = `<div class="card" style="height:487px;">
-            <div class="card-header">
+                let html = `<div class="card pb-3" style="height:390px;">
+            <div class="card-header text-white bg-primary-custom">
                 <h4>Experience</h4>
                 <div class="d-flex gap-2">
                     <a href="javascript:void(0)" data="id" id="lnk_add_experience">
-                        <i class="fa fa-plus-circle fs-5 text-warning"></i>
+                        <img class="bhr-" src="${main_view.asset_url}/images/icons/dot.svg" />
                     </a>
                 </div>
             </div>
@@ -668,25 +660,25 @@ var EmployeeComponent = new function () {
                         <div class="experience-toggle" data-experience-id="${d.id}"
                             style="display:flex; justify-content:space-between; width:350px; cursor: pointer;">
                             <div style="display:flex; width:350px; justify-content:space-between">
-                                <p class="text-primary" style="font-size:14px;width:125px;display:flex;justify-content:start; overflow-y: hidden; overflow-x: auto; scrollbar-width: none; align-items: flex-start; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap;">
-                                    📢${d.position}
+                                <p class="text-primary-custom" style="font-size:14px;width:175px;display:flex;justify-content:start; overflow-y: hidden; overflow-x: auto; scrollbar-width: none; align-items: flex-start; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap;">
+                                    📢 ${d.department}
                                 </p>
-                                <div class="date_join" style="width:200px;display:flex;justify-content:end;align-items:end;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
-                                    <p>: (${d.start_date}</p>
-                                    <p class="text-danger ml-2 mr-2">-</p>
-                                    <p>${d.end_date})</p>
-                                </div>
+                                
                             </div>
                         </div>
+                        <div style="display:flex; width:350px; justify-content:space-between">
+                            <div class="date_join text-muted" style="width:300px;display:flex;justify-content:start;align-items:end;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
+                                <img class="bhr-icons" src="${main_view.asset_url}/images/icons/calender.svg" />
+                                <p>(${d.start_date}</p><p class="text-danger ml-2 mr-2">-</p><p>${d.end_date})</p>
+                            </div>
+                            <p class="text-primary-custom text-nowrap">Position: ${d.position}</p>
+                                
+                        </div>
+                        
+
                         <div class="experience-details" id="details_${d.id}"
                             style="display: none; flex-direction: column; gap:10px; transition: all 0.3s ease;">
-                            <p class="text-success">Position: ${d.position}</p>
-                            <div style="display:flex">
-                                <p class="text-nowrap mr-2">Detail: </p>
-                                <p class="text-nowrap"> ${d.description}</p>
-                            </div>
-                            <p class="text-nowrap">Duration: ${d.period_type}</p>
-                            <p class="text-nowrap text-primary">Company: ${d.organization_id}</p>
+                            <p class="text-nowrap text-primary-custom">Company : ${d.organization_id}</p>
                         </div>
                     </div>
                 </div>
@@ -783,12 +775,12 @@ var EmployeeComponent = new function () {
                 console.log(1212, data);
 
                 let html = `
-                    <div class="card" style="height:487px;">
-                        <div class="card-header">
+                    <div class="card pb-3" style="height:390px;">
+                        <div class="card-header bg-primary-custom text-white">
                             <h4>Tax Allowance</h4>
                             <div class="d-flex gap-2">
                                 <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-tax-allowance">
-                                    <i class="fa fa-plus-circle fs-5 text-success"></i>
+                                    <i class="fa fa-plus-circle fs-5 text-white"></i>
                                 </a>
                             </div>
                         </div>
@@ -906,37 +898,26 @@ var EmployeeComponent = new function () {
 
 
     };
-    this.setResign = (id,menuLink)=>{
-
-
-    }
-    this.changeStatus = (id, lnk) => {
-
+    this.setResign = (id,lnk)=>{
         let tr = lnk.closest("tr");
         console.log(1,tr);
         let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
         console.log(123,status_id);
 
         let inputOptions = {
-            title: "Set Employee Status",
+            title: "Set Employee Resign",
             dataLabel: "Employee status",
             valueMember: "status_id",
             textMember: "name",
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data: [
-                {
-                    status_id: "10",
-                    name: "Active",
-                },
+               
                 {
                     status_id: "20",
                     name: "Resigned",
                 },
-                {
-                    status_id: "21",
-                    name: "Terminated",
-                },
+               
             ],
             defaultValue: status_id,
         };
@@ -956,7 +937,7 @@ var EmployeeComponent = new function () {
                             mThis.elEmployeeStatus.value = parseInt(d.value);
                             InputBox2.close();
                             mThis.elEmployeeStatus.dispatchEvent ( new Event('change'));
-                            cv_interact.success("The Employee status has been updated");
+                            cv_interact.success("The Employee has been update to resign");
                             // if(tr) tr.dataset.status_id = d.value;
                             // mThis.EmployeeListView.showPage(mThis.getFilterData());
                         } else
@@ -964,7 +945,107 @@ var EmployeeComponent = new function () {
                     });
             }
         });
-    };
+
+    }
+    this.setTerminated = (id,lnk)=>{
+        let tr = lnk.closest("tr");
+        console.log(1,tr);
+        let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
+        console.log(123,status_id);
+
+        let inputOptions = {
+            title: "Set Employee Terminate",
+            dataLabel: "Employee status",
+            valueMember: "status_id",
+            textMember: "name",
+            confirmButtonText: "Save",
+            blankErrorMessage: "Status is not correct!",
+            data: [
+               
+                {
+                    status_id: "30",
+                    name: "Terminated",
+                },
+               
+            ],
+            defaultValue: status_id,
+        };
+
+        InputBox2.show(inputOptions, (d) => {
+            if (d) {
+                let p = {
+                    id: id,
+                    status_id: d.value,
+                };
+                console.log(123, p);
+
+                vsapi
+                    .call(`${mThis.base_url}/hr/employee/update-status`, p)
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            mThis.elEmployeeStatus.value = parseInt(d.value);
+                            InputBox2.close();
+                            mThis.elEmployeeStatus.dispatchEvent ( new Event('change'));
+                            cv_interact.success("The Employee has been Terminate");
+                            // if(tr) tr.dataset.status_id = d.value;
+                            // mThis.EmployeeListView.showPage(mThis.getFilterData());
+                        } else
+                        cv_interact.error(res.error_message);
+                    });
+            }
+        });
+
+    }
+    this.setRejoin = (id,lnk)=>{
+        let tr = lnk.closest("tr");
+        console.log(1,tr);
+        let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
+        console.log(123,status_id);
+
+        let inputOptions = {
+            title: "Set Employee Rejoin",
+            dataLabel: "Employee status",
+            valueMember: "status_id",
+            textMember: "name",
+            confirmButtonText: "Save",
+            blankErrorMessage: "Status is not correct!",
+            data: [
+               
+                {
+                    status_id: "10",
+                    name: "Rejoin",
+                },
+               
+            ],
+            defaultValue: status_id,
+        };
+
+        InputBox2.show(inputOptions, (d) => {
+            if (d) {
+                let p = {
+                    id: id,
+                    status_id: d.value,
+                };
+                console.log(123, p);
+
+                vsapi
+                    .call(`${mThis.base_url}/hr/employee/update-status`, p)
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            mThis.elEmployeeStatus.value = parseInt(d.value);
+                            InputBox2.close();
+                            mThis.elEmployeeStatus.dispatchEvent ( new Event('change'));
+                            cv_interact.success("The Employee has been rejoin to work");
+                            // if(tr) tr.dataset.status_id = d.value;
+                            // mThis.EmployeeListView.showPage(mThis.getFilterData());
+                        } else
+                        cv_interact.error(res.error_message);
+                    });
+            }
+        });
+
+    }
+   
     this.editEmployee = (id, menuLink) => {
         let op = {
             id: id,
@@ -1068,8 +1149,8 @@ const AddEducation = (() => {
             dialog ||
             new GeneralDialog({
                 title: op.id
-                    ? "Edit Employee Seniority"
-                    : "New Employee Seniority", // Dynamically set title
+                    ? "Edit Education"
+                    : "New Education", 
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
                     return [
@@ -1086,7 +1167,7 @@ const AddEducation = (() => {
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.Period">Period</label>
-                            <div><input name="period" class="form-control data-input" data-field="period"/></div>
+                            <div><input name="period" class="form-control data-input" placeholder="(2020-2024)" data-field="period"/></div>
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.Major">Major</label>
@@ -1414,10 +1495,12 @@ const AddTaxAllowance = (() => {
 const EmployeeDialog = (() => {
     const self = {};
     let dialog = null;
+
     self.show = (op) => {
+    console.log(999, op);
+
         dialog =
-            dialog ||
-            new GeneralDialog({
+                new GeneralDialog({
                 cssClass: "modal-lg",
                 backdrop: "static", //User click outside form, do not close form
                 keyboard: true, //prevent user from using ESC key
@@ -1425,26 +1508,45 @@ const EmployeeDialog = (() => {
                     return [
                         `<div class="row">
                             <div class="col-3">
-                                <div name="div_emp_photo" class="data-input" data-field="image_url" role="button"></div>
+                                <div name="div_emp_photo" style="height:165px" class="data-input border border-primary" data-field="image_url" role="button"></div>
                             </div>
                             <div class="col-9">
                                 <div class="row">
-                                    <div class="form-group col-4">
+                                    <div class="form-group col-6">
                                         <label for="name" class="form-label" vslang="titles.Name"></label>
                                         <span class="text-danger" >*</span>
                                         <input name="name" class="form-control data-input" data-field="name" />
                                     </div>
-                                    <div class="form-group col-4">
-                                        <label for="name_kh" class="form-label" vslang="titles.Name KH"></label>
+                                    <div class="form-group col-6">
+                                        <label for="nid" class="form-label" vslang="titles.Identity Card"></label>
                                         <span class="text-danger" >*</span>
-                                        <input name="name_kh" class="form-control data-input" data-field="name_kh" />
+                                        <input name="nid" class="form-control data-input" data-field="nid" />
                                     </div>
-
-                                    <div class="form-group col-4">
-                                        <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
-                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                                   
+                                    <div class="form-group col-6">
+                                        <label for="date_of_birth" class="form-label" vslang="titles.Date Of Birth"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="date_of_birth" class="form-control data-input" data-field="date_of_birth" />
                                     </div>
-                                    <div class="form-group col-4">
+                                    <div class="form-group col-6">
+                                        <label for="nationality" class="form-label" vslang="titles.Nationality"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="nationality" class="form-control data-input" data-field="nationality" />
+                                    </div>
+                                </div>
+                            </div>
+                                <div class="row">
+                                  <div class="form-group col-6">
+                                        <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="phone_number" class="form-control data-input" data-field="phone_number" />
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="email" class="form-label" vslang="titles.Email"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
+                                    </div>
+                                    <div class="form-group col-3">
                                        <label for="sex" class="form-label" vslang="titles.Sex"></label>
                                             <select class="modal-select data-input" data-field="sex">
                                                 <option value="">(Select Sex)</option>
@@ -1452,69 +1554,42 @@ const EmployeeDialog = (() => {
                                                 <option value="F">Female</option>
                                                 <option value="O">Other</option>
                                             </select>
-
                                     </div>
-                                    <div class="form-group col-4">
-                                        <label for="date_of_birth" class="form-label" vslang="titles.Date Of Birth"></label>
-                                        <span class="text-danger" >*</span>
-                                        <input name="date_of_birth" class="form-control data-input" data-field="date_of_birth" />
+                                    <div class="form-group col-3">
+                                        <label for="salary_base" class="form-label" vslang="titles.Salary Base"></label>
+                                        <input name="salary_base" class="form-control data-input" data-field="salary_base" />
                                     </div>
-                                    <div class="form-group col-4">
-                                        <label for="nationality" class="form-label" vslang="titles.Nationality"></label>
+                                    <div class="form-group col-3">
+                                        <label for="position" class="form-label" vslang="titles.Position"></label>
                                         <span class="text-danger" >*</span>
-                                        <input name="nationality" class="form-control data-input" data-field="nationality" />
+                                        <select name="position" class="data-input"  data-field="position_id"></select>
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="type" class="form-label" vslang="titles.Employee Type"></label>
+                                        <span class="text-danger" >*</span>
+                                        <select name="type" class=" data-input"  data-field="emp_type_id"></select>
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
+                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="joining_date" class="form-label" vslang="titles.Joining Date"></label>
+                                        <input name="joining_date" class="form-control data-input" data-field="joining_date" />
+                                    </div>
+                                    <div class="form-group col-6">
+                                        <label for="work_shift" class="form-label" vslang="titles.Work Shift"></label>
+                                        <span class="text-danger" >*</span>
+                                        <select name="work_shift" class=" data-input"  data-field="work_shift_id"></select>
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label for="address" class="form-label" vslang="titles.Address">Address</label>
+                                        <textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>
                                     </div>
 
                                 </div>
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
-                                <span class="text-danger" >*</span>
-                                <input name="phone_number" class="form-control data-input" data-field="phone_number" />
-                            </div>
-                            <div class="form-group col-5">
-                                <label for="email" class="form-label" vslang="titles.Email"></label>
-                                <span class="text-danger" >*</span>
-                                <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
-                            </div>
-                            <div class="form-group col-3">
-                                    <label for="nid" class="form-label" vslang="titles.Identity Card"></label>
-                                    <span class="text-danger" >*</span>
-                                    <input name="nid" class="form-control data-input" data-field="nid" />
-                            </div>
-                            <div class="form-group col-5">
-                                <label for="joining_date" class="form-label" vslang="titles.Joining Date"></label>
-                                <input name="joining_date" class="form-control data-input" data-field="joining_date" />
-                            </div>
-                        <div class="form-group col-4">
-                            <label for="position" class="form-label" vslang="titles.Position"></label>
-                            <span class="text-danger" >*</span>
-                            <select name="position" class=" data-input"  data-field="position_id"></select>
-                        </div>
-                            <div class="form-group col-3">
-                                <label for="salary_base" class="form-label" vslang="titles.Salary Base"></label>
-                                <input name="salary_base" class="form-control data-input" data-field="salary_base" />
-                            </div>
-
-                        <div class="form-group col-6">
-                           <label for="type" class="form-label" vslang="titles.Employee Type"></label>
-                           <span class="text-danger" >*</span>
-                            <select name="type" class=" data-input"  data-field="emp_type_id"></select>
-                        </div>
-                        <div class="form-group col-6">
-                            <label for="work_shift" class="form-label" vslang="titles.Work Shift"></label>
-                            <span class="text-danger" >*</span>
-                            <select name="work_shift" class=" data-input"  data-field="work_shift_id"></select>
-                        </div>
-
-
-                        <div class="form-group col-12">
-                            <label for="address" class="form-label" vslang="titles.Address">Address</label>
-                            <textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>
-                        </div>
-
-
-              </div>`,
+                           
+                        </div>`,
                     ].join("");
                 },
                 contentCreated: (me) => {
@@ -1531,7 +1606,6 @@ const EmployeeDialog = (() => {
                         imgClass: "data-input",
                         dataset: { field: "image_url" },
                     });
-                    console.log(999, op);
 
                     me.showProfile = (code) => {
                         let fields = [];
@@ -1586,10 +1660,12 @@ const EmployeeDialog = (() => {
                             });
                         };
                     };
-
                     me.deleteImage(div_emp_photo);
-
+                    
                     me.showProfile(me.dataOptions.id);
+                    console.log(13,me.dataOptions.id);
+                    
+                  
                 },
                 configSelect: [
                     {
@@ -1625,10 +1701,10 @@ const EmployeeDialog = (() => {
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             let p = me.getData();
+                            
                             p.photo = me.userImageBox
                                 ? me.userImageBox.getImage()
                                 : "";
-                            console.log(222444, p);
                             vsapi
                                 .call(
                                     [
@@ -1642,7 +1718,7 @@ const EmployeeDialog = (() => {
                                 )
                                 .then((res) => {
                                     if (res.status_code == 200) {
-                                        me.hide(true, p);
+                                        me.modal.hide(true, p);
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
@@ -1668,6 +1744,29 @@ const EmployeeDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
+                    me.divModal.querySelectorAll('.data-input').forEach(el => {
+
+                        const data_member = el.dataset.field;
+                        console.log(90,op.id);
+                        
+                        let id = op.id;
+                        
+                        if(id){
+                            if (el.tagName.toLowerCase() === 'select') {
+                                if(data_member == 'position_id' || data_member == 'work_shift_id' || data_member == 'emp_type_id' ){
+                                el.setAttribute('disabled',true);
+                                // el.disabled = true;
+                                }
+                            }
+                            if(data_member == 'salary_base' || data_member == 'nid'){
+                                console.log(12,el);
+                                el.disabled  = true;
+                             }
+                             id=null;
+                        }
+                        
+                   });
+                   
                 },
             });
 
