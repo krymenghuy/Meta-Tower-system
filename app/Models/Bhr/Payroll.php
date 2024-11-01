@@ -74,10 +74,10 @@ class Payroll
         $str_search = '1=1';
 
         $query = DB::table('payrolls as p')
-        ->selectRaw('p.id, p.name, p.month_year, 
-                     DATE_FORMAT(p.start_date, "%Y-%m-%d") as start_date, 
-                     DATE_FORMAT(p.end_date, "%Y-%m-%d") as end_date, 
-                     p.p_number, p.total, p.authorized, p.disbursed, 
+        ->selectRaw('p.id, p.name, p.month_year,
+                     DATE_FORMAT(p.start_date, "%Y-%m-%d") as start_date,
+                     DATE_FORMAT(p.end_date, "%Y-%m-%d") as end_date,
+                     p.p_number, p.total, p.authorized, p.disbursed,
                      p.currency_code, p.exchange_rate')
         ->where('p.branch_id', $branch_id);
 
@@ -165,14 +165,31 @@ class Payroll
     function updateAuthorize($id = null, $ss = null)
     {
 
-        $ss = $ss ? $ss : $this->userInfo;
-        $x = DB::table('payrolls')->where('id', $id)->update([
+            $branch_id = $ss->branch_id;
+            $ss = $ss ?? $this->userInfo;
+            $x = DB::table('payrolls')->where('id', $id)->update([
             'authorized' => 1,
             'update_user'=>$ss->full_name,
             'update_date'=>getNowTime(),
             'update_uid'=>$ss->user_id
         ]);
-        return DV::depends($x, ['Payroll  authorize', 'updated']);
+            $total = DB::table('payrolls as p')
+                ->where('id', $id)
+                ->selectRaw('total as amount')->first();
+            $default_account = DB::table('accounts as a')
+                ->where('a.id', 1)
+                ->selectRaw('balance as amount, a.id as account_id')->first();
+            $total->account_id = $default_account->account_id;
+
+
+            $total->trx_type = "1";
+            $total = Transaction::deposit((array)$total, $ss);
+
+            $new_balance = $total['transactions']['amount'] + $default_account->amount;
+            $query = DB::table('accounts')
+            ->where('id', 1)->update(['balance'=> $new_balance, 'trx_id' => hex2bin($total['trx_id'])]);
+            return DV::depends($x, ['Payroll  authorize', 'updated']);
+
     }
     function updateDisburse($id = null, $ss = null)
     {

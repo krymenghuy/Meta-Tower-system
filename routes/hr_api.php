@@ -330,6 +330,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->gr
     Route::post('/details', [AccountController::class, 'getDetails']);
     Route::post('/delete', [AccountController::class, 'deleteAccount']);
     Route::post('/form-options', [AccountController::class, 'getFormOptions']);
+    Route::post('/transfer', [AccountController::class, 'transfer']);
 });
 
 
