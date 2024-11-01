@@ -318,8 +318,13 @@ const AccountDialog = (() => {
                         <input name="ballance" class="form-control data-input" data-field="balance" />
                     </div>
                     <div class="form-group col-6">
-                        <label for="currency" class="form-label" vslang="titles.Currency"></label>
-                        <input name="currency" class="form-control data-input" data-field="currency" />
+                         <label for="currency" class="form-label" vslang="titles.Currency"></label>
+                                            <select class="modal-select data-input" data-field="currency">
+                                                <option value="">(Select Currency)</option>
+                                                <option value="USD">US Dollar</option>
+                                                <option value="KHR">Cambodian Riel</option>
+
+                                            </select>
                     </div>
                     </div>
 
@@ -340,15 +345,10 @@ const AccountDialog = (() => {
                     {
                         name: "account_type",
                         data: "account_types",
-                        textField: "name",
+                        textField: "account_type",
                         valueField: "id",
                     },
-                    {
-                        name: "currency",
-                        data: "currencies",
-                        textField: "code",
-                        valueField: "id",
-                    },
+
                 ],
                 buttons: [
                     {
@@ -366,6 +366,7 @@ const AccountDialog = (() => {
                             const p = me.getData();
 
                             p.id = me.dataOptions.id; //get "id" from op
+
 
                             vsapi
                                 .call(
