@@ -110,6 +110,7 @@
     .bg-secondary-custom {
         background-color: red;
     }
+   
 
     .social-icons a {
         display: inline-block;
@@ -176,6 +177,12 @@
         border-radius: 50%;
         /* Optional: make it a circle */
     }
+    .bhr-icons{
+    width: 18;
+    height: 18px;
+    object-fit: contain;
+    margin-right: 10px;
+    }
 </style>
 
 <div id="_main_employeeComponent" style="display:none;padding:10px 0 0">
@@ -210,9 +217,9 @@
 
 
     <div class="d-none" id="view_see_info__">
-        <div class="d-flex px-3" id="btn_back">
+        <div class="d-flex px-3 pt-3" id="btn_back">
             <button id="_btn_backTo_employee" style="background-color:#2b3991; width:100px;"
-                class="btn text-white shadow rounded-4 m-2 p-2" type="button">
+                class="btn text-white shadow rounded-4 m-2 p-2"  type="button">
                 <i class="fa-solid fa-angles-left "></i>
                 <span class="" vslang="buttons.Back">Back</span>
             </button>
