@@ -503,10 +503,10 @@ var EmployeeComponent = new function () {
 
         html = [
             `
-             <div class="card" style="height:487px;">
-                            <div class="card-header">
+             <div class="card pb-3" style="height:390px;">
+                            <div class="card-header bg-primary-custom text-white">
                                 <h4>Skills</h4>
-                                <span class="ellipsis">...</span>
+                                
                             </div>
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
@@ -580,12 +580,12 @@ var EmployeeComponent = new function () {
             .then((res) => {
                 let data = res.status_code === 200 ? res.data.data : [];
                 console.log(123456, data);
-                let html = `<div class="card" style="height:487px;">
-                <div class="card-header">
+                let html = `<div class="card pb-3" style="height:390px;">
+                <div class="card-header text-white bg-primary-custom">
                     <h4>Education</h4>
                     <div class="d-flex gap-2">
                         <a href="javascript:void(0)" data="id" id="lnk_add_education">
-                            <i class="fa fa-plus-circle fs-5 text-success"></i>
+                            <i class="fa fa-plus-circle fs-5 text-white"></i>
                         </a>
                     </div>
                 </div>
@@ -593,11 +593,11 @@ var EmployeeComponent = new function () {
             `;
                 data.map((d) => {
                     html += `
-                    <div class="row mt-2 py-4 border-bottom">
+                    <div class="row py-2 border-bottom border-primary">
                         <div class="col-md-6">
-                            <h6 style="width:180px; height:20px overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap">${d.period}</h6>
-                            <p class="text-success" style="width:180px; height:20px">${d.edu_level}</p>
-                            <p class="text-nowrap" style="width:180px; height:20px">${d.major}</p>
+                            <h6 class="text-" style="width:180px; height:22px overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap">${d.period}</h6>
+                            <p class="text-primary-custom" style="width:180px; height:20px"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/graduate.svg" /> ${d.edu_level}</p>
+                            <p class="text-muted" style="width:180px; height:20px"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/radio.svg" /> ${d.major}</p>
                         </div>
 
                         <div class="col-md-6">
@@ -649,12 +649,12 @@ var EmployeeComponent = new function () {
             .then((res) => {
                 let data = res.status_code === 200 ? res.data.data : [];
                 console.log(123456, data);
-                let html = `<div class="card" style="height:487px;">
-            <div class="card-header">
+                let html = `<div class="card pb-3" style="height:390px;">
+            <div class="card-header text-white bg-primary-custom">
                 <h4>Experience</h4>
                 <div class="d-flex gap-2">
                     <a href="javascript:void(0)" data="id" id="lnk_add_experience">
-                        <i class="fa fa-plus-circle fs-5 text-warning"></i>
+                        <img class="bhr-" src="${main_view.asset_url}/images/icons/dot.svg" />
                     </a>
                 </div>
             </div>
@@ -668,25 +668,25 @@ var EmployeeComponent = new function () {
                         <div class="experience-toggle" data-experience-id="${d.id}"
                             style="display:flex; justify-content:space-between; width:350px; cursor: pointer;">
                             <div style="display:flex; width:350px; justify-content:space-between">
-                                <p class="text-primary" style="font-size:14px;width:125px;display:flex;justify-content:start; overflow-y: hidden; overflow-x: auto; scrollbar-width: none; align-items: flex-start; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap;">
-                                    📢${d.position}
+                                <p class="text-primary-custom" style="font-size:14px;width:175px;display:flex;justify-content:start; overflow-y: hidden; overflow-x: auto; scrollbar-width: none; align-items: flex-start; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap;">
+                                    📢 ${d.department}
                                 </p>
-                                <div class="date_join" style="width:200px;display:flex;justify-content:end;align-items:end;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
-                                    <p>: (${d.start_date}</p>
-                                    <p class="text-danger ml-2 mr-2">-</p>
-                                    <p>${d.end_date})</p>
-                                </div>
+                                
                             </div>
                         </div>
+                        <div style="display:flex; width:350px; justify-content:space-between">
+                            <div class="date_join text-muted" style="width:300px;display:flex;justify-content:start;align-items:end;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
+                                <img class="bhr-icons" src="${main_view.asset_url}/images/icons/calender.svg" />
+                                <p>(${d.start_date}</p><p class="text-danger ml-2 mr-2">-</p><p>${d.end_date})</p>
+                            </div>
+                            <p class="text-primary-custom text-nowrap">Position: ${d.position}</p>
+                                
+                        </div>
+                        
+
                         <div class="experience-details" id="details_${d.id}"
                             style="display: none; flex-direction: column; gap:10px; transition: all 0.3s ease;">
-                            <p class="text-success">Position: ${d.position}</p>
-                            <div style="display:flex">
-                                <p class="text-nowrap mr-2">Detail: </p>
-                                <p class="text-nowrap"> ${d.description}</p>
-                            </div>
-                            <p class="text-nowrap">Duration: ${d.period_type}</p>
-                            <p class="text-nowrap text-primary">Company: ${d.organization_id}</p>
+                            <p class="text-nowrap text-primary-custom">Company : ${d.organization_id}</p>
                         </div>
                     </div>
                 </div>
@@ -783,12 +783,12 @@ var EmployeeComponent = new function () {
                 console.log(1212, data);
 
                 let html = `
-                    <div class="card" style="height:487px;">
-                        <div class="card-header">
+                    <div class="card pb-3" style="height:390px;">
+                        <div class="card-header bg-primary-custom text-white">
                             <h4>Tax Allowance</h4>
                             <div class="d-flex gap-2">
                                 <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-tax-allowance">
-                                    <i class="fa fa-plus-circle fs-5 text-success"></i>
+                                    <i class="fa fa-plus-circle fs-5 text-white"></i>
                                 </a>
                             </div>
                         </div>
@@ -1068,8 +1068,8 @@ const AddEducation = (() => {
             dialog ||
             new GeneralDialog({
                 title: op.id
-                    ? "Edit Employee Seniority"
-                    : "New Employee Seniority", // Dynamically set title
+                    ? "Edit Education"
+                    : "New Education", 
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
                     return [
@@ -1086,7 +1086,7 @@ const AddEducation = (() => {
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.Period">Period</label>
-                            <div><input name="period" class="form-control data-input" data-field="period"/></div>
+                            <div><input name="period" class="form-control data-input" placeholder="(2020-2024)" data-field="period"/></div>
                         </div>
                         <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.Major">Major</label>
@@ -1489,7 +1489,7 @@ const EmployeeDialog = (() => {
                         <div class="form-group col-4">
                             <label for="position" class="form-label" vslang="titles.Position"></label>
                             <span class="text-danger" >*</span>
-                            <select name="position" class=" data-input"  data-field="position_id"></select>
+                            <select name="position" class="data-input"  data-field="position_id"></select>
                         </div>
                             <div class="form-group col-3">
                                 <label for="salary_base" class="form-label" vslang="titles.Salary Base"></label>
@@ -1586,10 +1586,25 @@ const EmployeeDialog = (() => {
                             });
                         };
                     };
-
                     me.deleteImage(div_emp_photo);
-
+                    
                     me.showProfile(me.dataOptions.id);
+                    console.log(13,me.modal);
+                    
+                    me.divModal.querySelectorAll('.data-input').forEach(el => {
+
+                        const data_member = el.dataset.field;
+                        
+                        if (el.tagName.toLowerCase() === 'select') {
+                            if(data_member == 'position_id'){
+                            el.setAttribute('disabled',true);
+                            }
+                        }
+                        if(data_member == 'name' || data_member == 'nid'){
+                            console.log(12,el);
+                            el.disabled  = true;
+                         }
+                   });
                 },
                 configSelect: [
                     {
@@ -1625,10 +1640,10 @@ const EmployeeDialog = (() => {
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             let p = me.getData();
+                            
                             p.photo = me.userImageBox
                                 ? me.userImageBox.getImage()
                                 : "";
-                            console.log(222444, p);
                             vsapi
                                 .call(
                                     [
