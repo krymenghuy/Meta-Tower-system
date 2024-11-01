@@ -87,7 +87,7 @@ class Account
                     t.trx_type,
                     a.balance,
                     a.currency,
-                    '.$balance_date.',
+                    '.$balance_date.        ',
                     e.photo_file_name as emp_photo
                 ')
 
@@ -125,7 +125,7 @@ class Account
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('account_types as at', 'at.id', '=', 'a.account_type_id')
             ->join('transactions as t', 't.id', '=', 'a.trx_id')
-            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type_id,at.name as account_type, a.account_number,t.amount as transaction_amount,t.trx_type,a.currency,a.balance,formatdate(a.last_balance_date) as last_balance_date,e.photo_file_name as emp_photo')
+            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type_id,at.name as account_type, a.account_number,t.amount as transaction_amount,t.trx_type,a.currency,a.balance,a.last_balance_date as last_balance_date,e.photo_file_name as emp_photo')
             ->where('a.id', $id)->first();
         if ($row) {
             $row->image_url = Employee::profilePicture($row->emp_id);

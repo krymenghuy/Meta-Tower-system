@@ -368,21 +368,21 @@ const AccountDialog = (() => {
                             p.id = me.dataOptions.id; //get "id" from op
 
 
-                            // vsapi
-                            //     .call(
-                            //         [
-                            //             main_view.base_url,
-                            //             "/hr/account/save",
-                            //         ].join(""),
-                            //         p,
-                            //         btn,
-                            //         null
-                            //     )
-                            //     .then((res) => {
-                            //         if (res.status_code == 200) {
-                            //             me.hide(true, p);
-                            //         } else cv_interact.error(res.error_message);
-                            //     });
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/account/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                    } else cv_interact.error(res.error_message);
+                                });
                         },
                     },
                 ],
