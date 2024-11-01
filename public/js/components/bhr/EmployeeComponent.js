@@ -1596,13 +1596,14 @@ const EmployeeDialog = (() => {
                         const data_member = el.dataset.field;
                         
                         if (el.tagName.toLowerCase() === 'select') {
-                            if(data_member == 'position_id'){
-                            el.setAttribute('disabled',true);
+                            if(data_member == 'position_id' || data_member == 'work_shift_id' || data_member == 'emp_type_id' ){
+                            // el.setAttribute('disabled',true);
+                            el.disabled = true;
                             }
                         }
                         if(data_member == 'name' || data_member == 'nid'){
                             console.log(12,el);
-                            el.disabled  = true;
+                            el.readonly  = true;
                          }
                    });
                 },
