@@ -17,16 +17,19 @@ class Transaction
         $this->userInfo = $userInfo;
     }
 
-    static function save($arr,$ss = null){
+    static function deposit($arr,$ss = null){
         $ss = $ss ?? Transaction::$userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'emp_id' => '1|number',
-            'payroll_id' => '1|number',
+            'emp_id' => '0|number',
+            'payroll_id' => '0|number',
             'amount' => '1|number',
             'remarks' => '0|string|250',
             'trx_type' => '1|number',
+            'status'=>'0|string|10',
+            'account_id' => '1|number',
+
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -36,6 +39,69 @@ class Transaction
 
         $id = $res->id;
         $inputs = $res->values;
+        $inputs['status'] = 'in';
+
+        $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
+        if ($id) {
+            return ( ['transactions' => $inputs,'trx_id'=>bin2hex($id)] );
+        }
+
+        return ['error' => 'Error saving transaction'];
+    }
+    static function withdrawal($arr,$ss = null){
+        $ss = $ss ?? Transaction::$userInfo;
+        $branch_id = $ss->branch_id;
+        $v_rule = [
+            'id' => '0|identity=1',
+            'emp_id' => '0|number',
+            'payroll_id' => '0|number',
+            'amount' => '1|number',
+            'remarks' => '0|string|250',
+            'trx_type' => '1|number',
+            'status'=>'0|string|10',
+            'account_id' => '1|number',
+        ];
+
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return ['error' => $res->error];
+        }
+
+        $id = $res->id;
+        $inputs = $res->values;
+        $inputs['status'] = 'out';
+
+        $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
+        if ($id) {
+            return ( ['transactions' => $inputs,'trx_id'=>bin2hex($id)] );
+        }
+
+        return ['error' => 'Error saving transaction'];
+    }
+    static function transfer($arr,$ss = null,$status='in'){
+        $ss = $ss ?? Transaction::$userInfo;
+        $branch_id = $ss->branch_id;
+        $v_rule = [
+            'id' => '0|identity=1',
+            'emp_id' => '1|number',
+            'payroll_id' => '0|number',
+            'amount' => '1|number',
+            'remarks' => '0|string|250',
+            'trx_type' => '1|number',
+            'status'=>'0|string|10',
+            'account_id' => '1|number',
+            'transfer_acc_id' => '1|number',
+        ];
+
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return ['error' => $res->error];
+        }
+
+        $id = $res->id;
+        $inputs = $res->values;
+        $inputs['status'] = $status;
+
 
         $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
         if ($id) {

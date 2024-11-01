@@ -29,7 +29,7 @@ class Account
             'account_number' => '1|number',
             'balance' => '0|number',
             'currency' => '1|string',
-            'account_type_id' => '1|number',
+            'account_type' => '1|string',
 
         ];
 
@@ -73,15 +73,13 @@ class Account
                 $query = DB::table('accounts as a')
                 ->join('employees as e', 'e.id', '=', 'a.emp_id')
                 ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-                ->join('account_types as at', 'at.id', '=', 'a.account_type_id')
                 ->join('transactions as t', 't.id', '=', 'a.trx_id')
                 ->selectRaw('
                     a.id,
                     a.emp_id,
                     e.name as emp_name,
                     pos.title as position,
-                    a.account_type_id,
-                    at.name as account_type,
+                    a.account_type,
                     a.account_number,
                     t.amount as transaction_amount,
                     t.trx_type,
@@ -123,9 +121,8 @@ class Account
         $row = DB::table('accounts as a')
             ->join('employees as e', 'e.id', 'a.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->join('account_types as at', 'at.id', '=', 'a.account_type_id')
             ->join('transactions as t', 't.id', '=', 'a.trx_id')
-            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type_id,at.name as account_type, a.account_number,t.amount as transaction_amount,t.trx_type,a.currency,a.balance,formatdate(a.last_balance_date) as last_balance_date,e.photo_file_name as emp_photo')
+            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type, a.account_number,t.amount as transaction_amount,t.trx_type,a.currency,a.balance,formatdate(a.last_balance_date) as last_balance_date,e.photo_file_name as emp_photo')
             ->where('a.id', $id)->first();
         if ($row) {
             $row->image_url = Employee::profilePicture($row->emp_id);
@@ -169,8 +166,41 @@ class Account
             ],
 
             'employees' => GeneralSettings::options_employee(10, $ss),
-            'account_types' => DB::table('account_types')->selectRaw('id,name AS account_type')->get(),
             'accounts' => $account,
         ];
+    }
+
+    function transfer($arr, $ss)
+    {
+        $d = (object) $arr;
+        $branch_id = $ss->branch_id;
+        $trx = (object) [];
+
+        $payroll_account = DB::table('accounts')
+            ->where('account_number', $d->account_number)
+            ->value('balance');
+
+        $payroll_balance = $payroll_account - $d->w_balance;
+
+        $trx->emp_id = $d->emp_id;
+        $trx->trx_type='3';
+        $trx->amount = $d->w_balance*(-1);
+        $trx->status = 'out';
+
+        $trx = Transaction::save((array)$trx, $ss);
+
+        DB::table('accounts')
+            ->where('account_number', $d->account_number)
+            ->update(['balance' => $payroll_balance, 'trx_id' => hex2bin($trx['trx_id'])]);
+
+        $wellet = DB::table('wallet_accounts')
+            ->where('w_account_number', $d->w_account_number)
+            ->value('w_balance');
+
+        $new_wellet_balance = $d->w_balance + $wellet;
+
+        $wellet = DB::table('wallet_accounts')
+            -where('w_account_number', $d->w_account_number)
+            ->update(['w_balance' => $new_wellet_balance]);
     }
 }

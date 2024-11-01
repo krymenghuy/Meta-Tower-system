@@ -266,7 +266,7 @@ var PayrollComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success('Updated Payroll Successfully');
+                cv_interact.success('Updated Successfully');
                 mThis.PayrollListView.showPage();
             }
         };
