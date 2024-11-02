@@ -86,6 +86,7 @@ var EmployeeBonusComponent = new (function () {
         };
 
         const pr_tbl = mThis.BenefitListView.getListContainer();
+
         const sh_parent = pr_tbl;
         sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add('overflow-y-auto');

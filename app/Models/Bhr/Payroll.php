@@ -167,12 +167,16 @@ class Payroll
 
             $branch_id = $ss->branch_id;
             $ss = $ss ?? $this->userInfo;
+            $check = DB::table('payrolls')->where('id', $id)->value('authorized');
+            if($check){
+                return DV::error('Already Authorized');
+            }
             $x = DB::table('payrolls')->where('id', $id)->update([
-            'authorized' => 1,
-            'update_user'=>$ss->full_name,
-            'update_date'=>getNowTime(),
-            'update_uid'=>$ss->user_id
-        ]);
+                'authorized' => 1,
+                'update_user'=>$ss->full_name,
+                'update_date'=>getNowTime(),
+                'update_uid'=>$ss->user_id
+            ]);
             $total = DB::table('payrolls as p')
                 ->where('id', $id)
                 ->selectRaw('total as amount')->first();

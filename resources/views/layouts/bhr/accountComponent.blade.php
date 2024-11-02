@@ -1,5 +1,5 @@
 <div id="_main_accountComponent" style="display:none;padding:20px 0 0">
-    <div class="d-flex justify-content-between w-100 p-3 " id="_divFilter">
+    <div class="d-flex justify-content-between w-100 p-4" id="_divFilter">
         <div class="d-flex align-items-center w-50 gap-2">
             <div class="d-flex align-items-center w-50 gap-2">
                 <input type="text" class="form-control filter-field" data-field="search_value" id="_sdl_search_account"
@@ -19,19 +19,19 @@
         </div>
     </div>
 
-    <div class="p-3">
-        <div id="_account_list"></div>
-    </div>
+    <div id="_account_list" class="m-4"></div>
 </div>
 <style>
     #_account_list{
-        height: 500px;
+        height: 510px;
+        padding-bottom: 30px;
         overflow-y: scroll;
         overflow-x: hidden;
         scrollbar-width: none;
     }
-
     #_account_list_paginator {
+        display: flex;
+        position: fixed;
         bottom: 0;
     }
 </style>

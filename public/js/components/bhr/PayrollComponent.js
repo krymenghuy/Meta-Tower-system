@@ -11,7 +11,7 @@ var PayrollComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnAddpayroll");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_payroll");
-
+    let cloneTable = null;
     this.cols = [
         {
             title: "No",
@@ -105,8 +105,8 @@ var PayrollComponent = new (function () {
             data: (data) => `
                 <div class="d-flex justify-content-end align-items-end">
                     <a href="javascript:void(0)"
-                       class="${data.disbursed === 1 ? "d-none" : "btn_payroll_action"}"
-                       data-id="${data.id}" data-statusid="${data.status_id}">
+                       class="btn_payroll_action ${data.disbursed === 1 ? " d-none" : ""}"
+                       data-id="${data.id}" data-authorized="${data.authorized}" >
                         <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
                     </a>
                 </div>`
@@ -122,7 +122,18 @@ var PayrollComponent = new (function () {
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: 'table table--white rounded-2 overflow-hidden header-uppercase',
+            rowCreated: (data, index, tr) => {
+                cloneTable = tr.parentElement.parentElement;
+                console.log(1212,cloneTable);
+
+                tr.classList.add('tr_action');
+                // mThis.initDropdownMenus(cloneTable);
+
+                // mThis.initDropdownMenus(mThis.pr_table);
+            },
         });
+
+
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
@@ -142,11 +153,12 @@ var PayrollComponent = new (function () {
             AddPayRollListDailog.show(op);
         };
 
+        console.log(555, mThis.self.querySelectorAll('.table-test tr td'));
+
         const pr_tbl = mThis.PayrollListView.getListContainer();
         // pr_tbl.style.height = `${window.innerHeight - 225}px`;
         pr_tbl.classList.add('overflow-y-auto', 'overflow-x-hidden');
 
-        mThis.initDropdownMenus(pr_tbl);
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = () => mThis.PayrollListView.showPage(mThis.getDataFormFilter());
         });
@@ -158,10 +170,19 @@ var PayrollComponent = new (function () {
             }, 200);
         });
 
+        mThis.pr_table = mThis.PayrollListView.getTable();
+        mThis.initDropdownMenus(mThis.pr_table);
+
+        this.cloneTable = mThis.self.querySelector('#_payroll_list');
+        console.log(7777,mThis.cloneTable.querySelector('tr'));
+
         mThis.initAlready = true;
     };
 
+
     this.initDropdownMenus = (table) => {
+        console.log(666,table);
+
         const menuOptions = {
             containerElement: table,
             actionButtonClass: "btn_payroll_action",
@@ -206,7 +227,30 @@ var PayrollComponent = new (function () {
             },
         };
         new VSDropdownMenu(menuOptions);
+        console.log(123456,table.querySelectorAll('a.btn_payroll_action'));
+
+        table.querySelectorAll('a.btn_payroll_action').forEach(e => {
+            const isAuthorized = e.dataset.authorized == '1';
+            console.log(9999,menuOptions.menus);
+
+            menuOptions.menus.forEach((el ,i) => {
+                // const action = el.dataset.mnuaction;
+            console.log(123,isAuthorized ,444,el);
+            if(isAuthorized){
+                if (el.name === 'edit_payroll' || el.name === 'delete_payroll') {
+                    delete menuOptions.menus[i];
+                }
+            }else{
+                menuOptions.menus[i+1] = menuOptions.menus[i];
+            }
+
+            });
+        });
+
     };
+
+
+
     this.changeAuthorize = (id, menuLink)=>{
         let p={
             id:id,
@@ -321,6 +365,8 @@ var PayrollComponent = new (function () {
     }
     this.show = function () {
         mThis.init();
+
+
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
             mThis.PayrollListView.showPage();

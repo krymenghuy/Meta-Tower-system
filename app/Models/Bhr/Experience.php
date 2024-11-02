@@ -77,7 +77,7 @@ class Experience //extends Model
             ->where('exp.branch_id', $branch_id)
             ->whereRaw($str_search)
             ->where('exp.emp_id', $emp_id)
-            ->selectRaw('exp.id, exp.description, pos.id, pos.title as position,pos.department_id,d.name as department,org.id as organization_id, org.name as organization_id, exp.period_type, formatDate(exp.end_date) as end_date, formatDate(exp.start_date) as start_date')
+            ->selectRaw('exp.id, exp.description, pos.id, pos.title as position,pos.department_id,d.name as department,org.id as organization_id, org.name as organization_id, exp.period_type,exp.end_date as end_date,exp.start_date as start_date')
             ->orderBy('exp.id', 'DESC');
 
         $clone_query = clone $query;

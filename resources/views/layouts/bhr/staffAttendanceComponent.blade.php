@@ -1,8 +1,9 @@
 <div id="_main_staffAttendanceComponent" style="display:none;padding:20px 0 0">
-    <div class="d-flex  p-4 justify-content-between w-200 " id="search">
+    <div class="d-flex  p-4 justify-content-between w-200 " id="_divFilter_attendance">
         <div class="d-flex align-items-center w-100 gap-2">
             <div class="d-flex align-items-center w-50 gap-2">
-                <input type="text" class="form-control filter-field" id="_staff_attendance_search" placeholder="Search attendance ...">
+                <input type="text" class="form-control filter-field" id="_staff_attendance_search"
+                    placeholder="Search attendance ...">
 
                 <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
                     <i class="la la-search"></i>
@@ -19,17 +20,18 @@
     <div id="_staff_attendance_list" class="m-4"></div>
 </div>
 <style>
-
     #_staff_attendance_list {
-        height: 600px;
+        height: 580px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
     }
+
     #_staff_attendance_list_paginator {
         bottom: 0;
     }
-    .choices__list{
+
+    .choices__list {
         max-height: 600px;
         overflow-y: auto;
     }
