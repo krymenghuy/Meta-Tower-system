@@ -143,7 +143,7 @@ class Leave
         if($status_id){
             $str_status = 'l.status_id = \'' .$status_id. '\'' ;
         }
-        else{
+        if($str_dates){
             $end_date = convertDate($end_date);
             $start_date = convertDate($start_date);
             if ((bool) strtotime($start_date) && (bool) strtotime($end_date)) {

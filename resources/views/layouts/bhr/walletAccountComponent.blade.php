@@ -1,5 +1,5 @@
 <div id="_main_walletAccountComponent" style="display:none;padding:20px 0 0">
-    <div class="d-flex justify-content-between w-100 p-3 " id="_divFilter">
+    <div class="d-flex justify-content-between w-100 p-4 " id="_divFilter">
         <div class="d-flex align-items-center w-50 gap-2">
             <div class="d-flex align-items-center w-50 gap-2">
                 <input type="text" class="form-control filter-field" id="_sdl_search_wallet_account"data-field="search_value"
@@ -18,13 +18,11 @@
         </div>
     </div>
 
-    <div class="p-3">
-        <div id="_wallet_account_list"></div>
-    </div>
+    <div id="_wallet_account_list" class="m-4"></div>
 </div>
 <style>
     #_wallet_account_list{
-        height: 500px;
+        height: 560px;
         overflow-y: scroll;
         overflow-x: hidden;
         scrollbar-width: none;

@@ -8,7 +8,7 @@ var StaffAttendanceComponent = new (function () {
     this.title_prop = "Staff Attendance";
     this.btnAdd = this.self.querySelector("#_btnAddStaffAttendance");
     this.elSearch = this.self.querySelector("#_staff_attendance_search");
-    this._searchAttendance = this.self.querySelector("#search");
+    this.divFilter = this.self.querySelector("#_divFilter_attendance");
     this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
 
     this.cols = [
@@ -42,7 +42,7 @@ var StaffAttendanceComponent = new (function () {
             data: "check_in_time",
         },
         {
-            title: "attendance date",
+            title: "Attendance Date",
             className: "align-middle",
             data: "attendance_date",
         },
@@ -54,7 +54,10 @@ var StaffAttendanceComponent = new (function () {
         {
             title: "Status",
             className: "align-middle",
-            data: "status_id",
+            data: "formatted_status",
+            render: function (data, type, row) {
+                return data;
+            },
         },
         {
             title: "Remark",
@@ -88,16 +91,11 @@ var StaffAttendanceComponent = new (function () {
 
         mThis.StaffAttendanceListView = new ListView("_staff_attendance_list", {
             fetchApi: `${mThis.base_url}/hr/attendances/list-paginate`,
-            // processResponse: (res) => {
-            //     console.log(res);
-            //     return res.data;
-            // },
-            perPage:10,
+            perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white header-uppercase",
             listContainerClass: null,
-            
         });
 
         mThis.btnAdd.onclick = function (e) {
@@ -112,90 +110,68 @@ var StaffAttendanceComponent = new (function () {
             };
             StaffAttendanceDialog.show(op);
         };
+
         const pr_tbl = mThis.StaffAttendanceListView.getListContainer();
-        const sh_parent = pr_tbl;
-        // sh_parent.style.height = window.innerHeight - 235 + "px";
-        sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        pr_tbl.classList.add("overflow-y-auto");
+        pr_tbl.classList.add("overflow-x-hidden");
 
         mThis.initDropdownMenus(pr_tbl);
 
-        mThis._searchAttendance.addEventListener("change", (e) => {
-            e.preventDefault();
-            mThis.StaffAttendanceListView.showPage(mThis.getDataFormFilter());
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
+            };
         });
+
+        mThis.elSearch.addEventListener("keyup", (e) => {
+            e.preventDefault();
+            clearTimeout(mThis.search_timeout);
+            mThis.search_timeout = setTimeout(() => {
+                mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
+            }, 250);
+        });
+
         mThis.initAlready = true;
     };
-    mThis.elSearch.addEventListener("keyup", (e) => {
-        clearTimeout(mThis.search_timeout);
-        mThis.search_timeout = setTimeout(() => {
-            if (mThis.StaffAttendanceListView) {
-                mThis.StaffAttendanceListView.showPage(
-                    mThis.getDataFormFilter()
-                );
-            } else {
-                console.error("Staff is not defined");
-            }
-        }, 200);
-    });
 
-    mThis.btnSearch.onclick = (e) => {
-        if (mThis.StaffAttendanceListView) {
-            mThis.StaffAttendanceListView.showPage(mThis.getDataFormFilter());
-        } else {
-            console.error("Staff is not defined");
-        }
-    };
-    this.setFilterPeriod = (p, name, start_date, end_date) => {
-        return p;
-    };
+    this.getFilterData = () => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
 
-    this.getDataFormFilter = () => {
-        let p = {};
-        p.search_value = mThis.elSearch.value;
-        let main_filters =
-            mThis._searchAttendance.querySelectorAll(".filter-field");
-        main_filters.forEach((el) => {
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(222, p.search_value, main_filters);
 
         return p;
     };
+
     this.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
             actionButtonClass: "btn_staffAttendance_action",
             cssClass: "bg-white shadow",
-            //menuItemClass:"",
             menus: [
                 {
-                    html: '<span class="ps-2  " vslang="titles.Edit StaffAttendance">Edit Staff Attendance</span>',
+                    html: '<span class="ps-2">Edit Staff Attendance</span>',
                     icon: `<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_staff_attendance",
                 },
                 {
-                    html: '<span class="ps-2  " vslang="titles.Delete StafAttendance">Delete Staff Attendance</span>',
+                    html: '<span class="ps-2">Delete Staff Attendance</span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_staff_attendance",
                 },
             ],
             onClick: (menulink, id, name) => {
-                switch (name) {
-                    case "edit_staff_attendance": {
-                        mThis.editStaffAttendance(id, menulink);
-                        break;
-                    }
-                    case "delete_staff_attendance": {
-                        mThis.deleteStaffAttendance(id, menulink);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
+                if (name === "edit_staff_attendance") {
+                    mThis.editStaffAttendance(id, menulink);
+                } else if (name === "delete_staff_attendance") {
+                    mThis.deleteStaffAttendance(id, menulink);
                 }
             },
         };
@@ -212,9 +188,8 @@ var StaffAttendanceComponent = new (function () {
         };
         StaffAttendanceDialog.show(op);
     };
-    this.deleteStaffAttendance = (id, menulink) => {
-        console.log(13456, id, menulink);
 
+    this.deleteStaffAttendance = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
@@ -242,7 +217,7 @@ var StaffAttendanceComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Attendances Delete Successfully"
+                                    "Attendance deleted successfully"
                                 );
                                 mThis.StaffAttendanceListView.showPage();
                             }
@@ -262,7 +237,7 @@ var StaffAttendanceComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, this.elSortBy);
+                console.log("Form options prepared", d);
             });
     };
 
@@ -283,7 +258,7 @@ const StaffAttendanceDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static", //User click outside form, do not close form
                 keyboard: true, //prevent user from using ESC key
                 createContent: () => {
@@ -304,12 +279,9 @@ const StaffAttendanceDialog = (() => {
                                 <label for="check_out_time" class="form-label" vslang="titles.Check Out Time">Check Out Time</label>
                                 <input type="time" name="check_out_time" class="form-control data-input" data-field="check_out_time" />
                             </div>
+
                             <div class="form-group col-12">
-                                <label for="attendance_date" class="form-label">Attendance Date</label>
-                                <input type="date" class="form-control data-input" data-field="attendance_date" id="attendance_date" placeholder="Select Attendance Date" required>
-                            </div>
-                            <div class="form-group col-12">
-                                <label for="remark" class="form-label" vslang="titles.Reason"></label>
+                                <label for="remark" class="form-label" vslang="titles.Remark"></label>
                                 <textarea  type="text" class="form-control data-input" data-field="remark"></textarea>
                             </div>
 
