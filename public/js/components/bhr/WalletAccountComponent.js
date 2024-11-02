@@ -36,17 +36,16 @@ var WalletAccountComponent = new (function () {
             title: "Account Type",
             className: "align-middle",
             data: (data, index, tr) => {
-                const accountType = mThis.AccountTypeMap[data.account_type_id] || "Payroll";
-                const backgroundColor = accountType === "Wallet" ? "info" : "success";
-                return `<p class="p-2 text-center rounded-5 m-0 border text-white w-50 bg-${backgroundColor}">${accountType}</p>`;
-            }
+                return `<p class="p-1 m-0 text-center rounded-5 border text-white w-50 bg-info bg-gradient">${data.w_account_type ?? ""}</p>`;
+            },
         },
+
 
         {
             title: "Account Number",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.account_number ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.w_account_number ?? ''}</p>`;
             }
         },
 
@@ -55,7 +54,7 @@ var WalletAccountComponent = new (function () {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.balance ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.w_balance ?? ''}</p>`;
             }
         },
         {
@@ -103,6 +102,7 @@ var WalletAccountComponent = new (function () {
             let op = {
                 btn: e.target,
                 onClose: () => {
+                    cv_interact.success('Account Added Successfully');
                     mThis.WalletAccountListView.showPage();
                 }
             };
@@ -184,6 +184,7 @@ var WalletAccountComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
+                cv_interact.success('Account Updated Successfully');
                 mThis.WalletAccountListView.showPage();
             }
         };
@@ -196,6 +197,7 @@ var WalletAccountComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
+                cv_interact.success('Deleted Successfully');
                 mThis.WalletAccountListView.showPage();
             }
         };
@@ -236,11 +238,8 @@ var WalletAccountComponent = new (function () {
 
             VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
 
-            mThis.AccountTypeMap = d.account_types.reduce((map, account_type) => {
-                map[account_type.id] = account_type.account_type;
-                return map;
-            })
-        })
+
+        });
     }
 
 
@@ -274,21 +273,27 @@ const WalletAccountDialog = (()=>{
                     <div class="form-group  col-12 d.none">
                         <div id="info"></div>
                     </div>
-                    <div class="form-group col-6">
-                        <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
-                        <select name="account_type" class=" data-input"  data-field="account_type_id"></select>
+                  <div class="form-group col-6">
+                        <label for="w_account_type" class="form-label" vslang="titles.Account Type"></label>
+                                            <select class="modal-select data-input" data-field="w_account_type">
+                                                <option value="Wallet">Wallet</option>
+                                            </select>
                     </div>
                     <div class="form-group col-6">
-                        <label for="account_number" class="form-label" vslang="titles.Account Number"></label>
-                        <input name="account_number" class="form-control data-input" data-field="account_number" />
+                        <label for="w_account_number" class="form-label" vslang="titles.Account Number"></label>
+                        <input name="w_account_number" class="form-control data-input" data-field="w_account_number" />
                     </div>
                     <div class="form-group col-6">
-                        <label for="ballance" class="form-label" vslang="titles.Balance"></label>
-                        <input name="ballance" class="form-control data-input" data-field="balance" />
+                        <label for="w_balance" class="form-label" vslang="titles.Balance"></label>
+                        <input name="w_balance" class="form-control data-input" data-field="w_balance" />
                     </div>
                     <div class="form-group col-6">
-                        <label for="currency" class="form-label" vslang="titles.Currency"></label>
-                        <input name="currency" class="form-control data-input" data-field="currency" />
+                         <label for="currency" class="form-label" vslang="titles.Currency"></label>
+                                            <select class="modal-select data-input" data-field="currency">
+                                                <option value="">(Select Currency)</option>
+                                                <option value="KHR">Cambodian Riel</option>
+                                                <option value="USD">US Dollar</option>
+                                            </select>
                     </div>
                     </div>
 
@@ -303,12 +308,6 @@ const WalletAccountDialog = (()=>{
                  textField:(me, d)=> {return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`; },
                 // textField:"name",
                  valueField:'id'
-               },
-               {
-                name:"account_type",
-                data:'account_types',
-                textField:"account_type",
-                valueField:'id'
                },
 
             ],

@@ -42,10 +42,8 @@ var AccountMenagmentComponent = new (function () {
             title: "Account Type",
             className: "align-middle",
             data: (data, index, tr) => {
-                const accountType = mThis.AccountTypeMap[data.account_type_id] || "Payroll";
-                const backgroundColor = accountType === "Wallet" ? "info" : "success";
-                return `<p class="p-2 text-center rounded-5 m-0 border text-white w-50 bg-${backgroundColor}">${accountType}</p>`;
-            }
+                return `<p class="p-1 m-0 text-center rounded-5 m-0 border text-white w-50 bg-success">${data.account_type ?? ""}</p>`;
+            },
         },
         {
             title: "Account Number",
@@ -113,6 +111,7 @@ var AccountMenagmentComponent = new (function () {
             let op = {
                 btn: e.target,
                 onClose: () => {
+                    cv_interact.success('Account Added Successfully');
                     mThis.AccountListView.showPage();
                 },
             };
@@ -157,6 +156,12 @@ var AccountMenagmentComponent = new (function () {
             //menuItemClass:"",
             menus: [
                 {
+                    html: '<span class="ps-2  " vslang="titles.Transfer">Transfer</span>',
+                    icon: `<i class="fa-solid fa-money-bill-transfer"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "transfer",
+                },
+                {
                     html: '<span class="ps-2  " vslang="titles.Modify Account">Modify Account</span>',
                     icon: `<i class="fa-regular fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
@@ -172,6 +177,10 @@ var AccountMenagmentComponent = new (function () {
 
             onClick: (menuLink, id, name) => {
                 switch (name) {
+                    case "transfer": {
+                        mThis.transfer(id, menuLink);
+                        break;
+                    }
                     case "edit_account": {
                         mThis.editAccount(id, menuLink);
                         break;
@@ -189,12 +198,23 @@ var AccountMenagmentComponent = new (function () {
         };
         new VSDropdownMenu(menuOptopns);
     };
+    this.transfer = (id, menuLink) => {
+        let op = {
+            id: id, // Pass the ID to fetch the data
+            btn: menuLink,
+            onClose: () => {
+                mThis.AccountListView.showPage(); // Refresh the list after editing
+            },
+        };
 
+        TransferDialog.show(op);
+    };
     this.editAccount = (id, menuLink) => {
         let op = {
             id: id, // Pass the ID to fetch the data
             btn: menuLink,
             onClose: () => {
+                cv_interact.success('Account Updated Successfully');
                 mThis.AccountListView.showPage(); // Refresh the list after editing
             },
         };
@@ -207,6 +227,7 @@ var AccountMenagmentComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
+                cv_interact.success("Deleted Successfully");
                 mThis.AccountListView.showPage();
             },
         };
@@ -268,10 +289,7 @@ var AccountMenagmentComponent = new (function () {
 
             VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
 
-                mThis.AccountTypeMap = d.account_types.reduce((map, account_type) => {
-                    map[account_type.id] = account_type.account_type;
-                    return map;
-                });
+
             });
     };
 
@@ -306,8 +324,10 @@ const AccountDialog = (() => {
                         <div id="info"></div>
                     </div>
                     <div class="form-group col-6">
-                        <label for="account_type" class="form-label" vslang="titles.Account Type">choose account type</label>
-                        <select name="account_type" class=" data-input"  data-field="account_type_id"></select>
+                        <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
+                                            <select class="modal-select data-input" data-field="account_type">
+                                                <option value="Payroll">Payroll</option>
+                                            </select>
                     </div>
                     <div class="form-group col-6">
                         <label for="account_number" class="form-label" vslang="titles.Account Number"></label>
@@ -321,9 +341,8 @@ const AccountDialog = (() => {
                          <label for="currency" class="form-label" vslang="titles.Currency"></label>
                                             <select class="modal-select data-input" data-field="currency">
                                                 <option value="">(Select Currency)</option>
-                                                <option value="USD">US Dollar</option>
                                                 <option value="KHR">Cambodian Riel</option>
-
+                                                <option value="USD">US Dollar</option>
                                             </select>
                     </div>
                     </div>
@@ -340,12 +359,6 @@ const AccountDialog = (() => {
                         textField: (me, d) => {
                             return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`;
                         },
-                        valueField: "id",
-                    },
-                    {
-                        name: "account_type",
-                        data: "account_types",
-                        textField: "account_type",
                         valueField: "id",
                     },
 
@@ -389,6 +402,146 @@ const AccountDialog = (() => {
                 prepareFormOptions: {
                     createTitle: "Add Account",
                     modifyTitle: "Edit Account",
+                    targetProp: "accounts",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/hr/account/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                    //    onResponse: (me, res)=>{
+                    //      console.log('result from api "/form-options": ', res);
+                    //    }
+                },
+
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
+
+        dialog.show(op);
+    };
+
+    return self;
+})();
+
+const TransferDialog = (() => {
+    const self = {};
+    let dialog = null;
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg",
+                backdrop: "static", //User click outside form, do not close form
+                keyboard: true, //prevent user from using ESC key
+                createContent: () => {
+                    return [
+                        `<div class="row">
+                    <div class="form-group col-6">
+                        <label for="employee" class="form-label" vslang="titles.Employee"></label>
+                        <select name="employee" class=" data-input"  data-field="emp_id"></select>
+                    </div>
+                    <div class="form-group col-6">
+                         <label for="currency" class="form-label" vslang="titles.Currency"></label>
+                                            <select class="modal-select data-input" data-field="currency">
+                                                <option value="">(Select Currency)</option>
+                                                <option value="KHR">Cambodian Riel</option>
+                                                <option value="USD">US Dollar</option>
+                                            </select>
+                    </div>
+                    <div class="form-group  col-12 d.none">
+                        <div id="info"></div>
+                    </div>
+                    <div class="form-group col-4">
+                        <label for="account_type" class="form-label" vslang="titles.From Account"></label>
+                                            <select class="modal-select data-input" data-field="account_type">
+                                                <option value="Payroll">Payroll</option>
+                                            </select>
+                    </div>
+                    <div class="form-group col-4">
+                        <label for="account_number" class="form-label" vslang="titles.From Account Number"></label>
+                        <input name="account_number" class="form-control data-input" data-field="account_number" />
+                    </div>
+                    <div class="form-group col-4">
+                        <label for="ballance" class="form-label" vslang="titles.Payroll Balance"></label>
+                        <input name="ballance" class="form-control data-input" data-field="balance" />
+                    </div>
+                    <div class="form-group col-4">
+                        <label for="w_account_type" class="form-label" vslang="titles.To Account "></label>
+                                            <select class="modal-select data-input" data-field="w_account_type">
+                                                <option value="Wallet">Wallet</option>
+                                            </select>
+                    </div>
+                    <div class="form-group col-4">
+                        <label for="w_account_number" class="form-label" vslang="titles.To Account Number"></label>
+                        <input name="w_account_number" class="form-control data-input" data-field="w_account_number" />
+                    </div>
+                    <div class="form-group col-4">
+                        <label for="w_balance" class="form-label" vslang="titles.Wallet Balance"></label>
+                        <input name="w_balance" class="form-control data-input" data-field="w_balance" />
+                    </div>
+                    </div>
+
+
+              </div>`,
+                    ].join("");
+                },
+
+                configSelect: [
+                    {
+                        name: "employee",
+                        data: "employees",
+                        textField: (me, d) => {
+                            return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`;
+                        },
+                        valueField: "id",
+                    },
+
+                ],
+                buttons: [
+                    {
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Transfer</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+
+                            p.id = me.dataOptions.id; //get "id" from op
+                            console.log(123,p);
+
+
+                            // vsapi
+                            //     .call(
+                            //         [
+                            //             main_view.base_url,
+                            //             "/hr/account/save",
+                            //         ].join(""),
+                            //         p,
+                            //         btn,
+                            //         null
+                            //     )
+                            //     .then((res) => {
+                            //         if (res.status_code == 200) {
+                            //             me.hide(true, p);
+                            //         } else cv_interact.error(res.error_message);
+                            //     });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Add Account",
+                    modifyTitle: "Transfer",
                     targetProp: "accounts",
                     api: {
                         endpoint: [

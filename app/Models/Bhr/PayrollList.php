@@ -349,21 +349,42 @@ class PayrollList
 
             $trx = DB::table('payroll_lists as pl')
                     ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+                    ->join('accounts as a', 'a.emp_id', '=', 'pl.emp_id')
                     ->where('pl.id', $id)
-                    ->selectRaw('total_salary as amount,emp_id,payroll_id,p.name as remarks')->first();
-            $trx->trx_type='0';
-            $trx = Transaction::save((array)$trx, $ss);
+                    ->selectRaw('total_salary as amount,pl.emp_id,pl.payroll_id,p.name as remarks,a.id as account_id ')->first();
+            $trx->trx_type=3;
+            $trx->transfer_acc_id = 1;
+            $trx = Transaction::transfer((array)$trx, $ss);
+            $transfer_amount = 0;
+            if($trx){
+                $transfer_amount = $trx['transactions']['amount'];
+                $account_id = DB::table('accounts')->where('emp_id', $trx['transactions']['emp_id'])->value('id');
+                $updateBalance_acc = PayrollList::updateBalance($account_id,'accounts','in',  $trx['transactions']['amount'], $trx['trx_id'], $ss);
+            }
 
-            $account_id = DB::table('accounts')->where('emp_id', $trx['transactions']['emp_id'])->value('id');
-            $updateBalance = PayrollList::updateBalance($account_id,  $trx['transactions']['amount'], $trx['trx_id'], $ss);
-            $query = DB::table('payroll_lists')
-            ->where('id', $id)
-            ->update(['disburse' => 1, 'trx_id' => hex2bin($trx['trx_id'])]);
+            $default_account = DB::table('accounts as a')
+                    ->where('a.id', 1)
+                    ->selectRaw(' a.id as account_id')->first();
+            $default_account->trx_type='2';
+            $default_account->amount = $transfer_amount;
+            $account_id = $default_account->account_id;
+            $last_balance = $default_account->amount;
+            $default_account = Transaction::withdrawal((array)$default_account, $ss);
+            if($default_account){
+                $updateBalance_def = PayrollList::updateBalance($account_id,'accounts','out',  $default_account['transactions']['amount'], $default_account['trx_id'], $ss);
+            }
+            // $newBalance = $default_account['transactions']['amount'] - $last_balance;
+            if($updateBalance_acc && $updateBalance_def){
+                $query = DB::table('payroll_lists')
+                ->where('id', $id)
+                ->update(['disburse' => 1, 'trx_id' => hex2bin($trx['trx_id'])]);
+                return $query;
+            }
+            return DV::error('Disbursement failed');
 
-            return $query;
         }
 
-        static function updateBalance($account_id, $amount, $trx_id, $ss = null)
+        static function updateBalance($account_id,$table_name,$status, $amount, $trx_id, $ss = null)
         {
             if(!$account_id){
                 return DV::error('Invalid account id');
@@ -371,12 +392,18 @@ class PayrollList
             if(!$amount){
                 $amount = 0;
             }
+            $lastBalance = DB::table($table_name)->where('id', $account_id)->value('balance');
 
-            $lastBalance = DB::table('accounts')->where('id', $account_id)->value('balance');
-            $newBalance = (float)$lastBalance + (float)$amount;
+            if($status=='in'){
+                $newBalance = (float)$lastBalance + (float)$amount;
+            }else if($status=='out'){
+                $newBalance = (float)$lastBalance - (float)$amount;
+            }else{
+                $newBalance = (float)$amount;
+            }
 
             $lastBalanceDate = date('Y-m-d');
-            $query = DB::table('accounts')
+            $query = DB::table($table_name)
                 ->where('id', $account_id)
                 ->update(['balance' => $newBalance, 'last_balance_date' => $lastBalanceDate, 'trx_id' => hex2bin($trx_id)]);
             return $query;

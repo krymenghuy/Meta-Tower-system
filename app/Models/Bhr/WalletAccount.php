@@ -23,10 +23,10 @@ class WalletAccount
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
-            'account_number' => '1|number',
-            'balance' => '0|number',
+            'w_account_number' => '1|number',
+            'w_balance' => '0|number',
             'currency' => '1|string',
-            'account_type_id' => '1|number',
+            'w_account_type' => '1|string',
 
         ];
 
@@ -66,22 +66,20 @@ class WalletAccount
 
 
         $str_search = '1=1';
-        $balance_date = DBX::formatDate('wa.last_balance_date','last_balance_date');
+        $w_balance_date = DBX::formatDate('wa.last_balance_date','last_balance_date');
         $query = DB::table('wallet_accounts as wa')
         ->join('employees as e', 'e.id', '=', 'wa.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-        ->join('account_types as at', 'at.id', '=', 'wa.account_type_id')
         ->selectRaw('
             wa.id,
             wa.emp_id,
             e.name as emp_name,
             pos.title as position,
-            wa.account_number,
-            wa.account_type_id,
-            at.name as account_type,
-            wa.balance,
+            wa.w_account_number,
+            wa.w_account_type,
+            wa.w_balance,
             wa.currency,
-            '.$balance_date.',
+            '.$w_balance_date.',
             e.photo_file_name as emp_photo
         ')
             ->where('wa.branch_id', $branch_id);
@@ -90,7 +88,7 @@ class WalletAccount
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "wa.account_number like '%" . $search_value . "%' or e.name like '%" . $search_value . "%' or pos.title like '%" . $search_value . "%'";
+            $str_search = "wa.w_account_number like '%" . $search_value . "%' or e.name like '%" . $search_value . "%' or pos.title like '%" . $search_value . "%'";
             $query->whereRaw($str_search);
         }
         $query->orderBy($sort_by, $sort_order);
@@ -118,16 +116,14 @@ class WalletAccount
         $query = DB::table('wallet_accounts as wa')
             ->join('employees as e', 'e.id', '=', 'wa.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->join('account_types as at', 'at.id', '=', 'wa.account_type_id')
             ->selectRaw('
                 wa.id,
                 wa.emp_id,
                 e.name as emp_name,
                 pos.title as position,
-                wa.account_number,
-                wa.account_type_id,
-                at.name as account_type,
-                wa.balance,
+                wa.w_account_number,
+                wa.w_account_type,
+                wa.w_balance,
                 wa.currency,
                 e.photo_file_name as emp_photo
             ')
@@ -167,12 +163,11 @@ class WalletAccount
 
             'sort_by' => [
                 ['id' => 'e.name', 'name' => 'By Name'],
-                ['id' => 'wa.account_number', 'name' => 'By Account Number'],
-                ['id' => 'wa.balance', 'name' => 'By  Balance'],
+                ['id' => 'wa.w_account_number', 'name' => 'By Account Number'],
+                ['id' => 'wa.w_balance', 'name' => 'By  W_balance'],
             ],
 
           'employees' => GeneralSettings::options_employee(10,$ss),
-          'account_types' => DB::table('account_types')->selectRaw('id,name AS account_type')->get(),
             'wallet_account' => $wallet_account,
         ];
 
