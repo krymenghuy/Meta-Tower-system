@@ -138,17 +138,17 @@ var EmployeeComponent = new function () {
                     name: "set_resign",
                 },
                 {
-                    html: '<span class="ps-2" vslang="titles.Set Join">Set Rejoin</span>',
+                    html: '<span class="ps-2" vslang="titles.Set Rejoin">Set Rejoin</span>',
                     icon: `<i class="fa-solid text-primary fa-rotate-right"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "set_rejoin",
                 },
-                {
-                    html: '<span class="ps-2 text-" vslang="titles.Set Terminated">Set Terminated</span>',
-                    icon: `<i class="fa-solid text-dark fa-rocket"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "set_terminated",
-                },
+                // {
+                //     html: '<span class="ps-2 text-" vslang="titles.Set Terminated">Set Terminated</span>',
+                //     icon: `<i class="fa-solid text-dark fa-rocket"></i>`,
+                //     cssClass: "border-bottom pb-2",
+                //     name: "set_terminated",
+                // },
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -165,10 +165,10 @@ var EmployeeComponent = new function () {
                         mThis.setResign(id,menuLink);
                         break;
                     }
-                    case "set_terminated":{
-                        mThis.setTerminated(id,menuLink);
-                        break;
-                    }
+                    // case "set_terminated":{
+                    //     mThis.setTerminated(id,menuLink);
+                    //     break;
+                    // }
                     case "set_rejoin":{
                         mThis.setRejoin(id,menuLink);
                         break;
@@ -992,55 +992,55 @@ var EmployeeComponent = new function () {
         });
         mThis.ResignDialog.show(op);
     }
-    this.setTerminated = (id,lnk)=>{
-        let tr = lnk.closest("tr");
-        console.log(1,tr);
-        let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
-        console.log(123,status_id);
+    // this.setTerminated = (id,lnk)=>{
+    //     let tr = lnk.closest("tr");
+    //     console.log(1,tr);
+    //     let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
+    //     console.log(123,status_id);
 
-        let inputOptions = {
-            title: "Set Employee Terminate",
-            dataLabel: "Employee status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data: [
+    //     let inputOptions = {
+    //         title: "Set Employee Terminate",
+    //         dataLabel: "Employee status",
+    //         valueMember: "status_id",
+    //         textMember: "name",
+    //         confirmButtonText: "Save",
+    //         blankErrorMessage: "Status is not correct!",
+    //         data: [
                
-                {
-                    status_id: "30",
-                    name: "Terminated",
-                },
+    //             {
+    //                 status_id: "30",
+    //                 name: "Terminated",
+    //             },
                
-            ],
-            defaultValue: status_id,
-        };
+    //         ],
+    //         defaultValue: status_id,
+    //     };
 
-        InputBox2.show(inputOptions, (d) => {
-            if (d) {
-                let p = {
-                    id: id,
-                    status_id: d.value,
-                };
-                console.log(123, p);
+    //     InputBox2.show(inputOptions, (d) => {
+    //         if (d) {
+    //             let p = {
+    //                 id: id,
+    //                 status_id: d.value,
+    //             };
+    //             console.log(123, p);
 
-                vsapi
-                    .call(`${mThis.base_url}/hr/employee/update-status`, p)
-                    .then((res) => {
-                        if (res.status_code === 200) {
-                            mThis.elEmployeeStatus.value = parseInt(d.value);
-                            InputBox2.close();
-                            mThis.elEmployeeStatus.dispatchEvent ( new Event('change'));
-                            cv_interact.success("The Employee has been Terminate");
-                            // if(tr) tr.dataset.status_id = d.value;
-                            // mThis.EmployeeListView.showPage(mThis.getFilterData());
-                        } else
-                        cv_interact.error(res.error_message);
-                    });
-            }
-        });
+    //             vsapi
+    //                 .call(`${mThis.base_url}/hr/employee/update-status`, p)
+    //                 .then((res) => {
+    //                     if (res.status_code === 200) {
+    //                         mThis.elEmployeeStatus.value = parseInt(d.value);
+    //                         InputBox2.close();
+    //                         mThis.elEmployeeStatus.dispatchEvent ( new Event('change'));
+    //                         cv_interact.success("The Employee has been Terminate");
+    //                         // if(tr) tr.dataset.status_id = d.value;
+    //                         // mThis.EmployeeListView.showPage(mThis.getFilterData());
+    //                     } else
+    //                     cv_interact.error(res.error_message);
+    //                 });
+    //         }
+    //     });
 
-    }
+    // }
     this.setRejoin = (id,lnk)=>{
         let tr = lnk.closest("tr");
         console.log(1,tr);
@@ -1332,11 +1332,11 @@ const AddExperience = (() => {
                         `<div class="row">
                         <div class=" form-group col-md-6">
                             <label class="form-label" vslang="titles.Start Date">Start Date</label>
-                            <div><input type="date" name="start_date" class=" form-control data-input" data-field="start_date"></input></div>
+                            <div><input  name="start_date" class=" form-control data-input" data-field="start_date"></input></div>
                         </div>
                         <div class=" form-group col-md-6">
                             <label class="form-label" vslang="titles.End Date">End Date</label>
-                            <div><input type="date" name="end_date" class=" form-control data-input" data-field="end_date"></input></div>
+                            <div><input  name="end_date" class=" form-control data-input" data-field="end_date"></input></div>
                         </div>
                         <div class=" form-group col-md-6">
                             <label class="form-label" vslang="titles.Position">Position</label>
@@ -1358,6 +1358,15 @@ const AddExperience = (() => {
                     </div>`,
                     ].join("");
                 },
+                contentCreated:(me)=>{
+                    DateTimePicker.init(me.controls.start_date);
+                    DateTimePicker.init(me.controls.end_date);
+
+             
+                    
+                   
+                   
+                 },
                 buttons: [
                     {
                         label: "<span>Cancel</span>",

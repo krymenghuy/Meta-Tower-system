@@ -28,8 +28,8 @@ class Experience //extends Model
             'organization_id' => '1|number|exists=organizations.id',
             'description' => '0|string|0-300',
             'period_type' => '0|string|0-150',
-            'start_date' => '0|date',
-            'end_date' => '0|date'
+            'start_date' => '1|date',
+            'end_date' => '1|date'
 
         ];
         $exp_char = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
