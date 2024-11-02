@@ -628,7 +628,7 @@ var EmployeeComponent = new function () {
         let p = {
             emp_id: employeeId,
         };
-        console.log(1, p);
+        console.log(123456789, p);
 
         vsapi
             .call(
@@ -640,7 +640,7 @@ var EmployeeComponent = new function () {
             )
             .then((res) => {
                 let data = res.status_code === 200 ? res.data.data : [];
-                console.log(123456, data);
+                console.log(12345600000, data);
                 let html = `<div class="card pb-3" style="height:390px;">
             <div class="card-header text-white bg-primary-custom">
                 <h4>Experience</h4>

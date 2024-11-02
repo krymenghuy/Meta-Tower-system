@@ -8,6 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class Attendance
 {
+    
     protected $id = null;
     protected $userInfo = null;
 
@@ -25,14 +26,13 @@ class Attendance
 
         // Validation rules
         $v_rule = [
-            'id' => '0|identity=1',
-            'emp_id' => '1||exists=employees.id',
-            'check_in_time' => '0|time',
-            'check_out_time' => '0|time',
-            'attendance_date' => '0|date',
-            'status_id' => '1|enum|DEFAULT=Present',
-            'remark' => '0|string',
-        ];
+                'id' => '0|identity=1',
+                'emp_id' => '1||exists=employees.id',
+                'check_in_time' => '0|time',
+                'check_out_time' => '0|time',
+                'status_id' => '0|enum|DEFAULT=Present',
+                'remark' => '0|string',
+            ];
 
         $res = validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
         if ($res->error) {
@@ -42,23 +42,37 @@ class Attendance
         $inputs = $res->values;
         $emp_id = $inputs['emp_id'];
 
-        if (isset($inputs['attendance_date'])) {
-            $attendance_date = date('Y-m-d', strtotime($inputs['attendance_date']));
-        } else {
-            return DV::error('Attendance date is required');
+        // Set the attendance date to the current date if not provided
+        $attendance_date = date('Y-m-d');
+
+        // Check if attendance already exists for the employee on the same date
+        $existingAttendance = DB::table('attendances')
+        ->where('emp_id', $emp_id)
+        ->whereDate('attendance_date', $attendance_date)
+        ->first();
+
+        if ($existingAttendance && !$id) {
+            // If an ID is not provided and attendance already exists, use existing record's ID to update
+            $id = $existingAttendance->id;
+        } elseif ($existingAttendance && $id != $existingAttendance->id) {
+            // If ID is provided but does not match existing record, return error
+            return DV::error('Attendance for this employee on this date already exists.');
         }
 
         $day_name = date('D', strtotime($attendance_date));
-        $except_days = ['Sun', 'Sat'];
+        $except_days = ['Sun'];
         if (in_array($day_name, $except_days)) {
             return DV::error('The day is a weekend');
         }
 
+        // Determine check-in time, check-out time, and status
         $check_in_time = isset($inputs['check_in_time']) ? date('H:i:s', strtotime($inputs['check_in_time'])) : '00:00:00';
         $check_out_time = isset($inputs['check_out_time']) ? date('H:i:s', strtotime($inputs['check_out_time'])) : '00:00:00';
 
-        $status_id = isset($inputs['status_id']) ? $inputs['status_id'] : 'Present';
-        $remark = isset($inputs['remark']) ? $inputs['remark'] : '';
+        $status_id = ($check_in_time <= '08:00:00') ? 'Present' : 'Late';
+
+        // Set remark to "On time" if check-in time is before 8:00 AM and no other remark is provided
+        $remark = isset($inputs['remark']) ? $inputs['remark'] : (($check_in_time < '08:00:00') ? 'On time' : '');
 
         $arr_attendance = [
             'emp_id' => $emp_id,
@@ -71,10 +85,13 @@ class Attendance
 
         unset($inputs['status_id']);
 
+        // Save the attendance data (insert or update based on ID)
         $newID = saveData($ss, 'attendances', ['id' => $id], $arr_attendance, [], 1, 1);
 
         return DV::depends($newID, ['attendances' => $inputs, 'id' => $newID], $ss);
     }
+
+
     function getStaffAttendanceListPaginate($arr, $ss)
     {
         $d = (object) $arr;
@@ -90,25 +107,25 @@ class Attendance
 
         // Build the query
         $query = DB::table('attendances as a')
-        ->join('employees as e', 'e.id', '=', 'a.emp_id')
-        ->leftJoin('leaves as l', function ($join) {
-            $join->on('l.emp_id', '=', 'e.id')
-            ->where('l.status_id', '=', 2); // Include employees on leave
-        })
+            ->join('employees as e', 'e.id', '=', 'a.emp_id')
+            ->leftJoin('leaves as l', function ($join) {
+                $join->on('l.emp_id', '=', 'e.id')
+                    ->where('l.status_id', '=', 2); // Include employees on leave
+            })
             ->selectRaw('
-            a.id,
-            e.id as emp_id,
-            e.photo_file_name as emp_photo,
-            e.name,
-            e.name_kh,
-            e.email as email,
-            a.emp_id,
-            a.check_in_time,
-            a.check_out_time,
-            a.attendance_date,
-            a.remark,
-            CASE WHEN l.id IS NOT NULL THEN "Absent" ELSE a.status_id END as status_id
-        ');
+                a.id,
+                e.id as emp_id,
+                e.photo_file_name as emp_photo,
+                e.name,
+                e.name_kh,
+                e.email as email,
+                a.emp_id,
+                a.check_in_time,
+                a.check_out_time,
+                a.attendance_date,
+                a.remark,
+                CASE WHEN l.id IS NOT NULL THEN "Absent" ELSE a.status_id END as status_id
+            ');
 
         // Apply filters if provided
         if ($search_id) {
@@ -118,7 +135,6 @@ class Attendance
             $query->where('a.status_id', $search_status_id);
         }
         if ($attendance_date) {
-            // Convert to 'Y-m-d' format to ensure date compatibility
             $formatted_date = date('Y-m-d', strtotime($attendance_date));
             $query->whereDate('a.attendance_date', '=', $formatted_date);
         }
@@ -129,14 +145,11 @@ class Attendance
                     ->orWhere('a.remark', 'LIKE', "%{$search_value}%")
                     ->orWhere('e.email', 'LIKE', "%{$search_value}%")
                     ->orWhere('a.attendance_date', 'LIKE', "%{$search_value}%");
-
             });
         }
 
-        // Use paginate for handling pagination directly
         $rows = $query->paginate($per_page, ['*'], 'page', $current_page);
 
-        // Process each row for additional details
         foreach ($rows as $row) {
             $row->image_url = '';
             if (isset($row->emp_id) && $row->emp_photo) {
@@ -144,15 +157,20 @@ class Attendance
             }
             unset($row->emp_photo);
 
-            // Format status with color: red for "Absent" and green for other statuses
-            $row->formatted_status = ($row->status_id === "Absent")
-            ? '<span style="color: red;">Absent</span>'
-                : '<span style="color: green;">' . htmlspecialchars($row->status_id) . '</span>';
+            // Format status with color: orange for "Late", green for "Present", and red for "Absent"
+            if ($row->status_id === "Absent") {
+                $row->formatted_status = '<span style="color: red;">Absent</span>';
+            } elseif ($row->status_id === "Late") {
+                $row->formatted_status = '<span style="color: orange;">Late</span>';
+            } else {
+                $row->formatted_status = '<span style="color: green;">Present</span>';
+            }
         }
-
 
         return $rows;
     }
+
+
 
     function attendanceList($filter = [], $ss = null)
     {

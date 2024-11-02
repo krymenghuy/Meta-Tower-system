@@ -258,7 +258,7 @@ const StaffAttendanceDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static", //User click outside form, do not close form
                 keyboard: true, //prevent user from using ESC key
                 createContent: () => {
@@ -279,12 +279,9 @@ const StaffAttendanceDialog = (() => {
                                 <label for="check_out_time" class="form-label" vslang="titles.Check Out Time">Check Out Time</label>
                                 <input type="time" name="check_out_time" class="form-control data-input" data-field="check_out_time" />
                             </div>
+
                             <div class="form-group col-12">
-                                <label for="attendance_date" class="form-label">Attendance Date</label>
-                                <input type="date" class="form-control data-input" data-field="attendance_date" id="attendance_date" placeholder="Select Attendance Date" required>
-                            </div>
-                            <div class="form-group col-12">
-                                <label for="remark" class="form-label" vslang="titles.Reason"></label>
+                                <label for="remark" class="form-label" vslang="titles.Remark"></label>
                                 <textarea  type="text" class="form-control data-input" data-field="remark"></textarea>
                             </div>
 
