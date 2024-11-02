@@ -907,19 +907,20 @@ var EmployeeComponent = new function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.EmployeeListView.showPage();
+                mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        mThis.ResignDialog = mThis.ResignDialog || new GeneralDialog({
-            title: op.id
-            ? "Set Resign"
-            : "Set Resign", 
-            cssClass: "modal-md d-flex justify-content-center",
+        mThis.ResignDialog =  new GeneralDialog({
+            title: LocaleManager.trans("Set Resign","titles"),
             createContent:()=>{
                 return [
                    ` <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Resign Date">Resign Date</label>
                             <div><input  name="resign_date" class="form-control data-input" placeholder="" data-field="resign_date"/></div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
+                            <div><input  name="effective_date" class="form-control data-input" placeholder="" data-field="effective_date"/></div>
                         </div>
                       <div class="form-group col-md-12">
                         <label class="form-label" vslang="titles.Remarks">Remarks</label>
@@ -931,6 +932,7 @@ var EmployeeComponent = new function () {
             },
             contentCreated:(me)=>{
                 DateTimePicker.init(me.controls.resign_date);
+                DateTimePicker.init(me.controls.effective_date);
          
                 
                
@@ -953,18 +955,23 @@ var EmployeeComponent = new function () {
                     label:"<span>Resign Now</span",
                     click:(me, btn,divModal)=>{
                          let p = me.getData();
-                         p.emp_id = op.id;
-                        
+                        //  p.emp_id = op.id;
+                         console.log(111,p);
                          vsapi.call(`${main_view.base_url}/hr/employee/set-resign-status`,p,btn,false).then(res =>{
                               if(res.status_code ==200){
-                                 me.hide(true,p);
-                                 cv_interact.success('This Employee has been resign successfully!');
-                                 EmployeeComponent.EmployeeListView.showPage();
+                                me.modal.hide(true, p);
+                                cv_interact.success('This Employee has been resign successfully!');
+                                EmployeeComponent.EmployeeListView.showPage();
                               }else cv_interact.error(res.error_message);
                          });
                     }
                 }
              ],
+             onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+               
+               
+            },
             //  prepareFormOptions:{
             //      modifyTitle:"",
             //      createTitle:"Set Resign",
@@ -1055,6 +1062,10 @@ var EmployeeComponent = new function () {
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data: [
+                {
+                    status_id: "20",
+                    name: "Resign",
+                },
                
                 {
                     status_id: "10",
@@ -1755,6 +1766,8 @@ const EmployeeDialog = (() => {
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             let p = me.getData();
+                            console.log(123,p);
+                            
                             
                             p.photo = me.userImageBox
                                 ? me.userImageBox.getImage()
