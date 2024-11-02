@@ -26,7 +26,8 @@ class EmployeeController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        $id = $req->emp_id ? $req->emp_id:$req->id;
+
+        $id = $req->emp_id ?? $req->id;
         $employee = new Employee($id, $ss);
         $res = $employee->setResignStatus($req->all());
         return JDV::raw($res);
