@@ -589,11 +589,11 @@ var EmployeeComponent = new function () {
                         <div class="col-md-6">
                             <h6 class="text-" style="width:180px; height:22px overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap">${d.period}</h6>
                             <p class="text-primary-custom" style="width:180px; height:20px"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/graduate.svg" /> ${d.edu_level}</p>
-                            <p class="text-muted" style="width:180px; height:20px"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/radio.svg" /> ${d.major}</p>
+                            <p class="text-muted" style="width:180px; height:20px;overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/radio.svg" /> ${d.major}</p>
                         </div>
 
                         <div class="col-md-6">
-                            <div class="d-flex justify-content-end">
+                            <div class="d-flex justify-content-start">
                                 <div class="d-flex gap-2 mt-4">
                                     <span class="">${d.school}</span>
                                 </div>
@@ -667,11 +667,11 @@ var EmployeeComponent = new function () {
                             </div>
                         </div>
                         <div style="display:flex; width:350px; justify-content:space-between">
-                            <div class="date_join text-muted" style="width:300px;display:flex;justify-content:start;align-items:end;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
+                            <div class="date_join text-muted" style="width:300px;display:flex;justify-content:start;align-items:start;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
                                 <img class="bhr-icons" src="${main_view.asset_url}/images/icons/calender.svg" />
                                 <p>(${d.start_date}</p><p class="text-danger ml-2 mr-2">-</p><p>${d.end_date})</p>
                             </div>
-                            <p class="text-primary-custom text-nowrap">Position: ${d.position}</p>
+                            <p class="text-primary-custom text-nowrap"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/bag.svg" /> ${d.position}</p>
                                 
                         </div>
                         
