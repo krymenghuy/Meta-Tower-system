@@ -335,8 +335,7 @@
                 CustomerDialog.show(op);
             };
 
-            mThis.tblCustomers = mThis.customerListView.getTable();
-            mThis.initDropdownMenus(mThis.tblCustomers);
+            
             console.log(12,mThis.tblCustomers);
 
             mThis.tblCustomers.onclick = e=>{
@@ -350,7 +349,6 @@
             }
 
             this.sh_container = mThis.customerListView.getListContainer();
-
             const sh_parent = mThis.sh_container.parentElement;
             sh_parent.style.height = (window.innerHeight - 190) + 'px';
             sh_parent.classList.add('overflow-y-auto');
