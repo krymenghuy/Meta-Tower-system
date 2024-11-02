@@ -25,7 +25,7 @@ var EmployeeBenefitComponent = new (function () {
             className: "align-middle text-start",
             data: (data) => `
             <div style="display: flex; align-items: center;">
-                <img class="image-student-tbl" src="${data.image_url}" alt="" 
+                <img class="image-student-tbl" src="${data.image_url}" alt=""
                     style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                 <div>
                     <span style="font-size: 14px; font-weight: bold;">${
@@ -90,7 +90,7 @@ var EmployeeBenefitComponent = new (function () {
             className: "align-middle text-start",
             data: (data) => `
             <div style="display: flex; align-items: center;">
-                <img class="image-student-tbl" src="${data.image_url}" alt="" 
+                <img class="image-student-tbl" src="${data.image_url}" alt=""
                     style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                 <div>
                     <span style="font-size: 14px; font-weight: bold;">${
@@ -165,7 +165,7 @@ var EmployeeBenefitComponent = new (function () {
             className: "align-middle text-start",
             data: (data) => `
         <div style="display: flex; align-items: center;">
-            <img class="image-student-tbl" src="${data.image_url}" alt="" 
+            <img class="image-student-tbl" src="${data.image_url}" alt=""
                 style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
             <div>
                 <span style="font-size: 14px; font-weight: bold;">${
@@ -245,7 +245,7 @@ var EmployeeBenefitComponent = new (function () {
             columns: mThis.cols,
             tableClass: "table table--white overflow-hidden header-uppercase",
             listContainerClass: null,
-        });
+        }); 
 
         // Event for adding a benefit
         mThis.btnAdd.onclick = function (e) {
