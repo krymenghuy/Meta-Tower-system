@@ -126,7 +126,10 @@ class Attendance
             $search_value = escape_like_str($search_value);
             $query->where(function ($q) use ($search_value) {
                 $q->where('e.name', 'LIKE', "%{$search_value}%")
-                ->orWhere('a.remark', 'LIKE', "%{$search_value}%");
+                    ->orWhere('a.remark', 'LIKE', "%{$search_value}%")
+                    ->orWhere('e.email', 'LIKE', "%{$search_value}%")
+                    ->orWhere('a.attendance_date', 'LIKE', "%{$search_value}%");
+
             });
         }
 
@@ -141,11 +144,12 @@ class Attendance
             }
             unset($row->emp_photo);
 
-            // Add formatted status with red color for "Absent"
+            // Format status with color: red for "Absent" and green for other statuses
             $row->formatted_status = ($row->status_id === "Absent")
             ? '<span style="color: red;">Absent</span>'
-            : $row->status_id;
+                : '<span style="color: green;">' . htmlspecialchars($row->status_id) . '</span>';
         }
+
 
         return $rows;
     }

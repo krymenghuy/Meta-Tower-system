@@ -8,8 +8,7 @@ var StaffAttendanceComponent = new (function () {
     this.title_prop = "Staff Attendance";
     this.btnAdd = this.self.querySelector("#_btnAddStaffAttendance");
     this.elSearch = this.self.querySelector("#_staff_attendance_search");
-    this.elFilter_attendance_date = this.self.querySelector("#_filter_attendance_date");
-    this._searchAttendance = this.self.querySelector("#search");
+    this.divFilter = this.self.querySelector("#_divFilter_attendance");
     this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
 
     this.cols = [
@@ -118,43 +117,34 @@ var StaffAttendanceComponent = new (function () {
 
         mThis.initDropdownMenus(pr_tbl);
 
-        // Event listeners for filters
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
+            };
+        });
+
         mThis.elSearch.addEventListener("keyup", (e) => {
+            e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
-                if (mThis.StaffAttendanceListView) {
-                    mThis.StaffAttendanceListView.showPage(
-                        mThis.getFilterData()
-                    );
-                }
-            }, 200);
-        });
-
-        mThis.elFilter_attendance_date.addEventListener("change", (e) => {
-            e.preventDefault();
-            mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
-        });
-
-        mThis.btnSearch.onclick = (e) => {
-            if (mThis.StaffAttendanceListView) {
                 mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
-            }
-        };
+            }, 250);
+        });
 
         mThis.initAlready = true;
     };
 
     this.getFilterData = () => {
         let p = {
-            attendance_date: mThis.elFilter_attendance_date.value,
+            search_value: mThis.elSearch.value,
         };
-        
-        
-        mThis._searchAttendance.querySelectorAll(".filter-field").forEach((el) => {
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-console.log(9292, p);
+
         return p;
     };
 

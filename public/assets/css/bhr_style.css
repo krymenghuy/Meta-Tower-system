@@ -1724,11 +1724,10 @@ ul.list-filter-um li:not(li:last-child) {
 
 .table--white {
     background: #FFFFFF !important;
-    color: #000000 !important;
-    font-size: small !important;
-    font-weight: normal !important;
+    color: #252525d4 !important;
+    font-size: 13px !important;
+    font-weight: 300 !important;
     text-align: left !important;
-    /* border-radius: 0.5rem !important; */
     text-align: center !important;
 
 }
@@ -1737,8 +1736,13 @@ ul.list-filter-um li:not(li:last-child) {
     color: white!important;
     /* border-radius: 0.5rem !important; */
     background-color:#2B3991 !important;
+    font-size: 14px !important;
+    padding: 10px !important;
+        
 }
-
+tbody, td, tfoot, th, thead, tr {
+    padding: 7px !important;
+}
 .table--white tr:hover {
     background: skyblue !important;
     color: #FFFFFF !important;
