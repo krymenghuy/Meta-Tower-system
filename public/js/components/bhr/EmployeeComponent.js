@@ -60,8 +60,10 @@ var EmployeeComponent = new function () {
             view_see_info.classList.add("d-none");
             let sub_content = mThis.self.querySelector("#sub_content");
             sub_content.classList.remove("d-none");
-            mThis.EmployeeListView.showPage(mThis.getFilterData());
+            // mThis.EmployeeListView.showPage(mThis.getFilterData());
         };
+        mThis.EmployeeListView.showPage(mThis.getFilterData());
+
 
         mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = e =>{
@@ -81,6 +83,7 @@ var EmployeeComponent = new function () {
         };
          this.listContainer = mThis.EmployeeListView.getListContainer();
          console.log(12,mThis.listContainer);
+         
          mThis.initDropdownMenus(div);
 
 
@@ -328,7 +331,7 @@ var EmployeeComponent = new function () {
                                 </div>
                                 
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 mt-3">
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Name</p>
                                     <p class="px-2">:</p>
@@ -359,7 +362,7 @@ var EmployeeComponent = new function () {
                                   
 
                             </div>
-                            <div class="col-md-3">
+                            <div class="col-md-3 mt-3">
                             
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Position</p>
@@ -384,13 +387,13 @@ var EmployeeComponent = new function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Email</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-primary">${data.email || ""}</p>
+                                    <p class="text-">${data.email || ""}</p>
                                 </div>
                         
                                
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-3 mt-3">
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Salary Base</p>
                                     <p class="px-2">:</p>
@@ -898,54 +901,96 @@ var EmployeeComponent = new function () {
 
 
     };
-    this.setResign = (id,lnk)=>{
-        let tr = lnk.closest("tr");
-        console.log(1,tr);
-        let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
-        console.log(123,status_id);
-
-        let inputOptions = {
-            title: "Set Employee Resign",
-            dataLabel: "Employee status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data: [
-               
-                {
-                    status_id: "20",
-                    name: "Resigned",
-                },
-               
-            ],
-            defaultValue: status_id,
+    this.setResign = (id,menuLink)=>{
+        
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.EmployeeListView.showPage();
+            },
         };
+        mThis.ResignDialog = mThis.ResignDialog || new GeneralDialog({
+            title: op.id
+            ? "Set Resign"
+            : "Set Resign", 
+            cssClass: "modal-md d-flex justify-content-center",
+            createContent:()=>{
+                return [
+                   ` <div class="form-group col-md-12">
+                            <label class="form-label" vslang="titles.Resign Date">Resign Date</label>
+                            <div><input  name="resign_date" class="form-control data-input" placeholder="" data-field="resign_date"/></div>
+                        </div>
+                      <div class="form-group col-md-12">
+                        <label class="form-label" vslang="titles.Remarks">Remarks</label>
+                        <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
+                    </div>
 
-        InputBox2.show(inputOptions, (d) => {
-            if (d) {
-                let p = {
-                    id: id,
-                    status_id: d.value,
-                };
-                console.log(123, p);
-
-                vsapi
-                    .call(`${mThis.base_url}/hr/employee/update-status`, p)
-                    .then((res) => {
-                        if (res.status_code === 200) {
-                            mThis.elEmployeeStatus.value = parseInt(d.value);
-                            InputBox2.close();
-                            mThis.elEmployeeStatus.dispatchEvent ( new Event('change'));
-                            cv_interact.success("The Employee has been update to resign");
-                            // if(tr) tr.dataset.status_id = d.value;
-                            // mThis.EmployeeListView.showPage(mThis.getFilterData());
-                        } else
-                        cv_interact.error(res.error_message);
-                    });
-            }
+                   `
+                ].join('');
+            },
+            contentCreated:(me)=>{
+                DateTimePicker.init(me.controls.resign_date);
+         
+                
+               
+               
+             },
+             
+             configSelect:[
+              
+             ],
+             buttons:[
+                {
+                    label: "<span>Cancel</span>",
+                    cssClass: "btn btn-warning text-white",
+                    click: (me) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    cssClass:"btn btn-primary",
+                    label:"<span>Resign Now</span",
+                    click:(me, btn,divModal)=>{
+                         let p = me.getData();
+                         p.emp_id = op.id;
+                        
+                         vsapi.call(`${main_view.base_url}/hr/employee/set-resign-status`,p,btn,false).then(res =>{
+                              if(res.status_code ==200){
+                                 me.hide(true,p);
+                                 cv_interact.success('This Employee has been resign successfully!');
+                                 EmployeeComponent.EmployeeListView.showPage();
+                              }else cv_interact.error(res.error_message);
+                         });
+                    }
+                }
+             ],
+            //  prepareFormOptions:{
+            //      modifyTitle:"",
+            //      createTitle:"Set Resign",
+            //      api:{
+            //         targetProp:"Set Resign",
+            //         endpoint: `${main_view.base_url}`,
+            //         params:(dataOption)=>{
+            //             return {"id":dataOption.id};
+            //         }, 
+            //      }
+            //  },
+            //  onShow:(me)=>{
+            //     me.controls.name.focus();
+            //     me.controls.name.select();
+            // },
+            //  onPrepareForm:(me,data)=>{
+            //      let fields = me.getFields();
+                 
+            //     //  const app_types = [
+            //     //     {value:0, label:"Web Application"},
+            //     //     {value:1, label:"Mobile App"}
+            //     //  ];
+            //     //  VSUtil.setComboItems(fields.app_id,data.apps,"id","app_name",null,null,0);
+            //  }
         });
-
+        mThis.ResignDialog.show(op);
     }
     this.setTerminated = (id,lnk)=>{
         let tr = lnk.closest("tr");

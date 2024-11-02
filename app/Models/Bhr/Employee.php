@@ -487,6 +487,7 @@ class Employee //extends Model
             'employee' => $employee,
         ];
     }
+   
     function updateStatus($status_id, $id = null, $ss = null)
     {
         $ss = $ss ? $ss : $this->userInfo;
@@ -528,5 +529,48 @@ class Employee //extends Model
     
         return DV::depends($x, ['Employee status', 'updated']);
     }
+
+    public function setResignStatus($arr=[],$ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+
+        $v_rule = [
+            'id'=>'0|identify=1',
+            'emp_id'=>'1|number',
+            'effective_date'=>'0|datetime',
+            'resign_date'=>'1|date',
+            'remarks'=>'0|string|1-300'
+        ];
+
+        $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $emp_id = $inputs['id'];
+        $id = saveData($ss,'resignations',['id'=>$emp_id],$inputs,[],1);
+        if($id){
+            DB::table('employees')->where('id', $id)->update(['status_id' => 20]);
+           
+            return DV::depends(1,['new resign'=>$inputs],'Failed to resign');
+        }
+        return DV::error('Failed');
+    }
+
+
+    public function setRejoinStatus($status_id, $id = null, $ss = null)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+    
+    
+            $rejoined = DB::table('employees')->where('id', $id)->update([
+                'status_id' => $status_id,
+                'update_user' => $ss->full_name ?? null,
+                'update_date' => getNowTime(),
+                'update_uid' => $ss->user_id ?? null
+            ]);
+    
+            return DV::depends($rejoined, ['Employee status updated successfully'], 'Failed to update employee status');
+    }
+    
     
 }
