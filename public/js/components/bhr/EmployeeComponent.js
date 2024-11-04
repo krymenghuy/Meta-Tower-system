@@ -239,13 +239,13 @@ var EmployeeComponent = new function () {
                                     <h5 class="text-success">${d.name}</h5>
                                 </div>
                                 <div class="card_container">
-                                    <div class="employee_id text-primary">#: <span class="ms-1">${d.code || "null"}</span></div>
+                                    <div class="employee_id text-primary-custom">#: <span class="ms-1">${d.code || "null"}</span></div>
                                     <div class="container_top">
                                         <div class="position">
-                                            <i class="text-danger  fa-solid fa-dashboard"></i> <span class="ms-1"> ${d.department || "null"}</span>
+                                            <i class="text-danger  fa-solid fa-dashboard"></i> <span class="ms-1"> ${d.type || "null"}</span>
                                         </div>
                                         <div class="me-3">
-                                            <i class=" text-primary fa-solid fa-clock"></i> <span>${d.position || "null"}</span>
+                                            <i class=" text-primary-custom fa-solid fa-clock"></i> <span>${d.position || "null"}</span>
                                         </div>
                                     </div>
                                     <div class="container_bottom">
@@ -253,7 +253,7 @@ var EmployeeComponent = new function () {
                                             <i class="text-warning fas fa-envelope"></i> <span>${d.email || "null"}</span>
                                         </div>
                                         <div class="phone">
-                                            <i class="text-primary fas fa-phone"></i> <span>${d.phone_number || "null"}</span>
+                                            <i class="text-success fas fa-phone"></i> <span>${d.phone_number || "null"}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -395,9 +395,9 @@ var EmployeeComponent = new function () {
 
                             <div class="col-md-3 mt-3">
                                 <div class="d-flex">
-                                    <p class="text-nowrap  width-p">Salary Base</p>
+                                    <p class="text-nowrap  width-p">salary</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">៛​${data.salary_base || ""}</p>
+                                    <p class="text-nowrap">​${data.salary || ""}(រៀល)</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Payroll Tax</p>
@@ -450,19 +450,25 @@ var EmployeeComponent = new function () {
             cssClass: "bg-white shadow",
             menus: [
                 {
-                    html: '<span class="ps-2" vslang="titles.Edit Profile">Edit Profile</span>',
-                    icon: `<i class="fa-regular fa-pencil fs-5"></i>`,
-
+                    html: '<span class="ps-2" vslang="titles.Modify Profile Info">Modify Profile Info</span>',
+                    icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_emp_profile_info",
                 },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Set Resign">Set Resign</span>',
+                    icon: `<i class="fa-solid text-warning fa-pen-nib"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "set_resign",
+                },
 
                 {
-                    html: '<span class="ps-2  " vslang="titles.Promotion Employee">Promotion Employee</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    html: '<span class="ps-2  " vslang="titles.Promote Staff">Promote Staff</span>',
+                    icon: `<i class="fa-solid text-success fa-bolt"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "promotion_employee",
+                    name: "promote_employee",
                 },
+                
                 {
                     html: '<span class="ps-2  " vslang="titles.Change Branch Employee">Change Branch Employee</span>',
                     icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
@@ -472,8 +478,12 @@ var EmployeeComponent = new function () {
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "change_employee_status": {
-                        mThis.changeStatus(id, menuLink);
+                    case "promote_employee": {
+                        mThis.promoteEmployee(id, menuLink);
+                        break;
+                    }
+                    case "set_resign":{
+                        mThis.setResign(id,menuLink);
                         break;
                     }
                     case "edit_emp_profile_info": {
@@ -999,6 +1009,104 @@ var EmployeeComponent = new function () {
         });
         mThis.ResignDialog.show(op);
     }
+    this.promoteEmployee = (id,menuLink)=>{
+        
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.EmployeeListView.showPage(mThis.getFilterData());
+            },
+        };
+        mThis.ResignDialog =  new GeneralDialog({
+            title: LocaleManager.trans("Promote Staff","titles"),
+            createContent:()=>{
+                return [
+                   ` <div class="form-group col-md-12">
+                            <label class="form-label" vslang="titles.Resign Date">Resign Date</label>
+                            <div><input  name="resign_date" class="form-control data-input" placeholder="" data-field="resign_date"/></div>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
+                            <div><input  name="effective_date" class="form-control data-input" placeholder="" data-field="effective_date"/></div>
+                        </div>
+                      <div class="form-group col-md-12">
+                        <label class="form-label" vslang="titles.Remarks">Remarks</label>
+                        <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
+                    </div>
+
+                   `
+                ].join('');
+            },
+            contentCreated:(me)=>{
+                DateTimePicker.init(me.controls.resign_date);
+                DateTimePicker.init(me.controls.effective_date);
+         
+                
+               
+               
+             },
+             
+             configSelect:[
+              
+             ],
+             buttons:[
+                {
+                    label: "<span>Cancel</span>",
+                    cssClass: "btn btn-warning text-white",
+                    click: (me) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    cssClass:"btn btn-primary",
+                    label:"<span>Promote Now</span",
+                    click:(me, btn,divModal)=>{
+                         let p = me.getData();
+                        //  p.emp_id = op.id;
+                         console.log(111,p);
+                         vsapi.call(`${main_view.base_url}/hr/employee/set-resign-status`,p,btn,false).then(res =>{
+                              if(res.status_code ==200){
+                                me.modal.hide(true, p);
+                                cv_interact.success('This Employee has been resign successfully!');
+                                EmployeeComponent.EmployeeListView.showPage();
+                              }else cv_interact.error(res.error_message);
+                         });
+                    }
+                }
+             ],
+             onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+               
+               
+            },
+            //  prepareFormOptions:{
+            //      modifyTitle:"",
+            //      createTitle:"Set Resign",
+            //      api:{
+            //         targetProp:"Set Resign",
+            //         endpoint: `${main_view.base_url}`,
+            //         params:(dataOption)=>{
+            //             return {"id":dataOption.id};
+            //         }, 
+            //      }
+            //  },
+            //  onShow:(me)=>{
+            //     me.controls.name.focus();
+            //     me.controls.name.select();
+            // },
+            //  onPrepareForm:(me,data)=>{
+            //      let fields = me.getFields();
+                 
+            //     //  const app_types = [
+            //     //     {value:0, label:"Web Application"},
+            //     //     {value:1, label:"Mobile App"}
+            //     //  ];
+            //     //  VSUtil.setComboItems(fields.app_id,data.apps,"id","app_name",null,null,0);
+            //  }
+        });
+        mThis.ResignDialog.show(op);
+    }
     // this.setTerminated = (id,lnk)=>{
     //     let tr = lnk.closest("tr");
     //     console.log(1,tr);
@@ -1062,10 +1170,6 @@ var EmployeeComponent = new function () {
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data: [
-                {
-                    status_id: "20",
-                    name: "Resign",
-                },
                
                 {
                     status_id: "10",
@@ -1621,13 +1725,8 @@ const EmployeeDialog = (() => {
                                             </select>
                                     </div>
                                     <div class="form-group col-3">
-                                        <label for="salary_base" class="form-label" vslang="titles.Salary Base"></label>
-                                        <input name="salary_base" class="form-control data-input" data-field="salary_base" />
-                                    </div>
-                                    <div class="form-group col-3">
-                                        <label for="position" class="form-label" vslang="titles.Position"></label>
-                                        <span class="text-danger" >*</span>
-                                        <select name="position" class="data-input"  data-field="position_id"></select>
+                                        <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
+                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
                                     </div>
                                     <div class="form-group col-3">
                                         <label for="type" class="form-label" vslang="titles.Employee Type"></label>
@@ -1635,9 +1734,16 @@ const EmployeeDialog = (() => {
                                         <select name="type" class=" data-input"  data-field="emp_type_id"></select>
                                     </div>
                                     <div class="form-group col-3">
-                                        <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
-                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                                        <label for="position" class="form-label" vslang="titles.Position"></label>
+                                        <span class="text-danger" >*</span>
+                                        <select name="position" class="data-input"  data-field="position_id"></select>
                                     </div>
+                                    <div class="form-group col-3">
+                                        <label for="salary" class="form-label" vslang="titles.salary"></label>
+                                        <input name="salary" class="form-control data-input" data-field="salary" />
+                                    </div>
+                                    
+                                    
                                     <div class="form-group col-3">
                                         <label for="joining_date" class="form-label" vslang="titles.Joining Date"></label>
                                         <input name="joining_date" class="form-control data-input" data-field="joining_date" />
@@ -1825,7 +1931,7 @@ const EmployeeDialog = (() => {
                                 // el.disabled = true;
                                 }
                             }
-                            if(data_member == 'salary_base' || data_member == 'nid'){
+                            if(data_member == 'salary' || data_member == 'nid'){
                                 console.log(12,el);
                                 el.disabled  = true;
                              }
