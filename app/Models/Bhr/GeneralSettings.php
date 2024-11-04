@@ -6,8 +6,8 @@ namespace App\Models\Bhr;
 use App\Models\UM;
 //use Carbon\Carbon;
 //use Session;
-use DB;
-use Sanitizer;
+use Illuminate\Support\Facades\DB;
+use App\Security\Sanitizer;
 //use Illuminate\Support\Collection;
 
 class GeneralSettings //extends Model
