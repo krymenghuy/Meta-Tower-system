@@ -5,68 +5,66 @@ var PositionComponent = new (function () {
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_positionComponent");
     this.self = this.jm[0];
-    this.title_prop = "Position";
+    this.title_prop = "Positions";
     this.btnAdd = this.self.querySelector("#_btnAddPosition");
     this.divFilter = this.self.querySelector("#_divFilter");
-    this.elStatus = this.self.querySelector("#el_status");
     this.elSearch = this.self.querySelector("#_sdl_search_position");
-    this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
 
     this.cols = [
         {
-            title: "No",
+            title: "",
             className: "align-middle text-capitalize text-nowrap text-left",
-            data: (data, index, i) => {
-                return index + 1;
-            },
+            data: "",
         },
         {
-            title: "Position title",
-            className: "align-middle text-capitalize text-nowrap text-left",
-            data: "title",
+            title: "Position",
+            className: "align-middle text-capitalize",
+            data:(data)=>`<span class="text-primary-custom">${data.title}</span>`,
         },
         {
-            title: "Department Name",
+            title: "Department",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: "department",
         },
         {
             title: "Salary",
             className: "align-middle text-capitalize text-nowrap text-left",
-            data: (data)=>`
-                  <span class="text-primary-custom" style="font-weight: bold;">${data.salary ?? ""}<span class="text-danger"> (រៀល) </span></span>
-            `,
-        },
+            data: (data) => {
+                const formattedSalary = data.salary
+                    ? new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(data.salary)
+                    : "";
+                
+                return `
+                    <span class="text-primary-custom" style="font-weight: bold;">
+                        ${formattedSalary}  <span class="text-danger">(riels)</span>
+                    </span>
+                `;
+            },
+        }
+        ,
+        
+        
         {
-            title: "Create By",
+            title: "Last Updated",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data) => `
             <div style="display: block; align-items: center;">
-                <span style="font-size: 14px; font-weight: bold;">${
-                    data.update_user ?? ""
-                }</span><br/>
-                <span style="font-size: 12px; color: #2b3991;">${
-                    data.updated_at ?? ""
-                }</span>
+                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
+                <span style="font-size: 12px; color: #2b3991;">${data.updated_at ?? ""}</span>
             </div>`,
         },
         {
             className: "col_action align-middle",
             data: (data) => `
-            <div class="d-flex justify-content-end align-items-end">
+            <div class="d-flex justify-content-start align-items-center">
                 <div class="text-end gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${
-                        data.action_id > 1 ? "d-none" : "btn_payroll_action"
-                    }" data-id="${data.id}" data-statusid="${
-                data.status_id
-            }" aria-haspopup="true" aria-expanded="false">
-                        <img src="${
-                            main_view.asset_url
-                        }/images/icons/more_vert (3).svg" />
+                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_position_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                        <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
                     </a>
                 </div>
             </div>`,
         },
+       
     ];
 
     this.init = () => {
@@ -77,14 +75,13 @@ var PositionComponent = new (function () {
             perPage:10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass:
-                "table table--white rounded-2 overflow-hidden header-uppercase",
+            tableClass: "table table--white rounded-2 overflow-hidden header-uppercase",
             listContainerClass: null,
         });
 
         mThis.divFilter.addEventListener("change", (e) => {
             e.preventDefault();
-            mThis.PositionListView.showPage(mThis.getDataFormFilter());
+            mThis.PositionListView.showPage(mThis.getFilterData());
         });
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
@@ -95,10 +92,10 @@ var PositionComponent = new (function () {
                     mThis.PositionListView.showPage();
                 },
             };
-            PositionDilog.show(op);
+            PositionDialog.show(op);
         };
-        const pr_tbl = mThis.PositionListView.getListContainer();
-        const sh_parent = pr_tbl;
+        const listContainer = mThis.PositionListView.getListContainer();
+        const sh_parent = listContainer;
         // sh_parent.style.height = window.innerHeight - 275 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
@@ -107,36 +104,29 @@ var PositionComponent = new (function () {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
                 if (mThis.PositionListView) {
-                    mThis.PositionListView.showPage(mThis.getDataFormFilter());
+                    mThis.PositionListView.showPage(mThis.getFilterData());
                 } else {
                     console.error("PositionListView is not defined");
                 }
             }, 200);
         });
 
-        mThis.btnSearch.onclick = (e) => {
-            if (mThis.PositionListView) {
-                mThis.PositionListView.showPage(mThis.getDataFormFilter());
-            } else {
-                console.error("listView is not defined");
-            }
-        };
+      
 
-        mThis.initDropdownMenus(pr_tbl);
+        mThis.initDropdownMenus(listContainer);
 
         mThis.initAlready = true;
     };
-
-    this.getDataFormFilter = () => {
+  
+    this.getFilterData = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
-        p.status_id = mThis.elStatus.value;
         let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
         main_filters.forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(222, p);
+        // console.log(222, p);
 
         return p;
     };
@@ -144,19 +134,19 @@ var PositionComponent = new (function () {
     this.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass: "btn_payroll_action",
+            actionButtonClass: "btn_position_action",
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
                 {
                     html: '<span class="ps-2  " vslang="titles.Modify Position">Modify Position</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "edit_position",
                 },
                 {
                     html: '<span class="ps-2  " vslang="titles.Delete Position">Delete Position</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "delete_position",
                 },
@@ -165,11 +155,11 @@ var PositionComponent = new (function () {
             onClick: (menuLink, id, name) => {
                 switch (name) {
                     case "edit_position": {
-                        mThis.editposition(id, menuLink);
+                        mThis.editPosition(id, menuLink);
                         break;
                     }
                     case "delete_position": {
-                        mThis.deleteposition(id, menuLink);
+                        mThis.deletePosition(id, menuLink);
                         break;
                     }
 
@@ -182,7 +172,7 @@ var PositionComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     };
 
-    this.editposition = (id, menuLink) => {
+    this.editPosition = (id, menuLink) => {
         console.log(234, id);
 
         let op = {
@@ -192,10 +182,10 @@ var PositionComponent = new (function () {
                 mThis.PositionListView.showPage();
             },
         };
-        PositionDilog.show(op);
+        PositionDialog.show(op);
     };
 
-    this.deleteposition = (id, menuLink) => {
+    this.deletePosition = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -230,68 +220,48 @@ var PositionComponent = new (function () {
             }
         );
     };
-    this.prepareFormOptions = () => {
-        vsapi
-            .call(
-                `${main_view.base_url}/hr/position/form-options`,
-                null,
-                null,
-                null
-            )
-            .then((res) => {
-                const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, this.elStatus);
-
-                VSUtil.setComboItems(
-                    mThis.elStatus,
-                    d.status,
-                    "id",
-                    "name",
-                    true,
-                    "All",
-                    null
-                );
-            });
-    };
+    
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.prepareFormOptions();
-        mThis.PositionListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
+        mThis.PositionListView.showPage(mThis.getFilterData(),null,()=>{
+            mThis.jm.siblings().hide();
+            mThis.jm.hide().fadeIn(250);
+
+        });
+        
     };
 })();
 
-const PositionDilog = (()=>{
+const PositionDialog = (()=>{
 
     const self = {};
     let dialog = null;
      self.show = (op)=>{
 
-        dialog = dialog || new GeneralDialog({
-            cssClass:'modal-lg',
+        dialog = new GeneralDialog({
+            cssClass:'modal-md',
             backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
                  return [`<div class="row">
-                 <div class="form-group col-12">
+                 <div class="form-group col-md-12">
                      <label for="department" class="form-label" vslang="titles.Department"></label>
-                     <select name="department" class=" data-input"  data-field="department_id"></select>
+                     <span class="text-danger" >*</span>
+                     <select name="department" class="data-input"  data-field="department_id"></select>
                  </div>
-                 <div class="form-group  col-12 d.none">
-                     <div id="info"></div>
+                 <div class="form-group col-md-6">
+                     <label for="title" class="form-label" vslang="titles.Position"></label>
+                     <span class="text-danger" >*</span>
+                     <input type="text" class="form-control data-input" data-field="title">
                  </div>
-                <div class="form-group col-12">
-                     <label for="salary" class="form-label"
-                     vslang="titles.Salary"></label>
-                     <input  type="number" class="form-control data-input" data-field="salary">               </div>
-                 <div class="form-group col-12">
-                     <label for="title" class="form-label"
-                     vslang="titles.Title"></label>
-                     <textarea  type="text" class="form-control data-input" data-field="title"></textarea>
+                 <div class="form-group col-md-6">
+                        <label for="salary" class="form-label" vslang="titles.Salary"></label>
+                        <span class="text-danger" >*</span>
+                        <input  type="number" class="form-control data-input" data-field="salary">               
                  </div>
+                 
 
               </div>`].join('');
             },
@@ -306,16 +276,16 @@ const PositionDilog = (()=>{
             ],
             buttons:[
                {
-                label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
+                label:'<span class=""><i class="fa-solid text-danger fa-xmark"></i></span>',
+                cssClass:'btn btn-sm-outline rounded-3',
                 click:(me,btn)=>{
                     //Close with Cancel button
                     me.hide(false);
                 }
             },
                {
-                label:'<span>Save</span>',
-                cssClass:'btn btn-primary',
+                label:'<span><i class="fa-solid text-success fa-check"></i></span>',
+                cssClass:'btn btn-sm-outline rounded-3',
                 click:(me,btn)=>{
                     const p = me.getData();
 
