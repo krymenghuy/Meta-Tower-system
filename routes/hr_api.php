@@ -36,6 +36,7 @@ use App\Http\Controllers\Bhr\TaxAllowanceController;
 use App\Http\Controllers\Bhr\TaxBracketController;
 use App\Http\Controllers\Bhr\TransactionController;
 use App\Http\Controllers\Bhr\WalletAccountController;
+use App\Http\Controllers\Bhr\PromoteEmployeeController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -78,6 +79,11 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/set-rejoin-status',[EmployeeController::class,'setRejoinStatus']);
 
     //Route::post('updateSenderStatus', [SenderController::class, 'updateSenderStatus']);
+});
+
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('promote')->group(function(){
+    Route::post('/employee',[PromoteEmployeeController::class,'promoteEmployee']);
+
 });
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')->group(function () {
