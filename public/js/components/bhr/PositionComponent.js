@@ -36,7 +36,7 @@ var PositionComponent = new (function () {
                 
                 return `
                     <span class="text-primary-custom" style="font-weight: bold;">
-                        ${formattedSalary}  <span class="text-danger">(riels)</span>
+                        ${formattedSalary}  <span class="text-danger">(KHR)</span>
                     </span>
                 `;
             },
