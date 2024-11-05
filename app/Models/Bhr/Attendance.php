@@ -33,8 +33,8 @@ class Attendance
                 'status_id' => '0|enum|DEFAULT=Present',
                 'remark' => '0|string',
             ];
-
-        $res = validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
+        $remark = [':', "'" , '-', '.', '?', '$', '\'', '@'];
+        $res = validateObject($arr, $v_rule, 1, ["remark"=>$remark], $ss->lang, 0, null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -103,40 +103,43 @@ class Attendance
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
         $search_status_id = $d->status_id ?? null;
-        $attendance_date = $d->attendance_date ?? date('Y-m-d'); // Default to current date if not provided
+        $attendance_date = $d->attendance_date ?? date('Y-m-d');
 
-        // Define the ID for "Un Inform Leave" for comparison
-        $UNINFORM_LEAVE_ID = 1; // Replace with the actual leave_type_id for "Un Inform Leave"
+        // Assuming 'Urgent Leave' has a specific leave_type_id (replace with actual ID if known)
+        $UNINFORM_LEAVE_TYPE_ID = 8;
+
+        // Format the attendance date
+        $attendance_date = date('Y-m-d', strtotime($attendance_date));
 
         // Build the query
         $query = DB::table('attendances as a')
             ->join('employees as e', 'e.id', '=', 'a.emp_id')
             ->leftJoin('leaves as l', function ($join) use ($attendance_date) {
                 $join->on('l.emp_id', '=', 'e.id')
-                    ->where('l.status_id', '=', 2)
+                    ->where('l.status_id', '=', 2) // Assuming 2 represents an approved leave
                     ->whereDate('l.start_date', '<=', $attendance_date)
                     ->whereDate('l.end_date', '>=', $attendance_date);
             })
             ->selectRaw(
                 '
-        a.id,
-        e.id as emp_id,
-        e.photo_file_name as emp_photo,
-        e.name,
-        e.name_kh,
-        e.email as email,
-        a.emp_id,
-        a.check_in_time,
-        a.check_out_time,
-        a.attendance_date,
-        a.remark,
-        CASE 
-            WHEN l.id IS NOT NULL AND l.leave_type_id = ? THEN "Permission"
-            WHEN l.id IS NOT NULL THEN "Absent"
-            ELSE a.status_id
-        END as status_id
-    ',
-                [$UNINFORM_LEAVE_ID]
+            a.id,
+            e.id as emp_id,
+            e.photo_file_name as emp_photo,
+            e.name,
+            e.name_kh,
+            e.email as email,
+            a.emp_id,
+            a.check_in_time,
+            a.check_out_time,
+            a.attendance_date,
+            a.remark,
+            CASE 
+                WHEN l.id IS NOT NULL AND l.leave_type_id = ? THEN "Absent"
+                WHEN l.id IS NOT NULL THEN "Permission"
+                ELSE a.status_id
+            END as status_id
+            ',
+                [$UNINFORM_LEAVE_TYPE_ID]
             );
 
         // Apply filters if provided
@@ -147,8 +150,7 @@ class Attendance
             $query->where('a.status_id', $search_status_id);
         }
         if ($attendance_date) {
-            $formatted_date = date('Y-m-d', strtotime($attendance_date)); // Ensure the date is in 'Y-m-d' format
-            $query->whereDate('a.attendance_date', $formatted_date);
+            $query->whereDate('a.attendance_date', $attendance_date);
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
@@ -169,12 +171,11 @@ class Attendance
             }
             unset($row->emp_photo);
 
-            // Auto-fill remark for Absent status
             if ($row->status_id === "Absent" && empty($row->remark)) {
                 $row->remark = "Don't know the reason";
             }
 
-            // Format status with color: orange for "Late", green for "Present", and red for "Absent"
+            // Format the status
             if ($row->status_id === "Absent") {
                 $row->formatted_status = '<span style="color: red;">Absent</span>';
             } elseif ($row->status_id === "Late") {
@@ -188,7 +189,6 @@ class Attendance
 
         return $rows;
     }
-
 
     function attendanceList($filter = [], $ss = null)
     {

@@ -395,29 +395,33 @@ const LeaveRequestDialog = (()=>{
             backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
-                 return [`<div class="row">
-                 <div class="form-group col-12">
-                     <label for="employee" class="form-label" vslang="titles.Employee"></label>
-                     <select name="employee" class="form-control data-input"  data-field="emp_id"></select>
-                 </div>
-                 <div class="form-group  col-12 d.none">
-                     <div id="info"></div>
-                 </div>
-                 <div class="form-group col-6">
-                    <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
-                    <input name="start_date" class="form-control data-input" data-field="start_date" />
-                </div>
-                <div class="form-group col-6">
-                  <label for="end_date" class="form-label" vslang="titles.End Date"></label>
-                  <input name="end_date" class="form-control data-input" data-field="end_date" />
-                </div>
-                 <div class="form-group col-12">
-                     <label for="leave_type" class="form-label" vslang="titles.Leave Type"></label>
-                     <select name="leave_type" class=" data-input"  data-field="leave_type_id"></select>
-                 </div>
-               
-
-              </div>`].join('');
+                 return [
+                     `<div class="row">
+                    <div class="form-group col-12">
+                        <label for="employee" class="form-label" vslang="titles.Employee"></label>
+                        <select name="employee" class="form-control data-input"  data-field="emp_id"></select>
+                    </div>
+                    <div class="form-group  col-12 d.none">
+                        <div id="info"></div>
+                    </div>
+                    <div class="form-group col-6">
+                        <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
+                        <input name="start_date" class="form-control data-input" data-field="start_date" />
+                    </div>
+                    <div class="form-group col-6">
+                      <label for="end_date" class="form-label" vslang="titles.End Date"></label>
+                      <input name="end_date" class="form-control data-input" data-field="end_date" />
+                    </div>
+                    <div class="form-group col-12">
+                      <label for="remarks" class="form-label" vslang="titles.remarks"></label>
+                      <input name="remarks" class="form-control data-input" data-field="remarks" />
+                    </div>
+                    <div class="form-group col-12">
+                        <label for="leave_type" class="form-label" vslang="titles.Leave Type"></label>
+                        <select name="leave_type" class=" data-input"  data-field="leave_type_id"></select>
+                    </div>
+              </div>`,
+                 ].join("");
             },
             contentCreated:(me)=>{
                //Convert field to be DatePicker : start_date and end_date
