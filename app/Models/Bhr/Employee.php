@@ -100,14 +100,14 @@ class Employee //extends Model
         $employee_created = !$emp_id;
         $delete_prev_image = ($emp_id > 0 && (!$photo || isImage($photo)));
     
-        if ($d->emp_type_id == 'staff' && !empty($d->position_id)) {
+        if ($d->emp_type_id == '3' && !empty($d->position_id)) {
             $position = DB::table('positions')->where('id', $d->position_id)->first(['salary']);
             if ($position) {
                 $inputs['salary'] = $position->salary;
             } else {
                 return DV::error('Position not found');
             }
-        } else if ($d->emp_type_id != 'staff') {
+        } else if ($d->emp_type_id != '3') {
             
             $inputs['salary'] = null; 
         }
