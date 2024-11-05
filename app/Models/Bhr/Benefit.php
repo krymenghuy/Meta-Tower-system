@@ -18,14 +18,25 @@ class Benefit
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    function save($arr, $id,$ss = null)
+    function save($arr, $id, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $id = $id ?? $this->id;
         $d = (object) $arr;
         $emp_id = $d->emp_id ?? null;
+
         if (!$emp_id) return DV::error('Employee is required for saving benefit!');
+
+        // New validation to check for existing benefits of the same type
+        $existingBenefit = DB::table('emp_benefits')
+        ->where('emp_id', $emp_id)
+            ->where('benefit_type_id', $d->benefit_type_id)
+            ->first();
+
+        if ($existingBenefit) {
+            return DV::error('This employee already has a benefit of this type.');
+        }
 
         $v_rule = [
             'id' => '0|identity=1',
@@ -43,7 +54,9 @@ class Benefit
 
         $id = saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1, false);
         if ($id > 0) {
+            // Handling different benefit types
             if ($d->benefit_type_id == 1) {
+                // Bonus handling
                 $bonus_arr = ['benefit_id' => $id, 'remarks' => $d->remarks];
                 $bonus_v_rule = [
                     'benefit_id' => '1|number',
@@ -53,7 +66,6 @@ class Benefit
                 if ($bonus_res->error) return DV::error($bonus_res->error);
 
                 $bonus_inputs = $bonus_res->values;
-
                 $existing_bonus = DB::table('emp_bonuses')->where('benefit_id', $id)->first();
 
                 if ($existing_bonus) {
@@ -61,12 +73,10 @@ class Benefit
                 } else {
                     $bonus_id = saveData($ss, 'emp_bonuses', ['id' => null], $bonus_inputs, [], 1, false);
                 }
-                if ($bonus_id){
-                    
-                }
 
                 return DV::depends($bonus_id, ['Bonuses data saved']);
-            } else if ($d->benefit_type_id == 2) {
+            } elseif ($d->benefit_type_id == 2) {
+                // Seniority handling
                 $seniority_arr = [
                     'benefit_id' => $id,
                     'start_date' => $d->start_date ?? null,
@@ -85,7 +95,6 @@ class Benefit
                 if ($seniority_res->error) return DV::error($seniority_res->error);
 
                 $seniority_inputs = $seniority_res->values;
-
                 $existing_seniority = DB::table('emp_seniorities')->where('benefit_id', $id)->first();
 
                 if ($existing_seniority) {
@@ -95,8 +104,8 @@ class Benefit
                 }
 
                 return DV::depends($seniority_id, ['Seniority data saved']);
-            } 
-            else if ($d->benefit_type_id == 3) {
+            } elseif ($d->benefit_type_id == 3) {
+                // Life insurance handling
                 $life_insurances_arr = [
                     'benefit_id' => $id,
                     'start_date' => $d->start_date ?? null,
@@ -115,7 +124,6 @@ class Benefit
                 if ($life_insurances_res->error) return DV::error($life_insurances_res->error);
 
                 $life_insurances_inputs = $life_insurances_res->values;
-
                 $existing_life_insurances = DB::table('emp_life_insurances')->where('benefit_id', $id)->first();
 
                 if ($existing_life_insurances) {
@@ -130,9 +138,9 @@ class Benefit
             return DV::depends(1, ['Benefits saved' => $inputs, 'Benefit ID' => $id]);
         }
 
-
         return DV::depends($id, ['id' => $id], 'Save failed');
     }
+
 
     function getAllBenefitsList($arr, $ss = null)
     {

@@ -4,6 +4,7 @@ namespace App\Models\Bhr;
 
 use App\Models\DV;
 use App\Models\JDV;
+use App\Models\Bhr\PayrollList;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -26,7 +27,7 @@ class PayrollList
             'id' => '0|identity=1',
             'payroll_id' => '1|number',
             'emp_id' => '1|number',
-            // 'salary_base' => '0|number',
+            // 'salary' => '0|number',
             'benefit' => '0|number',
             'deduction' => '0|number',
             'disburse' => '0|number|default = 0',
@@ -90,7 +91,7 @@ class PayrollList
                         pos.title as emp_position,
                         el.name as emp_role,
                         b.name as branch_name,
-                        e.salary_base,
+                        e.salary,
                         e.apply_payroll_tax,
                         pl.benefit, pl.deduction,
                         pl.tax_rate,
@@ -134,7 +135,7 @@ class PayrollList
             $row->tax_allowance = ($row->tax_allowance ?? 0);
 
 
-            // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_amount <=' . $row->salary_base . ' and upper_amount >=' . $row->salary_base)->take(1)->value('rate');
+            // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_amount <=' . $row->salary . ' and upper_amount >=' . $row->salary)->take(1)->value('rate');
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
@@ -160,7 +161,7 @@ class PayrollList
                     pos.title as emp_position,
                     el.name as emp_role,
                     b.name as branch_name,
-                    e.salary_base,
+                    e.salary,
                     pl.benefit, pl.deduction,
                     pl.tax_base,
                     ta.amount as tax_allowance,
@@ -170,7 +171,7 @@ class PayrollList
         ->where('pl.id', $id)->first();
 
 
-        // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_amount <=' . $row->salary_base . ' and upper_amount >=' . $row->salary_base)->take(1)->value('rate');
+        // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_amount <=' . $row->salary . ' and upper_amount >=' . $row->salary)->take(1)->value('rate');
         return $row;
     }
     function deletePayrollList($id, $ss)
@@ -193,7 +194,7 @@ class PayrollList
 
             'sort_by' => [
                 ['id' => 'e.name', 'name' => 'By Name'],
-                ['id' => 'e.salary_base', 'name' => 'By Salary Base'],
+                ['id' => 'e.salary', 'name' => 'By Salary Base'],
 
             ],
 
@@ -214,14 +215,14 @@ class PayrollList
             return JDV::error('Payroll not found');
         }
              $get_employee = DB::table('employees')
-            ->where('status_id', 10)->selectRaw('id as emp_id,name,apply_payroll_tax,salary_base')->get();
+            ->where('status_id', 10)->selectRaw('id as emp_id,name,apply_payroll_tax,salary')->get();
         $success = 0;
         $error = 0;
         $exist = 0;
         foreach ($get_employee as $emp) {
             if($emp->apply_payroll_tax == 0){
                 $emp->tax_rate = DB::table('tax_brackets')
-                    ->whereRaw('lower_amount <=' . $emp->salary_base . ' and upper_amount >=' . $emp->salary_base)
+                    ->whereRaw('lower_amount <=' . $emp->salary . ' and upper_amount >=' . $emp->salary)
                     ->take(1)->value('rate');
 
             }else
@@ -286,7 +287,7 @@ class PayrollList
                     e.name as emp_name,
                     pos.title as emp_position,
                     el.name as emp_role,
-                    e.salary_base,
+                    e.salary,
                     pl.benefit, pl.deduction,
                     ta.amount as tax_allowance,
                     e.photo_file_name as emp_photo')->orderBy('e.id')->get();
@@ -301,24 +302,24 @@ class PayrollList
                     ->where('id', $payroll->emp_id)
                     ->value('apply_payroll_tax');
 
-                $salary_base = $payroll->salary_base;
+                $salary = $payroll->salary;
                 $tax_allowance = $payroll->tax_allowance;
                 $benefit = $payroll->benefit;
                 $deduction = $payroll->deduction;
 
                 if ($payroll->apply_payroll_tax == 0) {
                     $payroll->tax_rate = DB::table('tax_brackets')
-                        ->where('lower_amount', '<=', $salary_base)
-                        ->where('upper_amount', '>=', $salary_base)
+                        ->where('lower_amount', '<=', $salary)
+                        ->where('upper_amount', '>=', $salary)
                         ->value('rate');
 
                     $tax_rate = $payroll->tax_rate;
 
-                    $payroll->tax_base = ($salary_base - $tax_allowance) * ($tax_rate / 100);
-                    $payroll->total = $salary_base + $benefit - $deduction - $payroll->tax_base;
+                    $payroll->tax_base = ($salary - $tax_allowance) * ($tax_rate / 100);
+                    $payroll->total = $salary + $benefit - $deduction - $payroll->tax_base;
                 } else {
                     $payroll->tax_base = 0;  // No tax base for non-taxed employees
-                    $payroll->total = $salary_base + $benefit - $deduction ;
+                    $payroll->total = $salary + $benefit - $deduction ;
                 }
                 $row =DB::table('payroll_lists')->where('id',$payroll->id)->update(
                     [
@@ -351,11 +352,16 @@ class PayrollList
                     ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
                     ->join('accounts as a', 'a.emp_id', '=', 'pl.emp_id')
                     ->where('pl.id', $id)
-                    ->selectRaw('total_salary as amount,pl.emp_id,pl.payroll_id,p.name as remarks,a.id as account_id ')->first();
+                    ->selectRaw('total_salary as amount,pl.emp_id,pl.payroll_id,p.name as remarks,a.id as account_id,p.authorized,p.name ')->first();
             $trx->trx_type=3;
             $trx->transfer_acc_id = 1;
+            if(!$trx->authorized){
+                return DV::error($trx->name.' is not authorized ');
+            }
+
             $trx = Transaction::transfer((array)$trx, $ss);
             $transfer_amount = 0;
+
             if($trx){
                 $transfer_amount = $trx['transactions']['amount'];
                 $account_id = DB::table('accounts')->where('emp_id', $trx['transactions']['emp_id'])->value('id');
@@ -370,6 +376,7 @@ class PayrollList
             $account_id = $default_account->account_id;
             $last_balance = $default_account->amount;
             $default_account = Transaction::withdrawal((array)$default_account, $ss);
+
             if($default_account){
                 $updateBalance_def = PayrollList::updateBalance($account_id,'accounts','out',  $default_account['transactions']['amount'], $default_account['trx_id'], $ss);
             }
@@ -378,7 +385,7 @@ class PayrollList
                 $query = DB::table('payroll_lists')
                 ->where('id', $id)
                 ->update(['disburse' => 1, 'trx_id' => hex2bin($trx['trx_id'])]);
-                return $query;
+                return DV::depends(1, ['Payroll Disbursed' => $query]);
             }
             return DV::error('Disbursement failed');
 
@@ -393,7 +400,6 @@ class PayrollList
                 $amount = 0;
             }
             $lastBalance = DB::table($table_name)->where('id', $account_id)->value('balance');
-
             if($status=='in'){
                 $newBalance = (float)$lastBalance + (float)$amount;
             }else if($status=='out'){
@@ -401,7 +407,6 @@ class PayrollList
             }else{
                 $newBalance = (float)$amount;
             }
-
             $lastBalanceDate = date('Y-m-d');
             $query = DB::table($table_name)
                 ->where('id', $account_id)

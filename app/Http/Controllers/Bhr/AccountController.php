@@ -78,6 +78,6 @@ class AccountController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->account->transfer($req->all(), $ss));
+        return ($this->account->transfer($req->all(), $ss));
     }
 }
