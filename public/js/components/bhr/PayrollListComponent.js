@@ -42,7 +42,7 @@ var PayrollListComponent = new (function () {
             title: "Salary Base",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.salary_base ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.salary ?? '0.00'}</p>`;
             }
         },
         {
@@ -203,16 +203,16 @@ var PayrollListComponent = new (function () {
             menus:[
 
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Payroll List">Modify Payroll List</span>',
-                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"edit_payroll_list"
-                },
-                {
                     html:'<span class="ps-2  " vslang="titles.Disburse"></span>',
                     icon:`<i class="fa-solid fa-square-check"></i>`,
                     cssClass:"border-bottom pb-2",
                     name:"disburse_payroll_list"
+                },
+                {
+                    html:'<span class="ps-2  " vslang="titles.Modify Payroll List">Modify Payroll List</span>',
+                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass:"border-bottom pb-2",
+                    name:"edit_payroll_list"
                 },
                 {
                     html:'<span class="ps-2  " vslang="titles.Delete Payroll List">Delete Payroll List</span>',
@@ -287,6 +287,9 @@ var PayrollListComponent = new (function () {
                     if(res.status_code == 200){
                         cv_interact.success('Disbursed Successfully');
                         mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                    }
+                    else{
+                        cv_interact.error(res.error_message);
                     }
                 })
             }
