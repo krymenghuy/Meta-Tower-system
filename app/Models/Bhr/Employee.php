@@ -72,15 +72,14 @@ class Employee //extends Model
             'status_id' => '1|number|default = 10',
             'photo' => '0|image',
         ];
-
-
+    
         $checkUnique = null;
-
+    
         $res = validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
-
+    
         $emp_id = $res->id;
         $inputs = $res->values;
         $d = (object) $inputs;
@@ -89,13 +88,10 @@ class Employee //extends Model
         $inputs['phone_number'] = $d->phone_number;
         $phone_check = $this->checkUniqueEmployeeByPhone($d->phone_number, $emp_id);
         if ($phone_check) return DV::error($phone_check);
-        // if (!$d->phone_number) {
-        //     error_log('Phone number is required for valid  employee');
-        //     return DV::error('Phone number is required for valid  employee');
-        // }
+    
         $nid_check = $this->checkUniqueEmployeeByNID($d->nid, $emp_id);
         if ($nid_check) return DV::error($nid_check);
-
+    
         if (!$d->name_kh) {
             $d->name_kh = $d->name;
             $inputs['name_kh'] = $d->name_kh;
@@ -103,7 +99,19 @@ class Employee //extends Model
         unset($inputs['photo']);
         $employee_created = !$emp_id;
         $delete_prev_image = ($emp_id > 0 && (!$photo || isImage($photo)));
-
+    
+        if ($d->emp_type_id == 'staff' && !empty($d->position_id)) {
+            $position = DB::table('positions')->where('id', $d->position_id)->first(['salary']);
+            if ($position) {
+                $inputs['salary'] = $position->salary;
+            } else {
+                return DV::error('Position not found');
+            }
+        } else if ($d->emp_type_id != 'staff') {
+            
+            $inputs['salary'] = null; 
+        }
+    
         error_log('Saving data: ' . json_encode($inputs));
         $save = !$emp_id;
         $id = saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1);
@@ -114,21 +122,22 @@ class Employee //extends Model
         }
         if ($id > 0) {
             $new_code = null;
-
+    
             if ($delete_prev_image) {
                 $file_name = DB::table('employees as emp')->where('emp.id', $id)->take(1)->value('emp.photo_file_name');
                 if ($file_name) {
                     PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
                 }
-
+    
                 DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
             }
             PublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'employees.photo_file_name']);
             return DV::depends(1, ['employees' => $inputs, 'id' => $id]);
         }
-
+    
         return DV::error('Failed to save employee');
     }
+    
 
     // function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
     //     $id = $id ?? $this->id;
@@ -259,7 +268,7 @@ class Employee //extends Model
             emp.phone_number,
             emp.sex,
             emp.nationality,
-            emp.date_of_birth,
+            formatDate(emp.date_of_birth) as date_of_birth,
             emp.address,
             emp.photo_file_name,
             DATE_FORMAT(emp.joining_date, "%d %b %Y") as joining_date,  -- Format using DATE_FORMAT
