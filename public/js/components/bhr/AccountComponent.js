@@ -203,6 +203,7 @@ var AccountMenagmentComponent = new (function () {
             id: id, // Pass the ID to fetch the data
             btn: menuLink,
             onClose: () => {
+                cv_interact.success('Account Transferred Successfully');
                 mThis.AccountListView.showPage(); // Refresh the list after editing
             },
         };
@@ -447,7 +448,7 @@ const TransferDialog = (() => {
                     </div>
                     <div class="form-group col-6">
                          <label for="currency" class="form-label" vslang="titles.Currency"></label>
-                                            <select class="modal-select data-input" data-field="currency">
+                                            <select class="modal-select data-input" data-field="currency" >
                                                 <option value="">(Select Currency)</option>
                                                 <option value="KHR">Cambodian Riel</option>
                                                 <option value="USD">US Dollar</option>
@@ -458,30 +459,30 @@ const TransferDialog = (() => {
                     </div>
                     <div class="form-group col-4">
                         <label for="account_type" class="form-label" vslang="titles.From Account"></label>
-                                            <select class="modal-select data-input" data-field="account_type">
-                                                <option value="Payroll">Payroll</option>
+                                            <select class="modal-select data-input" data-field="account_type" disabled>
+                                                <option value="Payroll" >Payroll</option>
                                             </select>
                     </div>
                     <div class="form-group col-4">
                         <label for="account_number" class="form-label" vslang="titles.From Account Number"></label>
-                        <input name="account_number" class="form-control data-input" data-field="account_number" />
+                        <input name="account_number" class="form-control data-input" data-field="account_number"readonly />
                     </div>
                     <div class="form-group col-4">
                         <label for="ballance" class="form-label" vslang="titles.Payroll Balance"></label>
-                        <input name="ballance" class="form-control data-input" data-field="balance" />
+                        <input name="ballance" class="form-control data-input" data-field="balance"readonly />
                     </div>
                     <div class="form-group col-4">
                         <label for="w_account_type" class="form-label" vslang="titles.To Account "></label>
-                                            <select class="modal-select data-input" data-field="w_account_type">
+                                            <select class="modal-select data-input" data-field="w_account_type" disabled>
                                                 <option value="Wallet">Wallet</option>
                                             </select>
                     </div>
                     <div class="form-group col-4">
                         <label for="w_account_number" class="form-label" vslang="titles.To Account Number"></label>
-                        <input name="w_account_number" class="form-control data-input" data-field="w_account_number" />
+                        <input name="w_account_number" class="form-control data-input" data-field="w_account_number" readonly />
                     </div>
                     <div class="form-group col-4">
-                        <label for="w_balance" class="form-label" vslang="titles.Wallet Balance"></label>
+                        <label for="w_balance" class="form-label" vslang="titles.Amount"></label>
                         <input name="w_balance" class="form-control data-input" data-field="w_balance" />
                     </div>
                     </div>
@@ -521,21 +522,21 @@ const TransferDialog = (() => {
                             console.log(123,p);
 
 
-                            // vsapi
-                            //     .call(
-                            //         [
-                            //             main_view.base_url,
-                            //             "/hr/account/save",
-                            //         ].join(""),
-                            //         p,
-                            //         btn,
-                            //         null
-                            //     )
-                            //     .then((res) => {
-                            //         if (res.status_code == 200) {
-                            //             me.hide(true, p);
-                            //         } else cv_interact.error(res.error_message);
-                            //     });
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/account/transfer",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                    } else cv_interact.error(res.error_message);
+                                });
                         },
                     },
                 ],

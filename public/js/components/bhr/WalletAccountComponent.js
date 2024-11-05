@@ -36,7 +36,7 @@ var WalletAccountComponent = new (function () {
             title: "Account Type",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-1 m-0 text-center rounded-5 border text-white w-50 bg-info bg-gradient">${data.w_account_type ?? ""}</p>`;
+                return `<p class="p-1 m-0 text-center rounded-5 border text-white w-50 bg-info bg-gradient">${data.account_type ?? ""}</p>`;
             },
         },
 
@@ -45,7 +45,7 @@ var WalletAccountComponent = new (function () {
             title: "Account Number",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.w_account_number ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.account_number ?? ''}</p>`;
             }
         },
 
@@ -54,7 +54,7 @@ var WalletAccountComponent = new (function () {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.w_balance ?? ''}</p>`;
+                return `<p class="p-0 m-0">${data.balance ?? ''}</p>`;
             }
         },
         {
