@@ -27,9 +27,10 @@ class Position
             'salary' => '1|number',
             'inactive' => '1|number|default = 0',
         ];
+        $pos_char = ['$', '#', '@', '!','&', '.', '-', '_', '=', '?'];
 
         $checkUnque = ["$branch_id|positions|title|id=id|text=Position already exists."];
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, $checkUnque);
+        $res = validateObject($arr, $v_rule, true, ['title'=>$pos_char], $ss->lang, false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -69,7 +70,7 @@ class Position
             ->join('departments as d', 'd.id', '=', 'p.department_id')
             ->where('p.inactive',0)
             ->whereRaw($str_search)
-            ->selectRaw('p.id, p.title, p.department_id,p.salary, d.name as department,d.updated_at,d.update_user')->orderBy('p.id','DESC');
+            ->selectRaw('p.id, p.title, p.department_id,p.salary, d.name as department,p.updated_at,p.update_user')->orderBy('p.id','ASC');
         $clone_query = clone $query;
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();

@@ -143,13 +143,30 @@ var EmployeeComponent = new function () {
                     cssClass: "border-bottom pb-2",
                     name: "set_rejoin",
                 },
-                // {
-                //     html: '<span class="ps-2 text-" vslang="titles.Set Terminated">Set Terminated</span>',
-                //     icon: `<i class="fa-solid text-dark fa-rocket"></i>`,
-                //     cssClass: "border-bottom pb-2",
-                //     name: "set_terminated",
-                // },
+                {
+                    html: '<span class="ps-2 text-" vslang="titles.Set Terminated">Set Terminated</span>',
+                    icon: `<i class="fa-solid text-dark fa-rocket"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "set_terminated",
+                },
             ],
+            onShow:(me,container)=>{
+                // console.log(123,me.getActiveMenus(container).set_rejoin);
+                const menu = me.getActiveMenus(container);
+                const status_id = container.dataset.statusid;
+                menu.set_rejoin.style.display = status_id == 10? 'none':'block';
+                menu.set_terminated.style.display='none';
+
+
+                // switch(status_id){
+                //     case 10:{
+                //         menu.set_rejoin.style.display='none';
+                //         break;
+                //     }
+                // }
+
+
+            },
             onClick: (menuLink, id, name) => {
                 switch (name) {
                     
@@ -165,10 +182,10 @@ var EmployeeComponent = new function () {
                         mThis.setResign(id,menuLink);
                         break;
                     }
-                    // case "set_terminated":{
-                    //     mThis.setTerminated(id,menuLink);
-                    //     break;
-                    // }
+                    case "set_terminated":{
+                        mThis.setTerminated(id,menuLink);
+                        break;
+                    }
                     case "set_rejoin":{
                         mThis.setRejoin(id,menuLink);
                         break;
@@ -397,7 +414,7 @@ var EmployeeComponent = new function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">salary</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">​${data.salary || ""}(រៀល)</p>
+                                    <p class="text-nowrap">​${data.salary || "0.00"}(KHR)</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Payroll Tax</p>
@@ -1107,55 +1124,55 @@ var EmployeeComponent = new function () {
         });
         mThis.ResignDialog.show(op);
     }
-    // this.setTerminated = (id,lnk)=>{
-    //     let tr = lnk.closest("tr");
-    //     console.log(1,tr);
-    //     let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
-    //     console.log(123,status_id);
+    this.setTerminated = (id,lnk)=>{
+        let tr = lnk.closest("tr");
+        console.log(1,tr);
+        let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
+        console.log(123,status_id);
 
-    //     let inputOptions = {
-    //         title: "Set Employee Terminate",
-    //         dataLabel: "Employee status",
-    //         valueMember: "status_id",
-    //         textMember: "name",
-    //         confirmButtonText: "Save",
-    //         blankErrorMessage: "Status is not correct!",
-    //         data: [
+        let inputOptions = {
+            title: "Set Employee Terminate",
+            dataLabel: "Employee status",
+            valueMember: "status_id",
+            textMember: "name",
+            confirmButtonText: "Save",
+            blankErrorMessage: "Status is not correct!",
+            data: [
                
-    //             {
-    //                 status_id: "30",
-    //                 name: "Terminated",
-    //             },
+                {
+                    status_id: "30",
+                    name: "Terminated",
+                },
                
-    //         ],
-    //         defaultValue: status_id,
-    //     };
+            ],
+            defaultValue: status_id,
+        };
 
-    //     InputBox2.show(inputOptions, (d) => {
-    //         if (d) {
-    //             let p = {
-    //                 id: id,
-    //                 status_id: d.value,
-    //             };
-    //             console.log(123, p);
+        InputBox2.show(inputOptions, (d) => {
+            if (d) {
+                let p = {
+                    id: id,
+                    status_id: d.value,
+                };
+                console.log(123, p);
 
-    //             vsapi
-    //                 .call(`${mThis.base_url}/hr/employee/update-status`, p)
-    //                 .then((res) => {
-    //                     if (res.status_code === 200) {
-    //                         mThis.elEmployeeStatus.value = parseInt(d.value);
-    //                         InputBox2.close();
-    //                         mThis.elEmployeeStatus.dispatchEvent ( new Event('change'));
-    //                         cv_interact.success("The Employee has been Terminate");
-    //                         // if(tr) tr.dataset.status_id = d.value;
-    //                         // mThis.EmployeeListView.showPage(mThis.getFilterData());
-    //                     } else
-    //                     cv_interact.error(res.error_message);
-    //                 });
-    //         }
-    //     });
+                vsapi
+                    .call(`${mThis.base_url}/hr/employee/update-status`, p)
+                    .then((res) => {
+                        if (res.status_code === 200) {
+                            mThis.elEmployeeStatus.value = parseInt(d.value);
+                            InputBox2.close();
+                            mThis.elEmployeeStatus.dispatchEvent ( new Event('change'));
+                            cv_interact.success("The Employee has been Terminate");
+                            // if(tr) tr.dataset.status_id = d.value;
+                            // mThis.EmployeeListView.showPage(mThis.getFilterData());
+                        } else
+                        cv_interact.error(res.error_message);
+                    });
+            }
+        });
 
-    // }
+    }
     this.setRejoin = (id,lnk)=>{
         let tr = lnk.closest("tr");
         console.log(1,tr);
@@ -1740,7 +1757,7 @@ const EmployeeDialog = (() => {
                                     </div>
                                     <div class="form-group col-3">
                                         <label for="salary" class="form-label" vslang="titles.salary"></label>
-                                        <input name="salary" class="form-control data-input" data-field="salary" />
+                                        <input name="salary" class="form-control data-input" readonly data-field="salary" />
                                     </div>
                                     
                                     
