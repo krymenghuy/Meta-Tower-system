@@ -32,7 +32,7 @@ class Leave
             'end_date' => '1|date',
             'leave_type_id' => '1|number',
             'remarks' => '0|string|250',
-            'status_id' => '0|choice|1,2,3|default=2',
+            'status_id' => '0|choice|1,2,3|default=1',
         ];
     
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);

@@ -103,29 +103,41 @@ class Attendance
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
         $search_status_id = $d->status_id ?? null;
-        $attendance_date = $d->attendance_date ?? null;
+        $attendance_date = $d->attendance_date ?? date('Y-m-d'); // Default to current date if not provided
+
+        // Define the ID for "Un Inform Leave" for comparison
+        $UNINFORM_LEAVE_ID = 1; // Replace with the actual leave_type_id for "Un Inform Leave"
 
         // Build the query
         $query = DB::table('attendances as a')
             ->join('employees as e', 'e.id', '=', 'a.emp_id')
-            ->leftJoin('leaves as l', function ($join) {
+            ->leftJoin('leaves as l', function ($join) use ($attendance_date) {
                 $join->on('l.emp_id', '=', 'e.id')
-                    ->where('l.status_id', '=', 2); // Include employees on leave
+                    ->where('l.status_id', '=', 2)
+                    ->whereDate('l.start_date', '<=', $attendance_date)
+                    ->whereDate('l.end_date', '>=', $attendance_date);
             })
-            ->selectRaw('
-                a.id,
-                e.id as emp_id,
-                e.photo_file_name as emp_photo,
-                e.name,
-                e.name_kh,
-                e.email as email,
-                a.emp_id,
-                a.check_in_time,
-                a.check_out_time,
-                a.attendance_date,
-                a.remark,
-                CASE WHEN l.id IS NOT NULL THEN "Absent" ELSE a.status_id END as status_id
-            ');
+            ->selectRaw(
+                '
+        a.id,
+        e.id as emp_id,
+        e.photo_file_name as emp_photo,
+        e.name,
+        e.name_kh,
+        e.email as email,
+        a.emp_id,
+        a.check_in_time,
+        a.check_out_time,
+        a.attendance_date,
+        a.remark,
+        CASE 
+            WHEN l.id IS NOT NULL AND l.leave_type_id = ? THEN "Permission"
+            WHEN l.id IS NOT NULL THEN "Absent"
+            ELSE a.status_id
+        END as status_id
+    ',
+                [$UNINFORM_LEAVE_ID]
+            );
 
         // Apply filters if provided
         if ($search_id) {
@@ -135,16 +147,16 @@ class Attendance
             $query->where('a.status_id', $search_status_id);
         }
         if ($attendance_date) {
-            $formatted_date = date('Y-m-d', strtotime($attendance_date));
-            $query->whereDate('a.attendance_date', '=', $formatted_date);
+            $formatted_date = date('Y-m-d', strtotime($attendance_date)); // Ensure the date is in 'Y-m-d' format
+            $query->whereDate('a.attendance_date', $formatted_date);
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->where(function ($q) use ($search_value) {
                 $q->where('e.name', 'LIKE', "%{$search_value}%")
-                    ->orWhere('a.remark', 'LIKE', "%{$search_value}%")
-                    ->orWhere('e.email', 'LIKE', "%{$search_value}%")
-                    ->orWhere('a.attendance_date', 'LIKE', "%{$search_value}%");
+                ->orWhere('a.remark', 'LIKE', "%{$search_value}%")
+                ->orWhere('e.email', 'LIKE', "%{$search_value}%")
+                ->orWhere('a.attendance_date', 'LIKE', "%{$search_value}%");
             });
         }
 
@@ -157,11 +169,18 @@ class Attendance
             }
             unset($row->emp_photo);
 
+            // Auto-fill remark for Absent status
+            if ($row->status_id === "Absent" && empty($row->remark)) {
+                $row->remark = "Don't know the reason";
+            }
+
             // Format status with color: orange for "Late", green for "Present", and red for "Absent"
             if ($row->status_id === "Absent") {
                 $row->formatted_status = '<span style="color: red;">Absent</span>';
             } elseif ($row->status_id === "Late") {
                 $row->formatted_status = '<span style="color: orange;">Late</span>';
+            } elseif ($row->status_id === "Permission") {
+                $row->formatted_status = '<span style="color: blue;">Permission</span>';
             } else {
                 $row->formatted_status = '<span style="color: green;">Present</span>';
             }
@@ -171,54 +190,59 @@ class Attendance
     }
 
 
-
     function attendanceList($filter = [], $ss = null)
     {
         $branch_id = $ss->branch_id;
         $d = (object)$filter;
-        $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 10;
-        $search_id = $d->id ?? null;
-        if (!is_numeric($current_page)) {
-            $current_page = 1;
-        }
-        $search_value = $d->search_value ?? null;
-        $employee_id = $d->emp_id ?? null;
-        $attendance_date = $d->attendance_date ?? null;
+        $current_page = isset($d->current_page) && is_numeric($d->current_page) ? $d->current_page : 1;
+        $per_page = isset($d->per_page) && is_numeric($d->per_page) ? $d->per_page : 10;
+        $search_value = isset($d->search_value) ? escape_like_str($d->search_value) : null;
+        $employee_id = isset($d->emp_id) ? $d->emp_id : null;
+        $attendance_date = isset($d->attendance_date) ? date('Y-m-d', strtotime($d->attendance_date)) : null;
         $skip_rows = ($current_page - 1) * $per_page;
+
+        // Start building the query
+        $query = DB::table('attendances as a')
+            // ->join('attendances as a', 'a.emp_id', '=', 'emp.id')
+            ->join('employees as emp', 'emp.id', '=', 'a.emp_id')
+            ->join('employee_statuses as e', 'e.id', '=', 'a.status_id')
+            ->where('a.branch_id', $branch_id)
+            ->where('a.attendance_date', '>=', date('Y-m-d', strtotime('-30 days')))
+            ->where('a.attendance_date', '<=', date('Y-m-d'))
+            ->selectRaw('a.id, emp.id as employee_id, emp.gender, emp.name, emp.name_kh, emp.email, emp.code, emp.date_of_birth as dob, a.attendance_date, a.check_in_time, a.check_out_time, a.remark, a.status_id, e.photo_file_name as emp_photo')
+            ->orderBy('emp.name', 'asc');
+            // ->selectRaw('a.id, emp.id as employee_id, emp.gender, emp.name, emp.name_kh, emp.email, emp.code, emp.date_of_birth as dob, a.attendance_date, a.check_in_time, a.check_out_time, a.remark, a.status_id, e.photo_file_name as emp_photo')
+            // ->distinct();
+
+        // Build the search conditions
         $str_search = '1=1';
-        
-        if ($str_search) {
-            $skip_rows = 0;
-            $search_value = escape_like_str($search_value);
-            $str_search = "(emp.name = '$search_value' OR emp.code LIKE '%$search_value%')";
+
+        if ($search_value) {
+            $str_search .= " AND (emp.name LIKE '%$search_value%' OR emp.code LIKE '%$search_value%')";
         }
+
         if ($attendance_date) {
-            $formatted_attendance_date = date('Y-m-d', strtotime($attendance_date));  // Ensure the date is in 'Y-m-d' format
-            $str_search .= " AND a.attendance_date = '$formatted_attendance_date'";
+            $str_search .= " AND a.attendance_date = '$attendance_date'";
         }
-        $selectCols = 'a.id,emp.id as employee_id,emp.gender,emp.name,emp.name_kh,emp.email,emp.code,emp.date_of_birth as dob,a.attendance_date,a.check_in_time,a.check_out_time, a.remark, a.status_id,e.photo_file_name as emp_photo';
-        $query = DB::table('employees as emp')
-            ->join('attendances as a', 'a.emp_id', '=', 'emp.id')
-            // ->join('enrollments as e','e.id','=','sa.enrollment_id')
-            ->whereRaw($str_search)
-            ->selectRaw($selectCols)
-            ->distinct()
-            ->orderBy('emp.id', 'desc');
-        // $query = DB::table('student_attendances')->selectRaw();
+
+        // Apply search conditions
+        $query->whereRaw($str_search);
+
+        // Clone query for count
         $count_query = clone $query;
-        $count = $count_query->count('emp.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
-        if ($search_id) {
-            $query->where('emp.id', $search_id);
-        }
+        $count = $count_query->count();
+
+        // Filter by employee_id if provided
         if ($employee_id) {
-            $rows = $rows->where('emp.id', $employee_id);
-            $count = $rows->count();
-            dd($count, $employee_id);
+            $query->where('emp.id', $employee_id);
         }
+
+        // Get the rows with pagination
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
 
     function getDetails($id, $ss)
     {
