@@ -73,7 +73,7 @@ class Account
                 $query = DB::table('accounts as a')
                 ->join('employees as e', 'e.id', '=', 'a.emp_id')
                 ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-                ->join('transactions as t', 't.id', '=', 'a.trx_id')
+                // ->join('transactions as t', 't.id', '=', 'a.trx_id')
                 ->selectRaw('
                     a.id,
                     a.emp_id,
@@ -81,8 +81,6 @@ class Account
                     pos.title as position,
                     a.account_type,
                     a.account_number,
-                    t.amount as transaction_amount,
-                    t.trx_type,
                     a.balance,
                     a.currency,
                     '.$balance_date.        ',
@@ -122,7 +120,8 @@ class Account
             ->join('employees as e', 'e.id', 'a.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('transactions as t', 't.id', '=', 'a.trx_id')
-            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type, a.account_number,t.amount as transaction_amount,t.trx_type,a.currency,a.balance,e.photo_file_name as emp_photo')
+            ->join('wallet_accounts as wa', 'wa.emp_id', '=', 'a.emp_id')
+            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type, a.account_number,t.amount as transaction_amount,t.trx_type,a.currency,a.balance,e.photo_file_name as emp_photo,wa.account_number as w_account_number,wa.account_type as w_account_type')
             ->where('a.id', $id)->first();
         if ($row) {
             $row->image_url = Employee::profilePicture($row->emp_id);
@@ -170,37 +169,50 @@ class Account
         ];
     }
 
-    function transfer($arr, $ss)
-    {
+    function transfer($arr, $ss) {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
-        $trx = (object) [];
 
-        $payroll_account = DB::table('accounts')
-            ->where('account_number', $d->account_number)
-            ->value('balance');
 
-        $payroll_balance = $payroll_account - $d->w_balance;
+        $trx = $d;
+        $trx->trx_type=3;
+        $trx->transfer_acc_id = $trx->account_number;
+        $trx->amount = $trx->w_balance;
+        $trx->account_id = $trx->w_account_number;
+        $trx->remarks = 'Transfer from Payroll Account ' . $trx->account_number . ' to Wallet Account ' . $trx->w_account_number;
 
-        $trx->emp_id = $d->emp_id;
-        $trx->trx_type='3';
-        $trx->amount = $d->w_balance*(-1);
-        $trx->status = 'out';
+        if($trx->balance < $trx->amount){
+            return DV::error('Insufficient Balance');
+        }
 
-        $trx = Transaction::save((array)$trx, $ss);
+        $trx = Transaction::transfer((array)$trx, $ss);
+        $transfer_amount = 0;
 
-        DB::table('accounts')
-            ->where('account_number', $d->account_number)
-            ->update(['balance' => $payroll_balance, 'trx_id' => hex2bin($trx['trx_id'])]);
+        if($trx){
+            $transfer_amount = $trx['transactions']['amount'];
+            $account_id = DB::table('wallet_accounts')->where('emp_id', $trx['transactions']['emp_id'])->value('id');
+            $updateBalance_acc = PayrollList::updateBalance($account_id,'wallet_accounts','in',  $trx['transactions']['amount'], $trx['trx_id'], $ss);
+        }
 
-        $wellet = DB::table('wallet_accounts')
-            ->where('w_account_number', $d->w_account_number)
-            ->value('w_balance');
+        $payroll_account = DB::table('accounts as a')
+            ->where('a.account_number', $d->account_number)
+            ->selectRaw(' a.id as account_id')->first();
+        $payroll_account->trx_type='2';
+        $payroll_account->amount = $transfer_amount;
+        $account_id = $payroll_account->account_id;
+        $last_balance = $payroll_account->amount;
 
-        $new_wellet_balance = $d->w_balance + $wellet;
+        $payroll_account = Transaction::withdrawal((array)$payroll_account, $ss);
 
-        $wellet = DB::table('wallet_accounts')
-            -where('w_account_number', $d->w_account_number)
-            ->update(['w_balance' => $new_wellet_balance]);
+        if($payroll_account){
+            $updateBalance_def = PayrollList::updateBalance($account_id,'accounts','out',  $payroll_account['transactions']['amount'], $payroll_account['trx_id'], $ss);
+        }
+
+        if($updateBalance_acc && $updateBalance_def){
+
+            return DV::depends(1, ['Transferred Successfully' => '']);
+        }
+        return DV::error('Error transferring account');
+
     }
 }

@@ -198,6 +198,10 @@ class Payroll
     function updateDisburse($id = null, $ss = null)
     {
 
+        $check = DB::table('payrolls')->where('id', $id)->value('authorized');
+        if(!$check){
+            return DV::error('Not Authorized');
+        }
         $ss = $ss ? $ss : $this->userInfo;
         $x = DB::table('payrolls')->where('id', $id)->update([
             'disbursed' => 1,

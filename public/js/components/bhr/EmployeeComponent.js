@@ -1755,9 +1755,9 @@ const EmployeeDialog = (() => {
                                         <span class="text-danger" >*</span>
                                         <select name="position" class="data-input"  data-field="position_id"></select>
                                     </div>
-                                    <div class="form-group col-3">
+                                    <div class="form-group salary col-3">
                                         <label for="salary" class="form-label" vslang="titles.salary"></label>
-                                        <input name="salary" class="form-control data-input" readonly data-field="salary" />
+                                        <input name="salary" id="salary" class="form-control  data-input"  data-field="salary" />
                                     </div>
                                     
                                     
@@ -1781,6 +1781,9 @@ const EmployeeDialog = (() => {
                     ].join("");
                 },
                 contentCreated: (me) => {
+                    const salary = me.divModal.querySelector('.salary');
+                    console.log(1234,salary);
+                    salary.classList.add('d-none');
                     //Convert field to be DatePicker : start_date and end_date
                     DateTimePicker.init(me.controls.date_of_birth);
                     DateTimePicker.init(me.controls.joining_date);
@@ -1933,15 +1936,18 @@ const EmployeeDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
+                    
                     LocaleManager.translateZone(me.divModal);
                     me.divModal.querySelectorAll('.data-input').forEach(el => {
-
+                       
                         const data_member = el.dataset.field;
                         console.log(90,op.id);
+                        const salary = me.divModal.querySelector('.salary');
                         
                         let id = op.id;
                         
                         if(id){
+                            salary.classList.remove('d-none');
                             if (el.tagName.toLowerCase() === 'select') {
                                 if(data_member == 'position_id' || data_member == 'work_shift_id' || data_member == 'emp_type_id' ){
                                 el.setAttribute('disabled',true);
@@ -1952,12 +1958,18 @@ const EmployeeDialog = (() => {
                                 console.log(12,el);
                                 el.disabled  = true;
                              }
+                             
                              id=null;
                         }
                         
                    });
                    
                 },
+                onClose:(canceled)=>{
+                    
+    
+                     
+                }
             });
 
         dialog.show(op);

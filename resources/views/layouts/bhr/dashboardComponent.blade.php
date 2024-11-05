@@ -1,6 +1,6 @@
 <div id="_main_dashboardComponent" style="display:none;padding:10px 0 0; overflow:auto;">
     <div class="dashboard_top" id="_dashboard_top">
-      
+
     </div>
     <div class="dashboard_center" id="_dashboard_center">
     <div class="center_left">
@@ -158,7 +158,7 @@
                 <li><strong>Warning</strong><span>15</span></li>
             </ul>
         </div>
-      
+
     </div>
     <div class="dashboard_bottom" id="_dashboard_bottom">
     <div class="em_departement">

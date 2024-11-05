@@ -82,7 +82,7 @@ class Transaction
         $ss = $ss ?? Transaction::$userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
+            // 'id' => '0|identity=1',
             'emp_id' => '1|number',
             'payroll_id' => '0|number',
             'amount' => '1|number',
@@ -98,10 +98,9 @@ class Transaction
             return ['error' => $res->error];
         }
 
-        $id = $res->id;
+        $id = null;
         $inputs = $res->values;
         $inputs['status'] = $status;
-
 
         $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
         if ($id) {
