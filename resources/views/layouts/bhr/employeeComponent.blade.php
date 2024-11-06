@@ -110,7 +110,7 @@
     .bg-secondary-custom {
         background-color: red;
     }
-   
+
 
     .social-icons a {
         display: inline-block;
