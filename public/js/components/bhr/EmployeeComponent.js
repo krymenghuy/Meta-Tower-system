@@ -110,6 +110,7 @@ var EmployeeComponent = new function () {
 
         return p;
     };
+
     this.initDropdownMenus = (listContainer) => {
         console.log(listContainer);
 
@@ -213,6 +214,7 @@ var EmployeeComponent = new function () {
             mThis.renderEmployee(data, user);
         });
     };
+
     this.renderEmployee = (data) => {
         let html = "";
         html += `<div  class="row mb-5">`;
@@ -294,17 +296,6 @@ var EmployeeComponent = new function () {
 
         html += `</div>`;
         div.innerHTML = html;
-
-        // const sh_parent = div.querySelector("#_scroll_emp");
-        // sh_parent.style.height = window.innerHeight - 195 + "px";
-        // sh_parent.classList.add("overflow-y-auto");
-        // sh_parent.classList.add("overflow-x-hidden");
-
-        // // Handle resize
-        // window.onresize = function (e) {
-        //     e.preventDefault();
-        //     sh_parent.style.height = window.innerHeight - 100 + "px";
-        // };
 
         const seeProfileInfo = div.querySelectorAll(".see-detail");
         seeProfileInfo.forEach((link) => {
@@ -458,9 +449,8 @@ var EmployeeComponent = new function () {
         mThis.initDropdownMenusInfo(mThis.profile_info_emp);
 
     };
-    this.initDropdownMenusInfo = (listContainer) => {
-        console.log(listContainer);
 
+    this.initDropdownMenusInfo = (listContainer) => {
         const menuOptopns = {
             containerElement: listContainer,
             actionButtonClass: "btn_movement_action",
@@ -480,23 +470,17 @@ var EmployeeComponent = new function () {
                 },
 
                 {
-                    html: '<span class="ps-2  " vslang="titles.Promote Staff">Promote Staff</span>',
+                    html: '<span class="ps-2  " vslang="titles.Promote to Staff">Promote to Staff</span>',
                     icon: `<i class="fa-solid text-success fa-bolt"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "promote_employee",
+                    name: "promote_to_staff",
                 },
-                
-                {
-                    html: '<span class="ps-2  " vslang="titles.Change Branch Employee">Change Branch Employee</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "branch_transfer",
-                },
+            
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    case "promote_employee": {
-                        mThis.promoteEmployee(id, menuLink);
+                    case "promote_to_staff": {
+                        mThis.promoteToStaff(id, menuLink);
                         break;
                     }
                     case "set_resign":{
@@ -519,7 +503,8 @@ var EmployeeComponent = new function () {
             }
         }
         new VSDropdownMenu(menuOptopns);
-    }
+    };
+
     this.renderCardLeft = (employeeId) => {
         let html = "";
 
@@ -585,6 +570,7 @@ var EmployeeComponent = new function () {
         ].join("");
         this.profile_card_left.innerHTML = html;
     };
+
     this.renderCardCenter = (employeeId) => {
         let p = {
             emp_id: employeeId,
@@ -654,6 +640,7 @@ var EmployeeComponent = new function () {
                     });
             });
     };
+
     this.renderCardRight = (employeeId) => {
         let p = {
             emp_id: employeeId,
@@ -788,6 +775,7 @@ var EmployeeComponent = new function () {
                     });
             });
     };
+
     this.renderCardTaxAllowance = (employeeId) => {
         let p = { emp_id: employeeId };
         console.log(1122, p);
@@ -928,6 +916,7 @@ var EmployeeComponent = new function () {
 
 
     };
+
     this.setResign = (id,menuLink)=>{
         
         let op = {
@@ -1026,7 +1015,8 @@ var EmployeeComponent = new function () {
         });
         mThis.ResignDialog.show(op);
     }
-    this.promoteEmployee = (id,menuLink)=>{
+
+    this.promoteToStaff = (id,menuLink)=>{
         
         let op = {
             id: id,
@@ -1036,7 +1026,7 @@ var EmployeeComponent = new function () {
             },
         };
         mThis.ResignDialog =  new GeneralDialog({
-            title: LocaleManager.trans("Promote Staff","titles"),
+            title: LocaleManager.trans("Promote To Staff","titles"),
             createContent:()=>{
                 return [
                    ` <div class="form-group col-md-12">
@@ -1124,6 +1114,7 @@ var EmployeeComponent = new function () {
         });
         mThis.ResignDialog.show(op);
     }
+
     this.setTerminated = (id,lnk)=>{
         let tr = lnk.closest("tr");
         console.log(1,tr);
@@ -1173,6 +1164,7 @@ var EmployeeComponent = new function () {
         });
 
     }
+
     this.setRejoin = (id,lnk)=>{
         let tr = lnk.closest("tr");
         console.log(1,tr);

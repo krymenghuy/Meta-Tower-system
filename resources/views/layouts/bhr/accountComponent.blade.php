@@ -37,8 +37,8 @@
     </div>
 </div>
 <style>
-    #_account_list {
-        height: 460px;
+    #_account_list{
+        height: 500px;
         overflow-y: scroll;
         overflow-x: hidden;
         scrollbar-width: none;
@@ -46,5 +46,6 @@
 
     #_account_list_paginator {
         bottom: 0;
+        margin-top: 20px;
     }
 </style>

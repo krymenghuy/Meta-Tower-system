@@ -151,7 +151,7 @@
     }
 
     #_job_level_list {
-        height: 440px;
+        height: 350px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;

@@ -104,7 +104,6 @@ var StaffAttendanceComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success("Add attendance successfully");
                     mThis.StaffAttendanceListView.showPage();
                 },
             };
@@ -334,6 +333,9 @@ const StaffAttendanceDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
+                                        cv_interact.success(
+                                            "attendance save successfully"
+                                        );
                                     } else cv_interact.error(res.error_message);
                                     StaffAttendanceComponent.saveStaffAttendance();
                                 });

@@ -385,9 +385,9 @@ var EmployeeBenefitComponent = new (function () {
                     d.categories,
                     "id",
                     "name",
-                    true,
-                    "All Benefit Type",
-                    null
+                    false,
+                    null,
+                    1
                 );
 
                 // Create benefit type name map for displaying names instead of IDs
@@ -464,7 +464,7 @@ const EmployeeBenefitDialog = (() => {
                             </div>
                             <div class="form-group col-12">
                                 <label for="amount" class="form-label" vslang="titles.Amount"></label>
-                                <textarea type="text" class="form-control data-input" data-field="amount"></textarea>
+                                <input type="number" name="amount" class="form-control data-input" data-field="amount"></input>
                             </div>
                             <div class="form-group col-12">
                                 <label for="remark" class="form-label" vslang="titles.Remark"></label>

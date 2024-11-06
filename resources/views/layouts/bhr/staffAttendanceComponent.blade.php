@@ -25,7 +25,7 @@
 </div>
 <style>
     #_staff_attendance_list {
-        height: 580px;
+        height: 480px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
