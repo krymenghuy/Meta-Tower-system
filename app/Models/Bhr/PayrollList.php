@@ -352,13 +352,16 @@ class PayrollList
                     ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
                     ->join('accounts as a', 'a.emp_id', '=', 'pl.emp_id')
                     ->where('pl.id', $id)
-                    ->selectRaw('total_salary as amount,pl.emp_id,pl.payroll_id,p.name as remarks,a.id as account_id,p.authorized,p.name ')->first();
+                    ->selectRaw('total_salary as amount,pl.emp_id,pl.payroll_id,p.name as remarks,a.id as account_id,p.authorized,a.account_number')->first();
             $trx->trx_type=3;
             $trx->transfer_acc_id = 1;
-            if(!$trx->authorized){
-                return DV::error($trx->name.' is not authorized ');
-            }
+            $trx->from_acc_num = '1';
+            $trx->to_acc_num = $trx->account_number;
 
+            if(!$trx->authorized){
+                return DV::error($trx->remarks.' is not authorized ');
+            }
+         
             $trx = Transaction::transfer((array)$trx, $ss);
             $transfer_amount = 0;
 
@@ -370,8 +373,9 @@ class PayrollList
 
             $default_account = DB::table('accounts as a')
                     ->where('a.id', 1)
-                    ->selectRaw(' a.id as account_id')->first();
+                    ->selectRaw(' a.id as account_id,a.account_number')->first();
             $default_account->trx_type='2';
+            $default_account->from_acc_num = $default_account->account_number;
             $default_account->amount = $transfer_amount;
             $account_id = $default_account->account_id;
             $last_balance = $default_account->amount;

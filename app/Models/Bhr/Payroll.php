@@ -187,6 +187,7 @@ class Payroll
 
 
             $total->trx_type = "1";
+            $total->to_acc_num = 1;
             $total = Transaction::deposit((array)$total, $ss);
 
             $new_balance = $total['transactions']['amount'] + $default_account->amount;
