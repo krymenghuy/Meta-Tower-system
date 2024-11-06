@@ -268,7 +268,7 @@ function v_display($mod_id, $module_ids = null)
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                 <a href="PayrollListComponent" modid="105" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/Credit card.svg') }}" />
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/payroll_list.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Payroll list"></span>
                 </a>
@@ -296,7 +296,7 @@ function v_display($mod_id, $module_ids = null)
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
-                            src="{{ asset('assets/images/icons/driver_transaction.svg') }}" />
+                            src="{{ asset('assets/images/icons/attendance.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color" vslang="menus.Attendance Management">
                         Attendance Management
@@ -309,7 +309,7 @@ function v_display($mod_id, $module_ids = null)
                             <a href="LeaveComponent" modid="105" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/bhr/User x.svg') }}" />
+                                        src="{{ asset('assets/images/icons/absent.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Leave Management"></span>
                             </a>
@@ -318,7 +318,7 @@ function v_display($mod_id, $module_ids = null)
                             <a href="StaffAttendanceComponent" modid="209" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/package_trail.svg') }}" />
+                                        src="{{ asset('assets/images/icons/present.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color "
                                     vslang="menus.Employee Attendance"></span>
