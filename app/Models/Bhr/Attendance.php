@@ -33,8 +33,8 @@ class Attendance
                 'status_id' => '0|enum|DEFAULT=Present',
                 'remark' => '0|string',
             ];
-        $remark = [':', "'" , '-', '.', '?', '$', '\'', '@'];
-        $res = validateObject($arr, $v_rule, 1, ["remark"=>$remark], $ss->lang, 0, null);
+        $remark = [':', "'", '-', '.', '?', '$', '\'', '@'];
+        $res = validateObject($arr, $v_rule, 1, ["remark" => $remark], $ss->lang, 0, null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -51,12 +51,11 @@ class Attendance
         ->whereDate('attendance_date', $attendance_date)
         ->first();
 
-        if ($existingAttendance && !$id) {
-            // If an ID is not provided and attendance already exists, use existing record's ID to update
-            $id = $existingAttendance->id;
-        } elseif ($existingAttendance && $id != $existingAttendance->id) {
-            // If ID is provided but does not match existing record, return error
-            return DV::error('Attendance for this employee on this date already exists.');
+        if ($existingAttendance) {
+            if (!$id || $id != $existingAttendance->id) {
+                return DV::error('Attendance for this employee on this date already exists.');
+            }
+            $id = $existingAttendance->id; // Use existing ID for updates
         }
 
         $day_name = date('D', strtotime($attendance_date));
@@ -70,8 +69,6 @@ class Attendance
         $check_out_time = isset($inputs['check_out_time']) ? date('H:i:s', strtotime($inputs['check_out_time'])) : '00:00:00';
 
         $status_id = ($check_in_time <= '08:00:00') ? 'Present' : 'Late';
-
-        // Set remark to "On time" if check-in time is before 8:00 AM and no other remark is provided
         $remark = isset($inputs['remark']) ? $inputs['remark'] : (($check_in_time < '08:00:00') ? 'On time' : '');
 
         $arr_attendance = [
@@ -90,6 +87,7 @@ class Attendance
 
         return DV::depends($newID, ['attendances' => $inputs, 'id' => $newID], $ss);
     }
+
 
 
     function getStaffAttendanceListPaginate($arr, $ss)
