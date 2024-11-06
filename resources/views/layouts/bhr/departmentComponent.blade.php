@@ -18,7 +18,7 @@
 </div>
 <style>
     #_dep_list {
-        height: 600px;
+        height: 500px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
