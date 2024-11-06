@@ -3,7 +3,7 @@
         <div class="d-flex justify-content-between w-100 p-2 " id="_divFilter">
             <div class="d-flex align-items-center w-50 gap-2">
                 <div class="d-flex align-items-center w-50 gap-2 pl-3">
-                    <input type="text" class="form-control filter-field"
+                    <input type="text" class="form-control filter-field btn_search"
                         id="_sdl_search_wallet_account"data-field="search_value" placeholder="Search Here">
                 </div>
             </div>
@@ -13,7 +13,7 @@
                     <select type="id" id="el_sort_by" class="data-input filter-field"
                         data-field="sort_by"></select>
                 </div>
-                <button type="button" class="btn btn-primary" id="_btnWalletAddAccount">
+                <button type="button" class="btn_add" id="_btnWalletAddAccount">
                     <i class="fas fa-plus"></i>
                     <span>Add Account</span>
                 </button>

@@ -53,15 +53,15 @@
     <div class="d-flex justify-content-between w-200 " id="container_jobLevel">
         <div class="d-flex align-items-center w-100 gap-2 ml-4">
             <div class="d-flex align-items-center w-50 gap-2">
-                <input type="text" class="form-control filter-field" id="_job_level_search" placeholder="Search job level ...">
+                <input type="text" class="form-control filter-field btn_search" id="_job_level_search" placeholder="Search job level ...">
 
-                <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
+                <button id="_sdl_btnSearch" role="button" class="btn btn-primary rounded-5">
                     <i class="la la-search"></i>
                 </button>
             </div>
         </div>
         <div class="d-flex align-items-center justify-content-end gap-2 w-100 mr-4">
-            <button type="button" class="btn btn-primary" id="_btnAddJobLevel">
+            <button type="button" class="btn_add" id="_btnAddJobLevel">
                 <i class="fas fa-plus"></i>
                 <span>Add Job level </span>
             </button>

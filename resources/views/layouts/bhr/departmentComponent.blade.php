@@ -1,14 +1,14 @@
 <div id="_main_departmentComponent" style="display:none;padding:20px 0 0">
     <div class="d-flex  p-4 justify-content-between w-100 " id="_divFilter">
         <div class="d-flex align-items-center justify-content-start gap-2 w-100">
-            <button type="button" class="btn btn-primary-custom" id="_btnAddDepartment">
+            <button type="button" class="btn_add" id="_btnAddDepartment">
                 <i class="fas fa-plus"></i>
                 <span>Add New</span>
             </button>
         </div>
         <div class="d-flex align-items-center justify-content-end w-100 gap-2">
             <div class="d-flex align-items-end w-50 gap-2">
-                <input type="text" class="form-control rounded-4 filter-field" id="_search_department"
+                <input type="text" class="form-control btn_search filter-field" id="_search_department"
                     placeholder="Search Department">
             </div>
         </div>
