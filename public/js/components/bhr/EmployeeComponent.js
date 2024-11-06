@@ -238,47 +238,71 @@ var EmployeeComponent = new function () {
                 }
 
                 html += `
-                    <div class="col-md-3 mt-2 mb-3 employee-card" data-employee-id="${d.id
+                    <div class="col-md-3 mt-2 mb-3 employee-card" data-employee-id="${
+                        d.id
                     }">
-                        <div class="card">
+                        <div class="card d-flex">
                             <div class="card-header">
                                 <div class="status_employee" style="${statusColor} color: white; padding: 3px; border-radius: 20px;">
                                     <span>${status}</span>
                                 </div>
                                 <div class="dropdown">
-                                    <a href="javascript:void(0)" class="btn_employee_action" data-id="${d.id}" data-statusid="${d.status_id}" aria-haspopup="true" aria-expanded="false">
-                                        <img src="${main_view.asset_url}/images/bhr/more_vert.svg">
+                                    <a href="javascript:void(0)" class="btn_employee_action" data-id="${
+                                        d.id
+                                    }" data-statusid="${
+                    d.status_id
+                }" aria-haspopup="true" aria-expanded="false">
+                                        <img src="${
+                                            main_view.asset_url
+                                        }/images/bhr/more_vert.svg">
                                     </a>
                                 </div>
                             </div>
-                            <div class="card-body text-center">
-                                <img src="${d.image_url || "../assets/images/logo/default_image_user.avif" }" class="rounded-circle mb-3"
+                            <div class="card-body text-center j">
+                                <img src="${
+                                    d.image_url ||
+                                    "../assets/images/logo/default_image_user.avif"
+                                }" class="rounded-circle mb-3"
                                     alt="Profile Picture" style="width: 100px; height: 100px;">
                                 <div class="card-title">
                                     <h5 class="text-success">${d.name}</h5>
                                 </div>
-                                <div class="card_container">
-                                    <div class="employee_id text-primary-custom">#: <span class="ms-1">${d.code || "null"}</span></div>
+                                <div class="card_container gap-2 p-4 bg">
+                                    <div class="employee_id text-primary-custom">#: <span class="ms-2">${
+                                        d.code || "null"
+                                    }</span></div>
                                     <div class="container_top">
                                         <div class="position">
-                                            <i class="text-danger  fa-solid fa-dashboard"></i> <span class="ms-1"> ${d.type || "null"}</span>
+                                            <i class="text-danger  fa-solid fa-dashboard"></i> <span class="ms-1"> ${
+                                                d.type || "null"
+                                            }</span>
                                         </div>
                                         <div class="me-3">
-                                            <i class=" text-primary-custom fa-solid fa-clock"></i> <span>${d.position || "null"}</span>
+                                            <i class=" text-primary-custom fa-solid fa-clock"></i> <span>${
+                                                d.position || "null"
+                                            }</span>
                                         </div>
                                     </div>
                                     <div class="container_bottom">
                                         <div class="email">
-                                            <i class="text-warning fas fa-envelope"></i> <span>${d.email || "null"}</span>
+                                            <i class="text-warning fas fa-envelope"></i> <span class="p-2 rounded-5">${
+                                                d.email || "null"
+                                            }</span>
                                         </div>
                                         <div class="phone">
-                                            <i class="text-success fas fa-phone"></i> <span>${d.phone_number || "null"}</span>
+                                            <i class="text-success fas fa-phone"></i> <span class="p-2 rounded-5">${
+                                                d.phone_number || "null"
+                                            }</span>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card_bottom pt-3">
-                                    <div class="text-muted" style="font-size:11px;">Joining Date : <span class="text-primary-custom">${d.joining_date || "null"}</span></div>
-                                    <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">view info</a>
+                                    <div class="text-muted" style="font-size:11px;">Joining Date : <span class="text-primary-custom">${
+                                        d.joining_date || "null"
+                                    }</span></div>
+                                    <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${
+                                        d.id
+                                    }" aria-haspopup="true" aria-expanded="false">view info</a>
                                 </div>
                             </div>
                         </div>

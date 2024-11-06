@@ -189,7 +189,7 @@
     <div id="sub_content" class="p-4">
         <div class="d-flex justify-content-between w-100" id="div_filter_filed">
             <div class="d-flex align-items-start justify-content-start w-25">
-                <button type="button" class="btn text-white" style="background-color:#2b3991;" id="_btn_add_employee">
+                <button type="button" class="btn_add" style="background-color:#2b3991;" id="_btn_add_employee">
                     <i class="fas fa-plus"></i>
                     <span>Add Employee </span>
                 </button>
@@ -197,7 +197,7 @@
             <div class="d-flex align-items-center justify-content-end w-75 gap-3">
                 <div class="d-flex w-50 gap-3">
                     <div class="d-flex align-items-end w-100">
-                        <input type="text" class="form-control filter-field rounded-5" id="_search_employee"
+                        <input type="text" class="form-control filter-field btn_search" id="_search_employee"
                             placeholder="Search Employee">
                     </div>
                 </div>

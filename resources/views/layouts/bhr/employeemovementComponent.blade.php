@@ -2,7 +2,7 @@
     <div class="d-flex justify-content-between w-100 p-4" id="_divFilter">
         <div class="d-flex align-items-start w-100">
             <div class="d-flex w-50">
-                <button type="button" class="btn text-white" style="background-color:#2b3991;" id="_btnAddMovement">
+                <button type="button" class="btn text-white rounded-5" style="background-color:#2b3991;" id="_btnAddMovement">
                     <i class="fas fa-plus"></i>
                     <span>Add Movement</span>
                 </button>
@@ -10,7 +10,7 @@
             <div class="d-flex align-items-center justify-content-end gap-2 w-75 gap-3">
                 <div class="d-flex w-50 gap-3">
                     <div class="d-flex align-items-end w-100">
-                        <input type="text" class="form-control rounded-5 filter-field" id="_sdl_search_emp_movement"
+                        <input type="text" class="form-control btn_search filter-field" id="_sdl_search_emp_movement"
                             placeholder="Search Movement">
                     </div>
                 </div>
