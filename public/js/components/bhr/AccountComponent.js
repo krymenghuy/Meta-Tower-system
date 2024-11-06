@@ -9,6 +9,7 @@ var AccountMenagmentComponent = new (function () {
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_account");
     this.elSortBy = this.self.querySelector("#el_sort_by");
+    this.btnBack = this.self.querySelector("#_btn_backTo_account");
 
     this.cols = [
         {
@@ -82,7 +83,7 @@ var AccountMenagmentComponent = new (function () {
                 <div class="text-end gap-2 d-flex flex-wrap">
                     <a href="javascript:void(0)" class="${
                         data.action_id > 1 ? "d-none" : "btn_account_action"
-                    }" data-id="${data.id}" data-statusid="${
+                    }" data-id="${data.id}" data-emp_id="${data.emp_id}" data-statusid="${
                 data.status_id
             }" aria-haspopup="true" aria-expanded="false">
                         <img src="${
@@ -94,6 +95,122 @@ var AccountMenagmentComponent = new (function () {
         },
     ];
 
+    this.cols2 = [
+        {
+            title: "No",
+            className: "align-middle",
+            data: (data, index, i) => {
+                return index + 1;
+            },
+        },
+        {
+            title: "Trx Type",
+            className: 'trx_type text-nowrap align-middle',
+            data: function (data, index, tr) {
+                let cls_class = "text-white text-center border rounded-5";
+                let bg_color = ''; // Default background color
+                let trx_label = ''; // Default transaction label
+
+                if (data.trx_type === 1) {
+                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
+                    bg_color = '#9DBDFF';
+                    trx_label = 'Deposit';
+                } else if (data.trx_type === 2) {
+                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
+                    bg_color = '#FFB26F';
+                    trx_label = 'Withdrawal';
+                } else if (data.trx_type === 3) {
+                    cls_class = 'text-white text-center border border-primary rounded-5 p-1';
+                    bg_color = '#88C273';
+                    trx_label = 'Transfer';
+                }
+
+                return `<div><a class="d-block" data-trx_type="${data.trx_type}" data-id="${data.id}" href="javascript:void(0)">
+                            <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
+                                ${trx_label}
+                            </span>
+                        </a></div>`;
+            }
+        },
+        {
+            title: "From Account",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.from_acc_num ?? ""}</p>`;
+            },
+        },
+        {
+            title: "To Account",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.to_acc_num ?? ""}</p>`;
+            },
+        },
+        {
+            title: "Amount",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.amount ?? ""}</p>`;
+            },
+        },
+        {
+            title: "Date",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.created_at ?? ""}</p>`;
+            },
+        },
+        {
+            title: "Status",
+            className: "status text-nowrap align-middle",
+            data: function (data, index, tr) {
+                let cls_class = "text-white text-center border rounded-5";
+                let bg_color = ''; // Default background color
+                let status_label = ''; // Default status label
+
+                if (data.status === 'in') {
+                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
+                    bg_color = '#73EC8B';
+                    status_label = 'In';
+                } else if (data.status === 'out') {
+                    cls_class = 'text-white text-center border border-danger rounded-5 p-1';
+                    bg_color = '#FF6B6B';
+                    status_label = 'Out';
+                }
+
+                return `<div>
+                            <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
+                                ${status_label}
+                            </span>
+                        </div>`;
+            }
+        },
+
+        {
+            title: "Remarks",
+            className: "align-middle w-25",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.remarks ?? ""}</p>`;
+            },
+        },
+
+    ];
+    this.initTransaction = () => {
+        if (mThis.initTransactionAlready) return;
+        mThis.TransactionListView = new ListView("_transaction_info", {
+            fetchApi: `${main_view.base_url}/hr/transaction/list-paginate`,
+            perPage: 10,
+            apiCluster: main_view.apiCluster,
+            columns: mThis.cols2,
+            tableClass: "table table--white overflow-hidden  header-uppercase",
+            listContainerClass: null,
+        });
+        console.log(222,mThis.TransactionListView);
+
+
+        mThis.initTransactionAlready = true;
+
+    };
     this.init = () => {
         if (mThis.initAlready) return;
 
@@ -116,6 +233,14 @@ var AccountMenagmentComponent = new (function () {
                 },
             };
             AccountDialog.show(op);
+        };
+
+        mThis.btnBack.onclick = function (e) {
+            e.preventDefault();
+            let view_see_info = mThis.self.querySelector("#view_transaction_info");
+            view_see_info.classList.add("d-none");
+            let sub_content = mThis.self.querySelector("#sub_content");
+            sub_content.classList.remove("d-none");
         };
 
         const pr_tbl = mThis.AccountListView.getListContainer();
@@ -155,6 +280,13 @@ var AccountMenagmentComponent = new (function () {
             cssClass: "bg-white shadow",
             //menuItemClass:"",
             menus: [
+
+                {
+                    html: '<span class="ps-2  " vslang="titles.View Transaction">View Transaction</span>',
+                    icon: `<i class="fa-solid fa-repeat"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "view_transaction",
+                },
                 {
                     html: '<span class="ps-2  " vslang="titles.Transfer">Transfer</span>',
                     icon: `<i class="fa-solid fa-money-bill-transfer"></i>`,
@@ -179,6 +311,10 @@ var AccountMenagmentComponent = new (function () {
                 switch (name) {
                     case "transfer": {
                         mThis.transfer(id, menuLink);
+                        break;
+                    }
+                    case "view_transaction": {
+                        mThis.viewTransaction(id, menuLink);
                         break;
                     }
                     case "edit_account": {
@@ -210,6 +346,29 @@ var AccountMenagmentComponent = new (function () {
 
         TransferDialog.show(op);
     };
+
+    this.viewTransaction = (id, menuLink) => {
+        console.log(321,menuLink );
+        let emp_id = menuLink.dataset.emp_id;
+        let p = {
+            emp_id:emp_id,
+            account_id:id
+
+        }
+        const viewTran = this.self.querySelector("#view_transaction_info");
+        const sub_content = this.self.querySelector("#sub_content");
+        // this.show = function () {
+            mThis.initTransaction();
+            $(mThis.self).siblings().hide();
+            $(mThis.self).fadeIn(200);
+            mThis.TransactionListView.showPage(p);
+
+            viewTran.classList.remove("d-none");
+            sub_content.classList.add("d-none");
+
+        // };
+
+    }
     this.editAccount = (id, menuLink) => {
         let op = {
             id: id, // Pass the ID to fetch the data
@@ -301,7 +460,9 @@ var AccountMenagmentComponent = new (function () {
         mThis.AccountListView.showPage();
         $(mThis.self).siblings().hide();
         $(mThis.self).fadeIn(200);
+
     };
+
 })();
 
 const AccountDialog = (() => {
