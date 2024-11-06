@@ -29,8 +29,8 @@
 
 <style>
     #_payroll_list{
-        height: 520px;
-        padding-bottom: 60px;
+        height: 440px;
+        padding-bottom: 100px;
         overflow-y: scroll;
         overflow-x: hidden;
         scrollbar-width: none;

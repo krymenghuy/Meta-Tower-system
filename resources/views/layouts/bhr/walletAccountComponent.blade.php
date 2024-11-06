@@ -22,7 +22,7 @@
 </div>
 <style>
     #_wallet_account_list{
-        height: 460px;
+        height: 500px;
         overflow-y: scroll;
         overflow-x: hidden;
         scrollbar-width: none;
@@ -30,5 +30,6 @@
 
     #_wallet_account_list_paginator {
         bottom: 0;
+        margin-top: 20px;
     }
 </style>

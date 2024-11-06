@@ -42,7 +42,7 @@
         max-width: 100px;
     }
     #_employee_bonus_list{
-        height: 600px;
+        height: 520px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
