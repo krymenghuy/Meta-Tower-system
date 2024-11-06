@@ -87,16 +87,23 @@ li.kt-menu__section {
     background-color: #ffff !important;
     color: #8DC63F !important;
 }
+.menu-selected:hover{
+    color: #2b3991;
+}
 
 a.menu-selected .kt-menu__link-text {
-    color: black;
+    color: #2b3991;
 }
+
 
 .menu-selected .icons {
     /* filter: brightness(0) saturate(100%) invert(96%) sepia(80%) saturate(811%)
         hue-rotate(201deg) brightness(122%) contrast(100%); */
         /* color: #8DC63F !important; */
-        filter:hue-rotate(127deg);
+        /* filter:hue-rotate(127deg); */
+        filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%) hue-rotate(332deg) brightness(87%) contrast(79%);
+
+
 
     /* filter: brightness(0) saturate(100%) invert(100%) sepia(20%) saturate(7272%)
         hue-rotate(24deg) brightness(87%) contrast(79%); */

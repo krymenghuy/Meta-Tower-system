@@ -385,9 +385,9 @@ var EmployeeBenefitComponent = new (function () {
                     d.categories,
                     "id",
                     "name",
-                    true,
-                    "All Benefit Type",
-                    null
+                    false,
+                    null,
+                    1
                 );
 
                 // Create benefit type name map for displaying names instead of IDs

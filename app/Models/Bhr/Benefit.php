@@ -136,10 +136,16 @@ class Benefit
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $benefit_type_id = $d->benefit_type_id ?? null;
-
-        $str_benefit_type = $benefit_type_id ? 'b.benefit_type_id = \'' . $benefit_type_id . '\'' : '1=1';
-        $str_search = $search_value ? "(emp.name LIKE '%" . addslashes($search_value) . "%' OR b.remarks LIKE '%" . addslashes($search_value) . "%' OR b.amount LIKE '%" . addslashes($search_value) . "%')" : '1=1';
+        $benefit_type_id = $d->benefit_type_id ?? 1;
+        $str_srch = '1=1';
+        $str_where ="2=2";
+        if($search_value){
+            $skip_rows = 0;
+            $str_srch = "(emp.name LIKE '%" . addslashes($search_value) . "%' OR b.remarks LIKE '%" . addslashes($search_value) . "%' OR b.amount LIKE '%" . addslashes($search_value) . "%')";
+        }
+        if($benefit_type_id){
+            $str_where = 'b.benefit_type_id = \'' . $benefit_type_id . '\'';
+        } 
         $col_seniority_dates = DBX::formatDate('se.start_date', 'se_start_date') . ',' . DBX::formatDate('se.end_date', 'se_end_date');
         $col_insurance_dates = DBX::formatDate('li.start_date', 'li_start_date') . ',' . DBX::formatDate('li.end_date', 'li_end_date');
 
@@ -147,8 +153,8 @@ class Benefit
         ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
         ->leftJoin('emp_seniorities as se', 'se.benefit_id', '=', 'b.id') // Use LEFT JOIN if seniorities are optional
         ->leftJoin('emp_life_insurances as li', 'li.benefit_id', '=', 'b.id') // Use LEFT JOIN if life insurances are optional
-        ->whereRaw($str_search)
-        ->whereRaw($str_benefit_type)
+        ->whereRaw($str_srch)
+        ->whereRaw($str_where)
         
         ->selectRaw(
             'b.id, emp.id as emp_id, emp.name as name, emp.email as email, 
@@ -160,8 +166,9 @@ class Benefit
         ->orderBy('b.id', 'desc');
 
 
-        // Count the total benefits for pagination
-        $count = $benefitsQuery->count();
+        $clone_query = clone $benefitsQuery;
+
+        $count = $clone_query->count('b.id');
 
         // Get paginated results
         $rows = $benefitsQuery->skip($skip_rows)
