@@ -5,6 +5,43 @@
     -webkit-user-drag: none;
     font-family: "Poppins";
 }
+.tool-tip {
+    position: relative;
+    display: inline-block;
+    /* border-bottom: 1px dotted black; */
+  }
+  
+  .tool-tip .tool-tiptext {
+    visibility: hidden;
+    min-width: 100px;
+    background-color: #fff;
+    color: #2b3991;
+    border: 1px solid #2b3991;
+    text-align: center;
+    border-radius: 6px;
+    white-space: nowrap;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 150%;
+    left: 50%;
+    margin-left: -50px;
+  }
+  
+  .tool-tip .tool-tiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #2b3991 transparent;
+  }
+  
+  .tool-tip:hover .tool-tiptext {
+    visibility: visible;
+  }
 .btn_add {
     padding: 12px;
     color: white;
