@@ -493,11 +493,11 @@ const AccountDialog = (() => {
                     </div>
                     <div class="form-group col-6">
                         <label for="account_number" class="form-label" vslang="titles.Account Number"></label>
-                        <input name="account_number" class="form-control data-input" data-field="account_number" />
+                        <input name="account_number" class="form-control data-input form_input" data-field="account_number" />
                     </div>
                     <div class="form-group col-6">
                         <label for="ballance" class="form-label" vslang="titles.Balance"></label>
-                        <input name="ballance" class="form-control data-input" data-field="balance" />
+                        <input name="ballance" class="form-control data-input form_input" data-field="balance" />
                     </div>
                     <div class="form-group col-6">
                          <label for="currency" class="form-label" vslang="titles.Currency"></label>

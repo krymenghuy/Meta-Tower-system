@@ -93,6 +93,9 @@
         padding: 2px 15px;
         border-radius: 10px;
         width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
         color: #2B3991;
         font-weight: small;
 

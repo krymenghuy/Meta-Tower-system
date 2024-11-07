@@ -286,7 +286,8 @@ const MovementDialog = (()=>{
             backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
-                 return [`<div class="row">
+                 return [
+                     `<div class="row">
                     <div class="form-group col-12">
                         <label for="employee" class="form-label" vslang="titles.Employee"></label>
                         <select name="employee" class=" data-input"  data-field="emp_id"></select>
@@ -300,7 +301,7 @@ const MovementDialog = (()=>{
                     </div>
                     <div class="form-group col-6">
                         <label for="event_date" class="form-label" vslang="titles.Date"></label>
-                        <input name="event_date" class="form-control data-input" data-field="event_date" />
+                        <input name="event_date" class="form-control data-input form_input" data-field="event_date" />
                     </div>
                     <div class="form-group col-12">
                         <label for="remarks" class="form-label"
@@ -308,7 +309,8 @@ const MovementDialog = (()=>{
                         <textarea  type="text" class="form-control data-input" data-field="remarks"></textarea>
                     </div>
 
-              </div>`].join('');
+              </div>`,
+                 ].join("");
             },
             contentCreated:(me)=>{
                //Convert field to be DatePicker : start_date and end_date
