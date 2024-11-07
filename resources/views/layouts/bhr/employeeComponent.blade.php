@@ -12,7 +12,6 @@
         margin: 0;
     }
 
-
     .ellipsis {
         font-size: 18px;
     }
@@ -20,14 +19,11 @@
     .experience-company {
         font-weight: bold;
         font-size: 16px;
-
     }
 
     .card {
         border-radius: 5px;
         box-shadow: 0px 0px 3px 0px grey;
-
-
     }
 
     .card-header {
@@ -46,9 +42,7 @@
         justify-content: center;
         width: 40%;
         border-radius: 20px;
-        /* background-color: #2B3991; */
         color: #fff;
-
     }
 
     .card_container {
@@ -59,7 +53,6 @@
         padding: 10px;
         border-radius: 10px;
         font-size: 10px;
-
     }
 
     .container_top {
@@ -74,31 +67,48 @@
         gap: 5px;
         align-items: flex-start;
         width: 100%;
-
     }
 
     .email,
     .phone {
         display: flex;
-        gap: 5px;
-        padding: 2px;
+        gap: 10px;
         align-items: center;
+        justify-content: center;
         text-align: left;
         width: 100%;
     }
 
-    .email span,
-    .phone span {
+    .email div,
+    .phone div {
         background-color: #DADADA;
-        padding: 2px 15px;
+        padding: 5px;
         border-radius: 10px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: small;
+
+    }
+    .address{
         width: 100%;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
-        color: #2B3991;
         font-weight: small;
-
+    }
+    .email div span,
+    .phone div span {
+        display: flex;
+        align-self: center;
+        margin-right: 1px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-weight: small;
     }
 
     .card_bottom {
@@ -108,24 +118,19 @@
 
     }
 
-
-
     .bg-secondary-custom {
         background-color: red;
     }
 
-
     .social-icons a {
         display: inline-block;
         width: 40px;
-        /* Adjust size as needed */
         height: 40px;
         transition: transform 0.2s ease;
     }
 
     .social-icons a:hover {
         transform: scale(1.1);
-        /* Slight zoom on hover */
     }
 
     .social-icon {
@@ -165,20 +170,16 @@
 
     .div-img {
         background-color: #ffffff;
-        /* White background color */
         border-radius: 8px;
         padding: 10px;
         width: 100%;
-        /* Ensure image takes full width */
         text-align: center;
     }
 
     .div-img img {
         max-width: 100%;
-        /* Image resizes responsively */
         height: auto;
         border-radius: 50%;
-        /* Optional: make it a circle */
     }
     .bhr-icons{
     width: 18;
@@ -217,7 +218,6 @@
         <div id="_employee_list"></div>
         <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-5 d-flex justify-content-end"></div>
     </div>
-
 
     <div class="d-none" id="view_see_info__">
         <div class="d-flex px-3 pt-3" id="btn_back">
