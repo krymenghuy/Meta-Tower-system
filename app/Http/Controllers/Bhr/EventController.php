@@ -17,7 +17,7 @@ class EventController extends Controller
         $this->event = $event;
     }
 
-    public function saveEvent(Request $req)
+    public function createEvent(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
@@ -25,7 +25,7 @@ class EventController extends Controller
         }
         $id = $req->event_id ?? $req->id;
         $event = new Event($id, $ss);
-        $res = $event->save($req->all());
+        $res = Event::createEvent($req->all());
         return JDV::raw($res);
     }
 

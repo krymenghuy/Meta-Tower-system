@@ -5,6 +5,8 @@ namespace App\Models\Bhr;
 //use Illuminate\Database\Eloquent\Factories\HasFactory;
 //use Illuminate\Database\Eloquent\Model;
 use App\Models\Bhr\GeneralSettings;
+use App\Models\Bhr\Event;
+
 use App\Models\DV;
 use App\Models\PublicStorage;
 use Illuminate\Support\Facades\DB;
@@ -574,7 +576,9 @@ class Employee //extends Model
         $event_id = self::getEventId($event_name);
     
         if (!$event_id) {
-            return DV::error("Event '$event_name' is not defined yet.");
+            $event_arr = (array)['name'=>$event_name];
+            $event_id = Event::createEvent($event_arr,$ss);
+            $event_id=$event_id->status_code==200?$event_id->data['id']:'';
         }
     
         $save_emp_type_id = saveData($ss, 'employees', ['id' => $id], ['emp_type_id' => $emp_type_id], [], 1, false);
@@ -596,6 +600,17 @@ class Employee //extends Model
         }
     
         return DV::error('Failed to update employee.');
+    }
+    function promoteChangeEmployee($arr,$id=null,$ss=null){
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
+        $promote_info = null;
+        if(isset($arr['promote_info'])){
+            $promote_info = $arr['promote_info'];
+        }else return DV::error('promote info is required');
+        
+
+
     }
     public function setResignStatus($arr=[],$id=null,$ss = null)
     {

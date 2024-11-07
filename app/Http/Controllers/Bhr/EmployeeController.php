@@ -141,6 +141,14 @@ class EmployeeController extends Controller
     $res = $employee->promoteStaff($req->emp_type_id,$id,$ss,$req->all());
     return JDV::raw($res);
    }
+   public function promoteChangeEmployee(Request $req){
+    $ss =AuthService::verifyAuth($req,-1);
+    if($ss->status_code !==200) return JDV::raw($ss);
+    $id = $res->id ?? $req->id;
+    $employee = new Employee($id,$ss);
+    $res = $employee->promoteChangeEmployee($req->all(),$id,$ss);
+    return JDV::raw($res);
+   }
    public function setRejoinStatus(Request $req)
    {
        $ss = AuthService::verifyAuth($req, -1);

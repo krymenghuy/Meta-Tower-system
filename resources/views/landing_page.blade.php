@@ -30,7 +30,7 @@
 
 <body id="body" onload="checkDevice()">
   <div class="box-center  d-flex justify-content-center align-items-center">
-      <div class="container p-1  rounded-5">
+      <div class="container p-1  rounded-2">
         <div class="logo_">
           <img src="assets/images/logo/lc_logo.svg">
         </div>
@@ -45,16 +45,16 @@
                 echo '<div class="col-sm-12 mt-3">
                           <div class="card p-1 border shadow rounded-4">
                             <div class="d-flex flex-row">
-                              <img src="'.url('/assets/images/icons/'. ($app->icon_file_name?? 'package.png') ) . '"width="70"/>
+                              <img src="'.url('/assets/images/bhr/'. ($app->icon_file_name?? 'book1.png') ) . '"width="70"/>
                               <div class="d-flex  flex-column ml-2">
-                                <a href="'.$app->home_route.'" class="link text-primary" style="text-decoration:none"> <h4 class=" p-1 ms-2  link-view-app">'.$app->app_name.'</h4></a>
+                                <a href="'.$app->home_route.'" class="link text-primary-custom" style="text-decoration:none"> <h4 class=" p-1 ms-2 text-primary-custom link-view-app">'.$app->app_name.'</h4></a>
                                 <span class="ratings ms-2 p-1"><i class="fa fa-star"></i><i class="fa fa-star"></i><i
                                     class="fa fa-star"></i></span>
                               </div>
                             </div>
                               <div class="d-flex justify-content-between install mt-1">
-                                <span class="text-primary link-view-app">&nbsp;</span>
-                                <h6 style="font-size:15px;" class="text-secondary text-capitalize mx-4">Version : <span class="text-muted">1.5.1</span></h6>
+                                <span class="text-primary-custom link-view-app">&nbsp;</span>
+                                <h6 style="font-size:15px;" class="text-muted text-capitalize mx-4">Version : <span class="text-muted">1.5.1</span></h6>
                               </div>
                             </div>
                      </div>';
