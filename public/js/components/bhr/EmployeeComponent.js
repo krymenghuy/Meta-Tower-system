@@ -261,7 +261,13 @@ var EmployeeComponent = new function () {
                                     <span>${status}</span>
                                 </div>
                                 <div class="dropdown">
-                                    <a href="javascript:void(0)" class="btn_employee_action" data-id="${d.id}" data-statusid="${d.status_id}" data-typeid="${d.emp_type_id}" aria-haspopup="true" aria-expanded="false">
+                                    <a href="javascript:void(0)" class="btn_employee_action" data-id="${
+                                        d.id
+                                    }" data-statusid="${
+                    d.status_id
+                }" data-typeid="${
+                    d.emp_type_id
+                }" aria-haspopup="true" aria-expanded="false">
                                         <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-4 tool-tip"> <span class="tool-tiptext fs-6">Actions</span></i>
                                     </a>
                                 </div>
@@ -292,15 +298,15 @@ var EmployeeComponent = new function () {
                                         </div>
                                     </div>
                                     <div class="container_bottom">
-                                        <div class="email">
-                                            <i class="text-warning fas fa-envelope"></i> <span class="p-2 rounded-5">${
-                                                d.email || "null"
-                                            }</span>
-                                        </div>
-                                        <div class="phone">
-                                            <i class="text-success fas fa-phone"></i> <span class="p-2 rounded-5">${
+                                        <div class="phone text-success">
+                                            <div class=" d-flex rounded-5 gap-2"><i class="text-success m-1 fas fa-phone"></i><span> ${
                                                 d.phone_number || "null"
-                                            }</span>
+                                            }</span></div>
+                                        </div>
+                                        <div class="email text-primary">
+                                            <div class="d-flex rounded-5 gap-2"><i class="text-warning m-1 fas fa-envelope"></i><span>${
+                                                d.email || "null"
+                                            }</span></div>
                                         </div>
                                     </div>
                                 </div>
@@ -308,8 +314,12 @@ var EmployeeComponent = new function () {
                                     <div class="text-muted" style="font-size:11px;">Joining Date : <span class="text-primary-custom">${
                                         d.joining_date || "null"
                                     }</span></div>
-                                    <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
-                                        <i data-id="${d.id}" class="fa-regular  fa-eye text-primary-custom fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
+                                    <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${
+                                        d.id
+                                    }" aria-haspopup="true" aria-expanded="false">
+                                        <i data-id="${
+                                            d.id
+                                        }" class="fa-regular  fa-eye text-primary-custom fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
                                     </a>
                                 </div>
                             </div>
@@ -363,10 +373,15 @@ var EmployeeComponent = new function () {
                         <div class="row text-white mb-0">
                             <div class="col-md-3">
                                 <div class="div-img ms-2">
-                                    <img src="${data.image_url || "../uploads/public/1_data/default/images/mr.avif"}" alt="Employee Image">
+                                    <img src="${
+                                        data.image_url ||
+                                        "../uploads/public/1_data/default/images/mr.avif"
+                                    }" alt="Employee Image">
                                 </div>
                                 <div class="d-flex mt-3 ms-5 justify-content-start">
-                                    <span class="text-white">ID : ${data.code || ""}</span>
+                                    <span class="text-white">ID : ${
+                                        data.code || ""
+                                    }</span>
                                 </div>
 
                             </div>
@@ -374,28 +389,40 @@ var EmployeeComponent = new function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Name</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${data.name}</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.name
+                                    }</p>
                                 </div>
 
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Sex</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.sex == "M" ? "Male" : ""}${data.sex == "F" ? "Female" : ""}${data.sex == "O" ? "Other" : ""}</p>
+                                    <p class="text-nowrap">${
+                                        data.sex == "M" ? "Male" : ""
+                                    }${data.sex == "F" ? "Female" : ""}${
+            data.sex == "O" ? "Other" : ""
+        }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Nationality</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.nationality || ""}</p>
+                                    <p class="text-nowrap">${
+                                        data.nationality || ""
+                                    }</p>
                                 </div>
                                  <div class="d-flex">
                                     <p class="text-nowrap    width-p" vslang="titles.Identity Card">Identity Card</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${data.nid}</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.nid
+                                    }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Date of Birth</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.date_of_birth || ""}</p>
+                                    <p class="text-nowrap">${
+                                        data.date_of_birth || ""
+                                    }</p>
                                 </div>
 
 
@@ -406,22 +433,30 @@ var EmployeeComponent = new function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Position</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.position || ""}</p>
+                                    <p class="text-nowrap">${
+                                        data.position || ""
+                                    }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Work Shift</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.work_shift || "" }</p>
+                                    <p class="text-nowrap">${
+                                        data.work_shift || ""
+                                    }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Employee Type</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.type || ""}</p>
+                                    <p class="text-nowrap">${
+                                        data.type || ""
+                                    }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Tel</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.phone_number || ""}</p>
+                                    <p class="text-nowrap">${
+                                        data.phone_number || ""
+                                    }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Email</p>
@@ -436,22 +471,34 @@ var EmployeeComponent = new function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">salary</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">​${data.salary || "0.00"}(KHR)</p>
+                                    <p class="text-nowrap">​${
+                                        data.salary || "0.00"
+                                    }(KHR)</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Payroll Tax</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${data.apply_payroll_tax == "0" ? "Have Tax" : ""}${data.apply_payroll_tax == "1" ? "Non Tax" : ""}</p>
+                                    <p class="text-nowrap">${
+                                        data.apply_payroll_tax == "0"
+                                            ? "Have Tax"
+                                            : ""
+                                    }${
+            data.apply_payroll_tax == "1" ? "Non Tax" : ""
+        }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap    width-p" vslang="titles.NSSF">NSSF</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${data.nssf_id}</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.nssf_id
+                                    }</p>
                                 </div>
                                <div class="d-flex align-items-center">
-                                    <p class="text-nowrap    width-bp" vslang="titles.Address">Address</p>
+                                    <p class="text-nowrap width-bp" vslang="titles.Address">Address</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${data.address}</p>
+                                    <p class="address text-nowrap text-capitalize">${
+                                        data.address
+                                    }</p>
                                 </div>
 
                             </div>
@@ -465,19 +512,22 @@ var EmployeeComponent = new function () {
                                 <a href="https://web.telegram.org/a/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>
                             </div>
                             <div class="d-flex justify-content-end gap-3 px-5 w-75">
-                                  <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${data.id}" data-status ="${data.status_id}">
-                                        <i class="fa-regular fa-pen-to-square text-warning fs-5 tool-tip"><span class="tool-tiptext fs-6">Edit Profile</span></i>
-                                  </a>
-                                  <a href="javascript:void(0)" class="set_resign" data-id="${data.id}" data-status ="${data.status_id}">
-                                        <i class="fa-solid text-success fa-pen-nib tool-tip fs-5"><span class="tool-tiptext fs-6">Set Resign</span></i>
-                                  </a>
-                                   <a href="javascript:void(0)" class="promote_to_staff" data-id="${data.id}" data-status ="${data.status_id}">
-                                        <i class="fa-solid text-success fa-bolt tool-tip fs-5"><span class="tool-tiptext fs-6">Promote</span></i>
-                                  </a>
+                                <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${data.id}" data-status ="${data.status_id}">
+                                    <i class="fa-regular fa-pen-to-square text-warning fs-5 tool-tip"><span class="tool-tiptext fs-6">Edit Profile</span></i>
+                                </a>
+                                <a href="javascript:void(0)" class="set_resign" data-id="${data.id}" data-status ="${data.status_id}">
+                                    <i class="fa-solid text-success fa-pen-nib tool-tip fs-5"><span class="tool-tiptext fs-6">Set Resign</span></i>
+                                </a>
+                                <a href="javascript:void(0)" class="promote_to_staff" data-id="${data.id }" data-status ="${data.status_id}">
+                                    <i class="fa-solid text-danger fa-bullhorn tool-tip fs-5"><span class="tool-tiptext fs-6">Promote</span></i>
+                                </a>
+                                <a href="javascript:void(0)" class="btn_movement_action" data-id="${data.id}" data-statusid="${data.status_id}" data-typeid="${data.emp_type_id}" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-secondary fs-5 tool-tip"><span class="tool-tiptext fs-6">Actions</span></i>
+                                </a>
                                 <!-- <button class="btn_movement_action btn btn-light rounded-3 mx-3 btn-options position-relative text-nowrap" data-id="${data.id}"  data-status ="${data.status_id}" type="button">
                                     <span class="text-nowrap text-primary-custom" vslang="buttons.Movement">Movement</span>
                                     <i class="fa-solid text-primary-custom fa-caret-down ps-2"></i>
-                                </button> -->
+                                </button> -->   
                             </div>
                         </div>
                     </div>
