@@ -553,6 +553,11 @@ class Employee //extends Model
         $d = (object)$arr;
         $remarks = $d->remarks;
         $event_date = $d->event_date;
+
+        if ($event_date) {
+            $event_date = date('Y-m-d', strtotime($event_date));
+        }
+        
         $events = [
             '1.2' => 'intern to probation',
             '1.3' => 'intern to staff',
