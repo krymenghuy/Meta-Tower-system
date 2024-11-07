@@ -4,6 +4,7 @@
     width:100%;
     border-radius: 100px;
     background-color: #fff;
+    border-radius: 5px;
   }
   .choices__inner select{
     max-height:41px;
