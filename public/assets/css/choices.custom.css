@@ -2,13 +2,13 @@
   .choices, .choices__inner {
     min-width:150px;
     width:100%;
-    border-radius: 100px;
+    border-radius: 25px;
     background-color: #fff;
     border-radius: 5px;
   }
   .choices__inner select{
     max-height:41px;
-    border-radius: 50px;
+    /* border-radius: 50px; */
   }
   .choices__list--dropdown {
     max-height: 300px; /* Adjust the value as needed */

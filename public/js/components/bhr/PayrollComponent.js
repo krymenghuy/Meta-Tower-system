@@ -389,10 +389,11 @@ const AddPayRollListDailog = (()=>{
             backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
-                 return [`<div class="row">
+                 return [
+                     `<div class="row">
                  <div class="form-group col-6">
                     <label for="name" class="form-label" vslang="titles.Name "></label>
-                    <input name="name" class="form-control data-input" data-field="name" />
+                    <input name="name" class="form-control data-input form_input" data-field="name" />
                 </div>
                 <div class="form-group col-6">
                     <label for="month_year" class="form-label" vslang="titles.Month Year"></label>
@@ -400,7 +401,7 @@ const AddPayRollListDailog = (()=>{
                 </div>
                 <div class="form-group col-6">
                   <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
-                  <input name="start_date" class="form-control data-input" data-field="start_date" />
+                  <input name="start_date" class="form-control data-input form_input" data-field="start_date" />
                 </div>
                 <div class="form-group col-6">
                   <label for="end_date" class="form-label" vslang="titles.End Date"></label>
@@ -408,7 +409,7 @@ const AddPayRollListDailog = (()=>{
                 </div>
                 <div class="form-group col-6">
                     <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
-                        <select class="modal-select data-input" data-field="currency_code">
+                        <select class="modal-select data-input form_input" data-field="currency_code">
                             <option value="">(Select Currency)</option>
                             <option value="USD">USD</option>
                             <option value="KHR">KHR</option>
@@ -420,13 +421,14 @@ const AddPayRollListDailog = (()=>{
                 </div>
                 <div class="form-group col-6">
                     <label for="p_number" class="form-label" vslang="titles.Payroll Number "></label>
-                    <input type="number" name="p_number" class="form-control data-input" data-field="p_number" />
+                    <input type="number" name="p_number" class="form-control data-input form_input" data-field="p_number" />
                 </div>
-                <div class="form-group col-4">
+                <div class="form-group col-6">
                     <label for="total" class="form-label" vslang="titles.Total "></label>
                     <input name="total" class="form-control data-input" data-field="total" />
                 </div>
-              </div>`].join('');
+              </div>`,
+                 ].join("");
             },
             contentCreated:(me)=>{
                 //Convert field to be DatePicker : start_date and end_date

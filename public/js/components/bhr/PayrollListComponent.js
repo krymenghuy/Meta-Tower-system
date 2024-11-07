@@ -380,11 +380,12 @@ const PayRollListDialog = (()=>{
      self.show = (op)=>{
 
         dialog = dialog || new GeneralDialog({
-            cssClass:'modal-lg',
+            cssClass:'modal-md',
             backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
-                 return [`<div class="row">
+                 return [
+                     `<div class="row">
                  <div class="form-group col-12">
                      <label for="employee" class="form-label" vslang="titles.Name"></label>
                      <select name="employee" class=" data-input"  data-field="emp_id"></select>
@@ -392,19 +393,20 @@ const PayRollListDialog = (()=>{
                  <div class="form-group  col-12 d.none">
                      <div id="info"></div>
                  </div>
-                <div class="form-group col-6">
+                <div class="form-group col-12">
                      <label for="payroll_name" class="form-label" vslang="titles.Payroll Name"></label>
                      <select name="payroll_name" class=" data-input"  data-field="payroll_id"></select>
                  </div>
-                <div class="form-group col-6">
+                <div class="form-group col-12">
                   <label for="benefit" class="form-label" vslang="titles.Benefit"></label>
-                  <input name="benefit" class="form-control data-input" data-field="benefit" />
+                  <input name="benefit" class="form-control data-input form_input" data-field="benefit" />
                 </div>
-                <div class="form-group col-6">
+                <div class="form-group col-12">
                   <label for="desuction" class="form-label" vslang="titles.Desuction"></label>
                   <input name="desuction" class="form-control data-input" data-field="deduction" />
                 </div>
-              </div>`].join('');
+              </div>`,
+                 ].join("");
             },
 
             configSelect:[
