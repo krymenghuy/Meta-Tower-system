@@ -5,6 +5,7 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\DBX;
 
 class Transaction
 {
@@ -29,6 +30,8 @@ class Transaction
             'trx_type' => '1|number',
             'status'=>'0|string|10',
             'account_id' => '1|number',
+            'from_acc_num' => '0|number',
+            'to_acc_num' => '0|number',
 
         ];
 
@@ -60,6 +63,8 @@ class Transaction
             'trx_type' => '1|number',
             'status'=>'0|string|10',
             'account_id' => '1|number',
+            'from_acc_num' => '0|number',
+            'to_acc_num' => '0|number',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -91,6 +96,8 @@ class Transaction
             'status'=>'0|string|10',
             'account_id' => '1|number',
             'transfer_acc_id' => '1|number',
+            'from_acc_num' => '0|number',
+            'to_acc_num' => '0|number',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -124,15 +131,27 @@ class Transaction
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
+        $date = DBX::formatDate('t.created_at','created_at');
+        $str_emp_id = '1=1';
+        $emp_id = $d->emp_id ?? null;
 
+        if ($emp_id) {
+            $str_emp_id = 'e.id=' . $emp_id;
+        }
+        $account_id = $d->account_id ?? null;
+        $str_account_id = '2=2';
 
-        $str_search = '1=1';
+        if ($account_id) {
+            $str_account_id = 't.account_id=' . $account_id;
+        }
+        $str_search = '3=3';
 
         $query = DB::table('transactions as t')
             ->join('employees as e', 'e.id', 't.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->join('payrolls as p', 'p.id', '=', 't.payroll_id')
-            ->selectRaw(' hex(t.id) as id, t.emp_id, e.name as emp_name, pos.title as position, p.name as payroll_name, t.amount, t.remarks, t.trx_type')
+            ->whereRaw($str_emp_id)
+            ->whereRaw($str_account_id)
+            ->selectRaw(' hex(t.id) as id, t.emp_id, e.name as emp_name, pos.title as position, t.amount, t.remarks, t.trx_type,t.payroll_id,t.account_id,t.transfer_acc_id,t.status,'.$date.',t.from_acc_num,t.to_acc_num')
             ->where('t.branch_id', $branch_id);
 
         if ($search_value) {
@@ -142,9 +161,13 @@ class Transaction
         }
 
 
-        $count = $query->count('t.id');
-       return $rows = $query->skip($skip_rows)->take($per_page)->get();
 
+
+        $count = $query->count('t.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+        foreach($rows as $row){
+            $row->payroll_name = DB::table('payrolls')->where('id',$row->payroll_id)->value('name');
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 

@@ -2,9 +2,9 @@
     <div class="d-flex justify-content-between w-100 p-3 " id="_divFilter_emp_benefit">
         <div class="d-flex align-items-center w-50 gap-2">
             <div class="d-flex align-items-center w-50 gap-2">
-                <input type="text" class="form-control filter-field" id="_sdl_search_bonus" placeholder="Search Benefits">
+                <input type="text" class="form-control filter-field btn_search" id="_sdl_search_bonus" placeholder="Search Benefits">
             </div>
-            <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
+            <button id="_sdl_btnSearch" role="button" class="btn btn-primary rounded-5">
                 <i class="la la-search"></i>
             </button>
         </div>
@@ -13,7 +13,7 @@
                 <label for="" class="form-label " vslang="titles"></label>
                 <select type="id" id="el_category" class="data-input filter-field" data-field="category"></select>
             </div>
-            <button type="button" class="btn btn-primary" id="_btn_add_benefit">
+            <button type="button" class="btn_add" id="_btn_add_benefit">
                 <i class="fas fa-plus"></i>
                 <span>Add Benefit</span>
             </button>

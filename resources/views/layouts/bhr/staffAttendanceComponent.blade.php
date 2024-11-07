@@ -2,10 +2,10 @@
     <div class="d-flex  p-4 justify-content-between w-200 " id="_divFilter_attendance">
         <div class="d-flex align-items-center w-100 gap-2">
             <div class="d-flex align-items-center w-50 gap-2">
-                <input type="text" class="form-control filter-field" id="_staff_attendance_search"
+                <input type="text" class="form-control filter-field btn_search" id="_staff_attendance_search"
                     placeholder="Search attendance ...">
 
-                <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
+                <button id="_sdl_btnSearch" role="button" class="btn btn-primary rounded-5">
                     <i class="la la-search"></i>
                 </button>
             </div>
@@ -15,7 +15,7 @@
                     <input data-select="datepicker" class="form-control filter-field rounded-5" data-field="attendance_date"
                         placeholder="Attendance Date" id="_filter_attendance_date" />
                 </div>
-            <button type="button" class="btn btn-primary" id="_btnAddStaffAttendance">
+            <button type="button" class="btn_add" id="_btnAddStaffAttendance">
                 <i class="fas fa-plus"></i>
                 <span>Add StaffAttendance </span>
             </button>
