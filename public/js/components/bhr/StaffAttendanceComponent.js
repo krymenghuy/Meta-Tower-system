@@ -334,7 +334,7 @@ const StaffAttendanceDialog = (() => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         cv_interact.success(
-                                            "attendance save successfully"
+                                            "attendance ssave successfully"
                                         );
                                     } else cv_interact.error(res.error_message);
                                     StaffAttendanceComponent.saveStaffAttendance();

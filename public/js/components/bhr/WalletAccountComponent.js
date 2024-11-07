@@ -424,7 +424,8 @@ const WalletAccountDialog = (()=>{
             backdrop: 'static',
             keyboard:true,
             createContent:()=>{
-                 return [`<div class="row">
+                 return [
+                     `<div class="row">
                     <div class="form-group col-12">
                         <label for="employee" class="form-label" vslang="titles.Employee"></label>
                         <select name="employee" class=" data-input"  data-field="emp_id"></select>
@@ -440,11 +441,11 @@ const WalletAccountDialog = (()=>{
                     </div>
                     <div class="form-group col-6">
                         <label for="w_account_number" class="form-label" vslang="titles.Account Number"></label>
-                        <input name="w_account_number" class="form-control data-input" data-field="w_account_number" />
+                        <input name="w_account_number" class="form-control data-input rounded-5" data-field="w_account_number" />
                     </div>
                     <div class="form-group col-6">
                         <label for="w_balance" class="form-label" vslang="titles.Balance"></label>
-                        <input name="w_balance" class="form-control data-input" data-field="w_balance" />
+                        <input name="w_balance" class="form-control data-input rounded-5" data-field="w_balance" />
                     </div>
                     <div class="form-group col-6">
                          <label for="currency" class="form-label" vslang="titles.Currency"></label>
@@ -457,7 +458,8 @@ const WalletAccountDialog = (()=>{
                     </div>
 
 
-              </div>`].join('');
+              </div>`,
+                 ].join("");
             },
 
             configSelect:[

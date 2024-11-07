@@ -708,11 +708,11 @@ var EmployeeComponent = new function () {
                             </div>
                         </div>
                         <div style="display:flex; width:350px; justify-content:space-between">
-                            <div class="date_join text-muted" style="width:300px;display:flex;justify-content:start;align-items:start;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
+                            <div class="date_join text-muted" style="width:65%;display:flex;justify-content:start;align-items:start;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
                                 <img class="bhr-icons" src="${main_view.asset_url}/images/icons/calender.svg" />
                                 <p>(${d.start_date}</p><p class="text-danger ml-2 mr-2">-</p><p>${d.end_date})</p>
                             </div>
-                            <p class="text-primary-custom text-nowrap"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/bag.svg" /> ${d.position}</p>
+                            <p class="text-primary-custom text-nowrap" style="width:35%"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/bag.svg" /> ${d.position}</p>
                                 
                         </div>
                         
@@ -1759,7 +1759,7 @@ const EmployeeDialog = (() => {
                                     </div>
                                     <div class="form-group col-3">
                                         <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
-                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                                        <input name="nssf_id" class="form-control data-input form_input" data-field="nssf_id" />
                                     </div>
                                     <div class="form-group col-3">
                                         <label for="type" class="form-label" vslang="titles.Employee Type"></label>
@@ -1779,7 +1779,7 @@ const EmployeeDialog = (() => {
                                     
                                     <div class="form-group col-3">
                                         <label for="joining_date" class="form-label" vslang="titles.Joining Date"></label>
-                                        <input name="joining_date" class="form-control data-input" data-field="joining_date" />
+                                        <input name="joining_date" class="form-control data-input form_input" data-field="joining_date" />
                                     </div>
                                     <div class="form-group col-6">
                                         <label for="work_shift" class="form-label" vslang="titles.Work Shift"></label>
