@@ -413,7 +413,7 @@ const PayRollListDialog = (()=>{
                {
                  name:"employee",
                  data:'employees',
-                 textField:(me, d)=> {return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> <span>${d.email}</span><span>${d.phone_number}</span><span> ${d.position} </span> </div></div>`; },
+                 textField:(me, d)=> {return `<div class="d-flex gap-2"><img class="img_select mt-4" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> <span>${d.email}</span><span>${d.phone_number}</span><span> ${d.position} </span> </div></div>`; },
                 // textField:"name",
                  valueField:'id'
                },

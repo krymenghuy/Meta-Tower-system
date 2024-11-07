@@ -493,11 +493,11 @@ const AccountDialog = (() => {
                     </div>
                     <div class="form-group col-6">
                         <label for="account_number" class="form-label" vslang="titles.Account Number"></label>
-                        <input name="account_number" class="form-control data-input form_input" data-field="account_number" />
+                        <input name="account_number" class="form-control data-input" data-field="account_number" />
                     </div>
                     <div class="form-group col-6">
                         <label for="ballance" class="form-label" vslang="titles.Balance"></label>
-                        <input name="ballance" class="form-control data-input form_input" data-field="balance" />
+                        <input name="ballance" class="form-control data-input" data-field="balance" />
                     </div>
                     <div class="form-group col-6">
                          <label for="currency" class="form-label" vslang="titles.Currency"></label>
@@ -519,7 +519,7 @@ const AccountDialog = (() => {
                         name: "employee",
                         data: "employees",
                         textField: (me, d) => {
-                            return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`;
+                            return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`;
                         },
                         valueField: "id",
                     },
