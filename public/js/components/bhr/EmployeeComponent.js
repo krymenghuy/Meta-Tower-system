@@ -451,13 +451,13 @@ var EmployeeComponent = new function () {
                            
 
                         </div>
-                        <div class="d-flex justify-content-between px-2">
-                            <div class="social-icons d-flex justify-content-start mt-3">
+                        <div class="d-flex justify-content-between w-100 px-2 pt-1">
+                            <div class="social-icons d-flex w-25 justify-content-start">
                                 <a href="https://www.facebook.com" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
                                 <a href="https://www.linkedin.com" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>
                                 <a href="https://web.telegram.org/a/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>
                             </div>
-                            <div>
+                            <div class="d-flex justify-content-end w-75">
                                 <button class="btn_movement_action btn btn-light rounded-3 btn-options position-relative text-nowrap" data-id="${data.id}" data-pricelistid="${data.price_list_id}" data-status ="${data.status_id}" type="button">
                                     <span class="text-nowrap text-primary-custom" vslang="buttons.Movement">Movement</span>
                                     <i class="fa-solid text-primary-custom fa-caret-down ps-2"></i>

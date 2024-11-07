@@ -109,7 +109,7 @@ li.kt-menu__section {
     background-color: #ffff !important;
     color: #8dc63f !important;
 }
-.menu-selected:hover {
+.menu-selected .kt-menu__link-text:hover{
     color: #2b3991;
 }
 

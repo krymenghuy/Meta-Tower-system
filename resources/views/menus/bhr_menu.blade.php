@@ -129,7 +129,7 @@
 
     .kt-menu__link-text[vslang]:hover {
         border-radius: 0px 0px 0px 20px;
-        color: #000000;
+        color:#cab54a;
     }
 </style>
 
