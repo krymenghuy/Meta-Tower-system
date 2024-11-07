@@ -73,7 +73,6 @@ class Account
                 $query = DB::table('accounts as a')
                 ->join('employees as e', 'e.id', '=', 'a.emp_id')
                 ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-                // ->join('transactions as t', 't.id', '=', 'a.trx_id')
                 ->selectRaw('
                     a.id,
                     a.emp_id,
@@ -203,7 +202,7 @@ class Account
         $wallet_account = DB::table('wallet_accounts as wa')
             ->where('wa.account_number', $d->w_account_number)
             ->selectRaw(' wa.id as w_account_id,wa.account_number as w_account_number,wa.emp_id')->first();
-            
+
         $payroll_account->trx_type=2;
         $payroll_account->emp_id = $payroll_account->emp_id;
         $payroll_account->from_acc_num = $payroll_account->account_number;

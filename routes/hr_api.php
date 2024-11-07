@@ -194,6 +194,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list'
     Route::post('/import', [PayrollListController::class, 'importPayrollList']);
     Route::post('calculate', [PayrollListController::class, 'calculatePayrollList']);
     Route::post('disburse', [PayrollListController::class, 'disbursePayrollList']);
+    Route::post('disburse-all', [PayrollListController::class, 'disburseAllPayrollList']);
+
 });
 
 

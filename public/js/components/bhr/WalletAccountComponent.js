@@ -435,17 +435,17 @@ const WalletAccountDialog = (()=>{
                     </div>
                   <div class="form-group col-6">
                         <label for="w_account_type" class="form-label" vslang="titles.Account Type"></label>
-                                            <select class="modal-select data-input" data-field="w_account_type">
+                                            <select class="modal-select data-input" data-field="account_type">
                                                 <option value="Wallet">Wallet</option>
                                             </select>
                     </div>
                     <div class="form-group col-6">
                         <label for="w_account_number" class="form-label" vslang="titles.Account Number"></label>
-                        <input name="w_account_number" class="form-control data-input rounded-5" data-field="w_account_number" />
+                        <input name="w_account_number" class="form-control data-input" data-field="account_number" />
                     </div>
                     <div class="form-group col-6">
                         <label for="w_balance" class="form-label" vslang="titles.Balance"></label>
-                        <input name="w_balance" class="form-control data-input rounded-5" data-field="w_balance" />
+                        <input name="w_balance" class="form-control data-input" data-field="balance" disabled />
                     </div>
                     <div class="form-group col-6">
                          <label for="currency" class="form-label" vslang="titles.Currency"></label>
@@ -512,9 +512,18 @@ const WalletAccountDialog = (()=>{
             //    }
             },
 
-            onPrepareForm:(me, data)=>{
-                 LocaleManager.translateZone(me.divModal);
-            }
+            onPrepareForm: (me) => {
+                LocaleManager.translateZone(me.divModal);
+
+                const balanceField = me.divModal.querySelector('[data-field="balance"]');
+                if (balanceField) {
+                    if (me.dataOptions && me.dataOptions.id) {
+                        balanceField.disabled = true;
+                    } else {
+                        balanceField.disabled = false;
+                    }
+                }
+            },
 
         });
 

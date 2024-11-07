@@ -47,6 +47,7 @@ var EmployeeComponent = new function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
+                    cv_interact.success('Employee Added Successfully');
                     mThis.EmployeeListView.showPage(mThis.getFilterData());
                 },
             };
@@ -81,9 +82,10 @@ var EmployeeComponent = new function () {
             },250);
 
         };
+
          this.listContainer = mThis.EmployeeListView.getListContainer();
          console.log(12,mThis.listContainer);
-         
+
          mThis.initDropdownMenus(div);
 
 
@@ -131,7 +133,7 @@ var EmployeeComponent = new function () {
                     cssClass: "border-bottom pb-2",
                     name: "delete_employee",
                 },
-            
+
                 {
                     html: '<span class="ps-2  " vslang="titles.Set Resign">Set Resign</span>',
                     icon: `<i class="fa-solid text-warning fa-pen-nib"></i>`,
@@ -178,7 +180,7 @@ var EmployeeComponent = new function () {
             },
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    
+
                     case "edit_employee": {
                         mThis.editEmployee(id, menuLink);
                         break;
@@ -366,7 +368,7 @@ var EmployeeComponent = new function () {
                                 <div class="d-flex mt-3 ms-5 justify-content-start">
                                     <span class="text-white">ID : ${data.code || ""}</span>
                                 </div>
-                                
+
                             </div>
                             <div class="col-md-3 mt-3">
                                 <div class="d-flex">
@@ -374,7 +376,7 @@ var EmployeeComponent = new function () {
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap text-capitalize">${data.name}</p>
                                 </div>
-                               
+
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Sex</p>
                                     <p class="px-2">:</p>
@@ -395,12 +397,12 @@ var EmployeeComponent = new function () {
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${data.date_of_birth || ""}</p>
                                 </div>
-                               
-                                  
+
+
 
                             </div>
                             <div class="col-md-3 mt-3">
-                            
+
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Position</p>
                                     <p class="px-2">:</p>
@@ -426,8 +428,8 @@ var EmployeeComponent = new function () {
                                     <p class="px-2">:</p>
                                     <p class="text-">${data.email || ""}</p>
                                 </div>
-                        
-                               
+
+
                             </div>
 
                             <div class="col-md-3 mt-3">
@@ -451,9 +453,9 @@ var EmployeeComponent = new function () {
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap text-capitalize">${data.address}</p>
                                 </div>
-                            
+
                             </div>
-                           
+
 
                         </div>
                         <div class="d-flex justify-content-between w-100 px-2 pt-1">
@@ -479,7 +481,7 @@ var EmployeeComponent = new function () {
                             </div>
                         </div>
                     </div>
-                    
+
                     </div>
         `;
 
@@ -513,7 +515,7 @@ var EmployeeComponent = new function () {
                     cssClass: "border-bottom pb-2",
                     name: "promote_to_staff",
                 },
-            
+
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -567,7 +569,7 @@ var EmployeeComponent = new function () {
              <div class="card pb-3" style="height:390px;">
                             <div class="card-header bg-primary-custom text-white">
                                 <h4>Skills</h4>
-                                
+
                             </div>
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
@@ -734,7 +736,7 @@ var EmployeeComponent = new function () {
                                 <p class="text-primary-custom" style="font-size:14px;width:175px;display:flex;justify-content:start; overflow-y: hidden; overflow-x: auto; scrollbar-width: none; align-items: flex-start; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap;">
                                     📢 ${d.department}
                                 </p>
-                                
+
                             </div>
                         </div>
                         <div style="display:flex; width:350px; justify-content:space-between">
@@ -743,9 +745,9 @@ var EmployeeComponent = new function () {
                                 <p>(${d.start_date}</p><p class="text-danger ml-2 mr-2">-</p><p>${d.end_date})</p>
                             </div>
                             <p class="text-primary-custom text-nowrap" style="width:35%"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/bag.svg" /> ${d.position}</p>
-                                
+
                         </div>
-                        
+
 
                         <div class="experience-details" id="details_${d.id}"
                             style="display: none; flex-direction: column; gap:10px; transition: all 0.3s ease;">
@@ -972,7 +974,7 @@ var EmployeeComponent = new function () {
     };
 
     this.setResign = (id,menuLink)=>{
-        
+
         let op = {
             id: id,
             btn: menuLink,
@@ -1003,14 +1005,14 @@ var EmployeeComponent = new function () {
             contentCreated:(me)=>{
                 DateTimePicker.init(me.controls.resign_date);
                 DateTimePicker.init(me.controls.effective_date);
-         
-                
-               
-               
+
+
+
+
              },
-             
+
              configSelect:[
-              
+
              ],
              buttons:[
                 {
@@ -1039,8 +1041,8 @@ var EmployeeComponent = new function () {
              ],
              onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-               
-               
+
+
             },
             //  prepareFormOptions:{
             //      modifyTitle:"",
@@ -1050,7 +1052,7 @@ var EmployeeComponent = new function () {
             //         endpoint: `${main_view.base_url}`,
             //         params:(dataOption)=>{
             //             return {"id":dataOption.id};
-            //         }, 
+            //         },
             //      }
             //  },
             //  onShow:(me)=>{
@@ -1059,7 +1061,7 @@ var EmployeeComponent = new function () {
             // },
             //  onPrepareForm:(me,data)=>{
             //      let fields = me.getFields();
-                 
+
             //     //  const app_types = [
             //     //     {value:0, label:"Web Application"},
             //     //     {value:1, label:"Mobile App"}
@@ -1071,7 +1073,7 @@ var EmployeeComponent = new function () {
     }
 
     this.promoteToStaff = (id,menuLink)=>{
-        
+
         let op = {
             id: id,
             btn: menuLink,
@@ -1080,7 +1082,7 @@ var EmployeeComponent = new function () {
             },
         };
         console.log(909090,op);
-        
+
         mThis.PromoteDialog =  new GeneralDialog({
             title: LocaleManager.trans("Promote Staff","titles"),
             createContent:()=>{
@@ -1104,12 +1106,12 @@ var EmployeeComponent = new function () {
             },
             contentCreated:(me)=>{
                 DateTimePicker.init(me.controls.event_date);
-         
-                
-               
-               
+
+
+
+
              },
-             
+
              configSelect:[
                 {
                     name: "type",
@@ -1165,8 +1167,8 @@ var EmployeeComponent = new function () {
              ],
              onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-               
-               
+
+
             },
             //  prepareFormOptions:{
             //      modifyTitle:"",
@@ -1176,7 +1178,7 @@ var EmployeeComponent = new function () {
             //         endpoint: `${main_view.base_url}`,
             //         params:(dataOption)=>{
             //             return {"id":dataOption.id};
-            //         }, 
+            //         },
             //      }
             //  },
             //  onShow:(me)=>{
@@ -1185,7 +1187,7 @@ var EmployeeComponent = new function () {
             // },
             //  onPrepareForm:(me,data)=>{
             //      let fields = me.getFields();
-                 
+
             //     //  const app_types = [
             //     //     {value:0, label:"Web Application"},
             //     //     {value:1, label:"Mobile App"}
@@ -1210,12 +1212,12 @@ var EmployeeComponent = new function () {
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data: [
-               
+
                 {
                     status_id: "30",
                     name: "Terminated",
                 },
-               
+
             ],
             defaultValue: status_id,
         };
@@ -1260,12 +1262,12 @@ var EmployeeComponent = new function () {
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data: [
-               
+
                 {
                     status_id: "10",
                     name: "Rejoin",
                 },
-               
+
             ],
             defaultValue: status_id,
         };
@@ -1295,7 +1297,7 @@ var EmployeeComponent = new function () {
         });
 
     }
-   
+
     this.editEmployee = (id, menuLink) => {
         let op = {
             id: id,
@@ -1400,7 +1402,7 @@ const AddEducation = (() => {
             new GeneralDialog({
                 title: op.id
                     ? "Edit Education"
-                    : "New Education", 
+                    : "New Education",
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
                     return [
@@ -1567,10 +1569,10 @@ const AddExperience = (() => {
                     DateTimePicker.init(me.controls.start_date);
                     DateTimePicker.init(me.controls.end_date);
 
-             
-                    
-                   
-                   
+
+
+
+
                  },
                 buttons: [
                     {
@@ -1781,7 +1783,7 @@ const EmployeeDialog = (() => {
                                         <span class="text-danger" >*</span>
                                         <input name="nid" class="form-control data-input" data-field="nid" />
                                     </div>
-                                   
+
                                     <div class="form-group col-6">
                                         <label for="date_of_birth" class="form-label" vslang="titles.Date Of Birth"></label>
                                         <span class="text-danger" >*</span>
@@ -1832,8 +1834,8 @@ const EmployeeDialog = (() => {
                                         <label for="salary" class="form-label" vslang="titles.salary"></label>
                                         <input name="salary" id="salary" class="form-control  data-input"  data-field="salary" />
                                     </div>
-                                    
-                                    
+
+
                                     <div class="form-group col-3">
                                         <label for="joining_date" class="form-label" vslang="titles.Joining Date"></label>
                                         <input name="joining_date" class="form-control data-input form_input" data-field="joining_date" />
@@ -1849,7 +1851,7 @@ const EmployeeDialog = (() => {
                                     </div>
 
                                 </div>
-                           
+
                         </div>`,
                     ].join("");
                 },
@@ -1925,11 +1927,11 @@ const EmployeeDialog = (() => {
                         };
                     };
                     me.deleteImage(div_emp_photo);
-                    
+
                     me.showProfile(me.dataOptions.id);
                     console.log(13,me.dataOptions.id);
-                    
-                  
+
+
                 },
                 configSelect: [
                     {
@@ -1966,8 +1968,8 @@ const EmployeeDialog = (() => {
                         click: (me, btn) => {
                             let p = me.getData();
                             console.log(123,p);
-                            
-                            
+
+
                             p.photo = me.userImageBox
                                 ? me.userImageBox.getImage()
                                 : "";
@@ -2009,16 +2011,16 @@ const EmployeeDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    
+
                     LocaleManager.translateZone(me.divModal);
                     me.divModal.querySelectorAll('.data-input').forEach(el => {
-                       
+
                         const data_member = el.dataset.field;
                         console.log(90,op.id);
                         const salary = me.divModal.querySelector('.salary');
-                        
+
                         let id = op.id;
-                        
+
                         if(id){
                             salary.classList.remove('d-none');
                             if (el.tagName.toLowerCase() === 'select') {
@@ -2031,17 +2033,17 @@ const EmployeeDialog = (() => {
                                 console.log(12,el);
                                 el.disabled  = true;
                              }
-                             
+
                              id=null;
                         }
-                        
+
                    });
-                   
+
                 },
                 onClose:(canceled)=>{
-                    
-    
-                     
+
+
+
                 }
             });
 

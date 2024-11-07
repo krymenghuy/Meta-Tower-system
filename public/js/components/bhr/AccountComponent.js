@@ -497,7 +497,7 @@ const AccountDialog = (() => {
                     </div>
                     <div class="form-group col-6">
                         <label for="ballance" class="form-label" vslang="titles.Balance"></label>
-                        <input name="ballance" class="form-control data-input" data-field="balance" />
+                        <input name="ballance" class="form-control data-input" data-field="balance"  />
                     </div>
                     <div class="form-group col-6">
                          <label for="currency" class="form-label" vslang="titles.Currency"></label>
@@ -579,9 +579,20 @@ const AccountDialog = (() => {
                     //    }
                 },
 
-                onPrepareForm: (me, data) => {
+                onPrepareForm: (me) => {
                     LocaleManager.translateZone(me.divModal);
+
+                    const balanceField = me.divModal.querySelector('[data-field="balance"]');
+                    if (balanceField) {
+                        if (me.dataOptions && me.dataOptions.id) {
+                            balanceField.disabled = true;
+                        } else {
+                            balanceField.disabled = false;
+                        }
+                    }
                 },
+
+
             });
 
         dialog.show(op);

@@ -27,6 +27,10 @@
                 <i class="fas fa-calculator"></i>
                 <span></span>
             </button>
+            <button type="button" class="btn btn-primary" id="_btnDisburse" title="Disburse">
+                <i class="fa-solid fa-square-check"></i>
+                <span></span>
+            </button>
         </div>
     </div>
     <div id="_payrollList_list" class="m-4"></div>

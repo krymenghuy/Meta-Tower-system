@@ -4,7 +4,7 @@
             <div class="d-flex align-items-center w-50 gap-2">
                 <div class="d-flex align-items-center w-50 gap-2 pl-3">
                     <input type="text" class="form-control filter-field btn_search"
-                        id="_sdl_search_wallet_account"data-field="search_value" placeholder="Search Here">
+                        id="_sdl_search_wallet_account"data-field="search_value" placeholder="Search here">
                 </div>
             </div>
             <div class="d-flex align-items-center justify-content-end gap-2 w-50 pr-3">

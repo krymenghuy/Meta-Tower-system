@@ -24,6 +24,7 @@ class Event
             'id' => '0|identity=1',
             'name' => '1|string',
             'event_type' => '1|string',
+            'impact' => '1|string',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
