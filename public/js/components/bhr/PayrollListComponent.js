@@ -13,6 +13,7 @@ var PayrollListComponent = new (function () {
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSortBy = this.self.querySelector("#el_sort_by");
     this.btnCalculate = this.self.querySelector("#_btnCalculate");
+    this.btnDisburse = this.self.querySelector("#_btnDisburse");
 
     this.cols = [
 
@@ -134,6 +135,24 @@ var PayrollListComponent = new (function () {
                if(res.status_code ==200){
                  mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                  alert(res.data);
+               }else cv_interact.error(res.error_message);
+            });
+        };
+        mThis.btnDisburse.onclick = function (e) {
+
+            e.preventDefault();
+
+
+
+            let op = {
+                payroll_id : mThis.getFilterData().payroll_id,
+
+            }
+            console.log(444, op);
+            vsapi.call( [main_view.base_url,'/hr/payroll-list/disburse-all'].join(''), op,null,null).then(res=>{
+               if(res.status_code ==200){
+                cv_interact.success('Disbursed Successfully');
+                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                }else cv_interact.error(res.error_message);
             });
         };
