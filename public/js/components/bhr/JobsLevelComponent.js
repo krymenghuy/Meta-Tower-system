@@ -264,7 +264,7 @@ const JobLevelDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static", //User click outside form, do not close form
                 keyboard: true, //prevent user from using ESC key
                 createContent: () => {
@@ -281,7 +281,7 @@ const JobLevelDialog = (() => {
                             <div class="form-group  col-12 d.none">
                                <div id="info"></div>
                             </div>
-                            <div class="form-group col-6">
+                            <div class="form-group col-12">
                                 <label for="rank" class="form-label">Ranking</label>
                                 <input type="number" class="form-control data-input" data-field="rank" id="job_ranking" rows="2" placeholder="Input ranking here" required></input>                            
                             </div>
@@ -291,7 +291,7 @@ const JobLevelDialog = (() => {
                 },
                 buttons: [
                     {
-                        label: '<span class="text-jobLevel">Cancel</span>',
+                        label: '<span class="text-warning">Cancel</span>',
                         cssClass: "btn btn-default",
                         click: (me, btn) => {
                             //Close with Cancel button

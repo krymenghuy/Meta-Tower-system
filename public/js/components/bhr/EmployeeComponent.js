@@ -47,6 +47,7 @@ var EmployeeComponent = new function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
+                    cv_interact.success('Employee Added Successfully');
                     mThis.EmployeeListView.showPage(mThis.getFilterData());
                 },
             };
@@ -81,9 +82,10 @@ var EmployeeComponent = new function () {
             },250);
 
         };
+
          this.listContainer = mThis.EmployeeListView.getListContainer();
          console.log(12,mThis.listContainer);
-         
+
          mThis.initDropdownMenus(div);
 
 
@@ -131,7 +133,7 @@ var EmployeeComponent = new function () {
                     cssClass: "border-bottom pb-2",
                     name: "delete_employee",
                 },
-            
+
                 {
                     html: '<span class="ps-2  " vslang="titles.Set Resign">Set Resign</span>',
                     icon: `<i class="fa-solid text-warning fa-pen-nib"></i>`,
@@ -150,14 +152,22 @@ var EmployeeComponent = new function () {
                     cssClass: "border-bottom pb-2",
                     name: "set_terminated",
                 },
+                {
+                    html: '<span class="ps-2  " vslang="titles.Promote to Staff">Promote to Staff</span>',
+                    icon: `<i class="fa-solid text-success fa-bolt"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "promote_to_staff",
+                },
             ],
             onShow:(me,container)=>{
                 // console.log(123,me.getActiveMenus(container).set_rejoin);
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
+                const emp_type_id = container.dataset.typeid;
+
                 menu.set_rejoin.style.display = status_id == 10? 'none':'block';
                 menu.set_terminated.style.display='none';
-
+                menu.promote_to_staff.style.display = emp_type_id ==  3? 'none':'block;'
 
                 // switch(status_id){
                 //     case 10:{
@@ -170,7 +180,7 @@ var EmployeeComponent = new function () {
             },
             onClick: (menuLink, id, name) => {
                 switch (name) {
-                    
+
                     case "edit_employee": {
                         mThis.editEmployee(id, menuLink);
                         break;
@@ -189,6 +199,10 @@ var EmployeeComponent = new function () {
                     }
                     case "set_rejoin":{
                         mThis.setRejoin(id,menuLink);
+                        break;
+                    }
+                    case "promote_to_staff": {
+                        mThis.promoteToStaff(id, menuLink);
                         break;
                     }
 
@@ -230,7 +244,7 @@ var EmployeeComponent = new function () {
                         statusColor = "background-color: #dc3545;";
                         break;
                     case "Resigned":
-                        statusColor = "background-color: #ffc107;";
+                        statusColor = "background-color: #cab54a;";
                         break;
                     default:
                         statusColor = "background-color: #2B3991;";
@@ -247,14 +261,8 @@ var EmployeeComponent = new function () {
                                     <span>${status}</span>
                                 </div>
                                 <div class="dropdown">
-                                    <a href="javascript:void(0)" class="btn_employee_action" data-id="${
-                                        d.id
-                                    }" data-statusid="${
-                    d.status_id
-                }" aria-haspopup="true" aria-expanded="false">
-                                        <img src="${
-                                            main_view.asset_url
-                                        }/images/bhr/more_vert.svg">
+                                    <a href="javascript:void(0)" class="btn_employee_action" data-id="${d.id}" data-statusid="${d.status_id}" data-typeid="${d.emp_type_id}" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-4 tool-tip"> <span class="tool-tiptext fs-6">Actions</span></i>
                                     </a>
                                 </div>
                             </div>
@@ -300,9 +308,9 @@ var EmployeeComponent = new function () {
                                     <div class="text-muted" style="font-size:11px;">Joining Date : <span class="text-primary-custom">${
                                         d.joining_date || "null"
                                     }</span></div>
-                                    <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${
-                                        d.id
-                                    }" aria-haspopup="true" aria-expanded="false">view info</a>
+                                    <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${d.id}" aria-haspopup="true" aria-expanded="false">
+                                        <i data-id="${d.id}" class="fa-regular  fa-eye text-primary-custom fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -325,7 +333,6 @@ var EmployeeComponent = new function () {
         seeProfileInfo.forEach((link) => {
             link.addEventListener("click", (e) => {
                 const employeeId = e.target.dataset.id;
-
                 const employeeData = data.find((emp) => emp.id == employeeId);
 
                 if (employeeData) {
@@ -361,7 +368,7 @@ var EmployeeComponent = new function () {
                                 <div class="d-flex mt-3 ms-5 justify-content-start">
                                     <span class="text-white">ID : ${data.code || ""}</span>
                                 </div>
-                                
+
                             </div>
                             <div class="col-md-3 mt-3">
                                 <div class="d-flex">
@@ -369,7 +376,7 @@ var EmployeeComponent = new function () {
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap text-capitalize">${data.name}</p>
                                 </div>
-                               
+
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Sex</p>
                                     <p class="px-2">:</p>
@@ -390,12 +397,12 @@ var EmployeeComponent = new function () {
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${data.date_of_birth || ""}</p>
                                 </div>
-                               
-                                  
+
+
 
                             </div>
                             <div class="col-md-3 mt-3">
-                            
+
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Position</p>
                                     <p class="px-2">:</p>
@@ -421,8 +428,8 @@ var EmployeeComponent = new function () {
                                     <p class="px-2">:</p>
                                     <p class="text-">${data.email || ""}</p>
                                 </div>
-                        
-                               
+
+
                             </div>
 
                             <div class="col-md-3 mt-3">
@@ -446,32 +453,41 @@ var EmployeeComponent = new function () {
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap text-capitalize">${data.address}</p>
                                 </div>
-                            
+
                             </div>
-                           
+
 
                         </div>
-                        <div class="d-flex justify-content-between px-2">
-                            <div class="social-icons d-flex justify-content-start mt-3">
+                        <div class="d-flex justify-content-between w-100 px-2 pt-1">
+                            <div class="social-icons d-flex w-25 justify-content-start">
                                 <a href="https://www.facebook.com" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
                                 <a href="https://www.linkedin.com" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>
                                 <a href="https://web.telegram.org/a/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>
                             </div>
-                            <div>
-                                <button class="btn_movement_action btn btn-light rounded-3 btn-options position-relative text-nowrap" data-id="${data.id}" data-pricelistid="${data.price_list_id}" data-status ="${data.status_id}" type="button">
+                            <div class="d-flex justify-content-end gap-3 px-5 w-75">
+                                  <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${data.id}" data-status ="${data.status_id}">
+                                        <i class="fa-regular fa-pen-to-square text-warning fs-5 tool-tip"><span class="tool-tiptext fs-6">Edit Profile</span></i>
+                                  </a>
+                                  <a href="javascript:void(0)" class="set_resign" data-id="${data.id}" data-status ="${data.status_id}">
+                                        <i class="fa-solid text-success fa-pen-nib tool-tip fs-5"><span class="tool-tiptext fs-6">Set Resign</span></i>
+                                  </a>
+                                   <a href="javascript:void(0)" class="promote_to_staff" data-id="${data.id}" data-status ="${data.status_id}">
+                                        <i class="fa-solid text-success fa-bolt tool-tip fs-5"><span class="tool-tiptext fs-6">Promote</span></i>
+                                  </a>
+                                <!-- <button class="btn_movement_action btn btn-light rounded-3 mx-3 btn-options position-relative text-nowrap" data-id="${data.id}"  data-status ="${data.status_id}" type="button">
                                     <span class="text-nowrap text-primary-custom" vslang="buttons.Movement">Movement</span>
                                     <i class="fa-solid text-primary-custom fa-caret-down ps-2"></i>
-                                </button>
+                                </button> -->
                             </div>
                         </div>
                     </div>
-                    
+
                     </div>
         `;
 
         this.profile_info_emp.innerHTML = html;
         mThis.initDropdownMenusInfo(mThis.profile_info_emp);
-
+        mThis.setActionsProfileInfo(mThis.profile_info_emp);
     };
 
     this.initDropdownMenusInfo = (listContainer) => {
@@ -499,7 +515,7 @@ var EmployeeComponent = new function () {
                     cssClass: "border-bottom pb-2",
                     name: "promote_to_staff",
                 },
-            
+
             ],
             onClick: (menuLink, id, name) => {
                 switch (name) {
@@ -528,6 +544,22 @@ var EmployeeComponent = new function () {
         }
         new VSDropdownMenu(menuOptopns);
     };
+    this.setActionsProfileInfo = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".edit_emp_profile_info");
+            if (btn) {
+                mThis.editEmployee(btn.dataset.id, btn);
+            }
+            btn = VSUtil.closestLimited(e.target, ".set_resign");
+            if (btn) {
+                mThis.setResign(btn.dataset.id, btn);
+            }
+            btn = VSUtil.closestLimited(e.target,".promote_to_staff")
+            if (btn) {
+                mThis.promoteToStaff(btn.dataset.id, btn);
+            }
+        });
+    };
 
     this.renderCardLeft = (employeeId) => {
         let html = "";
@@ -537,7 +569,7 @@ var EmployeeComponent = new function () {
              <div class="card pb-3" style="height:390px;">
                             <div class="card-header bg-primary-custom text-white">
                                 <h4>Skills</h4>
-                                
+
                             </div>
                             <div class="card-body">
                                 <div class="d-flex justify-content-between">
@@ -704,18 +736,18 @@ var EmployeeComponent = new function () {
                                 <p class="text-primary-custom" style="font-size:14px;width:175px;display:flex;justify-content:start; overflow-y: hidden; overflow-x: auto; scrollbar-width: none; align-items: flex-start; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap;">
                                     📢 ${d.department}
                                 </p>
-                                
+
                             </div>
                         </div>
                         <div style="display:flex; width:350px; justify-content:space-between">
-                            <div class="date_join text-muted" style="width:300px;display:flex;justify-content:start;align-items:start;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
+                            <div class="date_join text-muted" style="width:65%;display:flex;justify-content:start;align-items:start;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
                                 <img class="bhr-icons" src="${main_view.asset_url}/images/icons/calender.svg" />
                                 <p>(${d.start_date}</p><p class="text-danger ml-2 mr-2">-</p><p>${d.end_date})</p>
                             </div>
-                            <p class="text-primary-custom text-nowrap"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/bag.svg" /> ${d.position}</p>
-                                
+                            <p class="text-primary-custom text-nowrap" style="width:35%"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/bag.svg" /> ${d.position}</p>
+
                         </div>
-                        
+
 
                         <div class="experience-details" id="details_${d.id}"
                             style="display: none; flex-direction: column; gap:10px; transition: all 0.3s ease;">
@@ -942,7 +974,7 @@ var EmployeeComponent = new function () {
     };
 
     this.setResign = (id,menuLink)=>{
-        
+
         let op = {
             id: id,
             btn: menuLink,
@@ -973,14 +1005,14 @@ var EmployeeComponent = new function () {
             contentCreated:(me)=>{
                 DateTimePicker.init(me.controls.resign_date);
                 DateTimePicker.init(me.controls.effective_date);
-         
-                
-               
-               
+
+
+
+
              },
-             
+
              configSelect:[
-              
+
              ],
              buttons:[
                 {
@@ -1009,8 +1041,8 @@ var EmployeeComponent = new function () {
              ],
              onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-               
-               
+
+
             },
             //  prepareFormOptions:{
             //      modifyTitle:"",
@@ -1020,7 +1052,7 @@ var EmployeeComponent = new function () {
             //         endpoint: `${main_view.base_url}`,
             //         params:(dataOption)=>{
             //             return {"id":dataOption.id};
-            //         }, 
+            //         },
             //      }
             //  },
             //  onShow:(me)=>{
@@ -1029,7 +1061,7 @@ var EmployeeComponent = new function () {
             // },
             //  onPrepareForm:(me,data)=>{
             //      let fields = me.getFields();
-                 
+
             //     //  const app_types = [
             //     //     {value:0, label:"Web Application"},
             //     //     {value:1, label:"Mobile App"}
@@ -1041,7 +1073,7 @@ var EmployeeComponent = new function () {
     }
 
     this.promoteToStaff = (id,menuLink)=>{
-        
+
         let op = {
             id: id,
             btn: menuLink,
@@ -1049,38 +1081,65 @@ var EmployeeComponent = new function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        mThis.ResignDialog =  new GeneralDialog({
-            title: LocaleManager.trans("Promote To Staff","titles"),
+        console.log(909090,op);
+
+        mThis.PromoteDialog =  new GeneralDialog({
+            title: LocaleManager.trans("Promote Staff","titles"),
             createContent:()=>{
                 return [
-                   ` <div class="form-group col-md-12">
-                            <label class="form-label" vslang="titles.Resign Date">Resign Date</label>
-                            <div><input  name="resign_date" class="form-control data-input" placeholder="" data-field="resign_date"/></div>
-                        </div>
-                        <div class="form-group col-md-12">
-                            <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
-                            <div><input  name="effective_date" class="form-control data-input" placeholder="" data-field="effective_date"/></div>
-                        </div>
+                     `<div class="form-group col-md-12">
+                        <label for="type" class="form-label" vslang="titles.Employee Type"></label>
+                        <span class="text-danger" >*</span>
+                        <select name="type" class=" data-input"  data-field="emp_type_id"></select>
+                      </div>
+                      <div class="form-group col-md-12">
+                        <label class="form-label" vslang="titles.Event Date">Event Date</label>
+                        <div><input  name="event_date" class="form-control data-input" placeholder="" data-field="event_date"/></div>
+                      </div>
                       <div class="form-group col-md-12">
                         <label class="form-label" vslang="titles.Remarks">Remarks</label>
                         <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
-                    </div>
+                      </div>
 
                    `
                 ].join('');
             },
             contentCreated:(me)=>{
-                DateTimePicker.init(me.controls.resign_date);
-                DateTimePicker.init(me.controls.effective_date);
-         
-                
-               
-               
+                DateTimePicker.init(me.controls.event_date);
+
+
+
+
              },
-             
+
              configSelect:[
-              
+                {
+                    name: "type",
+                    data: "types",
+                    textField: "name",
+                    valueField: "id",
+                },
              ],
+             prepareFormOptions: {
+                createTitle: "New Education",
+                modifyTitle: "Edit Education",
+                targetProp: "Education",
+                api: {
+                    endpoint: `${main_view.base_url}/hr/employee/form-options`,
+                    params: (op) => {
+                        return { id: op.id }; // Pass ID to fetch data for edit
+                    },
+                    onResponse: (me, res) => {
+                        if (op.id) {
+                            // Populate form with existing data for edit mode
+                            // me.setValue('emp_id', res.data.emp_id);
+                            // me.setValue('period', res.data.period);
+                            // me.setValue('description', res.data.description);
+                            // me.setValue('amount', res.data.amount);
+                        }
+                    },
+                },
+            },
              buttons:[
                 {
                     label: "<span>Cancel</span>",
@@ -1096,10 +1155,10 @@ var EmployeeComponent = new function () {
                          let p = me.getData();
                         //  p.emp_id = op.id;
                          console.log(111,p);
-                         vsapi.call(`${main_view.base_url}/hr/employee/set-resign-status`,p,btn,false).then(res =>{
+                         vsapi.call(`${main_view.base_url}/hr/employee/promote-staff`,p,btn,false).then(res =>{
                               if(res.status_code ==200){
                                 me.modal.hide(true, p);
-                                cv_interact.success('This Employee has been resign successfully!');
+                                cv_interact.success('This Employee has been promoted successfully!');
                                 EmployeeComponent.EmployeeListView.showPage();
                               }else cv_interact.error(res.error_message);
                          });
@@ -1108,8 +1167,8 @@ var EmployeeComponent = new function () {
              ],
              onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-               
-               
+
+
             },
             //  prepareFormOptions:{
             //      modifyTitle:"",
@@ -1119,7 +1178,7 @@ var EmployeeComponent = new function () {
             //         endpoint: `${main_view.base_url}`,
             //         params:(dataOption)=>{
             //             return {"id":dataOption.id};
-            //         }, 
+            //         },
             //      }
             //  },
             //  onShow:(me)=>{
@@ -1128,7 +1187,7 @@ var EmployeeComponent = new function () {
             // },
             //  onPrepareForm:(me,data)=>{
             //      let fields = me.getFields();
-                 
+
             //     //  const app_types = [
             //     //     {value:0, label:"Web Application"},
             //     //     {value:1, label:"Mobile App"}
@@ -1136,7 +1195,7 @@ var EmployeeComponent = new function () {
             //     //  VSUtil.setComboItems(fields.app_id,data.apps,"id","app_name",null,null,0);
             //  }
         });
-        mThis.ResignDialog.show(op);
+        mThis.PromoteDialog.show(op);
     }
 
     this.setTerminated = (id,lnk)=>{
@@ -1153,12 +1212,12 @@ var EmployeeComponent = new function () {
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data: [
-               
+
                 {
                     status_id: "30",
                     name: "Terminated",
                 },
-               
+
             ],
             defaultValue: status_id,
         };
@@ -1203,12 +1262,12 @@ var EmployeeComponent = new function () {
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data: [
-               
+
                 {
                     status_id: "10",
                     name: "Rejoin",
                 },
-               
+
             ],
             defaultValue: status_id,
         };
@@ -1238,7 +1297,7 @@ var EmployeeComponent = new function () {
         });
 
     }
-   
+
     this.editEmployee = (id, menuLink) => {
         let op = {
             id: id,
@@ -1343,7 +1402,7 @@ const AddEducation = (() => {
             new GeneralDialog({
                 title: op.id
                     ? "Edit Education"
-                    : "New Education", 
+                    : "New Education",
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
                     return [
@@ -1510,10 +1569,10 @@ const AddExperience = (() => {
                     DateTimePicker.init(me.controls.start_date);
                     DateTimePicker.init(me.controls.end_date);
 
-             
-                    
-                   
-                   
+
+
+
+
                  },
                 buttons: [
                     {
@@ -1724,7 +1783,7 @@ const EmployeeDialog = (() => {
                                         <span class="text-danger" >*</span>
                                         <input name="nid" class="form-control data-input" data-field="nid" />
                                     </div>
-                                   
+
                                     <div class="form-group col-6">
                                         <label for="date_of_birth" class="form-label" vslang="titles.Date Of Birth"></label>
                                         <span class="text-danger" >*</span>
@@ -1759,7 +1818,7 @@ const EmployeeDialog = (() => {
                                     </div>
                                     <div class="form-group col-3">
                                         <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
-                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                                        <input name="nssf_id" class="form-control data-input form_input" data-field="nssf_id" />
                                     </div>
                                     <div class="form-group col-3">
                                         <label for="type" class="form-label" vslang="titles.Employee Type"></label>
@@ -1775,11 +1834,11 @@ const EmployeeDialog = (() => {
                                         <label for="salary" class="form-label" vslang="titles.salary"></label>
                                         <input name="salary" id="salary" class="form-control  data-input"  data-field="salary" />
                                     </div>
-                                    
-                                    
+
+
                                     <div class="form-group col-3">
                                         <label for="joining_date" class="form-label" vslang="titles.Joining Date"></label>
-                                        <input name="joining_date" class="form-control data-input" data-field="joining_date" />
+                                        <input name="joining_date" class="form-control data-input form_input" data-field="joining_date" />
                                     </div>
                                     <div class="form-group col-6">
                                         <label for="work_shift" class="form-label" vslang="titles.Work Shift"></label>
@@ -1792,7 +1851,7 @@ const EmployeeDialog = (() => {
                                     </div>
 
                                 </div>
-                           
+
                         </div>`,
                     ].join("");
                 },
@@ -1868,11 +1927,11 @@ const EmployeeDialog = (() => {
                         };
                     };
                     me.deleteImage(div_emp_photo);
-                    
+
                     me.showProfile(me.dataOptions.id);
                     console.log(13,me.dataOptions.id);
-                    
-                  
+
+
                 },
                 configSelect: [
                     {
@@ -1909,8 +1968,8 @@ const EmployeeDialog = (() => {
                         click: (me, btn) => {
                             let p = me.getData();
                             console.log(123,p);
-                            
-                            
+
+
                             p.photo = me.userImageBox
                                 ? me.userImageBox.getImage()
                                 : "";
@@ -1952,16 +2011,16 @@ const EmployeeDialog = (() => {
                 },
 
                 onPrepareForm: (me, data) => {
-                    
+
                     LocaleManager.translateZone(me.divModal);
                     me.divModal.querySelectorAll('.data-input').forEach(el => {
-                       
+
                         const data_member = el.dataset.field;
                         console.log(90,op.id);
                         const salary = me.divModal.querySelector('.salary');
-                        
+
                         let id = op.id;
-                        
+
                         if(id){
                             salary.classList.remove('d-none');
                             if (el.tagName.toLowerCase() === 'select') {
@@ -1974,17 +2033,17 @@ const EmployeeDialog = (() => {
                                 console.log(12,el);
                                 el.disabled  = true;
                              }
-                             
+
                              id=null;
                         }
-                        
+
                    });
-                   
+
                 },
                 onClose:(canceled)=>{
-                    
-    
-                     
+
+
+
                 }
             });
 

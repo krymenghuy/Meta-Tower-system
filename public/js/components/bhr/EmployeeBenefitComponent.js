@@ -456,11 +456,11 @@ const EmployeeBenefitDialog = (() => {
                             </div>
                             <div class="form-group col-6">
                                 <label for="start_date" class="form-label" vslang="titles.StartDate">Start Date</label>
-                                <input type="date" class="form-control data-input" data-field="start_date" />
+                                <input type="date" class="form-control data-input date_form" data-field="start_date" />
                             </div>
                             <div class="form-group col-6">
                                 <label for="end_date" class="form-label" vslang="titles.EndDate">End Date</label>
-                                <input type="date" class="form-control data-input" data-field="end_date" />
+                                <input type="date" class="form-control data-input date_form" data-field="end_date" />
                             </div>
                             <div class="form-group col-12">
                                 <label for="amount" class="form-label" vslang="titles.Amount"></label>
@@ -478,7 +478,7 @@ const EmployeeBenefitDialog = (() => {
                         name: "employee",
                         data: "employees",
                         textField: (me, d) =>
-                            `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span>${d.name}</span><span>${d.position}</span></div></div>`,
+                            `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span>${d.name}</span><span>${d.position}</span></div></div>`,
                         valueField: "id",
                     },
                     {

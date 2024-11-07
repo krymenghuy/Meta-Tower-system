@@ -12,7 +12,7 @@
         </div>
         <div class="d-flex align-items-center justify-content-end gap-2 w-100">
                 <div class="d-flex align-items-center w-50">
-                    <input data-select="datepicker" class="form-control filter-field rounded-5" data-field="attendance_date"
+                    <input data-select="datepicker" class="form-control filter-field form_input" data-field="attendance_date"
                         placeholder="Attendance Date" id="_filter_attendance_date" />
                 </div>
             <button type="button" class="btn_add" id="_btnAddStaffAttendance">

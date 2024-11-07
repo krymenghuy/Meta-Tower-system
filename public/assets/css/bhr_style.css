@@ -5,21 +5,70 @@
     -webkit-user-drag: none;
     font-family: "Poppins";
 }
+.tool-tip {
+    position: relative;
+    display: inline-block;
+    /* border-bottom: 1px dotted black; */
+  }
+  
+  .tool-tip .tool-tiptext {
+    visibility: hidden;
+    min-width: 100px;
+    background-color: #fff;
+    color: #2b3991;
+    border: 1px solid #2b3991;
+    text-align: center;
+    border-radius: 6px;
+    white-space: nowrap;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    top: 150%;
+    left: 50%;
+    margin-left: -50px;
+  }
+  
+  .tool-tip .tool-tiptext::after {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #2b3991 transparent;
+  }
+  
+  .tool-tip:hover .tool-tiptext {
+    visibility: visible;
+  }
 .btn_add {
     padding: 12px;
     color: white;
     background-color: #2b3991;
-    border-radius: 50px;
+    border-radius: 20px;
     cursor: pointer;
     border: none;
     text-decoration: none;
 
 }
 .btn_search {
-    padding: 15px;
-    border-radius: 50px;
+    padding: 22px;
+    border-radius: 25px;
     cursor: pointer;
     text-decoration: none;
+}
+.form_input{
+     padding: 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    text-decoration: none;
+}
+.img_select{
+    width:40px;
+    height:40px;
+    border-radius:20px; 
+    object-fit:cover"
 }
 .text-primary-custom {
     color: #2b3991;
@@ -42,16 +91,7 @@
 }
 
 .dropdown-item {
-    /* display: block;
-    width: 100%;
-    padding: 0.25rem 1.5rem;
-    clear: both; */
-    /* font-weight: 400; */
     color: dark;
-    /* text-align: inherit;
-    white-space: nowrap;
-    background-color: transparent;
-    border: 0; */
 }
 .dropdown-item:hover {
     color: #2b3991;
@@ -103,7 +143,7 @@ li.kt-menu__section {
     background-color: #ffff !important;
     color: #8dc63f !important;
 }
-.menu-selected:hover {
+.menu-selected .kt-menu__link-text:hover{
     color: #2b3991;
 }
 
@@ -742,13 +782,13 @@ a.menu-selected .kt-menu__link-text {
     white-space: nowrap;
 }
 
-.form-date {
+.form-_form {
     color: var(--bs-warning);
 }
 
 .form-select-extend,
-.form-date:focus,
-.form-date {
+.form-_form:focus,
+.form-_form {
     border: none;
     outline: none;
     background-color: transparent;
@@ -1356,7 +1396,7 @@ a.menu-selected .kt-menu__link-text {
     padding: 0.15rem 1rem;
 }
 
-input[data-select="datepicker"].data-invoice::placeholder {
+input[data-select="_formpicker"].data-invoice::placeholder {
     color: #ff000090;
 }
 
@@ -1661,8 +1701,8 @@ ul.list-filter-um li:not(li:last-child) {
     right: 10px;
 }
 
-.fee-start-date,
-.set-start-date {
+.fee-start-_form,
+.set-start-_form {
     width: 115px;
     background-color: transparent;
     border: none;

@@ -297,7 +297,7 @@ const StaffAttendanceDialog = (() => {
                         name: "employee",
                         data: "employees",
                         textField: (me, d) => {
-                            return `<div class="d-flex gap-2 py-2"><img style="width:80px;height:50px margin-top:100px;margin-right:10px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> <span>${d.email}</span><span> ${d.position} </span> </div></div>`;
+                            return `<div class="d-flex gap-2 py-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span><span> ${d.position} </span> </div></div>`;
                         },
                         // textField:"name",
                         valueField: "id",
@@ -334,7 +334,7 @@ const StaffAttendanceDialog = (() => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         cv_interact.success(
-                                            "attendance save successfully"
+                                            "attendance ssave successfully"
                                         );
                                     } else cv_interact.error(res.error_message);
                                     StaffAttendanceComponent.saveStaffAttendance();
