@@ -480,7 +480,6 @@ class Employee //extends Model
     {
         return DB::table('employees as e')->join('positions as p', 'p.id', '=', 'e.position_id')->selectRaw('p.title , p.id')->first();
     }
-
     function getFormOptions($id, $ss)
     {
         $employee = null;
@@ -496,7 +495,6 @@ class Employee //extends Model
             'employee' => $employee,
         ];
     }
-   
     function updateStatus($status_id, $id = null, $ss = null)
     {
         $ss = $ss ? $ss : $this->userInfo;
@@ -538,7 +536,62 @@ class Employee //extends Model
     
         return DV::depends($x, ['Employee status', 'updated']);
     }
+    static function getEventId($name)
+    {
+        return DB::table('events')->where('name', $name)->value('id');
+    }
+    function getProps($id, $props = [])
+    {
+        $cols = is_array($props) ? implode(',', $props) : $props;
+        $row = DB::table('employees')->where('id', $id)->selectRaw($cols)->first();
+        return $row;
+    }
+    function promoteStaff($emp_type_id, $id = null, $ss = null,$arr)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+        $d = (object)$arr;
+        $remarks = $d->remarks;
+        $event_date = $d->event_date;
+        $events = [
+            '1.2' => 'intern to probation',
+            '1.3' => 'intern to staff',
+            '2.3' => 'probation to staff'
+        ];
+    
+        $emp = $this->getProps($id, 'emp_type_id');
+        if (!$emp) {
+            return DV::error('Employee ID not found!');
+        }
+    
+        $key = $emp->emp_type_id . '.' . $emp_type_id;
+        $event_name = $events[$key] ?? null;
+        $event_id = self::getEventId($event_name);
+    
+        if (!$event_id) {
+            return DV::error("Event '$event_name' is not defined yet.");
+        }
+    
+        $save_emp_type_id = saveData($ss, 'employees', ['id' => $id], ['emp_type_id' => $emp_type_id], [], 1, false);
 
+        if ($save_emp_type_id) {
+
+            $impact = $emp_type_id > $emp->emp_type_id ? 'Positive' : ($emp_type_id < $emp->emp_type_id ? 'Negative' : 'Neutral');
+            $inputs = [
+                'emp_id' => $id,
+                'event_id' => $event_id,
+                'impact' => $impact,
+                'remarks'=> $remarks,
+                'event_date'=>$event_date
+            ];
+    
+            saveData($ss, 'emp_events', [], $inputs, [], 1, false);
+    
+            return DV::depends($save_emp_type_id, ['Employee', 'updated']);
+        }
+    
+        return DV::error('Failed to update employee.');
+    }
     public function setResignStatus($arr=[],$id=null,$ss = null)
     {
         $ss = $ss ?? $this->userInfo;
@@ -565,8 +618,6 @@ class Employee //extends Model
         }
         return DV::error('Failed');
     }
-
-
     public function setRejoinStatus($status_id, $id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
