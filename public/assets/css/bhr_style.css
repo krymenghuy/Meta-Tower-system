@@ -27,6 +27,12 @@
     cursor: pointer;
     text-decoration: none;
 }
+.img_select{
+    width:40px;
+    height:40px;
+    border-radius:20px; 
+    object-fit:cover"
+}
 .text-primary-custom {
     color: #2b3991;
 }
@@ -48,16 +54,7 @@
 }
 
 .dropdown-item {
-    /* display: block;
-    width: 100%;
-    padding: 0.25rem 1.5rem;
-    clear: both; */
-    /* font-weight: 400; */
     color: dark;
-    /* text-align: inherit;
-    white-space: nowrap;
-    background-color: transparent;
-    border: 0; */
 }
 .dropdown-item:hover {
     color: #2b3991;
