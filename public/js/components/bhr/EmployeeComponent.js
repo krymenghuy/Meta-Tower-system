@@ -304,7 +304,7 @@ var EmployeeComponent = new function () {
                                             }</span></div>
                                         </div>
                                         <div class="email text-primary">
-                                            <div class="d-flex rounded-5 gap-2"><i class="text-warning m-1 fas fa-envelope"></i><span>${
+                                            <div class="d-flex rounded-5 gap-2"><i class="text-primary m-1 fas fa-envelope"></i><span>${
                                                 d.email || "null"
                                             }</span></div>
                                         </div>
