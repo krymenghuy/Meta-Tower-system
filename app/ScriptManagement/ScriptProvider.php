@@ -123,6 +123,7 @@ class ScriptProvider
                 '/js/components/bhr/AccountComponent.js',
                 '/js/components/bhr/TaxBracketComponent.js',
                 '/js/components/bhr/WalletAccountComponent.js',
+                '/js/components/bhr/HolidayComponent.js',
 
             ]
         ],
