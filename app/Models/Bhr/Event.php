@@ -17,14 +17,14 @@ class Event
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
-        $ss = $ss ?? $this->userInfo;
+    static function createEvent($arr,$ss = null){
+        $ss = $ss ?? self::userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
             'name' => '1|string',
-            'event_type' => '1|string',
-            'impact' => '1|string',
+            'event_type' => '0|string',
+            'impact' => '0|string',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);

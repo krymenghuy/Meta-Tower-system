@@ -75,6 +75,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/filter-options', [EmployeeController::class, 'getFilterOptions']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
     Route::post('/promote-staff', [EmployeeController::class, 'promoteStaff']);
+    Route::post('/promote-change',[EmployeeController::class,'promoteChangeEmployee']);
     Route::post('/update-status', [EmployeeController::class, 'updateStatus']);
 
     Route::post('/set-resign-status',[EmployeeController::class,'setResignStatus']);
@@ -318,7 +319,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('branch-change
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('event')->group(function () {
 
-    Route::post('/save', [EventController::class, 'saveEvent']);
+    Route::post('/save', [EventController::class, 'createEvent']);
     Route::post('/list-paginate', [EventController::class, 'getEventListPaginate']);
     Route::post('/details', [EventController::class, 'getDetails']);
     Route::post('/delete', [EventController::class, 'deleteEvent']);
