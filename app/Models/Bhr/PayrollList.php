@@ -32,7 +32,7 @@ class PayrollList
             'deduction' => '0|number',
             'disburse' => '0|number|default = 0',
             // 'tax_base' => '0|number',
-            // 'tax_allowance' => '0|number',
+            // 'allowance' => '0|number',
             // 'tax_rate' => '0|number',
             // 'total_salary' => '0|number',
         ];
@@ -78,9 +78,7 @@ class PayrollList
 
         $query = DB::table('payroll_lists as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-            ->join('tax_allowances as ta', 'ta.emp_id', '=', 'e.id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->join('um_branches as b', 'b.id', '=', 'e.branch_id')
             ->selectRaw('pl.id,
@@ -89,18 +87,20 @@ class PayrollList
                         e.id as emp_id,
                         e.name as emp_name,
                         pos.title as emp_position,
-                        el.name as emp_role,
                         b.name as branch_name,
                         e.salary,
                         e.apply_payroll_tax,
-                        pl.benefit, pl.deduction,
+                        pl.benefit,
+                        pl.deduction,
                         pl.tax_rate,
+                        pl.bias,
                         pl.tax_base,
-                        ta.amount as tax_allowance,
+                        pl.tax_bonus,
                         pl.total_salary,
                         pl.disburse,
                         e.photo_file_name as emp_photo')
             ->whereRaw($str_search);
+
         if ($search_id) {
             $query->where('pl.id', $search_id);
         }
@@ -108,38 +108,42 @@ class PayrollList
             $search_value = escape_like_str($search_value);
             $query->whereRaw("e.name like '%{$search_value}%' or pos.title like '%{$search_value}%' or el.name like '%{$search_value}%'");
         }
-
         if ($filter_by) {
             $query->where('pl.payroll_id', $filter_by);
         }
-
         if ($search_branch) {
             $query->where('e.branch_id', $search_branch);
         }
 
         $query->orderBy($sort_by, $sort_order);
-        $clone_query = clone  $query;
+        $clone_query = clone $query;
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
+
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->emp_photo) {
                 $row->image_url = Employee::profilePicture($row->emp_id);
             }
             unset($row->emp_photo);
+
+            $row->allowance = DB::table('tax_allowances')
+                ->where('emp_id', $row->emp_id)
+                ->value('allowance');
+
+
+
             $row->tax_base = ($row->tax_base ?? 0);
             $row->total_salary = ($row->total_salary ?? 0);
             $row->benefit = ($row->benefit ?? 0);
             $row->deduction = ($row->deduction ?? 0);
-
-            $row->tax_allowance = ($row->tax_allowance ?? 0);
-
-
-            // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_amount <=' . $row->salary . ' and upper_amount >=' . $row->salary)->take(1)->value('rate');
+            $row->allowance = ($row->allowance ?? 0);
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
+
 
     function getDetails($id, $ss)
     {
@@ -148,7 +152,6 @@ class PayrollList
 
         $row =DB::table('payroll_lists as pl')
         ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-        ->join('tax_allowances as ta', 'ta.id', '=', 'e.id')
         ->join('positions as pos', 'pos.id', '=', 'e.position_id')
         ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
         ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
@@ -164,14 +167,17 @@ class PayrollList
                     e.salary,
                     pl.benefit, pl.deduction,
                     pl.tax_base,
-                    ta.amount as tax_allowance,
+                    pl.tax_bonus,
                     pl.total_salary,
                     pl.disburse,
                     e.photo_file_name as emp_photo')
         ->where('pl.id', $id)->first();
 
-
-        // $row->tax_rate = DB::table('tax_brackets')->whereRaw('lower_amount <=' . $row->salary . ' and upper_amount >=' . $row->salary)->take(1)->value('rate');
+        if ($row) {
+            $row->allowance = DB::table('tax_allowances')
+            ->where('emp_id', $row->emp_id)
+            ->value('allowance');
+        }
         return $row;
     }
     function deletePayrollList($id, $ss)
@@ -211,27 +217,39 @@ class PayrollList
         $d = (object) $req;
 
         $payroll_id = isset($d->payroll_id) ? $d->payroll_id : null;
-        if(!$payroll_id){
+        if (!$payroll_id) {
             return JDV::error('Payroll not found');
         }
-             $get_employee = DB::table('employees')
-            ->where('status_id', 10)->selectRaw('id as emp_id,name,apply_payroll_tax,salary')->get();
+
+        $get_employee = DB::table('employees')
+            ->where('status_id', 10)
+            ->selectRaw('id as emp_id, name, apply_payroll_tax, salary')
+            ->get();
+
         $success = 0;
         $error = 0;
-        $exist = 0;
+
         foreach ($get_employee as $emp) {
-            if($emp->apply_payroll_tax == 0){
-                $emp->tax_rate = DB::table('tax_brackets')
-                    ->whereRaw('lower_amount <=' . $emp->salary . ' and upper_amount >=' . $emp->salary)
-                    ->take(1)->value('rate');
+            if ($emp->apply_payroll_tax == 0) {
+                $taxInfo = DB::table('tax_brackets')
+                    ->where(function ($query) use ($emp) {
+                        $query->whereRaw('lower_amount <= ?', [$emp->salary])
+                            ->whereRaw('(upper_amount >= ? OR upper_amount = -1)', [$emp->salary]);
+                    })
+                    ->select('rate', 'bias')
+                    ->first();
 
-            }else
-            {
-
-                $emp->tax_rate = 0;
+                $emp->tax_rate = (object) [
+                    'rate' => $taxInfo->rate ?? 0,
+                    'bias' => $taxInfo->bias ?? 0
+                ];
+            } else {
+                $emp->tax_rate = (object) ['rate' => 0, 'bias' => 0];
             }
+
             $payroll_list_id = null;
             $emp->payroll_id = $payroll_id;
+
             $v_rule = [
                 'id' => '0|identity=1',
                 'payroll_id' => '1|number',
@@ -240,29 +258,37 @@ class PayrollList
                 'deduction' => '0|number',
                 'tax_rate' => '0|number',
                 'tax_base' => '0|number',
+                'bias' => '0|number',
                 'total_salary' => '0|number',
             ];
 
+            $empArray = (array)$emp;
+            $empArray['tax_rate'] = $emp->tax_rate->rate;
+            $empArray['bias'] = $emp->tax_rate->bias;
 
-            $res = validateObject((array)$emp, $v_rule, true, [], $ss->lang);
+            $res = validateObject($empArray, $v_rule, true, [], $ss->lang);
             if ($res->error) {
                 $error++;
+                continue;
             }
+
             $inputs = $res->values;
-            $checkExist = DB::table('payroll_lists')->where('emp_id', $inputs['emp_id'])->where('payroll_id', $inputs['payroll_id'])->first();
-            if($checkExist){
-                $payroll_list_id = $checkExist->id;
-            }
-            else{
-                $payroll_list_id = saveData($ss,'payroll_lists', ['id' => $payroll_list_id], $inputs, [], 1);
-            }
+
+            $checkExist = DB::table('payroll_lists')
+                ->where('emp_id', $inputs['emp_id'])
+                ->where('payroll_id', $inputs['payroll_id'])
+                ->first();
+
+            $payroll_list_id = $checkExist ? $checkExist->id : saveData($ss, 'payroll_lists', ['id' => null], $inputs, [], 1);
+
             if ($payroll_list_id > 0) {
                 $success++;
             }
         }
-        return DV::depends(1, ['success' => $success, 'error' => $error]);
 
+        return DV::depends(1, ['success' => $success, 'error' => $error]);
     }
+
 
     function calculatePayrollList($req, $ss)
     {
@@ -274,74 +300,98 @@ class PayrollList
         }
 
         $payrolls = DB::table('payroll_lists as pl')
-        ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-        ->join('tax_allowances as ta', 'ta.emp_id', '=', 'e.id')
-        ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-        ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
-        ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
-        ->whereRaw($str_payroll_id)
-        ->selectRaw('pl.id,
-                    p.id as payroll_id,
-                    p.name as payroll_name,
-                    e.id as emp_id,
-                    e.name as emp_name,
-                    pos.title as emp_position,
-                    el.name as emp_role,
-                    e.salary,
-                    pl.benefit, pl.deduction,
-                    ta.amount as tax_allowance,
-                    e.photo_file_name as emp_photo')->orderBy('e.id')->get();
+            ->join('employees as e', 'e.id', '=', 'pl.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+            ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
+            ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+            ->whereRaw($str_payroll_id)
+            ->selectRaw('pl.id,
+                        p.id as payroll_id,
+                        p.name as payroll_name,
+                        e.id as emp_id,
+                        e.name as emp_name,
+                        pos.title as emp_position,
+                        el.name as emp_role,
+                        e.salary,
+                        pl.benefit, pl.deduction,
+                        e.photo_file_name as emp_photo')
+            ->orderBy('e.id')
+            ->get();
 
+        $success = 0;
+        $error = 0;
+        $success_ids = [];
+        $error_ids = [];
 
-            $success = 0;
-            $error = 0;
-            $success_ids =[];
-            $error_ids = [];
-            foreach ($payrolls as &$payroll) {
-                $payroll->apply_payroll_tax = DB::table('employees')
-                    ->where('id', $payroll->emp_id)
-                    ->value('apply_payroll_tax');
+        foreach ($payrolls as &$payroll) {
 
-                $salary = $payroll->salary;
-                $tax_allowance = $payroll->tax_allowance;
-                $benefit = $payroll->benefit;
-                $deduction = $payroll->deduction;
+            // Retrieve allowance or set to 0 if not found
+            $payroll->allowance = DB::table('tax_allowances')
+                ->where('emp_id', $payroll->emp_id)
+                ->value('allowance') ?? 0;
 
-                if ($payroll->apply_payroll_tax == 0) {
-                    $payroll->tax_rate = DB::table('tax_brackets')
-                        ->where('lower_amount', '<=', $salary)
-                        ->where('upper_amount', '>=', $salary)
-                        ->value('rate');
+            $payroll->apply_payroll_tax = DB::table('employees')
+                ->where('id', $payroll->emp_id)
+                ->value('apply_payroll_tax');
 
-                    $tax_rate = $payroll->tax_rate;
+            $salary = $payroll->salary;
+            $allowance = $payroll->allowance ;
+            $benefit = $payroll->benefit ?? 0;
+            $deduction = $payroll->deduction;
+            $tax_bonus = 0;
 
-                    $payroll->tax_base = ($salary - $tax_allowance) * ($tax_rate / 100);
-                    $payroll->total = $salary + $benefit - $deduction - $payroll->tax_base;
+            if ($payroll->apply_payroll_tax == 0) {
+                $tax_info = DB::table('tax_brackets')
+                    ->where('lower_amount', '<=', $salary)
+                    ->where(function($query) use ($salary) {
+                        $query->where('upper_amount', '>=', $salary)
+                              ->orWhere('upper_amount', '=', -1);
+                    })
+                    ->first(['rate', 'bias']);
+
+                $tax_rate = $tax_info->rate ?? 0;
+                $bias = $tax_info->bias ?? 0;
+
+                // Check if there's a benefit (bonus)
+                if ($benefit > 0) {
+                    $payroll->tax_base = ($salary - $allowance) * ($tax_rate / 100) - $bias;
+                    $tax_bonus = $benefit * (20 / 100);
+                    $payroll->total = ($salary + $benefit) - ($payroll->tax_base + $tax_bonus + $deduction);
                 } else {
-                    $payroll->tax_base = 0;  // No tax base for non-taxed employees
-                    $payroll->total = $salary + $benefit - $deduction ;
+                    $payroll->tax_base = ($salary - $allowance) * ($tax_rate / 100) - $bias;
+                    $payroll->total = $salary - ($payroll->tax_base + $deduction);
                 }
-                $row =DB::table('payroll_lists')->where('id',$payroll->id)->update(
-                    [
-                     'tax_base' => $payroll->tax_base,
-                     'total_salary' => $payroll->total
-                     ]
-                );
-                if($row ){
-                    $success++;
-                    $success_ids[] = $payroll->id;
-                }else {
-                    $error++;
-                    $error_ids[] = $payroll->id;
-                }
-
-
+            } else {
+                // Non-taxed employees
+                $payroll->tax_base = 0;
+                $payroll->total = $salary + $benefit - $deduction;
             }
 
-            return DV::depends(1,['On Calulate',$success,'On Calulate ids',$success_ids,'Calculated',$error,'Calculated ids',$error_ids]);
+            $row = DB::table('payroll_lists')->where('id', $payroll->id)->update([
+                'tax_base' => $payroll->tax_base,
+                'tax_bonus' => $tax_bonus,
+                'total_salary' => $payroll->total
+            ]);
 
+            if ($row) {
+                $success++;
+                $success_ids[] = $payroll->id;
+            } else {
+                $error++;
+                $error_ids[] = $payroll->id;
+            }
+        }
 
+        return DV::depends(1, [
+            'On Calculate', $success,
+            'On Calculate ids', $success_ids,
+            'Calculated', $error,
+            'Calculated ids', $error_ids
+        ]);
     }
+
+
+
 
     function disbursePayrollList($id, $ss = null)
     {

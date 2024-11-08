@@ -18,13 +18,16 @@ class TaxAllowance
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr, $ss = null) {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
+
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
             'amount' => '1|number',
+            'qty' => '1|number',
+            'allowance' => '0|number',
             'remarks' => '0|string|250',
         ];
 
@@ -36,6 +39,8 @@ class TaxAllowance
         $id = $res->id;
         $inputs = $res->values;
 
+        $inputs['allowance'] = $inputs['qty'] * $inputs['amount'];
+
         $id = saveData($ss, 'tax_allowances', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['sender' => $inputs, 'id' => $id]);
@@ -43,6 +48,7 @@ class TaxAllowance
 
         return DV::error('Error saving data');
     }
+
 
     function getTaxAllowanceListPaginate($arr, $ss)
     {
@@ -65,7 +71,7 @@ class TaxAllowance
 
         $query = DB::table('tax_allowances as ta')
             ->join('employees as em', 'em.id', '=', 'ta.emp_id')
-            ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.remarks')
+            ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.qty,ta.allowance,ta.remarks')
             ->where('ta.branch_id', $ss->branch_id)
             ->where('ta.emp_id', $emp_id);
 
@@ -90,7 +96,7 @@ class TaxAllowance
         $branch_id = $ss->branch_id;
         $query = DB::table('tax_allowances as ta')
             ->join('employees as em', 'em.id', '=', 'ta.emp_id')
-            ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.remarks')
+            ->selectRaw('ta.id, em.name as emp_name,ta.amount,ta.qty,ta.allowance,ta.remarks')
             ->where('ta.branch_id', $ss->branch_id)
             ->where('ta.id', $id)
             ->first();

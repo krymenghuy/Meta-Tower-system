@@ -866,6 +866,9 @@ var EmployeeComponent = new function () {
                         <div class="row mt-2 py-4 border-bottom">
                             <div class="col-md-8">
                                 <p class="text-success" style="width:180px; height:20px">Amount: ${d.amount}</p>
+                                <p class="text-success" style="width:180px; height:20px">Quantity: ${d.qty}</p>
+                                <p class="text-success" style="width:180px; height:20px">Allowance: ${d.allowance}</p>
+
                                 <p class="text-nowrap" style="width:180px; height:20px">Remarks: ${d.remarks}</p>
                             </div>
                             <div class="col-md-4 text-end">
@@ -1676,6 +1679,10 @@ const AddTaxAllowance = (() => {
                         <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.Amount">Amount</label>
                             <div><input name="amount" class="form-control data-input" data-field="amount"/></div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Amount">Quantity</label>
+                            <div><input name="qty" class="form-control data-input" data-field="qty"/></div>
                         </div>
                         <div class="form-group col-12">
                             <label for="remarks" class="form-label"

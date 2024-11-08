@@ -19,19 +19,35 @@ var TaxBracketComponent = new (function () {
         },
         {
             title: "Lower Amount",
-            className: "align-middle text-capitalize text-nowrap text-left",
-            data: "lower_amount",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${main_view.currency.symbol + data.lower_amount ?? '0.00'}</p>`;
+            }
         },
+
         {
             title: "Upper Amount",
-            className: "align-middle text-capitalize text-nowrap text-left",
-            data: "upper_amount",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                let upperAmount = Number(data.upper_amount) === -1 ? '∞' : (main_view.currency.symbol + (data.upper_amount ?? '0.00'));
+                return `<p class="p-0 m-0">${upperAmount}</p>`;
+            }
         },
+
+
         {
             title: "Rate",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: "rate",
         },
+        {
+            title: "Bias",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${main_view.currency.symbol + data.bias ?? '0.00'}</p>`;
+            }
+        },
+
         {
             className: "col_action align-middle",
             data: (data) => `
@@ -205,17 +221,21 @@ const TaxBracketDailog = (()=>{
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
                  return [`<div class="row">
-                <div class="form-group col-12">
+                <div class="form-group col-6">
                   <label for="lower_amount" class="form-label" vslang="titles.Lower Amount"></label>
                   <input name="lower_amount" class="form-control data-input" data-field="lower_amount" />
                 </div>
-                <div class="form-group col-12">
+                <div class="form-group col-6">
                   <label for="upper_amount" class="form-label" vslang="titles.Upper Amount"></label>
                   <input name="upper_amount" class="form-control data-input" data-field="upper_amount" />
                 </div>
-                <div class="form-group col-12">
+                <div class="form-group col-6">
                   <label for="rate" class="form-label" vslang="titles.Rate"></label>
                   <input name="rate" class="form-control data-input" data-field="rate" />
+                </div>
+                <div class="form-group col-6">
+                  <label for="deduction" class="form-label" vslang="titles.Deduction"></label>
+                  <input name="deduction" class="form-control data-input" data-field="deduction" />
                 </div>
 
               </div>`].join('');
