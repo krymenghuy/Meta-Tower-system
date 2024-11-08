@@ -27,10 +27,10 @@ class Position
             'salary' => '1|number',
             'inactive' => '1|number|default = 0',
         ];
-        $pos_char = ['$', '#', '@', '!','&', '.', '-', '_', '=', '?'];
+        $pos_char = ['$',"'", '#', '@', '!','&', '.', '-', '_', '=', '?'];
 
         $checkUnque = ["$branch_id|positions|title|id=id|text=Position already exists."];
-        $res = validateObject($arr, $v_rule, true, ['title'=>$pos_char], $ss->lang, false, $checkUnque);
+        $res = validateObject($arr, $v_rule, true, ['Title'=>$pos_char], $ss->lang, false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -75,8 +75,6 @@ class Position
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
@@ -111,8 +109,6 @@ class Position
 
             // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
             'departments' => DB::table('departments')->selectRaw('id,name')->get(),
-
-
             'positions' => $position,
         ];
 

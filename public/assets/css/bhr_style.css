@@ -43,17 +43,18 @@
     visibility: visible;
   }
 .btn_add {
-    padding: 12px;
+    padding: 10px;
     color: white;
     background-color: #2b3991;
     border-radius: 20px;
+    margin-top: 3px;
     cursor: pointer;
     border: none;
     text-decoration: none;
 
 }
 .btn_search {
-    padding: 22px;
+    padding: 15px;
     border-radius: 25px;
     cursor: pointer;
     text-decoration: none;

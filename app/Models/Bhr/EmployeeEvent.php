@@ -26,7 +26,7 @@ class EmployeeEvent
             'event_id' => '1|number|exist=events.id',
             'event_date' => '1|date',
             'remarks' => '0|string|250',
-            'impact_id'=> '0|number'
+            'impact'=> '0|number'
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);

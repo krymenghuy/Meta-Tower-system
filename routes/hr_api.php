@@ -32,6 +32,7 @@ use App\Http\Controllers\Bhr\EmployeeEventController;
 use App\Http\Controllers\Bhr\EducationController;
 use App\Http\Controllers\Bhr\ExperienceController;
 use App\Http\Controllers\Bhr\AccountController;
+use App\Http\Controllers\Bhr\HolidayController;
 use App\Http\Controllers\Bhr\TaxAllowanceController;
 use App\Http\Controllers\Bhr\TaxBracketController;
 use App\Http\Controllers\Bhr\TransactionController;
@@ -75,6 +76,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/filter-options', [EmployeeController::class, 'getFilterOptions']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
     Route::post('/promote-staff', [EmployeeController::class, 'promoteStaff']);
+    Route::post('/promote-change',[EmployeeController::class,'promoteChangeEmployee']);
     Route::post('/update-status', [EmployeeController::class, 'updateStatus']);
 
     Route::post('/set-resign-status',[EmployeeController::class,'setResignStatus']);
@@ -318,7 +320,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('branch-change
 
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('event')->group(function () {
 
-    Route::post('/save', [EventController::class, 'saveEvent']);
+    Route::post('/save', [EventController::class, 'createEvent']);
     Route::post('/list-paginate', [EventController::class, 'getEventListPaginate']);
     Route::post('/details', [EventController::class, 'getDetails']);
     Route::post('/delete', [EventController::class, 'deleteEvent']);
@@ -382,4 +384,12 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('wallet-accoun
     Route::post('/details', [WalletAccountController::class, 'getDetails']);
     Route::post('/delete', [WalletAccountController::class, 'deleteWalletAccount']);
     Route::post('/form-options', [WalletAccountController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('holiday')->group(function () {
+
+    Route::post('/save', [HolidayController::class, 'saveHoliday']);
+    Route::post('/list-paginate', [HolidayController::class, 'getHolidayListPaginate']);
+    Route::post('/details', [HolidayController::class, 'getDetails']);
+    Route::post('/delete', [HolidayController::class, 'deleteHoliday']);
+    Route::post('/form-options', [HolidayController::class, 'getFormOptions']);
 });
