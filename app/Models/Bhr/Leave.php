@@ -76,9 +76,9 @@ class Leave
         $id = saveData($ss, 'leaves', ['id' => $id], $inputs, [], 1, false);
         return DV::depends($id, ['action', 'leave saved'], 'Failed to save Leave Information');
     }
-    
 
-   
+
+
 
     // static function checkLeaveError($id,$start_date, $end_date, $remarks) {
     //     $leave = DB::table('leaves as l')->where('l.id',$id)->selectRaw('id,formatDate(start_date) as start_date, formatDate(end_date) as end_date,status_id')->first();
@@ -86,42 +86,42 @@ class Leave
     //     $today = date('Y-m-d');
     //     $start_date = convertDate($start_date);
     //     $end_date = convertDate($end_date);
-    
+
     //     if ($start_date > $end_date) {
     //         return 'The start date cannot be later than '.$end_date;
     //     }
-        
+
     //     if ($start_date < $today) {
     //         return 'The start date cannot be earlier than '.$today;
     //     }
-        
+
     //     if ($end_date < $today) {
     //         return 'The end date cannot be earlier than '.$today;
     //     }
-        
+
     //     if ($start_date < $today && $end_date < $today) {
     //         return 'Both the start date and end date are incorrect.';
     //     }
-        
+
     //     if ($start_date && $end_date && strtotime($start_date) > strtotime($end_date)) {
     //         return 'Leave Date and End Date are not reasonable.';
     //     }
-        
+
     //     if (!$remarks) {
     //         return'Remarks are required for Dropout or Suspend.';
     //     }
-    
+
     //     return null;
     // }
-    
-   
+
+
     function getLeaveListPaginate($arr, $ss)
     {
         $subs_id = $ss->subs_id;
         $d = (object) $arr;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
-    
+
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
@@ -135,49 +135,60 @@ class Leave
         $str_status = '2=2';
         $str_dates = '3=3';
         $str_leave_type_id = '4=4';
-        if ($search_value){
+
+        if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $str_search = '(emp.name LIKE \'%' .$search_value. '%\' OR emp.code LIKE \'%' .$search_value. '%\')';
-        } 
-        if($status_id){
-            $str_status = 'l.status_id = \'' .$status_id. '\'' ;
+            $str_search = '(emp.name LIKE \'%' . $search_value . '%\' OR emp.code LIKE \'%' . $search_value . '%\')';
         }
-        if($str_dates){
+        if ($status_id) {
+            $str_status = 'l.status_id = \'' . $status_id . '\'';
+        }
+
+        // Determine date filter: use today's date if no date range is provided, otherwise use specified range
+        $today = date('Y-m-d');
+        if ($start_date && $end_date) {
             $end_date = convertDate($end_date);
             $start_date = convertDate($start_date);
             if ((bool) strtotime($start_date) && (bool) strtotime($end_date)) {
-                $str_dates = DBX::convertToDate('l.end_date') ." BETWEEN '$start_date' AND '$end_date'";
+                // Check if there is any overlap between the leave period and the given date range
+                $str_dates = "(
+                (l.start_date BETWEEN '$start_date' AND '$end_date') OR
+                (l.end_date BETWEEN '$start_date' AND '$end_date') OR
+                (l.start_date <= '$start_date' AND l.end_date >= '$end_date')
+            )";
             }
+        } else {
+            // Default to today's date if no start_date and end_date are provided
+            $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
         }
-    
+
         $skip_rows = ($current_page - 1) * $per_page;
-        $col_dates = DBX::formatDate('l.start_date','start_date').','.DBX::formatDate('l.end_date','end_date');
-        
+        $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
+
         $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
-        
+
         $query = DB::table('leaves as l')
-            ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
-            ->join('positions as p', 'p.id', '=', 'emp.position_id')
-            ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
-            ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
-            // ->where('l.subs_id', hex2bin($ss->subs_id))
-            ->whereRaw($str_search)
+        ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
+        ->join('positions as p', 'p.id', '=', 'emp.position_id')
+        ->join('leave_types as lt', 'lt.id', '=', 'l.leave_type_id')
+        ->join('leave_statuses as ls', 'ls.id', '=', 'l.status_id')
+        ->whereRaw($str_search)
             ->whereRaw($str_status)
-            ->whereRaw($str_dates)
+            ->whereRaw($str_dates)  // Apply date filter based on user input or default to current date
             ->selectRaw('l.id, emp.id as emp_id, emp.code as emp_code, emp.name as employee, emp.sex, p.title, l.leave_type_id, lt.name as leave_type,'
-                . $col_dates
+            . $col_dates
                 . ', ls.name as status, l.remarks, l.update_user, l.update_date, l.status_id, emp.photo_file_name as emp_photo,'
                 . $leave_days_calc)  // Include leave days in the result
             ->orderBy('l.id', 'DESC');
-    
+
         // Clone the query to get the total count
         $clone_query = clone $query;
         $count = $clone_query->count('l.id');
-    
+
         // Paginate the results
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-    
+
         foreach ($rows as $row) {
             $row->image_url = '';
             if (isset($row->emp_id) && $row->emp_photo) {
@@ -185,9 +196,12 @@ class Leave
             }
             unset($row->emp_photo);  // Clean up unnecessary data
         }
-    
+
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
+
+
     
 
     function getDetails($id ,$ss =null)
