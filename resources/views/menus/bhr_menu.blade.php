@@ -373,12 +373,8 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Warning"></span>
                 </a>
             </li>
-            {{-- /* skills*/ --}}
 
-
-
-            {{-- /*jobs level*/ --}}
-            {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                 <a href="HolidayComponent" modid="-1" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <i class="fas fa-truck-plane icons opacity-icons"></i>
@@ -386,7 +382,8 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Holiday"></span>
                 </a>
             </li>
-            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
+
+            {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
                 <a href="CompanySetupComponent" modid="201" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"

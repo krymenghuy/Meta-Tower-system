@@ -32,6 +32,7 @@ use App\Http\Controllers\Bhr\EmployeeEventController;
 use App\Http\Controllers\Bhr\EducationController;
 use App\Http\Controllers\Bhr\ExperienceController;
 use App\Http\Controllers\Bhr\AccountController;
+use App\Http\Controllers\Bhr\HolidayController;
 use App\Http\Controllers\Bhr\TaxAllowanceController;
 use App\Http\Controllers\Bhr\TaxBracketController;
 use App\Http\Controllers\Bhr\TransactionController;
@@ -383,4 +384,12 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('wallet-accoun
     Route::post('/details', [WalletAccountController::class, 'getDetails']);
     Route::post('/delete', [WalletAccountController::class, 'deleteWalletAccount']);
     Route::post('/form-options', [WalletAccountController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('holiday')->group(function () {
+
+    Route::post('/save', [HolidayController::class, 'saveHoliday']);
+    Route::post('/list-paginate', [HolidayController::class, 'getHolidayListPaginate']);
+    Route::post('/details', [HolidayController::class, 'getDetails']);
+    Route::post('/delete', [HolidayController::class, 'deleteHoliday']);
+    Route::post('/form-options', [HolidayController::class, 'getFormOptions']);
 });

@@ -1,53 +1,40 @@
-<div id="_main_holidayComponent"  style="display:none;padding:20px 0 0">
-    {{-- formAddHoliday --}}
-
-    {{-- endform --}}
+<div id="_main_holidayComponent" style="display:none;padding:20px 0 0">
+    <div class="d-flex justify-content-between w-100 p-4" id="_divFilter">
+        <div class="d-flex align-items-start w-100">
+            <div class="d-flex w-50">
+                <button type="button" class="btn text-white rounded-5" style="background-color:#2b3991;"
+                    id="_btnAddHoliday">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Holiday</span>
+                </button>
+            </div>
+            <div class="d-flex align-items-center justify-content-end gap-2 w-75 gap-3">
+                <div class="d-flex justify-content-end gap-3 w-50">
+                    <div class="d-flex align-items-center w-50">
+                        <input data-select="datepicker" class="form-control filter-field rounded-5"
+                            data-field="start_date" placeholder="Start Date" id="_leave_filter_start_date" />
+                    </div>
+                    <div class="d-flex align-items-center w-50">
+                        <input data-select="datepicker" class="form-control filter-field rounded-5"
+                            data-field="end_date" placeholder="End Date" id="_leave_fliter_end_date" />
+                    </div>
+                </div>
+                <div class="d-flex w-50 gap-3">
+                    <div class="d-flex align-items-end w-100">
+                        <input type="text" class="form-control btn_search filter-field" id="_sdl_search_holiday"
+                            placeholder="Search Holiday">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="m-4" id="_holiday_list"></div>
 </div>
 <style>
-    /* form */
-    .container {
-        display: flex;
-        gap: 20px;
-        margin: 10px;
+    #_holiday_list {
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+        max-height: 500px;
     }
-
-    .btn {
-        background-color: #007bff;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 5px;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-    }
-
-    .btn i {
-        margin-right: 10px;
-    }
-
-    .btn:hover {
-        background-color: #0056b3;
-        color: white;
-    }
-
-    .searchHoliday {
-        padding: 10px;
-        border: 1px solid #e2e0e0;
-        border-radius: 50px;
-        width: 500px;
-        background-color: #f8f9fa;
-    }
-
-    .table-container {
-        margin-top: 50px;
-    }
-
-    .row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-    }
-
-    /* endform */
 </style>

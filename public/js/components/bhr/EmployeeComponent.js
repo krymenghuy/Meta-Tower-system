@@ -507,25 +507,41 @@ var EmployeeComponent = new function () {
                         </div>
                         <div class="d-flex justify-content-between w-100 px-2 pt-1">
                             <div class="social-icons d-flex w-25 justify-content-start">
-                                <a href="https://www.facebook.com" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
-                                <a href="https://www.linkedin.com" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>
+                                <a href="https://www.facebook.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
+                                <a href="https://www.linkedin.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>
                                 <a href="https://web.telegram.org/a/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>
                             </div>
                             
                             <div class="d-flex justify-content-end gap-3 px-5 w-75">
-                                <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${data.id}" data-status ="${data.status_id}">
+                                <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${
+                                    data.id
+                                }" data-status ="${data.status_id}">
                                     <i class="fa-regular fa-pen-to-square text-warning fs-5 tool-tip"><span class="tool-tiptext fs-6">Edit Profile</span></i>
                                 </a>
-                                <a href="javascript:void(0)" class="set_resign" data-id="${data.id}" data-status ="${data.status_id}">
+                                <a href="javascript:void(0)" class="set_resign" data-id="${
+                                    data.id
+                                }" data-status ="${data.status_id}">
                                     <i class="fa-solid text-success fa-pen-nib tool-tip fs-5"><span class="tool-tiptext fs-6">Set Resign</span></i>
                                 </a>
-                                <a href="javascript:void(0)" class="promote_to_staff" data-id="${data.id }" data-status ="${data.status_id}">
+                                <a href="javascript:void(0)" class="promote_to_staff" data-id="${
+                                    data.id
+                                }" data-status ="${data.status_id}">
                                     <i class="fa-solid text-danger fa-bullhorn tool-tip fs-5"><span class="tool-tiptext fs-6">Promote</span></i>
                                 </a>
-                                <a href="javascript:void(0)" class="btn_movement_action" data-id="${data.id}" data-statusid="${data.status_id}" data-typeid="${data.emp_type_id}" aria-haspopup="true" aria-expanded="false">
+                                <a href="javascript:void(0)" class="btn_movement_action" data-id="${
+                                    data.id
+                                }" data-statusid="${
+            data.status_id
+        }" data-typeid="${
+            data.emp_type_id
+        }" aria-haspopup="true" aria-expanded="false">
                                     <i class="fa-solid fa-ellipsis-vertical text-secondary fs-5 tool-tip"><span class="tool-tiptext fs-6">Actions</span></i>
                                 </a>
-                                <!-- <button class="btn_movement_action btn btn-light rounded-3 mx-3 btn-options position-relative text-nowrap" data-id="${data.id}"  data-status ="${data.status_id}" type="button">
+                                <!-- <button class="btn_movement_action btn btn-light rounded-3 mx-3 btn-options position-relative text-nowrap" data-id="${
+                                    data.id
+                                }"  data-status ="${
+            data.status_id
+        }" type="button">
                                     <span class="text-nowrap text-primary-custom" vslang="buttons.Movement">Movement</span>
                                     <i class="fa-solid text-primary-custom fa-caret-down ps-2"></i>
                                 </button> -->   
@@ -717,8 +733,8 @@ var EmployeeComponent = new function () {
 
                         <div class="col-md-6">
                             <div class="d-flex justify-content-start">
-                                <div class="d-flex gap-2 mt-4">
-                                    <span class="">${d.school}</span>
+                                <div class="d-flex gap-2 mt-4" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+                                    <span>${d.school}</span>
                                 </div>
                             </div>
                         </div>

@@ -277,6 +277,7 @@ echo $user->lang ?? 'en'; ?>">
                             @include('layouts.bhr.accountComponent')
                             @include('layouts.bhr.taxbracketComponent')
                             @include('layouts.bhr.walletAccountComponent')
+                            @include('layouts.bhr.holidayComponent')
                         </div>
                     </div>
                 </div>
