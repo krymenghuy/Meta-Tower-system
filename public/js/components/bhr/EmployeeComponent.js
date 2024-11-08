@@ -511,6 +511,7 @@ var EmployeeComponent = new function () {
                                 <a href="https://www.linkedin.com" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>
                                 <a href="https://web.telegram.org/a/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>
                             </div>
+                            
                             <div class="d-flex justify-content-end gap-3 px-5 w-75">
                                 <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${data.id}" data-status ="${data.status_id}">
                                     <i class="fa-regular fa-pen-to-square text-warning fs-5 tool-tip"><span class="tool-tiptext fs-6">Edit Profile</span></i>
