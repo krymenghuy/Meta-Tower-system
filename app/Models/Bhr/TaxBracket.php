@@ -26,6 +26,7 @@ class TaxBracket
             'lower_amount' => '1|number',
             'upper_amount' => '1|number',
             'rate' => '1|number',
+            'bias' => '1|number',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
@@ -64,7 +65,7 @@ class TaxBracket
         $str_search = '1=1';
 
         $query = DB::table('tax_brackets as tb')
-            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate')
+            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias')
             ->where('tb.branch_id', $ss->branch_id);
 
         if ($search_id) {
@@ -84,7 +85,7 @@ class TaxBracket
     {
         $branch_id = $ss->branch_id;
         $query = DB::table('tax_brackets as tb')
-            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate')
+            ->selectRaw('tb.id, tb.lower_amount, tb.upper_amount, tb.rate, tb.bias')
             ->where('tb.branch_id', $ss->branch_id)
             ->where('tb.id', $id)
             ->first();

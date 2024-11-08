@@ -17,12 +17,6 @@
                 <i class="fa-solid fa-file-import" style="color: white;"></i>
                 <span></span>
             </button>
-
-            <button type="button" class="btn btn-primary" id="_btnInsert" title="Insert">
-                <i class="fa-regular fa-square-plus" style="color: white;"></i>
-                <span></span>
-            </button>
-
             <button type="button" class="btn btn-primary" id="_btnCalculate" title="Calculate">
                 <i class="fas fa-calculator"></i>
                 <span></span>
