@@ -12,7 +12,7 @@
   width: 100%;
   height: 100vh;
   margin: 0;
-  background-color: #ddc882;
+  background-color: #2b3991;
   background-position: center;
   background-image: linear-gradient(182deg, rgb(240 233 233 / 0%) 0%, rgb(255 255 255) 100%);
   /* background-size: cover;
@@ -33,7 +33,7 @@
 .container {
   width: 30%;
   height: auto;
-  background-color:#2429464f;
+  background-color:#2429461f;
   background-position: center;
   background-size: cover;
   background-attachment: fixed;

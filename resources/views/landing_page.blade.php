@@ -30,7 +30,7 @@
 
 <body id="body" onload="checkDevice()">
   <div class="box-center  d-flex justify-content-center align-items-center">
-      <div class="container p-1  rounded-2">
+      <div class="container p-1  rounded-3">
         <div class="logo_">
           <img src="assets/images/logo/lc_logo.svg">
         </div>
