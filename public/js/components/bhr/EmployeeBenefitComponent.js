@@ -454,14 +454,16 @@ const EmployeeBenefitDialog = (() => {
                                 <label for="category" class="form-label" vslang="titles.Category"></label>
                                 <select name="category" class="data-input" data-field="benefit_type_id" id="benefit_type_id"></select>
                             </div>
-                            <div class="form-group col-6">
-                                <label for="start_date" class="form-label" vslang="titles.StartDate">Start Date</label>
-                                <input type="date" class="form-control data-input date_form" data-field="start_date" />
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="end_date" class="form-label" vslang="titles.EndDate">End Date</label>
-                                <input type="date" class="form-control data-input date_form" data-field="end_date" />
-                            </div>
+                            <div class="form-group col-md-12">
+                           <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
+                           <span class="text-danger" >*</span>
+                           <input name="start_date" class="form-control data-input" data-field="start_date">
+                        </div>
+                        <div class="form-group col-12">
+                            <label for="end_date" class="form-label" vslang="titles.End Date"></label>
+                            <span class="text-danger" >*</span>
+                            <input name="end_date" class="form-control data-input" data-field="end_date" />
+                        </div>
                             <div class="form-group col-12">
                                 <label for="amount" class="form-label" vslang="titles.Amount"></label>
                                 <input type="number" name="amount" class="form-control data-input" data-field="amount"></input>
@@ -472,6 +474,10 @@ const EmployeeBenefitDialog = (() => {
                             </div>
                         </div>`,
                     ].join("");
+                },
+                contentCreated: (me) => {
+                    DateTimePicker.init(me.controls.start_date);
+                    DateTimePicker.init(me.controls.end_date);
                 },
                 configSelect: [
                     {

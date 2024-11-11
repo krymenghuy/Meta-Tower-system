@@ -74,14 +74,14 @@ class Employee //extends Model
             'status_id' => '1|number|default = 10',
             'photo' => '0|image',
         ];
-    
+
         $checkUnique = null;
-    
+
         $res = validateObject($arr, $v_rule, true, ['email' => GeneralSettings::$email_chars, 'photo' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']) ? null : $checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
-    
+
         $emp_id = $res->id;
         $inputs = $res->values;
         $d = (object) $inputs;
@@ -90,10 +90,10 @@ class Employee //extends Model
         $inputs['phone_number'] = $d->phone_number;
         $phone_check = $this->checkUniqueEmployeeByPhone($d->phone_number, $emp_id);
         if ($phone_check) return DV::error($phone_check);
-    
+
         $nid_check = $this->checkUniqueEmployeeByNID($d->nid, $emp_id);
         if ($nid_check) return DV::error($nid_check);
-    
+
         if (!$d->name_kh) {
             $d->name_kh = $d->name;
             $inputs['name_kh'] = $d->name_kh;
@@ -101,7 +101,7 @@ class Employee //extends Model
         unset($inputs['photo']);
         $employee_created = !$emp_id;
         $delete_prev_image = ($emp_id > 0 && (!$photo || isImage($photo)));
-    
+
         if ($d->emp_type_id == '3' && !empty($d->position_id)) {
             $position = DB::table('positions')->where('id', $d->position_id)->first(['salary']);
             if ($position) {
@@ -110,10 +110,10 @@ class Employee //extends Model
                 return DV::error('Position not found');
             }
         } else if ($d->emp_type_id != '3') {
-            
-            $inputs['salary'] = null; 
+
+            $inputs['salary'] = null;
         }
-    
+
         error_log('Saving data: ' . json_encode($inputs));
         $save = !$emp_id;
         $id = saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1);
@@ -124,22 +124,22 @@ class Employee //extends Model
         }
         if ($id > 0) {
             $new_code = null;
-    
+
             if ($delete_prev_image) {
                 $file_name = DB::table('employees as emp')->where('emp.id', $id)->take(1)->value('emp.photo_file_name');
                 if ($file_name) {
                     PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'images', $file_name);
                 }
-    
+
                 DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
             }
             PublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo, null, ['id' => $id, 'store' => 'employees.photo_file_name']);
             return DV::depends(1, ['employees' => $inputs, 'id' => $id]);
         }
-    
+
         return DV::error('Failed to save employee');
     }
-    
+
 
     // function saveProfilePicture($photo_data,$file_type = null,$id=null,$ss=null){
     //     $id = $id ?? $this->id;
@@ -228,6 +228,7 @@ class Employee //extends Model
     {
         $subs_id = $ss->subs_id;
         $d = (object) $arr;
+        $branch_id = $ss->branch_id;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
@@ -237,6 +238,7 @@ class Employee //extends Model
         $status = $d->status_id ?? 10;
         $type = $d->emp_type_id ?? 3;
         $search_value = $d->search_value ?? null;
+        $el_branch = $d->branch_id ?? null;
         $str_srch = '1=1';
         $str_where = '2=2';
 
@@ -253,13 +255,16 @@ class Employee //extends Model
             $str_where .= ' AND emp.emp_type_id =\'' . $type . '\'';
         }
 
+        // Initialize query with joins
         $query = DB::table('employees as emp')
-            ->join('positions as p', 'p.id', '=', 'emp.position_id')
-            ->join('departments as d','d.id','=','p.department_id')
-            ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
-            ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
-            ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
-            ->whereRaw($str_srch)
+        ->join('positions as p', 'p.id', '=', 'emp.position_id')
+        ->join('departments as d', 'd.id', '=', 'p.department_id')
+        ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
+        ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
+        ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
+        ->join('um_branches as b', 'b.id', '=', 'emp.branch_id')
+
+        ->whereRaw($str_srch)
             ->whereRaw($str_where)
             ->selectRaw('
             emp.code,
@@ -273,7 +278,7 @@ class Employee //extends Model
             formatDate(emp.date_of_birth) as date_of_birth,
             emp.address,
             emp.photo_file_name,
-            DATE_FORMAT(emp.joining_date, "%d %b %Y") as joining_date,  -- Format using DATE_FORMAT
+            DATE_FORMAT(emp.joining_date, "%d %b %Y") as joining_date,
             emp.nssf_id,
             emp.nid,
             emp.position_id,
@@ -285,14 +290,24 @@ class Employee //extends Model
             ws.name as work_shift,
             emp.apply_payroll_tax,
             emp.status_id,
+            b.name as branch_name,
             es.name as status
         ')
             ->orderBy('emp.id', 'DESC');
 
+        // Apply branch filtering if specified
+        if ($el_branch) {
+            $query->where('emp.branch_id', $el_branch);
+        }
+
+        // Clone query to get count before applying pagination
         $clone_query = clone $query;
         $count = $clone_query->count('emp.id');
+
+        // Apply pagination
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
+        // Process each row to add `image_url` and remove `photo_file_name`
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->photo_file_name) {
@@ -301,8 +316,10 @@ class Employee //extends Model
             unset($row->photo_file_name);
         }
 
+        // Return paginated results
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
 
     static function props($id, $cols)
     {
@@ -379,18 +396,16 @@ class Employee //extends Model
             if ($row->photo_file_name) {
                 $row->image_url = PublicStorage::getUrl($row->branch_id, 'customer', 'image') . $row->photo_file_name;
                 unset($row->photo_file_name);
-                if(!$row->image_url) $row->image_url =self::defaultImage($ss->branch_id);
-
+                if (!$row->image_url) $row->image_url = self::defaultImage($ss->branch_id);
             }
-
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
     static function defaultImage($branch_id)
     {
-      return PublicStorage::getUrl(['subs_id'=>$subs_id,'dir'=>'default'],'image').'mr3.jpg';
-      // return PublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
+        return PublicStorage::getUrl(['subs_id' => $subs_id, 'dir' => 'default'], 'image') . 'mr3.jpg';
+        // return PublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
     }
     function getDetails($id, $ss)
     {
@@ -401,6 +416,8 @@ class Employee //extends Model
             ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
             ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
             ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
+            ->join('um_branches as b', 'b.id', '=', 'emp.branch_id')
+
             ->selectRaw('
                 emp.code,
                 emp.id,
@@ -425,6 +442,7 @@ class Employee //extends Model
                 ws.name as work_shift,
                 emp.apply_payroll_tax,
                 emp.status_id,
+                b.name as branch_name,
                 es.name as status
             ')
             ->where('emp.branch_id', $branch_id)
@@ -489,7 +507,7 @@ class Employee //extends Model
             $employee = self::getDetails($id, $ss);
         }
         return (object) [
-
+            'branches' => GeneralSettings::options_branch($ss),
             'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,title')->get(),
             'types' => DB::table('emp_types')->selectRaw('id,name')->get(),
@@ -507,12 +525,12 @@ class Employee //extends Model
             'update_date' => getNowTime(),
             'update_uid' => $ss->user_id
         ]);
-    
+
         // Check if the status_id indicates a resignation (status_id = 30)
         if ($status_id == 20) {
             // Check if a resignation record already exists
             $existingResignation = DB::table('resignations')->where('emp_id', $id)->first();
-    
+
             if ($existingResignation) {
                 // Update the existing resignation record
                 DB::table('resignations')->where('emp_id', $id)->update([
@@ -535,7 +553,7 @@ class Employee //extends Model
                 ]);
             }
         }
-    
+
         return DV::depends($x, ['Employee status', 'updated']);
     }
     static function getEventId($name)
@@ -548,7 +566,7 @@ class Employee //extends Model
         $row = DB::table('employees')->where('id', $id)->selectRaw($cols)->first();
         return $row;
     }
-    function promoteStaff($emp_type_id, $id = null, $ss = null,$arr)
+    function promoteStaff($emp_type_id, $id = null, $ss = null, $arr)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
@@ -559,28 +577,28 @@ class Employee //extends Model
         if ($event_date) {
             $event_date = date('Y-m-d', strtotime($event_date));
         }
-        
+
         $events = [
             '1.2' => 'intern to probation',
             '1.3' => 'intern to staff',
             '2.3' => 'probation to staff'
         ];
-    
+
         $emp = $this->getProps($id, 'emp_type_id');
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
-    
+
         $key = $emp->emp_type_id . '.' . $emp_type_id;
         $event_name = $events[$key] ?? null;
         $event_id = self::getEventId($event_name);
-    
+
         if (!$event_id) {
-            $event_arr = (array)['name'=>$event_name];
-            $event_id = Event::createEvent($event_arr,$ss);
-            $event_id=$event_id->status_code==200?$event_id->data['id']:'';
+            $event_arr = (array)['name' => $event_name];
+            $event_id = Event::createEvent($event_arr, $ss);
+            $event_id = $event_id->status_code == 200 ? $event_id->data['id'] : '';
         }
-    
+
         $save_emp_type_id = saveData($ss, 'employees', ['id' => $id], ['emp_type_id' => $emp_type_id], [], 1, false);
 
         if ($save_emp_type_id) {
@@ -590,29 +608,27 @@ class Employee //extends Model
                 'emp_id' => $id,
                 'event_id' => $event_id,
                 'impact' => $impact,
-                'remarks'=> $remarks,
-                'event_date'=>$event_date
+                'remarks' => $remarks,
+                'event_date' => $event_date
             ];
-    
+
             saveData($ss, 'emp_events', [], $inputs, [], 1, false);
-    
+
             return DV::depends($save_emp_type_id, ['Employee', 'updated']);
         }
-    
+
         return DV::error('Failed to update employee.');
     }
-    function promoteChangeEmployee($arr,$id=null,$ss=null){
+    function promoteChangeEmployee($arr, $id = null, $ss = null)
+    {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $promote_info = null;
-        if(isset($arr['promote_info'])){
+        if (isset($arr['promote_info'])) {
             $promote_info = $arr['promote_info'];
-        }else return DV::error('promote info is required');
-        
-
-
+        } else return DV::error('promote info is required');
     }
-    public function setResignStatus($arr=[],$id=null,$ss = null)
+    public function setResignStatus($arr = [], $id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
@@ -620,21 +636,21 @@ class Employee //extends Model
         $v_rule = [
             // 'id' => '0|identify=1',
             // 'emp_id' => '1|number',
-            'effective_date'=>'1|date',
+            'effective_date' => '1|date',
             'resign_date' => '1|date',
             'remarks' => '0|string|1-300'
         ];
 
-        $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
-        if($res->error) return DV::error($res->error);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $inputs['emp_id'] = $id;
-        $resign_id = saveData($ss,'resignations',['id'=>null],$inputs,[],1);
+        $resign_id = saveData($ss, 'resignations', ['id' => null], $inputs, [], 1);
 
-        if($resign_id){
+        if ($resign_id) {
             DB::table('employees')->where('id', $id)->update(['status_id' => 20]);
-           
-            return DV::depends(1,['new resign'=>$inputs],'Failed to resign');
+
+            return DV::depends(1, ['new resign' => $inputs], 'Failed to resign');
         }
         return DV::error('Failed');
     }
@@ -642,14 +658,12 @@ class Employee //extends Model
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
-    
-    
-            $rejoined = DB::table('employees')->where('id', $id)->update([
-                'status_id' => $status_id,
-            ]);
-    
-            return DV::depends($rejoined, ['Employee status updated successfully'], 'Failed to update employee status');
+
+
+        $rejoined = DB::table('employees')->where('id', $id)->update([
+            'status_id' => $status_id,
+        ]);
+
+        return DV::depends($rejoined, ['Employee status updated successfully'], 'Failed to update employee status');
     }
-    
-    
 }
