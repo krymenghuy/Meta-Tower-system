@@ -1,6 +1,6 @@
 "use strict";
 
-var EmployeeComponent = new function () {
+var EmployeeComponent = new (function () {
     let mThis = this;
     this.title_prop = "Employee management";
     this.base_url = main_view.base_url;
@@ -8,6 +8,7 @@ var EmployeeComponent = new function () {
     this.self = this.jm[0];
 
     this.elEmployeeStatus = this.self.querySelector("#filter_employee_status");
+    this.el_branch = this.self.querySelector("#el_branch");
     this.elEmployeeType = this.self.querySelector("#filter_employee_type");
     this.btnAdd = this.self.querySelector("#_btn_add_employee");
     this.btnBack = this.self.querySelector("#_btn_backTo_employee");
@@ -18,7 +19,9 @@ var EmployeeComponent = new function () {
     this.profile_card_right = mThis.self.querySelector("#profile_card_right");
     this.tax_allownce_card = mThis.self.querySelector("#tax_allownce_card");
     this.profile_info_emp = mThis.self.querySelector("#profile_info_emp");
-    this.paginationContainer = mThis.self.querySelector('#container_pagination');
+    this.paginationContainer = mThis.self.querySelector(
+        "#container_pagination"
+    );
     let div = mThis.self.querySelector("#_employee_list");
     this.init = () => {
         if (mThis.initAlready) return;
@@ -30,9 +33,9 @@ var EmployeeComponent = new function () {
 
             apiCluster: main_view.apiCluster,
             processResponse: (res) => {
-                console.log(1234,res.data.data);
+                console.log(1234, res.data.data);
 
-                    return res.data;
+                return res.data;
             },
             renderItems: (data, list_container) => {
                 mThis.renderEmployeeList(list_container, data);
@@ -47,7 +50,7 @@ var EmployeeComponent = new function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success('Employee Added Successfully');
+                    cv_interact.success("Employee Added Successfully");
                     mThis.EmployeeListView.showPage(mThis.getFilterData());
                 },
             };
@@ -65,47 +68,47 @@ var EmployeeComponent = new function () {
         };
         mThis.EmployeeListView.showPage(mThis.getFilterData());
 
-
-        mThis.div_filter_fields.querySelectorAll('.filter-field').forEach(el => {
-            el.onchange = e =>{
-                e.preventDefault();
-                mThis.EmployeeListView.showPage(mThis.getFilterData());
-
-            }
-        });
+        mThis.div_filter_fields
+            .querySelectorAll(".filter-field")
+            .forEach((el) => {
+                el.onchange = (e) => {
+                    e.preventDefault();
+                    mThis.EmployeeListView.showPage(mThis.getFilterData());
+                };
+            });
         let timeOut = null;
         mThis.elSearch.onkeyup = function (e) {
             e.preventDefault();
             clearTimeout(timeOut);
-            timeOut = setTimeout(()=>{
+            timeOut = setTimeout(() => {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
-            },250);
-
+            }, 250);
         };
 
-         this.listContainer = mThis.EmployeeListView.getListContainer();
-         console.log(12,mThis.listContainer);
+        this.listContainer = mThis.EmployeeListView.getListContainer();
+        console.log(12, mThis.listContainer);
 
-         mThis.initDropdownMenus(div);
+        mThis.initDropdownMenus(div);
 
-
-         const sh_parent = mThis.listContainer.parentElement;
-         sh_parent.style.height = (window.innerHeight - 200) + 'px';
-         sh_parent.classList.add('overflow-y-auto');
-         window.onresize = () =>{
-             sh_parent.style.height = (window.innerHeight - 190) + 'px';
-         }
-
+        const sh_parent = mThis.listContainer.parentElement;
+        sh_parent.style.height = window.innerHeight - 200 + "px";
+        sh_parent.classList.add("overflow-y-auto");
+        window.onresize = () => {
+            sh_parent.style.height = window.innerHeight - 190 + "px";
+        };
 
         mThis.initAlready = true;
     };
 
     this.getFilterData = () => {
         let p = {};
-            p.status_id = mThis.elEmployeeStatus.value;
-            p.emp_type_id = mThis.elEmployeeType.value;
-            p.search_value = mThis.elSearch.value;
-            mThis.div_filter_fields.querySelectorAll('.filter-field').forEach( el => {
+        p.status_id = mThis.elEmployeeStatus.value;
+        p.emp_type_id = mThis.elEmployeeType.value;
+        p.branch_id = mThis.el_branch.value;
+        p.search_value = mThis.elSearch.value;
+        mThis.div_filter_fields
+            .querySelectorAll(".filter-field")
+            .forEach((el) => {
                 let f = el.dataset.field;
                 p[f] = el.value;
             });
@@ -159,7 +162,7 @@ var EmployeeComponent = new function () {
                     name: "promote_to_staff",
                 },
             ],
-            onShow:(me,container)=>{
+            onShow: (me, container) => {
                 // console.log(123,me.getActiveMenus(container).set_rejoin);
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
@@ -175,12 +178,9 @@ var EmployeeComponent = new function () {
                 //         break;
                 //     }
                 // }
-
-
             },
             onClick: (menuLink, id, name) => {
                 switch (name) {
-
                     case "edit_employee": {
                         mThis.editEmployee(id, menuLink);
                         break;
@@ -189,16 +189,16 @@ var EmployeeComponent = new function () {
                         mThis.deleteEmployee(id, menuLink);
                         break;
                     }
-                    case "set_resign":{
-                        mThis.setResign(id,menuLink);
+                    case "set_resign": {
+                        mThis.setResign(id, menuLink);
                         break;
                     }
-                    case "set_terminated":{
-                        mThis.setTerminated(id,menuLink);
+                    case "set_terminated": {
+                        mThis.setTerminated(id, menuLink);
                         break;
                     }
-                    case "set_rejoin":{
-                        mThis.setRejoin(id,menuLink);
+                    case "set_rejoin": {
+                        mThis.setRejoin(id, menuLink);
                         break;
                     }
                     case "promote_to_staff": {
@@ -210,10 +210,10 @@ var EmployeeComponent = new function () {
                         break;
                     }
                 }
-            }
-        }
+            },
+        };
         new VSDropdownMenu(menuOptopns);
-    }
+    };
 
     this.renderEmployeeList = (div, data) => {
         data = data ?? [];
@@ -348,9 +348,9 @@ var EmployeeComponent = new function () {
                 if (employeeData) {
                     let sub_content = mThis.self.querySelector("#sub_content");
                     sub_content.classList.add("d-none");
-                    let view_see_info = mThis.self.querySelector("#view_see_info__");
+                    let view_see_info =
+                        mThis.self.querySelector("#view_see_info__");
                     view_see_info.classList.remove("d-none");
-
 
                     mThis.renderProfile(employeeData);
                     mThis.renderCardCenter(employeeId);
@@ -961,93 +961,104 @@ var EmployeeComponent = new function () {
                 this.tax_allownce_card.innerHTML = html;
 
                 // Add event listener for "Add" button
-                document.querySelector(".lnk-add-tax-allowance").addEventListener("click", function (e) {
-                    e.preventDefault();
-
-                    let btn = document.querySelector(".lnk-add-tax-allowance");
-                    console.log(333, btn.dataset);
-
-                    let op = {
-                        id: null,
-                        emp_id: btn.dataset.empid,
-
-                        btn: e.target,
-                        title: "New Tax Allowance",
-                        onClose: () => {
-                            mThis.EmployeeListView.showPage();
-                        },
-                    };
-                    console.log(op);
-                    AddTaxAllowance.show(op);
-                });
-
-                // Add event listeners for all "Edit" buttons
-                document.querySelectorAll(".lnk-edit-tax-allowance").forEach((btn) => {
-                    btn.addEventListener("click", function (e) {
+                document
+                    .querySelector(".lnk-add-tax-allowance")
+                    .addEventListener("click", function (e) {
                         e.preventDefault();
-                        const id = e.target.closest('a').getAttribute("data-id");
+
+                        let btn = document.querySelector(
+                            ".lnk-add-tax-allowance"
+                        );
+                        console.log(333, btn.dataset);
 
                         let op = {
-                            id: id,
-                            emp_id: employeeId,
+                            id: null,
+                            emp_id: btn.dataset.empid,
+
                             btn: e.target,
-                            title: "Edit Tax Allowance",
+                            title: "New Tax Allowance",
                             onClose: () => {
-                                mThis.renderCardTaxAllowance.showPage();
+                                mThis.EmployeeListView.showPage();
                             },
                         };
-                        console.log("Edit operation:", op);
+                        console.log(op);
                         AddTaxAllowance.show(op);
                     });
-                });
 
-                document.querySelectorAll(".lnk-delete-tax-allowance").forEach((btn) => {
-                    btn.addEventListener("click", function (e) {
-                        e.preventDefault();
-                        const id = e.target.closest('a').getAttribute("data-id");
-                        const emp_id = e.target.closest('a').getAttribute("data-emp-id");
-                        let op ={
-                            id: id,
-                            btn: e.target,
-                            onClose: () => {
+                // Add event listeners for all "Edit" buttons
+                document
+                    .querySelectorAll(".lnk-edit-tax-allowance")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const id = e.target
+                                .closest("a")
+                                .getAttribute("data-id");
 
-                            },
-                        };
-                        cv_interact.confirm(
-                            "Delete this Employee?",
-                            {
-                                title: "Delete Employee",
-                                context: "delete",
-                                confirmButtonText: "Delete",
-                            },
-                            function (e) {
-                                if (e) {
-                                    vsapi
-                                        .call(
-                                            `${main_view.base_url}/hr/tax-allowance/delete`,
-                                            op,
-                                            false,
-                                            false,
-                                            false
-                                        )
-                                        .then((res) => {
-                                            if (res.status_code == 200) {
-                                                cv_interact.success("Deleted Successfully");
-                                                // EmployeeComponent.EmployeeListView.showPage();
-                                                EmployeeComponent.renderCardTaxAllowance(emp_id);
-
-                                            }
-                                        });
-                                }
-                            }
-                        );
-
-
+                            let op = {
+                                id: id,
+                                emp_id: employeeId,
+                                btn: e.target,
+                                title: "Edit Tax Allowance",
+                                onClose: () => {
+                                    mThis.renderCardTaxAllowance.showPage();
+                                },
+                            };
+                            console.log("Edit operation:", op);
+                            AddTaxAllowance.show(op);
+                        });
                     });
-                });
+
+                document
+                    .querySelectorAll(".lnk-delete-tax-allowance")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const id = e.target
+                                .closest("a")
+                                .getAttribute("data-id");
+                            const emp_id = e.target
+                                .closest("a")
+                                .getAttribute("data-emp-id");
+                            let op = {
+                                id: id,
+                                btn: e.target,
+                                onClose: () => {},
+                            };
+                            cv_interact.confirm(
+                                "Delete this Employee?",
+                                {
+                                    title: "Delete Employee",
+                                    context: "delete",
+                                    confirmButtonText: "Delete",
+                                },
+                                function (e) {
+                                    if (e) {
+                                        vsapi
+                                            .call(
+                                                `${main_view.base_url}/hr/tax-allowance/delete`,
+                                                op,
+                                                false,
+                                                false,
+                                                false
+                                            )
+                                            .then((res) => {
+                                                if (res.status_code == 200) {
+                                                    cv_interact.success(
+                                                        "Deleted Successfully"
+                                                    );
+                                                    // EmployeeComponent.EmployeeListView.showPage();
+                                                    EmployeeComponent.renderCardTaxAllowance(
+                                                        emp_id
+                                                    );
+                                                }
+                                            });
+                                    }
+                                }
+                            );
+                        });
+                    });
             });
-
-
     };
     this.movement = (id,menuLink)=>{
 
@@ -1208,7 +1219,7 @@ var EmployeeComponent = new function () {
                       <div class="form-group col-md-12">
                         <label class="form-label" vslang="titles.Remarks">Remarks</label>
                         <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
-                    </div>
+                      </div>
 
                    `
                 ].join('');
@@ -1292,13 +1303,13 @@ var EmployeeComponent = new function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        console.log(909090,op);
+        console.log(909090, op);
 
-        mThis.PromoteDialog =  new GeneralDialog({
-            title: LocaleManager.trans("Promote Staff","titles"),
-            createContent:()=>{
+        mThis.PromoteDialog = new GeneralDialog({
+            title: LocaleManager.trans("Promote Staff", "titles"),
+            createContent: () => {
                 return [
-                     `<div class="form-group col-md-12">
+                    `<div class="form-group col-md-12">
                         <label for="type" class="form-label" vslang="titles.Employee Type"></label>
                         <span class="text-danger" >*</span>
                         <select name="type" class=" data-input"  data-field="emp_type_id"></select>
@@ -1312,18 +1323,14 @@ var EmployeeComponent = new function () {
                         <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
                       </div>
 
-                   `
-                ].join('');
+                   `,
+                ].join("");
             },
-            contentCreated:(me)=>{
+            contentCreated: (me) => {
                 DateTimePicker.init(me.controls.event_date);
+            },
 
-
-
-
-             },
-
-             configSelect:[
+            configSelect: [
                 {
                     name: "type",
                     data: "types",
@@ -1351,7 +1358,7 @@ var EmployeeComponent = new function () {
                     },
                 },
             },
-             buttons:[
+            buttons: [
                 {
                     label: "<span>Cancel</span>",
                     cssClass: "btn btn-warning text-white",
@@ -1360,26 +1367,33 @@ var EmployeeComponent = new function () {
                     },
                 },
                 {
-                    cssClass:"btn btn-primary",
-                    label:"<span>Promote Now</span",
-                    click:(me, btn,divModal)=>{
-                         let p = me.getData();
+                    cssClass: "btn btn-primary",
+                    label: "<span>Promote Now</span",
+                    click: (me, btn, divModal) => {
+                        let p = me.getData();
                         //  p.emp_id = op.id;
-                         console.log(111,p);
-                         vsapi.call(`${main_view.base_url}/hr/employee/promote-staff`,p,btn,false).then(res =>{
-                              if(res.status_code ==200){
-                                me.modal.hide(true, p);
-                                cv_interact.success('This Employee has been promoted successfully!');
-                                EmployeeComponent.EmployeeListView.showPage();
-                              }else cv_interact.error(res.error_message);
-                         });
-                    }
-                }
-             ],
-             onPrepareForm: (me, data) => {
+                        console.log(111, p);
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/hr/employee/promote-staff`,
+                                p,
+                                btn,
+                                false
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.modal.hide(true, p);
+                                    cv_interact.success(
+                                        "This Employee has been promoted successfully!"
+                                    );
+                                    EmployeeComponent.EmployeeListView.showPage();
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+            onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-
-
             },
             //  prepareFormOptions:{
             //      modifyTitle:"",
@@ -1407,13 +1421,13 @@ var EmployeeComponent = new function () {
             //  }
         });
         mThis.PromoteDialog.show(op);
-    }
+    };
 
-    this.setTerminated = (id,lnk)=>{
+    this.setTerminated = (id, lnk) => {
         let tr = lnk.closest("tr");
-        console.log(1,tr);
+        console.log(1, tr);
         let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
-        console.log(123,status_id);
+        console.log(123, status_id);
 
         let inputOptions = {
             title: "Set Employee Terminate",
@@ -1423,12 +1437,10 @@ var EmployeeComponent = new function () {
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data: [
-
                 {
                     status_id: "30",
                     name: "Terminated",
                 },
-
             ],
             defaultValue: status_id,
         };
@@ -1447,23 +1459,25 @@ var EmployeeComponent = new function () {
                         if (res.status_code === 200) {
                             mThis.elEmployeeStatus.value = parseInt(d.value);
                             InputBox2.close();
-                            mThis.elEmployeeStatus.dispatchEvent ( new Event('change'));
-                            cv_interact.success("The Employee has been Terminate");
+                            mThis.elEmployeeStatus.dispatchEvent(
+                                new Event("change")
+                            );
+                            cv_interact.success(
+                                "The Employee has been Terminate"
+                            );
                             // if(tr) tr.dataset.status_id = d.value;
                             // mThis.EmployeeListView.showPage(mThis.getFilterData());
-                        } else
-                        cv_interact.error(res.error_message);
+                        } else cv_interact.error(res.error_message);
                     });
             }
         });
+    };
 
-    }
-
-    this.setRejoin = (id,lnk)=>{
+    this.setRejoin = (id, lnk) => {
         let tr = lnk.closest("tr");
-        console.log(1,tr);
+        console.log(1, tr);
         let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
-        console.log(123,status_id);
+        console.log(123, status_id);
 
         let inputOptions = {
             title: "Set Employee Rejoin",
@@ -1473,12 +1487,10 @@ var EmployeeComponent = new function () {
             confirmButtonText: "Save",
             blankErrorMessage: "Status is not correct!",
             data: [
-
                 {
                     status_id: "10",
                     name: "Rejoin",
                 },
-
             ],
             defaultValue: status_id,
         };
@@ -1497,17 +1509,19 @@ var EmployeeComponent = new function () {
                         if (res.status_code === 200) {
                             mThis.elEmployeeStatus.value = parseInt(d.value);
                             InputBox2.close();
-                            mThis.elEmployeeStatus.dispatchEvent ( new Event('change'));
-                            cv_interact.success("The Employee has been rejoin to work");
+                            mThis.elEmployeeStatus.dispatchEvent(
+                                new Event("change")
+                            );
+                            cv_interact.success(
+                                "The Employee has been rejoin to work"
+                            );
                             // if(tr) tr.dataset.status_id = d.value;
                             // mThis.EmployeeListView.showPage(mThis.getFilterData());
-                        } else
-                        cv_interact.error(res.error_message);
+                        } else cv_interact.error(res.error_message);
                     });
             }
         });
-
-    }
+    };
 
     this.editEmployee = (id, menuLink) => {
         let op = {
@@ -1588,6 +1602,15 @@ var EmployeeComponent = new function () {
                     null,
                     3
                 );
+                VSUtil.setComboItems(
+                    mThis.el_branch,
+                    d.branches,
+                    "id",
+                    "branch_name",
+                    true,
+                    "All Branch",
+                    null
+                );
             });
     };
 
@@ -1596,12 +1619,10 @@ var EmployeeComponent = new function () {
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.EmployeeListView.showPage(mThis.getFilterData());
-            mThis.jm.siblings().hide();
-            mThis.jm.hide().fadeIn(250);
-
-
-    }
-};
+        mThis.jm.siblings().hide();
+        mThis.jm.hide().fadeIn(250);
+    };
+})();
 
 const AddEducation = (() => {
     const self = {};
@@ -1611,9 +1632,7 @@ const AddEducation = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                title: op.id
-                    ? "Edit Education"
-                    : "New Education",
+                title: op.id ? "Edit Education" : "New Education",
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
                     return [
@@ -1676,7 +1695,9 @@ const AddEducation = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
-                                        EmployeeComponent.renderCardCenter(me.dataOptions.emp_id);
+                                        EmployeeComponent.renderCardCenter(
+                                            me.dataOptions.emp_id
+                                        );
 
                                         EmployeeComponent.renderCardCenter(
                                             me.dataOptions.emp_id
@@ -1726,8 +1747,7 @@ const AddEducation = (() => {
                         },
                     },
                 },
-                onShow: (me) => {
-                },
+                onShow: (me) => {},
             });
 
         dialog.show(op);
@@ -1776,15 +1796,10 @@ const AddExperience = (() => {
                     </div>`,
                     ].join("");
                 },
-                contentCreated:(me)=>{
+                contentCreated: (me) => {
                     DateTimePicker.init(me.controls.start_date);
                     DateTimePicker.init(me.controls.end_date);
-
-
-
-
-
-                 },
+                },
                 buttons: [
                     {
                         label: "<span>Cancel</span>",
@@ -1871,14 +1886,12 @@ const AddTaxAllowance = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        console.log(9999,op);
+        console.log(9999, op);
 
         dialog =
             dialog ||
             new GeneralDialog({
-                title: op.id
-                    ? "Add Tax Allowance"
-                    : " Edit Tax Allowance ",
+                title: op.id ? "Add Tax Allowance" : " Edit Tax Allowance ",
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
                     return [
@@ -1915,7 +1928,7 @@ const AddTaxAllowance = (() => {
                         click: (me) => {
                             let p = me.getData();
                             p.emp_id = me.dataOptions.emp_id;
-                            console.log(7777,p);
+                            console.log(7777, p);
 
                             vsapi
                                 .call(
@@ -1930,9 +1943,9 @@ const AddTaxAllowance = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
-                                        EmployeeComponent.renderCardTaxAllowance(me.dataOptions.emp_id);
-
-
+                                        EmployeeComponent.renderCardTaxAllowance(
+                                            me.dataOptions.emp_id
+                                        );
                                     } else cv_interact.error(res.error_message);
                                 });
                         },
@@ -1959,8 +1972,7 @@ const AddTaxAllowance = (() => {
                         },
                     },
                 },
-                onShow: (me) => {
-                },
+                onShow: (me) => {},
             });
 
         dialog.show(op);
@@ -1973,16 +1985,15 @@ const EmployeeDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-    console.log(999, op);
+        console.log(999, op);
 
-        dialog =
-                new GeneralDialog({
-                cssClass: "modal-lg",
-                backdrop: "static", //User click outside form, do not close form
-                keyboard: true, //prevent user from using ESC key
-                createContent: () => {
-                    return [
-                        `<div class="row">
+        dialog = new GeneralDialog({
+            cssClass: "modal-lg",
+            backdrop: "static", //User click outside form, do not close form
+            keyboard: true, //prevent user from using ESC key
+            createContent: () => {
+                return [
+                    `<div class="row">
                             <div class="col-3">
                                 <div name="div_emp_photo" style="height:165px" class="data-input border border-primary" data-field="image_url" role="button"></div>
                             </div>
@@ -2068,199 +2079,192 @@ const EmployeeDialog = (() => {
                                 </div>
 
                         </div>`,
-                    ].join("");
+                ].join("");
+            },
+            contentCreated: (me) => {
+                const salary = me.divModal.querySelector(".salary");
+                console.log(1234, salary);
+                salary.classList.add("d-none");
+                //Convert field to be DatePicker : start_date and end_date
+                DateTimePicker.init(me.controls.date_of_birth);
+                DateTimePicker.init(me.controls.joining_date);
+                console.log(444);
+                LocaleManager.translateZone(me.divModal);
+                let div_emp_photo = me.divModal.querySelector(
+                    '[name="div_emp_photo"]'
+                );
+                me.userImageBox = new ImageBox(div_emp_photo, {
+                    containerclass: "emp-profile-container",
+                    imgClass: "data-input",
+                    dataset: { field: "image_url" },
+                });
+
+                me.showProfile = (code) => {
+                    let fields = [];
+                    let p = { id: code };
+                    console.log(4545, me);
+
+                    vsapi
+                        .call(
+                            [
+                                main_view.base_url,
+                                "/hr/employee/form-options",
+                            ].join(""),
+                            p,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            let d = res.status_code == 200 ? res.data : {};
+                            d = d.employee || {};
+
+                            me.divModal
+                                .querySelectorAll(".data-input")
+                                .forEach((el) => {
+                                    const f = el.dataset.field;
+                                    console.log(7788899, d);
+
+                                    if (fields.indexOf(f) >= 0) {
+                                        el.value = d[f] || "";
+                                    } else if (f === "image_url") {
+                                        if (me.dataOptions.id)
+                                            el.innerHTML = `<img name="div_emp_photo" class="w-100" src="${
+                                                d[f] || ""
+                                            }"/>`;
+                                    }
+                                });
+                        });
+                };
+                me.deleteImage = (div) => {
+                    const btnDelete = div; //.querySelector('[role=\'button\']');
+                    btnDelete.onclick = function (e) {
+                        e.preventDefault();
+                        const html = `<div id="dlg_image_chooser"
+                                            class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
+                                            <i class="fa-regular fa-image fs-4 text-muted"></i>
+                                        </div>`;
+                        div.innerHTML = html;
+                        // mThis.chooseImage(div);
+                        // let div_emp_photo = div.querySelector('[name="div_emp_photo"]');
+                        me.userImageBox = new ImageBox(div, {
+                            containerclass: "emp-profile-container",
+                            imgClass: "data-input",
+                            dataset: { field: "image_url" },
+                        });
+                    };
+                };
+                me.deleteImage(div_emp_photo);
+
+                me.showProfile(me.dataOptions.id);
+                console.log(13, me.dataOptions.id);
+            },
+            configSelect: [
+                {
+                    name: "position",
+                    data: "positions",
+                    textField: "title",
+                    valueField: "id",
                 },
-                contentCreated: (me) => {
-                    const salary = me.divModal.querySelector('.salary');
-                    console.log(1234,salary);
-                    salary.classList.add('d-none');
-                    //Convert field to be DatePicker : start_date and end_date
-                    DateTimePicker.init(me.controls.date_of_birth);
-                    DateTimePicker.init(me.controls.joining_date);
-                    console.log(444);
-                    LocaleManager.translateZone(me.divModal);
-                    let div_emp_photo = me.divModal.querySelector(
-                        '[name="div_emp_photo"]'
-                    );
-                    me.userImageBox = new ImageBox(div_emp_photo, {
-                        containerclass: "emp-profile-container",
-                        imgClass: "data-input",
-                        dataset: { field: "image_url" },
-                    });
+                {
+                    name: "type",
+                    data: "types",
+                    textField: "name",
+                    valueField: "id",
+                },
+                {
+                    name: "work_shift",
+                    data: "work_shifts",
+                    textField: "name",
+                    valueField: "id",
+                },
+            ],
+            buttons: [
+                {
+                    label: '<span class="text-warning">Cancel</span>',
+                    cssClass: "btn btn-default",
+                    click: (me, btn) => {
+                        //Close with Cancel button
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: "<span>Save</span>",
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        let p = me.getData();
+                        console.log(123, p);
 
-                    me.showProfile = (code) => {
-                        let fields = [];
-                        let p = { id: code };
-                        console.log(4545, me);
-
+                        p.photo = me.userImageBox
+                            ? me.userImageBox.getImage()
+                            : "";
                         vsapi
                             .call(
-                                [
-                                    main_view.base_url,
-                                    "/hr/employee/form-options",
-                                ].join(""),
+                                [main_view.base_url, "/hr/employee/save"].join(
+                                    ""
+                                ),
                                 p,
+                                btn,
                                 false,
                                 false
                             )
                             .then((res) => {
-                                let d = res.status_code == 200 ? res.data : {};
-                                d = d.employee || {};
-
-                                me.divModal
-                                    .querySelectorAll(".data-input")
-                                    .forEach((el) => {
-                                        const f = el.dataset.field;
-                                        console.log(7788899, d);
-
-                                        if (fields.indexOf(f) >= 0) {
-                                            el.value = d[f] || "";
-                                        } else if (f === "image_url") {
-                                            if (me.dataOptions.id)
-                                                el.innerHTML = `<img name="div_emp_photo" class="w-100" src="${d[f] || ""
-                                                    }"/>`;
-                                        }
-                                    });
+                                if (res.status_code == 200) {
+                                    me.modal.hide(true, p);
+                                } else cv_interact.error(res.error_message);
                             });
-                    };
-                    me.deleteImage = (div) => {
-                        const btnDelete = div; //.querySelector('[role=\'button\']');
-                        btnDelete.onclick = function (e) {
-                            e.preventDefault();
-                            const html = `<div id="dlg_image_chooser"
-                                            class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
-                                            <i class="fa-regular fa-image fs-4 text-muted"></i>
-                                        </div>`;
-                            div.innerHTML = html;
-                            // mThis.chooseImage(div);
-                            // let div_emp_photo = div.querySelector('[name="div_emp_photo"]');
-                            me.userImageBox = new ImageBox(div, {
-                                containerclass: "emp-profile-container",
-                                imgClass: "data-input",
-                                dataset: { field: "image_url" },
-                            });
-                        };
-                    };
-                    me.deleteImage(div_emp_photo);
-
-                    me.showProfile(me.dataOptions.id);
-                    console.log(13,me.dataOptions.id);
-
-
-                },
-                configSelect: [
-                    {
-                        name: "position",
-                        data: "positions",
-                        textField: "title",
-                        valueField: "id",
-                    },
-                    {
-                        name: "type",
-                        data: "types",
-                        textField: "name",
-                        valueField: "id",
-                    },
-                    {
-                        name: "work_shift",
-                        data: "work_shifts",
-                        textField: "name",
-                        valueField: "id",
-                    },
-                ],
-                buttons: [
-                    {
-                        label: '<span class="text-warning">Cancel</span>',
-                        cssClass: "btn btn-default",
-                        click: (me, btn) => {
-                            //Close with Cancel button
-                            me.hide(false);
-                        },
-                    },
-                    {
-                        label: "<span>Save</span>",
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            let p = me.getData();
-                            console.log(123,p);
-
-
-                            p.photo = me.userImageBox
-                                ? me.userImageBox.getImage()
-                                : "";
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/hr/employee/save",
-                                    ].join(""),
-                                    p,
-                                    btn,
-                                    false,
-                                    false
-                                )
-                                .then((res) => {
-                                    if (res.status_code == 200) {
-                                        me.modal.hide(true, p);
-                                    } else cv_interact.error(res.error_message);
-                                });
-                        },
-                    },
-                ],
-                prepareFormOptions: {
-                    createTitle: "Add Employee",
-                    modifyTitle: "Edit Employee",
-                    targetProp: "employee",
-                    api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/hr/employee/form-options",
-                        ].join(""),
-                        params: (op) => {
-                            return { id: op.id };
-                        },
-                    },
-                    onResponse: (me, res) => {
-                        console.log('result from api "/form-options": ', res);
                     },
                 },
+            ],
+            prepareFormOptions: {
+                createTitle: "Add Employee",
+                modifyTitle: "Edit Employee",
+                targetProp: "employee",
+                api: {
+                    endpoint: [
+                        main_view.base_url,
+                        "/hr/employee/form-options",
+                    ].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+                onResponse: (me, res) => {
+                    console.log('result from api "/form-options": ', res);
+                },
+            },
 
-                onPrepareForm: (me, data) => {
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+                me.divModal.querySelectorAll(".data-input").forEach((el) => {
+                    const data_member = el.dataset.field;
+                    console.log(90, op.id);
+                    const salary = me.divModal.querySelector(".salary");
 
-                    LocaleManager.translateZone(me.divModal);
-                    me.divModal.querySelectorAll('.data-input').forEach(el => {
+                    let id = op.id;
 
-                        const data_member = el.dataset.field;
-                        console.log(90,op.id);
-                        const salary = me.divModal.querySelector('.salary');
-
-                        let id = op.id;
-
-                        if(id){
-                            salary.classList.remove('d-none');
-                            if (el.tagName.toLowerCase() === 'select') {
-                                if(data_member == 'position_id' || data_member == 'work_shift_id' || data_member == 'emp_type_id' ){
-                                el.setAttribute('disabled',true);
+                    if (id) {
+                        salary.classList.remove("d-none");
+                        if (el.tagName.toLowerCase() === "select") {
+                            if (
+                                data_member == "position_id" ||
+                                data_member == "work_shift_id" ||
+                                data_member == "emp_type_id"
+                            ) {
+                                el.setAttribute("disabled", true);
                                 // el.disabled = true;
-                                }
                             }
-                            if(data_member == 'salary' || data_member == 'nid'){
-                                console.log(12,el);
-                                el.disabled  = true;
-                             }
-
-                             id=null;
+                        }
+                        if (data_member == "salary" || data_member == "nid") {
+                            console.log(12, el);
+                            el.disabled = true;
                         }
 
-                   });
-
-                },
-                onClose:(canceled)=>{
-
-
-
-                }
-            });
+                        id = null;
+                    }
+                });
+            },
+            onClose: (canceled) => {},
+        });
 
         dialog.show(op);
     };
