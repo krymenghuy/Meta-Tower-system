@@ -25,10 +25,10 @@ class Holiday
         $v_rule = [
             'id' => '0|identity=1',
             'name' => '1|string|0-100',
-            'holiday_type' => '1|number',
+            'holiday_type_id' => '1|number',
             'start_date' => '1|date',
             'end_date' => '1|date',
-            'remarks' => '0|string|0-300',
+            'description' => '0|string|0-300',
         ];
 
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?'];
@@ -79,7 +79,7 @@ class Holiday
         $sort_direction = strtolower($sort_direction) === 'desc' ? 'desc' : 'asc';
 
         $query = DB::table('holidays as h')
-        ->join('holiday_types as ht', 'ht.id', '=', 'h.holiday_type')
+        ->join('holiday_types as ht', 'ht.id', '=', 'h.holiday_type_id')
         ->selectRaw('
             h.id,
             h.name,
@@ -90,7 +90,7 @@ class Holiday
             DATEDIFF(h.end_date, h.start_date) + 1 as duration,
             ht.id as holiday_type_id,
             ht.name as holiday_type,
-            h.remarks
+            h.description
         ')
         ->where('h.branch_id', $branch_id);
 
@@ -115,6 +115,7 @@ class Holiday
 
         // Apply sorting
         $query->orderBy("h.$sort_by", $sort_direction);
+        
 
         $count = $query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -134,7 +135,7 @@ class Holiday
     public function getDetails($id, $ss)
     {
         $row = DB::table('holidays as h')
-            ->join('holiday_types as ht', 'ht.id', '=', 'h.holiday_type')
+            ->join('holiday_types as ht', 'ht.id', '=', 'h.holiday_type_id')
             ->selectRaw('
                 h.id,
                 h.name,
@@ -144,7 +145,7 @@ class Holiday
                 DATE_FORMAT(h.end_date, "%Y-%m-%d") as formatted_end_date,
                 ht.id as holiday_type_id,
                 ht.name as holiday_type,
-                h.remarks
+                h.description
             ')
             ->where('h.branch_id', $ss->branch_id)
             ->where('h.id', $id)
@@ -158,22 +159,12 @@ class Holiday
         return $row;
     }
 
-    public function deleteHoliday($id, $ss)
+    function deleteHoliday($id, $ss)
     {
-        if (!is_numeric($id)) {
-            return DV::error('Invalid ID');
-        }
+        $id = $id ?? $this->id;
 
-        $query = DB::table('holidays')
-            ->where('id', $id)
-            ->where('branch_id', $ss->branch_id)
-            ->delete();
-
-        if (!$query) {
-            return DV::error('Holiday not found');
-        }
-
-        return DV::success('Holiday deleted successfully');
+        $delete = DB::table('holidays')->where('id', $id)->delete();
+        return DV::depends($delete, ['action', 'deleted']);
     }
 
     public function getFormOptions($id, $ss)
