@@ -167,12 +167,10 @@ var EmployeeComponent = new (function () {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                 const emp_type_id = container.dataset.typeid;
+                menu.set_terminated.style.display='none';
 
-                menu.set_rejoin.style.display =
-                    status_id == 10 ? "none" : "block";
-                menu.set_terminated.style.display = "none";
-                menu.promote_to_staff.style.display =
-                    emp_type_id == 3 ? "none" : "block;";
+                menu.set_rejoin.style.display = status_id == 10? 'none':'block';
+                menu.promote_to_staff.style.display = emp_type_id ==  3? 'none':'block;'
 
                 // switch(status_id){
                 //     case 10:{
@@ -518,18 +516,24 @@ var EmployeeComponent = new (function () {
                                 <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${
                                     data.id
                                 }" data-status ="${data.status_id}">
-                                    <i class="fa-regular fa-pen-to-square text-warning fs-5 tool-tip"><span class="tool-tiptext fs-6">Edit Profile</span></i>
+                                    <i class="fa-regular fa-pen-to-square text-success fs-5 tool-tip"><span class="tool-tiptext fs-6">Edit Profile</span></i>
+                                </a>
+                                <a href="javascript:void(0)" class="delete_employee" data-id="${
+                                    data.id
+                                }" data-status ="${data.status_id}">
+                                    <i class="fa-solid text-danger fa-user-xmark fs-5 tool-tip"><span class="tool-tiptext fs-6">Delete</span></i>
                                 </a>
                                 <a href="javascript:void(0)" class="set_resign" data-id="${
                                     data.id
                                 }" data-status ="${data.status_id}">
-                                    <i class="fa-solid text-success fa-pen-nib tool-tip fs-5"><span class="tool-tiptext fs-6">Set Resign</span></i>
+                                    <i class="fa-solid fa-triangle-exclamation text-warning tool-tip fs-5"><span class="tool-tiptext fs-6">Set Resign</span></i>
                                 </a>
-                                <a href="javascript:void(0)" class="promote_to_staff" data-id="${
+                                <a href="javascript:void(0)" class="movement" data-id="${
                                     data.id
                                 }" data-status ="${data.status_id}">
-                                    <i class="fa-solid text-danger fa-bullhorn tool-tip fs-5"><span class="tool-tiptext fs-6">Promote</span></i>
+                                    <i class="fa-brands fa-stack-exchange text-white tool-tip fs-5"><span class="tool-tiptext fs-6">movement</span></i>
                                 </a>
+                                 <!-- 
                                 <a href="javascript:void(0)" class="btn_movement_action" data-id="${
                                     data.id
                                 }" data-statusid="${
@@ -539,7 +543,7 @@ var EmployeeComponent = new (function () {
         }" aria-haspopup="true" aria-expanded="false">
                                     <i class="fa-solid fa-ellipsis-vertical text-secondary fs-5 tool-tip"><span class="tool-tiptext fs-6">Actions</span></i>
                                 </a>
-                                <!-- <button class="btn_movement_action btn btn-light rounded-3 mx-3 btn-options position-relative text-nowrap" data-id="${
+                               <button class="btn_movement_action btn btn-light rounded-3 mx-3 btn-options position-relative text-nowrap" data-id="${
                                     data.id
                                 }"  data-status ="${
             data.status_id
@@ -555,76 +559,78 @@ var EmployeeComponent = new (function () {
         `;
 
         this.profile_info_emp.innerHTML = html;
-        mThis.initDropdownMenusInfo(mThis.profile_info_emp);
+        // mThis.initDropdownMenusInfo(mThis.profile_info_emp);
         mThis.setActionsProfileInfo(mThis.profile_info_emp);
     };
 
-    this.initDropdownMenusInfo = (listContainer) => {
-        const menuOptopns = {
-            containerElement: listContainer,
-            actionButtonClass: "btn_movement_action",
-            cssClass: "bg-white shadow",
-            menus: [
-                {
-                    html: '<span class="ps-2" vslang="titles.Modify Profile Info">Modify Profile Info</span>',
-                    icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "edit_emp_profile_info",
-                },
-                {
-                    html: '<span class="ps-2  " vslang="titles.Set Resign">Set Resign</span>',
-                    icon: `<i class="fa-solid text-warning fa-pen-nib"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "set_resign",
-                },
+    // this.initDropdownMenusInfo = (listContainer) => {
+    //     const menuOptopns = {
+    //         containerElement: listContainer,
+    //         actionButtonClass: "btn_movement_action",
+    //         cssClass: "bg-white shadow",
+    //         menus: [
+    //             {
+    //                 html: '<span class="ps-2" vslang="titles.Modify Profile Info">Modify Profile Info</span>',
+    //                 icon: `<i class="fa-regular text-primary fa-edit fs-5"></i>`,
+    //                 cssClass: "border-bottom pb-2",
+    //                 name: "edit_emp_profile_info",
+    //             },
+    //             {
+    //                 html: '<span class="ps-2  " vslang="titles.Set Resign">Set Resign</span>',
+    //                 icon: `<i class="fa-solid text-warning fa-pen-nib"></i>`,
+    //                 cssClass: "border-bottom pb-2",
+    //                 name: "set_resign",
+    //             },
 
-                {
-                    html: '<span class="ps-2  " vslang="titles.Promote to Staff">Promote to Staff</span>',
-                    icon: `<i class="fa-solid text-success fa-bolt"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "promote_to_staff",
-                },
-            ],
-            onClick: (menuLink, id, name) => {
-                switch (name) {
-                    case "promote_to_staff": {
-                        mThis.promoteToStaff(id, menuLink);
-                        break;
-                    }
-                    case "set_resign": {
-                        mThis.setResign(id, menuLink);
-                        break;
-                    }
-                    case "edit_emp_profile_info": {
-                        mThis.editEmployee(id, menuLink);
-                        break;
-                    }
-                    case "delete_employee": {
-                        mThis.deleteEmployee(id, menuLink);
-                        break;
-                    }
+    //             {
+    //                 html: '<span class="ps-2  " vslang="titles.Movement">Movement</span>',
+    //                 icon: `<i class="fa-solid text-success fa-bolt"></i>`,
+    //                 cssClass: "border-bottom pb-2",
+    //                 name: "movement",
+    //             },
 
-                    default: {
-                        break;
-                    }
-                }
-            },
-        };
-        new VSDropdownMenu(menuOptopns);
-    };
+    //         ],
+    //         onClick: (menuLink, id, name) => {
+    //             switch (name) {
+    //                 case "movement": {
+    //                     mThis.movementEmployee(id, menuLink);
+    //                     break;
+    //                 }
+    //                 case "set_resign":{
+    //                     mThis.setResign(id,menuLink);
+    //                     break;
+    //                 }
+    //                 case "edit_emp_profile_info": {
+    //                     mThis.editEmployee(id, menuLink);
+    //                     break;
+    //                 }
+                   
+
+    //                 default: {
+    //                     break;
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     new VSDropdownMenu(menuOptopns);
+    // };
     this.setActionsProfileInfo = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(e.target, ".edit_emp_profile_info");
             if (btn) {
                 mThis.editEmployee(btn.dataset.id, btn);
             }
+            btn = VSUtil.closestLimited(e.target,".delete_employee");
+            if (btn) {
+                mThis.deleteEmployee(btn.dataset.id, btn);
+            }
             btn = VSUtil.closestLimited(e.target, ".set_resign");
             if (btn) {
                 mThis.setResign(btn.dataset.id, btn);
             }
-            btn = VSUtil.closestLimited(e.target, ".promote_to_staff");
+            btn = VSUtil.closestLimited(e.target,".movement")
             if (btn) {
-                mThis.promoteToStaff(btn.dataset.id, btn);
+                mThis.movement(btn.dataset.id, btn);
             }
         });
     };
@@ -1054,8 +1060,8 @@ var EmployeeComponent = new (function () {
                     });
             });
     };
+    this.movement = (id,menuLink)=>{
 
-    this.setResign = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -1063,11 +1069,146 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        mThis.ResignDialog = new GeneralDialog({
-            title: LocaleManager.trans("Set Resign", "titles"),
-            createContent: () => {
+        console.log(909090,op);
+
+        mThis.MovementDialog =  new GeneralDialog({
+            title: LocaleManager.trans("Movement","titles"),
+            createContent:()=>{
                 return [
-                    ` <div class="form-group col-md-12">
+                     `<div class="form-group col-md-12">
+                        <label for="branch" class="form-label" vslang="titles.Branch"></label>
+                        <span class="text-danger" >*</span>
+                        <select name="branch" class="form-control data-input"  data-field="branch_id"></select>
+                      </div>
+                      <div class="form-group col-md-12">
+                        <label for="position" class="form-label" vslang="titles.Position"></label>
+                        <span class="text-danger" >*</span>
+                        <select name="position" class="form-control data-input"  data-field="position_id"></select>
+                      </div>
+                      <div class="form-group col-md-12">
+                        <label for="salary" class="form-label" vslang="titles.Salary"></label>
+                        <span class="text-danger" >*</span>
+                        <select name="salary" class="form-control data-input"  data-field="salary"></select>
+                      </div>
+                      <div class="form-group col-md-12">
+                        <label class="form-label" vslang="titles.Promote Date">Promote Date</label>
+                        <div><input  name="promote_date" class="form-control data-input" placeholder="" data-field="promotion_date"/></div>
+                      </div>
+                      <div class="form-group col-md-12">
+                        <label class="form-label" vslang="titles.Remarks">Remarks</label>
+                        <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
+                      </div>
+
+                   `
+                ].join('');
+            },
+            contentCreated:(me)=>{
+
+
+
+
+             },
+
+             configSelect:[
+                {
+                    // name: "type",
+                    // data: "types",
+                    // textField: "name",
+                    // valueField: "id",
+                },
+             ],
+             prepareFormOptions: {
+                createTitle: "Movement",
+                modifyTitle: "Movement",
+                targetProp: "Movement",
+                api: {
+                    endpoint: `${main_view.base_url}/hr/employee/form-options`,
+                    params: (op) => {
+                        return { id: op.id }; // Pass ID to fetch data for edit
+                    },
+                    onResponse: (me, res) => {
+                        if (op.id) {
+                            // Populate form with existing data for edit mode
+                            // me.setValue('emp_id', res.data.emp_id);
+                            // me.setValue('period', res.data.period);
+                            // me.setValue('description', res.data.description);
+                            // me.setValue('amount', res.data.amount);
+                        }
+                    },
+                },
+            },
+             buttons:[
+                {
+                    label: "<span>Cancel</span>",
+                    cssClass: "btn btn-warning text-white",
+                    click: (me) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    cssClass:"btn btn-primary",
+                    label:"<span>Save</span",
+                    click:(me, btn,divModal)=>{
+                         let p = me.getData();
+                        //  p.emp_id = op.id;
+                         console.log(111,p);
+                         vsapi.call(`${main_view.base_url}/hr/employee/promote-staff`,p,btn,false).then(res =>{
+                              if(res.status_code ==200){
+                                me.modal.hide(true, p);
+                                cv_interact.success('This Employee has been promoted successfully!');
+                                EmployeeComponent.EmployeeListView.showPage();
+                              }else cv_interact.error(res.error_message);
+                         });
+                    }
+                }
+             ],
+             onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+
+
+            },
+            //  prepareFormOptions:{
+            //      modifyTitle:"",
+            //      createTitle:"Set Resign",
+            //      api:{
+            //         targetProp:"Set Resign",
+            //         endpoint: `${main_view.base_url}`,
+            //         params:(dataOption)=>{
+            //             return {"id":dataOption.id};
+            //         },
+            //      }
+            //  },
+            //  onShow:(me)=>{
+            //     me.controls.name.focus();
+            //     me.controls.name.select();
+            // },
+            //  onPrepareForm:(me,data)=>{
+            //      let fields = me.getFields();
+
+            //     //  const app_types = [
+            //     //     {value:0, label:"Web Application"},
+            //     //     {value:1, label:"Mobile App"}
+            //     //  ];
+            //     //  VSUtil.setComboItems(fields.app_id,data.apps,"id","app_name",null,null,0);
+            //  }
+        });
+        mThis.MovementDialog.show(op);
+    }
+
+    this.setResign = (id,menuLink)=>{
+
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.EmployeeListView.showPage(mThis.getFilterData());
+            },
+        };
+        mThis.ResignDialog =  new GeneralDialog({
+            title: LocaleManager.trans("Set Resign","titles"),
+            createContent:()=>{
+                return [
+                   ` <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Resign Date">Resign Date</label>
                             <div><input  name="resign_date" class="form-control data-input" placeholder="" data-field="resign_date"/></div>
                         </div>
@@ -1078,18 +1219,24 @@ var EmployeeComponent = new (function () {
                       <div class="form-group col-md-12">
                         <label class="form-label" vslang="titles.Remarks">Remarks</label>
                         <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
-                    </div>
+                      </div>
 
-                   `,
-                ].join("");
+                   `
+                ].join('');
             },
-            contentCreated: (me) => {
+            contentCreated:(me)=>{
                 DateTimePicker.init(me.controls.resign_date);
                 DateTimePicker.init(me.controls.effective_date);
-            },
 
-            configSelect: [],
-            buttons: [
+
+
+
+             },
+
+             configSelect:[
+
+             ],
+             buttons:[
                 {
                     label: "<span>Cancel</span>",
                     cssClass: "btn btn-warning text-white",
@@ -1098,33 +1245,26 @@ var EmployeeComponent = new (function () {
                     },
                 },
                 {
-                    cssClass: "btn btn-primary",
-                    label: "<span>Resign Now</span",
-                    click: (me, btn, divModal) => {
-                        let p = me.getData();
+                    cssClass:"btn btn-primary",
+                    label:"<span>Resign Now</span",
+                    click:(me, btn,divModal)=>{
+                         let p = me.getData();
                         //  p.emp_id = op.id;
-                        console.log(111, p);
-                        vsapi
-                            .call(
-                                `${main_view.base_url}/hr/employee/set-resign-status`,
-                                p,
-                                btn,
-                                false
-                            )
-                            .then((res) => {
-                                if (res.status_code == 200) {
-                                    me.modal.hide(true, p);
-                                    cv_interact.success(
-                                        "This Employee has been resign successfully!"
-                                    );
-                                    EmployeeComponent.EmployeeListView.showPage();
-                                } else cv_interact.error(res.error_message);
-                            });
-                    },
-                },
-            ],
-            onPrepareForm: (me, data) => {
+                         console.log(111,p);
+                         vsapi.call(`${main_view.base_url}/hr/employee/set-resign-status`,p,btn,false).then(res =>{
+                              if(res.status_code ==200){
+                                me.modal.hide(true, p);
+                                cv_interact.success('This Employee has been resign successfully!');
+                                EmployeeComponent.EmployeeListView.showPage();
+                              }else cv_interact.error(res.error_message);
+                         });
+                    }
+                }
+             ],
+             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
+
+
             },
             //  prepareFormOptions:{
             //      modifyTitle:"",
@@ -1152,9 +1292,10 @@ var EmployeeComponent = new (function () {
             //  }
         });
         mThis.ResignDialog.show(op);
-    };
+    }
 
-    this.promoteToStaff = (id, menuLink) => {
+    this.promoteToStaff = (id,menuLink)=>{
+
         let op = {
             id: id,
             btn: menuLink,
@@ -1196,11 +1337,11 @@ var EmployeeComponent = new (function () {
                     textField: "name",
                     valueField: "id",
                 },
-            ],
-            prepareFormOptions: {
-                createTitle: "New Education",
-                modifyTitle: "Edit Education",
-                targetProp: "Education",
+             ],
+             prepareFormOptions: {
+                createTitle: "Promote",
+                modifyTitle: "Promote",
+                targetProp: "Promote",
                 api: {
                     endpoint: `${main_view.base_url}/hr/employee/form-options`,
                     params: (op) => {
