@@ -199,11 +199,15 @@
                 </button>
             </div>
             <div class="d-flex align-items-center justify-content-end w-75 gap-3">
-                <div class="d-flex w-50 gap-3">
+                <div class="d-flex w-25 gap-3">
                     <div class="d-flex align-items-end w-100">
                         <input type="text" class="form-control filter-field btn_search" id="_search_employee"
                             placeholder="Search Employee">
                     </div>
+                </div>
+                <div class="d-flex align-items-center">
+                    <select type="id" id="el_branch" class="data-input filter-field"
+                        data-field="el_branch"></select>
                 </div>
                 <div class="d-flex align-items-center">
                     <select type="id" id="filter_employee_status" class="data-input filter-field"
