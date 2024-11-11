@@ -29,9 +29,9 @@ var HolidayComponent = new (function () {
             data: "holiday_type",
         },
         {
-            title: "remarks",
+            title: "description",
             className: "align-middle",
-            data: "remarks",
+            data: "description",
         },
         {
             title: "Start date",
@@ -48,12 +48,13 @@ var HolidayComponent = new (function () {
             className: "col_action align-end",
             data: function (data, row, display) {
                 return `
-                   <div class="d-flex justify-content-end align-items-end">
-                        <div class="text-end gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class="btn_holiday_action" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                            </a>
-                        </div>
+                    <div class="d-flex align-items-center gap-3">
+                        <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-holiday-modify">
+                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                        </a>
+                        <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-holiday-delete">
+                            <i class="fa-solid fa-trash-can text-danger fs-5"></i>
+                        </a>
                     </div>
                 `;
             },
@@ -72,9 +73,12 @@ var HolidayComponent = new (function () {
             listContainerClass: null,
         });
 
-        mThis.divFilter.addEventListener("change", (e) => {
-            e.preventDefault();
-            mThis.HolidayListView.showPage(mThis.getFilterData());
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+
+                mThis.HolidayListView.showPage(mThis.getFilterData());
+            };
         });
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
@@ -108,56 +112,70 @@ var HolidayComponent = new (function () {
         mThis.initAlready = true;
     };
     this.getFilterData = () => {
-        let p = {};
-        p.search_value = mThis.elSearch.value;
-        let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
-        main_filters.forEach((el) => {
+        let p = {
+            search_value: mThis.elSearch.value,
+        };
+
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        // console.log(222, p);
+        console.log(345, p);
 
         return p;
     };
-    this.initDropdownMenus = (table) => {
-        const menuOptopns = {
-            containerElement: table,
-            actionButtonClass: "btn_holiday_action",
-            cssClass: "bg-white shadow",
-            //menuItemClass:"",
-            menus: [
-                {
-                    html: '<span class="ps-2  " vslang="titles.Modify Holiday">Modify Holiday</span>',
-                    icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "edit_holiday",
-                },
-                {
-                    html: '<span class="ps-2  " vslang="titles.Delete Holiday">Delete Holiday</span>',
-                    icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_holiday",
-                },
-            ],
+    // this.initDropdownMenus = (table) => {
+    //     const menuOptopns = {
+    //         containerElement: table,
+    //         actionButtonClass: "btn_holiday_action",
+    //         cssClass: "bg-white shadow",
+    //         //menuItemClass:"",
+    //         menus: [
+    //             {
+    //                 html: '<span class="ps-2  " vslang="titles.Modify Holiday">Modify Holiday</span>',
+    //                 icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
+    //                 cssClass: "border-bottom pb-2",
+    //                 name: "edit_holiday",
+    //             },
+    //             {
+    //                 html: '<span class="ps-2  " vslang="titles.Delete Holiday">Delete Holiday</span>',
+    //                 icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
+    //                 cssClass: "border-bottom pb-2",
+    //                 name: "delete_holiday",
+    //             },
+    //         ],
 
-            onClick: (menuLink, id, name) => {
-                switch (name) {
-                    case "edit_holiday": {
-                        mThis.editHoliday(id, menuLink);
-                        break;
-                    }
-                    case "delete_holiday": {
-                        mThis.deleteHoliday(id, menuLink);
-                        break;
-                    }
+    //         onClick: (menuLink, id, name) => {
+    //             switch (name) {
+    //                 case "edit_holiday": {
+    //                     mThis.editHoliday(id, menuLink);
+    //                     break;
+    //                 }
+    //                 case "delete_holiday": {
+    //                     mThis.deleteHoliday(id, menuLink);
+    //                     break;
+    //                 }
 
-                    default: {
-                        break;
-                    }
-                }
-            },
-        };
-        new VSDropdownMenu(menuOptopns);
+    //                 default: {
+    //                     break;
+    //                 }
+    //             }
+    //         },
+    //     };
+    //     new VSDropdownMenu(menuOptopns);
+    // };
+    this.initDropdownMenus = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btn-holiday-modify");
+            if (btn) {
+                mThis.editHoliday(btn.dataset.id, btn);
+            }
+            btn = VSUtil.closestLimited(e.target, ".btn-holiday-delete");
+            if (btn) {
+                mThis.deleteHoliday(btn.dataset.id, btn);
+            }
+            console.log(123, btn);
+        });
     };
     this.editHoliday = (id, menuLink) => {
         console.log(234, id);
@@ -173,6 +191,9 @@ var HolidayComponent = new (function () {
     };
 
     this.deleteHoliday = (id, menuLink) => {
+        // Prevent multiple clicks on the delete button
+        menuLink.disabled = true;
+
         let op = {
             id: id,
             btn: menuLink,
@@ -180,6 +201,7 @@ var HolidayComponent = new (function () {
                 mThis.HolidayListView.showPage();
             },
         };
+
         cv_interact.confirm(
             "Delete this Holiday?",
             {
@@ -198,15 +220,33 @@ var HolidayComponent = new (function () {
                             false
                         )
                         .then((res) => {
-                            if (res.status_code == 200) {
+                            if (res.status_code === 200) {
                                 cv_interact.success("Deleted Successfully");
                                 mThis.HolidayListView.showPage();
+                            } else {
+                                // Display an error if the deletion fails
+                                cv_interact.error(
+                                    "Deletion failed. Try again."
+                                );
                             }
+                        })
+                        .catch(() => {
+                            cv_interact.error(
+                                "An error occurred. Please try again."
+                            );
+                        })
+                        .finally(() => {
+                            // Re-enable the button after completion
+                            menuLink.disabled = false;
                         });
+                } else {
+                    // Re-enable the button if the user cancels the confirmation
+                    menuLink.disabled = false;
                 }
             }
         );
     };
+
     // Show component
     this.show = function () {
         mThis.init();
@@ -236,7 +276,7 @@ const HolidayDialog = (() => {
                         <div class="form-group col-md-12">
                             <label for="holiday_type" class="form-label" vslang="titles.Holiday Type"></label>
                             <span class="text-danger" >*</span>
-                            <select name="holiday_type" class="data-input"  data-field="holiday_type"></select>
+                            <select name="holiday_type" class=" form-control data-input"  data-field="holiday_type_id"></select>
                         </div>
                         <div class="form-group col-md-12">
                            <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
@@ -249,8 +289,8 @@ const HolidayDialog = (() => {
                             <input name="end_date" class="form-control data-input" data-field="end_date" />
                         </div>
                         <div class="form-group col-md-12">
-                           <label for="remarks" class="form-label" vslang="titles.Remarks"></label>
-                           <input type="text" class="form-control data-input" data-field="remarks">               
+                           <label for="description" class="form-label" vslang="titles.Description"></label>
+                           <input type="text" class="form-control data-input" data-field="description">               
                         </div>
                     </div>`,
                 ].join("");
