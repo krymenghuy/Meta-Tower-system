@@ -184,6 +184,13 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Employee Management"></span>
                 </a>
             </li>
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(204); ?>>
+                <a href="WorkshiftComponent" modid="204" class="menu-item kt-menu__link">
+                    <span class="kt-menu__link-icon">
+                        <img class="icons opacity-icons" src="{{ asset('assets/images/icons/manage_sale_staff.svg') }}" />                    </span>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Workshift"></span>
+                </a>
+            </li>
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                 <a href="EmployeeBenefitComponent" modid="105" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -291,7 +298,7 @@ function v_display($mod_id, $module_ids = null)
                     </ul>
                 </div>
             </li>
-
+            
             {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                 <a href="SkillsComponent" modid="-1" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
