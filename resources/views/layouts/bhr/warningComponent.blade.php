@@ -24,7 +24,7 @@
         bottom: 0;
     }
     #_warning_list {
-        height: 570px;
+        height: 500px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
