@@ -7,6 +7,7 @@ use App\Models\JDV;
 use App\Models\Bhr\PayrollList;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\DBX;
 
 class PayrollList
 {
@@ -221,9 +222,23 @@ class PayrollList
             return JDV::error('Payroll not found');
         }
 
-        $get_employee = DB::table('employees')
-            ->where('status_id', 10)
-            ->selectRaw('id as emp_id, name, apply_payroll_tax, salary')
+        $payroll = DB::table('payrolls')->where('id', $payroll_id)->first();
+        if (!$payroll) {
+            return JDV::error('Payroll period not found');
+        }
+        $start_date = $payroll->start_date;
+        $end_date = $payroll->end_date;
+
+        $get_employee = DB::table('employees as e')
+            ->leftJoin('resignations as r', 'e.id', '=', 'r.emp_id')
+            ->where(function ($query) use ($start_date, $end_date) {
+                $query->where('e.status_id', 10) // Active employees
+                    ->orWhere(function ($q) use ($start_date, $end_date) {
+                        $q->where('e.status_id', 20) // Resigned employees
+                          ->whereBetween('r.effective_date', [$start_date, $end_date]);
+                    });
+            })
+            ->selectRaw('e.id as emp_id, e.name, e.apply_payroll_tax, e.salary')
             ->get();
 
         $success = 0;
@@ -290,6 +305,7 @@ class PayrollList
     }
 
 
+
     function calculatePayrollList($req, $ss)
     {
         $d = (object) $req;
@@ -299,14 +315,20 @@ class PayrollList
             $str_payroll_id = 'p.id = ' . $payroll_id;
         }
 
+        $start_date = DBX::formatDate('p.start_date', 'start_date');
+        $end_date = DBX::formatDate('p.end_date', 'end_date');
+
         $payrolls = DB::table('payroll_lists as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
+            ->leftJoin('resignations as r', 'r.emp_id', '=', 'e.id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->whereRaw($str_payroll_id)
             ->selectRaw('pl.id,
                         p.id as payroll_id,
+                        '.$start_date.',
+                        '.$end_date.',
                         p.name as payroll_name,
                         e.id as emp_id,
                         e.name as emp_name,
@@ -314,7 +336,10 @@ class PayrollList
                         el.name as emp_role,
                         e.salary,
                         pl.benefit, pl.deduction,
-                        e.photo_file_name as emp_photo')
+                        e.photo_file_name as emp_photo,
+                        e.status_id,
+                        e.joining_date,
+                        r.effective_date')
             ->orderBy('e.id')
             ->get();
 
@@ -325,7 +350,35 @@ class PayrollList
 
         foreach ($payrolls as &$payroll) {
 
-            // Retrieve allowance or set to 0 if not found
+            // Calculate payroll days in the period
+            $payroll_start_date = new \DateTime($payroll->start_date);
+            $payroll_end_date = new \DateTime($payroll->end_date);
+            $payroll_days = $payroll_start_date->diff($payroll_end_date)->days + 1;
+
+            $resigned_or_new_start = false;
+            $count_date = $payroll_days;
+
+            if ($payroll->status_id == 20 && $payroll->effective_date) {
+                // Employee has resigned
+                $effective_date = new \DateTime($payroll->effective_date);
+                if ($effective_date >= $payroll_start_date && $effective_date <= $payroll_end_date) {
+                    $count_date = $payroll_start_date->diff($effective_date)->days;
+                    $resigned_or_new_start = true;
+                }
+            } elseif ($payroll->joining_date) {
+                // Employee has just started
+                $joining_date = new \DateTime($payroll->joining_date);
+                if ($joining_date >= $payroll_start_date && $joining_date <= $payroll_end_date) {
+                    $count_date = $joining_date->diff($payroll_end_date)->days + 1;
+                    $resigned_or_new_start = true;
+                }
+
+            }
+
+            $salary = $payroll->salary;
+            $salary_per_day = $salary / $payroll_days;
+            $last_salary = $resigned_or_new_start ? $salary_per_day * $count_date : $salary;
+
             $payroll->allowance = DB::table('tax_allowances')
                 ->where('emp_id', $payroll->emp_id)
                 ->value('allowance') ?? 0;
@@ -334,17 +387,16 @@ class PayrollList
                 ->where('id', $payroll->emp_id)
                 ->value('apply_payroll_tax');
 
-            $salary = $payroll->salary;
-            $allowance = $payroll->allowance ;
+            $allowance = $payroll->allowance;
             $benefit = $payroll->benefit ?? 0;
             $deduction = $payroll->deduction;
             $tax_bonus = 0;
 
             if ($payroll->apply_payroll_tax == 0) {
                 $tax_info = DB::table('tax_brackets')
-                    ->where('lower_amount', '<=', $salary)
-                    ->where(function($query) use ($salary) {
-                        $query->where('upper_amount', '>=', $salary)
+                    ->where('lower_amount', '<=', $last_salary)
+                    ->where(function($query) use ($last_salary) {
+                        $query->where('upper_amount', '>=', $last_salary)
                               ->orWhere('upper_amount', '=', -1);
                     })
                     ->first(['rate', 'bias']);
@@ -352,19 +404,17 @@ class PayrollList
                 $tax_rate = $tax_info->rate ?? 0;
                 $bias = $tax_info->bias ?? 0;
 
-                // Check if there's a benefit (bonus)
                 if ($benefit > 0) {
-                    $payroll->tax_base = ($salary - $allowance) * ($tax_rate / 100) - $bias;
+                    $payroll->tax_base = ($last_salary - $allowance) * ($tax_rate / 100) - $bias;
                     $tax_bonus = $benefit * (20 / 100);
-                    $payroll->total = ($salary + $benefit) - ($payroll->tax_base + $tax_bonus + $deduction);
+                    $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $tax_bonus + $deduction);
                 } else {
-                    $payroll->tax_base = ($salary - $allowance) * ($tax_rate / 100) - $bias;
-                    $payroll->total = $salary - ($payroll->tax_base + $deduction);
+                    $payroll->tax_base = ($last_salary - $allowance) * ($tax_rate / 100) - $bias;
+                    $payroll->total = $last_salary - ($payroll->tax_base + $deduction);
                 }
             } else {
-                // Non-taxed employees
                 $payroll->tax_base = 0;
-                $payroll->total = $salary + $benefit - $deduction;
+                $payroll->total = $last_salary + $benefit - $deduction;
             }
 
             $row = DB::table('payroll_lists')->where('id', $payroll->id)->update([
@@ -389,6 +439,7 @@ class PayrollList
             'Calculated ids', $error_ids
         ]);
     }
+
 
 
 

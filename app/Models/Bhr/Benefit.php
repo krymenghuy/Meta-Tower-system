@@ -81,8 +81,8 @@ class Benefit
                 ];
                 $seniority_v_rule = [
                     'benefit_id' => '1|number',
-                    'start_date' => '0|date',
-                    'end_date' => '0|date',
+                    'start_date' => '1|date',
+                    'end_date' => '1|date',
                     'seniority_type' => '0|string|1-50',
                     'remarks' => '0|string|1-250'
                 ];
@@ -104,8 +104,8 @@ class Benefit
                 ];
                 $life_insurances_v_rule = [
                     'benefit_id' => '1|number',
-                    'start_date' => '0|date',
-                    'end_date' => '0|date',
+                    'start_date' => '1|date',
+                    'end_date' => '1|date',
                     'life_insurance_type' => '0|string|1-50',
                     'remarks' => '0|string|1-250'
                 ];
