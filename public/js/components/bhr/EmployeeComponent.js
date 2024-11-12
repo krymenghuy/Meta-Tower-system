@@ -167,12 +167,35 @@ var EmployeeComponent = new (function () {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                 const emp_type_id = container.dataset.typeid;
-                menu.set_terminated.style.display='none';
+                // menu.set_resign.style.display= status_id == 20? 'none' :'block';
+                // menu.set_rejoin.style.display = status_id == 10? 'none':'block';
+                // menu.set_terminated.style.display = status_id == 10? 'none':'block';
 
-                menu.set_rejoin.style.display = status_id == 10? 'none':'block';
+                // menu.promote_to_staff.style.display = emp_type_id ==  3? 'none':'block;'
+
+                if (status_id == 10) {
+                    for (const item in menu) {
+                        if (menu[item] && menu[item].style) {
+                            menu[item].style.display = (menu[item].dataset.mnuaction === 'set_resign' || menu[item].dataset.mnuaction === 'edit_employee') ? 'block' : 'none';
+                        }
+                        if ((emp_type_id == 1 || emp_type_id == 2) && menu[item].dataset.mnuaction === 'promote_to_staff') {
+                            menu[item].style.display = 'block';
+                        }
+                    }
+                }else if (status_id == 20) {
+                    for (const item in menu) {
+                        if (menu[item] && menu[item].style) {
+                            menu[item].style.display = (menu[item].dataset.mnuaction === 'set_rejoin' || menu[item].dataset.mnuaction === 'set_terminated') ? 'block' : 'none';
+                        }
+                    }
+                }else 
+                for (const item in menu) {
+                    if (menu[item] && menu[item].style) {
+                    	menu[item].style.display = (menu[item].dataset.mnuaction === 'set_rejoin' || menu[item].dataset.mnuaction === 'delete_employee') ? 'block' : 'none';
+                    }
+                }
                 
-                menu.promote_to_staff.style.display = emp_type_id ==  3? 'none':'block;'
-
+           
                 // switch(status_id){
                 //     case 10:{
                 //         menu.set_rejoin.style.display='none';
