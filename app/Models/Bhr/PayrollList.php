@@ -222,6 +222,7 @@ class PayrollList
             return JDV::error('Payroll not found');
         }
 
+        // Get payroll period
         $payroll = DB::table('payrolls')->where('id', $payroll_id)->first();
         if (!$payroll) {
             return JDV::error('Payroll period not found');
@@ -230,13 +231,26 @@ class PayrollList
         $end_date = $payroll->end_date;
 
         $get_employee = DB::table('employees as e')
-            ->leftJoin('resignations as r', 'e.id', '=', 'r.emp_id')
             ->where(function ($query) use ($start_date, $end_date) {
-                $query->where('e.status_id', 10) // Active employees
-                    ->orWhere(function ($q) use ($start_date, $end_date) {
-                        $q->where('e.status_id', 20) // Resigned employees
-                          ->whereBetween('r.effective_date', [$start_date, $end_date]);
+                $query->where('e.status_id', 10)  // Active employees
+                    ->orWhere(function ($query) use ($start_date, $end_date) {
+                        $query->where('e.status_id', 20)  // Resigned employees
+                            ->whereExists(function ($query) use ($start_date, $end_date) {
+                                $query->select(DB::raw(1))
+                                    ->from('resignations as r')
+                                    ->whereColumn('r.emp_id', 'e.id')
+                                    ->whereBetween('r.effective_date', [$start_date, $end_date]);
+                            })
+                            ->orWhereExists(function ($query) use ($start_date) {
+                                $query->select(DB::raw(1))
+                                    ->from('resignations as r')
+                                    ->whereColumn('r.emp_id', 'e.id')
+                                    ->where('r.effective_date', '>', $start_date);
+                            });
                     });
+            })
+            ->where(function ($query) use ($end_date) {
+                $query->where('e.joining_date', '<=', $end_date);
             })
             ->selectRaw('e.id as emp_id, e.name, e.apply_payroll_tax, e.salary')
             ->get();
@@ -249,7 +263,7 @@ class PayrollList
                 $taxInfo = DB::table('tax_brackets')
                     ->where(function ($query) use ($emp) {
                         $query->whereRaw('lower_amount <= ?', [$emp->salary])
-                            ->whereRaw('(upper_amount >= ? OR upper_amount = -1)', [$emp->salary]);
+                              ->whereRaw('(upper_amount >= ? OR upper_amount = -1)', [$emp->salary]);
                     })
                     ->select('rate', 'bias')
                     ->first();
@@ -365,6 +379,7 @@ class PayrollList
                     $count_date = $payroll_start_date->diff($effective_date)->days;
                     $resigned_or_new_start = true;
                 }
+
             } elseif ($payroll->joining_date) {
                 // Employee has just started
                 $joining_date = new \DateTime($payroll->joining_date);
@@ -379,43 +394,58 @@ class PayrollList
             $salary_per_day = $salary / $payroll_days;
             $last_salary = $resigned_or_new_start ? $salary_per_day * $count_date : $salary;
 
+            // \Log::info('count Days: ' . $count_date . ' - Employee ID: ' . $payroll->emp_id);
+
             $payroll->allowance = DB::table('tax_allowances')
                 ->where('emp_id', $payroll->emp_id)
                 ->value('allowance') ?? 0;
 
+            $allowance = $payroll->allowance;
+            $allowance_per_day = $allowance / $payroll_days;
+            $last_allowance = $resigned_or_new_start ? $allowance_per_day * $count_date : $allowance;
+
             $payroll->apply_payroll_tax = DB::table('employees')
                 ->where('id', $payroll->emp_id)
                 ->value('apply_payroll_tax');
-
-            $allowance = $payroll->allowance;
             $benefit = $payroll->benefit ?? 0;
             $deduction = $payroll->deduction;
             $tax_bonus = 0;
-
             if ($payroll->apply_payroll_tax == 0) {
                 $tax_info = DB::table('tax_brackets')
-                    ->where('lower_amount', '<=', $last_salary)
-                    ->where(function($query) use ($last_salary) {
-                        $query->where('upper_amount', '>=', $last_salary)
+                    ->where('lower_amount', '<=', $salary)
+                    ->where(function($query) use ($salary) {
+                        $query->where('upper_amount', '>=', $salary)
                               ->orWhere('upper_amount', '=', -1);
                     })
                     ->first(['rate', 'bias']);
-
                 $tax_rate = $tax_info->rate ?? 0;
                 $bias = $tax_info->bias ?? 0;
+                $bias_per_day = $bias / $payroll_days;
+                $last_bias = $resigned_or_new_start ? $bias_per_day * $count_date : $bias;
+
 
                 if ($benefit > 0) {
-                    $payroll->tax_base = ($last_salary - $allowance) * ($tax_rate / 100) - $bias;
+                    $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
+                    if($payroll->tax_base < 0) {
+                        $payroll->tax_base = 0;
+                    }
                     $tax_bonus = $benefit * (20 / 100);
                     $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $tax_bonus + $deduction);
                 } else {
-                    $payroll->tax_base = ($last_salary - $allowance) * ($tax_rate / 100) - $bias;
+                    $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
+
+                    if($payroll->tax_base < 0) {
+                        $payroll->tax_base = 0;
+                    }
                     $payroll->total = $last_salary - ($payroll->tax_base + $deduction);
                 }
+
             } else {
                 $payroll->tax_base = 0;
                 $payroll->total = $last_salary + $benefit - $deduction;
             }
+
+
 
             $row = DB::table('payroll_lists')->where('id', $payroll->id)->update([
                 'tax_base' => $payroll->tax_base,
