@@ -71,12 +71,14 @@ class Payroll
         $search_authorized = $d->authorized ?? null;
         $search_disbursed = $d->disbursed ?? null;
 
+        $start_date = DBX::formatDate('p.start_date','start_date');
+        $end_date = DBX::formatDate('p.end_date','end_date');
+
         $str_search = '1=1';
 
         $query = DB::table('payrolls as p')
         ->selectRaw('p.id, p.name, p.month_year,
-                     DATE_FORMAT(p.start_date, "%Y-%m-%d") as start_date,
-                     DATE_FORMAT(p.end_date, "%Y-%m-%d") as end_date,
+                    '.$start_date.', '.$end_date.',
                      p.p_number, p.total, p.authorized, p.disbursed,
                      p.currency_code, p.exchange_rate')
         ->where('p.branch_id', $branch_id);

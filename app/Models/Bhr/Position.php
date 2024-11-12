@@ -75,8 +75,6 @@ class Position
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
@@ -111,8 +109,6 @@ class Position
 
             // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
             'departments' => DB::table('departments')->selectRaw('id,name')->get(),
-
-
             'positions' => $position,
         ];
 

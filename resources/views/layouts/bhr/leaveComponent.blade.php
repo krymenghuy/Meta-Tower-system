@@ -42,7 +42,7 @@
 
 <style>
     #_leave_request_list {
-        height: 460px;
+        height: 400px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;

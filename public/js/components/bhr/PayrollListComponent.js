@@ -8,7 +8,6 @@ var PayrollListComponent = new (function () {
     this.title_prop = "Payroll List";
     this.elFilter = this.self.querySelector('#el_filter_payrollList');
     this.elFilterBranch = this.self.querySelector('#el_filter_branch');
-    this.btnInsert = this.self.querySelector("#_btnInsert");
     this.btnImport = this.self.querySelector("#_btnImport");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSortBy = this.self.querySelector("#el_sort_by");
@@ -40,7 +39,7 @@ var PayrollListComponent = new (function () {
         },
 
         {
-            title: "Salary Base",
+            title: "Salary",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol +data.salary ?? '0.00'}</p>`;
@@ -61,6 +60,29 @@ var PayrollListComponent = new (function () {
                 return `<p class="p-0 m-0">${main_view.currency.symbol +data.deduction ?? '0.00'}</p>`;
             }
         },
+        {
+            title: "Allowance",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.allowance ?? '0.00'}</p>`;
+            }
+        },
+
+        {
+            title: "Tax Rate",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.tax_rate ?? ''} %</p>`;
+            }
+        },
+        {
+            title: "Bias",
+            className: "align-middle",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.bias ?? '0.00'}</p>`;
+            }
+        },
+
 
         {
             title: "Tax Base",
@@ -70,17 +92,10 @@ var PayrollListComponent = new (function () {
             }
         },
         {
-            title: "Tax Allowance",
+            title: "Tax Bonus",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_allowance ?? '0.00'}</p>`;
-            }
-        },
-        {
-            title: "Tax Rate",
-            className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.tax_rate ?? ''} %</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_bonus ?? '0.00'}</p>`;
             }
         },
         {
@@ -156,23 +171,7 @@ var PayrollListComponent = new (function () {
                }else cv_interact.error(res.error_message);
             });
         };
-        mThis.btnInsert.onclick = function (e) {
-            e.preventDefault();
-            // let content = mThis.bookingListView.getListContainer();
 
-            let op = {
-                id: null,
-                // id: 1,
-                btn: e.target,
-                onClose: () => {
-                    cv_interact.success('Inserted Successfully');
-                    mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                }
-            };
-            // content.parentElement.classList.add('d-none');
-
-            PayRollListDialog.show(op);
-        };
         mThis.btnImport.onclick = function (e) {
             e.preventDefault();
             // let content = mThis.bookingListView.getListContainer();

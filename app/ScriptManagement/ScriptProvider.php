@@ -106,7 +106,6 @@ class ScriptProvider
                 '/js/components/bhr/SkillsComponent.js',
                 '/js/components/bhr/JobsLevelComponent.js',
                 '/js/components/bhr/EmployeeComponent.js',
-
                 '/js/components/bhr/PayrollComponent.js',
                 '/js/components/bhr/PayrollListComponent.js',
                 '/js/components/bhr/DepartmentComponent.js',
@@ -123,6 +122,9 @@ class ScriptProvider
                 '/js/components/bhr/AccountComponent.js',
                 '/js/components/bhr/TaxBracketComponent.js',
                 '/js/components/bhr/WalletAccountComponent.js',
+                '/js/components/bhr/HolidayComponent.js',
+                '/js/components/bhr/WorkshiftComponent.js',
+                
 
             ]
         ],
