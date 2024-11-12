@@ -92,10 +92,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('emp-event')->
     Route::post('/delete', [EmployeeEventController::class, 'deleteEmpEvent']);
     Route::post('/form-options', [EmployeeEventController::class, 'getFormOptions']);
 });
-
-
-
-
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave')->group(function () {
 
     Route::post('/save', [LeaveController::class, 'save']);
