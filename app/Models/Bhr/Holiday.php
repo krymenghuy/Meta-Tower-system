@@ -31,10 +31,10 @@ class Holiday
             'description' => '0|string|0-300',
         ];
 
-        $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?'];
+        $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?',','];
         $checkUnique = ["$branch_id|holidays|name|id=id|text=Holiday already exists."];
 
-        $res = validateObject($arr, $v_rule, true, ['Title' => $pos_char], $ss->lang, false, $checkUnique);
+        $res = validateObject($arr, $v_rule, true, ['description' => $pos_char], $ss->lang, false, $checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -75,8 +75,8 @@ class Holiday
             $sort_by = 'start_date';
         }
 
-        // Ensure sort direction is either 'asc' or 'desc'
-        $sort_direction = strtolower($sort_direction) === 'desc' ? 'desc' : 'asc';
+        // Ensure sort direction is either 'asc' or 'asc'
+        $sort_direction = strtolower($sort_direction) === 'asc' ? 'asc' : 'asc';
 
         $query = DB::table('holidays as h')
         ->join('holiday_types as ht', 'ht.id', '=', 'h.holiday_type_id')

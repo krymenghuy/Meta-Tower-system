@@ -696,29 +696,38 @@ class Employee //extends Model
         return DV::error('Failed to save resignation record.');
     }
     
-    public function setRejoinStatus($arr = [], $status_id, $id = null, $ss = null)
+   
+    public function setRejoinStatus($arr = [], $id = null, $ss = null, $status_id)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
-        $d = (object)$arr;
-        $remarks = $d->remarks;
-        $event_date = $d->event_date;
-        if($event_date){
-            $event_date = date('Y-m-d',strtotime($event_date));
-
-        }
-        
-        $events = [
-            'active.10' => 'Rejoin to work'
+    
+        $v_rule = [
+            
+            'rejoin_date' => '1|date',
+            'remarks' => '0|string|1-300'
         ];
+    
+        
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        if ($res->error) return DV::error($res->error);
+    
+        $inputs = $res->values;
+        $inputs['emp_id'] = $id;
+    
+       
         $emp = $this->getProps($id, 'status_id');
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
     
-       
+        
+        $events = [
+            'active.10' => 'Rejoin'
+        ];
         $key = $emp->status_id . '.' . $status_id;
-        $event_name = $events[$key] ?? 'Rejoin'; 
+        $event_name = $events[$key] ?? 'Rejoin';
+    
         $event_id = self::getEventId($event_name);
         if (!$event_id) {
             $event_data = ['name' => $event_name];
@@ -731,7 +740,6 @@ class Employee //extends Model
             return DV::error('Failed to create or retrieve rejoin event.');
         }
     
-        // Log the rejoin event
         $event_date = date('Y-m-d', strtotime($inputs['rejoin_date']));
         $event_inputs = [
             'emp_id' => $id,
@@ -740,21 +748,21 @@ class Employee //extends Model
             'event_date' => $event_date
         ];
     
-        // Save the event to the database using query builder
-        $event_saved = DB::table('emp_events')->insert($event_inputs);
+        $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
         if (!$event_saved) {
             return DV::error('Failed to log rejoin event.');
         }
     
-        // Update employee status to 'Rejoined' (status 10)
-        $status_updated = DB::table('employees')->where('id', $id)->update(['status_id' => 10]);
+        
+        $rejoin_id = saveData($ss, 'rejoins', ['id' => null], $inputs, [], 1);
+        if ($rejoin_id) {
+           
+            DB::table('employees')->where('id', $id)->update(['status_id' => 10]);
     
-        if ($status_updated) {
-            // Return success message
-            return DV::depends(1, ['new rejoin' => $inputs], 'Rejoin processed successfully.');
+            return DV::depends(1, ['rejoin' => $inputs], 'rejoin processed successfully.');
         }
     
-        return DV::error('Failed to update employee status.');
+        return DV::error('Failed to save rejoin record.');
     }
     
 }

@@ -170,6 +170,7 @@ var EmployeeComponent = new (function () {
                 menu.set_terminated.style.display='none';
 
                 menu.set_rejoin.style.display = status_id == 10? 'none':'block';
+                
                 menu.promote_to_staff.style.display = emp_type_id ==  3? 'none':'block;'
 
                 // switch(status_id){
@@ -1472,56 +1473,101 @@ var EmployeeComponent = new (function () {
             }
         });
     };
+    this.setRejoin = (id,menuLink)=>{
 
-    this.setRejoin = (id, lnk) => {
-        let tr = lnk.closest("tr");
-        console.log(1, tr);
-        let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
-        console.log(123, status_id);
-
-        let inputOptions = {
-            title: "Set Employee Rejoin",
-            dataLabel: "Employee status",
-            valueMember: "status_id",
-            textMember: "name",
-            confirmButtonText: "Save",
-            blankErrorMessage: "Status is not correct!",
-            data: [
-                {
-                    status_id: "10",
-                    name: "Rejoin",
-                },
-            ],
-            defaultValue: status_id,
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.EmployeeListView.showPage(mThis.getFilterData());
+            },
         };
+        mThis.RejoinDialog =  new GeneralDialog({
+            title: LocaleManager.trans("Set Rejoin","titles"),
+            createContent:()=>{
+                return [
+                   ` <div class="form-group col-md-12">
+                            <label class="form-label" vslang="titles.Resign Date">Rejoin Date</label>
+                            <div><input  name="rejoin_date" class="form-control data-input" placeholder="" data-field="rejoin_date"/></div>
+                        </div>
+                        
+                      <div class="form-group col-md-12">
+                        <label class="form-label" vslang="titles.Remarks">Remarks</label>
+                        <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
+                      </div>
 
-        InputBox2.show(inputOptions, (d) => {
-            if (d) {
-                let p = {
-                    id: id,
-                    status_id: d.value,
-                };
-                console.log(123, p);
+                   `
+                ].join('');
+            },
+            contentCreated:(me)=>{
+                DateTimePicker.init(me.controls.rejoin_date);
+                
 
-                vsapi
-                    .call(`${mThis.base_url}/hr/employee/update-status`, p)
-                    .then((res) => {
-                        if (res.status_code === 200) {
-                            mThis.elEmployeeStatus.value = parseInt(d.value);
-                            InputBox2.close();
-                            mThis.elEmployeeStatus.dispatchEvent(
-                                new Event("change")
-                            );
-                            cv_interact.success(
-                                "The Employee has been rejoin to work"
-                            );
-                            // if(tr) tr.dataset.status_id = d.value;
-                            // mThis.EmployeeListView.showPage(mThis.getFilterData());
-                        } else cv_interact.error(res.error_message);
-                    });
-            }
+
+
+             },
+
+             configSelect:[
+
+             ],
+             buttons:[
+                {
+                    label: "<span>Cancel</span>",
+                    cssClass: "btn btn-warning text-white",
+                    click: (me) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    cssClass:"btn btn-primary",
+                    label:"<span>Join Now</span",
+                    click:(me, btn,divModal)=>{
+                         let p = me.getData();
+                        //  p.emp_id = op.id;
+                         console.log(111,p);
+                         vsapi.call(`${main_view.base_url}/hr/employee/set-rejoin-status`,p,btn,false).then(res =>{
+                              if(res.status_code ==200){
+                                me.modal.hide(true, p);
+                                cv_interact.success('This Employee has been join successfully!');
+                              }else cv_interact.error(res.error_message);
+                         });
+                    }
+                }
+             ],
+             onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+
+
+            },
+            //  prepareFormOptions:{
+            //      modifyTitle:"",
+            //      createTitle:"Set Resign",
+            //      api:{
+            //         targetProp:"Set Resign",
+            //         endpoint: `${main_view.base_url}`,
+            //         params:(dataOption)=>{
+            //             return {"id":dataOption.id};
+            //         },
+            //      }
+            //  },
+            //  onShow:(me)=>{
+            //     me.controls.name.focus();
+            //     me.controls.name.select();
+            // },
+            //  onPrepareForm:(me,data)=>{
+            //      let fields = me.getFields();
+
+            //     //  const app_types = [
+            //     //     {value:0, label:"Web Application"},
+            //     //     {value:1, label:"Mobile App"}
+            //     //  ];
+            //     //  VSUtil.setComboItems(fields.app_id,data.apps,"id","app_name",null,null,0);
+            //  }
         });
-    };
+        mThis.RejoinDialog.show(op);
+    }
+
+    
 
     this.editEmployee = (id, menuLink) => {
         let op = {

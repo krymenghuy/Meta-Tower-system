@@ -158,7 +158,7 @@ class EmployeeController extends Controller
        }
        $id = $req->id ? $req->id : $req->id;
        $employee = new Employee($id, $ss);
-       $res = $employee->setRejoinStatus($req->all(),$req->status_id, $id);
+       $res = $employee->setRejoinStatus($req->all(),$id,$ss,$req->status_id);
        return JDV::raw($res);
    }
 
