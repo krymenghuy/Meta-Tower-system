@@ -96,7 +96,7 @@ class PayrollList
                         pl.tax_rate,
                         pl.bias,
                         pl.tax_base,
-                        pl.tax_bonus,
+                        pl.tax_benefit,
                         pl.total_salary,
                         pl.disburse,
                         e.photo_file_name as emp_photo')
@@ -168,7 +168,7 @@ class PayrollList
                     e.salary,
                     pl.benefit, pl.deduction,
                     pl.tax_base,
-                    pl.tax_bonus,
+                    pl.tax_benefit,
                     pl.total_salary,
                     pl.disburse,
                     e.photo_file_name as emp_photo')
@@ -409,7 +409,7 @@ class PayrollList
                 ->value('apply_payroll_tax');
             $benefit = $payroll->benefit ?? 0;
             $deduction = $payroll->deduction;
-            $tax_bonus = 0;
+            $tax_benefit = 0;
             if ($payroll->apply_payroll_tax == 0) {
                 $tax_info = DB::table('tax_brackets')
                     ->where('lower_amount', '<=', $salary)
@@ -429,8 +429,8 @@ class PayrollList
                     if($payroll->tax_base < 0) {
                         $payroll->tax_base = 0;
                     }
-                    $tax_bonus = $benefit * (20 / 100);
-                    $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $tax_bonus + $deduction);
+                    $tax_benefit = $benefit * (20 / 100);
+                    $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $tax_benefit + $deduction);
                 } else {
                     $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
 
@@ -449,7 +449,7 @@ class PayrollList
 
             $row = DB::table('payroll_lists')->where('id', $payroll->id)->update([
                 'tax_base' => $payroll->tax_base,
-                'tax_bonus' => $tax_bonus,
+                'tax_benefit' => $tax_benefit,
                 'total_salary' => $payroll->total
             ]);
 
