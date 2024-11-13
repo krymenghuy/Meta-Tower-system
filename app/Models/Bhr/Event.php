@@ -20,11 +20,11 @@ class Event
     static function createEvent($arr,$ss = null){
         $ss = $ss ?? self::userInfo;
         $branch_id = $ss->branch_id;
+       
         $v_rule = [
             'id' => '0|identity=1',
             'name' => '1|string',
-            'event_type' => '0|string',
-            'impact' => '0|string',
+            'event_type' => '0|string|default = General',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);

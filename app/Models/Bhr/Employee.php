@@ -619,15 +619,6 @@ class Employee //extends Model
 
         return DV::error('Failed to update employee.');
     }
-    function promoteChangeEmployee($arr, $id = null, $ss = null)
-    {
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-        $promote_info = null;
-        if (isset($arr['promote_info'])) {
-            $promote_info = $arr['promote_info'];
-        } else return DV::error('promote info is required');
-    }
     public function setResignStatus($arr = [], $id = null, $ss = null, $status_id)
     {
         $ss = $ss ?? $this->userInfo;
@@ -672,9 +663,11 @@ class Employee //extends Model
         }
     
         $event_date = date('Y-m-d', strtotime($inputs['resign_date']));
+        $impact = $status_id > $emp->status_id ? 'Positive' : ($status_id < $emp->status_id ? 'Negative' : 'Neutral');
         $event_inputs = [
             'emp_id' => $id,
             'event_id' => $event_id,
+            'impact' => $impact,
             'remarks' => $inputs['remarks'] ?? '',
             'event_date' => $event_date
         ];
@@ -701,21 +694,14 @@ class Employee //extends Model
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
-    
         $v_rule = [
-            
             'rejoin_date' => '1|date',
             'remarks' => '0|string|1-300'
         ];
-    
-        
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
-    
         $inputs = $res->values;
         $inputs['emp_id'] = $id;
-    
-       
         $emp = $this->getProps($id, 'status_id');
         if (!$emp) {
             return DV::error('Employee ID not found!');
@@ -734,16 +720,16 @@ class Employee //extends Model
             $event_result = Event::createEvent($event_data, $ss);
             $event_id = $event_result->status_code == 200 ? $event_result->data['id'] : '';
         }
-    
-        
         if (!$event_id) {
             return DV::error('Failed to create or retrieve rejoin event.');
         }
     
         $event_date = date('Y-m-d', strtotime($inputs['rejoin_date']));
+        $impact = $status_id > $emp->status_id ? 'Positive' : ($status_id < $emp->status_id ? 'Negative' : 'Neutral');
         $event_inputs = [
             'emp_id' => $id,
             'event_id' => $event_id,
+            'impact' => $impact,
             'remarks' => $inputs['remarks'] ?? '',
             'event_date' => $event_date
         ];
