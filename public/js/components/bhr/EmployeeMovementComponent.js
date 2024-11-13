@@ -49,11 +49,13 @@ var EmployeeMovementComponent = new (function () {
         },
 
         {
-            title: "Remarks",
+            title: "Create By",
             className: "align-middle",
-            data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.remarks ?? ''}</p>`;
-            }
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
+                <span style="font-size: 12px; color: #2b3991;">${data.updated_at ?? ""}</span>
+            </div>`,
         },
 
         {
@@ -84,17 +86,7 @@ var EmployeeMovementComponent = new (function () {
             }
         },
 
-        {
-            className: "col_action align-middle",
-            data: (data) => `
-            <div class="d-flex justify-content-end align-items-end">
-                <div class="text-end gap-2 d-flex flex-wrap">
-                    <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_movement_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                        <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                    </a>
-                </div>
-            </div>`,
-        },
+      
     ];
 
     this.init = () => {

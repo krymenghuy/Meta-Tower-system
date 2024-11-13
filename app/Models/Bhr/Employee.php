@@ -519,41 +519,45 @@ class Employee //extends Model
     {
         $ss = $ss ? $ss : $this->userInfo;
         $id = $id ?? $this->id;
-        $x = DB::table('employees')->where('id', $id)->update([
-            'status_id' => $status_id,
-            'update_user' => $ss->full_name,
-            'update_date' => getNowTime(),
-            'update_uid' => $ss->user_id
-        ]);
 
-        // Check if the status_id indicates a resignation (status_id = 30)
-        if ($status_id == 20) {
-            // Check if a resignation record already exists
-            $existingResignation = DB::table('resignations')->where('emp_id', $id)->first();
-
-            if ($existingResignation) {
-                // Update the existing resignation record
-                DB::table('resignations')->where('emp_id', $id)->update([
-                    'effective_date' => getNowTime(),  // Adjust to the actual effective date
-                    'resignation_date' => getNowTime(),
-                    'update_user' => $ss->full_name,
-                    'update_date' => getNowTime(),
-                    'update_uid' => $ss->user_id
-                ]);
-            } else {
-                // Insert a new resignation record
-                DB::table('resignations')->insert([
-                    'emp_id' => $id,
-                    'effective_date' => getNowTime(),  // Adjust to the actual effective date
-                    'resignation_date' => getNowTime(),
-                    'remarks' => 'Resignation recorded', // Add remarks as needed
-                    'create_user' => $ss->full_name,
-                    'create_date' => getNowTime(),
-                    'create_uid' => $ss->user_id
-                ]);
-            }
+        $emp = $this->getProps($id, 'status_id');
+        if (!$emp) {
+            return DV::error('Employee ID not found!');
         }
-
+    
+        
+        $events = [
+            'active.30' => 'Terminated'
+        ];
+        $key = $emp->status_id . '.' . $status_id;
+        $event_name = $events[$key] ?? 'Terminated';
+    
+        $event_id = self::getEventId($event_name);
+        if (!$event_id) {
+            $event_data = ['name' => $event_name];
+            $event_result = Event::createEvent($event_data, $ss);
+            $event_id = $event_result->status_code == 200 ? $event_result->data['id'] : '';
+        }
+    
+        
+        if (!$event_id) {
+            return DV::error('Failed to create or retrieve terminated event.');
+        }
+        $event_date = date('Y-m-d');
+        $impact = $status_id > $emp->status_id ? 'Positive' : ($status_id < $emp->status_id ? 'Negative' : 'Neutral');
+        $event_inputs = [
+            'emp_id' => $id,
+            'event_id' => $event_id,
+            'impact' => $impact,
+            'remarks' => 'terminated',
+            'event_date' => $event_date
+        ];
+    
+        $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
+        if (!$event_saved) {
+            return DV::error('Failed to log resignation event.');
+        }
+        $x = DB::table('employees')->where('id', $id)->update(['status_id' => $status_id]);
         return DV::depends($x, ['Employee status', 'updated']);
     }
     static function getEventId($name)
@@ -619,51 +623,134 @@ class Employee //extends Model
 
         return DV::error('Failed to update employee.');
     }
-    function promoteChangeEmployee($arr, $id = null, $ss = null)
-    {
-        $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
-        $promote_info = null;
-        if (isset($arr['promote_info'])) {
-            $promote_info = $arr['promote_info'];
-        } else return DV::error('promote info is required');
-    }
-    public function setResignStatus($arr = [], $id = null, $ss = null)
+    public function setResignStatus($arr = [], $id = null, $ss = null, $status_id)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
-
+    
         $v_rule = [
-            // 'id' => '0|identify=1',
-            // 'emp_id' => '1|number',
             'effective_date' => '1|date',
             'resign_date' => '1|date',
             'remarks' => '0|string|1-300'
         ];
-
+    
+        
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        if ($res->error) return DV::error($res->error);
+    
+        $inputs = $res->values;
+        $inputs['emp_id'] = $id;
+    
+       
+        $emp = $this->getProps($id, 'status_id');
+        if (!$emp) {
+            return DV::error('Employee ID not found!');
+        }
+    
+        
+        $events = [
+            'active.20' => 'Resignation'
+        ];
+        $key = $emp->status_id . '.' . $status_id;
+        $event_name = $events[$key] ?? 'Resignation';
+    
+        $event_id = self::getEventId($event_name);
+        if (!$event_id) {
+            $event_data = ['name' => $event_name];
+            $event_result = Event::createEvent($event_data, $ss);
+            $event_id = $event_result->status_code == 200 ? $event_result->data['id'] : '';
+        }
+    
+        
+        if (!$event_id) {
+            return DV::error('Failed to create or retrieve resignation event.');
+        }
+    
+        $event_date = date('Y-m-d', strtotime($inputs['resign_date']));
+        // $impact = $status_id > $emp->status_id ? 'Positive' : ($status_id < $emp->status_id ? 'Negative' : 'Neutral');
+        $event_inputs = [
+            'emp_id' => $id,
+            'event_id' => $event_id,
+            'impact' => 'Negative',
+            'remarks' => $inputs['remarks'] ?? '',
+            'event_date' => $event_date
+        ];
+    
+        $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
+        if (!$event_saved) {
+            return DV::error('Failed to log resignation event.');
+        }
+    
+        
+        $resign_id = saveData($ss, 'resignations', ['id' => null], $inputs, [], 1);
+        if ($resign_id) {
+           
+            DB::table('employees')->where('id', $id)->update(['status_id' => 20]);
+    
+            return DV::depends(1, ['new resign' => $inputs], 'Resignation processed successfully.');
+        }
+    
+        return DV::error('Failed to save resignation record.');
+    }
+    public function setRejoinStatus($arr = [], $id = null, $ss = null, $status_id)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+        $v_rule = [
+            'rejoin_date' => '1|date',
+            'remarks' => '0|string|1-300'
+        ];
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $inputs['emp_id'] = $id;
-        $resign_id = saveData($ss, 'resignations', ['id' => null], $inputs, [], 1);
-
-        if ($resign_id) {
-            DB::table('employees')->where('id', $id)->update(['status_id' => 20]);
-
-            return DV::depends(1, ['new resign' => $inputs], 'Failed to resign');
+        $emp = $this->getProps($id, 'status_id');
+        if (!$emp) {
+            return DV::error('Employee ID not found!');
         }
-        return DV::error('Failed');
+    
+        
+        $events = [
+            'active.10' => 'Rejoin'
+        ];
+        $key = $emp->status_id . '.' . $status_id;
+        $event_name = $events[$key] ?? 'Rejoin';
+    
+        $event_id = self::getEventId($event_name);
+        if (!$event_id) {
+            $event_data = ['name' => $event_name];
+            $event_result = Event::createEvent($event_data, $ss);
+            $event_id = $event_result->status_code == 200 ? $event_result->data['id'] : '';
+        }
+        if (!$event_id) {
+            return DV::error('Failed to create or retrieve rejoin event.');
+        }
+    
+        $event_date = date('Y-m-d', strtotime($inputs['rejoin_date']));
+        // $impact = $status_id > $emp->status_id ? 'Positive' : ($status_id < $emp->status_id ? 'Negative' : 'Neutral');
+        $event_inputs = [
+            'emp_id' => $id,
+            'event_id' => $event_id,
+            'impact' => 'Positive',
+            'remarks' => $inputs['remarks'] ?? '',
+            'event_date' => $event_date
+        ];
+    
+        $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
+        if (!$event_saved) {
+            return DV::error('Failed to log rejoin event.');
+        }
+    
+        
+        $rejoin_id = saveData($ss, 'rejoins', ['id' => null], $inputs, [], 1);
+        if ($rejoin_id) {
+           
+            DB::table('employees')->where('id', $id)->update(['status_id' => 10]);
+    
+            return DV::depends(1, ['rejoin' => $inputs], 'rejoin processed successfully.');
+        }
+    
+        return DV::error('Failed to save rejoin record.');
     }
-    public function setRejoinStatus($status_id, $id = null, $ss = null)
-    {
-        $ss = $ss ?? $this->userInfo;
-        $id = $id ?? $this->id;
-
-
-        $rejoined = DB::table('employees')->where('id', $id)->update([
-            'status_id' => $status_id,
-        ]);
-
-        return DV::depends($rejoined, ['Employee status updated successfully'], 'Failed to update employee status');
-    }
+    
 }
