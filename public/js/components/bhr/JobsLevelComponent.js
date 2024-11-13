@@ -9,6 +9,7 @@ var JobsLevelComponent = new (function () {
     this.title_prop = "Job Level";
     this.btnAdd = this.self.querySelector("#_btnAddJobLevel");
     this.elSearch = this.self.querySelector("#_job_level_search");
+    this.elCard = this.self.querySelector(".top_level_card");
     this._searchJobLevel = this.self.querySelector("#container_jobLevel");
     this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
     // Define table columns
@@ -21,7 +22,7 @@ var JobsLevelComponent = new (function () {
             },
         },
         {
-            title: "Job Name",
+            title: "Job Level",
             className: "align-middle",
             data: "name",
         },
@@ -52,15 +53,20 @@ var JobsLevelComponent = new (function () {
             },
         },
         {
+            title: "Action",
             className: "col_action align-middle",
-            data: (data) => `
-                <div class="d-flex justify-content-end align-items-end">
-                    <div class="text-end gap-2 d-flex flex-wrap">
-                        <a href="javascript:void(0)" class="${ data.action_id > 1 ? "d-none": "btn_joblevel_action" }" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                            <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+            data: function (data, row, display) {
+                return `
+                    <div class="d-flex align-items-center gap-3">
+                        <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-job-level-modify">
+                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                        </a>
+                        <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-job-level-delete">
+                            <i class="fa-solid fa-trash-can text-danger fs-5"></i>
                         </a>
                     </div>
-                </div>`,
+                `;
+            },
         },
     ];
 
@@ -136,45 +142,18 @@ var JobsLevelComponent = new (function () {
 
         return p;
     };
-    this.initDropdownMenus = (table) => {
-        const menuOptopns = {
-            containerElement: table,
-            actionButtonClass: "btn_joblevel_action",
-            cssClass: "bg-white shadow",
-            //menuItemClass:"",
-            menus: [
-                {
-                    html: '<span class="ps-2  " vslang="titles.Edit Job Level">Edit Job Level</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "edit_jobLevel",
-                },
-                {
-                    html: '<span class="ps-2  " vslang="titles.Delete Job Level">Delete Job Level</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_jobLevel",
-                },
-            ],
-            onClick: (menulink, id, name) => {
-                switch (name) {
-                    case "edit_jobLevel": {
-                        console.log(98787653, id);
-
-                        mThis.editJobLevel(id, menulink);
-                        break;
-                    }
-                    case "delete_jobLevel": {
-                        mThis.deleteJobLevel(id, menulink);
-                        break;
-                    }
-                    default: {
-                        break;
-                    }
-                }
-            },
-        };
-        new VSDropdownMenu(menuOptopns);
+    this.initDropdownMenus = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btn-job-level-modify");
+            if (btn) {
+                mThis.editJobLevel(btn.dataset.id, btn);
+            }
+            btn = VSUtil.closestLimited(e.target, ".btn-job-level-delete");
+            if (btn) {
+                mThis.deleteJobLevel(btn.dataset.id, btn);
+            }
+            console.log(123, btn);
+        });
     };
     this.editJobLevel = (id, menulink) => {
         let op = {
