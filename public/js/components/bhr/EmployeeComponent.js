@@ -167,7 +167,7 @@ var EmployeeComponent = new (function () {
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                 const emp_type_id = container.dataset.typeid;
-                menu.set_terminated.style.display='none';
+                // menu.set_terminated.style.display='none';
 
                 menu.set_rejoin.style.display = status_id == 10? 'none':'block';
                 menu.promote_to_staff.style.display = emp_type_id ==  3? 'none':'block;'
