@@ -71,7 +71,7 @@ class EmployeeEvent
         ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
         ->join('positions as p', 'p.id', '=', 'emp.position_id')
         ->join('events as e', 'e.id', '=', 'ee.event_id')
-        ->selectRaw('ee.id, ee.emp_id, ee.event_id, e.name as event, e.impact, DATE_FORMAT(ee.event_date, "%Y-%m-%d") as event_date, ee.remarks, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
+        ->selectRaw('ee.id, ee.emp_id, ee.event_id, e.name as event, DATE_FORMAT(ee.event_date, "%Y-%m-%d") as event_date, ee.remarks, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
         ->where('ee.branch_id', $branch_id);
 
         if ($search_id) {
