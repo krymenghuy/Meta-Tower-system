@@ -91,13 +91,8 @@ class Job_Level //extends Model
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
-
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 20;
-        if (!is_numeric($current_page)) {
-            $current_page = 1;
-        }
-
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
@@ -108,7 +103,9 @@ class Job_Level //extends Model
 
         $query = DB::table('job_levels as j')
         ->whereRaw($str_search)
-        ->selectRaw('j.id, j.name, j.description, j.rank, j.updated_at,j.update_user')->orderBy('j.id','DESC');
+        ->selectRaw('j.id, j.name, j.description, j.rank, j.updated_at, j.update_user')
+        ->orderBy('j.rank', 'ASC'); // Sort by rank in ascending order
+
         if ($search_id) {
             $query->where('j.id', $search_id);
         }
@@ -117,12 +114,16 @@ class Job_Level //extends Model
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "j.name like '%{$search_value}%' or j.description like '%{$search_value}%' or j.name like '%{$search_value}%'";
+            $str_search = "j.name LIKE '%{$search_value}%' OR j.description LIKE '%{$search_value}%'";
             $query->whereRaw($str_search);
         }
-       $clone_query = clone $query;
-       $count = $clone_query->count('j.id');
-       $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        $clone_query = clone $query;
+        $count = $clone_query->count('j.id');
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
+
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
+
 }

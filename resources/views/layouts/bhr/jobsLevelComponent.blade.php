@@ -1,13 +1,13 @@
 <div id="_main_jobsLevelComponent" style="display:none;padding:20px 0 0">
     <div class="top_level_card">
-        <div class="card_title">TOP JOBS</div>
+        <div class="top_job_title">TOP JOBS</div>
         <div class="top_level_cards">
             <div class="top_level_card1">
                 <div class="card_left">
                     <img src="assets/images/skills/software.png" alt="">
                 </div>
                 <div class="card_right">
-                    <h6>Information Technology</h6>
+                    <h6 class="card_title">Information Technology</h6>
                     <div class="rating">
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
@@ -22,7 +22,7 @@
                     <img src="assets/images/skills/backend.png" alt="">
                 </div>
                 <div class="card_right">
-                    <h6>Backend Development</h6>
+                    <h6 class="card_title">Backend Development</h6>
                     <div class="rating">
                         <i class="fa fa-star"></i>
                         <i class="fa fa-star"></i>
@@ -37,7 +37,7 @@
                     <img src="assets/images/skills/maketing.png" alt="">
                 </div>
                 <div class="card_right">
-                    <h6>Marketing</h6>
+                    <h6 class="card_title">Marketing</h6>
                     <div class="rating">
                         rating:
                         <i class="fa fa-star"></i>
@@ -99,7 +99,7 @@
         padding: 20px;
     }
 
-    .card_title {
+    .top_job_title {
         font-size: 24px;
         font-weight: bold;
     }

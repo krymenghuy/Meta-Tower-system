@@ -65,7 +65,7 @@ var HolidayComponent = new (function () {
 
         mThis.HolidayListView = new ListView("_holiday_list", {
             fetchApi: `${main_view.base_url}/hr/holiday/list-paginate`,
-            perPage: 10,
+            perPage: 15,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass:
