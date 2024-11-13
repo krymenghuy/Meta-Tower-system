@@ -101,6 +101,7 @@ class PayrollList
                         pl.bias,
                         pl.tax_base,
                         pl.tax_benefit,
+                        pl.tax_benefit,
                         pl.total_salary,
                         pl.disburse,
                         '.$joining_date.',
@@ -178,6 +179,7 @@ class PayrollList
                     pl.tax_rate,
                     pl.bias,
                     pl.tax_base,
+                    pl.tax_benefit,
                     pl.tax_benefit,
                     pl.total_salary,
                     pl.disburse,
@@ -444,6 +446,8 @@ class PayrollList
                     if($payroll->tax_base < 0) {
                         $payroll->tax_base = 0;
                     }
+                    $tax_benefit = $benefit * (20 / 100);
+                    $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $tax_benefit + $deduction);
                     $tax_benefit = $benefit * (20 / 100);
                     $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $tax_benefit + $deduction);
                 } else {

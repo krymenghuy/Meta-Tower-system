@@ -106,9 +106,7 @@ var EmployeeComponent = new (function () {
         p.emp_type_id = mThis.elEmployeeType.value;
         p.branch_id = mThis.el_branch.value;
         p.search_value = mThis.elSearch.value;
-        mThis.div_filter_fields
-            .querySelectorAll(".filter-field")
-            .forEach((el) => {
+        mThis.div_filter_fields.querySelectorAll(".filter-field").forEach((el) => {
                 let f = el.dataset.field;
                 p[f] = el.value;
             });
@@ -1097,35 +1095,23 @@ var EmployeeComponent = new (function () {
 
         mThis.MovementDialog =  new GeneralDialog({
             title: LocaleManager.trans("Movement","titles"),
-            createContent:()=>{
-                return [
-                     `<div class="form-group col-md-12">
-                        <label for="branch" class="form-label" vslang="titles.Branch"></label>
-                        <span class="text-danger" >*</span>
-                        <select name="branch" class="form-control data-input"  data-field="branch_id"></select>
-                      </div>
-                      <div class="form-group col-md-12">
-                        <label for="position" class="form-label" vslang="titles.Position"></label>
-                        <span class="text-danger" >*</span>
-                        <select name="position" class="form-control data-input"  data-field="position_id"></select>
-                      </div>
-                      <div class="form-group col-md-12">
-                        <label for="salary" class="form-label" vslang="titles.Salary"></label>
-                        <span class="text-danger" >*</span>
-                        <select name="salary" class="form-control data-input"  data-field="salary"></select>
-                      </div>
-                      <div class="form-group col-md-12">
-                        <label class="form-label" vslang="titles.Promote Date">Promote Date</label>
-                        <div><input  name="promote_date" class="form-control data-input" placeholder="" data-field="promotion_date"/></div>
-                      </div>
-                      <div class="form-group col-md-12">
-                        <label class="form-label" vslang="titles.Remarks">Remarks</label>
-                        <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
-                      </div>
-
-                   `
-                ].join('');
-            },
+            createContent: () => {
+                return `
+                    <div class="d-flex align-items-center gap-3 border-bottom">
+                        <input class="mb-2" type="checkbox" id="item-${id}" name="items" value="${id}" />
+                        <label for="item-${id}" class="text-primary-custom">Change Branch</label>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 border-bottom">
+                        <input class="mb-2" type="checkbox" id="item-${id}" name="items" value="${id}" />
+                        <label for="item-${id}" class="text-primary-custom">Change Position</label>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 border-bottom">
+                        <input class="mb-2" type="checkbox" id="item-${id}" name="items" value="${id}" />
+                        <label for="item-${id}" class="text-primary-custom">Change salary</label>
+                    </div>
+                `
+            }
+            ,
             contentCreated:(me)=>{
 
 
