@@ -106,9 +106,7 @@ var EmployeeComponent = new (function () {
         p.emp_type_id = mThis.elEmployeeType.value;
         p.branch_id = mThis.el_branch.value;
         p.search_value = mThis.elSearch.value;
-        mThis.div_filter_fields
-            .querySelectorAll(".filter-field")
-            .forEach((el) => {
+        mThis.div_filter_fields.querySelectorAll(".filter-field").forEach((el) => {
                 let f = el.dataset.field;
                 p[f] = el.value;
             });
