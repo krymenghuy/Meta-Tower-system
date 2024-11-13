@@ -186,14 +186,14 @@ var EmployeeComponent = new (function () {
                             menu[item].style.display = (menu[item].dataset.mnuaction === 'set_rejoin' || menu[item].dataset.mnuaction === 'set_terminated') ? 'block' : 'none';
                         }
                     }
-                }else 
+                }else
                 for (const item in menu) {
                     if (menu[item] && menu[item].style) {
                     	menu[item].style.display = (menu[item].dataset.mnuaction === 'set_rejoin' || menu[item].dataset.mnuaction === 'delete_employee') ? 'block' : 'none';
                     }
                 }
-                
-           
+
+
                 // switch(status_id){
                 //     case 10:{
                 //         menu.set_rejoin.style.display='none';
@@ -533,7 +533,7 @@ var EmployeeComponent = new (function () {
                                 <a href="https://www.linkedin.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>
                                 <a href="https://web.telegram.org/a/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>
                             </div>
-                            
+
                             <div class="d-flex justify-content-end gap-3 px-5 w-75">
                                 <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${
                                     data.id
@@ -555,7 +555,7 @@ var EmployeeComponent = new (function () {
                                 }" data-status ="${data.status_id}">
                                     <i class="fa-brands fa-stack-exchange text-white tool-tip fs-5"><span class="tool-tiptext fs-6">movement</span></i>
                                 </a>
-                                 <!-- 
+                                 <!--
                                 <a href="javascript:void(0)" class="btn_movement_action" data-id="${
                                     data.id
                                 }" data-statusid="${
@@ -572,7 +572,7 @@ var EmployeeComponent = new (function () {
         }" type="button">
                                     <span class="text-nowrap text-primary-custom" vslang="buttons.Movement">Movement</span>
                                     <i class="fa-solid text-primary-custom fa-caret-down ps-2"></i>
-                                </button> -->   
+                                </button> -->
                             </div>
                         </div>
                     </div>
@@ -626,7 +626,7 @@ var EmployeeComponent = new (function () {
     //                     mThis.editEmployee(id, menuLink);
     //                     break;
     //                 }
-                   
+
 
     //                 default: {
     //                     break;
@@ -1499,7 +1499,7 @@ var EmployeeComponent = new (function () {
                             <label class="form-label" vslang="titles.Resign Date">Rejoin Date</label>
                             <div><input  name="rejoin_date" class="form-control data-input" placeholder="" data-field="rejoin_date"/></div>
                         </div>
-                        
+
                       <div class="form-group col-md-12">
                         <label class="form-label" vslang="titles.Remarks">Remarks</label>
                         <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
@@ -1510,7 +1510,7 @@ var EmployeeComponent = new (function () {
             },
             contentCreated:(me)=>{
                 DateTimePicker.init(me.controls.rejoin_date);
-                
+
 
 
 
@@ -1576,7 +1576,7 @@ var EmployeeComponent = new (function () {
         mThis.RejoinDialog.show(op);
     }
 
-    
+
 
     this.editEmployee = (id, menuLink) => {
         let op = {

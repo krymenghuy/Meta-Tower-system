@@ -13,6 +13,8 @@ var PayrollListComponent = new (function () {
     this.elSortBy = this.self.querySelector("#el_sort_by");
     this.btnCalculate = this.self.querySelector("#_btnCalculate");
     this.btnDisburse = this.self.querySelector("#_btnDisburse");
+    this.btnBack = this.self.querySelector("#_btn_backTo_payrollList");
+    this.payment_info = this.self.querySelector("#payment_info");
 
     this.cols = [
 
@@ -54,7 +56,7 @@ var PayrollListComponent = new (function () {
         },
 
         {
-            title: "Desuction",
+            title: "Deduction",
             className: "align-middle",
             data: (data, index, tr) => {
                 return `<p class="p-0 m-0">${main_view.currency.symbol +data.deduction ?? '0.00'}</p>`;
@@ -92,10 +94,10 @@ var PayrollListComponent = new (function () {
             }
         },
         {
-            title: "Tax Bonus",
+            title: "Tax Benefit",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_bonus ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_benefit ?? '0.00'}</p>`;
             }
         },
         {
@@ -189,6 +191,13 @@ var PayrollListComponent = new (function () {
 
             PayRollImportDailog.show(op);
         };
+        mThis.btnBack.onclick = function (e) {
+            e.preventDefault();
+            const sub_content = mThis.self.querySelector("#sub_content");
+            sub_content.classList.remove("d-none");
+            const payment_slip = mThis.self.querySelector("#payment_slip");
+            payment_slip.classList.add("d-none");
+        };
 
         const pr_tbl = mThis.PayrollList_ListView.getListContainer();
         const sh_parent = pr_tbl;
@@ -219,7 +228,12 @@ var PayrollListComponent = new (function () {
             cssClass:"bg-white shadow",
             //menuItemClass:"",
             menus:[
-
+                {
+                    html: '<span class="ps-2  " vslang="titles.View Payment">View Payment</span>',
+                    icon: `<i class="fa-regular fa-eye"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "payment_slip",
+                },
                 {
                     html:'<span class="ps-2  " vslang="titles.Disburse"></span>',
                     icon:`<i class="fa-solid fa-square-check"></i>`,
@@ -243,7 +257,10 @@ var PayrollListComponent = new (function () {
 
             onClick:(menuLink, id, name)=>{
                 switch(name){
-
+                    case 'payment_slip':{
+                      mThis.viewPayment(id, menuLink);
+                      break;
+                    }
                     case 'edit_payroll_list':{
                       mThis.editPayrollList(id, menuLink);
                       break;
@@ -267,7 +284,14 @@ var PayrollListComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     }
 
+    this.viewPayment = (id, menuLink) => {
 
+        const sub_content = this.self.querySelector("#sub_content");
+        sub_content.classList.add("d-none");
+        const payment_slip = this.self.querySelector("#payment_slip");
+        payment_slip.classList.remove("d-none");
+
+    }
     this.editPayrollList = (id, menuLink) => {
 
         let op = {
