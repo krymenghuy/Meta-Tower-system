@@ -111,7 +111,7 @@ class ScriptProvider
                 '/js/components/bhr/DepartmentComponent.js',
                 '/js/components/bhr/PositionComponent.js',
                 '/js/components/bhr/LeaveComponent.js',
-                '/js/components/bhr/ReportComponent.js',
+                '/js/components/bhr/ReportCenterComponent.js',
                 'js/components/bhr/WarningComponent.js',
                 '/js/components/bhr/EmployeeSeniorityComponent.js',
                 '/js/components/bhr/EmployeeBonusComponent.js',
