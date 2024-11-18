@@ -13,9 +13,9 @@ var EmployeeBenefitComponent = new (function () {
     this.elCategory = this.self.querySelector("#el_category");
     this.cols = [
         {
-            title: "No",
+            title: "",
             className: "align-middle text-capitalize text-nowrap",
-            data: (data, index, i) => index + 1,
+            // data: (data, index, i) => index + 1,
         },
         {
             title: "Name",
@@ -35,7 +35,75 @@ var EmployeeBenefitComponent = new (function () {
             </div>`,
         },
         {
-            title: "Benefity Type",
+            title: "Benefit Type",
+            className: "align-middle text-center",
+            data: (data) => {
+                const benefitTypeName =
+                    mThis.benefitTypeMap[data.benefit_type_id] || "Unknown";
+
+                return `
+                <p class="p-2 text-nowrap w-50">
+                    ${benefitTypeName}
+                </p>`;
+            },
+        },
+        {
+            title: "Amount",
+            className: "align-middle",
+            data: (data) =>
+                `<p class="p-0 m-0">${(data.amount ?? "")}<span class="text-danger"> (រៀល)</span></p>`,
+        },
+    
+        {
+            title: "Last Updated",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
+                <span style="font-size: 12px; color: #2b3991;">${data.updated_at ?? ""}</span>
+            </div>`,
+        },
+        {
+            title: "Action",
+            className: "col_action align-middle",
+            data: (data) => `
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="text-center gap-2 d-flex flex-wrap">
+                    <button class="btn btn-sm btn-primary btn_edit_bonus" data-id="${data.id}">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger btn_delete_bonus" data-id="${data.id}">
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>`,
+        },
+    ];
+    this.cols_bonus = [
+        {
+            title: "",
+            className: "align-middle text-capitalize text-nowrap",
+            // data: (data, index, i) => index + 1,
+        },
+        {
+            title: "Name",
+            className: "align-middle text-start",
+            data: (data) => `
+            <div style="display: flex; align-items: center;">
+                <img class="image-student-tbl" src="${data.image_url}" alt=""
+                    style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                <div>
+                    <span style="font-size: 14px; font-weight: bold;">${
+                        data.name ?? ""
+                    }</span><br/>
+                    <span style="font-size: 12px; color: gray;">${
+                        data.email ?? ""
+                    }</span>
+                </div>
+            </div>`,
+        },
+        {
+            title: "Benefit Type",
             className: "align-middle text-center",
             data: (data) => {
                 const benefitTypeName =
@@ -78,9 +146,9 @@ var EmployeeBenefitComponent = new (function () {
     ];
     this.cols_seniority = [
         {
-            title: "No",
+            title: "",
             className: "align-middle text-capitalize text-nowrap",
-            data: (data, index, i) => index + 1,
+            // data: (data, index, i) => index + 1,
         },
         {
             title: "Name",
@@ -100,7 +168,7 @@ var EmployeeBenefitComponent = new (function () {
         </div>`,
         },
         {
-            title: "Benefity Type",
+            title: "Benefit Type",
             className: "align-middle text-center",
             data: (data) => {
                 const benefitTypeName =
@@ -153,9 +221,9 @@ var EmployeeBenefitComponent = new (function () {
     ];
     this.cols_insurance = [
         {
-            title: "No",
+            title: "",
             className: "align-middle text-capitalize text-nowrap",
-            data: (data, index, i) => index + 1,
+            // data: (data, index, i) => index + 1,
         },
         {
             title: "Name",
@@ -175,7 +243,7 @@ var EmployeeBenefitComponent = new (function () {
         </div>`,
         },
         {
-            title: "Benefity Type",
+            title: "Benefit Type",
             className: "align-middle text-center",
             data: (data) => {
                 const benefitTypeName =
@@ -244,7 +312,6 @@ var EmployeeBenefitComponent = new (function () {
             listContainerClass: null,
         }); 
 
-        // Event for adding a benefit
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             let op = {
@@ -258,12 +325,10 @@ var EmployeeBenefitComponent = new (function () {
             EmployeeBenefitDialog.show(op)
         };
 
-        // Apply filter on category selection
         mThis.elCategory.addEventListener("change", () => {
             mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
         });
 
-        // Initialize other event listeners
         mThis.setActionListeners();
 
         mThis.initAlready = true;
@@ -298,7 +363,7 @@ var EmployeeBenefitComponent = new (function () {
 
     this.getFilterData = () => {
         let p = {
-            benefit_type_id: mThis.elCategory.value, // Get the selected category value
+            benefit_type_id: mThis.elCategory.value,
             search_value: mThis.elSearch.value,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -374,12 +439,11 @@ var EmployeeBenefitComponent = new (function () {
                     d.categories,
                     "id",
                     "name",
-                    false,
-                    null,
-                    1
+                    true,
+                    'All benefit',
+                    null
                 );
 
-                // Create benefit type name map for displaying names instead of IDs
                 mThis.benefitTypeMap = d.categories.reduce((map, category) => {
                     map[category.id] = category.name;
                     return map;
@@ -389,12 +453,12 @@ var EmployeeBenefitComponent = new (function () {
     mThis.elCategory.onchange = () => {
         const selectedColumns =
             mThis.elCategory.value === "1"
-                ? mThis.cols
+                ? mThis.cols_bonus
                 : mThis.elCategory.value === "2"
                 ? mThis.cols_seniority
                 : mThis.elCategory.value === "3"
                 ? mThis.cols_insurance
-                : mThis.cols; // default columns
+                : mThis.cols;
 
         mThis.EmployeeBenefitListView.showPage(mThis.getFilterData(), {
             columns: selectedColumns,
@@ -407,7 +471,7 @@ var EmployeeBenefitComponent = new (function () {
         mThis.prepareFormOptions();
         const selectedColumns =
             mThis.elCategory.value === "1"
-                ? mThis.cols
+                ? mThis.cols_bonus
                 : mThis.elCategory.value === "2"
                 ? mThis.cols_seniority
                 : mThis.elCategory.value === "3"

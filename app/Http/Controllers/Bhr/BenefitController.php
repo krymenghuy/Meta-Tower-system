@@ -17,10 +17,10 @@ class BenefitController extends Controller
 
     public function saveBenefit(Request $req)
     {
-        $id = $req->id ?? null;
+        $id = $req->emp_id ?? $req->id;
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = $this->benefitModel->save($req->all(),$id,$ss);
+        $res = $this->benefitModel->save($req->benefit_type_id,$id,$ss,$req->all());
         return JDV::raw($res);
     }
 
