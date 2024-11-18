@@ -2,8 +2,7 @@
 
 namespace App\Models\Bhr;
 
-//use Illuminate\Database\Eloquent\Factories\HasFactory;
-//use Illuminate\Database\Eloquent\Model;
+
 use App\Models\Bhr\GeneralSettings;
 use App\Models\Bhr\Event;
 
@@ -15,7 +14,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class Employee //extends Model
 {
-    //use HasFactory;
 
     protected $id = null;
     protected $userInfo = null;

@@ -5,7 +5,6 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Psy\Command\WhereamiCommand;
 use App\Models\DBX;
 
 class Benefit
@@ -28,13 +27,11 @@ class Benefit
 
         if (!$emp_id) return DV::error('Employee is required for saving benefit!');
 
-        // Check if the benefit of the same type already exists for this employee
         $existingBenefit = DB::table('emp_benefits')
         ->where('emp_id', $emp_id)
             ->where('benefit_type_id', $d->benefit_type_id)
             ->first();
 
-        // Allow updating the existing benefit if $id is provided
         if ($existingBenefit && (!$id && $id !== $existingBenefit->id)) {
             return DV::error('This employee already has a benefit of this type.');
         }
@@ -53,7 +50,6 @@ class Benefit
         $id = $res->id;
         $inputs = $res->values;
 
-        // Update or insert data in the `emp_benefits` table
         $id = saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1, false);
         if ($id > 0) {
             // Handling different benefit types with updates to existing entries
@@ -70,6 +66,7 @@ class Benefit
                 $existing_bonus = DB::table('emp_bonuses')->where('benefit_id', $id)->first();
 
                 $bonus_id = saveData($ss, 'emp_bonuses', ['id' => $existing_bonus->id ?? null], $bonus_inputs, [], 1, false);
+                
                 return DV::depends($bonus_id, ['Bonuses data saved']);
             } elseif ($d->benefit_type_id == 2) {
                 $seniority_arr = [
