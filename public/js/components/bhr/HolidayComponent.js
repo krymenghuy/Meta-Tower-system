@@ -20,8 +20,10 @@ var HolidayComponent = new (function () {
         },
         {
             title: "Holiday",
-            className: "align-middle text-capitalize text-nowrap",
-            data: "name",
+            className: "align-middle fw-bold",
+            data: (data)=>{
+                return `<span class="text-danger">${data.name}</span>`
+            },
         },
         {
             title: "Holiday Type",

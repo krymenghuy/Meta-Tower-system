@@ -14,6 +14,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class Employee //extends Model
 {
+    //use HasFactory;
 
     protected $id = null;
     protected $userInfo = null;
