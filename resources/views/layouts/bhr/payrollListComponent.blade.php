@@ -40,7 +40,7 @@
             </button>
         </div>
         <div id="payment_info" class="payment_details">
-            <div class="payment_card">
+            {{-- <div class="payment_card">
                 <div class="payment-header">
                     <div class="payment-logo">
                         <img src="{{ asset('assets/images/logo/lc_logo.svg') }}" alt="Company Logo">
@@ -169,7 +169,7 @@
                     <button class="pay-btn">Pay</button>
                     <button class="print-btn">Print</button>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
 

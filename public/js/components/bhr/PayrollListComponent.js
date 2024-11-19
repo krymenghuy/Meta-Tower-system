@@ -286,10 +286,11 @@ var PayrollListComponent = new (function () {
     this.renderPayment = (data) => {
        let html = '';
          html += `
+         <div id="payment_info" class="payment_details">
             <div class="payment_card">
                 <div class="payment-header">
                     <div class="payment-logo">
-                        <img src="{{ asset('assets/images/logo/lc_logo.svg') }}" alt="Company Logo">
+                        <img src="${ 'assets/images/logo/lc_logo.svg' }" alt="Company Logo">
                     </div>
                     <div class="payment-title">
                         <h3>Payment Slip</h3>
@@ -301,7 +302,7 @@ var PayrollListComponent = new (function () {
                     <div class="row cols-2 mb-0">
                         <div class="col-2">
                             <div class="payment_img" data-id="" data-imageurl="">
-                                <img src="${data.image_url || "../uploads/public/1_data/default/images/mr.avif"} alt="Profile Image">
+                                <img src="${data.image_url}" alt="Profile Image">
                             </div>
                         </div>
                         <div class="col-5 p_profile_left">
@@ -415,9 +416,12 @@ var PayrollListComponent = new (function () {
                     <button class="pay-btn">Pay</button>
                     <button class="print-btn">Print</button>
                 </div>
+                </div>
             </div>`;
 
         this.payment_info.innerHTML = html;
+        console.log(444, this.payment_info);
+
     };
 
 
@@ -431,9 +435,11 @@ var PayrollListComponent = new (function () {
             id: id,
         }
         vsapi.call(`${main_view.base_url}/hr/payroll-list/pay-slip`,op,false,false,false).then(res => {
+            console.log(666,res);
+
             if(res.status_code == 200){
                 let d = res.data;
-                console.log(d);
+                console.log(555,d);
 
                 mThis.renderPayment(d)
             }
