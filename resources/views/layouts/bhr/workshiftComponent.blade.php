@@ -150,12 +150,11 @@
         </div> --}}
     </div>
 
-    <div id="_work_shift_body">
-        <!-- Employee 1 -->
-        {{-- <div class="col-2 work_shift">Work Shift A</div> --}}
+    <!-- <div id="_work_shift_body">
+            <div class="col-2 work_shift">Work Shift A</div> 
         <div class="scane_time d-block">
             <div class="shift_time d-flex" id="shift_time_row1">
-                {{-- <div class="col-1-5 shift-status">
+                <div class="col-1-5 shift-status">
                     <div class="btn-act-check-in">
                         <div class="morning_shift">8:00AM</div>
                         <span>Check In</span>
@@ -197,10 +196,10 @@
                         <span>weekend</span>
                     </div>
 
-                </div> --}}
+                </div>
             </div>
             <div class="shift_time d-flex">
-                {{-- <div class="col-1-5 shift-status">
+                <div class="col-1-5 shift-status">
                     <div class="btn-act-check-in">
                         <div class="morning_shift">8:30AM</div>
                         <span>Check In</span>
@@ -242,9 +241,9 @@
                         <span>weekend</span>
                     </div>
 
-                </div> --}}
+                </div>
             </div>
         </div>
-    </div>
+    </div> -->
     <div id="_work_shift_list"></div>
 </div>
