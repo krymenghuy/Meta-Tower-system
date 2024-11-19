@@ -113,6 +113,6 @@ class PayrollListController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return $this->payrollListModel->paySlip($req->id,$ss);
+        return JDV::result($this->payrollListModel->paySlip($req->all(), $ss));
     }
 }
