@@ -82,11 +82,6 @@ var WorkshiftComponent = new (function () {
         sh_parent.classList.add("overflow-x-hidden");
 
         mThis.initDropdownMenus(pr_tbl);
-
-        // mThis._searchWorkShift.addEventListener("change", (e) => {
-        //     e.preventDefault();
-        //     mThis.WorkshiftListView.showPage(mThis.getDataFormFilter());
-        // });
         mThis.initAlready = true;
     };
     mThis.elSearch.addEventListener("keyup", (e) => {
@@ -103,29 +98,31 @@ var WorkshiftComponent = new (function () {
     this.setFilterPeriod = (p, name) => {
         return p;
     };
-     this.renderWorkshift = (div, data) => {
-         data = data ?? [];
-         if (!AuthManager) {
-             console.error(
-                 "Authentication Management does not seems to work properly. You may need to refresh page"
-             );
-             return;
-         }
+    this.renderWorkshift = (div, data) => {
+        data = data ?? [];
+        if (!AuthManager) {
+            console.error(
+                "Authentication Management does not seems to work properly. You may need to refresh page"
+            );
+            return;
+        }
 
-         AuthManager.init().then((user) => {
-             mThis.beginRenderWorkShift();
-         });
+        AuthManager.init().then((user) => {
+            mThis.beginRenderWorkShift();
+        });
     };
-    this.beginRenderWorkShift = (container,data) => {
-        console.log(1223,container,321,data);
-        
-        let html = '';
+    this.beginRenderWorkShift = (container, data) => {
+        console.log(1223, container, 321, data);
+
+        let html = "";
         html += mThis.renderHeader();
-        
-    }
-    
+    };
+
     this.renderHeader = () => {
-        return[`
+        let html = "";
+
+        html = [
+            `
             <div id="work_shift_type" class="col-12 p-3 border d-flex gap-2" >
             <div class="col-2 w-100 shift_header">Work Shift Type</div>
             <div class="shift_date col-1-5">Monday</div>
@@ -136,8 +133,10 @@ var WorkshiftComponent = new (function () {
             <div class="shift_date col-1-5">Saturday</div>
             <div class="shift_date col-1-5">Sunday</div>
         </div>
-            `].join("");
-    }
+            `,
+        ].join("");
+        this.work_shift_header.innerHTML = html;
+    };
 
     this.getDataFormFilter = () => {
         let p = {};
