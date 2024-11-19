@@ -1,5 +1,5 @@
 <div id="_main_employee_benefit_component" style="display:none; padding: 20px;">
-    <div class="d-flex justify-content-between w-100 p-3 " id="_divFilter_employee_benefit">
+    <div class="d-flex justify-content-between w-100 py-3" id="_divFilter_employee_benefit">
         <div class="d-flex align-items-center w-50 gap-2">
             <button type="button" class="btn btn-primary-custom rounded-5" id="_btn_add_benefit">
             <i class="fa-solid fa-layer-group"></i>
@@ -19,7 +19,7 @@
         </div>
     </div>
 
-    <div class="p-3">
+    <div class="">
         <div id="_employee_bonus_list"></div>
     </div>
 </div>

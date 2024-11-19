@@ -52,13 +52,13 @@ var WorkshiftComponent = new (function () {
             apiCluster: main_view.apiCluster,
             // columns: mThis.cols,
             // tableClass: "table table--white header-uppercase",
-            processResponse: (res) => {
-                console.log(1234, res.data.data);
+            // processResponse: (res) => {
+            //     console.log(1234, res.data.data);
 
-                return res.data;
-            },
+            //     return res.data;
+            // },
             renderItems: (data, list_container) => {
-                mThis.renderWorkshift(list_container, data);
+                mThis.renderWorkShift(list_container, data);
             },
             listContainerClass: null,
         });
@@ -98,45 +98,146 @@ var WorkshiftComponent = new (function () {
     this.setFilterPeriod = (p, name) => {
         return p;
     };
-    this.renderWorkshift = (div, data) => {
-        data = data ?? [];
-        if (!AuthManager) {
-            console.error(
-                "Authentication Management does not seems to work properly. You may need to refresh page"
-            );
-            return;
-        }
+     this.renderWorkShift = (div, data) => {
+         data = data ?? [];
+         if (!AuthManager) {
+             console.error(
+                 "Authentication Management does not seems to work properly. You may need to refresh page"
+             );
+             return;
+         }
 
-        AuthManager.init().then((user) => {
-            mThis.beginRenderWorkShift();
-        });
-    };
-    this.beginRenderWorkShift = (container, data) => {
-        console.log(1223, container, 321, data);
-
-        let html = "";
-        html += mThis.renderHeader();
+         AuthManager.init().then((user) => {
+             mThis.beginRenderWorkShift(div,data);
+         });
     };
 
     this.renderHeader = () => {
         let html = "";
 
-        html = [
-            `
+        return [
+            `<div id="_work_shift_header">
             <div id="work_shift_type" class="col-12 p-3 border d-flex gap-2" >
             <div class="col-2 w-100 shift_header">Work Shift Type</div>
             <div class="shift_date col-1-5">Monday</div>
             <div class="shift_date col-1-5">Tuesday</div>
             <div class="shift_date col-1-5">Wednesday</div>
-            <div class="shift_date col-1-5">Thusday</div>
+            <div class="shift_date col-1-5">Thursday</div>
             <div class="shift_date col-1-5">Friday</div>
             <div class="shift_date col-1-5">Saturday</div>
             <div class="shift_date col-1-5">Sunday</div>
         </div>
+        </div>
             `,
         ].join("");
-        this.work_shift_header.innerHTML = html;
     };
+    this.beginRenderWorkShift = (div,data) => {
+        console.log(1223,div,321,data);
+        
+        let html = '';
+        html += this.renderHeader();
+            
+            html += `
+                    <div id="_work_shift_body">
+        <div class="col-2 work_shift">Work Shift A</div> 
+        <div class="scane_time d-block">
+            <div class="shift_time d-flex" id="shift_time_row1">
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-check-in">
+                        <div class="morning_shift">8:00AM</div>
+                        <span>Check In</span>
+                    </div>
+                </div>
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-check-in">
+                        <div class="morning_shift">8:00AM</div>
+                        <span>Check In</span>
+                    </div>
+                </div>
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-check-in">
+                        <div class="afternoon_shift">8:00AM</div>
+                        <span>Check In</span>
+                    </div>
+                </div>
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-check-in">
+                        <div class="morning_shift">8:00AM</div>
+                        <span>Check In</span>
+                    </div>
+                </div>
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-check-in">
+                        <div class="morning_shift">8:00AM</div>
+                        <span>Check In</span>
+                    </div>
+                </div>
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-check-in">
+                        <div>5:00PM</div>
+                        <span>Check In</span>
+                    </div>
+                </div>
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-inactive">
+                        <div class="inactive">Day Off</div>
+                        <span>weekend</span>
+                    </div>
+
+                </div>
+            </div>
+            <div class="shift_time d-flex">
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-check-in">
+                        <div class="morning_shift">8:30AM</div>
+                        <span>Check In</span>
+                    </div>
+                </div>
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-check-in">
+                        <div class="morning_shift">8:30AM</div>
+                        <span>Check In</span>
+                    </div>
+                </div>
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-check-in">
+                        <div class="afternoon_shift">8:30AM</div>
+                        <span>Check In</span>
+                    </div>
+                </div>
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-check-in">
+                        <div class="morning_shift">8:30AM</div>
+                        <span>Check In</span>
+                    </div>
+                </div>
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-check-in">
+                        <div class="morning_shift">8:30AM</div>
+                        <span>Check In</span>
+                    </div>
+                </div>
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-check-in">
+                        <div>5:00PM</div>
+                        <span>Check In</span>
+                    </div>
+                </div>
+                <div class="col-1-5 shift-status">
+                    <div class="btn-act-inactive">
+                        <div class="inactive">Day Off</div>
+                        <span>weekend</span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>`;
+    div.innerHTML = html;
+        
+    }
+    
+  
 
     this.getDataFormFilter = () => {
         let p = {};
