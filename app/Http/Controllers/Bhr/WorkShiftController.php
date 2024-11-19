@@ -35,7 +35,7 @@ class WorkShiftController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->workShiftModel->getWorkShiftListPaginate($ss));
+        return JDV::result($this->workShiftModel->getWorkShiftListPaginate($req->all(), $ss));
     }
 
     public function getDetails(Request $req)
