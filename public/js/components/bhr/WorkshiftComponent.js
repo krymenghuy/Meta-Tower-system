@@ -82,11 +82,6 @@ var WorkshiftComponent = new (function () {
         sh_parent.classList.add("overflow-x-hidden");
 
         mThis.initDropdownMenus(pr_tbl);
-
-        // mThis._searchWorkShift.addEventListener("change", (e) => {
-        //     e.preventDefault();
-        //     mThis.WorkshiftListView.showPage(mThis.getDataFormFilter());
-        // });
         mThis.initAlready = true;
     };
     mThis.elSearch.addEventListener("keyup", (e) => {
@@ -118,7 +113,10 @@ var WorkshiftComponent = new (function () {
     };
 
     this.renderHeader = () => {
-        return[`
+        let html = "";
+
+        return [
+            `<div id="_work_shift_header">
             <div id="work_shift_type" class="col-12 p-3 border d-flex gap-2" >
             <div class="col-2 w-100 shift_header">Work Shift Type</div>
             <div class="shift_date col-1-5">Monday</div>
@@ -129,7 +127,9 @@ var WorkshiftComponent = new (function () {
             <div class="shift_date col-1-5">Saturday</div>
             <div class="shift_date col-1-5">Sunday</div>
         </div>
-            `].join("");
+        </div>
+            `,
+        ].join("");
     };
     this.beginRenderWorkShift = (div,data) => {
         console.log(1223,div,321,data);
@@ -233,7 +233,7 @@ var WorkshiftComponent = new (function () {
             </div>
         </div>
     </div>`;
-        div.innerHTML = html;
+    div.innerHTML = html;
         
     }
     
