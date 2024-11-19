@@ -107,4 +107,6 @@ class PayrollController extends Controller
         return JDV::raw($res);
     }
 
+   
+
 }

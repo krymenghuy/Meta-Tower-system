@@ -76,7 +76,6 @@ class PayrollList
         $sort_by = $d->sort_by ?? 'pl.id';
         $sort_order = $d->sort_order ?? 'asc';
         $str_search = '1=1';
-        $joining_date = DBX::formatDate('e.joining_date','joining_date');
 
 
         $query = DB::table('payroll_lists as pl')
@@ -88,9 +87,7 @@ class PayrollList
                         p.id as payroll_id,
                         p.name as payroll_name,
                         e.id as emp_id,
-                        e.code as emp_code,
                         e.name as emp_name,
-                        e.sex,
                         pos.title as emp_position,
                         b.name as branch_name,
                         e.salary,
@@ -104,7 +101,6 @@ class PayrollList
                         pl.tax_benefit,
                         pl.total_salary,
                         pl.disburse,
-                        '.$joining_date.',
                         e.photo_file_name as emp_photo')
             ->whereRaw($str_search);
 
@@ -641,5 +637,54 @@ class PayrollList
             return DV::depends(1, ['Payroll Disbursed' => $results]);
     }
 
+    function paySlip($id, $ss)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $branch_id = $ss->branch_id;
+        $joining_date = DBX::formatDate('e.joining_date','joining_date');
+
+        $row =DB::table('payroll_lists as pl')
+        ->join('employees as e', 'e.id', '=', 'pl.emp_id')
+        ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+        ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+        ->join('um_branches as b', 'b.id', '=', 'e.branch_id')
+        ->selectRaw('pl.id,
+                    p.id as payroll_id,
+                    p.name as payroll_name,
+                    e.id as emp_id,
+                    e.code as emp_code,
+                    e.name as emp_name,
+                    e.sex,
+                    pos.title as emp_position,
+                    b.name as branch_name,
+                    e.salary,
+                    pl.p_salary,
+                    e.apply_payroll_tax,
+                    pl.benefit,
+                    pl.deduction,
+                    pl.tax_rate,
+                    pl.bias,
+                    pl.p_bias,
+                    pl.p_allowance,
+                    pl.tax_base,
+                    pl.tax_benefit,
+                    pl.tax_benefit,
+                    pl.total_salary,
+                    '.$joining_date.',
+                    e.photo_file_name as emp_photo')
+        ->where('pl.id', $id)->first();
+
+        if ($row) {
+            $row->allowance = DB::table('tax_allowances')
+            ->where('emp_id', $row->emp_id)
+            ->value('allowance');
+        }
+        $row->image_url = '';
+        if ($row->emp_photo) {
+            $row->image_url = Employee::profilePicture($row->emp_id);
+        }
+        unset($row->emp_photo);
+        return $row;
+    }
 
 }

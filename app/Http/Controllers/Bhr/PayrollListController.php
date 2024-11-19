@@ -107,4 +107,12 @@ class PayrollListController extends Controller
         }
         return ($this->payrollListModel->disburseAllPayrollList($req->all(), $ss));
     }
+    public function paySlip(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return $this->payrollListModel->paySlip($req->id,$ss);
+    }
 }
