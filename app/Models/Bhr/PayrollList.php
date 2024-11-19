@@ -474,7 +474,7 @@ class PayrollList
                 $success++;
                 $success_ids[] = $payroll->id;
             } else {
-                $error++;
+                $eror++;
                 $error_ids[] = $payroll->id;
             }
         }
