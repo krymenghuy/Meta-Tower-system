@@ -344,7 +344,7 @@ class PayrollList
         $payrolls = DB::table('payroll_lists as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
             ->leftJoin('resignations as r', 'r.emp_id', '=', 'e.id')
-            ->leftJoin('rejoins as rej', 'rej.emp_id', '=', 'e.id')  // Join rejoins table
+            ->leftJoin('rejoins as rej', 'rej.emp_id', '=', 'e.id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('emp_types as el', 'el.id', '=', 'e.emp_type_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
@@ -364,7 +364,7 @@ class PayrollList
                         e.status_id,
                         e.joining_date,
                         r.effective_date,
-                        rej.rejoin_date')  // Select rejoin_date
+                        rej.rejoin_date')
             ->orderBy('e.id')
             ->get();
 
@@ -460,6 +460,7 @@ class PayrollList
             $row = DB::table('payroll_lists')->where('id', $payroll->id)->update([
                 'tax_base' => $payroll->tax_base,
                 'tax_benefit' => $tax_benefit,
+                'count_day' => $count_date,
                 'p_salary' => $last_salary,
                 'p_allowance' => $last_allowance,
                 'p_bias' => $last_bias,
@@ -659,6 +660,7 @@ class PayrollList
                     b.name as branch_name,
                     e.salary,
                     pl.p_salary,
+                    pl.count_day,
                     e.apply_payroll_tax,
                     pl.benefit,
                     pl.deduction,
