@@ -13,9 +13,9 @@ var EmployeeMovementComponent = new (function () {
     this.cols = [
 
         {
-            title: "No",
+            title: "",
             className: 'align-middle',
-            data: (data, index, i) => { return (index + 1) },
+            // data: (data, index, i) => { return (index + 1) },
 
         },
         {
@@ -27,7 +27,7 @@ var EmployeeMovementComponent = new (function () {
                             <div>
                                 <span style="font-size: 14px; font-weight: bold;">${data.emp_name ?? ''}</span>
                                 <br/>
-                                <span style="font-size: 12px; color: gray;">${data.position ?? ''}</span>
+                                <span style="font-size: 10px; color: #2b3991;">${data.position ?? ''}</span>
                             </div>
                         </div>`;
             }
@@ -54,7 +54,7 @@ var EmployeeMovementComponent = new (function () {
             data: (data) => `
             <div style="display: block; align-items: center;">
                 <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
-                <span style="font-size: 12px; color: #2b3991;">${data.updated_at ?? ""}</span>
+                <span style="font-size: 10px; color: #2b3991;">${data.updated_at ?? ""}</span>
             </div>`,
         },
 
