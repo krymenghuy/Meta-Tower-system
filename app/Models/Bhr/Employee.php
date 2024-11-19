@@ -2,8 +2,7 @@
 
 namespace App\Models\Bhr;
 
-//use Illuminate\Database\Eloquent\Factories\HasFactory;
-//use Illuminate\Database\Eloquent\Model;
+
 use App\Models\Bhr\GeneralSettings;
 use App\Models\Bhr\Event;
 

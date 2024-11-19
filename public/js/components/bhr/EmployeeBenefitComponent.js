@@ -3,22 +3,19 @@
 var EmployeeBenefitComponent = new (function () {
     let mThis = this;
     this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children(
-        "#_main_employee_benefit_component"
-    );
+    this.jm = main_view.appContent.children("#_main_employee_benefit_component");
     this.self = this.jm[0];
     this.title_prop = "Employee Benefits";
     let div = mThis.self.querySelector("#_employee_bonus_list");
     this.btnAdd = this.self.querySelector("#_btn_add_benefit");
-    this.divFilter = this.self.querySelector("#_divFilter_emp_benefit");
+    this.divFilter = this.self.querySelector("#_divFilter_employee_benefit");
     this.elSearch = this.self.querySelector("#_sdl_search_bonus");
     this.elCategory = this.self.querySelector("#el_category");
-    this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
     this.cols = [
         {
-            title: "No",
+            title: "",
             className: "align-middle text-capitalize text-nowrap",
-            data: (data, index, i) => index + 1,
+            // data: (data, index, i) => index + 1,
         },
         {
             title: "Name",
@@ -38,7 +35,75 @@ var EmployeeBenefitComponent = new (function () {
             </div>`,
         },
         {
-            title: "Benefity Type",
+            title: "Benefit Type",
+            className: "align-middle text-center",
+            data: (data) => {
+                const benefitTypeName =
+                    mThis.benefitTypeMap[data.benefit_type_id] || "Unknown";
+
+                return `
+                <p class="p-2 text-nowrap w-50">
+                    ${benefitTypeName}
+                </p>`;
+            },
+        },
+        {
+            title: "Amount",
+            className: "align-middle",
+            data: (data) =>
+                `<p class="p-0 m-0">${(data.amount ?? "")}<span class="text-danger"> (រៀល)</span></p>`,
+        },
+    
+        {
+            title: "Last Updated",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
+                <span style="font-size: 12px; color: #2b3991;">${data.updated_at ?? ""}</span>
+            </div>`,
+        },
+        {
+            title: "Action",
+            className: "col_action align-middle",
+            data: (data) => `
+            <div class="d-flex justify-content-start align-items-center">
+                <div class="text-center gap-2 d-flex flex-wrap">
+                    <button class="btn btn-sm btn-primary btn_edit_bonus" data-id="${data.id}">
+                        <i class="fa-regular fa-pen-to-square"></i>
+                    </button>
+                    <button class="btn btn-sm btn-danger btn_delete_bonus" data-id="${data.id}">
+                        <i class="fa-regular fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>`,
+        },
+    ];
+    this.cols_bonus = [
+        {
+            title: "",
+            className: "align-middle text-capitalize text-nowrap",
+            // data: (data, index, i) => index + 1,
+        },
+        {
+            title: "Name",
+            className: "align-middle text-start",
+            data: (data) => `
+            <div style="display: flex; align-items: center;">
+                <img class="image-student-tbl" src="${data.image_url}" alt=""
+                    style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                <div>
+                    <span style="font-size: 14px; font-weight: bold;">${
+                        data.name ?? ""
+                    }</span><br/>
+                    <span style="font-size: 12px; color: gray;">${
+                        data.email ?? ""
+                    }</span>
+                </div>
+            </div>`,
+        },
+        {
+            title: "Benefit Type",
             className: "align-middle text-center",
             data: (data) => {
                 const benefitTypeName =
@@ -81,9 +146,9 @@ var EmployeeBenefitComponent = new (function () {
     ];
     this.cols_seniority = [
         {
-            title: "No",
+            title: "",
             className: "align-middle text-capitalize text-nowrap",
-            data: (data, index, i) => index + 1,
+            // data: (data, index, i) => index + 1,
         },
         {
             title: "Name",
@@ -103,7 +168,7 @@ var EmployeeBenefitComponent = new (function () {
         </div>`,
         },
         {
-            title: "Benefity Type",
+            title: "Benefit Type",
             className: "align-middle text-center",
             data: (data) => {
                 const benefitTypeName =
@@ -156,9 +221,9 @@ var EmployeeBenefitComponent = new (function () {
     ];
     this.cols_insurance = [
         {
-            title: "No",
+            title: "",
             className: "align-middle text-capitalize text-nowrap",
-            data: (data, index, i) => index + 1,
+            // data: (data, index, i) => index + 1,
         },
         {
             title: "Name",
@@ -178,7 +243,7 @@ var EmployeeBenefitComponent = new (function () {
         </div>`,
         },
         {
-            title: "Benefity Type",
+            title: "Benefit Type",
             className: "align-middle text-center",
             data: (data) => {
                 const benefitTypeName =
@@ -243,11 +308,10 @@ var EmployeeBenefitComponent = new (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white overflow-hidden header-uppercase",
+            tableClass: "table table--white overflow-hidden rounded-3 header-uppercase",
             listContainerClass: null,
         }); 
 
-        // Event for adding a benefit
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             let op = {
@@ -261,12 +325,10 @@ var EmployeeBenefitComponent = new (function () {
             EmployeeBenefitDialog.show(op)
         };
 
-        // Apply filter on category selection
         mThis.elCategory.addEventListener("change", () => {
             mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
         });
 
-        // Initialize other event listeners
         mThis.setActionListeners();
 
         mThis.initAlready = true;
@@ -297,21 +359,13 @@ var EmployeeBenefitComponent = new (function () {
         }, 200);
     });
 
-    mThis.btnSearch.onclick = (e) => {
-        if (mThis.EmployeeBenefitListView) {
-            mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
-        } else {
-            console.error("Employee Benefit  is not defined");
-        }
-    };
+    
 
     this.getFilterData = () => {
         let p = {
-            benefit_type_id: mThis.elCategory.value, // Get the selected category value
+            benefit_type_id: mThis.elCategory.value,
             search_value: mThis.elSearch.value,
         };
-        console.log(1234, p);
-
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const field = el.dataset.field;
             p[field] = el.value;
@@ -385,12 +439,11 @@ var EmployeeBenefitComponent = new (function () {
                     d.categories,
                     "id",
                     "name",
-                    false,
-                    null,
-                    1
+                    true,
+                    'All benefit',
+                    null
                 );
 
-                // Create benefit type name map for displaying names instead of IDs
                 mThis.benefitTypeMap = d.categories.reduce((map, category) => {
                     map[category.id] = category.name;
                     return map;
@@ -400,12 +453,12 @@ var EmployeeBenefitComponent = new (function () {
     mThis.elCategory.onchange = () => {
         const selectedColumns =
             mThis.elCategory.value === "1"
-                ? mThis.cols
+                ? mThis.cols_bonus
                 : mThis.elCategory.value === "2"
                 ? mThis.cols_seniority
                 : mThis.elCategory.value === "3"
                 ? mThis.cols_insurance
-                : mThis.cols; // default columns
+                : mThis.cols;
 
         mThis.EmployeeBenefitListView.showPage(mThis.getFilterData(), {
             columns: selectedColumns,
@@ -418,7 +471,7 @@ var EmployeeBenefitComponent = new (function () {
         mThis.prepareFormOptions();
         const selectedColumns =
             mThis.elCategory.value === "1"
-                ? mThis.cols
+                ? mThis.cols_bonus
                 : mThis.elCategory.value === "2"
                 ? mThis.cols_seniority
                 : mThis.elCategory.value === "3"
@@ -446,29 +499,29 @@ const EmployeeBenefitDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row">
-                            <div class="form-group col-12">
+                            <div class="form-group col-md-6">
                                 <label for="employee" class="form-label" vslang="titles.Employee"></label>
                                 <select name="employee" class="data-input" data-field="emp_id"></select>
                             </div>
-                            <div class="form-group col-12">
+                            <div class="form-group col-md-6">
                                 <label for="category" class="form-label" vslang="titles.Category"></label>
                                 <select name="category" class="data-input" data-field="benefit_type_id" id="benefit_type_id"></select>
                             </div>
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-6">
                            <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
                            <span class="text-danger" >*</span>
                            <input name="start_date" class="form-control data-input" data-field="start_date">
                         </div>
-                        <div class="form-group col-12">
+                        <div class="form-group col-md-6">
                             <label for="end_date" class="form-label" vslang="titles.End Date"></label>
                             <span class="text-danger" >*</span>
                             <input name="end_date" class="form-control data-input" data-field="end_date" />
                         </div>
-                            <div class="form-group col-12">
+                            <div class="form-group col-md-6">
                                 <label for="amount" class="form-label" vslang="titles.Amount"></label>
                                 <input type="number" name="amount" class="form-control data-input" data-field="amount"></input>
                             </div>
-                            <div class="form-group col-12">
+                            <div class="form-group col-md-12">
                                 <label for="remark" class="form-label" vslang="titles.Remark"></label>
                                 <textarea type="text" class="form-control data-input" data-field="remarks"></textarea>
                             </div>

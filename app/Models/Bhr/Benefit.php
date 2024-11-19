@@ -5,8 +5,9 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-use Psy\Command\WhereamiCommand;
 use App\Models\DBX;
+use App\Models\Bhr\Event;
+use App\Models\Bhr\Employee;
 
 class Benefit
 {
@@ -18,27 +19,17 @@ class Benefit
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    function save($arr, $id = null, $ss = null)
+    function getProps($id, $props = [])
+    {
+        $cols = is_array($props) ? implode(',', $props) : $props;
+        $row = DB::table('emp_benefits')->where('id', $id)->selectRaw($cols)->first();
+        return $row;
+    }
+    function save($benefit_type_id, $id = null, $ss = null,$arr)
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $id = $id ?? $this->id;
-        $d = (object) $arr;
-        $emp_id = $d->emp_id ?? null;
-
-        if (!$emp_id) return DV::error('Employee is required for saving benefit!');
-
-        // Check if the benefit of the same type already exists for this employee
-        $existingBenefit = DB::table('emp_benefits')
-        ->where('emp_id', $emp_id)
-            ->where('benefit_type_id', $d->benefit_type_id)
-            ->first();
-
-        // Allow updating the existing benefit if $id is provided
-        if ($existingBenefit && (!$id && $id !== $existingBenefit->id)) {
-            return DV::error('This employee already has a benefit of this type.');
-        }
-
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number|exists=employees.id',
@@ -46,17 +37,73 @@ class Benefit
             'amount' => '0|number',
             'remarks' => '0|string|1-255'
         ];
-
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
 
         $id = $res->id;
         $inputs = $res->values;
+        $d = (object)$arr;
+        $remarks = $d->remarks;
+     
+        $emp_id = $d->emp_id ?? null;
 
-        // Update or insert data in the `emp_benefits` table
+        if (!$emp_id) return DV::error('Employee is required for saving benefit!');
+
+        $existingBenefit = DB::table('emp_benefits')
+        ->where('emp_id', $emp_id)
+            ->where('benefit_type_id', $d->benefit_type_id)
+            ->first();
+
+        if ($existingBenefit && (!$id && $id !== $existingBenefit->id)) {
+            return DV::error('This employee already has a benefit of this type.');
+        }
+
+       
+        
         $id = saveData($ss, 'emp_benefits', ['id' => $id], $inputs, [], 1, false);
+
         if ($id > 0) {
-            // Handling different benefit types with updates to existing entries
+            $events = [
+                '1' => 'Bonus',
+                '2' => 'Seniority',
+                '3' => 'Life Insurance'
+            ];
+            
+            $benefit = $this->getProps($id, ['benefit_type_id']);
+            if (!$benefit) {
+                return DV::error('Benefit type id not found!');
+            }
+            
+            $event_name = $events[$benefit->benefit_type_id] ?? null;
+            if (!$event_name) {
+                return DV::error("No matching event name found for benefit type ID: {$benefit->benefit_type_id}");
+            }
+            
+            $event_id = Employee::getEventId($event_name);
+            if (!$event_id) {
+                $event_arr = ['name' => $event_name];
+                $event_res = Event::createEvent($event_arr, $ss);
+                if ($event_res->status_code == 200 && !empty($event_res->data['id'])) {
+                    $event_id = $event_res->data['id'];
+                } else {
+                    return DV::error("Failed to create or fetch event for: {$event_name}");
+                }
+            }
+            
+            $event_date = date('Y-m-d');
+            $event_inputs = [
+                'emp_id' => $emp_id,
+                'event_id' => $event_id,
+                'impact' => 'Positive',
+                'remarks' => $remarks ?? '',
+                'event_date' => $event_date
+            ];
+            
+            $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
+            if (!$event_saved) {
+                return DV::error('Failed to log event.');
+            }
+            
             if ($d->benefit_type_id == 1) {
                 $bonus_arr = ['benefit_id' => $id, 'remarks' => $d->remarks];
                 $bonus_v_rule = [
@@ -70,6 +117,7 @@ class Benefit
                 $existing_bonus = DB::table('emp_bonuses')->where('benefit_id', $id)->first();
 
                 $bonus_id = saveData($ss, 'emp_bonuses', ['id' => $existing_bonus->id ?? null], $bonus_inputs, [], 1, false);
+                
                 return DV::depends($bonus_id, ['Bonuses data saved']);
             } elseif ($d->benefit_type_id == 2) {
                 $seniority_arr = [
@@ -136,7 +184,7 @@ class Benefit
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $benefit_type_id = $d->benefit_type_id ?? 1;
+        $benefit_type_id = $d->benefit_type_id ?? null;
         $str_srch = '1=1';
         $str_where ="2=2";
         if($search_value){
@@ -158,7 +206,7 @@ class Benefit
         
         ->selectRaw(
             'b.id, emp.id as emp_id, emp.name as name, emp.email as email, 
-                b.benefit_type_id, b.amount, b.remarks, b.update_user, b.create_date, emp.photo_file_name as emp_photo, '
+                b.benefit_type_id, b.amount, b.remarks, b.update_user,b.updated_at, b.create_date, emp.photo_file_name as emp_photo, '
            . $col_seniority_dates . ', ' 
            . $col_insurance_dates
         )
