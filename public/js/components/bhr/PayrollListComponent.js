@@ -283,6 +283,143 @@ var PayrollListComponent = new (function () {
         }
         new VSDropdownMenu(menuOptopns);
     }
+    this.renderPayment = (data) => {
+       let html = '';
+         html += `
+            <div class="payment_card">
+                <div class="payment-header">
+                    <div class="payment-logo">
+                        <img src="{{ asset('assets/images/logo/lc_logo.svg') }}" alt="Company Logo">
+                    </div>
+                    <div class="payment-title">
+                        <h3>Payment Slip</h3>
+                    </div>
+                </div>
+
+
+                <div class="payment_profile">
+                    <div class="row cols-2 mb-0">
+                        <div class="col-2">
+                            <div class="payment_img" data-id="" data-imageurl="">
+                                <img src="${data.image_url || "../uploads/public/1_data/default/images/mr.avif"} alt="Profile Image">
+                            </div>
+                        </div>
+                        <div class="col-5 p_profile_left">
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Employee Name</p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap text-capitalize data-get">${data.emp_name}</p>
+                            </div>
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Sex</p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap text-capitalize">${data.sex}</p>
+                            </div>
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Employee ID</p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap">${data.emp_code}</p>
+                            </div>
+                        </div>
+                        <div class="col-5 p_profile_right">
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Branch</p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap text-capitalize">${data.branch_name}</p>
+                            </div>
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Position</p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap text-capitalize">${data.emp_position}</p>
+                            </div>
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Join Date</p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap text-capitalize">${data.joining_date}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment_table row">
+                    <table class="table left-table col-6">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Bese Salary</td>
+                                <td>${data.salary}</td>
+                            </tr>
+                            <tr>
+                                <td>Base Allowance</td>
+                                <td>${data.allowance}</td>
+                            </tr>
+                            <tr>
+                                <td>Base Bias</td>
+                                <td>${data.bias}</td>
+                            </tr>
+                            <tr>
+                                <td>Benefit</td>
+                                <td>${data.benefit}</td>
+                            </tr>
+                            <tr>
+                                <td>Deduction</td>
+                                <td>${data.deduction}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+
+                    <table class="table right-table col-6">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> Salary </td>
+                                <td>${data.p_salary}</td>
+                            </tr>
+                            <tr>
+                                <td>Allowance</td>
+                                <td>${data.p_allowance}</td>
+                            </tr>
+                            <tr>
+                                <td>Bias</td>
+                                <td>${data.p_bias}</td>
+                            </tr>
+                            <tr>
+                                <td>Tax Base</td>
+                                <td>${data.tax_base}</td>
+                            </tr>
+                            <tr>
+                                <td>Tax Benefit</td>
+                                <td>${data.tax_benefit}</td>
+                            </tr>
+                            <tr>
+                                <td>Total Salary</td>
+                                <td class="total_salary">${data.total_salary}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Footer Buttons -->
+                <div class="payment_footer">
+                    <button class="pay-btn">Pay</button>
+                    <button class="print-btn">Print</button>
+                </div>
+            </div>`;
+
+        this.payment_info.innerHTML = html;
+    };
+
 
     this.viewPayment = (id, menuLink) => {
 
@@ -290,6 +427,17 @@ var PayrollListComponent = new (function () {
         sub_content.classList.add("d-none");
         const payment_slip = this.self.querySelector("#payment_slip");
         payment_slip.classList.remove("d-none");
+        let op = {
+            id: id,
+        }
+        vsapi.call(`${main_view.base_url}/hr/payroll-list/pay-slip`,op,false,false,false).then(res => {
+            if(res.status_code == 200){
+                let d = res.data;
+                console.log(d);
+
+                mThis.renderPayment(d)
+            }
+        })
 
     }
     this.editPayrollList = (id, menuLink) => {

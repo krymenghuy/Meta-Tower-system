@@ -39,7 +39,7 @@
                 <span class="" vslang="buttons.Back">Back</span>
             </button>
         </div>
-        <div id="payment_info" class="payment_info">
+        <div id="payment_info" class="payment_details">
             <div class="payment_card">
                 <div class="payment-header">
                     <div class="payment-logo">
@@ -99,7 +99,7 @@
                     <table class="table left-table col-6">
                         <thead>
                             <tr>
-                                <th>Catagory</th>
+                                <th>Category</th>
                                 <th>AMOUNT</th>
                             </tr>
                         </thead>
@@ -132,7 +132,7 @@
                     <table class="table right-table col-6">
                         <thead>
                             <tr>
-                                <th>Catagory</th>
+                                <th>Category</th>
                                 <th>AMOUNT</th>
                             </tr>
                         </thead>
@@ -200,7 +200,7 @@
 
 
     }
-    .payment_info {
+    .payment_details {
         display: flex;
         justify-content: center;
         height: 480px;
