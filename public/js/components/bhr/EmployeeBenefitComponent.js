@@ -51,7 +51,7 @@ var EmployeeBenefitComponent = new (function () {
             title: "Amount",
             className: "align-middle",
             data: (data) =>
-                `<p class="p-0 m-0">${(data.amount ?? "")}<span class="text-danger"> (រៀល)</span></p>`,
+                `<p class="p-0 text-primary-custom m-0">${(data.amount ?? "")}<span class="text-danger"> (រៀល)</span></p>`,
         },
     
         {
