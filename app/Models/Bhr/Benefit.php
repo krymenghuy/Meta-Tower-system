@@ -64,7 +64,7 @@ class Benefit
 
         if ($id > 0) {
             $events = [
-                '1' => 'Bonus',
+                '1' => 'Receive Bonus',
                 '2' => 'Seniority',
                 '3' => 'Life Insurance'
             ];
@@ -154,7 +154,7 @@ class Benefit
                     'benefit_id' => '1|number',
                     'start_date' => '1|date',
                     'end_date' => '1|date',
-                    'life_insurance_type' => '0|string|1-50',
+                    'life_insurance_type' => '0|string|1-150',
                     'remarks' => '0|string|1-250'
                 ];
                 $life_insurances_res = validateObject($life_insurances_arr, $life_insurances_v_rule, true, [], $ss->lang, false, null);
@@ -218,21 +218,21 @@ class Benefit
 
         $count = $clone_query->count('b.id');
 
-        // Get paginated results
+        
         $rows = $benefitsQuery->skip($skip_rows)
             ->take($per_page)
             ->get();
 
-        // Process the image URLs and clean up
+        
         foreach ($rows as $row) {
             $row->image_url = '';
             if (isset($row->emp_id) && $row->emp_photo) {
                 $row->image_url = Employee::profilePicture($row->emp_id);
             }
-            unset($row->emp_photo);  // Remove unnecessary data
+            unset($row->emp_photo);
         }
 
-        // Paginate the results
+        
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 

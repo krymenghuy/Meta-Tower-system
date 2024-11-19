@@ -194,7 +194,7 @@
         <div class="d-flex justify-content-between w-100" id="div_filter_filed">
             <div class="d-flex align-items-start justify-content-start w-25">
                 <button type="button" class="btn_add" style="background-color:#2b3991;" id="_btn_add_employee">
-                    <i class="fas fa-plus"></i>
+                <i class="fa-solid fa-share"></i>
                     <span>Add Employee </span>
                 </button>
             </div>
