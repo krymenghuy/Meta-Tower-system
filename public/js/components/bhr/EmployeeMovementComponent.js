@@ -13,9 +13,9 @@ var EmployeeMovementComponent = new (function () {
     this.cols = [
 
         {
-            title: "No",
+            title: "",
             className: 'align-middle',
-            data: (data, index, i) => { return (index + 1) },
+            // data: (data, index, i) => { return (index + 1) },
 
         },
         {
@@ -27,7 +27,7 @@ var EmployeeMovementComponent = new (function () {
                             <div>
                                 <span style="font-size: 14px; font-weight: bold;">${data.emp_name ?? ''}</span>
                                 <br/>
-                                <span style="font-size: 12px; color: gray;">${data.position ?? ''}</span>
+                                <span style="font-size: 10px; color: #2b3991;">${data.position ?? ''}</span>
                             </div>
                         </div>`;
             }
@@ -54,7 +54,7 @@ var EmployeeMovementComponent = new (function () {
             data: (data) => `
             <div style="display: block; align-items: center;">
                 <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
-                <span style="font-size: 12px; color: #2b3991;">${data.updated_at ?? ""}</span>
+                <span style="font-size: 10px; color: #2b3991;">${data.updated_at ?? ""}</span>
             </div>`,
         },
 
@@ -63,23 +63,23 @@ var EmployeeMovementComponent = new (function () {
             className: 'status text-nowrap align-middle',
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
-                let bg_color = ''; // Default background color
+                let bg_color = '';
 
                 if ((data.impact || '').toLowerCase() === 'positive') {
                     cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#28a745'; // Green background for success
+                    bg_color = '#28a745';
                 } else if ((data.impact || '').toLowerCase() === 'neutral') {
                     cls_class = 'text-white text-center border border-warning rounded-5 p-1';
-                    bg_color = '#ffc107'; // Yellow background for pending
+                    bg_color = '#ffc107';
                 } else if ((data.impact || '').toLowerCase() === 'negative') {
                     cls_class = 'text-white text-center border border-danger rounded-5 p-1';
-                    bg_color = '#dc3545'; // Red background for in progress
+                    bg_color = '#dc3545';
                 } else {
-                    bg_color = '#6c757d'; // Default gray background for other statuses
+                    bg_color = '#6c757d';
                 }
 
                 return `<div><a class="d-block" data-status="${data.impact}" data-id="${data.id}" href="javascript:void(0)">
-                            <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
+                            <span style="display:block;width:100px; background: ${bg_color}" class="p-1 ${cls_class}">
                                 ${data.impact}
                             </span>
                         </a></div>`;

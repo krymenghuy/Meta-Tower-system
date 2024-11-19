@@ -11,14 +11,18 @@ var WarningComponent = new (function () {
     this.elSearch = this.self.querySelector("#_warning_search");
     this._searchWarning = this.self.querySelector("#_warning_component");
     this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
-    // Define the columns for the warning list view
     this.cols = [
         {
-            title: "No",
+            title: "",
             className: "align-middle text-capitalize text-nowrap",
-            data: (data, index, i) => {
-                return index + 1;
-            },
+            // data: (data, index, i) => {
+            //     return index + 1;
+            // },
+        },
+        {
+            title: "Warning Date",
+            className: "align-middle",
+            data:(data)=>`<span class="text-danger">${data.warning_date}</span>`
         },
         {
             title: "Name",
@@ -32,37 +36,27 @@ var WarningComponent = new (function () {
                         <span style="font-size: 14px; font-weight: bold;">${
                             data.name ?? ""
                         }</span><br/>
-                        <span style="font-size: 12px; color: gray;">${
-                            data.email ?? ""
-                        }</span>
+                       
                     </div>
                 </div>`,
         },
+       
         {
-            title: "POSITION",
+            title: "Type",
             className: "align-middle",
-            data: "position",
+            data:(data)=>`<span class="text-primary-custom  px-2 text-center rounded-5">${data.warning_type}</span>`
         },
         {
-            title: "ISSUES",
+            title: "Reason",
             className: "align-middle",
-            data: "issues",
-        },
-        {
-            title: "PROMISES",
-            className: "align-middle",
-            data: "promises",
+            data: "reason",
         },
         {
             title: "Remarks",
             className: "align-middle",
-            data: "remarks",
+             data:(data)=>`<span class="text-danger">${data.remarks ?? 'take time'}</span>`
         },
-        {
-            title: "WARNING",
-            className: "align-middle",
-            data: (data) => `Warning: ${data.warning}`,
-        },
+       
         {
             className: "col_action align-middle",
             data: (data) => `
@@ -277,35 +271,31 @@ const WarningDialog = (() => {
             dialog ||
             new GeneralDialog({
                 cssClass: "modal-lg",
-                backdrop: "static", //User click outside form, do not close form
-                keyboard: true, //prevent user from using ESC key
+                backdrop: "static", 
+                keyboard: true, 
                 createContent: () => {
                     return [
                         `<div class="row">
-                            <div class="form-group col-12">
+                            <div class="form-group col-md-12">
                                 <label for="employee" class="form-label" vslang="titles.Employee"></label>
                                 <select name="employee" class=" data-input"  data-field="emp_id"></select>
                             </div>
-                            <div class="form-group col-12">
-                                <label for="position" class="form-label">Position</label>
-                                <input type="text" class="form-control data-input" data-field= "position" id="position" placeholder="Input position here"></input>
+                            <div class="form-group col-md-6">
+                                <label for="issued_by" class="form-label">issued by</label>
+                                <input type="text" class="form-control data-input" data-field= "issued_by" id="issued_by"</input>
                             </div>
-                            <div class="form-group  col-12 d.none">
-                               <div id="info"></div>
+                            <div class="form-group col-md-6">
+                                <label for="warning_date" class="form-label" vslang="titles.Warning Date"></label>
+                                <span class="text-danger" >*</span>
+                                <input name="warning_date" class="form-control data-input" data-field="warning_date">
                             </div>
-                            <div class="form-group col-6">
-                                <label for="warningPromises" class="form-label">Promises</label>
-                                <input class="form-control data-input" data-field="promises" id="warningPromises" rows="2" placeholder="Input promises here" required></input>                            
+                            
+                            <div class="form-group col-md-6">
+                                <label for="reason" class="form-label">reason</label>
+                                <input class="form-control data-input" data-field="reason" id="reason"></input>                            
                             </div>
-                            <div class="form-group col-6">
-                                <label for="warning" class="form-label">Warning</label>
-                                <input class="form-control data-input" data-field="warning" id="warning" rows="2"></input>                            
-                            </div>
-                            <div class="form-group col-6">
-                                <label for="warningIssues" class="form-label">Issues</label>
-                                <textarea class="form-control data-input" data-field="issues" id="warningIssues" rows="2" placeholder="Input issues here" required></textarea>
-                            </div>
-                             <div class="form-group col-6">
+                           
+                             <div class="form-group col-md-12">
                                 <label for="remarks" class="form-label">Remarks</label>
                                 <textarea class="form-control data-input" data-field="remarks" id="remarks"></textarea>
                             </div>
@@ -318,9 +308,9 @@ const WarningDialog = (() => {
                         name: "employee",
                         data: "employees",
                         textField: (me, d) => {
-                            return `<div class="d-flex gap-2"><img class="img_select mt-4" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> <span>${d.email}</span><span>${d.phone_number}</span><span> ${d.position} </span> </div></div>`;
+                            return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column" style="color:#2b3991;font-size:11px;"><span> ${d.name} </span> <span> ${d.position} </span> </div></div>`;
                         },
-                        // textField:"name",
+                    
                         valueField: "id",
                     },
                 ],
@@ -329,7 +319,7 @@ const WarningDialog = (() => {
                         label: '<span class="text-warning">Cancel</span>',
                         cssClass: "btn btn-default",
                         click: (me, btn) => {
-                            //Close with Cancel button
+                          
                             me.hide(false);
                         },
                     },
@@ -339,7 +329,7 @@ const WarningDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
 
-                            p.id = me.dataOptions.id; //get "id" from op
+                            p.id = me.dataOptions.id; 
 
                             vsapi
                                 .call(
@@ -363,6 +353,7 @@ const WarningDialog = (() => {
                     me.saveWarning = (p) => {
                         alert("Data saved.");
                     };
+                    DateTimePicker.init(me.controls.warning_date);
                 },
                 prepareFormOptions: {
                     createTitle: "Add Warning",

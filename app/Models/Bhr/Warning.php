@@ -2,17 +2,21 @@
 
 namespace App\Models\Bhr;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Support\Facades\DB;
 use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class Warning extends Model
+class Warning 
 {
-    use HasFactory;
+    protected $table = 'warnings';
+    protected $id = null;
+    protected $userInfo = null;
+    public function __construct($id=null , $userInfo = null){
+        $this->id = $id;
+        $this->$userInfo = $userInfo;
 
-    protected $table = 'warnings'; // Define the table name
+    }
     protected $fillable = [
         'name',
         'name_kh',
@@ -23,28 +27,24 @@ class Warning extends Model
         'promises',
         'warning',
         'subs_id'
-    ]; // Fillable fields for mass assignment
+    ]; 
 
     protected static $img_dir = 'warnings/profile';
 
-    public function saveWarnings($arr = [], $userInfo = null)
+    public function saveWarnings($arr = [], $ss = null)
     {
-        $ss = $userInfo ?? $this->userInfo; // Fallback to the instance's userInfo
+        $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
-        // Validation rules
         $v_rule = [
-            'id' => '0|identity=1', // Allow id for update
+            'id' => '0|identity=1', 
             'emp_id' => '1|number|exits.employees.id',
-            'position' => '0|string|0-100',
-            'issues' => '0|string|max:250',
-            'promises' => '0|string|max:250',
-            'warning' => '0|string|max:100',
-            'remarks' => '0|string|0-300',
+            'warning_type' => '0|string|50',
+            'warning_date' => '1|date',
+            'reason' => '0|string|255',
+            'remarks' => '0|string|255',
         ];
-        // $checkUnque = ["$branch_id|warnings|emp_id|warning|id=id|text=Employee has already warning "];
-
-        // Validate inputs
+       
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);//,$checkUnque);
         if ($res->error) {
             return DV::error($res->error);
@@ -81,21 +81,19 @@ class Warning extends Model
 
         $str_search = '1=1';
 
-        $query = DB::table('warnings as war')
-            ->join('employees as e', 'e.id', '=', 'war.emp_id')
-            ->selectRaw('war.id, e.id as emp_id, e.name, e.name_kh,war.position,war.remarks,e.email as email, war.issues, war.promises, war.warning, e.photo_file_name as emp_photo')
-            ->orderBy('war.id', 'DESC');
+        $query = DB::table('warnings as w')
+            ->join('employees as emp', 'emp.id', '=', 'w.emp_id')
+            ->selectRaw('w.id, emp.id as emp_id, emp.name, emp.name_kh,formatDate(w.warning_date) as warning_date,w.warning_type,w.remarks,w.reason,emp.position_id, emp.photo_file_name as emp_photo')
+            ->orderBy('w.id', 'DESC');
         if ($search_id) {
-            $query->where('war.id', $search_id);
+            $query->where('w.id', $search_id);
         }
 
-        if ($search_status_id) {
-            $query->where('war.issues', $search_status_id);
-        }
+       
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $str_search = "e.name like '%{$search_value}%' or e.name_kh like '%{$search_value}%' or war.promises like '%{$search_value}%'";
+            $str_search = "emp.name like '%{$search_value}%' or emp.name_kh like '%{$search_value}%' or w.reason like '%{$search_value}%'";
             $query->whereRaw($str_search);
         }
 
