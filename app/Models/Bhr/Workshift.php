@@ -65,14 +65,16 @@ class Workshift
 
         $search_value = $d->search_value ?? null;
         $str_search = '1=1';
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $str_search = "(ws.name LIKE '%" . $search_value . "')";
-        }
-
+        
         $query = DB::table('work_shifts as ws')
             ->whereRaw($str_search)
             ->selectRaw('ws.id, ws.name,ws.update_date,ws.update_user')->orderBy('ws.id', 'ASC');
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->where(function ($q) use ($search_value) {
+                $q->where('ws.name', 'LIKE', "%{$search_value}%");
+            });
+        }
         $clone_query = clone $query;
         $count = $clone_query->count('ws.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
