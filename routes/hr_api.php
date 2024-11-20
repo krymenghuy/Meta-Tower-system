@@ -135,6 +135,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list'
     Route::post('calculate', [PayrollListController::class, 'calculatePayrollList']);
     Route::post('disburse', [PayrollListController::class, 'disbursePayrollList']);
     Route::post('disburse-all', [PayrollListController::class, 'disburseAllPayrollList']);
+    Route::post('pay-slip', [PayrollListController::class, 'paySlip']);
 
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('report')->group(function () {

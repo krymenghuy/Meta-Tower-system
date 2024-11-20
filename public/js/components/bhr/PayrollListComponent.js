@@ -15,6 +15,8 @@ var PayrollListComponent = new (function () {
     this.btnDisburse = this.self.querySelector("#_btnDisburse");
     this.btnBack = this.self.querySelector("#_btn_backTo_payrollList");
     this.payment_info = this.self.querySelector("#payment_info");
+    this.btnPrint = this.self.querySelector("#_btnPrint");
+
 
     this.cols = [
 
@@ -195,8 +197,8 @@ var PayrollListComponent = new (function () {
             e.preventDefault();
             const sub_content = mThis.self.querySelector("#sub_content");
             sub_content.classList.remove("d-none");
-            const payment_slip = mThis.self.querySelector("#payment_slip");
-            payment_slip.classList.add("d-none");
+            const pay_slip = mThis.self.querySelector("#pay_slip");
+            pay_slip.classList.add("d-none");
         };
 
         const pr_tbl = mThis.PayrollList_ListView.getListContainer();
@@ -229,10 +231,10 @@ var PayrollListComponent = new (function () {
             //menuItemClass:"",
             menus:[
                 {
-                    html: '<span class="ps-2  " vslang="titles.View Payment">View Payment</span>',
+                    html: '<span class="ps-2  " vslang="titles.View Pay Slip">View Pay Slip</span>',
                     icon: `<i class="fa-regular fa-eye"></i>`,
                     cssClass: "border-bottom pb-2",
-                    name: "payment_slip",
+                    name: "pay_slip",
                 },
                 {
                     html:'<span class="ps-2  " vslang="titles.Disburse"></span>',
@@ -257,7 +259,7 @@ var PayrollListComponent = new (function () {
 
             onClick:(menuLink, id, name)=>{
                 switch(name){
-                    case 'payment_slip':{
+                    case 'pay_slip':{
                       mThis.viewPayment(id, menuLink);
                       break;
                     }
@@ -283,13 +285,247 @@ var PayrollListComponent = new (function () {
         }
         new VSDropdownMenu(menuOptopns);
     }
+    this.renderPayment = (data) => {
+       let html = '';
+         html += `
+        <style>
+            .payment_card {
+
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            width: 1000px;
+
+
+            }
+            .payment_details {
+                display: flex;
+                justify-content: center;
+                height: 480px;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .payment-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            padding: 10px;
+            padding-bottom: 20px;
+            }
+            .payment-logo {
+                position: absolute;
+                left: 0;
+            }
+
+            .payment-title {
+                text-align: center;
+                flex-grow: 1;
+            }
+            .payment_profile {
+                gap: 10px;
+                justify-content: center;
+                border: 1px solid #ccc;
+                padding: 10px;
+                border-radius: 5px;
+            }
+
+            .payment_img {
+                display: flex;
+                justify-content: center;
+                width: 80px;
+                height: 80px;
+                overflow: hidden;
+                border-radius: 50%;
+
+            }
+            .p_profile_left{
+                display: flex;
+                flex-direction: column;
+                justify-content: start;
+            }
+            .payment_table{
+                display: flex;
+                padding: 10px;
+            }
+            .payment_footer{
+                display: flex;
+                justify-content: right;
+
+            }
+
+        </style>
+            <div class="payment_card">
+                <div class="payment-header">
+                    <div class="payment-logo">
+                        <img src="${ 'assets/images/logo/lc_logo.svg' }" alt="Company Logo">
+                    </div>
+                    <div class="payment-title">
+                        <h3> ℙ𝕒𝕪 𝕊𝕝𝕚𝕡 </h3>
+                    </div>
+                </div>
+
+
+                <div class="payment_profile">
+                    <div class="row cols-2 mb-0">
+                        <div class="col-2">
+                            <div class="payment_img" data-id="" data-imageurl="">
+                                <img src="${data.image_url}" alt="Profile Image">
+                            </div>
+                        </div>
+                        <div class="col-5 p_profile_left">
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Employee Name</p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap text-capitalize data-get">${data.emp_name}</p>
+                            </div>
+                           <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Sex</p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap text-capitalize">
+                                    ${data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other'}
+                                </p>
+                            </div>
+
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Employee ID</p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap">${data.emp_code}</p>
+                            </div>
+                        </div>
+                        <div class="col-5 p_profile_right">
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Branch</p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap text-capitalize">${data.branch_name}</p>
+                            </div>
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Position</p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap text-capitalize">${data.emp_position}</p>
+                            </div>
+                            <div class="d-flex">
+                                <p class="text-nowrap text-muted width-p">Join Date</p>
+                                <p class="px-2">:</p>
+                                <p class="text-nowrap text-capitalize">${data.joining_date}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="payment_table row "style="display: flex !important">
+                <div class="col-6">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Bese Salary</td>
+                                <td>${data.salary}</td>
+                            </tr>
+                            <tr>
+                                <td>Base Allowance</td>
+                                <td>${data.allowance || 0.00} </td>
+                            </tr>
+                            <tr>
+                                <td>Base Bias</td>
+                                <td>${data.bias}</td>
+                            </tr>
+                             <tr>
+                                <td>Days</td>
+                                <td>${data.count_day}</td>
+                            </tr>
+                            <tr>
+                                <td>Benefit</td>
+                                <td class="text-success">${data.benefit}</td>
+                            </tr>
+                            <tr>
+                                <td>Deduction</td>
+                                <td class="text-danger">${data.deduction}</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-6">
+
+                    <table class="table ">
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>AMOUNT</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td> Salary </td>
+                                <td>${data.p_salary}</td>
+                            </tr>
+                            <tr>
+                                <td>Allowance</td>
+                                <td>${data.p_allowance}</td>
+                            </tr>
+                            <tr>
+                                <td>Bias</td>
+                                <td>${data.p_bias}</td>
+                            </tr>
+                            <tr>
+                                <td>Tax Base</td>
+                                <td class ="text-danger">${data.tax_base}</td>
+                            </tr>
+                            <tr>
+                                <td>Tax Benefit</td>
+                                <td class="text-danger">${data.tax_benefit}</td>
+                            </tr>
+                            <tr>
+                                <td>Total Salary</td>
+                                <td class="text-success">${data.total_salary}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+
+            </div>`;
+
+        this.payment_info.innerHTML = html;
+        // let btnPrint = this.payment_info.querySelector('#_btnPrint');
+        console.log(444, this.payment_info);
+
+
+
+    };
+    this.btnPrint.addEventListener('click', () => {
+        windowPrint(this.payment_info.innerHTML);
+        // window.print();
+    })
+
 
     this.viewPayment = (id, menuLink) => {
 
         const sub_content = this.self.querySelector("#sub_content");
         sub_content.classList.add("d-none");
-        const payment_slip = this.self.querySelector("#payment_slip");
-        payment_slip.classList.remove("d-none");
+        const pay_slip = this.self.querySelector("#pay_slip");
+        pay_slip.classList.remove("d-none");
+        let op = {
+            id: id,
+        }
+        vsapi.call(`${main_view.base_url}/hr/payroll-list/pay-slip`,op,false,false,false).then(res => {
+            console.log(666,res);
+
+            if(res.status_code == 200){
+                let d = res.data;
+                console.log(555,d);
+
+                mThis.renderPayment(d)
+            }
+        })
 
     }
     this.editPayrollList = (id, menuLink) => {
@@ -599,3 +835,43 @@ console.log(999,op);
 })();
 
 
+function windowPrint(html=null)
+{
+    let HtmlString = null;
+    HtmlString = html ? html : HtmlString;
+    if(HtmlString)
+    {
+        let myWindow = window.open('','PRINT');
+        myWindow.document.write(`<!DOCTYPE html>
+        <html>
+            <head>
+                <title>Student Attendaces Report</title>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
+                <style>
+                     *{
+                        margin:0;
+                        padding:0;
+                        box-sizing: border-box;
+                        font-size:11px;
+                    }
+                    table{
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+
+                </style>
+
+            </head>
+            <body>${HtmlString}</body>
+        </html>`);
+        //${HtmlString.replace(/table-responsive\s+/g,'')}
+        myWindow.document.close();
+        setTimeout(() => {
+            myWindow.focus();
+            myWindow.print();
+            myWindow.close();
+        },500);
+    }
+    else
+        cv_interact.warning('Select Run Report Before Print!');
+}
