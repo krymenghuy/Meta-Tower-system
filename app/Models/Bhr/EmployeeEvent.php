@@ -59,38 +59,34 @@ class EmployeeEvent
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $sort_by = $d->sort_by ?? 'ee.id';
-        $sort_order = $d->sort_order ?? 'asc';
-        $search_id = $d->id ?? null;
-        $search_status_id = $d->status_id ?? null;
-        $search_event_id = $d->event_id ?? null;
-
+        $event = $d->event_id ?? null;
+        $employee = $d->emp_id ?? null;
+        $str_where  = '2=2';
         $str_search = '1=1';
+        if ($search_value) {
+            $skip_rows=0;
+            $search_value = escape_like_str($search_value);
+            $str_search = "emp.name like '%" . $search_value . "'";
+        }
+        if($event){
+            $str_where = 'ee.event_id =\''.$event.'\'';
+        }
+        if($employee){
+            $str_where .= ' AND ee.emp_id =\'' . $employee . '\'';
 
+        }
         $query = DB::table('emp_events as ee')
         ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
         ->join('positions as p', 'p.id', '=', 'emp.position_id')
         ->join('events as e', 'e.id', '=', 'ee.event_id')
+        ->where('ee.branch_id', $branch_id)
+        ->whereRaw($str_search)
+        ->whereRaw($str_where)
         ->selectRaw('ee.id, ee.emp_id, ee.event_id,ee.impact, e.name as event, formatDate(ee.event_date) as event_date, ee.remarks,ee.update_user,ee.updated_at, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
-        ->where('ee.branch_id', $branch_id);
+        ->orderBy('ee.id','DESC');
+        $clone_query = clone $query;
 
-        if ($search_id) {
-            $query->where('ee.id', $search_id);
-        }
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $str_search = "e.name like '%" . $search_value . "%' or ee.remarks like '%" . $search_value . "%' or emp.name like '%" . $search_value . "%' or p.title like '%" . $search_value . "%'";
-        }
-        if ($search_status_id) {
-            $query->where('ee.impact_id', $search_status_id);
-        }
-        if ($search_event_id) {
-            $query->where('ee.event_id', $search_event_id);
-        }
-        $query->whereRaw($str_search);
-        $query->orderBy($sort_by, $sort_order);
-
-        $count = $query->count('ee.id');
+        $count = $clone_query->count('ee.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
@@ -144,11 +140,6 @@ class EmployeeEvent
         }
         return (object) [
 
-            'sort_by' => [
-                ['id' => 'emp.name', 'name' => 'By Name'],
-                ['id' => 'ee.event_date', 'name' => 'By Date'],
-
-            ],
             'employees' => GeneralSettings::options_employee(10,$ss),
             'events' => DB::table('events')->selectRaw('id,name')->get(),
 
