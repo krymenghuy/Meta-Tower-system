@@ -5,17 +5,21 @@
         background-color: #ff000059;
         border: 2px solid #fe1f1f;
         border-radius: 5px;
-        width: 135px;
+        /* width: 135px; */
         text-align: center;
     }
-
+    #work_shift_type{
+        background-color: #2b3991;
+        color: #fff;
+        border-radius: 5px;
+    }
     .btn-act-check-in {
         padding: 14px;
         color: #008767;
         background-color: #16c0985c;
         border: 2px solid #008767;
         border-radius: 5px;
-        width: 135px;
+        /* width: 135px; */
         text-align: center;
     }
 
@@ -37,8 +41,13 @@
 
     #_work_shift_body {
         display: flex;
-        height: 460px;
+        flex-direction: column;
+        height: 550px;
         gap: 1rem;
+        margin-top: 10px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
 
     }
 
@@ -59,7 +68,6 @@
         align-items: center;
         color: white;
         background-color: rgba(21, 16, 16, 0.687);
-        /* left: -10px; */
         margin: 5px 0px 0px 0px;
         border-radius: 5px;
     }
@@ -74,13 +82,19 @@
 
     .shift-status {
         padding: 5px;
+        width: 200px;
     }
-
-    .shift-status:hover {
+    .shift-status:hover{
+        transition: background-color 0.3s ease;
         transition: box-shadow 0.3s ease;
         border-radius: 20px;
         cursor: pointer;
-        scale: 1.05;
+        scale: 1.01;
+    }
+    .listview-container{
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width:none;
     }
     .work_shift:hover {
         transition: box-shadow 0.3s ease;
@@ -99,40 +113,40 @@
         height: 400px;
         gap: 1rem;
     }
+    #_work_shift_list{
+        display: flex;
+        padding: 0;
+    }
+    #_work_shift_list_paginator{
+        display: flex;
+        justify-content: flex-end;
+        margin-top: -30px;
+    }
+    
 </style>
 
 <div id="_main_workshiftComponent" style="display:block;padding:20px">
-    <div class="d-flex p-4 justify-content-between w-200" id="_divFilter">
+    <div class="d-flex py-2 pt-2 justify-content-between w-200" id="_divFilter">
         <div class="d-flex align-items-center w-100 gap-2">
             <div class="d-flex align-items-center w-50 gap-2">
                 <input type="text" class="form-control filter-field btn_search" id="_work_shift_search"
-                    placeholder="Search Work Shift Here ........">
+                    placeholder="Search.........">
                 <button id="_sdl_btnSearch" role="button" class="btn btn-primary rounded-5">
                     <i class="la la-search"></i>
                 </button>
             </div>
         </div>
-        <div class="d-flex align-items-center justify-content-end w-100">
+        <div class="d-flex align-items-center justify-content-end w-100 gap-2">
             <div class="d-flex align-items-center" style="width:200px">
-                <select id="el_work_shift" class="data-input filter-field " data-field="work_shift">
-                    <option value="">Select Work Shift</option>
-                    <option value="Work Shift A">Work Shift A</option>
-                    <option value="Work Shift B">Work Shift B</option>
-                    <option value="Work Shift C">Work Shift C</option>
-                    <option value="Work Shift D">Work Shift D</option>
-                    <option value="Work Shift E">Work Shift E</option>
-                    <option value="Work Shift F">Work Shift F</option>
-                    <option value="Work Shift G">Work Shift G</option>
-                    <option value="Work Shift H">Work Shift H</option>
-                    <option value="Work Shift I">Work Shift I</option>
-                    <option value="Work Shift J">Work Shift J</option>
-                    <option value="Work Shift K">Work Shift K</option>
-                    <option value="Work Shift L">Work Shift L</option>
-                </select>
+                <select id="el_work_shift" name="shifts" class="data-input filter-field" data-field="shifts"></select>
             </div>
             <button type="button" class="btn_add" id="_btnAddWorkShift">
                 <i class="fas fa-plus"></i>
                 <span>Add Work Shift</span>
+            </button>
+            <button type="button" class="btn_add" id="_btnAddShiftDetail">
+                <i class="fas fa-plus"></i>
+                <span>Add Shift Detail</span>
             </button>
         </div>
     </div>
@@ -150,8 +164,8 @@
         </div> --}}
     </div>
 
-    <!-- <div id="_work_shift_body">
-            <div class="col-2 work_shift">Work Shift A</div> 
+    <div id="_work_shift_body">
+            <!-- <div class="col-2 work_shift">Work Shift A</div> 
         <div class="scane_time d-block">
             <div class="shift_time d-flex" id="shift_time_row1">
                 <div class="col-1-5 shift-status">
@@ -243,7 +257,7 @@
 
                 </div>
             </div>
-        </div>
-    </div> -->
+        </div> -->
+    </div>
     <div id="_work_shift_list"></div>
 </div>
