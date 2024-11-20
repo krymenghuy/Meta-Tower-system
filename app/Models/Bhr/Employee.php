@@ -227,7 +227,6 @@ class Employee //extends Model
     {
         $subs_id = $ss->subs_id;
         $d = (object) $arr;
-        $branch_id = $ss->branch_id;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
@@ -237,7 +236,7 @@ class Employee //extends Model
         $status = $d->status_id ?? 10;
         $type = $d->emp_type_id ?? 3;
         $search_value = $d->search_value ?? null;
-        $el_branch = $d->branch_id ?? null;
+        $branch = $d->branch_id ?? null;
         $str_srch = '1=1';
         $str_where = '2=2';
 
@@ -253,8 +252,11 @@ class Employee //extends Model
         if ($type) {
             $str_where .= ' AND emp.emp_type_id =\'' . $type . '\'';
         }
+        if ($branch) {
+            $str_where .='AND emp.branch_id=\''.$branch.'\'';
+        }
 
-        // Initialize query with joins
+        
         $query = DB::table('employees as emp')
         ->join('positions as p', 'p.id', '=', 'emp.position_id')
         ->join('departments as d', 'd.id', '=', 'p.department_id')
@@ -294,19 +296,13 @@ class Employee //extends Model
         ')
             ->orderBy('emp.id', 'DESC');
 
-        // Apply branch filtering if specified
-        if ($el_branch) {
-            $query->where('emp.branch_id', $el_branch);
-        }
-
-        // Clone query to get count before applying pagination
+        
         $clone_query = clone $query;
         $count = $clone_query->count('emp.id');
 
-        // Apply pagination
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        // Process each row to add `image_url` and remove `photo_file_name`
+       
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->photo_file_name) {
@@ -315,7 +311,7 @@ class Employee //extends Model
             unset($row->photo_file_name);
         }
 
-        // Return paginated results
+       
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
@@ -514,7 +510,7 @@ class Employee //extends Model
             'employee' => $employee,
         ];
     }
-    function updateStatus($status_id, $id = null, $ss = null)
+    function setTerminateStatus($status_id, $id = null, $ss = null)
     {
         $ss = $ss ? $ss : $this->userInfo;
         $id = $id ?? $this->id;
@@ -569,7 +565,7 @@ class Employee //extends Model
         $row = DB::table('employees')->where('id', $id)->selectRaw($cols)->first();
         return $row;
     }
-    function promoteStaff($emp_type_id, $id = null, $ss = null, $arr)
+    function promoteIntern($emp_type_id, $id = null, $ss = null, $arr)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
@@ -582,9 +578,9 @@ class Employee //extends Model
         }
 
         $events = [
-            '1.2' => 'intern to probation',
-            '1.3' => 'intern to staff',
-            '2.3' => 'probation to staff'
+            '1.2' => 'promote intern to probation',
+            '1.3' => 'Promote intern to staff',
+            '2.3' => 'Promote probation to staff'
         ];
 
         $emp = $this->getProps($id, 'emp_type_id');
@@ -751,5 +747,13 @@ class Employee //extends Model
     
         return DV::error('Failed to save rejoin record.');
     }
+    function promoteStaff($emp_type_id, $id = null, $ss = null, $arr)
+    {
+        $ss = $ss ?? $this->userInfo;
+        $id = $id ?? $this->id;
+        $d = (object)$arr;
+   
+    }
+
     
 }

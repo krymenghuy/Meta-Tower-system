@@ -1095,29 +1095,77 @@ var EmployeeComponent = new (function () {
 
         mThis.MovementDialog =  new GeneralDialog({
             title: LocaleManager.trans("Movement","titles"),
+            cssClass:'modal-lg',
             createContent: () => {
                 return `
-                    <div class="d-flex align-items-center gap-3 border-bottom">
-                        <input class="mb-2" type="checkbox" id="item-${id}" name="items" value="${id}" />
-                        <label for="item-${id}" class="text-primary-custom">Change Branch</label>
+                    <div id="movement-options">
+                        <div class="d-flex align-items-center gap-3 border-bottom">
+                            <input class="mb-2 change-option" type="checkbox" id="branch-change-${id}" name="items" value="branch" />
+                            <label for="branch-change-${id}" class="text-primary-custom">Change Branch</label>
+                       
+                            <input class="mb-2 change-option" type="checkbox" id="position-change-${id}" name="items" value="position" />
+                            <label for="position-change-${id}" class="text-primary-custom">Change Position</label>
+                        
+                            <input class="mb-2 change-option" type="checkbox" id="salary-change-${id}" name="items" value="salary" />
+                            <label for="salary-change-${id}" class="text-primary-custom">Change Salary</label>
+                        </div>
+                        
                     </div>
-                    <div class="d-flex align-items-center gap-3 border-bottom">
-                        <input class="mb-2" type="checkbox" id="item-${id}" name="items" value="${id}" />
-                        <label for="item-${id}" class="text-primary-custom">Change Position</label>
+                    <div class="p-2">
+                        <select id="branch-select-${id}" class="form-control col-md-3 d-none">
+                            <option value="" disabled selected>Select Branch</option>
+                            <option value="1">Branch 1</option>
+                            <option value="2">Branch 2</option>
+                            <option value="3">Branch 3</option>
+                        </select>
+                        
                     </div>
-                    <div class="d-flex align-items-center gap-3 border-bottom">
-                        <input class="mb-2" type="checkbox" id="item-${id}" name="items" value="${id}" />
-                        <label for="item-${id}" class="text-primary-custom">Change salary</label>
+                    <div class="p-2">
+                        <select id="position-select-${id}" class="form-control col-md-6 d-none">
+                            <option value="" disabled selected>Select Position</option>
+                            <option value="manager">Manager</option>
+                            <option value="developer">Developer</option>
+                            <option value="analyst">Analyst</option>
+                        </select>
                     </div>
-                `
-            }
-            ,
-            contentCreated:(me)=>{
-
-
-
-
-             },
+                    <div class="p-2">
+                        <div id="salary-input-${id}" class="form-group col-md-6 d-none">
+                            <label class="form-label" vslang="titles.New Salary">New Salary</label>
+                            <input name="new_salary" class="form-control data-input" placeholder="" data-field="new_salary" />
+                        </div>
+                    </div>
+                `;
+            },
+            contentCreated: (me) => {
+                const container = document.getElementById('movement-options');
+                const checkboxes = container.querySelectorAll('.change-option');
+            
+                checkboxes.forEach((checkbox) => {
+                    checkbox.addEventListener('change', function () {
+                        let targetId;
+                        if (this.value === 'branch') {
+                            targetId = `branch-select-${id}`;
+                        } else if (this.value === 'position') {
+                            targetId = `position-select-${id}`;
+                        } else if (this.value === 'salary') {
+                            targetId = `salary-input-${id}`;
+                        }
+            
+                        const targetElement = document.getElementById(targetId);
+                        if (this.checked) {
+                            targetElement.classList.remove('d-none');
+                        } else {
+                            targetElement.classList.add('d-none');
+                            if (targetElement.tagName === 'SELECT') {
+                                targetElement.value = ''; // Reset select if hidden
+                            } else if (targetElement.tagName === 'DIV') {
+                                targetElement.querySelector('input').value = ''; // Reset input field
+                            }
+                        }
+                    });
+                });
+            },
+            
 
              configSelect:[
                 {
