@@ -5,6 +5,7 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
+
 class ShiftDetails
 {
     protected $id = null;
@@ -16,7 +17,8 @@ class ShiftDetails
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr, $ss = null)
+    {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
@@ -27,7 +29,7 @@ class ShiftDetails
             'end_time' => '1|string|0-100',
         ];
 
-        $res = validateObject($arr, $v_rule, true, ['day'=>['-']], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, ['day' => ['-']], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -35,7 +37,7 @@ class ShiftDetails
         $id = $res->id;
         $inputs = $res->values;
 
-        $id = saveData($ss,'shift_details', ['id' => $id], $inputs, [], 1);
+        $id = saveData($ss, 'shift_details', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['shift_details' => $inputs, 'id' => $id]);
         }
@@ -43,7 +45,8 @@ class ShiftDetails
         return DV::error('Error saving shift details');
     }
 
-    function getShiftDetailsListPaginate($arr, $ss) {
+    function getShiftDetailsListPaginate($arr, $ss)
+    {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
 
@@ -73,27 +76,28 @@ class ShiftDetails
             $query->whereRaw($str_search);
         }
 
-        $query->skip($skip_rows)->take($per_page);
-        $count_query = clone $query;
-        $count = $count_query->count('sd.id');
-        $rows = $query->get();
+        $count = $query->count('sd.id');
+        $rows = $query->skip($skip_rows)
+            ->take($per_page)
+            ->get();
 
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getDetails($id,$ss){
+    function getDetails($id, $ss)
+    {
 
         $query = DB::table('shift_details as sd')
             ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
             ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.start_time, sd.end_time, ws.name as work_shift_name')
-            ->where('sd.id',$id)
+            ->where('sd.id', $id)
             ->first();
         return $query;
-
     }
 
-    function deleteShiftDetails($id, $ss){
+    function deleteShiftDetails($id, $ss)
+    {
         $query = DB::table('shift_details')
             ->where('id', $id)
             ->delete();
@@ -112,11 +116,8 @@ class ShiftDetails
         return (object) [
 
             // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
-            'Work Shift' => DB::table('work_shifts')->selectRaw('id,name')->get(),
-
-
+            'shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
             'shiftdetails' => $shiftdetails,
         ];
-
     }
 }
