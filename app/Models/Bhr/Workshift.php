@@ -109,6 +109,7 @@ class Workshift
             $work_shift = self::getDetails($id, $ss);
         }
         return (object) [
+            'shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
             'work_shifts' => $work_shift,
         ];
     }
