@@ -209,6 +209,23 @@ var PayrollComponent = new (function () {
                     name: "delete_payroll"
                 },
             ],
+            onShow: (me, container) => {
+
+                const menu = me.getActiveMenus(container);
+                const authorized = container.dataset.authorized;
+
+
+
+                if (authorized == 1) {
+                    for (const item in menu) {
+                        if (menu[item] && menu[item].style) {
+                            menu[item].style.display = (menu[item].dataset.mnuaction === 'edit_payroll' || menu[item].dataset.mnuaction === 'delete_payroll' || menu[item].dataset.mnuaction === 'change_authorize') ? 'none' : 'block';
+                        }
+
+                    }
+                }
+
+            },
             onClick: (menuLink, id, name) => {
                 switch (name) {
                     case 'change_authorize':

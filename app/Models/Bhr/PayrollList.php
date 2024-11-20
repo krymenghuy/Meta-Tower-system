@@ -75,6 +75,7 @@ class PayrollList
         $search_branch = $d->branch_id ?? null;
         $sort_by = $d->sort_by ?? 'pl.id';
         $sort_order = $d->sort_order ?? 'asc';
+        $search_disburse = $d->disburse ?? null;
         $str_search = '1=1';
 
 
@@ -90,7 +91,7 @@ class PayrollList
                         e.name as emp_name,
                         pos.title as emp_position,
                         b.name as branch_name,
-                        e.salary,
+                        pl.salary,
                         e.apply_payroll_tax,
                         pl.benefit,
                         pl.deduction,
@@ -117,6 +118,11 @@ class PayrollList
         if ($search_branch) {
             $query->where('e.branch_id', $search_branch);
         }
+
+        if (!is_null($search_disburse)) { // Ensure the condition applies for both 0 and 1
+            $query->where('pl.disburse', $search_disburse);
+        }
+
 
         $query->orderBy($sort_by, $sort_order);
         $clone_query = clone $query;
@@ -168,7 +174,7 @@ class PayrollList
                     e.sex,
                     pos.title as emp_position,
                     b.name as branch_name,
-                    e.salary,
+                    pl.salary,
                     e.apply_payroll_tax,
                     pl.benefit,
                     pl.deduction,
@@ -212,6 +218,10 @@ class PayrollList
                 ['id' => 'e.name', 'name' => 'By Name'],
                 ['id' => 'e.salary', 'name' => 'By Salary Base'],
 
+            ],
+            'disburse' => [
+                ['id' => 0, 'name' => 'Not Disburse'],
+                ['id' => 1, 'name' => 'Disbursed'],
             ],
 
           'employees' => GeneralSettings::options_employee(10,$ss),
@@ -268,11 +278,22 @@ class PayrollList
         $error = 0;
 
         foreach ($get_employee as $emp) {
+            $payroll_list = DB::table('payroll_lists')
+                ->where('emp_id', $emp->emp_id)
+                ->where('payroll_id', $payroll_id)
+                ->first();
+
+            if ($payroll_list) {
+                $emp_salary = $payroll_list->salary;
+            } else {
+                $emp_salary = $emp->salary;
+            }
+
             if ($emp->apply_payroll_tax == 0) {
                 $taxInfo = DB::table('tax_brackets')
-                    ->where(function ($query) use ($emp) {
-                        $query->whereRaw('lower_amount <= ?', [$emp->salary])
-                              ->whereRaw('(upper_amount >= ? OR upper_amount = -1)', [$emp->salary]);
+                    ->where(function ($query) use ($emp_salary) {
+                        $query->whereRaw('lower_amount <= ?', [$emp_salary])
+                              ->whereRaw('(upper_amount >= ? OR upper_amount = -1)', [$emp_salary]);
                     })
                     ->select('rate', 'bias')
                     ->first();
@@ -285,7 +306,6 @@ class PayrollList
                 $emp->tax_rate = (object) ['rate' => 0, 'bias' => 0];
             }
 
-            $payroll_list_id = null;
             $emp->payroll_id = $payroll_id;
 
             $v_rule = [
@@ -298,11 +318,13 @@ class PayrollList
                 'tax_base' => '0|number',
                 'bias' => '0|number',
                 'total_salary' => '0|number',
+                'salary' => '0|number',
             ];
 
             $empArray = (array)$emp;
             $empArray['tax_rate'] = $emp->tax_rate->rate;
             $empArray['bias'] = $emp->tax_rate->bias;
+            $empArray['salary'] = $emp_salary;
 
             $res = validateObject($empArray, $v_rule, true, [], $ss->lang);
             if ($res->error) {
@@ -326,6 +348,9 @@ class PayrollList
 
         return DV::depends(1, ['success' => $success, 'error' => $error]);
     }
+
+
+
 
 
 
@@ -358,7 +383,7 @@ class PayrollList
                         e.name as emp_name,
                         pos.title as emp_position,
                         el.name as emp_role,
-                        e.salary,
+                        pl.salary,
                         pl.benefit, pl.deduction,
                         e.photo_file_name as emp_photo,
                         e.status_id,
@@ -387,7 +412,7 @@ class PayrollList
                     $count_date = $payroll_start_date->diff($effective_date)->days;
                     $resigned_or_new_start = true;
                 }
-            }elseif ($payroll->rejoin_date) {
+            } elseif ($payroll->rejoin_date) {
                 $rejoin_date = new \DateTime($payroll->rejoin_date);
 
                 if ($rejoin_date >= $payroll_start_date && $rejoin_date <= $payroll_end_date) {
@@ -395,8 +420,7 @@ class PayrollList
                     $resigned_or_new_start = true;
                 }
 
-            }
-             elseif ($payroll->joining_date) {
+            } elseif ($payroll->joining_date) {
                 $joining_date = new \DateTime($payroll->joining_date);
                 if ($joining_date >= $payroll_start_date && $joining_date <= $payroll_end_date) {
                     $count_date = $joining_date->diff($payroll_end_date)->days + 1;
@@ -439,16 +463,15 @@ class PayrollList
 
                 if ($benefit > 0) {
                     $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
-                    if($payroll->tax_base < 0) {
+                    if ($payroll->tax_base < 0) {
                         $payroll->tax_base = 0;
                     }
                     $tax_benefit = $benefit * (20 / 100);
                     $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $tax_benefit + $deduction);
-                    $tax_benefit = $benefit * (20 / 100);
-                    $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $tax_benefit + $deduction);
+
                 } else {
                     $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
-                    if($payroll->tax_base < 0) {
+                    if ($payroll->tax_base < 0) {
                         $payroll->tax_base = 0;
                     }
                     $payroll->total = $last_salary - ($payroll->tax_base + $deduction);
@@ -483,6 +506,8 @@ class PayrollList
             'Calculated ids', $error_ids
         ]);
     }
+
+
 
 
 
@@ -642,51 +667,60 @@ class PayrollList
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-        $joining_date = DBX::formatDate('e.joining_date','joining_date');
+        $joining_date = DBX::formatDate('e.joining_date', 'joining_date');
 
-        $row =DB::table('payroll_lists as pl')
-        ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-        ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-        ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
-        ->join('um_branches as b', 'b.id', '=', 'e.branch_id')
-        ->selectRaw('pl.id,
-                    p.id as payroll_id,
-                    p.name as payroll_name,
-                    e.id as emp_id,
-                    e.code as emp_code,
-                    e.name as emp_name,
-                    e.sex,
-                    pos.title as emp_position,
-                    b.name as branch_name,
-                    e.salary,
-                    pl.p_salary,
-                    pl.count_day,
-                    e.apply_payroll_tax,
-                    pl.benefit,
-                    pl.deduction,
-                    pl.tax_rate,
-                    pl.bias,
-                    pl.p_bias,
-                    pl.p_allowance,
-                    pl.tax_base,
-                    pl.tax_benefit,
-                    pl.tax_benefit,
-                    pl.total_salary,
-                    '.$joining_date.',
-                    e.photo_file_name as emp_photo')
-        ->where('pl.id', $id)->first();
+        $row = DB::table('payroll_lists as pl')
+            ->join('employees as e', 'e.id', '=', 'pl.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+            ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
+            ->join('um_branches as b', 'b.id', '=', 'e.branch_id')
+            ->selectRaw('pl.id,
+                        p.id as payroll_id,
+                        p.name as payroll_name,
+                        e.id as emp_id,
+                        e.code as emp_code,
+                        e.name as emp_name,
+                        e.sex,
+                        pos.title as emp_position,
+                        b.name as branch_name,
+                        pl.salary,
+                        pl.p_salary,
+                        pl.count_day,
+                        e.apply_payroll_tax,
+                        pl.benefit,
+                        pl.deduction,
+                        pl.tax_rate,
+                        pl.bias,
+                        pl.p_bias,
+                        pl.p_allowance,
+                        pl.tax_base,
+                        pl.tax_benefit,
+                        pl.total_salary,
+                        ' . $joining_date . ',
+                        e.photo_file_name as emp_photo')
+            ->where('pl.id', $id)->first();
 
         if ($row) {
+
             $row->allowance = DB::table('tax_allowances')
-            ->where('emp_id', $row->emp_id)
-            ->value('allowance');
+                ->where('emp_id', $row->emp_id)
+                ->value('allowance');
+
+
+            $row->benefit = $row->benefit ?? 0.00;
+            $row->deduction = $row->deduction ?? 0.00;
+            $row->tax_base = $row->tax_base ?? 0.00;
+            $row->total_salary = $row->total_salary ?? 0.00;
+
+
+            $row->image_url = $row->emp_photo
+                ? Employee::profilePicture($row->emp_id)
+                : '';
+            unset($row->emp_photo);
         }
-        $row->image_url = '';
-        if ($row->emp_photo) {
-            $row->image_url = Employee::profilePicture($row->emp_id);
-        }
-        unset($row->emp_photo);
+
         return $row;
     }
+
 
 }

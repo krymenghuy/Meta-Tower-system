@@ -27,7 +27,7 @@ var WalletAccountComponent = new (function () {
                             <div>
                                 <span style="font-size: 14px; font-weight: bold;">${data.emp_name ?? ''}</span>
                                 <br/>
-                                <span style="font-size: 12px; color: gray;">${data.position ?? ''}</span>
+                                <span style="font-size: 11px; color: gray;">${data.position ?? ''}</span>
                             </div>
                         </div>`;
             }
@@ -272,7 +272,7 @@ var WalletAccountComponent = new (function () {
             menus:[
                 {
                     html: '<span class="ps-2  " vslang="titles.View Transaction">View Transaction</span>',
-                    icon: `<i class="fa-solid fa-repeat"></i>`,
+                    icon: `<i class="fa-regular fa-eye"></i>`,
                     cssClass: "border-bottom pb-2",
                     name: "view_wallet_transaction",
                 },

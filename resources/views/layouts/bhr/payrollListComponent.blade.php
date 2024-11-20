@@ -8,8 +8,11 @@
                 <div class="d-flex align-items-center justify-content-end gap-2 w-25 pl-2">
                     <select type="id" id="el_filter_branch" class="data-input filter-field"></select>
                 </div>
-                <div class="d-flex align-items-center justify-content-end gap-2 w-25 pl-2">
+                {{-- <div class="d-flex align-items-center justify-content-end gap-2 w-25 pl-2">
                     <select type="id" id="el_sort_by" class="data-input filter-field"></select>
+                </div> --}}
+                <div class="d-flex align-items-center justify-content-end gap-2 w-25 pl-2">
+                    <select type="id" id="el_filter_disburse" class="data-input filter-field"></select>
                 </div>
             </div>
 
@@ -31,19 +34,23 @@
         <div id="_payrollList_list" class="m-4"></div>
     </div>
 
-    <div class="d-none" id="pay_slip">
-        <div class="d-flex px-3 pt-3" id="btn_back">
-            <button id="_btn_backTo_payrollList" style="background-color:#2b3991; width:100px;"
-                class="btn text-white shadow rounded-4 m-2 p-2" type="button">
-                <i class="fa-solid fa-angles-left "></i>
-                <span class="" vslang="buttons.Back">Back</span>
-            </button>
+    <div class="d-none row" id="pay_slip">
+        <div class="d-flex justify-content-between">
+            <div class="d-flex px-3 pt-3 w-50" id="btn_back">
+                <button id="_btn_backTo_payrollList" style="background-color:#2b3991; width:100px; height:40px"
+                    class="btn text-white shadow rounded-4 m-2 p-2" type="button">
+                    <i class="fa-solid fa-angles-left "></i>
+                    <span class="" vslang="buttons.Back">Back</span>
+                </button>
+            </div>
+            <div class="payment_footer width-50">
+                <button class="btn text-white shadow rounded-4 m-2 p-2"style="background-color:#2b3991; width:100px; height:40px" id="_btnPrint">Print</button>
+            </div>
         </div>
+
         <div id="payment_info" class="payment_details">
         </div>
-        <div class="payment_footer">
-            <button class="btn btn-primary" id="_btnPrint">Print</button>
-        </div>
+
     </div>
 
 
@@ -63,9 +70,12 @@
         display: flex;
         position: fixed;
     }
-    .payment_footer{
+
+    .payment_footer {
         display: flex;
         justify-content: flex-end;
-        padding-right: 140px;
+        padding: 20px;
+
+
     }
 </style>
