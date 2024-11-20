@@ -2,8 +2,7 @@
     <div class="d-flex  p-4 justify-content-between w-200 " id="_warning_component">
         <div class="d-flex align-items-center w-100 gap-2">
         <button type="button" class="btn_add" id="_btnAddWarning">
-                <i class="fas fa-plus"></i>
-                <span>Add Warning</span>
+                <span>Employee Warning</span>
             </button>
             
         </div>

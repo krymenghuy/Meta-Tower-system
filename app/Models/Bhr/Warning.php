@@ -35,33 +35,67 @@ class Warning
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-
+    
         $v_rule = [
-            'id' => '0|identity=1', 
+            'id' => '0|identity=1',
             'emp_id' => '1|number|exits.employees.id',
             'warning_type' => '0|string|50',
             'warning_date' => '1|date',
             'reason' => '0|string|255',
             'remarks' => '0|string|255',
         ];
-       
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);//,$checkUnque);
+    
+        // Validate input
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) {
             return DV::error($res->error);
         }
+    
         $id = $res->id;
-
         $inputs = $res->values;
-
+    
+        // Save warning data
         $warning = saveData($ss, 'emp_warnings', ['id' => $id], $inputs, [], 1);
         if ($warning > 0) {
-            
+            // Define event details
+            $event_name = 'Employee Warnings';
+            $event_id = Employee::getEventId($event_name);
+    
+            // If event ID doesn't exist, create a new event
+            if (!$event_id) {
+                $event_arr = ['name' => $event_name];
+                $event_res = Event::createEvent($event_arr, $ss);
+    
+                if ($event_res->status_code == 200 && !empty($event_res->data['id'])) {
+                    $event_id = $event_res->data['id'];
+                } else {
+                    return DV::error("Failed to create or fetch event for: {$event_name}");
+                }
+            }
+    
+            // Prepare event inputs
+            $event_date = $inputs['warning_date'];
+            $event_inputs = [
+                'emp_id' => $inputs['emp_id'],
+                'event_id' => $event_id,
+                'impact' => 'Neutral', // Adjust impact as needed (e.g., Positive, Neutral, Negative)
+                'remarks' => $inputs['remarks'] ?? '',
+                'event_date' => $event_date,
+                'branch_id' => $branch_id
+            ];
+    
+            // Save event data
+            $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
+            if (!$event_saved) {
+                return DV::error('Failed to log event.');
+            }
+    
             return DV::depends(1, ['emp_warnings' => $inputs, 'id' => $id]);
         }
-
+    
         return DV::depends($warning, ['emp_warnings' => $inputs, 'id' => $id]);
-        
     }
+    
 
     function getWarningsListPaginate($arr, $ss)
     {
@@ -69,36 +103,26 @@ class Warning
         $branch_id = $ss->branch_id;
 
         $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 20;
+        $per_page = $d->per_page ?? 10;
         if (!is_numeric($current_page)) {
             $current_page = 1;
         }
-
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-        $search_status_id = $d->status_id ?? null;
-
         $str_search = '1=1';
-
+        if($search_value){
+            $skip_rows = 0;
+            $str_search = "(emp.name LIKE '%".$search_value."%' OR emp.code = '".$search_value."')";
+        }
         $query = DB::table('emp_warnings as w')
             ->join('employees as emp', 'emp.id', '=', 'w.emp_id')
-            ->selectRaw('w.id, emp.id as emp_id, emp.name, emp.name_kh,formatDate(w.warning_date) as warning_date,w.warning_type,w.remarks,w.reason,emp.position_id, emp.photo_file_name as emp_photo')
-            ->orderBy('w.id', 'DESC');
-        if ($search_id) {
-            $query->where('w.id', $search_id);
-        }
-
+            ->whereRaw($str_search)
+            ->selectRaw('w.id, emp.id as emp_id, emp.name, emp.name_kh,formatDate(w.warning_date) as warning_date,w.warning_type,w.remarks,w.reason,emp.position_id, emp.photo_file_name as emp_photo,w.updated_at,w.update_user')
+            ->orderBy('w.id', 'ASC');
        
-
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $str_search = "emp.name like '%{$search_value}%' or emp.name_kh like '%{$search_value}%' or w.reason like '%{$search_value}%'";
-            $query->whereRaw($str_search);
-        }
-
-        $count = $query->count();
+        $clone_query = clone $query;
+        $count = $clone_query->count('w.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
