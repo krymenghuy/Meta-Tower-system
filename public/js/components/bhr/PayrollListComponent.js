@@ -360,8 +360,10 @@ var PayrollListComponent = new (function () {
             <div class="payment_card">
                 <div class="payment-header">
                     <div class="payment-logo">
-                        <img src="${ 'assets/images/logo/lc_logo.svg' }" alt="Company Logo">
+                        <img src="${main_view.base_url}/assets/images/logo/lc_logo.svg" alt="Company Logo">
                     </div>
+
+
                     <div class="payment-title">
                         <h3> ℙ𝕒𝕪 𝕊𝕝𝕚𝕡 </h3>
                     </div>
@@ -845,7 +847,7 @@ function windowPrint(html=null)
         myWindow.document.write(`<!DOCTYPE html>
         <html>
             <head>
-                <title>Student Attendaces Report</title>
+                <title>Pay Slip</title>
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
                 <style>
                      *{
@@ -864,7 +866,6 @@ function windowPrint(html=null)
             </head>
             <body>${HtmlString}</body>
         </html>`);
-        //${HtmlString.replace(/table-responsive\s+/g,'')}
         myWindow.document.close();
         setTimeout(() => {
             myWindow.focus();
