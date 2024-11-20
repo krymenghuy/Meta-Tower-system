@@ -34,6 +34,8 @@ use App\Http\Controllers\Bhr\TaxBracketController;
 use App\Http\Controllers\Bhr\TransactionController;
 use App\Http\Controllers\Bhr\WalletAccountController;
 use App\Http\Controllers\Bhr\PromoteEmployeeController;
+use App\Http\Controllers\Bhr\ShiftDetailsController;
+
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -164,11 +166,11 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('work-shifts')
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('shift-details')->group(function () {
 
-    Route::post('/save', [ShiftDetailController::class, 'saveShiftDetails']);
-    Route::post('/list-paginate', [ShiftDetailController::class, 'getShiftDetailsListPaginate']);
-    Route::post('/details', [ShiftDetailController::class, 'getDetails']);
-    Route::post('/delete', [ShiftDetailController::class, 'deleteShiftDetails']);
-    Route::post('/form-options', [ShiftDetailController::class, 'getFormOptions']);
+    Route::post('/save', [ShiftDetailsController::class, 'saveShiftDetails']);
+    Route::post('/list-paginate', [ShiftDetailsController::class, 'getShiftDetailsListPaginate']);
+    Route::post('/details', [ShiftDetailsController::class, 'getDetails']);
+    Route::post('/delete', [ShiftDetailsController::class, 'deleteShiftDetails']);
+    Route::post('/form-options', [ShiftDetailsController::class, 'getFormOptions']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('scan-plan')->group(function () {
 
