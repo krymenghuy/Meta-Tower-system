@@ -21,14 +21,17 @@ class ShiftDetails
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
+
+        // Validation rules
         $v_rule = [
             'id' => '0|identity=1',
             'work_shift_id' => '1|number',
-            'day' => '1|string|0-100',
-            'start_time' => '1|string|0-100',
-            'end_time' => '1|string|0-100',
+            'day' => '0|string|0-100', // Allows comma-separated days
+            'time' => '1|string|0-100',
+            'action' => '1|string|0-100',
         ];
 
+        // Validate input
         $res = validateObject($arr, $v_rule, true, ['day' => ['-']], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
@@ -37,13 +40,29 @@ class ShiftDetails
         $id = $res->id;
         $inputs = $res->values;
 
-        $id = saveData($ss, 'shift_details', ['id' => $id], $inputs, [], 1);
-        if ($id > 0) {
-            return DV::depends(1, ['shift_details' => $inputs, 'id' => $id]);
+        // Split multiple days into an array
+        $days = explode(',', $inputs['day']);
+        $days = array_map('trim', $days); // Remove whitespace from each day
+
+        // Prepare response data
+        $savedRows = [];
+        foreach ($days as $day) {
+            // Update the 'day' field for each row
+            $inputs['day'] = $day;
+
+            // Save data for each day
+            $savedId = saveData($ss, 'shift_details', ['id' => $id], $inputs, [], 1);
+            if ($savedId > 0) {
+                $savedRows[] = ['id' => $savedId, 'shift_details' => $inputs];
+            } else {
+                return DV::error("Error saving shift details for day: {$day}");
+            }
         }
 
-        return DV::error('Error saving shift details');
+        // Return success with all saved rows
+        return DV::depends(1, ['saved_rows' => $savedRows]);
     }
+
 
     function getShiftDetailsListPaginate($arr, $ss)
     {
@@ -65,7 +84,7 @@ class ShiftDetails
 
         $query = DB::table('shift_details as sd')
             ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
-            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.start_time, sd.end_time, ws.name as work_shift_name');
+            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action, ws.name as work_shift_name');
 
         if ($search_id) {
             $query->whereRaw('sd.id =' . $search_id);
@@ -90,7 +109,7 @@ class ShiftDetails
 
         $query = DB::table('shift_details as sd')
             ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
-            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.start_time, sd.end_time, ws.name as work_shift_name')
+            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time,sd.action, ws.name as work_shift_name')
             ->where('sd.id', $id)
             ->first();
         return $query;

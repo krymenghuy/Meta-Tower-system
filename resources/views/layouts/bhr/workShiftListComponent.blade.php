@@ -55,7 +55,7 @@
 
     .shift_header:hover,
     .shift_date:hover {
-        background-color: rgb(255, 255, 255);
+        background-color: rgba(81, 1, 92, 0.376);
         transition: background-color 0.3s ease;
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.46);
         transition: box-shadow 0.3s ease;
@@ -82,28 +82,15 @@
         scrollbar-width: none;
     }
 
-    .shift-status-monday,
-    .shift-status-tuesday,
-    .shift-status-wednesday,
-    .shift-status-thursday,
-    .shift-status-friday,
-    .shift-status-saturday,
-    .shift-status-sunday {
+    .shift-status {
         padding: 5px;
         width: 200px;
     }
 
-    .shift-status-monday:hover,
-    .shift-status-tuesday:hover,
-    .shift-status-wednesday:hover,
-    .shift-status-thursday:hover,
-    .shift-status-friday:hover,
-    .shift-status-saturday:hover,
-    .shift-status-sunday:hover {
+    .shift-status:hover {
         transition: background-color 0.3s ease;
         transition: box-shadow 0.3s ease;
         border-radius: 20px;
-        
         cursor: pointer;
         scale: 1.01;
     }
@@ -190,102 +177,38 @@
     }
 
     .day:hover {
-        border-color: #1de67a;
+        border-color: #007bff;
         background-color: #bfdffb;
     }
 
     .day.active {
-        border-color: #00ff9d;
+        border-color: #007bff;
         background-color: #007bff;
         color: white;
     }
-    #shift-container {
-  display: grid;
-  grid-template-rows: auto 1fr;
-  gap: 10px;
-  padding: 10px;
-  font-family: Arial, sans-serif;
-}
-
-.shift-header {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  background-color: #324c80;
-  color: white;
-  padding: 10px 0;
-  text-align: center;
-  font-weight: bold;
-}
-
-.shift-body {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 5px;
-}
-
-.shift-column {
-  min-height: 150px;
-  border: 1px solid #ddd;
-  padding: 5px;
-  background-color: #f9f9f9;
-}
-
-.shift-entry {
-  padding: 10px;
-  margin: 5px 0;
-  text-align: center;
-  border-radius: 5px;
-}
-
-.check-in {
-  background-color: #c8f1e0;
-  color: #045d56;
-}
-
-.check-out {
-  background-color: #e0e7f9;
-  color: #3b5998;
-}
-
-.weekend {
-  background-color: #f9d6d6;
-  color: #a94442;
-}
-
 </style>
 
-<div id="_main_workshiftComponent" style="display:block;padding:20px">
+<div id="_main_workShiftListComponent" style="display:block;padding:50px 20px ">
     <div class="d-flex py-2 pt-2 justify-content-between w-200" id="_divFilter">
-        <div class="header-container" id="_work_shift_search">
-            <div class="view-selector">
-                <button>Week 3</button>
-            </div>
-            <div class="date-navigation" id="week_date">
-                <button class="nav-button">&lt;</button>
-                <span class="date-range">Nov 18 - Nov 24</span>
-                <button class="nav-button">&gt;</button>
+        <div class="d-flex align-items-center w-100 gap-2">
+            <div class="d-flex align-items-center w-50 gap-2">
+                <input type="text" class="form-control filter-field btn_search" id="_work_shift_list_search"
+                    placeholder="Search.........">
+                <button id="_sdl_btnSearch" role="button" class="btn btn-primary rounded-5">
+                    <i class="la la-search"></i>
+                </button>
             </div>
         </div>
         <div class="d-flex align-items-center justify-content-end w-100 gap-2">
             <div class="d-flex align-items-center" style="width:200px">
-                <select id="el_work_shift" name="shifts" class="data-input filter-field" data-field="shifts"></select>
+                <select id="el_work_shift_list" name="shifts" class="data-input filter-field" data-field="shifts"></select>
             </div>
             <button type="button" class="btn_add" id="_btnAddWorkShift">
                 <i class="fas fa-plus"></i>
                 <span>Add Work Shift</span>
             </button>
-            <button type="button" class="btn_add" id="_btnAddShiftDetail">
-                <i class="fas fa-plus"></i>
-                <span>Add Shift Detail</span>
-            </button>
         </div>
     </div>
-
-    <div id="_work_shift_header">
-    </div>
-
-    <div id="_work_shift_body">
-
-    </div>
-    <div id="_work_shift_list"></div>
+    <div id="_work_shift_lists" class="mt-5"></div>
 </div>
+

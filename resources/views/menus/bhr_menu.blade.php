@@ -412,6 +412,14 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-text font-color " vslang="menus.Holiday"></span>
                             </a>
                         </li>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+                            <a href="WorkShiftListComponent" modid="-1" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                     <img class="icons opacity-icons" src="{{asset('assets/images/icons/work_shift.svg')}}">
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Work Shift List"></span>
+                            </a>
+                        </li>
 
                     </ul>
                 </div>

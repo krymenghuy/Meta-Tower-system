@@ -111,59 +111,65 @@ var WorkshiftComponent = new (function () {
         ].join("");
     };
     this.beginRenderWorkShift = (div, data) => {
-        console.log(1223, div, 321, data);
         let html = "";
         html += this.renderHeader();
 
         data.forEach((d) => {
-            html += `
-                    <div class="shift_time d-flex" id="shift_time_row1">
-                        <div class="shift-status">
-                            <div class="btn-act-check-in">
-                                <div class="morning_shift">${d.start_time}</div>
-                                <span>Check In</span>
-                            </div>
-                        </div>
-                        <div class="shift-status">
-                            <div class="btn-act-check-in">
-                                <div class="morning_shift">${d.start_time}</div>
-                                <span>Check In</span>
-                            </div>
-                        </div>
-                        <div class="shift-status">
-                            <div class="btn-act-check-in">
-                                <div class="afternoon_shift">${d.start_time}</div>
-                                <span>Check In</span>
-                            </div>
-                        </div>
-                        <div class="shift-status">
-                            <div class="btn-act-check-in">
-                                <div class="morning_shift">${d.start_time}</div>
-                                <span>Check In</span>
-                            </div>
-                        </div>
-                        <div class="shift-status">
-                            <div class="btn-act-check-in">
-                                <div class="morning_shift">${d.start_time}</div>
-                                <span>Check In</span>
-                            </div>
-                        </div>
-                        <div class="shift-status">
-                            <div class="btn-act-check-in">
-                                <div>${d.start_time}</div>
-                                <span>Check In</span>
-                            </div>
-                        </div>
-                        <div class="shift-status">
-                            <div class="btn-act-inactive">
-                                <div class="inactive">${d.start_time}</div>
-                                <span>weekend</span>
-                            </div>
+            // Determine the class for the action
+            const actionClass =
+                d.action === "Check Out"
+                    ? "bg-secondary text-info border-info"
+                    : "";
 
-                        </div>
+            html += `
+            <div class="shift_time d-flex" id="shift_time_row1">
+                <div class="shift-status-monday">
+                    <div class="btn-act-check-in ${actionClass}">
+                        <div class="morning_shift">${d.time}</div>
+                        <span>${d.action}</span>
+                    </div>
+                </div>
+                <div class="shift-status-tuesday">
+                    <div class="btn-act-check-in ${actionClass}">
+                        <div class="morning_shift">${d.time}</div>
+                        <span>${d.action}</span>
+                    </div>
+                </div>
+                <div class="shift-status-wednesday">
+                    <div class="btn-act-check-in ${actionClass}">
+                        <div class="afternoon_shift">${d.time}</div>
+                        <span>${d.action}</span>
+                    </div>
+                </div>
+                <div class="shift-status-thursday">
+                    <div class="btn-act-check-in ${actionClass}">
+                        <div class="morning_shift">${d.time}</div>
+                        <span>${d.action}</span>
+                    </div>
+                </div>
+                <div class="shift-status-friday">
+                    <div class="btn-act-check-in ${actionClass}">
+                        <div class="morning_shift">${d.time}</div>
+                        <span>${d.action}</span>
+                    </div>
+                </div>
+                <div class="shift-status-saturday">
+                    <div class="btn-act-check-in ${actionClass}">
+                        <div>${d.time}</div>
+                        <span>${d.action}</span>
+                    </div>
+                </div>
+                <div class="shift-status-sunday">
+                    <div class="btn-act-inactive">
+                        <div class="inactive">${d.time}</div>
+                        <span>weekend</span>
+                    </div>
+                </div>
             </div>`;
-            div.innerHTML = html;
         });
+
+        // Update the content of the container
+        div.innerHTML = html;
     };
 
     this.getDataFormFilter = () => {
@@ -305,7 +311,6 @@ var WorkshiftComponent = new (function () {
         );
     };
 })();
-
 const WorkShiftDialog = (() => {
     const self = {};
     let dialog = null;
@@ -378,7 +383,7 @@ const WorkShiftDialog = (() => {
                 prepareFormOptions: {
                     createTitle: "Add WorkShift",
                     modifyTitle: "Edit WorkShift",
-                    targetProp: "shift-detailss",
+                    targetProp: "shift-details",
                     api: {
                         endpoint: [
                             main_view.base_url,
@@ -406,23 +411,24 @@ const WorkShiftDialog = (() => {
 const ShiftDetailDialog = (() => {
     const self = {};
     let dialog = null;
+
     self.show = (op) => {
         dialog =
             dialog ||
             new GeneralDialog({
                 cssClass: "modal-md",
-                backdrop: "static", //User click outside form, do not close form
-                keyboard: true, //prevent user from using ESC key
+                backdrop: "static", // User click outside form, do not close form
+                keyboard: true, // Prevent user from using ESC key
                 createContent: () => {
                     return [
                         `<div class="row">
                             <div class="form-group col-md-12">
                                 <label for="shifts" class="form-label" vslang="titles.Work Shift"></label>
-                                <span class="text-danger" >*</span>
+                                <span class="text-danger">*</span>
                                 <select class="form-control data-input" name="shifts" data-field="work_shift_id"></select>
                             </div>
                             <div class="form-group col-md-12">
-                                <div class="d-flex days">
+                                <div class="d-flex days data-input" data-field="day">
                                     <div class="day" data-value="Mon">Mon</div>
                                     <div class="day" data-value="Tue">Tue</div>
                                     <div class="day" data-value="Wed">Wed</div>
@@ -438,14 +444,22 @@ const ShiftDetailDialog = (() => {
                             </div>                                                                     
                             <div class="form-group col-12">
                                 <label for="action" class="form-label" vslang="titles.Action">Action</label>
-                                <select type="text" name="action" class="form-control data-input" data-field="action"></select>
+                                <select type="text" name="action" class="form-control data-input" data-field="action">
+                                    <option value="check_in">Check In</option>
+                                    <option value="check_out">Check Out</option>
+                                </select>
                             </div>                                                                     
                          </div>`,
                     ].join("");
                 },
                 contentCreated: (me) => {
-                    //Convert field to be DatePicker : time and end_time
-                    DateTimePicker.init(me.controls.time);
+                    // DateTimePicker.init(me.controls.time);
+                    const days = me.divModal.querySelectorAll(".day");
+                    days.forEach((day) => {
+                        day.addEventListener("click", (event) => {
+                            day.classList.toggle("active");
+                        });
+                    });
                 },
                 configSelect: [
                     {
@@ -460,7 +474,6 @@ const ShiftDetailDialog = (() => {
                         label: '<span class="text-shift-details">Cancel</span>',
                         cssClass: "btn btn-default",
                         click: (me, btn) => {
-                            //Close with Cancel button
                             me.hide(false);
                         },
                     },
@@ -469,8 +482,20 @@ const ShiftDetailDialog = (() => {
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
-
-                            p.id = me.dataOptions.id; //get "id" from op
+                            
+                            p.id = me.dataOptions.id; 
+                            // const selectedDays = [];
+                            let selectedDays = '';
+                            const days =
+                                me.divModal.querySelectorAll(".day.active");
+                            days.forEach((day) => {
+                                // selectedDays.push(
+                                //     day.getAttribute("data-value")
+                                // );
+                                selectedDays += day.dataset.value + ',';
+                            });
+                            p.day = selectedDays;
+                            console.log(3333,p);
 
                             vsapi
                                 .call(
@@ -490,14 +515,9 @@ const ShiftDetailDialog = (() => {
                         },
                     },
                 ],
-                contentCreated: (me, divModal) => {
-                    me.saveWorkShift = (p) => {
-                        alert("Data saved.");
-                    };
-                },
                 prepareFormOptions: {
-                    createTitle: "Add WorkShift",
-                    modifyTitle: "Edit WorkShift",
+                    createTitle: "Add Shift Details",
+                    modifyTitle: "Edit Shift Details",
                     targetProp: "shift-details",
                     api: {
                         endpoint: [
@@ -509,10 +529,9 @@ const ShiftDetailDialog = (() => {
                         },
                     },
                     onResponse: (me, res) => {
-                        console.log('result from api "/form-options": ', res);
+                        console.log('Result from API "/form-options": ', res);
                     },
                 },
-
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
                 },

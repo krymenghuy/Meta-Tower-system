@@ -124,6 +124,7 @@ class ScriptProvider
                 '/js/components/bhr/WalletAccountComponent.js',
                 '/js/components/bhr/HolidayComponent.js',
                 '/js/components/bhr/WorkshiftComponent.js',
+                '/js/components/bhr/WorkShiftListComponent.js',
                 
 
             ]
