@@ -48,7 +48,6 @@
 
 
 </div>
-</div>
 
 <style>
     #_payrollList_list {
