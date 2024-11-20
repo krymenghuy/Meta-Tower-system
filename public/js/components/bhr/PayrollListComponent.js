@@ -10,7 +10,8 @@ var PayrollListComponent = new (function () {
     this.elFilterBranch = this.self.querySelector('#el_filter_branch');
     this.btnImport = this.self.querySelector("#_btnImport");
     this.divFilter = this.self.querySelector("#_divFilter");
-    this.elSortBy = this.self.querySelector("#el_sort_by");
+    // this.elSortBy = this.self.querySelector("#el_sort_by");
+    this.elFilterDisburse = this.self.querySelector("#el_filter_disburse");
     this.btnCalculate = this.self.querySelector("#_btnCalculate");
     this.btnDisburse = this.self.querySelector("#_btnDisburse");
     this.btnBack = this.self.querySelector("#_btn_backTo_payrollList");
@@ -35,7 +36,7 @@ var PayrollListComponent = new (function () {
                             <div>
                                 <span style="font-size: 14px; font-weight: bold;">${data.emp_name ?? ''}</span>
                                 <br/>
-                                <span style="font-size: 12px">${data.emp_position ?? ''}</span>
+                                <span style="font-size: 11px; color: gray;">${data.emp_position ?? ''}</span>
 
                             </div>
                         </div>`;
@@ -115,9 +116,9 @@ var PayrollListComponent = new (function () {
                 <div class="d-flex justify-content-center align-items-center">
                     <div class="text-center gap-2 d-flex flex-wrap">
                         <a href="javascript:void(0)"
-                           class="${data.disburse === 1 ? "d-none" : "btn_payroll_list_action"}"
+                           class="btn_payroll_list_action"
                            data-id="${data.id}"
-                           data-statusid="${data.status_id}"
+                           data-disburse="${data.disburse}"
                            aria-haspopup="true"
                            aria-expanded="false">
                             <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
@@ -158,23 +159,30 @@ var PayrollListComponent = new (function () {
             });
         };
         mThis.btnDisburse.onclick = function (e) {
-
             e.preventDefault();
 
-
-
             let op = {
-                payroll_id : mThis.getFilterData().payroll_id,
+                payroll_id: mThis.getFilterData().payroll_id,
+            };
 
-            }
-            console.log(444, op);
-            vsapi.call( [main_view.base_url,'/hr/payroll-list/disburse-all'].join(''), op,null,null).then(res=>{
-               if(res.status_code ==200){
-                cv_interact.success('Disbursed Successfully');
-                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-               }else cv_interact.error(res.error_message);
+            cv_interact.confirm('Disburse this Payroll List?', {
+                title: 'Disburse Payroll List',
+                context: 'disburse',
+                confirmButtonText: "Disburse"
+            }, function (confirmation) {
+                if (confirmation) {
+                    vsapi.call([main_view.base_url, '/hr/payroll-list/disburse-all'].join(''), op, null, null).then(res => {
+                        if (res.status_code === 200) {
+                            cv_interact.success('Disbursed Successfully');
+                            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                        } else {
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+                }
             });
         };
+
 
         mThis.btnImport.onclick = function (e) {
             e.preventDefault();
@@ -256,7 +264,22 @@ var PayrollListComponent = new (function () {
                 },
 
             ],
+            onShow: (me, container) => {
 
+                const menu = me.getActiveMenus(container);
+                const disburse = container.dataset.disburse;
+
+
+                if (disburse == 1) {
+                    for (const item in menu) {
+                        if (menu[item] && menu[item].style) {
+                            menu[item].style.display = (menu[item].dataset.mnuaction === 'delete_payroll_list' || menu[item].dataset.mnuaction === 'edit_payroll_list' || menu[item].dataset.mnuaction === 'disburse_payroll_list') ? 'none' : 'block';
+                        }
+
+                    }
+                }
+
+            },
             onClick:(menuLink, id, name)=>{
                 switch(name){
                     case 'pay_slip':{
@@ -302,9 +325,7 @@ var PayrollListComponent = new (function () {
             .payment_details {
                 display: flex;
                 justify-content: center;
-                height: 480px;
-                gap: 10px;
-                padding: 10px;
+                height: 510px;
             }
 
             .payment-header {
@@ -341,27 +362,20 @@ var PayrollListComponent = new (function () {
                 border-radius: 50%;
 
             }
-            .p_profile_left{
-                display: flex;
-                flex-direction: column;
-                justify-content: start;
-            }
+
             .payment_table{
                 display: flex;
                 padding: 10px;
-            }
-            .payment_footer{
-                display: flex;
-                justify-content: right;
-
             }
 
         </style>
             <div class="payment_card">
                 <div class="payment-header">
                     <div class="payment-logo">
-                        <img src="${ 'assets/images/logo/lc_logo.svg' }" alt="Company Logo">
+                        <img src="${main_view.base_url}/assets/images/logo/lc_logo.svg" alt="Company Logo">
                     </div>
+
+
                     <div class="payment-title">
                         <h3> ℙ𝕒𝕪 𝕊𝕝𝕚𝕡 </h3>
                     </div>
@@ -421,7 +435,7 @@ var PayrollListComponent = new (function () {
                         <thead>
                             <tr>
                                 <th>Category</th>
-                                <th>AMOUNT</th>
+                                <th>Amount</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -459,7 +473,7 @@ var PayrollListComponent = new (function () {
                         <thead>
                             <tr>
                                 <th>Category</th>
-                                <th>AMOUNT</th>
+                                <th>Amount</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -475,21 +489,26 @@ var PayrollListComponent = new (function () {
                                 <td>Bias</td>
                                 <td>${data.p_bias}</td>
                             </tr>
-                            <tr>
-                                <td>Tax Base</td>
-                                <td class ="text-danger">${data.tax_base}</td>
+                             <tr>
+                                <td>Tax Rate</td>
+                                <td>${data.tax_rate }%</td>
                             </tr>
                             <tr>
                                 <td>Tax Benefit</td>
                                 <td class="text-danger">${data.tax_benefit}</td>
                             </tr>
                             <tr>
-                                <td>Total Salary</td>
-                                <td class="text-success">${data.total_salary}</td>
+                                <td>Tax Base</td>
+                                <td class ="text-danger">${data.tax_base}</td>
                             </tr>
                         </tbody>
+
                     </table>
                     </div>
+                       <div class="col-12 d-flex justify-content-center pb-1">
+                            <p class=" text-success rounded-5 m-0 border p-2 bg-light">Total Salary : ${data.total_salary ?? ""}</p>
+                       </div>
+
                 </div>
 
             </div>`;
@@ -553,7 +572,7 @@ var PayrollListComponent = new (function () {
                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
             }
         };
-        cv_interact.confirm('Disburse this Payroll List?',{
+        cv_interact.confirm('Disburse this Payroll ?',{
             title: 'Disburse Payroll List',
             context: 'disburse',
             confirmButtonText:"Disburse"
@@ -604,7 +623,8 @@ var PayrollListComponent = new (function () {
         let p = {};
         p.payroll_id = mThis.elFilter.value;
         p.branch_id = mThis.elFilterBranch.value;
-        p.sort_by = mThis.elSortBy.value;
+        // p.sort_by = mThis.elSortBy.value;
+        p.disburse = mThis.elFilterDisburse.value;
 
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
         main_filters.forEach(el => {
@@ -633,7 +653,8 @@ var PayrollListComponent = new (function () {
 
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
             VSUtil.setComboItems(mThis.elFilterBranch,d.branches,'id','branch_name',true,'All Branch',null);
-            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
+            // VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
+            VSUtil.setComboItems(mThis.elFilterDisburse, d.disburse, 'id', 'name',  true, 'Default', null);
 
         })
     }
@@ -845,8 +866,9 @@ function windowPrint(html=null)
         myWindow.document.write(`<!DOCTYPE html>
         <html>
             <head>
-                <title>Student Attendaces Report</title>
+                <title>Pay Slip</title>
                 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
+                 <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/bhr_style.css"/>
                 <style>
                      *{
                         margin:0;
@@ -864,7 +886,6 @@ function windowPrint(html=null)
             </head>
             <body>${HtmlString}</body>
         </html>`);
-        //${HtmlString.replace(/table-responsive\s+/g,'')}
         myWindow.document.close();
         setTimeout(() => {
             myWindow.focus();
