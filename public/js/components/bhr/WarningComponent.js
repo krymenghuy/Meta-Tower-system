@@ -6,11 +6,10 @@ var WarningComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_warningComponent");
     this.self = this.jm[0];
     this.initAlready = false;
-    this.title_prop = "Warning";
+    this.title_prop = "Employee Warning";
     this.btnAdd = this.self.querySelector("#_btnAddWarning");
     this.elSearch = this.self.querySelector("#_warning_search");
     this._searchWarning = this.self.querySelector("#_warning_component");
-    this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
     this.cols = [
         {
             title: "",
@@ -18,11 +17,6 @@ var WarningComponent = new (function () {
             // data: (data, index, i) => {
             //     return index + 1;
             // },
-        },
-        {
-            title: "Warning Date",
-            className: "align-middle",
-            data:(data)=>`<span class="text-danger">${data.warning_date}</span>`
         },
         {
             title: "Name",
@@ -40,7 +34,11 @@ var WarningComponent = new (function () {
                     </div>
                 </div>`,
         },
-       
+        {
+            title: "Warning Date",
+            className: "align-middle",
+            data:(data)=>`<span class="text-danger">${data.warning_date}</span>`
+        },
         {
             title: "Type",
             className: "align-middle",
@@ -56,7 +54,15 @@ var WarningComponent = new (function () {
             className: "align-middle",
              data:(data)=>`<span class="text-danger">${data.remarks ?? 'take time'}</span>`
         },
-       
+        {
+            title: "Create By",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
+                <span style="font-size: 10px; color: #2b3991;">${data.updated_at ?? ""}</span>
+            </div>`,
+        },
         {
             className: "col_action align-middle",
             data: (data) => `
@@ -126,13 +132,7 @@ var WarningComponent = new (function () {
         }, 200);
     });
 
-    mThis.btnSearch.onclick = (e) => {
-        if (mThis.WarningListView) {
-            mThis.WarningListView.showPage(mThis.getDataFormFilter());
-        } else {
-            console.error("warning  is not defined");
-        }
-    };
+   
     this.setFilterPeriod = (p, name, start_date, end_date) => {
         return p;
     };
@@ -281,9 +281,15 @@ const WarningDialog = (() => {
                                 <select name="employee" class=" data-input"  data-field="emp_id"></select>
                             </div>
                             <div class="form-group col-md-6">
-                                <label for="issued_by" class="form-label">issued by</label>
-                                <input type="text" class="form-control data-input" data-field= "issued_by" id="issued_by"</input>
+                                <label for="warning_type" class="form-label">Warning Type</label>
+                                <select class="form-control data-input" data-field="warning_type" id="warning_type">
+                                    <option value="" disabled selected>Select Warning Type</option>
+                                    <option value="First Warning">First Warning</option>
+                                    <option value="Second Warning">Second Warning</option>
+                                    <option value="Last Warning">Last Warning</option>
+                                </select>
                             </div>
+
                             <div class="form-group col-md-6">
                                 <label for="warning_date" class="form-label" vslang="titles.Warning Date"></label>
                                 <span class="text-danger" >*</span>
