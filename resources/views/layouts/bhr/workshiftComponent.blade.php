@@ -8,11 +8,13 @@
         /* width: 135px; */
         text-align: center;
     }
-    #work_shift_type{
+
+    #work_shift_type {
         background-color: #2b3991;
         color: #fff;
         border-radius: 5px;
     }
+
     .btn-act-check-in {
         padding: 14px;
         color: #008767;
@@ -84,18 +86,21 @@
         padding: 5px;
         width: 200px;
     }
-    .shift-status:hover{
+
+    .shift-status:hover {
         transition: background-color 0.3s ease;
         transition: box-shadow 0.3s ease;
         border-radius: 20px;
         cursor: pointer;
         scale: 1.01;
     }
-    .listview-container{
+
+    .listview-container {
         overflow-y: auto;
         overflow-x: hidden;
-        scrollbar-width:none;
+        scrollbar-width: none;
     }
+
     .work_shift:hover {
         transition: box-shadow 0.3s ease;
         border-radius: 20px;
@@ -109,31 +114,99 @@
         cursor: pointer;
         border-radius: 20px;
     }
-    #_main_workshiftComponent{
+
+    #_main_workshiftComponent {
         height: 400px;
         gap: 1rem;
     }
-    #_work_shift_list{
+
+    #_work_shift_list {
         display: flex;
         padding: 0;
     }
-    #_work_shift_list_paginator{
+
+    #_work_shift_list_paginator {
         display: flex;
         justify-content: flex-end;
         margin-top: -30px;
     }
-    
+
+    .header-container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #fff;
+        padding: 0px 10px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        width: 600px;
+    }
+
+    .view-selector button,
+    .nav-button {
+        background-color: #f0f0f0;
+        border: none;
+        border-radius: 4px;
+        padding: 5px 10px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .view-selector button:hover,
+    .nav-button:hover,
+    .filter-button:hover {
+        background-color: #e0e0e0;
+    }
+
+    .days {
+        display: flex;
+        gap: 10px;
+        /* Adds spacing between the days */
+    }
+
+    .day {
+        padding: 10px 15px;
+        border: 2px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+        text-align: center;
+        user-select: none;
+        transition: all 0.3s ease;
+    }
+
+    .day:hover {
+        border-color: #007bff;
+        background-color: #bfdffb;
+    }
+
+    .day.active {
+        border-color: #007bff;
+        background-color: #007bff;
+        color: white;
+    }
 </style>
 
 <div id="_main_workshiftComponent" style="display:block;padding:20px">
     <div class="d-flex py-2 pt-2 justify-content-between w-200" id="_divFilter">
-        <div class="d-flex align-items-center w-100 gap-2">
+        {{-- <div class="d-flex align-items-center w-100 gap-2">
             <div class="d-flex align-items-center w-50 gap-2">
                 <input type="text" class="form-control filter-field btn_search" id="_work_shift_search"
                     placeholder="Search.........">
                 <button id="_sdl_btnSearch" role="button" class="btn btn-primary rounded-5">
                     <i class="la la-search"></i>
                 </button>
+            </div>
+        </div> --}}
+        <div class="header-container" id="_work_shift_search">
+            <div class="view-selector">
+                <button>Week 3</button>
+            </div>
+            <div class="date-navigation" id="week_date">
+                <button class="nav-button">&lt;</button>
+                <span class="date-range">Nov 18 - Nov 24</span>
+                <button class="nav-button">&gt;</button>
             </div>
         </div>
         <div class="d-flex align-items-center justify-content-end w-100 gap-2">
@@ -152,112 +225,11 @@
     </div>
 
     <div id="_work_shift_header">
-        {{-- <div id="work_shift_type" class="col-12 p-3 border d-flex gap-2" >
-            <div class="col-2 w-100 shift_header">Work Shift Type</div>
-            <div class="shift_date col-1-5">Monday</div>
-            <div class="shift_date col-1-5">Tuesday</div>
-            <div class="shift_date col-1-5">Wednesday</div>
-            <div class="shift_date col-1-5">Thusday</div>
-            <div class="shift_date col-1-5">Friday</div>
-            <div class="shift_date col-1-5">Saturday</div>
-            <div class="shift_date col-1-5">Sunday</div>
-        </div> --}}
     </div>
 
     <div id="_work_shift_body">
-            <!-- <div class="col-2 work_shift">Work Shift A</div> 
-        <div class="scane_time d-block">
-            <div class="shift_time d-flex" id="shift_time_row1">
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-check-in">
-                        <div class="morning_shift">8:00AM</div>
-                        <span>Check In</span>
-                    </div>
-                </div>
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-check-in">
-                        <div class="morning_shift">8:00AM</div>
-                        <span>Check In</span>
-                    </div>
-                </div>
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-check-in">
-                        <div class="afternoon_shift">8:00AM</div>
-                        <span>Check In</span>
-                    </div>
-                </div>
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-check-in">
-                        <div class="morning_shift">8:00AM</div>
-                        <span>Check In</span>
-                    </div>
-                </div>
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-check-in">
-                        <div class="morning_shift">8:00AM</div>
-                        <span>Check In</span>
-                    </div>
-                </div>
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-check-in">
-                        <div>5:00PM</div>
-                        <span>Check In</span>
-                    </div>
-                </div>
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-inactive">
-                        <div class="inactive">Day Off</div>
-                        <span>weekend</span>
-                    </div>
-
-                </div>
-            </div>
-            <div class="shift_time d-flex">
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-check-in">
-                        <div class="morning_shift">8:30AM</div>
-                        <span>Check In</span>
-                    </div>
-                </div>
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-check-in">
-                        <div class="morning_shift">8:30AM</div>
-                        <span>Check In</span>
-                    </div>
-                </div>
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-check-in">
-                        <div class="afternoon_shift">8:30AM</div>
-                        <span>Check In</span>
-                    </div>
-                </div>
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-check-in">
-                        <div class="morning_shift">8:30AM</div>
-                        <span>Check In</span>
-                    </div>
-                </div>
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-check-in">
-                        <div class="morning_shift">8:30AM</div>
-                        <span>Check In</span>
-                    </div>
-                </div>
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-check-in">
-                        <div>5:00PM</div>
-                        <span>Check In</span>
-                    </div>
-                </div>
-                <div class="col-1-5 shift-status">
-                    <div class="btn-act-inactive">
-                        <div class="inactive">Day Off</div>
-                        <span>weekend</span>
-                    </div>
-
-                </div>
-            </div>
-        </div> -->
+    
     </div>
     <div id="_work_shift_list"></div>
 </div>
+

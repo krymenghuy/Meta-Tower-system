@@ -176,14 +176,6 @@ var WorkshiftComponent = new (function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        // p.search_value = mThis.elSearch.value;
-        // let main_filters =
-        //     mThis._searchWorkShift.querySelectorAll(".filter-field");
-        // main_filters.forEach((el) => {
-        //     const f = el.dataset.field;
-        //     p[f] = el.value;
-        // });
-        // console.log(222, p.search_value, main_filters);
 
         return p;
     };
@@ -276,28 +268,6 @@ var WorkshiftComponent = new (function () {
             }
         );
     };
-    // this.prepareFormOptions = () => {
-    //     vsapi
-    //         .call(
-    //             `${main_view.base_url}/hr/shift-details/form-options`,
-    //             null,
-    //             null,
-    //             null
-    //         )
-    //         .then((res) => {
-    //             const d = res.status_code == 200 ? res.data : {};
-    //             VSUtil.setComboItems(
-    //                 mThis.elFilter_status,
-    //                 d.status,
-    //                 "id",
-    //                 "name",
-    //                 true,
-    //                 "All Work Shifts",
-    //                 null
-    //             );
-    //         });
-
-    // };
     this.prepareFormOptions = () => {
         vsapi
             .call(
@@ -453,44 +423,15 @@ const ShiftDetailDialog = (() => {
                             </div>
                             <div class="form-group col-md-12">
                                 <div class="d-flex days">
-                                    <div class="day ml-2">
-                                        <label>
-                                            <input type="checkbox" name="days[]" value="Mon"> Mon
-                                        </label>
-                                    </div>
-                                    <div class="day ml-4">
-                                        <label>
-                                            <input type="checkbox" name="days[]" value="Tue"> Tue
-                                        </label>
-                                    </div>
-                                    <div class="day ml-4">
-                                        <label>
-                                            <input type="checkbox" name="days[]" value="Wed"> Wed
-                                        </label>
-                                    </div>
-                                    <div class="day ml-4">
-                                        <label>
-                                            <input type="checkbox" name="days[]" value="Thu"> Thu
-                                        </label>
-                                    </div>
-                                    <div class="day ml-4">
-                                        <label>
-                                            <input type="checkbox" name="days[]" value="Fri"> Fri
-                                        </label>
-                                    </div>
-                                    <div class="day ml-4">
-                                        <label>
-                                            <input type="checkbox" name="days[]" value="Sat"> Sat
-                                        </label>
-                                    </div>
-                                    <div class="day ml-4">
-                                        <label>
-                                            <input type="checkbox" name="days[]" value="Sun"> Sun
-                                        </label>
-                                    </div>
+                                    <div class="day" data-value="Mon">Mon</div>
+                                    <div class="day" data-value="Tue">Tue</div>
+                                    <div class="day" data-value="Wed">Wed</div>
+                                    <div class="day" data-value="Thu">Thu</div>
+                                    <div class="day" data-value="Fri">Fri</div>
+                                    <div class="day" data-value="Sat">Sat</div>
+                                    <div class="day" data-value="Sun">Sun</div>
                                 </div>
                             </div>
-
                             <div class="form-group col-12">
                                 <label for="time" class="form-label" vslang="titles.Time">Time</label>
                                 <input type="time" name="time" class="form-control data-input" data-field="time" />
