@@ -9,7 +9,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class Warning 
 {
-    protected $table = 'warnings';
+    protected $table = 'emp_warnings';
     protected $id = null;
     protected $userInfo = null;
     public function __construct($id=null , $userInfo = null){
@@ -53,12 +53,13 @@ class Warning
 
         $inputs = $res->values;
 
-        $warning = saveData($ss, 'warnings', ['id' => $id], $inputs, [], 1);
+        $warning = saveData($ss, 'emp_warnings', ['id' => $id], $inputs, [], 1);
         if ($warning > 0) {
-            return DV::depends(1, ['warnings' => $inputs, 'id' => $id]);
+            
+            return DV::depends(1, ['emp_warnings' => $inputs, 'id' => $id]);
         }
 
-        return DV::depends($warning, ['warnings' => $inputs, 'id' => $id]);
+        return DV::depends($warning, ['emp_warnings' => $inputs, 'id' => $id]);
         
     }
 
@@ -81,7 +82,7 @@ class Warning
 
         $str_search = '1=1';
 
-        $query = DB::table('warnings as w')
+        $query = DB::table('emp_warnings as w')
             ->join('employees as emp', 'emp.id', '=', 'w.emp_id')
             ->selectRaw('w.id, emp.id as emp_id, emp.name, emp.name_kh,formatDate(w.warning_date) as warning_date,w.warning_type,w.remarks,w.reason,emp.position_id, emp.photo_file_name as emp_photo')
             ->orderBy('w.id', 'DESC');
@@ -122,13 +123,13 @@ class Warning
         $branch_id = $ss->branch_id;
 
         // Check if the warning exists before attempting to delete
-        $warningExists = DB::table('warnings')->where('id', $id)->exists();
+        $warningExists = DB::table('emp_warnings')->where('id', $id)->exists();
         if (!$warningExists) {
             return DV::error('Warning not found');
         }
 
         // Attempt to delete the warning
-        $deleted = DB::table('warnings')->where('id', $id)->delete();
+        $deleted = DB::table('emp_warnings')->where('id', $id)->delete();
 
         if ($deleted) {
             return DV::result(['message' => 'Warning deleted successfully']);
@@ -139,7 +140,7 @@ class Warning
     static function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
-        $row = DB::table('warnings as w')->selectRaw('w.id,w.emp_id,w.remarks,w.position,w.issues,w.promises,w.warning')->where('w.branch_id', $branch_id)->where('w.id', $id)->take(1)->first();
+        $row = DB::table('emp_warnings as w')->selectRaw('w.id,w.emp_id,w.remarks,w.position,w.issues,w.promises,w.warning')->where('w.branch_id', $branch_id)->where('w.id', $id)->take(1)->first();
         return $row;
     }
     static function getFormOptions($id, $ss)
