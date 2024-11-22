@@ -8,6 +8,7 @@ use App\Models\Bhr\PayrollList;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
+use App\Models\Bhr\PayrollListSettings;
 
 class PayrollList
 {
@@ -350,10 +351,6 @@ class PayrollList
     }
 
 
-
-
-
-
     function calculatePayrollList($req, $ss)
     {
         $d = (object) $req;
@@ -401,10 +398,23 @@ class PayrollList
         foreach ($payrolls as &$payroll) {
             $payroll_start_date = new \DateTime($payroll->start_date);
             $payroll_end_date = new \DateTime($payroll->end_date);
+
             $payroll_days = $payroll_start_date->diff($payroll_end_date)->days + 1;
 
             $resigned_or_new_start = false;
             $count_date = $payroll_days;
+
+            $check_rejoin = DB::table('employees as e')
+                ->join('rejoins as rej', 'rej.emp_id', '=', 'e.id')
+                ->where('e.id', $payroll->emp_id)->value('rej.id');
+
+            if($check_rejoin){
+                $effective_date = new \DateTime($payroll->effective_date);
+                if ($effective_date >= new \DateTime($payroll->start_date) && $effective_date <= new \DateTime($payroll->end_date)) {
+                    $count_date = (new \DateTime($payroll->start_date))->diff($effective_date)->days;
+                    $resigned_or_new_start = true;
+                }
+            }
 
             if ($payroll->status_id == 20 && $payroll->effective_date) {
                 $effective_date = new \DateTime($payroll->effective_date);
@@ -598,10 +608,9 @@ class PayrollList
         ->where('disburse', 0)
         ->count();
 
-        if ($undisbursedCount === 1) {
-        return DV::error('Already Disbursed');
+        if ($undisbursedCount === 0) {
+            return DV::error('Payroll List Already Disbursed');
         }
-
 
         $payrollEntries = DB::table('payroll_lists as pl')
                             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
