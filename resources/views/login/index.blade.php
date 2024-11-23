@@ -190,12 +190,12 @@
     <body onload="checkDevice()">
         <div class="vs-container-login">
             <div>
-                <img class="img-background" src="{{ asset('assets/images/bhr/book1.png') }}"/>
+                <img class="img-background" src="{{ asset('assets/images/bhr/bhr_b3.png') }}"/>
                 <div class="overlay-blur"></div>
             </div>
             <div class="login-frame">
                 <div class="vs-container-front-img">
-                    <img class="img-front" src="{{ asset('assets/images/bhr/book1.png') }}"/>
+                    <img class="img-front" src="{{ asset('assets/images/bhr/bhr_b.png') }}"/>
                     <div class="vs-login">
                         <div class="vs-form-login">
                             <h3 class="vs-title">Sign in to your account</h3>
