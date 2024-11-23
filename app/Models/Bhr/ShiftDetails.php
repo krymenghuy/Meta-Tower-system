@@ -26,13 +26,14 @@ class ShiftDetails
         $v_rule = [
             'id' => '0|identity=1',
             'work_shift_id' => '1|number',
-            'day' => '0|string|0-100', // Allows comma-separated days
+            'days' => '0|string|0-250', // Allows comma-separated days
             'time' => '1|string|0-100',
             'action' => '1|string|0-100',
         ];
-
+        $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ',','|'];
+        $checkUnique = ["$branch_id|shiftDetails|name|id=id|text=Shift Detail already exists."];
         // Validate input
-        $res = validateObject($arr, $v_rule, true, ['day' => ['-']], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, ['days' => $pos_char], $ss->lang, false, $checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -41,7 +42,7 @@ class ShiftDetails
         $inputs = $res->values;
 
         // Split multiple days into an array
-        $days = explode(',', $inputs['day']);
+        $days = explode('|', $inputs['days']);
         $days = array_map('trim', $days); // Remove whitespace from each day
 
         // Prepare response data
@@ -49,7 +50,8 @@ class ShiftDetails
         foreach ($days as $day) {
             // Update the 'day' field for each row
             $inputs['day'] = $day;
-
+            
+            unset($inputs['days']);
             // Save data for each day
             $savedId = saveData($ss, 'shift_details', ['id' => $id], $inputs, [], 1);
             if ($savedId > 0) {
@@ -64,44 +66,60 @@ class ShiftDetails
     }
 
 
-    function getShiftDetailsListPaginate($arr, $ss)
+    public function getShiftDetailsListPaginate($arr, $ss)
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
 
         $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 10;
-        if (!is_numeric($current_page)) {
-            $current_page = 1;
-        }
-
+        $per_page = $d->per_page ?? 100;
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
+        $work_shift_id = $d->work_shift_id ?? null;
 
-        $str_search = '1=1';
+        $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
-        $query = DB::table('shift_details as sd')
-            ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
-            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action, ws.name as work_shift_name');
+        $rows = DB::table('shift_details as sd')
+        ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
+        ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action')
+        ->where('ws.id', $work_shift_id)->get();
 
-        if ($search_id) {
-            $query->whereRaw('sd.id =' . $search_id);
-        }
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $str_search = "sd.day like '%" . $search_value . "%' or ws.name like '%" . $search_value . "%'";
-            $query->whereRaw($str_search);
+        $data = [];
+        foreach($days as $day){
+            $ds = self::getScanTimes($rows, $day);
+            $data[$day] = $ds;
         }
 
-        $count = $query->count('sd.id');
-        $rows = $query->skip($skip_rows)
-            ->take($per_page)
-            ->get();
+        return $data;
+    }
+
+    static function getScanTimes($rows, $day){
+        $day = strtolower($day);
+        $founds = $rows->filter(function($x) use($day){
+            return strtolower($x->day) == $day;
+        });
+        $xs = [];
+        foreach($founds as $row){
+            $xs[] = $row;
+        }
+        return $xs;
+    }
 
 
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+    static function getUnique_id($rows)
+    {
+        // return $rows;
+        $unique_id = [];
+        $newRows = [];
+
+        foreach ($rows as $row) {
+            if (!in_array($row->work_shift_id, $unique_id)) {
+                $unique_id[] = $row->work_shift_id;
+                $newRows[] = $row;
+            }
+        }
+        return $newRows ;
     }
 
     function getDetails($id, $ss)

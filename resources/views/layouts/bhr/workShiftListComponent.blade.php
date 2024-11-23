@@ -1,39 +1,4 @@
 <style>
-    .btn-act-inactive {
-        padding: 14px;
-        color: #fe1f1f;
-        background-color: #ff000059;
-        border: 2px solid #fe1f1f;
-        border-radius: 5px;
-        /* width: 135px; */
-        text-align: center;
-    }
-
-    #work_shift_type {
-        background-color: #2b3991;
-        color: #fff;
-        border-radius: 5px;
-    }
-
-    .btn-act-check-in {
-        padding: 14px;
-        color: #008767;
-        background-color: #16c0985c;
-        border: 2px solid #008767;
-        border-radius: 5px;
-        /* width: 135px; */
-        text-align: center;
-    }
-
-    .btn-act-afternoon {
-        padding: 14px;
-        color: #84600b;
-        background-color: #ffe625ae;
-        border: 2px solid #928101f6;
-        border-radius: 5px;
-        width: 135px;
-        text-align: center;
-    }
 
     #_work_shift_header .col-1-5,
     #_work_shift_body .col-1-5 {
@@ -51,17 +16,6 @@
         overflow-x: hidden;
         scrollbar-width: none;
 
-    }
-
-    .shift_header:hover,
-    .shift_date:hover {
-        background-color: rgba(81, 1, 92, 0.376);
-        transition: background-color 0.3s ease;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.46);
-        transition: box-shadow 0.3s ease;
-        border-radius: 20px;
-        cursor: pointer;
-        scale: 1.1;
     }
 
     .work_shift {
@@ -158,33 +112,6 @@
     .nav-button:hover,
     .filter-button:hover {
         background-color: #e0e0e0;
-    }
-
-    .days {
-        display: flex;
-        gap: 10px;
-        /* Adds spacing between the days */
-    }
-
-    .day {
-        padding: 10px 15px;
-        border: 2px solid #ccc;
-        border-radius: 5px;
-        cursor: pointer;
-        text-align: center;
-        user-select: none;
-        transition: all 0.3s ease;
-    }
-
-    .day:hover {
-        border-color: #007bff;
-        background-color: #bfdffb;
-    }
-
-    .day.active {
-        border-color: #007bff;
-        background-color: #007bff;
-        color: white;
     }
 </style>
 
