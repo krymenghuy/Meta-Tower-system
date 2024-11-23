@@ -38,7 +38,7 @@ var WorkshiftComponent = new (function () {
                 btn: e.target,
                 onClose: () => {
                     cv_interact.success("Add Shift Detail successfully");
-                    mThis.WorkshiftListView.showPage();
+                    // mThis.WorkshiftListView.showPage();
                 },
             };
             ShiftDetailDialog.show(op);
@@ -276,17 +276,18 @@ var WorkshiftComponent = new (function () {
                 null
             )
             .then((res) => {
-                const d = res.status_code == 200 ? res.data : {};
-
-                VSUtil.setComboItems(
-                    mThis.elFilter_status,
-                    d.shifts,
-                    "id",
-                    "name",
-                    true,
-                    "All work shift",
-                    null
-                );
+                if (res.status_code === 200) {
+                    const d = res.data;
+                    VSUtil.setComboItems(
+                        mThis.elFilter_status,
+                        d.shifts,
+                        "id",
+                        "name",
+                        true,
+                        "All work shifts",
+                        null
+                    );
+                }
             });
     };
 
@@ -294,12 +295,6 @@ var WorkshiftComponent = new (function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-        // mThis.WorkshiftListView.showPage(
-        //     mThis.getDataFormFilter(),
-        //     null,
-        //     () => {
-        //     }
-        // );
         mThis.jm.siblings().hide();
         mThis.jm.hide().fadeIn(250);
     };

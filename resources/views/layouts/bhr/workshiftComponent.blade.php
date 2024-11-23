@@ -197,7 +197,7 @@
 
     .week {
         display: flex;
-        gap: 10px;
+        gap: 7px;
         /* Adds spacing between the days */
     }
 
@@ -291,13 +291,15 @@
         padding: 10px;
         margin: 5px 0;
     }
+
     .bg-red {
-    background-color: #b95862;
-    color: white;
-    border-radius: 5px;
-    padding: 10px;
-    margin: 5px 0;
-}
+        background-color: #b95862;
+        color: white;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 5px 0;
+    }
+
     .shift_card {
         padding: 10px;
         border: 1px solid #314166;
@@ -323,15 +325,9 @@
 
 <div id="_main_workshiftComponent" style="display:block;padding:20px">
     <div class="d-flex py-2 pt-2 justify-content-between w-200" id="_divFilter">
-        <div class="header-container" id="_work_shift_search">
-            <div class="view-selector">
-                <button>Week 3</button>
-            </div>
-            <div class="date-navigation" id="week_date">
-                <button class="nav-button">&lt;</button>
-                <span class="date-range">Nov 18 - Nov 24</span>
-                <button class="nav-button">&gt;</button>
-            </div>
+        <div class="d-flex align-items-center w-50 gap-2">
+            <input type="text" class="form-control filter-field btn_search" id="_work_shift_search"
+                    placeholder="Search workShift ...">
         </div>
         <div class="d-flex align-items-center justify-content-end w-100 gap-2">
             <div class="d-flex align-items-center" style="width:200px">
@@ -350,5 +346,4 @@
     <div id="_work_shift_body">
 
     </div>
-    <div id="_work_shift_list"></div>
 </div>
