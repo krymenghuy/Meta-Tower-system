@@ -10,7 +10,7 @@
     display: inline-block;
     /* border-bottom: 1px dotted black; */
   }
-
+  
   .tool-tip .tool-tiptext {
     visibility: hidden;
     min-width: 100px;
@@ -27,7 +27,7 @@
     left: 50%;
     margin-left: -50px;
   }
-
+  
   .tool-tip .tool-tiptext::after {
     content: "";
     position: absolute;
@@ -38,7 +38,7 @@
     border-style: solid;
     border-color: transparent transparent #2b3991 transparent;
   }
-
+  
   .tool-tip:hover .tool-tiptext {
     visibility: visible;
   }
@@ -68,7 +68,7 @@
 .img_select{
     width:40px;
     height:40px;
-    border-radius:20px;
+    border-radius:20px; 
     object-fit:cover"
 }
 .text-primary-custom {
@@ -1852,7 +1852,4 @@ tr {
 }
 .w-15 {
     width: 15%;
-}
-.w-12 {
-    width: 12%;
 }

@@ -51,7 +51,7 @@ var PayrollComponent = new (function () {
         },
         {
             title: "Exchange Rate",
-            className: "align-middle w-12",
+            className: "align-middle",
             data: (data) => `<p class="p-0 m-0">${data.exchange_rate ?? ''}</p>`
         },
           {

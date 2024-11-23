@@ -441,6 +441,4 @@ class GeneralSettings //extends Model
   static function options_warning_types($ss =null){
     return DB::table('warning_types as t')->selectRaw('id, name as warning_types')->get();
   }
-
-
 }
