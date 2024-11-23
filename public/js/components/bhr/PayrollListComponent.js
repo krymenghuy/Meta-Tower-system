@@ -173,12 +173,8 @@ var PayrollListComponent = new (function () {
                 if (confirmation) {
                     vsapi.call([main_view.base_url, '/hr/payroll-list/disburse-all'].join(''), op, null, null).then(res => {
                         if (res.status_code === 200) {
-                            if (res.data && res.data.message === 'Payroll List Already Disbursed') {
-                                cv_interact.error('Payroll List Already Disbursed');
-                            } else {
-                                cv_interact.success('Disbursed Successfully');
-                                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                            }
+                            cv_interact.success('Disbursed Successfully');
+                            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
                         } else {
                             cv_interact.error(res.error_message);
                         }
@@ -186,7 +182,6 @@ var PayrollListComponent = new (function () {
                 }
             });
         };
-
 
 
         mThis.btnImport.onclick = function (e) {
@@ -216,9 +211,9 @@ var PayrollListComponent = new (function () {
 
         const pr_tbl = mThis.PayrollList_ListView.getListContainer();
         const sh_parent = pr_tbl;
-        // sh_parent.style.height = (window.innerHeight - 225) + 'px';
-        sh_parent.classList.add("overflow-y-auto");
-        sh_parent.classList.add("overflow-x-hidden");
+        // sh_parent.style.height = (window.innerHeight - 200) + 'px';
+        sh_parent.classList.add('overflow-y-auto');
+        sh_parent.classList.add('overflow-x-hidden');
 
         mThis.initDropdownMenus(pr_tbl);///
 
@@ -684,26 +679,28 @@ const PayRollListDialog = (()=>{
      self.show = (op)=>{
 
         dialog = dialog || new GeneralDialog({
-            cssClass:'modal-lg',
+            cssClass:'modal-md',
             backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
                  return [
                      `<div class="row">
-                 <div class="form-group col-6">
+                 <div class="form-group col-12">
                      <label for="employee" class="form-label" vslang="titles.Name"></label>
                      <select name="employee" class=" data-input"  data-field="emp_id"></select>
                  </div>
-
-                <div class="form-group col-6">
+                 <div class="form-group  col-12 d.none">
+                     <div id="info"></div>
+                 </div>
+                <div class="form-group col-12">
                      <label for="payroll_name" class="form-label" vslang="titles.Payroll Name"></label>
                      <select name="payroll_name" class=" data-input"  data-field="payroll_id"></select>
                  </div>
-                <div class="form-group col-6">
+                <div class="form-group col-12">
                   <label for="benefit" class="form-label" vslang="titles.Benefit"></label>
                   <input name="benefit" class="form-control data-input form_input" data-field="benefit" />
                 </div>
-                <div class="form-group col-6">
+                <div class="form-group col-12">
                   <label for="desuction" class="form-label" vslang="titles.Desuction"></label>
                   <input name="desuction" class="form-control data-input" data-field="deduction" />
                 </div>
@@ -715,9 +712,8 @@ const PayRollListDialog = (()=>{
                {
                  name:"employee",
                  data:'employees',
-                 textField: (me, d) => {
-                    return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`;
-                },
+                 textField:(me, d)=> {return `<div class="d-flex gap-2"><img class="img_select mt-4" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> <span>${d.email}</span><span>${d.phone_number}</span><span> ${d.position} </span> </div></div>`; },
+                // textField:"name",
                  valueField:'id'
                },
                {

@@ -58,7 +58,7 @@
 
 <style>
     #_payrollList_list {
-        height: 500px;
+        height: 480px;
         padding-bottom: 80px;
         overflow-y: scroll;
         overflow-x: hidden;
@@ -67,7 +67,8 @@
 
     #_payrollList_list_paginator {
         bottom: 0;
-        margin-top: 20px;
+        display: flex;
+        position: fixed;
     }
 
     .payment_footer {
