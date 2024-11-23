@@ -51,7 +51,7 @@
         padding: 5px;
     }
 
-    .row {
+    #_main_workshiftComponent .row {
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
