@@ -173,8 +173,12 @@ var PayrollListComponent = new (function () {
                 if (confirmation) {
                     vsapi.call([main_view.base_url, '/hr/payroll-list/disburse-all'].join(''), op, null, null).then(res => {
                         if (res.status_code === 200) {
-                            cv_interact.success('Disbursed Successfully');
-                            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                            if (res.data && res.data.message === 'Payroll List Already Disbursed') {
+                                cv_interact.error('Payroll List Already Disbursed');
+                            } else {
+                                cv_interact.success('Disbursed Successfully');
+                                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                            }
                         } else {
                             cv_interact.error(res.error_message);
                         }
@@ -182,6 +186,7 @@ var PayrollListComponent = new (function () {
                 }
             });
         };
+
 
 
         mThis.btnImport.onclick = function (e) {
@@ -211,9 +216,9 @@ var PayrollListComponent = new (function () {
 
         const pr_tbl = mThis.PayrollList_ListView.getListContainer();
         const sh_parent = pr_tbl;
-        // sh_parent.style.height = (window.innerHeight - 200) + 'px';
-        sh_parent.classList.add('overflow-y-auto');
-        sh_parent.classList.add('overflow-x-hidden');
+        // sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
 
         mThis.initDropdownMenus(pr_tbl);///
 
@@ -308,6 +313,7 @@ var PayrollListComponent = new (function () {
         }
         new VSDropdownMenu(menuOptopns);
     }
+
     this.renderPayment = (data) => {
        let html = '';
          html += `
@@ -374,11 +380,10 @@ var PayrollListComponent = new (function () {
                     <div class="payment-logo">
                         <img src="${main_view.base_url}/assets/images/logo/lc_logo.svg" alt="Company Logo">
                     </div>
-
-
                     <div class="payment-title">
-                        <h3> ℙ𝕒𝕪 𝕊𝕝𝕚𝕡 </h3>
+                        <h4>ℙ𝕒𝕪 𝕊𝕝𝕚𝕡 : ${data.start_date} - ${data.end_date}</h4>
                     </div>
+
                 </div>
 
 
@@ -392,12 +397,12 @@ var PayrollListComponent = new (function () {
                         <div class="col-5 p_profile_left">
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Employee Name</p>
-                                <p class="px-2">:</p>
+                                <p class="px-3">:</p>
                                 <p class="text-nowrap text-capitalize data-get">${data.emp_name}</p>
                             </div>
                            <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Sex</p>
-                                <p class="px-2">:</p>
+                                <p class="px-3">:</p>
                                 <p class="text-nowrap text-capitalize">
                                     ${data.sex === 'M' ? 'Male' : data.sex === 'F' ? 'Female' : 'Other'}
                                 </p>
@@ -405,24 +410,24 @@ var PayrollListComponent = new (function () {
 
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Employee ID</p>
-                                <p class="px-2">:</p>
+                                <p class="px-3">:</p>
                                 <p class="text-nowrap">${data.emp_code}</p>
                             </div>
                         </div>
                         <div class="col-5 p_profile_right">
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Branch</p>
-                                <p class="px-2">:</p>
+                                <p class="px-3">:</p>
                                 <p class="text-nowrap text-capitalize">${data.branch_name}</p>
                             </div>
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Position</p>
-                                <p class="px-2">:</p>
+                                <p class="px-3">:</p>
                                 <p class="text-nowrap text-capitalize">${data.emp_position}</p>
                             </div>
                             <div class="d-flex">
                                 <p class="text-nowrap text-muted width-p">Join Date</p>
-                                <p class="px-2">:</p>
+                                <p class="px-3">:</p>
                                 <p class="text-nowrap text-capitalize">${data.joining_date}</p>
                             </div>
                         </div>
@@ -679,28 +684,26 @@ const PayRollListDialog = (()=>{
      self.show = (op)=>{
 
         dialog = dialog || new GeneralDialog({
-            cssClass:'modal-md',
+            cssClass:'modal-lg',
             backdrop: 'static', //User click outside form, do not close form
             keyboard:true, //prevent user from using ESC key
             createContent:()=>{
                  return [
                      `<div class="row">
-                 <div class="form-group col-12">
+                 <div class="form-group col-6">
                      <label for="employee" class="form-label" vslang="titles.Name"></label>
                      <select name="employee" class=" data-input"  data-field="emp_id"></select>
                  </div>
-                 <div class="form-group  col-12 d.none">
-                     <div id="info"></div>
-                 </div>
-                <div class="form-group col-12">
+
+                <div class="form-group col-6">
                      <label for="payroll_name" class="form-label" vslang="titles.Payroll Name"></label>
                      <select name="payroll_name" class=" data-input"  data-field="payroll_id"></select>
                  </div>
-                <div class="form-group col-12">
+                <div class="form-group col-6">
                   <label for="benefit" class="form-label" vslang="titles.Benefit"></label>
                   <input name="benefit" class="form-control data-input form_input" data-field="benefit" />
                 </div>
-                <div class="form-group col-12">
+                <div class="form-group col-6">
                   <label for="desuction" class="form-label" vslang="titles.Desuction"></label>
                   <input name="desuction" class="form-control data-input" data-field="deduction" />
                 </div>
@@ -712,8 +715,9 @@ const PayRollListDialog = (()=>{
                {
                  name:"employee",
                  data:'employees',
-                 textField:(me, d)=> {return `<div class="d-flex gap-2"><img class="img_select mt-4" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> <span>${d.email}</span><span>${d.phone_number}</span><span> ${d.position} </span> </div></div>`; },
-                // textField:"name",
+                 textField: (me, d) => {
+                    return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`;
+                },
                  valueField:'id'
                },
                {
