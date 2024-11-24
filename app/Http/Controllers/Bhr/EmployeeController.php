@@ -160,7 +160,7 @@ class EmployeeController extends Controller
     if($ss->status_code !==200) return JDV::raw($ss);
     $id = $res->id ?? $req->id;
     $employee = new Employee($id,$ss);
-    $res = $employee->promoteStaff($req->emp_type_id,$id,$ss,$req->all());
+    $res = $employee->promoteStaff($req->all(),$id,$ss);
     return JDV::raw($res);
    }
 
