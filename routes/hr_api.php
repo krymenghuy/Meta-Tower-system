@@ -76,9 +76,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
 
     //Route::post('updateSenderStatus', [SenderController::class, 'updateSenderStatus']);
 });
-Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('promote')->group(function(){
-    Route::post('/employee',[PromoteEmployeeController::class,'promoteEmployee']);
-});
+
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('event')->group(function () {
     Route::post('/save', [EventController::class, 'createEvent']);
     Route::post('/list-paginate', [EventController::class, 'getEventListPaginate']);

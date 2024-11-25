@@ -33,7 +33,7 @@ var EmployeeComponent = new (function () {
 
             apiCluster: main_view.apiCluster,
             processResponse: (res) => {
-                console.log(1234, res.data.data);
+                // console.log(1234, res.data.data);
 
                 return res.data;
             },
@@ -86,7 +86,7 @@ var EmployeeComponent = new (function () {
         };
 
         this.listContainer = mThis.EmployeeListView.getListContainer();
-        console.log(12, mThis.listContainer);
+        // console.log(12, mThis.listContainer);
 
         mThis.initDropdownMenus(div);
 
@@ -115,7 +115,7 @@ var EmployeeComponent = new (function () {
     };
 
     this.initDropdownMenus = (listContainer) => {
-        console.log(listContainer);
+        // console.log(listContainer);
 
         const menuOptopns = {
             containerElement: listContainer,
@@ -1091,8 +1091,6 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        console.log(909090,op);
-
         mThis.MovementDialog =  new GeneralDialog({
             title: LocaleManager.trans("Movement","titles"),
             cssClass:'modal-lg',
@@ -1100,98 +1098,117 @@ var EmployeeComponent = new (function () {
                 return `
                     <div id="movement-options">
                         <div class="d-flex align-items-center gap-3 border-bottom">
-                            <input class="mb-2 change-option" type="checkbox" id="branch-change-${id}" name="items" value="branch" />
-                            <label for="branch-change-${id}" class="text-primary-custom">Change Branch</label>
+                            <input data-target="div_branch" name="change_branch" class="mb-2 change-option" type="checkbox" id="branch" name="items" value="branch" />
+                            <label for="branch" class="text-primary-custom">Change Branch</label>
                        
-                            <input class="mb-2 change-option" type="checkbox" id="position-change-${id}" name="items" value="position" />
-                            <label for="position-change-${id}" class="text-primary-custom">Change Position</label>
+                            <input data-target="div_position" name="change_position" class="mb-2 change-option" type="checkbox" id="position" name="items" value="position" />
+                            <label for="position" class="text-primary-custom">Change Position</label>
                         
-                            <input class="mb-2 change-option" type="checkbox" id="salary-change-${id}" name="items" value="salary" />
-                            <label for="salary-change-${id}" class="text-primary-custom">Change Salary</label>
+                            <input data-target="div_salary" name="change_salary" class="mb-2 change-option" type="checkbox" id="salary" name="items" value="salary" />
+                            <label for="salary" class="text-primary-custom">Change Salary</label>
+                        </div>
+                    </div>
+
+                    <div name="div_branch" class="p-3  branch" style="display:none;">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label class="form-label" vslang="titles.Change Branch"></label>
+                                <select name="branch" id="branch" class="form-control data-input" data-field="branch_id">
+                                
+                                </select>
+                            </div>
+                            <div id="remarks" class="form-group col-md-6">
+                                <label class="form-label" vslang="titles.Remarks"></label>
+                                <input name="remarks" class="form-control rounded-5 data-input" placeholder="" data-field="branch_remarks" />
+                            </div>
                         </div>
                         
                     </div>
-                    <div class="p-2">
-                        <select id="branch-select-${id}" class="form-control col-md-3 d-none">
-                            <option value="" disabled selected>Select Branch</option>
-                            <option value="1">Branch 1</option>
-                            <option value="2">Branch 2</option>
-                            <option value="3">Branch 3</option>
-                        </select>
-                        
+                    <div name="div_position" class="p-2" style="display:none;">
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label class="form-label" vslang="titles.Change Position"></label>
+                                <select name="position" id="position" class="form-control data-input" data-field="position_id">
+                                    
+                                </select>
+                            </div>
+                            <div id="remarks" class="form-group col-md-6">
+                                <label class="form-label" vslang="titles.Remarks"></label>
+                                <input name="remarks" class="form-control rounded-5 data-input" placeholder="" data-field="position_remarks" />
+                            </div>
+                        </div>
                     </div>
-                    <div class="p-2">
-                        <select id="position-select-${id}" class="form-control col-md-6 d-none">
-                            <option value="" disabled selected>Select Position</option>
-                            <option value="manager">Manager</option>
-                            <option value="developer">Developer</option>
-                            <option value="analyst">Analyst</option>
-                        </select>
-                    </div>
-                    <div class="p-2">
-                        <div id="salary-input-${id}" class="form-group col-md-6 d-none">
-                            <label class="form-label" vslang="titles.New Salary">New Salary</label>
-                            <input name="new_salary" class="form-control data-input" placeholder="" data-field="new_salary" />
+
+                    
+                    <div name="div_salary" class="p-2" style="display:none;">
+                        <div class="row">
+                            <div id="salary" class="form-group col-md-6">
+                                <label class="form-label" vslang="titles.Old Salary"></label>
+                                <input name="salary" class="form-control rounded-5 data-input" placeholder="" data-field="salary_id" />
+                            </div>
+                           
+                            <div id="remarks" class="form-group col-md-6">
+                                <label class="form-label" vslang="titles.Remarks"></label>
+                                <input name="remarks" class="form-control rounded-5 data-input" placeholder="" data-field="salary_remarks" />
+                            </div>
                         </div>
                     </div>
                 `;
             },
             contentCreated: (me) => {
-                const container = document.getElementById('movement-options');
-                const checkboxes = container.querySelectorAll('.change-option');
-            
-                checkboxes.forEach((checkbox) => {
-                    checkbox.addEventListener('change', function () {
-                        let targetId;
-                        if (this.value === 'branch') {
-                            targetId = `branch-select-${id}`;
-                        } else if (this.value === 'position') {
-                            targetId = `position-select-${id}`;
-                        } else if (this.value === 'salary') {
-                            targetId = `salary-input-${id}`;
+                
+         
+                me.setEvent=(div)=>{
+                    div.querySelectorAll('input').forEach(input=>{
+                        input.onchange = e =>{
+                                const divTarget =  me.controls[input.dataset.target];
+                                if(divTarget){
+                                    divTarget.style.display = input.checked ? 'block':'none';
+                                }
+
                         }
-            
-                        const targetElement = document.getElementById(targetId);
-                        if (this.checked) {
-                            targetElement.classList.remove('d-none');
-                        } else {
-                            targetElement.classList.add('d-none');
-                            if (targetElement.tagName === 'SELECT') {
-                                targetElement.value = ''; // Reset select if hidden
-                            } else if (targetElement.tagName === 'DIV') {
-                                targetElement.querySelector('input').value = ''; // Reset input field
-                            }
-                        }
-                    });
+                        
                 });
+
+                }
+                me.setEvent(me.divModal);
+
+
+
+               
+            
+              
             },
             
 
              configSelect:[
                 {
-                    // name: "type",
-                    // data: "types",
-                    // textField: "name",
-                    // valueField: "id",
+                    name: "branch",
+                    data: "branches",
+                    textField: "branch_name",
+                    valueField: "id",
+                },
+                {
+                    name: "position",
+                    data: "positions",
+                    textField: "title",
+                    valueField: "id",
                 },
              ],
              prepareFormOptions: {
-                createTitle: "Movement",
-                modifyTitle: "Movement",
+                createTitle: "Add Movement",
+                modifyTitle: "Edit Movement",
                 targetProp: "Movement",
                 api: {
                     endpoint: `${main_view.base_url}/hr/employee/form-options`,
+                    
                     params: (op) => {
-                        return { id: op.id }; // Pass ID to fetch data for edit
+                        console.log(123,op);
+                        
+                        return { id: op.id };
                     },
                     onResponse: (me, res) => {
-                        if (op.id) {
-                            // Populate form with existing data for edit mode
-                            // me.setValue('emp_id', res.data.emp_id);
-                            // me.setValue('period', res.data.period);
-                            // me.setValue('description', res.data.description);
-                            // me.setValue('amount', res.data.amount);
-                        }
+                        
                     },
                 },
             },
@@ -1220,35 +1237,42 @@ var EmployeeComponent = new (function () {
                     }
                 }
              ],
+             onShow:(me)=>{
+                console.log(me.fields.branch_id = me.dataOptions.id);
+                
+                
+            },
              onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
+                
+                // me.divModal.querySelectorAll(".data-input").forEach((el) => {
+                //     const data_member = el.dataset.field;
+                //     console.log(90, op.id);
+                    
 
+                //     let id = op.id;
+
+                //     if (id) {
+                //         if (el.tagName.toLowerCase() === "select") {
+                //             if (
+                //                 data_member == "position" ||
+                //                 data_member == "branch"
+                //             ) {
+                //                 el.setAttribute("disabled", true);
+                //                 // el.disabled = true;
+                //             }
+                //         }
+                //         if (data_member == "salary") {
+                //             console.log(12, el);
+                //             el.disabled = true;
+                //         }
+
+                //         id = null;
+                //     }
+                // });
 
             },
-            //  prepareFormOptions:{
-            //      modifyTitle:"",
-            //      createTitle:"Set Resign",
-            //      api:{
-            //         targetProp:"Set Resign",
-            //         endpoint: `${main_view.base_url}`,
-            //         params:(dataOption)=>{
-            //             return {"id":dataOption.id};
-            //         },
-            //      }
-            //  },
-            //  onShow:(me)=>{
-            //     me.controls.name.focus();
-            //     me.controls.name.select();
-            // },
-            //  onPrepareForm:(me,data)=>{
-            //      let fields = me.getFields();
-
-            //     //  const app_types = [
-            //     //     {value:0, label:"Web Application"},
-            //     //     {value:1, label:"Mobile App"}
-            //     //  ];
-            //     //  VSUtil.setComboItems(fields.app_id,data.apps,"id","app_name",null,null,0);
-            //  }
+          
         });
         mThis.MovementDialog.show(op);
     }
