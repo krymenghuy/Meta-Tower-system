@@ -33,7 +33,7 @@ var EmployeeComponent = new (function () {
 
             apiCluster: main_view.apiCluster,
             processResponse: (res) => {
-                console.log(1234, res.data.data);
+                // console.log(1234, res.data.data);
 
                 return res.data;
             },
@@ -86,7 +86,7 @@ var EmployeeComponent = new (function () {
         };
 
         this.listContainer = mThis.EmployeeListView.getListContainer();
-        console.log(12, mThis.listContainer);
+        // console.log(12, mThis.listContainer);
 
         mThis.initDropdownMenus(div);
 
@@ -115,7 +115,7 @@ var EmployeeComponent = new (function () {
     };
 
     this.initDropdownMenus = (listContainer) => {
-        console.log(listContainer);
+        // console.log(listContainer);
 
         const menuOptopns = {
             containerElement: listContainer,

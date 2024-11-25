@@ -796,7 +796,7 @@ class Employee //extends Model
     $inputs = $res->values;
     $inputs['promo_id'] = $promo_id;
     $inputs['emp_id'] = $emp_id;
- 
+    
 
     $saved_id = saveData($ss, 'emp_branches', ['id' => null], $inputs, [], 1, false);
     $branch_id = $inputs['branch_id'];
@@ -804,37 +804,54 @@ class Employee //extends Model
     return DV::depends(1,null);
     }
 
-    static function changePosition($ss,$emp_id,$promo_id,$arr,$change_position){
+    static function changePosition($ss,$emp_id,$promo_id,$arr){
         if(!$arr) return;
-        if(!$change_position) return;
-        // $d = (object)$arr;
-        $id = saveData($ss,'emp_positions',['id'=>null],$arr,[],1,false);
-        if($id){
-            $position_id = $arr['position_id'];
-            DB::table('employees')->where('id',$emp_id)->update(['position_id'=>$position_id]);
+        $v_rule = [
+            'position_id' => '0|number',
+            'start_date' => '1|date',
+            'remarks' =>'0|string|0-300'
+        ];
+        $res = validateObject($arr,$v_rule,true,[],$ss->lang);
+        if($res->error) {
+            return DV::error($res->error);
         }
-        if ($id > 0) {
-            return DV::depends(1, ['emp_position' => $arr, 'id' => $id]);
-        }
+        $id = $res->id;
+        $inputs = $res->values;
+        $inputs['promo_id'] =$promo_id;
+        $inputs['emp_id'] = $emp_id;
 
-        return DV::error('Error saving data');
+        $id = saveData($ss,'emp_positions',['id'=>null],$arr,[],1,false);
+        $position_id = $arr['position_id'];
+        $updated = DB::table('employees')->where('id',$emp_id)->update(['position_id'=>$position_id]);
+     
+
+        return DV::depends(1,null);
 
 
     }
-    static function changeSalary($ss,$emp_id,$promo_id,$arr,$change_salary){
+    static function changeSalary($ss,$emp_id,$promo_id,$arr){
         if(!$arr) return;
-        if(!$change_salary) return;
-        // $d = (object)$arr;
-        $id = saveData($ss,'salary_histories',['id'=>null],$arr,[],1,false);
-        if($id){
-            $salary = $arr['salary'];
-            DB::table('employees')->where('id',$emp_id)->update(['salary'=>$salary]);
-        }
-        if ($id > 0) {
-            return DV::depends(1, ['salary_histories' => $arr, 'id' => $id]);
-        }
+        $v_rule = [
+            'org_position_id' =>'0|number',
+            'new_position_id' =>'0|number',
+            'org_salary' => '0|decimal',
+            'new_salary' => '0|decimal',
 
-        return DV::error('Error saving data');
+
+        ];
+        $res = validateObject($arr,$v_rule,true,[],$ss->lang);
+        $id = $res->id;
+        $inputs = $res->values;
+        $inputs['promo_id'] = $promo_id;
+        $inputs['emp_id'] = $emp_id;
+
+
+        $id = saveData($ss,'salary_histories',['id'=>null],$arr,[],1,false);
+            $salary = $arr['salary'];
+            $updated = DB::table('employees')->where('id',$emp_id)->update(['salary'=>$salary]);
+       
+
+        return DV::depends(1,null);
 
 
     }
@@ -860,7 +877,7 @@ class Employee //extends Model
         $id = $res->id;
         $inputs = $res->values;
 
-        $id = saveData($ss, 'emp_promotions', ['id' => $id], $inputs, [], 1);
+        $id = saveData($ss, 'emp_promotions', ['id' => $id], $inputs, [], 1,false);
         if ($id > 0) {
             return $id;
         }

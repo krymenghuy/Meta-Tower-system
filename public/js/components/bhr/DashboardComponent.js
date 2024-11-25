@@ -80,7 +80,7 @@ var DashboardComponent = new (function () {
   
         vsapi.call(`${main_view.base_url}/api/merchant/v2/order-summary-counts`,p, null,false,false).then(res => {
             let data = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data) : {};
-            console.log(123,data);   
+            // console.log(123,data);   
 
             mThis.renderDashboardTop();
 
