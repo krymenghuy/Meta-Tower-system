@@ -118,7 +118,7 @@ class Warning
         $query = DB::table('emp_warnings as w')
             ->join('employees as emp', 'emp.id', '=', 'w.emp_id')
             ->whereRaw($str_search)
-            ->selectRaw('w.id, emp.id as emp_id, emp.name, emp.name_kh,formatDate(w.warning_date) as warning_date,w.warning_type,w.remarks,w.reason,emp.position_id, emp.photo_file_name as emp_photo,w.updated_at,w.update_user')
+            ->selectRaw('w.id, emp.id as emp_id, emp.name, emp.name_kh,DATE_FORMAT(w.warning_date, "%d %b %Y") as warning_date,w.warning_type,w.remarks,w.reason,emp.position_id, emp.photo_file_name as emp_photo,w.updated_at,w.update_user')
             ->orderBy('w.id', 'ASC');
        
         $clone_query = clone $query;

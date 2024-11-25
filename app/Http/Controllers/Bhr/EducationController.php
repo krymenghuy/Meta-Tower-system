@@ -18,7 +18,7 @@ class EducationController extends Controller
     public function save(Request $req){
         $ss = AuthService::verifyAuth($req,1);
         if($ss->status_code !=200) return JDV::raw($ss);
-        $id = $req->id ?? $req->id;
+        $id = $req->id ?? $req->emp_id;
         $edu = $this->education->save($req->all(),$id,$ss);
         return JDV::raw($edu);
     } 

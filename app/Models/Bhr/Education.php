@@ -26,6 +26,7 @@ class Education //extends Model
             'school_id' => '1|number|exists=schools.id',
             'edu_level_id' => '1|number|exists=edu_levels.id',
             'period' => '0|string|0-150',
+            'start_year' => '0|year',
             'finish_year' => '0|year',
             'major' => '0|string|0-150',
             'diploma' => '0|string|1-150'
@@ -39,6 +40,8 @@ class Education //extends Model
         if($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
+    //    $inputs['emp_id'] = $emp_id;
+        
         $id = saveData($ss,'emp_educations',['id'=>$id],$inputs,[],1);
         if($id > 0 ){
             return DV::depends(1,['emp_educations'=>$inputs,'id'=>$id]);
@@ -63,7 +66,7 @@ class Education //extends Model
             ->join('edu_levels as l','l.id','=','e.edu_level_id')
             ->where('e.branch_id',$branch_id)
             ->where('e.emp_id',$emp_id)
-            ->selectRaw('e.id,emp.name as emp_name,s.id as school_id,s.name as school,l.id as level_id,l.name as edu_level,e.period,e.finish_year,e.major,e.diploma')
+            ->selectRaw('e.id,emp.name as emp_name,s.id as school_id,s.name as school,l.id as level_id,l.name as edu_level,e.period,e.start_year,e.finish_year,e.major,e.diploma')
             ->orderBy('e.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('e.id');
@@ -77,11 +80,10 @@ class Education //extends Model
 
     function details($id,$ss=null){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('emp_educations')->selectRaw('id,emp_id,school_id,period,edu_level_id,finish_year,major,diploma')
+        $rows = DB::table('emp_educations')->selectRaw('id,emp_id,school_id,period,edu_level_id,start_year,finish_year,major,diploma')
             ->where('branch_id',$branch_id)
             ->where('id',$id)
             ->take(1)->first();
-        if(!$rows) return null;
         return $rows;
 
 
@@ -89,12 +91,12 @@ class Education //extends Model
     
 
     function formOptions($id,$ss){
-        $education = null;
-        if($id) $education = self::details($id,$ss);
+        $educations = null;
+        if($id) $educations = self::details($id,$ss);
         return (object) [
             'schools'=>DB::table('schools')->selectRaw('id,name')->get(),
             'edu_levels'=>DB::table('edu_levels')->selectRaw('id,name')->get(),
-            'education'=>$education,
+            'education'=>$educations,
         ];
 
     }

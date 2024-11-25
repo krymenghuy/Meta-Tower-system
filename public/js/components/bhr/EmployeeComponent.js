@@ -89,7 +89,7 @@ var EmployeeComponent = new (function () {
         // console.log(12, mThis.listContainer);
 
         mThis.initDropdownMenus(div);
-
+        mThis.initDropdownEducation(div);
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.height = window.innerHeight - 200 + "px";
         sh_parent.classList.add("overflow-y-auto");
@@ -106,7 +106,9 @@ var EmployeeComponent = new (function () {
         p.emp_type_id = mThis.elEmployeeType.value;
         p.branch_id = mThis.el_branch.value;
         p.search_value = mThis.elSearch.value;
-        mThis.div_filter_fields.querySelectorAll(".filter-field").forEach((el) => {
+        mThis.div_filter_fields
+            .querySelectorAll(".filter-field")
+            .forEach((el) => {
                 let f = el.dataset.field;
                 p[f] = el.value;
             });
@@ -174,25 +176,41 @@ var EmployeeComponent = new (function () {
                 if (status_id == 10) {
                     for (const item in menu) {
                         if (menu[item] && menu[item].style) {
-                            menu[item].style.display = (menu[item].dataset.mnuaction === 'set_resign' || menu[item].dataset.mnuaction === 'edit_employee') ? 'block' : 'none';
+                            menu[item].style.display =
+                                menu[item].dataset.mnuaction === "set_resign" ||
+                                menu[item].dataset.mnuaction === "edit_employee"
+                                    ? "block"
+                                    : "none";
                         }
-                        if ((emp_type_id == 1 || emp_type_id == 2) && menu[item].dataset.mnuaction === 'promote_to_staff') {
-                            menu[item].style.display = 'block';
+                        if (
+                            (emp_type_id == 1 || emp_type_id == 2) &&
+                            menu[item].dataset.mnuaction === "promote_to_staff"
+                        ) {
+                            menu[item].style.display = "block";
                         }
                     }
-                }else if (status_id == 20) {
+                } else if (status_id == 20) {
                     for (const item in menu) {
                         if (menu[item] && menu[item].style) {
-                            menu[item].style.display = (menu[item].dataset.mnuaction === 'set_rejoin' || menu[item].dataset.mnuaction === 'set_terminated') ? 'block' : 'none';
+                            menu[item].style.display =
+                                menu[item].dataset.mnuaction === "set_rejoin" ||
+                                menu[item].dataset.mnuaction ===
+                                    "set_terminated"
+                                    ? "block"
+                                    : "none";
                         }
                     }
-                }else
-                for (const item in menu) {
-                    if (menu[item] && menu[item].style) {
-                    	menu[item].style.display = (menu[item].dataset.mnuaction === 'set_rejoin' || menu[item].dataset.mnuaction === 'delete_employee') ? 'block' : 'none';
+                } else
+                    for (const item in menu) {
+                        if (menu[item] && menu[item].style) {
+                            menu[item].style.display =
+                                menu[item].dataset.mnuaction === "set_rejoin" ||
+                                menu[item].dataset.mnuaction ===
+                                    "delete_employee"
+                                    ? "block"
+                                    : "none";
+                        }
                     }
-                }
-
 
                 // switch(status_id){
                 //     case 10:{
@@ -227,7 +245,6 @@ var EmployeeComponent = new (function () {
                         mThis.promoteToStaff(id, menuLink);
                         break;
                     }
-
                     default: {
                         break;
                     }
@@ -236,7 +253,19 @@ var EmployeeComponent = new (function () {
         };
         new VSDropdownMenu(menuOptopns);
     };
-
+    this.initDropdownEducation = () => {
+        addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btn-education-modify");
+            if (btn) {
+                mThis.editEducation(btn.dataset.id, btn);
+            }
+            btn = VSUtil.closestLimited(e.target, ".btn-education-delete");
+            if (btn) {
+                mThis.deleteEducation(btn.dataset.id, btn);
+            }
+            console.log(123, btn);
+        });
+    };
     this.renderEmployeeList = (div, data) => {
         data = data ?? [];
         if (!AuthManager) {
@@ -301,7 +330,9 @@ var EmployeeComponent = new (function () {
                                 }" class="rounded-circle mb-3"
                                     alt="Profile Picture" style="width: 100px; height: 100px;">
                                 <div class="card-title">
-                                    <h6 class="text-primary-custom text-nowrap">${d.name}</h6>
+                                    <h6 class="text-primary-custom text-nowrap">${
+                                        d.name
+                                    }</h6>
                                 </div>
                                 <div class="card_container gap-2 p-4 bg">
                                     <div class="employee_id text-primary-custom">#: <span class="ms-2">${
@@ -566,8 +597,8 @@ var EmployeeComponent = new (function () {
                                     <i class="fa-solid fa-ellipsis-vertical text-secondary fs-5 tool-tip"><span class="tool-tiptext fs-6">Actions</span></i>
                                 </a>
                                <button class="btn_movement_action btn btn-light rounded-3 mx-3 btn-options position-relative text-nowrap" data-id="${
-                                    data.id
-                                }"  data-status ="${
+                                   data.id
+                               }"  data-status ="${
             data.status_id
         }" type="button">
                                     <span class="text-nowrap text-primary-custom" vslang="buttons.Movement">Movement</span>
@@ -583,6 +614,7 @@ var EmployeeComponent = new (function () {
         this.profile_info_emp.innerHTML = html;
         // mThis.initDropdownMenusInfo(mThis.profile_info_emp);
         mThis.setActionsProfileInfo(mThis.profile_info_emp);
+        mThis.setActionsEducation(mThis.profile_card_center);
     };
 
     // this.initDropdownMenusInfo = (listContainer) => {
@@ -627,7 +659,6 @@ var EmployeeComponent = new (function () {
     //                     break;
     //                 }
 
-
     //                 default: {
     //                     break;
     //                 }
@@ -642,7 +673,7 @@ var EmployeeComponent = new (function () {
             if (btn) {
                 mThis.editEmployee(btn.dataset.id, btn);
             }
-            btn = VSUtil.closestLimited(e.target,".delete_employee");
+            btn = VSUtil.closestLimited(e.target, ".delete_employee");
             if (btn) {
                 mThis.deleteEmployee(btn.dataset.id, btn);
             }
@@ -650,7 +681,7 @@ var EmployeeComponent = new (function () {
             if (btn) {
                 mThis.setResign(btn.dataset.id, btn);
             }
-            btn = VSUtil.closestLimited(e.target,".movement")
+            btn = VSUtil.closestLimited(e.target, ".movement");
             if (btn) {
                 mThis.movement(btn.dataset.id, btn);
             }
@@ -727,7 +758,6 @@ var EmployeeComponent = new (function () {
         let p = {
             emp_id: employeeId,
         };
-        console.log(1, p);
 
         vsapi
             .call(
@@ -739,41 +769,50 @@ var EmployeeComponent = new (function () {
             )
             .then((res) => {
                 let data = res.status_code === 200 ? res.data.data : [];
-                console.log(123456, data);
                 let html = `<div class="card pb-3" style="height:390px;">
                 <div class="card-header text-white bg-primary-custom">
                     <h4>Education</h4>
                     <div class="d-flex gap-2">
-                        <a href="javascript:void(0)" data="id" id="lnk_add_education">
+                        <a href="javascript:void(0)" id="lnk_add_education">
                             <i class="fa fa-plus-circle fs-5 text-white"></i>
                         </a>
                     </div>
                 </div>
                 <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
             `;
-                data.map((d) => {
-                    html += `
-                    <div class="row py-2 border-bottom border-primary">
-                        <div class="col-md-6">
-                            <h6 class="text-" style="width:180px; height:22px overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap">${d.period}</h6>
-                            <p class="text-primary-custom" style="width:180px; height:20px"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/graduate.svg" /> ${d.edu_level}</p>
-                            <p class="text-muted" style="width:180px; height:20px;overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/radio.svg" /> ${d.major}</p>
-                        </div>
 
-                        <div class="col-md-6">
-                            <div class="d-flex justify-content-start">
-                                <div class="d-flex gap-2 mt-4" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
-                                    <span>${d.school}</span>
-                                </div>
+                data.forEach((d) => {
+                    html += `
+                <div class="experience_item py-2 border-bottom border-primary" style="display:flex">
+                    <div class="col-md-6">
+                        <h6 class="text-" style="width:180px; height:22px; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap">${d.period}</h6>
+                        <p class="text-primary-custom" style="width:170px; height:20px"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/graduate.svg" /> ${d.edu_level}</p>
+                        <p class="text-muted" style="width:160px; height:20px; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/radio.svg" /> ${d.major}</p>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="d-flex justify-content-start">
+                            <div class="d-flex gap-2 mt-4" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+                                <span>${d.school}</span>
                             </div>
                         </div>
                     </div>
+                    <div class="education_actions align-items-center gap-3 mr-2" style="display:flex; flex-direction:column; justify-content:center">
+                        <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-modify">
+                            <i class="fa-regular fa-pen-to-square text-warning fs-10"></i>
+                        </a>
+                        <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-delete">
+                            <i class="fa-solid fa-trash-can text-danger fs-10"></i>
+                        </a>
+                    </div>
+                </div>
                 `;
                 });
 
                 html += `</div></div>`;
                 this.profile_card_center.innerHTML = html;
 
+                // Add new education
                 document
                     .getElementById("lnk_add_education")
                     .addEventListener("click", function (e) {
@@ -787,9 +826,54 @@ var EmployeeComponent = new (function () {
                                 mThis.EmployeeListView.showPage();
                             },
                         };
-                        console.log(op);
                         AddEducation.show(op);
                     });
+
+                // Add delete functionality
+                // document
+                //     .querySelectorAll(".btn-education-delete")
+                //     .forEach((btn) => {
+                //         btn.addEventListener("click", function (e) {
+                //             e.preventDefault();
+
+                //             // Confirm delete action
+                //             if (
+                //                 confirm(
+                //                     "Are you sure you want to delete this record?"
+                //                 )
+                //             ) {
+                //                 // Get the correct data-id
+                //                 let educationId = this.getAttribute("data-id");
+
+                //                 // Send delete request to API
+                //                 vsapi
+                //                     .call(
+                //                         `${main_view.base_url}/hr/education/delete`,
+                //                         { id: educationId },
+                //                         null,
+                //                         false,
+                //                         false
+                //                     )
+                //                     .then((deleteRes) => {
+                //                         if (deleteRes.status_code === 200) {
+                //                             // Refresh the education list
+                //                             mThis.renderCardCenter(employeeId);
+                //                         } else {
+                //                             console.error(
+                //                                 "Failed to delete education:",
+                //                                 deleteRes.message
+                //                             );
+                //                         }
+                //                     })
+                //                     .catch((err) =>
+                //                         console.error(
+                //                             "Error deleting education:",
+                //                             err
+                //                         )
+                //                     );
+                //             }
+                //         });
+                //     });
             });
     };
 
@@ -815,7 +899,7 @@ var EmployeeComponent = new (function () {
                 <h4>Experience</h4>
                 <div class="d-flex gap-2">
                     <a href="javascript:void(0)" data="id" id="lnk_add_experience">
-                        <img class="bhr-" src="${main_view.asset_url}/images/icons/dot.svg" />
+                        <i class="fa fa-plus-circle fs-5 text-white"></i>
                     </a>
                 </div>
             </div>
@@ -1082,8 +1166,7 @@ var EmployeeComponent = new (function () {
                     });
             });
     };
-    this.movement = (id,menuLink)=>{
-
+    this.movement = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -1091,9 +1174,9 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        mThis.MovementDialog =  new GeneralDialog({
-            title: LocaleManager.trans("Movement","titles"),
-            cssClass:'modal-lg',
+        mThis.MovementDialog = new GeneralDialog({
+            title: LocaleManager.trans("Movement", "titles"),
+            cssClass: "modal-lg",
             createContent: () => {
                 return `
                     <div id="movement-options">
@@ -1156,32 +1239,22 @@ var EmployeeComponent = new (function () {
                 `;
             },
             contentCreated: (me) => {
-                
-         
-                me.setEvent=(div)=>{
-                    div.querySelectorAll('input').forEach(input=>{
-                        input.onchange = e =>{
-                                const divTarget =  me.controls[input.dataset.target];
-                                if(divTarget){
-                                    divTarget.style.display = input.checked ? 'block':'none';
-                                }
-
-                        }
-                        
-                });
-
-                }
+                me.setEvent = (div) => {
+                    div.querySelectorAll("input").forEach((input) => {
+                        input.onchange = (e) => {
+                            const divTarget = me.controls[input.dataset.target];
+                            if (divTarget) {
+                                divTarget.style.display = input.checked
+                                    ? "block"
+                                    : "none";
+                            }
+                        };
+                    });
+                };
                 me.setEvent(me.divModal);
-
-
-
-               
-            
-              
             },
-            
 
-             configSelect:[
+            configSelect: [
                 {
                     name: "branch",
                     data: "branches",
@@ -1194,25 +1267,23 @@ var EmployeeComponent = new (function () {
                     textField: "title",
                     valueField: "id",
                 },
-             ],
-             prepareFormOptions: {
+            ],
+            prepareFormOptions: {
                 createTitle: "Add Movement",
                 modifyTitle: "Edit Movement",
                 targetProp: "Movement",
                 api: {
                     endpoint: `${main_view.base_url}/hr/employee/form-options`,
-                    
+
                     params: (op) => {
-                        console.log(123,op);
-                        
+                        console.log(123, op);
+
                         return { id: op.id };
                     },
-                    onResponse: (me, res) => {
-                        
-                    },
+                    onResponse: (me, res) => {},
                 },
             },
-             buttons:[
+            buttons: [
                 {
                     label: "<span>Cancel</span>",
                     cssClass: "btn btn-warning text-white",
@@ -1221,34 +1292,40 @@ var EmployeeComponent = new (function () {
                     },
                 },
                 {
-                    cssClass:"btn btn-primary",
-                    label:"<span>Save</span",
-                    click:(me, btn,divModal)=>{
-                         let p = me.getData();
+                    cssClass: "btn btn-primary",
+                    label: "<span>Save</span",
+                    click: (me, btn, divModal) => {
+                        let p = me.getData();
                         //  p.emp_id = op.id;
-                         console.log(111,p);
-                         vsapi.call(`${main_view.base_url}/hr/employee/promote-staff`,p,btn,false).then(res =>{
-                              if(res.status_code ==200){
-                                me.modal.hide(true, p);
-                                cv_interact.success('This Employee has been promoted successfully!');
-                                EmployeeComponent.EmployeeListView.showPage();
-                              }else cv_interact.error(res.error_message);
-                         });
-                    }
-                }
-             ],
-             onShow:(me)=>{
-                console.log(me.fields.branch_id = me.dataOptions.id);
-                
-                
+                        console.log(111, p);
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/hr/employee/promote-staff`,
+                                p,
+                                btn,
+                                false
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.modal.hide(true, p);
+                                    cv_interact.success(
+                                        "This Employee has been promoted successfully!"
+                                    );
+                                    EmployeeComponent.EmployeeListView.showPage();
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+            onShow: (me) => {
+                console.log((me.fields.branch_id = me.dataOptions.id));
             },
-             onPrepareForm: (me, data) => {
+            onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-                
+
                 // me.divModal.querySelectorAll(".data-input").forEach((el) => {
                 //     const data_member = el.dataset.field;
                 //     console.log(90, op.id);
-                    
 
                 //     let id = op.id;
 
@@ -1270,15 +1347,12 @@ var EmployeeComponent = new (function () {
                 //         id = null;
                 //     }
                 // });
-
             },
-          
         });
         mThis.MovementDialog.show(op);
-    }
+    };
 
-    this.setResign = (id,menuLink)=>{
-
+    this.setResign = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -1286,11 +1360,11 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        mThis.ResignDialog =  new GeneralDialog({
-            title: LocaleManager.trans("Set Resign","titles"),
-            createContent:()=>{
+        mThis.ResignDialog = new GeneralDialog({
+            title: LocaleManager.trans("Set Resign", "titles"),
+            createContent: () => {
                 return [
-                   ` <div class="form-group col-md-12">
+                    ` <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Resign Date">Resign Date</label>
                             <div><input  name="resign_date" class="form-control data-input" placeholder="" data-field="resign_date"/></div>
                         </div>
@@ -1303,22 +1377,16 @@ var EmployeeComponent = new (function () {
                         <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
                       </div>
 
-                   `
-                ].join('');
+                   `,
+                ].join("");
             },
-            contentCreated:(me)=>{
+            contentCreated: (me) => {
                 DateTimePicker.init(me.controls.resign_date);
                 DateTimePicker.init(me.controls.effective_date);
+            },
 
-
-
-
-             },
-
-             configSelect:[
-
-             ],
-             buttons:[
+            configSelect: [],
+            buttons: [
                 {
                     label: "<span>Cancel</span>",
                     cssClass: "btn btn-warning text-white",
@@ -1327,26 +1395,33 @@ var EmployeeComponent = new (function () {
                     },
                 },
                 {
-                    cssClass:"btn btn-primary",
-                    label:"<span>Resign Now</span",
-                    click:(me, btn,divModal)=>{
-                         let p = me.getData();
+                    cssClass: "btn btn-primary",
+                    label: "<span>Resign Now</span",
+                    click: (me, btn, divModal) => {
+                        let p = me.getData();
                         //  p.emp_id = op.id;
-                         console.log(111,p);
-                         vsapi.call(`${main_view.base_url}/hr/employee/set-resign-status`,p,btn,false).then(res =>{
-                              if(res.status_code ==200){
-                                me.modal.hide(true, p);
-                                cv_interact.success('This Employee has been resign successfully!');
-                                EmployeeComponent.EmployeeListView.showPage();
-                              }else cv_interact.error(res.error_message);
-                         });
-                    }
-                }
-             ],
-             onPrepareForm: (me, data) => {
+                        console.log(111, p);
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/hr/employee/set-resign-status`,
+                                p,
+                                btn,
+                                false
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.modal.hide(true, p);
+                                    cv_interact.success(
+                                        "This Employee has been resign successfully!"
+                                    );
+                                    EmployeeComponent.EmployeeListView.showPage();
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+            onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-
-
             },
             //  prepareFormOptions:{
             //      modifyTitle:"",
@@ -1374,10 +1449,9 @@ var EmployeeComponent = new (function () {
             //  }
         });
         mThis.ResignDialog.show(op);
-    }
+    };
 
-    this.promoteToStaff = (id,menuLink)=>{
-
+    this.promoteToStaff = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -1419,8 +1493,8 @@ var EmployeeComponent = new (function () {
                     textField: "name",
                     valueField: "id",
                 },
-             ],
-             prepareFormOptions: {
+            ],
+            prepareFormOptions: {
                 createTitle: "Promote",
                 modifyTitle: "Promote",
                 targetProp: "Promote",
@@ -1554,8 +1628,7 @@ var EmployeeComponent = new (function () {
             }
         });
     };
-    this.setRejoin = (id,menuLink)=>{
-
+    this.setRejoin = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -1563,11 +1636,11 @@ var EmployeeComponent = new (function () {
                 mThis.EmployeeListView.showPage(mThis.getFilterData());
             },
         };
-        mThis.RejoinDialog =  new GeneralDialog({
-            title: LocaleManager.trans("Set Rejoin","titles"),
-            createContent:()=>{
+        mThis.RejoinDialog = new GeneralDialog({
+            title: LocaleManager.trans("Set Rejoin", "titles"),
+            createContent: () => {
                 return [
-                   ` <div class="form-group col-md-12">
+                    ` <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Resign Date">Rejoin Date</label>
                             <div><input  name="rejoin_date" class="form-control data-input" placeholder="" data-field="rejoin_date"/></div>
                         </div>
@@ -1577,21 +1650,15 @@ var EmployeeComponent = new (function () {
                         <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
                       </div>
 
-                   `
-                ].join('');
+                   `,
+                ].join("");
             },
-            contentCreated:(me)=>{
+            contentCreated: (me) => {
                 DateTimePicker.init(me.controls.rejoin_date);
+            },
 
-
-
-
-             },
-
-             configSelect:[
-
-             ],
-             buttons:[
+            configSelect: [],
+            buttons: [
                 {
                     label: "<span>Cancel</span>",
                     cssClass: "btn btn-warning text-white",
@@ -1600,25 +1667,32 @@ var EmployeeComponent = new (function () {
                     },
                 },
                 {
-                    cssClass:"btn btn-primary",
-                    label:"<span>Join Now</span",
-                    click:(me, btn,divModal)=>{
-                         let p = me.getData();
+                    cssClass: "btn btn-primary",
+                    label: "<span>Join Now</span",
+                    click: (me, btn, divModal) => {
+                        let p = me.getData();
                         //  p.emp_id = op.id;
-                         console.log(111,p);
-                         vsapi.call(`${main_view.base_url}/hr/employee/set-rejoin-status`,p,btn,false).then(res =>{
-                              if(res.status_code ==200){
-                                me.modal.hide(true, p);
-                                cv_interact.success('This Employee has been join successfully!');
-                              }else cv_interact.error(res.error_message);
-                         });
-                    }
-                }
-             ],
-             onPrepareForm: (me, data) => {
+                        console.log(111, p);
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/hr/employee/set-rejoin-status`,
+                                p,
+                                btn,
+                                false
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.modal.hide(true, p);
+                                    cv_interact.success(
+                                        "This Employee has been join successfully!"
+                                    );
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+            onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-
-
             },
             //  prepareFormOptions:{
             //      modifyTitle:"",
@@ -1646,9 +1720,76 @@ var EmployeeComponent = new (function () {
             //  }
         });
         mThis.RejoinDialog.show(op);
-    }
+    };
 
+    this.setActionsEducation = (div_exp) => {
+        div_exp.addEventListener("click", (e) => {
+            let btn = VSUtil.closestLimited(e.target, ".btn-education-modify");
+            if (btn) {
+                mThis.editEducation(btn.dataset.id, btn);
+                return;
+            }
+            btn = VSUtil.closestLimited(e.target, ".btn-education-delete");
+            if (btn) {
+                mThis.deleteEducation(btn.dataset.id, btn);
+                return;
+            }
+        });
+    };
+    this.editEducation = (id, menuLink) => {
+        let op = {
+            id: id,
+            btn: menuLink,
+            onClose: () => {
+                mThis.EmployeeListView.showPage();
+            },
+        };
+        AddEducation.show(op);
+    };
+    this.deleteEducation = (id, menuLink) => {
+        let emp_id = menuLink.closest(".experience_item").dataset.empId; // Get emp_id if needed
+        let op = { id: id, emp_id: emp_id };
 
+        const div_exp = menuLink.closest(".experience_item");
+
+        cv_interact.confirm(
+            "Are you sure you want to delete this Education record?",
+            {
+                title: "Delete Education",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/hr/education/delete`,
+                            op, // Ensure correct payload
+                            null,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code === 200) {
+                                if (div_exp) div_exp.remove();
+                                cv_interact.success("Deleted Successfully");
+                            } else {
+                                cv_interact.error(
+                                    res.message ||
+                                        "Failed to delete. Try again."
+                                );
+                            }
+                        })
+                        .catch((err) => {
+                            console.error("API Error:", err);
+                            cv_interact.error(
+                                "An error occurred. Please try again."
+                            );
+                        });
+                }
+            }
+        );
+    };
 
     this.editEmployee = (id, menuLink) => {
         let op = {
@@ -1756,6 +1897,8 @@ const AddEducation = (() => {
     let dialog = null;
 
     self.show = (op) => {
+        console.log(666,op);
+        
         dialog =
             dialog ||
             new GeneralDialog({
@@ -1784,8 +1927,12 @@ const AddEducation = (() => {
                         </div>
 
                         <div class="form-group col-md-6">
-                            <label class="form-label" vslang="titles.End Year">Finish Year</label>
-                            <div><input name="end_year" class="form-control data-input" data-field="end_year"/></div>
+                            <label class="form-label" vslang="titles.Start Year">Start Year</label>
+                            <div><input name="start_year" class="form-control data-input" data-field="start_year"/></div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Finish Year">Finish Year</label>
+                            <div><input name="finish_year" class="form-control data-input" data-field="finish_year"/></div>
                         </div>
 
                         <div class="form-group col-md-12">
@@ -1808,7 +1955,8 @@ const AddEducation = (() => {
                         cssClass: "btn btn-primary",
                         click: (me) => {
                             let p = me.getData();
-                            p.emp_id = op.emp_id;
+                            console.log(1011, me.dataOptions.emp_id);
+
                             vsapi
                                 .call(
                                     [
@@ -1857,7 +2005,7 @@ const AddEducation = (() => {
                 prepareFormOptions: {
                     createTitle: "New Education",
                     modifyTitle: "Edit Education",
-                    targetProp: "Education",
+                    targetProp: "education",
                     api: {
                         endpoint: `${main_view.base_url}/hr/education/form-options`,
                         params: (op) => {
@@ -1941,7 +2089,7 @@ const AddExperience = (() => {
                         click: (me, btn) => {
                             let p = me.getData();
                             p.emp_id = op.emp_id;
-                            // console.log(928762, p);
+                            console.log(928762, p);
 
                             vsapi
                                 .call(
@@ -2055,7 +2203,6 @@ const AddTaxAllowance = (() => {
                         click: (me) => {
                             let p = me.getData();
                             p.emp_id = me.dataOptions.emp_id;
-                            console.log(7777, p);
 
                             vsapi
                                 .call(
