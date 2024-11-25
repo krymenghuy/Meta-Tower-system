@@ -301,7 +301,7 @@ var EmployeeComponent = new (function () {
                                 }" class="rounded-circle mb-3"
                                     alt="Profile Picture" style="width: 100px; height: 100px;">
                                 <div class="card-title">
-                                    <h5 class="text-success">${d.name}</h5>
+                                    <h6 class="text-primary-custom text-nowrap">${d.name}</h6>
                                 </div>
                                 <div class="card_container gap-2 p-4 bg">
                                     <div class="employee_id text-primary-custom">#: <span class="ms-2">${

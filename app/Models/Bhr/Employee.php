@@ -253,10 +253,9 @@ class Employee //extends Model
             $str_where .= ' AND emp.emp_type_id =\'' . $type . '\'';
         }
         if ($branch) {
-            $str_where .='AND emp.branch_id=\''.$branch.'\'';
+            $str_where .= ' AND emp.branch_id=\'' . $branch . '\'';
         }
 
-        
         $query = DB::table('employees as emp')
         ->join('positions as p', 'p.id', '=', 'emp.position_id')
         ->join('departments as d', 'd.id', '=', 'p.department_id')
@@ -264,7 +263,6 @@ class Employee //extends Model
         ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
         ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
         ->join('um_branches as b', 'b.id', '=', 'emp.branch_id')
-
         ->whereRaw($str_srch)
             ->whereRaw($str_where)
             ->selectRaw('
@@ -276,7 +274,7 @@ class Employee //extends Model
             emp.phone_number,
             emp.sex,
             emp.nationality,
-            formatDate(emp.date_of_birth) as date_of_birth,
+            DATE_FORMAT(emp.date_of_birth, "%d %b %Y") as date_of_birth,
             emp.address,
             emp.photo_file_name,
             DATE_FORMAT(emp.joining_date, "%d %b %Y") as joining_date,
@@ -296,13 +294,11 @@ class Employee //extends Model
         ')
             ->orderBy('emp.id', 'DESC');
 
-        
         $clone_query = clone $query;
         $count = $clone_query->count('emp.id');
 
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-       
         foreach ($rows as $row) {
             $row->image_url = '';
             if ($row->photo_file_name) {
@@ -311,9 +307,9 @@ class Employee //extends Model
             unset($row->photo_file_name);
         }
 
-       
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
 
 
     static function props($id, $cols)
