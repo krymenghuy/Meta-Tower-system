@@ -1111,30 +1111,38 @@ var EmployeeComponent = new (function () {
 
                     <div name="div_branch" class="p-3  branch" style="display:none;">
                         <div class="row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Change Branch"></label>
                                 <select name="branch" id="branch" class="form-control data-input" data-field="branch_id">
                                 
                                 </select>
                             </div>
-                            <div id="remarks" class="form-group col-md-6">
+                            <div class=" form-group col-md-4">
+                                <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
+                                <input  name="effective_date" class="rounded-5 form-control data-input" data-field="effective_date"></input>
+                            </div>
+                            <div id="remarks" class="form-group col-md-5">
                                 <label class="form-label" vslang="titles.Remarks"></label>
-                                <input name="remarks" class="form-control rounded-5 data-input" placeholder="" data-field="branch_remarks" />
+                                <input name="remarks" class="form-control  data-input" placeholder="" data-field="remarks">
                             </div>
                         </div>
                         
                     </div>
                     <div name="div_position" class="p-2" style="display:none;">
                         <div class="row">
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Change Position"></label>
                                 <select name="position" id="position" class="form-control data-input" data-field="position_id">
                                     
                                 </select>
                             </div>
-                            <div id="remarks" class="form-group col-md-6">
+                              <div class=" form-group col-md-4">
+                                <label class="form-label" vslang="titles.Start Date">Start Date</label>
+                                <input  name="start_date" class="rounded-5 form-control data-input" data-field="start_date"></input>
+                            </div>
+                            <div id="remarks" class="form-group col-md-5">
                                 <label class="form-label" vslang="titles.Remarks"></label>
-                                <input name="remarks" class="form-control rounded-5 data-input" placeholder="" data-field="position_remarks" />
+                                <input name="remarks" class="form-control data-input" placeholder="" data-field="remarks" />
                             </div>
                         </div>
                     </div>
@@ -1142,22 +1150,28 @@ var EmployeeComponent = new (function () {
                     
                     <div name="div_salary" class="p-2" style="display:none;">
                         <div class="row">
-                            <div id="salary" class="form-group col-md-6">
+                            <div id="salary" class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Old Salary"></label>
-                                <input name="salary" class="form-control rounded-5 data-input" placeholder="" data-field="salary_id" />
+                                <input name="org_salary" class="form-control rounded-5 data-input" placeholder="" data-field="salary" />
+                            </div>
+                            <div id="salary" class="form-group col-md-4">
+                                <label class="form-label" vslang="titles.New Salary"></label>
+                                <input name="new_salary" class="form-control rounded-5 data-input" placeholder="" data-field="salary" />
                             </div>
                            
-                            <div id="remarks" class="form-group col-md-6">
+                            <div id="remarks" class="form-group col-md-5">
                                 <label class="form-label" vslang="titles.Remarks"></label>
-                                <input name="remarks" class="form-control rounded-5 data-input" placeholder="" data-field="salary_remarks" />
+                                <input name="remarks" class="form-control rounded-5 data-input" placeholder="" data-field="remarks" />
                             </div>
                         </div>
                     </div>
                 `;
             },
             contentCreated: (me) => {
-                
-         
+                DateTimePicker.init(me.controls.effective_date);
+                DateTimePicker.init(me.controls.start_date);
+
+
                 me.setEvent=(div)=>{
                     div.querySelectorAll('input').forEach(input=>{
                         input.onchange = e =>{
@@ -1165,19 +1179,10 @@ var EmployeeComponent = new (function () {
                                 if(divTarget){
                                     divTarget.style.display = input.checked ? 'block':'none';
                                 }
-
                         }
-                        
                 });
-
                 }
                 me.setEvent(me.divModal);
-
-
-
-               
-            
-              
             },
             
 
@@ -1195,23 +1200,6 @@ var EmployeeComponent = new (function () {
                     valueField: "id",
                 },
              ],
-             prepareFormOptions: {
-                createTitle: "Add Movement",
-                modifyTitle: "Edit Movement",
-                targetProp: "Movement",
-                api: {
-                    endpoint: `${main_view.base_url}/hr/employee/form-options`,
-                    
-                    params: (op) => {
-                        console.log(123,op);
-                        
-                        return { id: op.id };
-                    },
-                    onResponse: (me, res) => {
-                        
-                    },
-                },
-            },
              buttons:[
                 {
                     label: "<span>Cancel</span>",
@@ -1225,9 +1213,32 @@ var EmployeeComponent = new (function () {
                     label:"<span>Save</span",
                     click:(me, btn,divModal)=>{
                          let p = me.getData();
-                        //  p.emp_id = op.id;
-                         console.log(111,p);
-                         vsapi.call(`${main_view.base_url}/hr/employee/promote-staff`,p,btn,false).then(res =>{
+                         p.emp_id = op.id;
+
+                         let change_branch = {},change_position = {}, change_salary = {};
+                         
+                         if(me.controls.change_branch.checked){
+                            change_branch.brach_id = p.branch_id;
+                            change_branch.remarks = p.remarks;
+                            change_branch.effective_date = p.effective_date;
+                         }
+                         if(me.controls.change_position.checked){
+                            change_position.position_id = p.position_id;
+                            change_position.remarks = p.remarks;
+                            change_position.start_date = p.start_date;
+                         }
+                         if(me.controls.change_salary.checked){
+                            change_salary.new_salary = p.salary;
+                            change_salary.remarks = p.remarks;
+                         }
+                         let d = {};
+                         d.emp_id = p.emp_id;
+                         d.promotion_date = p.effective_date;
+                         d.change_branch = change_branch;
+                         d.change_position = change_position;
+                         d.change_salary = change_salary;
+
+                         vsapi.call(`${main_view.base_url}/hr/employee/promote-staff`,d,btn,false).then(res =>{
                               if(res.status_code ==200){
                                 me.modal.hide(true, p);
                                 cv_interact.success('This Employee has been promoted successfully!');
@@ -1237,45 +1248,37 @@ var EmployeeComponent = new (function () {
                     }
                 }
              ],
-             onShow:(me)=>{
-                console.log(me.fields.branch_id = me.dataOptions.id);
-                
-                
-            },
-             onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
-                
-                // me.divModal.querySelectorAll(".data-input").forEach((el) => {
-                //     const data_member = el.dataset.field;
-                //     console.log(90, op.id);
+             prepareFormOptions: {
+                createTitle: "Employee Movement",
+                modifyTitle: "Edit Movement",
+                targetProp: "Employee Movement",
+                api: {
+                    endpoint: `${main_view.base_url}/hr/employee/form-options`,
                     
-
-                //     let id = op.id;
-
-                //     if (id) {
-                //         if (el.tagName.toLowerCase() === "select") {
-                //             if (
-                //                 data_member == "position" ||
-                //                 data_member == "branch"
-                //             ) {
-                //                 el.setAttribute("disabled", true);
-                //                 // el.disabled = true;
-                //             }
-                //         }
-                //         if (data_member == "salary") {
-                //             console.log(12, el);
-                //             el.disabled = true;
-                //         }
-
-                //         id = null;
-                //     }
-                // });
-
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                    onResponse: (me, res) => {
+                        
+                    },
+                },
             },
+             
+             
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+                me.controls.branch.value = data.employee.branch_id;
+                me.controls.position.value = data.employee.position_id; 
+                me.controls.org_salary.value = data.employee.salary || null; 
+
+            
+              
+            },
+            
           
         });
         mThis.MovementDialog.show(op);
-    }
+    };
 
     this.setResign = (id,menuLink)=>{
 
