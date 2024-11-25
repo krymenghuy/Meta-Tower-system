@@ -115,8 +115,8 @@
     }
 </style>
 
-<div id="_main_workShiftListComponent" style="display:block;padding:50px 20px ">
-    <div class="d-flex py-2 pt-2 justify-content-between w-200" id="_divFilter">
+<div id="_main_workShiftListComponent" style="display:none;padding:50px 20px ">
+    <div class="d-flex py-2 pt-2 justify-content-between w-100" id="_divFilter">
         <div class="d-flex align-items-center w-100 gap-2">
             <div class="d-flex align-items-center w-50 gap-2">
                 <input type="text" class="form-control filter-field btn_search" id="_work_shift_list_search"
