@@ -268,6 +268,7 @@ class Employee //extends Model
             ->selectRaw('
             emp.code,
             emp.id,
+            emp.branch_id,
             emp.name,
             emp.name_kh,
             emp.email,
@@ -412,6 +413,7 @@ class Employee //extends Model
             ->selectRaw('
                 emp.code,
                 emp.id,
+                emp.branch_id,
                 emp.name,
                 emp.name_kh,
                 emp.email,
@@ -743,12 +745,140 @@ class Employee //extends Model
     
         return DV::error('Failed to save rejoin record.');
     }
-    function promoteStaff($emp_type_id, $id = null, $ss = null, $arr)
+
+    function promoteStaff($arr, $id = null, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
         $d = (object)$arr;
-   
+        $change_branch = $d->change_branch ?? null;
+        $change_position = $d->change_position ?? null;
+        $change_salary = $d->change_salary ?? null;
+        if(!$change_branch && !$change_position && !$change_salary){
+            return DV::error('No Promotion Request!');
+        }
+        $promo_id = self::createPromotion($arr,$ss);
+        // $promo_id = $promo->status_code == 200 ? $promo->data['id'] : '';
+        if(!$promo_id) return DV::error('Failed to create promotion');
+
+            $res = self::changeBranch($ss,$id,$promo_id,$change_branch);
+            //if($res && $res->status == 'Error') return DV::error($res->error_message);
+            
+            $res = self::changePosition($ss,$id,$promo_id,$change_position);
+            // if($position->status_code != 200) return DV::error($position->error);
+            $res = self::changeSalary($ss,$id,$promo_id,$change_salary);
+            // if($salary->status_code != 200) return DV::error($salary->error);
+ 
+
+        return DV::success(['message' => 'Employee promotion updated successfully.']);
+
+    }
+    static function changeBranch($ss, $emp_id,$promo_id,$arr)
+    {
+    if (!$arr) return;
+
+    $v_rule = [
+        'branch_id' => '0|number',
+        'effective_date' => '0|date',
+        'remarks' => '0|string|1-300',
+    ];
+
+    $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+    if ($res->error) {
+        return DV::error($res->error);
+    }
+
+    $id = $res->id;
+    $inputs = $res->values;
+    $inputs['promo_id'] = $promo_id;
+    $inputs['emp_id'] = $emp_id;
+    
+
+    $saved_id = saveData($ss, 'emp_branches', ['id' => null], $inputs, [], 1, false);
+    $branch_id = $inputs['branch_id'];
+    $updated = DB::table('employees')->where('id', $emp_id)->update(['branch_id' => $branch_id]);
+    return DV::depends(1,null);
+    }
+
+    static function changePosition($ss,$emp_id,$promo_id,$arr){
+        if(!$arr) return;
+        $v_rule = [
+            'position_id' => '0|number',
+            'start_date' => '1|date',
+            'remarks' =>'0|string|0-300'
+        ];
+        $res = validateObject($arr,$v_rule,true,[],$ss->lang);
+        if($res->error) {
+            return DV::error($res->error);
+        }
+        $id = $res->id;
+        $inputs = $res->values;
+        $inputs['promo_id'] =$promo_id;
+        $inputs['emp_id'] = $emp_id;
+
+        $id = saveData($ss,'emp_positions',['id'=>null],$arr,[],1,false);
+        $position_id = $arr['position_id'];
+        $updated = DB::table('employees')->where('id',$emp_id)->update(['position_id'=>$position_id]);
+     
+
+        return DV::depends(1,null);
+
+
+    }
+    static function changeSalary($ss,$emp_id,$promo_id,$arr){
+        if(!$arr) return;
+        $v_rule = [
+            'org_position_id' =>'0|number',
+            'new_position_id' =>'0|number',
+            'org_salary' => '0|decimal',
+            'new_salary' => '0|decimal',
+
+
+        ];
+        $res = validateObject($arr,$v_rule,true,[],$ss->lang);
+        $id = $res->id;
+        $inputs = $res->values;
+        $inputs['promo_id'] = $promo_id;
+        $inputs['emp_id'] = $emp_id;
+
+
+        $id = saveData($ss,'salary_histories',['id'=>null],$arr,[],1,false);
+            $salary = $arr['salary'];
+            $updated = DB::table('employees')->where('id',$emp_id)->update(['salary'=>$salary]);
+       
+
+        return DV::depends(1,null);
+
+
+    }
+    static function createPromotion($arr,$ss = null){
+        $ss = $ss ?? self::userInfo;
+        $branch_id = $ss->branch_id;
+       
+        $v_rule = [
+            'id' => '0|identity=1',
+            'emp_id'=>'1|number',
+            'promotion_date' => '1|date',
+            'change_branch' => '0|number|default = 0',
+            'change_position' => '0|number|default = 0',
+            'change_salary' => '0|number|default = 0',
+
+        ];
+
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return null;
+        }
+
+        $id = $res->id;
+        $inputs = $res->values;
+
+        $id = saveData($ss, 'emp_promotions', ['id' => $id], $inputs, [], 1,false);
+        if ($id > 0) {
+            return $id;
+        }
+
+        return null;
     }
 
     
