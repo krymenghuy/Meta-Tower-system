@@ -323,7 +323,7 @@
     }
 </style>
 
-<div id="_main_workshiftComponent" style="display:block;padding:20px">
+<div id="_main_workshiftComponent" style="display:none;padding:20px">
     <div class="d-flex py-2 pt-2 justify-content-between w-200" id="_divFilter">
         <div class="d-flex align-items-center w-50 gap-2">
             <input type="text" class="form-control filter-field btn_search" id="_work_shift_search"

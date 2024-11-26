@@ -82,8 +82,20 @@ class EmployeeEvent
         ->where('ee.branch_id', $branch_id)
         ->whereRaw($str_search)
         ->whereRaw($str_where)
-        ->selectRaw('ee.id, ee.emp_id, ee.event_id,ee.impact, e.name as event, formatDate(ee.event_date) as event_date, ee.remarks,ee.update_user,ee.updated_at, emp.name as emp_name, p.title as position, emp.photo_file_name as emp_photo')
-        ->orderBy('ee.id','DESC');
+            ->selectRaw('
+        ee.id,
+        ee.emp_id,
+        ee.event_id,
+        ee.impact,
+        e.name as event,
+        DATE_FORMAT(ee.event_date, "%d %b %Y") as event_date,
+        ee.remarks,
+        ee.update_user,
+        ee.updated_at,
+        emp.name as emp_name,
+        p.title as position,
+        emp.photo_file_name as emp_photo
+    ')        ->orderBy('ee.id','DESC');
         $clone_query = clone $query;
 
         $count = $clone_query->count('ee.id');
