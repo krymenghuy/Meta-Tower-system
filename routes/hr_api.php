@@ -58,6 +58,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->gr
 Route::prefix('dashboard')->group(function () {
     Route::post('/cards', [DashboardController::class, 'getCards']);
     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
+
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->group(function () {
 
@@ -288,4 +289,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('holiday')->gr
     Route::post('/details', [HolidayController::class, 'getDetails']);
     Route::post('/delete', [HolidayController::class, 'deleteHoliday']);
     Route::post('/form-options', [HolidayController::class, 'getFormOptions']);
+});
+
+
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('dashboard')->group(function () {
+    Route::post('/count-employees', [DashboardController::class, 'countEmployees']);
+    Route::post('/get-departments', [DashboardController::class, 'getDepartments']);
 });
