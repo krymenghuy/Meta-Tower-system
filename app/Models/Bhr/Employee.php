@@ -761,7 +761,6 @@ class Employee //extends Model
         if(!$promo_id) return DV::error('Failed to create promotion');
 
         $res = self::changeBranch($ss,$id,$promo_id,$change_branch);
-        
         $res = self::changePosition($ss,$id,$promo_id,$change_position);
         $res = self::changeSalary($ss,$id,$promo_id,$change_salary);
  
@@ -775,7 +774,7 @@ class Employee //extends Model
     if (!$arr) return;
 
     $v_rule = [
-        'branch_id' => '0|number',
+        'branch_id' => '1|number',
         'effective_date' => '1|date',
         'remarks' => '0|string|1-300',
     ];
@@ -789,8 +788,8 @@ class Employee //extends Model
     $inputs['promo_id'] = $promo_id;
     $inputs['emp_id'] = $emp_id;
 
-    $saved_id = saveData($ss, 'emp_branches', ['id' => null], $inputs, [], 1, false);
-    $branch_id = $inputs['branch_id'];
+    $id = saveData($ss, 'emp_branches', ['id' => null], $inputs, [], 1, false);
+    $branch_id = $arr['branch_id'];
     $updated = DB::table('employees')->where('id', $emp_id)->update(['branch_id' => $branch_id]);
     return DV::depends(1,null);
     }
@@ -832,11 +831,15 @@ class Employee //extends Model
         $res = validateObject($arr,$v_rule,true,[],$ss->lang);
         $inputs = $res->values;
         $org_salary = DB::table('employees')->where('id', $emp_id)->value('salary');
+        $org_position_id = DB::table('employees')->where('id', $emp_id)->value('position_id');
+
         $inputs['promo_id'] = $promo_id;
         $inputs['emp_id'] = $emp_id;
         $inputs['org_salary'] = $org_salary;
+        $inputs['org_position_id'] = $org_position_id;
 
-        $id = saveData($ss,'salary_histories',['id'=>null],$inputs,[],1,false);
+
+            $id = saveData($ss,'emp_salary_histories',['id'=>null],$inputs,[],1,false);
             $salary = $arr['new_salary'];
             $updated = DB::table('employees')->where('id',$emp_id)->update(['salary'=>$salary]);
        
@@ -852,7 +855,7 @@ class Employee //extends Model
           $v_rule = [
             'id' => '0|identity=1',
             'emp_id'=>'1|number',
-            'promotion_date' => '1|date',
+            'promotion_date' => '0|date',
             'change_branch' => '0|number|default=0',
             'change_position' => '0|number|default=0',
             'change_salary' => '0|number|default=0',

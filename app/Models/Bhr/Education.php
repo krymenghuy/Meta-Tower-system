@@ -17,14 +17,14 @@ class Education //extends Model
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$id=null,$ss){
+    function save($arr,$ss){
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identify=1',
-            'emp_id' => '1|number|exists=employees.id',
-            'school_id' => '1|number|exists=schools.id',
-            'edu_level_id' => '1|number|exists=edu_levels.id',
+            'id' => '0|identity=1',
+            'emp_id' => '1|number',
+            'school_id' => '1|number',
+            'edu_level_id' => '1|number',
             'period' => '0|string|0-150',
             'start_year' => '0|year',
             'finish_year' => '0|year',
@@ -38,16 +38,16 @@ class Education //extends Model
 
         $res = validateObject($arr,$v_rule,true,['period'=>$edu_char],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
+        $id = $res->id;
 
         $inputs = $res->values;
-    //    $inputs['emp_id'] = $emp_id;
         
         $id = saveData($ss,'emp_educations',['id'=>$id],$inputs,[],1);
         if($id > 0 ){
             return DV::depends(1,['emp_educations'=>$inputs,'id'=>$id]);
 
         }
-        return DV::depends($id,['action','saved']);
+        return DV::error('Error saving data');
         
     }
     function getListAll($arr,$ss){
@@ -66,7 +66,7 @@ class Education //extends Model
             ->join('edu_levels as l','l.id','=','e.edu_level_id')
             ->where('e.branch_id',$branch_id)
             ->where('e.emp_id',$emp_id)
-            ->selectRaw('e.id,emp.name as emp_name,s.id as school_id,s.name as school,l.id as level_id,l.name as edu_level,e.period,e.start_year,e.finish_year,e.major,e.diploma')
+            ->selectRaw('e.id,emp.id as emp_id,emp.name as emp_name,s.id as school_id,s.name as school,l.id as level_id,l.name as edu_level,e.period,e.start_year,e.finish_year,e.major,e.diploma')
             ->orderBy('e.id','DESC');
         $clone_query = clone $query;
         $count = $clone_query->count('e.id');
@@ -80,9 +80,11 @@ class Education //extends Model
 
     function details($id,$ss=null){
         $branch_id = $ss->branch_id;
-        $rows = DB::table('emp_educations')->selectRaw('id,emp_id,school_id,period,edu_level_id,start_year,finish_year,major,diploma')
-            ->where('branch_id',$branch_id)
-            ->where('id',$id)
+        $rows = DB::table('emp_educations as e')
+        ->join('employees as emp','emp.id','=','e.emp_id')
+        ->selectRaw('e.id,e.emp_id,emp.name as emp_name,e.school_id,e.period,e.edu_level_id,e.start_year,e.finish_year,e.major,e.diploma')
+            ->where('e.branch_id',$branch_id)
+            ->where('e.id',$id)
             ->take(1)->first();
         return $rows;
 

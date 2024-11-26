@@ -89,7 +89,6 @@ var EmployeeComponent = new (function () {
         // console.log(12, mThis.listContainer);
 
         mThis.initDropdownMenus(div);
-        mThis.initDropdownEducation(div);
         const sh_parent = mThis.listContainer.parentElement;
         sh_parent.style.height = window.innerHeight - 200 + "px";
         sh_parent.classList.add("overflow-y-auto");
@@ -117,7 +116,6 @@ var EmployeeComponent = new (function () {
     };
 
     this.initDropdownMenus = (listContainer) => {
-        // console.log(listContainer);
 
         const menuOptopns = {
             containerElement: listContainer,
@@ -163,7 +161,6 @@ var EmployeeComponent = new (function () {
                 },
             ],
             onShow: (me, container) => {
-                // console.log(123,me.getActiveMenus(container).set_rejoin);
                 const menu = me.getActiveMenus(container);
                 const status_id = container.dataset.statusid;
                 const emp_type_id = container.dataset.typeid;
@@ -253,19 +250,7 @@ var EmployeeComponent = new (function () {
         };
         new VSDropdownMenu(menuOptopns);
     };
-    this.initDropdownEducation = () => {
-        addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn-education-modify");
-            if (btn) {
-                mThis.editEducation(btn.dataset.id, btn);
-            }
-            btn = VSUtil.closestLimited(e.target, ".btn-education-delete");
-            if (btn) {
-                mThis.deleteEducation(btn.dataset.id, btn);
-            }
-            console.log(123, btn);
-        });
-    };
+ 
     this.renderEmployeeList = (div, data) => {
         data = data ?? [];
         if (!AuthManager) {
@@ -614,7 +599,6 @@ var EmployeeComponent = new (function () {
         this.profile_info_emp.innerHTML = html;
         // mThis.initDropdownMenusInfo(mThis.profile_info_emp);
         mThis.setActionsProfileInfo(mThis.profile_info_emp);
-        mThis.setActionsEducation(mThis.profile_card_center);
     };
 
     // this.initDropdownMenusInfo = (listContainer) => {
@@ -755,6 +739,7 @@ var EmployeeComponent = new (function () {
     };
 
     this.renderCardCenter = (employeeId) => {
+        
         let p = {
             emp_id: employeeId,
         };
@@ -801,7 +786,7 @@ var EmployeeComponent = new (function () {
                         <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-modify">
                             <i class="fa-regular fa-pen-to-square text-warning fs-10"></i>
                         </a>
-                        <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-delete">
+                        <a href="javascript:void(0)" data-id="${d.id}" data-empid="{employeeId}" class="btn-education-delete">
                             <i class="fa-solid fa-trash-can text-danger fs-10"></i>
                         </a>
                     </div>
@@ -827,6 +812,79 @@ var EmployeeComponent = new (function () {
                             },
                         };
                         AddEducation.show(op);
+                    });
+
+                document
+                    .querySelectorAll(".btn-education-modify")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const id = e.target
+                                .closest("a")
+                                .getAttribute("data-id");
+
+                            let op = {
+                                id: id,
+                                emp_id: employeeId,
+                                btn: e.target,
+                                title: "Edit",
+                                onClose: () => {
+                                    mThis.renderCardCenter.showPage();
+                                },
+                            };
+                            console.log("Edit operation:", op);
+                            AddEducation.show(op);
+                        });
+                    });
+                document
+                    .querySelectorAll(".btn-education-delete")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const id = e.target
+                                .closest("a")
+                                .getAttribute("data-id");
+                            const emp_id = e.target
+                                .closest("a")
+                                .getAttribute("data-empid");
+                            let op = {
+                                id: id,
+                                btn: e.target,
+                                onClose: () => {},
+                            };
+                            cv_interact.confirm(
+                                "Delete this Education?",
+                                {
+                                    title: "Delete Education",
+                                    context: "delete",
+                                    confirmButtonText: "Delete",
+                                },
+                                function (e) {
+                                    if (e) {
+                                        vsapi
+                                            .call(
+                                                `${main_view.base_url}/hr/education/delete`,
+                                                op,
+                                                false,
+                                                false,
+                                                false
+                                            )
+                                            .then((res) => {
+                                                if (res.status_code == 200) {
+                                                    cv_interact.success(
+                                                        "Deleted Successfully"
+                                                    );
+                                                    if (me && me.dataOptions && me.dataOptions.emp_id) {
+                                                        EmployeeComponent.renderCardCenter(me.dataOptions.emp_id);
+                                                    } else {
+                                                        console.error("Employee ID is undefined.");
+                                                    }
+                                                }
+                                            });
+                                    }
+                                }
+                            );
+                        });
                     });
 
                 // Add delete functionality
@@ -881,7 +939,6 @@ var EmployeeComponent = new (function () {
         let p = {
             emp_id: employeeId,
         };
-        console.log(123456789, p);
 
         vsapi
             .call(
@@ -893,7 +950,6 @@ var EmployeeComponent = new (function () {
             )
             .then((res) => {
                 let data = res.status_code === 200 ? res.data.data : [];
-                console.log(12345600000, data);
                 let html = `<div class="card pb-3" style="height:390px;">
             <div class="card-header text-white bg-primary-custom">
                 <h4>Experience</h4>
@@ -1006,7 +1062,6 @@ var EmployeeComponent = new (function () {
                                 mThis.EmployeeListView.showPage();
                             },
                         };
-                        console.log(op);
                         AddExperience.show(op);
                     });
             });
@@ -1014,7 +1069,6 @@ var EmployeeComponent = new (function () {
 
     this.renderCardTaxAllowance = (employeeId) => {
         let p = { emp_id: employeeId };
-        console.log(1122, p);
 
         vsapi
             .call(
@@ -1026,7 +1080,6 @@ var EmployeeComponent = new (function () {
             )
             .then((res) => {
                 let data = res.status_code === 200 ? res.data.data : [];
-                console.log(1212, data);
 
                 let html = `
                     <div class="card pb-3" style="height:390px;">
@@ -1087,7 +1140,6 @@ var EmployeeComponent = new (function () {
                                 mThis.EmployeeListView.showPage();
                             },
                         };
-                        console.log(op);
                         AddTaxAllowance.show(op);
                     });
 
@@ -1202,11 +1254,11 @@ var EmployeeComponent = new (function () {
                             </div>
                             <div class=" form-group col-md-4">
                                 <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
-                                <input  name="effective_date" class="rounded-5 form-control data-input" data-field="effective_date"></input>
+                                <input  name="effective_date" class="form-control data-input" data-field="effective_date"></input>
                             </div>
                             <div id="remarks" class="form-group col-md-5">
                                 <label class="form-label" vslang="titles.Remarks"></label>
-                                <input name="remarks" class="form-control  data-input" placeholder="" data-field="remarks">
+                                <input name="branch_remarks" class="form-control  data-input" placeholder="" data-field="remarks">
                             </div>
                         </div>
                         
@@ -1221,11 +1273,11 @@ var EmployeeComponent = new (function () {
                             </div>
                               <div class=" form-group col-md-4">
                                 <label class="form-label" vslang="titles.Start Date">Start Date</label>
-                                <input  name="start_date" class="rounded-5 form-control data-input" data-field="start_date"></input>
+                                <input  name="start_date" class="form-control data-input" data-field="start_date"></input>
                             </div>
                             <div id="remarks" class="form-group col-md-5">
                                 <label class="form-label" vslang="titles.Remarks"></label>
-                                <input name="remarks" class="form-control data-input" placeholder="" data-field="remarks" />
+                                <input name="position_remarks" class="form-control data-input" placeholder="" data-field="remarks" />
                             </div>
                         </div>
                     </div>
@@ -1234,22 +1286,34 @@ var EmployeeComponent = new (function () {
                     <div name="div_salary" class="p-2" style="display:none;">
                         <div class="row">
                             <div id="salary" class="form-group col-md-3">
-                                <label class="form-label" vslang="titles.Old Salary"></label>
-                                <input name="org_salary" class="form-control rounded-5 data-input" placeholder="" data-field="salary" />
+                                <label class="form-label" vslang="titles.Original Salary"></label>
+                                <input name="org_salary" class="form-control  data-input" placeholder="" data-field="salary" />
                             </div>
                             <div id="salary" class="form-group col-md-4">
                                 <label class="form-label" vslang="titles.New Salary"></label>
-                                <input name="new_salary" class="form-control rounded-5 data-input" placeholder="" data-field="salary" />
+                                <input name="new_salary" class="form-control  data-input" placeholder="" data-field="new_salary" />
                             </div>
                            
                             <div id="remarks" class="form-group col-md-5">
                                 <label class="form-label" vslang="titles.Remarks"></label>
-                                <input name="remarks" class="form-control rounded-5 data-input" placeholder="" data-field="remarks" />
+                                <input name="salary_remarks" class="form-control  data-input" placeholder="" data-field="remarks" />
                             </div>
                         </div>
                     </div>
                 `;
             },
+            // overrideMethod:{
+            //       "getData":(me,divModal) =>{
+            //           return {
+            //             'emp_id':me.dataOptions.id,
+            //             "change_branch":{'branch_id':me.controls.branch.value,'remarks':me.controls.branch_remarks.value,'effective_date':me.controls.effective_date.value},
+            //             "change_position":{'position_id':me.controls.position.value,'remarks':me.controls.position_remarks.value,'start_date':me.controls.start_date.value},
+            //             "change_salary":{'new_salary':me.controls.position.value,'remarks':me.controls.salary_remarks.value}
+
+
+            //           };
+            //       }
+            // },
             contentCreated: (me) => {
                 DateTimePicker.init(me.controls.effective_date);
                 DateTimePicker.init(me.controls.start_date);
@@ -1268,8 +1332,7 @@ var EmployeeComponent = new (function () {
                 me.setEvent(me.divModal);
             },
 
-            configSelect: [
-            },
+          
             
 
              configSelect:[
@@ -1300,30 +1363,36 @@ var EmployeeComponent = new (function () {
                     click:(me, btn,divModal)=>{
                          let p = me.getData();
                          p.emp_id = op.id;
-
+                         console.log(321,p);
+                         let d = {};
+                         d.emp_id = p.emp_id;
                          let change_branch = {},change_position = {}, change_salary = {};
                          
                          if(me.controls.change_branch.checked){
-                            change_branch.brach_id = p.branch_id;
-                            change_branch.remarks = p.remarks;
+                            change_branch.branch_id = p.branch_id;
+                            change_branch.remarks = me.controls.branch_remarks.value;
                             change_branch.effective_date = p.effective_date;
                          }
                          if(me.controls.change_position.checked){
                             change_position.position_id = p.position_id;
-                            change_position.remarks = p.remarks;
+                            change_position.remarks = me.controls.position_remarks.value;
                             change_position.start_date = p.start_date;
                          }
                          if(me.controls.change_salary.checked){
-                            change_salary.new_salary = p.salary;
-                            change_salary.remarks = p.remarks;
+                            change_salary.new_salary = p.new_salary;
+                            change_salary.remarks = me.controls.salary_remarks.value;
+                            change_salary.org_salary = p.salary;
+                            change_salary.org_position_id = p.position_id;
+                            change_salary.new_position_id = p.position_id;
+
+
                          }
-                         let d = {};
-                         d.emp_id = p.emp_id;
-                         d.promotion_date = p.effective_date;
+                         
                          d.change_branch = change_branch;
                          d.change_position = change_position;
                          d.change_salary = change_salary;
-
+                         console.log(123,d);
+                         
                          vsapi.call(`${main_view.base_url}/hr/employee/promote-staff`,d,btn,false).then(res =>{
                               if(res.status_code ==200){
                                 me.modal.hide(true, p);
@@ -1355,7 +1424,7 @@ var EmployeeComponent = new (function () {
                 LocaleManager.translateZone(me.divModal);
                 me.controls.branch.value = data.employee.branch_id;
                 me.controls.position.value = data.employee.position_id; 
-                me.controls.org_salary.value = data.employee.salary || null; 
+                me.controls.org_salary.value = data.employee.salary; 
 
             
               
@@ -1364,7 +1433,6 @@ var EmployeeComponent = new (function () {
           
         });
         mThis.MovementDialog.show(op);
-    };
     };
 
     this.setResign = (id,menuLink)=>{
@@ -1597,9 +1665,7 @@ var EmployeeComponent = new (function () {
 
     this.setTerminated = (id, lnk) => {
         let tr = lnk.closest("tr");
-        console.log(1, tr);
         let status_id = Validator.properCase(tr ? tr.dataset.status_id : "");
-        console.log(123, status_id);
 
         let inputOptions = {
             title: "Set Employee Terminate",
@@ -1623,7 +1689,6 @@ var EmployeeComponent = new (function () {
                     id: id,
                     status_id: d.value,
                 };
-                console.log(123, p);
 
                 vsapi
                     .call(`${mThis.base_url}/hr/employee/update-status`, p)
@@ -1688,7 +1753,6 @@ var EmployeeComponent = new (function () {
                     click: (me, btn, divModal) => {
                         let p = me.getData();
                         //  p.emp_id = op.id;
-                        console.log(111, p);
                         vsapi
                             .call(
                                 `${main_view.base_url}/hr/employee/set-rejoin-status`,
@@ -1737,76 +1801,6 @@ var EmployeeComponent = new (function () {
         });
         mThis.RejoinDialog.show(op);
     };
-
-    this.setActionsEducation = (div_exp) => {
-        div_exp.addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn-education-modify");
-            if (btn) {
-                mThis.editEducation(btn.dataset.id, btn);
-                return;
-            }
-            btn = VSUtil.closestLimited(e.target, ".btn-education-delete");
-            if (btn) {
-                mThis.deleteEducation(btn.dataset.id, btn);
-                return;
-            }
-        });
-    };
-    this.editEducation = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.EmployeeListView.showPage();
-            },
-        };
-        AddEducation.show(op);
-    };
-    this.deleteEducation = (id, menuLink) => {
-        let emp_id = menuLink.closest(".experience_item").dataset.empId; // Get emp_id if needed
-        let op = { id: id, emp_id: emp_id };
-
-        const div_exp = menuLink.closest(".experience_item");
-
-        cv_interact.confirm(
-            "Are you sure you want to delete this Education record?",
-            {
-                title: "Delete Education",
-                context: "delete",
-                confirmButtonText: "Delete",
-            },
-            function (e) {
-                if (e) {
-                    vsapi
-                        .call(
-                            `${main_view.base_url}/hr/education/delete`,
-                            op, // Ensure correct payload
-                            null,
-                            false,
-                            false
-                        )
-                        .then((res) => {
-                            if (res.status_code === 200) {
-                                if (div_exp) div_exp.remove();
-                                cv_interact.success("Deleted Successfully");
-                            } else {
-                                cv_interact.error(
-                                    res.message ||
-                                        "Failed to delete. Try again."
-                                );
-                            }
-                        })
-                        .catch((err) => {
-                            console.error("API Error:", err);
-                            cv_interact.error(
-                                "An error occurred. Please try again."
-                            );
-                        });
-                }
-            }
-        );
-    };
-
     this.editEmployee = (id, menuLink) => {
         let op = {
             id: id,
@@ -1913,7 +1907,6 @@ const AddEducation = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        console.log(666,op);
         
         dialog =
             dialog ||
@@ -1971,8 +1964,9 @@ const AddEducation = (() => {
                         cssClass: "btn btn-primary",
                         click: (me) => {
                             let p = me.getData();
-                            console.log(1011, me.dataOptions.emp_id);
-
+                            p.emp_id = me.dataOptions.emp_id;
+                            console.log(11,p);
+                            
                             vsapi
                                 .call(
                                     [
@@ -1986,9 +1980,7 @@ const AddEducation = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
-                                        EmployeeComponent.renderCardCenter(
-                                            me.dataOptions.emp_id
-                                        );
+                                       
 
                                         EmployeeComponent.renderCardCenter(
                                             me.dataOptions.emp_id
