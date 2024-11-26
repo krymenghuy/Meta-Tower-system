@@ -38,7 +38,6 @@ var WorkshiftComponent = new (function () {
                 btn: e.target,
                 onClose: () => {
                     cv_interact.success("Add Shift Detail successfully");
-                    // mThis.WorkshiftListView.showPage();
                 },
             };
             ShiftDetailDialog.show(op);
@@ -48,7 +47,7 @@ var WorkshiftComponent = new (function () {
             .forEach((el) => {
                 el.onchange = (e) => {
                     e.preventDefault();
-                    mThis.WorkshiftListView.showPage(mThis.getDataFormFilter());
+                    mThis.WorkshiftListView.showPage(mThis.getFilterData());
                 };
             });
         // const pr_tbl = mThis.WorkshiftListView.getListContainer();
@@ -66,7 +65,7 @@ var WorkshiftComponent = new (function () {
             vsapi
                 .call(
                     `${main_view.base_url}/hr/shift-details/list-paginate`,
-                    mThis.getDataFormFilter(),
+                    mThis.getFilterData(),
                     null,
                     null
                 )
@@ -76,14 +75,14 @@ var WorkshiftComponent = new (function () {
 
                     mThis.renderWorkShift(list_container, d);
                 });
-            console.log(1111, mThis.getDataFormFilter());
+            console.log(1111, mThis.getFilterData());
         };
     });
     mThis.elSearch.addEventListener("keyup", (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
             if (mThis.WorkshiftListView) {
-                mThis.WorkshiftListView.showPage(mThis.getDataFormFilter());
+                mThis.WorkshiftListView.showPage(mThis.getFilterData());
             } else {
                 console.error("shift-details is not defined");
             }
@@ -159,7 +158,7 @@ var WorkshiftComponent = new (function () {
     };
 
 
-    this.getDataFormFilter = () => {
+    this.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
@@ -199,16 +198,16 @@ var WorkshiftComponent = new (function () {
                     name: "delete_shift-details",
                 },
             ],
-            onClick: (menulink, id, name) => {
+            onClick: (menuLink, id, name) => {
                 switch (name) {
                     case "edit_shift-details": {
                         console.log(98787653, id);
 
-                        mThis.editWorkShift(id, menulink);
+                        mThis.editWorkShift(id, menuLink);
                         break;
                     }
                     case "delete_shift-details": {
-                        mThis.deleteWorkShift(id, menulink);
+                        mThis.deleteWorkShift(id, menuLink);
                         break;
                     }
                     default: {
@@ -220,20 +219,20 @@ var WorkshiftComponent = new (function () {
         new VSDropdownMenu(menuOptopns);
     };
 
-    this.editWorkShift = (id, menulink) => {
+    this.editWorkShift = (id, menuLink) => {
         let op = {
             id: id,
-            btn: menulink,
+            btn: menuLink,
             onClose: () => {
                 mThis.WorkshiftListView.showPage();
             },
         };
         WorkShiftDialog.show(op);
     };
-    this.deleteWorkShift = (id, menulink) => {
+    this.deleteWorkShift = (id, menuLink) => {
         let op = {
             id: id,
-            btn: menulink,
+            btn: menuLink,
             onClose: () => {
                 mThis.WorkshiftListView.showPage();
             },

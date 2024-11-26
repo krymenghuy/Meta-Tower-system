@@ -70,7 +70,7 @@ var WorkShiftListComponent = new (function () {
             el.onchange = (e) => {
                 e.preventDefault();
 
-                mThis.WorkShiftListsView.showPage(mThis.getDataFormFilter());
+                mThis.WorkShiftListsView.showPage(mThis.getFilterData());
             };
         });
         mThis.btnAdd.onclick = function (e) {
@@ -94,7 +94,7 @@ var WorkShiftListComponent = new (function () {
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
                 if (mThis.WorkShiftListsView) {
-                    mThis.WorkShiftListsView.showPage(mThis.getDataFormFilter());
+                    mThis.WorkShiftListsView.showPage(mThis.getFilterData());
                 } else {
                     console.error("Work Shift is not defined");
                 }
@@ -103,7 +103,7 @@ var WorkShiftListComponent = new (function () {
         mThis.initDropdownMenus(listContainer);
         mThis.initAlready = true;
     };
-    this.getDataFormFilter = () => {
+    this.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
         };
@@ -217,7 +217,7 @@ var WorkShiftListComponent = new (function () {
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
         mThis.WorkShiftListsView.showPage(
-            mThis.getDataFormFilter(),
+            mThis.getFilterData(),
             null,
             () => {
                 mThis.jm.siblings().hide();
