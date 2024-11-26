@@ -1,9 +1,12 @@
 <div id="_main_dashboardComponent" style="display:none;padding:10px 0 0; overflow:auto;">
     <div class="dashboard_top" id="_dashboard_top">
-
     </div>
+
     <div class="dashboard_center" id="_dashboard_center">
-    <div class="center_left">
+    </div>
+
+    <div class="dashboard_bottom" id="_dashboard_bottom">
+        <div class="center_left">
             <div class="leave_title">
                 <h5 class="leave_title_text">On Leave Today</h5>
             </div>
@@ -124,25 +127,10 @@
                 </div>
             </div>
         </div>
-        <div class="center_mid">
-            <h5>Top Staffs</h5>
-            <div class="top_staffs">
-                <div class="top2">
-                    <img src="assets/images/logo/logo_add.png" alt="">
-                    <span>Chanrith</span>
-                </div>
-                <div class="top1">
-                    <img src="assets/images/logo/logo_add.png" alt="">
-                    <span>Meng Chhorng</span>
-                </div>
-                <div class="top3">
-                    <img src="assets/images/logo/logo_add.png" alt="">
-                    <span>Darith</span>
-                </div>
-            </div>
-            <canvas id="myChart"></canvas>
-        </div>
-        <div class="center_right">
+
+
+
+        <div class="bottom_right">
             <h5>Attendance Today</h5>
             <div class="chart-container">
                 <canvas id="attendanceChart"></canvas>
@@ -160,221 +148,8 @@
         </div>
 
     </div>
-    <div class="dashboard_bottom" id="_dashboard_bottom">
-    <div class="em_departement">
-            <h3 class="d-flex align-items-start">Employee By Department</h3>
-            <table class="table  bg-white rounded-4">
-                <thead>
-                    <tr>
-                        <th>Role</th>
-                        <th>Finance</th>
-                        <th>Marketing</th>
-                        <th>HR</th>
-                        <th>Sales</th>
-                        <th>Account</th>
-                        <th>IT</th>
 
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Director</td>
-                        <td>10</td>
-                        <td>12</td>
-                        <td>10</td>
-                        <td>10</td>
-                        <td>10</td>
-                        <td>10</td>
-                    </tr>
-                    <tr>
-                        <td>Manager</td>
-                        <td>10</td>
-                        <td>12</td>
-                        <td>10</td>
-                        <td>10</td>
-                        <td>10</td>
-                        <td>10</td>
-                    </tr>
-                    <tr>
-                        <td>Assistant Manager</td>
-                        <td>10</td>
-                        <td>12</td>
-                        <td>10</td>
-                        <td>10</td>
-                        <td>10</td>
-                        <td>10</td>
-                    </tr>
-                    <tr>
-                        <td>Assistant Manager</td>
-                        <td>10</td>
-                        <td>12</td>
-                        <td>10</td>
-                        <td>10</td>
-                        <td>10</td>
-                        <td>10</td>
-                    </tr>
-                    <tr>
-                        <td>Assistant Manager</td>
-                        <td>10</td>
-                        <td>12</td>
-                        <td>10</td>
-                        <td>10</td>
-                        <td>10</td>
-                        <td>10</td>
-                    </tr>
-
-                </tbody>
-            </table>
-
-        </div>
-        <div class="staff_wallet">
-            <h3>Total Staff Wallet</h3>
-            <canvas id="staffWalletChart"></canvas>
-            <div class="wallet_text">
-                <span class="percentage">85%</span>
-            </div>
-            <p>01 October 2024</p>
-        </div>
-        <div class="staff_benefit">
-            <h3>Staff Benefits</h3>
-            <div class="benefit">
-                <div class="benefit-circle" style="background-color: #cdb4db;">
-                    <span>Bonus $5000</span>
-                </div>
-                <div class="benefit-info">
-                    <span>Last Update Aug 25</span>
-                </div>
-            </div>
-            <div class="benefit">
-                <div class="benefit-circle" style="background-color: #bde0fe;">
-                    <span>Seniority $10000</span>
-                </div>
-                <div class="benefit-info">
-                    <span>Last Update Aug 25</span>
-                </div>
-            </div>
-            <div class="benefit">
-                <div class="benefit-circle" style="background-color: #ffccd5;">
-                    <span>Other $1000</span>
-                </div>
-                <div class="benefit-info">
-                    <span>Last Update Aug 25</span>
-                </div>
-            </div>
-        </div>
-    </div>
 </div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    var ctx = document.getElementById('myChart').getContext('2d');
-
-    // Add shadow to the bars
-    Chart.defaults.plugins.barShadow = {
-        beforeDatasetsDraw: function(chart) {
-            const ctx = chart.ctx;
-            chart.data.datasets.forEach(function(dataset, i) {
-                const meta = chart.getDatasetMeta(i);
-                if (!meta.hidden) {
-                    meta.data.forEach(function(element) {
-                        ctx.save();
-                        ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
-                        ctx.shadowBlur = 10;
-                        ctx.shadowOffsetX = 5;
-                        ctx.shadowOffsetY = 5;
-                        ctx.fillRect(element.x - element.width / 2, element.y, element.width,
-                            chart.scales.y.bottom - element.y);
-                        ctx.restore();
-                    });
-                }
-            });
-        }
-    };
-
-    // var myChart = new Chart(ctx, {
-    //     type: 'bar',
-    //     data: {
-    //         labels: ['January', 'February', 'March', 'April', 'May', 'June'],
-    //         datasets: [{
-    //                 label: 'MengChhorng',
-    //                 data: [1400, 700, 100, 1000, 1100, 800],
-    //                 backgroundColor: 'rgba(255, 99, 132, 0.6)',
-    //                 borderColor: 'rgba(255, 99, 132, 1)',
-    //                 borderWidth: 1
-    //             },
-    //             {
-    //                 label: 'Darith',
-    //                 data: [600, 900, 300, 1300, 500, 1000],
-    //                 backgroundColor: 'rgba(54, 162, 235, 0.6)',
-    //                 borderColor: 'rgba(54, 162, 235, 1)',
-    //                 borderWidth: 1
-    //             },
-    //             {
-    //                 label: 'Channrith',
-    //                 data: [1200, 900, 1500, 760, 1100, 1600],
-    //                 backgroundColor: 'rgba(75, 192, 192, 0.6)',
-    //                 borderColor: 'rgba(75, 192, 192, 1)',
-    //                 borderWidth: 1
-    //             }
-    //         ]
-    //     },
-    //     options: {
-    //         plugins: {
-    //             barShadow: {}
-    //         },
-    //         scales: {
-    //             y: {
-    //                 beginAtZero: true
-    //             }
-    //         }
-    //     }
-    // });
-    var ctx = document.getElementById('attendanceChart').getContext('2d');
-    var attendanceChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Attendance', 'Not Reported'],
-            datasets: [{
-                data: [90, 10],
-                backgroundColor: ['#3C54A2', '#EAEAEA'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            cutout: '70%',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            }
-        }
-    });
-    var ctx = document.getElementById('staffWalletChart').getContext('2d');
-    var staffWalletChart = new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Used', 'Available'],
-            datasets: [{
-                data: [85, 15],
-                backgroundColor: ['#d4a373', '#eaeaea'],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            cutout: '70%', // Cutout size to match the style
-            plugins: {
-                legend: {
-                    display: false // No legend
-                }
-            }
-        }
-    });
-</script>
-
 
 <style>
     #_main_dashboardComponent {
@@ -413,7 +188,7 @@
         height: 100%;
     }
 
-    /* Top Section (Title and Ellipsis) */
+
     .total_top {
         display: flex;
         justify-content: space-between;
@@ -422,7 +197,7 @@
     }
 
     .total_title {
-        font-size: 1.2rem;
+        font-size: 1rem;
         font-weight: bold;
     }
 
@@ -454,6 +229,7 @@
 
     .dashboard_center {
         display: flex;
+        justify-content: center;
         width: 100%;
         padding: 20px;
         gap: 1rem;
@@ -546,7 +322,7 @@
         border-radius: 20px;
     }
 
-    .center_right {
+    .bottom_right {
         width: 24%;
         height: 350px;
         background-color: #ffffff;
@@ -575,40 +351,12 @@
         text-align: center;
     }
 
-    .top1 {
-        margin-bottom: 20%;
-    }
-
-    .top2,
-    .top3 {
-        margin-top: 23%;
-    }
-
-    .top1 img,
-    .top2 img,
-    .top3 img {
-        width: 100px;
-        height: 100px;
-        border-radius: 50% 50% 0% 50%;
-        object-fit: cover;
-    }
-
-    .top1 span,
-    .top2 span,
-    .top3 span {
-        width: 100%;
-        background-color: rgb(108, 202, 227);
-        color: white;
-        padding: 5px;
-        border-radius: 20px 0px 20px 0px;
-    }
-
     #myChart {
         max-width: 600px;
         max-height: 400px;
     }
 
-    .center_right {
+    .bottom_right {
         background-color: #F0F7FF;
         border-radius: 15px;
         padding: 20px;
@@ -681,10 +429,10 @@
 
     }
 
-    .em_departement{
-        width: 48%;
+    .em_departement {
+        width: 100%;
         display: flex;
-        /* align-items: center; */
+        justify-content:center;
         flex-direction: column;
         height: 350px;
         background-color: #E1ECF7;
@@ -694,8 +442,8 @@
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
 
     }
-    .staff_wallet
-    {
+
+    .staff_wallet {
         width: 24%;
         display: flex;
         align-items: center;
@@ -709,8 +457,8 @@
 
         flex: 1;
     }
-    .staff_benefit
-    {
+
+    .staff_benefit {
         width: 24%;
         display: flex;
         /* align-items: center; */
