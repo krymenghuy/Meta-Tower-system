@@ -9,6 +9,8 @@ var DashboardComponent = new (function () {
     this.dashboard_top = mThis.self.querySelector('#_dashboard_top');
     this.dashboard_center = mThis.self.querySelector('#_dashboard_center');
     this.dashboard_Bottom  = mThis.self.querySelector('#_dashboard_bottom');
+    this.dashboard_Bottom_left = mThis.self.querySelector('#_dashboard_bottom_left');
+    this.dashboard_Bottom_right = mThis.self.querySelector('#_dashboard_bottom_right');
 
 
     // Initialize component
@@ -26,19 +28,19 @@ var DashboardComponent = new (function () {
         let empTypesInternship = data.emp_types.find((type) => type.name === "Internship") || { count: 0 };
 
         let html = `
-        <div class="employees">
-            <div class="total_employee">
+        <div class="employees text-black-50" style="background-color: #7DE5ED; ">
+            <div class="total_employee" >
                 <div class="total_top">
                     <span class="total_title">Departments</span>
                     <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
                     <span class="total_number">${data.count_department}</span>
-                   <i class="fa-solid fa-building-user text-success" style="font-size: 1.5rem;"></i>
+                   <i class="fa-solid fa-building-user text-black-50" style="font-size: 1.5rem;"></i>
                 </div>
             </div>
         </div>
-         <div class="employees">
+         <div class="employees text-black-50" style="background-color: #82ACFF;">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Positions</span>
@@ -46,36 +48,36 @@ var DashboardComponent = new (function () {
                 </div>
                 <div class="total_bottom">
                     <span class="total_number">${data.count_position}</span>
-                   <i class="fa-solid fa-building-user text-success" style="font-size: 1.5rem;"></i>
+                   <i class="fa-solid fa-building-user text-black-50" style="font-size: 1.5rem;"></i>
                 </div>
             </div>
         </div>
-        <div class="employees">
+        <div class="employees text-black-50" style="background-color: #00FF9C">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Active Employees</span>
                     <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
-                    <span class="total_number text-success">${data.active}</span>
-                    <i class="fa fa-users text-success" style="font-size: 1.5rem;"></i>
+                    <span class="total_number">${data.active}</span>
+                    <i class="fa fa-users text-black-50" style="font-size: 1.5rem;"></i>
                 </div>
             </div>
         </div>
-        <div class="employees">
+        <div class="employees text-black-50" style="background-color: #FF8A8A">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Resigned Staff</span>
                     <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
-                    <span class="total_number text-danger">${data.resigned}</span>
-                    <i class="fa fa-users-slash text-danger" style="font-size: 1.5rem;"></i>
+                    <span class="total_number ">${data.resigned}</span>
+                    <i class="fa fa-users-slash text-black-50" style="font-size: 1.5rem;"></i>
                 </div>
             </div>
         </div>
 
-         <div class="employees">
+         <div class="employees text-black-50" style="background-color: #BBE9FF">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Internship</span>
@@ -83,11 +85,11 @@ var DashboardComponent = new (function () {
                 </div>
                 <div class="total_bottom">
                     <span class="total_number">${empTypesInternship.count}</span>
-                    <i class="fa fa-users text-success" style="font-size: 1.5rem;"></i>
+                    <i class="fa fa-users text-black-50" style="font-size: 1.5rem;"></i>
                 </div>
             </div>
         </div>
-        <div class="employees">
+        <div class="employees text-black-50" style="background-color: #C4D7FF">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">In Probation</span>
@@ -95,32 +97,32 @@ var DashboardComponent = new (function () {
                 </div>
                 <div class="total_bottom">
                     <span class="total_number">${empTypesInProbation.count}</span>
-                    <i class="fa fa-users text-success" style="font-size: 1.5rem;"></i>
+                    <i class="fa fa-users text-black-50" style="font-size: 1.5rem;"></i>
                 </div>
             </div>
         </div>
 
-         <div class="employees">
+         <div class="employees text-black-50" style="background-color: #B6FFA1">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">New Employees</span>
                     <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
-                    <span class="total_number text-success">${data.new_employees}</span>
-                    <i class="fa fa-users text-success" style="font-size: 1.5rem;"></i>
+                    <span class="total_number">${data.new_employees}</span>
+                    <i class="fa fa-users text-black-50" style="font-size: 1.5rem;"></i>
                 </div>
             </div>
         </div>
-         <div class="employees">
+         <div class="employees text-black-50" style="background-color: #FF2929">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Terminated</span>
                     <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
-                    <span class="total_number text-danger">${data.terminated}</span>
-                    <i class="fa fa-users-slash text-danger" style="font-size: 1.5rem;"></i>
+                    <span class="total_number ">${data.terminated}</span>
+                    <i class="fa fa-users-slash text-black-50" style="font-size: 1.5rem;"></i>
                 </div>
             </div>
         </div>
@@ -137,7 +139,7 @@ var DashboardComponent = new (function () {
           .map(department => `
             <tr>
               <td>${department.department_name}</td>
-              <td>${department.position_title}</td>
+              <td >${department.position_title}</td>
               <td>${department.staff_count}</td>
               <td>${department.internship_count}</td>
               <td>${department.in_probation_count}</td>
@@ -149,7 +151,7 @@ var DashboardComponent = new (function () {
 
         let html = `
           <div class="em_departement">
-            <h3 class="d-flex align-items-start">Employee By Department</h3>
+            <h3 class="d-flex align-items-start text-primary" style="font-size: 1.2rem;desplay: flex; justify-content: center;">𝔼𝕞𝕡𝕝𝕠𝕪𝕖𝕖 𝔹𝕪 𝔻𝕖𝕡𝕒𝕣𝕥𝕞𝕖𝕟𝕥</h3>
             <table class="table bg-white rounded-4">
               <thead>
                 <tr>
@@ -171,29 +173,137 @@ var DashboardComponent = new (function () {
       };
 
 
+      this.renderDashboardBottomLeft = (data) => {
+        if (!data || !data.data) return;
+
+
+        let rowsHtml = data.data
+          .map(data => `
+            <tr>
+            <td><img src="${data.image_url}" alt="Profile" style="width: 50px; height: 50px; border-radius: 50%;"></td>
+              <td class="pt-4">${data.emp_name}</td>
+              <td class="align-items-center m-3 " style="background-color: #3793C7;
+                                        display: flex;
+                                        justify-content: center;
+                                        align-items: center;
+                                        text-align: center;
+                                        outline: none;
+                                        color: white;
+                                        font-size: 12px;
+                                        border-radius: 20px;">${data.emp_position}
+                </td>
+              <td class="pt-4">${data.remarks}</td>
+
+            </tr>
+          `)
+          .join("");
+
+
+        let html = `
+
+            <h3 class="d-flex align-items-start text-danger" style="font-size: 1.2rem;desplay: flex; justify-content: center;"> 𝕆𝕟 𝕃𝕖𝕒𝕧𝕖 𝕋𝕠𝕕𝕒𝕪 </h3>
+            <table class="table bg-white rounded-4">
+              <thead>
+                <tr>
+                  <th>Profile</th>
+                  <th>Employee</th>
+                  <th >Position</th>
+                  <th>Reason</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${rowsHtml}
+              </tbody>
+            </table>
+
+        `;
+        mThis.dashboard_Bottom_left.innerHTML = html;
+    };
+
+    this.renderDashboardBottomRight = (data) => {
+        if (!data) return;
+
+        let html = `
+            <h3 class="d-flex align-items-start text-primary" style="font-size: 1.2rem;">𝔹𝕖𝕟𝕖𝕗𝕚𝕥𝕤</h3>
+            <table class="table bg-white rounded-4">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Amount</th>
+                        <th>Last Updated</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Bonus</td>
+                        <td>${data.total_bonuses}</td>
+                        <td>${data.lud_bonuses || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Seniority</td>
+                        <td>${data.total_seniority}</td>
+                        <td>${data.lud_seniority || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Life Insurance</td>
+                        <td>${data.total_life_insurance}</td>
+                        <td>${data.lud_life_insurance || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Other</td>
+                        <td>${data.total_other}</td>
+                        <td>${data.lud_other || 'N/A'}</td>
+                    </tr>
+                    <tr>
+                        <td>Total</td>
+                        <td class="text-success">${data.total_amount}</td>
+
+                    </tr>
+                </tbody>
+            </table>
+        `;
+
+        mThis.dashboard_Bottom_right.innerHTML = html;
+    };
+
+
+
+
     this.loadCards = (onFinish)=>{
         let p={};
 
         vsapi.call(`${main_view.base_url}/hr/dashboard/count-employees`,p, null,false,false).then(res => {
             let data = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data) : {};
             // console.log(123,data);
-
             mThis.renderDashboardTop(data);
-
-
             onFinish();
           });
     }
+
     this.loadCardsCenter = (onFinish)=>{
         let p={};
-
         vsapi.call(`${main_view.base_url}/hr/dashboard/get-departments`,p, null,false,false).then(res => {
             let data = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data) : {};
-            // console.log(123,data);
-
             mThis.renderDashboardCenter(data);
+            onFinish();
+          });
+    }
 
+    this.loadCardsBottomLeft = (onFinish)=>{
+        let p={};
 
+        vsapi.call(`${main_view.base_url}/hr/dashboard/get-levels`,p, null,false,false).then(res => {
+            let data = (res.status_code === 200) ?res.data : {};
+            mThis.renderDashboardBottomLeft(data);
+            onFinish();
+          });
+    }
+
+    this.loadCardsBottomRight = (onFinish)=>{
+        let p={};
+        vsapi.call(`${main_view.base_url}/hr/dashboard/get-benefits`,p, null,false,false).then(res => {
+            let data = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data) : {};
+            mThis.renderDashboardBottomRight(data);
             onFinish();
           });
     }
@@ -201,6 +311,8 @@ var DashboardComponent = new (function () {
 
         mThis.loadCards(onFinish);
         mThis.loadCardsCenter(onFinish);
+        mThis.loadCardsBottomLeft(onFinish);
+        mThis.loadCardsBottomRight(onFinish);
 
     }
     this.setDashboardScroll = ()=>{
