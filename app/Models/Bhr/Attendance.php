@@ -8,7 +8,7 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class Attendance
 {
-    
+
     protected $id = null;
     protected $userInfo = null;
 
@@ -26,13 +26,13 @@ class Attendance
 
         // Validation rules
         $v_rule = [
-                'id' => '0|identity=1',
-                'emp_id' => '1||exists=employees.id',
-                'check_in_time' => '0|time',
-                'check_out_time' => '0|time',
-                'status_id' => '0|enum|DEFAULT=Present',
-                'remark' => '0|string',
-            ];
+            'id' => '0|identity=1',
+            'emp_id' => '1||exists=employees.id',
+            'check_in_time' => '0|time',
+            'check_out_time' => '0|time',
+            'status_id' => '0|enum|DEFAULT=Present',
+            'remark' => '0|string',
+        ];
         $remark = [':', "'", '-', '.', '?', '$', '\'', '@'];
         $res = validateObject($arr, $v_rule, 1, ["remark" => $remark], $ss->lang, 0, null);
         if ($res->error) {
@@ -47,9 +47,9 @@ class Attendance
 
         // Check if attendance already exists for the employee on the same date
         $existingAttendance = DB::table('attendances')
-        ->where('emp_id', $emp_id)
-        ->whereDate('attendance_date', $attendance_date)
-        ->first();
+            ->where('emp_id', $emp_id)
+            ->whereDate('attendance_date', $attendance_date)
+            ->first();
 
         if ($existingAttendance) {
             if (!$id || $id != $existingAttendance->id) {
@@ -102,41 +102,36 @@ class Attendance
         $search_id = $d->id ?? null;
         $search_status_id = $d->status_id ?? null;
         $attendance_date = $d->attendance_date ?? date('Y-m-d');
-
-        // Assuming 'Urgent Leave' has a specific leave_type_id (replace with actual ID if known)
         $UNINFORM_LEAVE_TYPE_ID = 8;
-
-        // Format the attendance date
         $attendance_date = date('Y-m-d', strtotime($attendance_date));
-
-        // Build the query
         $query = DB::table('attendances as a')
             ->join('employees as e', 'e.id', '=', 'a.emp_id')
             ->leftJoin('leaves as l', function ($join) use ($attendance_date) {
                 $join->on('l.emp_id', '=', 'e.id')
-                    ->where('l.status_id', '=', 2) // Assuming 2 represents an approved leave
+                    ->whereIn('l.status_id', [2, 3]) // Include Approved (2) and Rejected (3) statuses
                     ->whereDate('l.start_date', '<=', $attendance_date)
                     ->whereDate('l.end_date', '>=', $attendance_date);
             })
             ->selectRaw(
                 '
-            a.id,
-            e.id as emp_id,
-            e.photo_file_name as emp_photo,
-            e.name,
-            e.name_kh,
-            e.email as email,
-            a.emp_id,
-            a.check_in_time,
-            a.check_out_time,
-            a.attendance_date,
-            a.remark,
-            CASE 
-                WHEN l.id IS NOT NULL AND l.leave_type_id = ? THEN "Absent"
-                WHEN l.id IS NOT NULL THEN "Permission"
-                ELSE a.status_id
-            END as status_id
-            ',
+        a.id,
+        e.id as emp_id,
+        e.photo_file_name as emp_photo,
+        e.name,
+        e.name_kh,
+        e.email as email,
+        a.emp_id,
+        a.check_in_time,
+        a.check_out_time,
+        a.attendance_date,
+        a.remark,
+        CASE 
+            WHEN l.id IS NOT NULL AND l.status_id = 3 THEN "Absent" -- Rejected leaves are considered Absent
+            WHEN l.id IS NOT NULL AND l.leave_type_id = ? THEN "Absent"
+            WHEN l.id IS NOT NULL THEN "Permission"
+            ELSE a.status_id
+        END as status_id
+        ',
                 [$UNINFORM_LEAVE_TYPE_ID]
             );
 
@@ -154,9 +149,9 @@ class Attendance
             $search_value = escape_like_str($search_value);
             $query->where(function ($q) use ($search_value) {
                 $q->where('e.name', 'LIKE', "%{$search_value}%")
-                ->orWhere('a.remark', 'LIKE', "%{$search_value}%")
-                ->orWhere('e.email', 'LIKE', "%{$search_value}%")
-                ->orWhere('a.attendance_date', 'LIKE', "%{$search_value}%");
+                    ->orWhere('a.remark', 'LIKE', "%{$search_value}%")
+                    ->orWhere('e.email', 'LIKE', "%{$search_value}%")
+                    ->orWhere('a.attendance_date', 'LIKE', "%{$search_value}%");
             });
         }
 
@@ -188,6 +183,7 @@ class Attendance
         return $rows;
     }
 
+
     function attendanceList($filter = [], $ss = null)
     {
         $branch_id = $ss->branch_id;
@@ -209,8 +205,8 @@ class Attendance
             ->where('a.attendance_date', '<=', date('Y-m-d'))
             ->selectRaw('a.id, emp.id as employee_id, emp.gender, emp.name, emp.name_kh, emp.email, emp.code, emp.date_of_birth as dob, a.attendance_date, a.check_in_time, a.check_out_time, a.remark, a.status_id, e.photo_file_name as emp_photo')
             ->orderBy('emp.name', 'asc');
-            // ->selectRaw('a.id, emp.id as employee_id, emp.gender, emp.name, emp.name_kh, emp.email, emp.code, emp.date_of_birth as dob, a.attendance_date, a.check_in_time, a.check_out_time, a.remark, a.status_id, e.photo_file_name as emp_photo')
-            // ->distinct();
+        // ->selectRaw('a.id, emp.id as employee_id, emp.gender, emp.name, emp.name_kh, emp.email, emp.code, emp.date_of_birth as dob, a.attendance_date, a.check_in_time, a.check_out_time, a.remark, a.status_id, e.photo_file_name as emp_photo')
+        // ->distinct();
 
         // Build the search conditions
         $str_search = '1=1';

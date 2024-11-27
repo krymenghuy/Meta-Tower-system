@@ -438,7 +438,6 @@ class Employee //extends Model
                 b.name as branch_name,
                 es.name as status
             ')
-            ->where('emp.branch_id', $branch_id)
             ->where('emp.id', $id)
             ->first();
 
@@ -754,20 +753,65 @@ class Employee //extends Model
         $change_branch = $d->change_branch ?? null;
         $change_position = $d->change_position ?? null;
         $change_salary = $d->change_salary ?? null;
-        if(!$change_branch && !$change_position && !$change_salary){
+    
+        if (!$change_branch && !$change_position && !$change_salary) {
             return DV::error('No Promotion Request!');
         }
-        $promo_id = self::createPromotion($arr,$ss);
-        if(!$promo_id) return DV::error('Failed to create promotion');
-
-        $res = self::changeBranch($ss,$id,$promo_id,$change_branch);
-        $res = self::changePosition($ss,$id,$promo_id,$change_position);
-        $res = self::changeSalary($ss,$id,$promo_id,$change_salary);
- 
-
+    
+        // Create promotion record
+        $promo_id = self::createPromotion($arr, $ss);
+        if (!$promo_id) return DV::error('Failed to create promotion');
+    
+        $event_names = [];
+        $remarks = $d->remarks ?? null;
+        $event_date = $d->event_date ?? date('Y-m-d');
+    
+        if ($change_branch) {
+            $resBranch = self::changeBranch($ss, $id, $promo_id, $change_branch);
+            if ($resBranch) $event_names[] = 'Change Branch';
+        }
+    
+        if ($change_position) {
+            $resPosition = self::changePosition($ss, $id, $promo_id, $change_position);
+            if ($resPosition) $event_names[] = 'Change Position';
+        }
+    
+        if ($change_salary) {
+            $resSalary = self::changeSalary($ss, $id, $promo_id, $change_salary);
+            if ($resSalary) $event_names[] = 'Change Salary';
+        }
+    
+        foreach ($event_names as $event_name) {
+            $event_data = [
+                'name' => $event_name,
+                'remarks' => $remarks,
+                'event_date' => $event_date,
+            ];
+    
+            $event_id = self::getEventId($event_name);
+            if (!$event_id) {
+                $event = Event::createEvent($event_data, $ss);
+                $event_id = $event->status_code == 200 ? $event->data['id'] : null;
+            }
+    
+            if (!$event_id) {
+                return DV::error("Failed to create or fetch event: $event_name.");
+            }
+    
+            $inputs = [
+                'emp_id' => $id,
+                'event_id' => $event_id,
+                'impact' => 'Positive',
+                'remarks' => $remarks,
+                'event_date' => $event_date,
+            ];
+    
+            saveData($ss, 'emp_events', [], $inputs, [], 1, false);
+        }
+    
         return DV::success(['message' => 'Employee promotion updated successfully.']);
-
     }
+    
     static function changeBranch($ss, $emp_id,$promo_id,$arr)
     {
 

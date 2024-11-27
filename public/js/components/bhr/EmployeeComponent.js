@@ -116,7 +116,6 @@ var EmployeeComponent = new (function () {
     };
 
     this.initDropdownMenus = (listContainer) => {
-
         const menuOptopns = {
             containerElement: listContainer,
             actionButtonClass: "btn_employee_action",
@@ -250,7 +249,7 @@ var EmployeeComponent = new (function () {
         };
         new VSDropdownMenu(menuOptopns);
     };
- 
+
     this.renderEmployeeList = (div, data) => {
         data = data ?? [];
         if (!AuthManager) {
@@ -267,7 +266,7 @@ var EmployeeComponent = new (function () {
 
     this.renderEmployee = (data) => {
         let html = "";
-        html += `<div  class="row mb-5">`;
+        html += `<div  class="row mb-3">`;
         let cmt = 0;
 
         if (Array.isArray(data) && data.length > 0) {
@@ -304,7 +303,7 @@ var EmployeeComponent = new (function () {
                 }" data-typeid="${
                     d.emp_type_id
                 }" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-4 tool-tip"> <span class="tool-tiptext fs-6">Actions</span></i>
+                                        <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-4 tool-tip"> <span class="tool-tiptext fs-10">Actions</span></i>
                                     </a>
                                 </div>
                             </div>
@@ -739,7 +738,6 @@ var EmployeeComponent = new (function () {
     };
 
     this.renderCardCenter = (employeeId) => {
-        
         let p = {
             emp_id: employeeId,
         };
@@ -874,11 +872,7 @@ var EmployeeComponent = new (function () {
                                                     cv_interact.success(
                                                         "Deleted Successfully"
                                                     );
-                                                    if (me && me.dataOptions && me.dataOptions.emp_id) {
-                                                        EmployeeComponent.renderCardCenter(me.dataOptions.emp_id);
-                                                    } else {
-                                                        console.error("Employee ID is undefined.");
-                                                    }
+                                                        EmployeeComponent.renderCardCenter(emp_id);
                                                 }
                                             });
                                     }
@@ -951,104 +945,81 @@ var EmployeeComponent = new (function () {
             .then((res) => {
                 let data = res.status_code === 200 ? res.data.data : [];
                 let html = `<div class="card pb-3" style="height:390px;">
-            <div class="card-header text-white bg-primary-custom">
-                <h4>Experience</h4>
-                <div class="d-flex gap-2">
-                    <a href="javascript:void(0)" data="id" id="lnk_add_experience">
-                        <i class="fa fa-plus-circle fs-5 text-white"></i>
-                    </a>
+                <div class="card-header text-white bg-primary-custom">
+                    <h4>Experience</h4>
+                    <div class="d-flex gap-2">
+                        <a href="javascript:void(0)" id="lnk_add_experience">
+                            <i class="fa fa-plus-circle fs-5 text-white"></i>
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
-        `;
+                <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+                `;
 
-                data.map((d) => {
+                data.forEach((d) => {
                     html += `
                 <div class="row py-3 border-bottom border-info">
                     <div class="col-md-6" style="display: flex; flex-direction: column; gap:10px">
                         <div class="experience-toggle" data-experience-id="${d.id}"
                             style="display:flex; justify-content:space-between; width:350px; cursor: pointer;">
                             <div style="display:flex; width:350px; justify-content:space-between">
-                                <p class="text-primary-custom" style="font-size:14px;width:175px;display:flex;justify-content:start; overflow-y: hidden; overflow-x: auto; scrollbar-width: none; align-items: flex-start; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap;">
+                                <p class="text-primary-custom" style="font-size:14px;width:195px;display:flex;justify-content:start; overflow-x: auto;scrollbar-width: none; text-overflow: ellipsis; white-space: nowrap;">
                                     📢 ${d.department}
                                 </p>
-
                             </div>
                         </div>
                         <div style="display:flex; width:350px; justify-content:space-between">
-                            <div class="date_join text-muted" style="width:65%;display:flex;justify-content:start;align-items:start;text-align:right; overflow-y: hidden; overflow-x: auto; scrollbar-width: none;">
+                            <div class="date_join text-muted" style="width:230px;display:flex;align-items:start;">
                                 <img class="bhr-icons" src="${main_view.asset_url}/images/icons/calender.svg" />
                                 <p>(${d.start_date}</p><p class="text-danger ml-2 mr-2">-</p><p>${d.end_date})</p>
                             </div>
-                            <p class="text-primary-custom text-nowrap" style="width:35%"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/bag.svg" /> ${d.position}</p>
-
+                            <p class="text-primary-custom text-nowrap" style="width:120px; justify-content:start;text-overflow: ellipsis;word-wrap: break-word;">
+                                <img class="bhr-icons" src="${main_view.asset_url}/images/icons/bag.svg" /> ${d.position}
+                            </p>
                         </div>
-
-
-                        <div class="experience-details" id="details_${d.id}"
-                            style="display: none; flex-direction: column; gap:10px; transition: all 0.3s ease;">
-                            <p class="text-nowrap text-primary-custom">Company : ${d.organization_id}</p>
+                        <div class="experience-details" id="details_${d.id}" style="display:none;flex-direction:column; gap:10px; transition: all 0.3s ease;">
+                            <div class="experience-details-dropdown" style="display:flex;width:350px; justify-content:space-between">
+                                <p class="text-primary-custom text-nowrap" style="width:230px;">Company: ${d.organization_id}</p>
+                                <div class="d-flex gap-3" style="width:120px;justify-content:start;">
+                                    <a href="javascript:void(0)" data-id="${d.id}" class="btn-experience-modify">
+                                        <i class="fa-regular fa-pen-to-square text-success fs-10"></i>
+                                    </a>
+                                    <a href="javascript:void(0)" data-id="${d.id}" data-empid="${employeeId}" class="btn-experience-delete">
+                                        <i class="fa-solid fa-trash-can text-info fs-10"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            `;
+                    `;
                 });
 
                 html += `</div></div>`;
                 this.profile_card_right.innerHTML = html;
-
-                let activeExperienceId = null; // Track currently active experience
-
-                // Add event listeners for toggle functionality
                 document
                     .querySelectorAll(".experience-toggle")
-                    .forEach((element) => {
-                        element.addEventListener("click", function () {
-                            let experienceId =
+                    .forEach((toggle) => {
+                        toggle.addEventListener("click", function () {
+                            const experienceId =
                                 this.getAttribute("data-experience-id");
-                            let detailsDiv = document.getElementById(
+                            const detailsDiv = document.getElementById(
                                 `details_${experienceId}`
                             );
-                            let isVisible = detailsDiv.style.display === "flex";
-
-                            // If there's an active experience and it's not the same one, close it
-                            if (
-                                activeExperienceId &&
-                                activeExperienceId !== experienceId
-                            ) {
-                                let activeDetailsDiv = document.getElementById(
-                                    `details_${activeExperienceId}`
-                                );
-                                if (activeDetailsDiv) {
-                                    activeDetailsDiv.style.display = "none";
-                                    let activeIcon = document.querySelector(
-                                        `[data-experience-id="${activeExperienceId}"] i`
-                                    );
-                                    activeIcon.classList.remove(
-                                        "fa-chevron-up"
-                                    );
-                                    activeIcon.classList.add("fa-chevron-down");
-                                }
-                            }
-
-                            // Toggle the current clicked experience
+                            const isVisible =
+                                detailsDiv.style.display === "flex";
                             if (isVisible) {
-                                detailsDiv.style.display = "none"; // Hide details
-                                activeExperienceId = null; // Clear active experience
-                                let icon = this.querySelector("i");
-                                icon.classList.remove("fa-chevron-up");
-                                icon.classList.add("fa-chevron-down");
+                                detailsDiv.style.display = "none"; // Hide dropdown
                             } else {
-                                detailsDiv.style.display = "flex"; // Show details
-                                activeExperienceId = experienceId; // Set active experience
-                                let icon = this.querySelector("i");
-                                icon.classList.remove("fa-chevron-down");
-                                icon.classList.add("fa-chevron-up");
+                                document
+                                    .querySelectorAll(".experience-details")
+                                    .forEach((el) => {
+                                        el.style.display = "none";
+                                    });
+                                detailsDiv.style.display = "flex"; // Show dropdown
                             }
                         });
                     });
-
-                // Add click event listener for "Add Experience"
                 document
                     .getElementById("lnk_add_experience")
                     .addEventListener("click", function (e) {
@@ -1064,6 +1035,90 @@ var EmployeeComponent = new (function () {
                         };
                         AddExperience.show(op);
                     });
+                document
+                    .querySelectorAll(".btn-experience-modify")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const id = e.target
+                                .closest("a")
+                                .getAttribute("data-id");
+
+                            let op = {
+                                id: id,
+                                emp_id: employeeId,
+                                btn: e.target,
+                                title: "Edit",
+                                onClose: () => {
+                                    mThis.renderCardRight.showPage();
+                                },
+                            };
+                            console.log("Edit operation:", op);
+                            AddExperience.show(op);
+                        });
+                    });
+                document
+                    .querySelectorAll(".btn-experience-delete")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const id = e.target
+                                .closest("a")
+                                .getAttribute("data-id");
+                            const emp_id = e.target
+                                .closest("a")
+                                .getAttribute("data-empid");
+
+                            // Confirm deletion
+                            cv_interact.confirm(
+                                "Delete this Experience?",
+                                {
+                                    title: "Delete Experience",
+                                    context: "delete",
+                                    confirmButtonText: "Delete",
+                                },
+                                function (confirmDelete) {
+                                    if (confirmDelete) {
+                                        // Call API to delete the experience
+                                        vsapi
+                                            .call(
+                                                `${main_view.base_url}/hr/experience/delete`,
+                                                { id: id },
+                                                false,
+                                                false,
+                                                false
+                                            )
+                                            .then((res) => {
+                                                if (res.status_code === 200) {
+                                                    cv_interact.success(
+                                                        "Deleted Successfully"
+                                                    );
+
+                                                    // Refresh the experience list
+                                                    EmployeeComponent.renderCardRight(
+                                                        emp_id
+                                                    );
+                                                } else {
+                                                    cv_interact.error(
+                                                        "Failed to delete the experience."
+                                                    );
+                                                }
+                                            })
+                                            .catch((err) => {
+                                                console.error(
+                                                    "Error during deletion:",
+                                                    err
+                                                );
+                                                cv_interact.error(
+                                                    "An error occurred."
+                                                );
+                                            });
+                                    }
+                                }
+                            );
+                        });
+                    });
+
             });
     };
 
@@ -1310,7 +1365,6 @@ var EmployeeComponent = new (function () {
             //             "change_position":{'position_id':me.controls.position.value,'remarks':me.controls.position_remarks.value,'start_date':me.controls.start_date.value},
             //             "change_salary":{'new_salary':me.controls.position.value,'remarks':me.controls.salary_remarks.value}
 
-
             //           };
             //       }
             // },
@@ -1318,24 +1372,22 @@ var EmployeeComponent = new (function () {
                 DateTimePicker.init(me.controls.effective_date);
                 DateTimePicker.init(me.controls.start_date);
 
-
-                me.setEvent=(div)=>{
-                    div.querySelectorAll('input').forEach(input=>{
-                        input.onchange = e =>{
-                                const divTarget =  me.controls[input.dataset.target];
-                                if(divTarget){
-                                    divTarget.style.display = input.checked ? 'block':'none';
-                                }
-                        }
-                });
-                }
+                me.setEvent = (div) => {
+                    div.querySelectorAll("input").forEach((input) => {
+                        input.onchange = (e) => {
+                            const divTarget = me.controls[input.dataset.target];
+                            if (divTarget) {
+                                divTarget.style.display = input.checked
+                                    ? "block"
+                                    : "none";
+                            }
+                        };
+                    });
+                };
                 me.setEvent(me.divModal);
             },
 
-          
-            
-
-             configSelect:[
+            configSelect: [
                 {
                     name: "branch",
                     data: "branches",
@@ -1348,8 +1400,8 @@ var EmployeeComponent = new (function () {
                     textField: "title",
                     valueField: "id",
                 },
-             ],
-             buttons:[
+            ],
+            buttons: [
                 {
                     label: "<span>Cancel</span>",
                     cssClass: "btn btn-warning text-white",
@@ -1358,85 +1410,88 @@ var EmployeeComponent = new (function () {
                     },
                 },
                 {
-                    cssClass:"btn btn-primary",
-                    label:"<span>Save</span",
-                    click:(me, btn,divModal)=>{
-                         let p = me.getData();
-                         p.emp_id = op.id;
-                         console.log(321,p);
-                         let d = {};
-                         d.emp_id = p.emp_id;
-                         let change_branch = {},change_position = {}, change_salary = {};
-                         
-                         if(me.controls.change_branch.checked){
+                    cssClass: "btn btn-primary",
+                    label: "<span>Save</span",
+                    click: (me, btn, divModal) => {
+                        let p = me.getData();
+                        p.emp_id = op.id;
+                        console.log(321, p);
+                        let d = {};
+                        d.emp_id = p.emp_id;
+                        let change_branch = {},
+                            change_position = {},
+                            change_salary = {};
+
+                        if (me.controls.change_branch.checked) {
                             change_branch.branch_id = p.branch_id;
-                            change_branch.remarks = me.controls.branch_remarks.value;
+                            change_branch.remarks =
+                                me.controls.branch_remarks.value;
                             change_branch.effective_date = p.effective_date;
-                         }
-                         if(me.controls.change_position.checked){
+                        }
+                        if (me.controls.change_position.checked) {
                             change_position.position_id = p.position_id;
-                            change_position.remarks = me.controls.position_remarks.value;
+                            change_position.remarks =
+                                me.controls.position_remarks.value;
                             change_position.start_date = p.start_date;
-                         }
-                         if(me.controls.change_salary.checked){
+                        }
+                        if (me.controls.change_salary.checked) {
                             change_salary.new_salary = p.new_salary;
-                            change_salary.remarks = me.controls.salary_remarks.value;
+                            change_salary.remarks =
+                                me.controls.salary_remarks.value;
                             change_salary.org_salary = p.salary;
                             change_salary.org_position_id = p.position_id;
                             change_salary.new_position_id = p.position_id;
+                        }
 
+                        d.change_branch = change_branch;
+                        d.change_position = change_position;
+                        d.change_salary = change_salary;
+                        console.log(123, d);
 
-                         }
-                         
-                         d.change_branch = change_branch;
-                         d.change_position = change_position;
-                         d.change_salary = change_salary;
-                         console.log(123,d);
-                         
-                         vsapi.call(`${main_view.base_url}/hr/employee/promote-staff`,d,btn,false).then(res =>{
-                              if(res.status_code ==200){
-                                me.modal.hide(true, p);
-                                cv_interact.success('This Employee has been promoted successfully!');
-                                EmployeeComponent.EmployeeListView.showPage();
-                              }else cv_interact.error(res.error_message);
-                         });
-                    }
-                }
-             ],
-             prepareFormOptions: {
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/hr/employee/promote-staff`,
+                                d,
+                                btn,
+                                false
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.modal.hide(true, p);
+                                    cv_interact.success(
+                                        "This Employee has been promoted successfully!"
+                                    );
+                                    EmployeeComponent.EmployeeListView.showPage();
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+            prepareFormOptions: {
                 createTitle: "Employee Movement",
                 modifyTitle: "Edit Movement",
                 targetProp: "Employee Movement",
                 api: {
                     endpoint: `${main_view.base_url}/hr/employee/form-options`,
-                    
+
                     params: (op) => {
                         return { id: op.id };
                     },
-                    onResponse: (me, res) => {
-                        
-                    },
+                    onResponse: (me, res) => {},
                 },
             },
-             
-             
+
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
                 me.controls.branch.value = data.employee.branch_id;
-                me.controls.position.value = data.employee.position_id; 
-                me.controls.org_salary.value = data.employee.salary; 
-
-            
-              
+                me.controls.position.value = data.employee.position_id;
+                me.controls.org_salary.value = data.employee.salary;
             },
-            
-          
         });
         mThis.MovementDialog.show(op);
     };
 
-    this.setResign = (id,menuLink)=>{
-
+    this.setResign = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
@@ -1907,7 +1962,6 @@ const AddEducation = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        
         dialog =
             dialog ||
             new GeneralDialog({
@@ -1965,8 +2019,8 @@ const AddEducation = (() => {
                         click: (me) => {
                             let p = me.getData();
                             p.emp_id = me.dataOptions.emp_id;
-                            console.log(11,p);
-                            
+                            console.log(11, p);
+
                             vsapi
                                 .call(
                                     [
@@ -1980,7 +2034,6 @@ const AddEducation = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
-                                       
 
                                         EmployeeComponent.renderCardCenter(
                                             me.dataOptions.emp_id
@@ -2067,13 +2120,13 @@ const AddExperience = (() => {
                             <label class="form-label" vslang="titles.Organization">Organization</label>
                             <div><select name="organization_id" class="form-control data-input" data-field="organization_id"></select></div>
                         </div>
-                        <div class=" form-group col-md-6">
+                        <div class=" form-group col-md-12">
                             <label class="form-label" vslang="titles.Period">Period</label>
                             <div><input name="period_type" class="form-control data-input" data-field="period_type"></input></div>
                         </div>
-                        <div class="form-group col-md-6">
+                        <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Description">Description</label>
-                            <div><input type="text" name="description" class="form-control data-input" data-field="description"/></div>
+                            <input type="text" name="description" class="form-control data-input" data-field="description"/>
                         </div>
 
                     </div>`,
@@ -2097,8 +2150,6 @@ const AddExperience = (() => {
                         click: (me, btn) => {
                             let p = me.getData();
                             p.emp_id = op.emp_id;
-                            console.log(928762, p);
-
                             vsapi
                                 .call(
                                     [
@@ -2271,52 +2322,33 @@ const EmployeeDialog = (() => {
 
         dialog = new GeneralDialog({
             cssClass: "modal-lg",
-            backdrop: "static", //User click outside form, do not close form
-            keyboard: true, //prevent user from using ESC key
+            backdrop: "static",
+            keyboard: true,
             createContent: () => {
                 return [
                     `<div class="row">
                             <div class="col-3">
-                                <div name="div_emp_photo" style="height:165px" class="data-input border border-primary" data-field="image_url" role="button"></div>
+                                <div name="div_emp_photo" style="height:165px;" class="data-input border border-primary" data-field="image_url" role="button"></div>
                             </div>
                             <div class="col-9">
                                 <div class="row">
-                                    <div class="form-group col-6">
-                                        <label for="name" class="form-label" vslang="titles.Name"></label>
+                                    <div class="form-group col-4">
+                                        <label for="name" class="form-label text-primary-custom" vslang="titles.Name"></label>
                                         <span class="text-danger" >*</span>
-                                        <input name="name" class="form-control data-input" data-field="name" />
+                                        <input name="name" class="form-control  data-input" data-field="name" />
                                     </div>
-                                    <div class="form-group col-6">
-                                        <label for="nid" class="form-label" vslang="titles.Identity Card"></label>
+                                    <div class="form-group col-4">
+                                        <label for="nid" class="form-label text-primary-custom" vslang="titles.Identity Card"></label>
                                         <span class="text-danger" >*</span>
-                                        <input name="nid" class="form-control data-input" data-field="nid" />
+                                        <input name="nid" class="form-control  data-input" data-field="nid" />
                                     </div>
-
-                                    <div class="form-group col-6">
-                                        <label for="date_of_birth" class="form-label" vslang="titles.Date Of Birth"></label>
+                                    <div class="form-group col-4">
+                                        <label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>
                                         <span class="text-danger" >*</span>
-                                        <input name="date_of_birth" class="form-control data-input" data-field="date_of_birth" />
+                                        <input name="nationality" class="form-control  data-input" data-field="nationality" />
                                     </div>
-                                    <div class="form-group col-6">
-                                        <label for="nationality" class="form-label" vslang="titles.Nationality"></label>
-                                        <span class="text-danger" >*</span>
-                                        <input name="nationality" class="form-control data-input" data-field="nationality" />
-                                    </div>
-                                </div>
-                            </div>
-                                <div class="row">
-                                  <div class="form-group col-6">
-                                        <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
-                                        <span class="text-danger" >*</span>
-                                        <input name="phone_number" class="form-control data-input" data-field="phone_number" />
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="email" class="form-label" vslang="titles.Email"></label>
-                                        <span class="text-danger" >*</span>
-                                        <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
-                                    </div>
-                                    <div class="form-group col-3">
-                                       <label for="sex" class="form-label" vslang="titles.Sex"></label>
+                                    <div class="form-group col-4">
+                                       <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
                                             <select class="modal-select data-input" data-field="sex">
                                                 <option value="">(Select Sex)</option>
                                                 <option value="M">Male</option>
@@ -2324,38 +2356,59 @@ const EmployeeDialog = (() => {
                                                 <option value="O">Other</option>
                                             </select>
                                     </div>
-                                    <div class="form-group col-3">
-                                        <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
-                                        <input name="nssf_id" class="form-control data-input form_input" data-field="nssf_id" />
-                                    </div>
-                                    <div class="form-group col-3">
-                                        <label for="type" class="form-label" vslang="titles.Employee Type"></label>
+                                    <div class="form-group col-4">
+                                        <label for="date_of_birth" class="form-label text-primary-custom" vslang="titles.Date Of Birth"></label>
                                         <span class="text-danger" >*</span>
-                                        <select name="type" class=" data-input"  data-field="emp_type_id"></select>
+                                        <input name="date_of_birth" class="form-control  data-input" data-field="date_of_birth" />
                                     </div>
-                                    <div class="form-group col-3">
-                                        <label for="position" class="form-label" vslang="titles.Position"></label>
+                                    <div class="form-group col-4">
+                                        <label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>
+                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                                    </div>
+
+                                   
+                                  
+                                </div>
+                            </div>
+                                <div class="row">
+                                    <div class="form-group col-4">
+                                        <label for="phone_number" class="form-label text-primary-custom" vslang="titles.Phone"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="phone_number" class="form-control data-input" data-field="phone_number" />
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="email" class="form-label text-primary-custom" vslang="titles.Email"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
+                                    </div>
+                                 
+                                    <div class="form-group salary col-4">
+                                        <label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>
+                                        <input name="salary" id="salary" class="form-control data-input"  data-field="salary" />
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="type" class="form-label text-primary-custom " vslang="titles.Employee Type"></label>
+                                        <span class="text-danger" >*</span>
+                                        <select name="type" class="data-input"  data-field="emp_type_id"></select>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="position" class="form-label text-primary-custom " vslang="titles.Position"></label>
                                         <span class="text-danger" >*</span>
                                         <select name="position" class="data-input"  data-field="position_id"></select>
                                     </div>
-                                    <div class="form-group salary col-3">
-                                        <label for="salary" class="form-label" vslang="titles.salary"></label>
-                                        <input name="salary" id="salary" class="form-control  data-input"  data-field="salary" />
-                                    </div>
-
-
-                                    <div class="form-group col-3">
-                                        <label for="joining_date" class="form-label" vslang="titles.Joining Date"></label>
-                                        <input name="joining_date" class="form-control data-input form_input" data-field="joining_date" />
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="work_shift" class="form-label" vslang="titles.Work Shift"></label>
+                                    
+                                    <div class="form-group col-4">
+                                        <label for="work_shift" class="form-label text-primary-custom " vslang="titles.Work Shift"></label>
                                         <span class="text-danger" >*</span>
                                         <select name="work_shift" class=" data-input"  data-field="work_shift_id"></select>
                                     </div>
+                                      <div class="form-group col-4">
+                                        <label for="joining_date" class="form-label text-primary-custom " vslang="titles.Joining Date"></label>
+                                        <input name="joining_date" class="form-control data-input " data-field="joining_date" />
+                                    </div>
                                     <div class="form-group col-12">
-                                        <label for="address" class="form-label" vslang="titles.Address">Address</label>
-                                        <textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>
+                                        <label for="address" class="form-label text-primary-custom" vslang="titles.Address">Address</label>
+                                        <textarea name="address" id="address" class="form-control  data-input" data-field="address"></textarea>
                                     </div>
 
                                 </div>

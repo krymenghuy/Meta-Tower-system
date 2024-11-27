@@ -25,14 +25,14 @@
     z-index: 1;
     top: 150%;
     left: 50%;
-    margin-left: -50px;
+    margin-left: -72px;
   }
   
   .tool-tip .tool-tiptext::after {
     content: "";
     position: absolute;
     bottom: 100%;
-    left: 50%;
+    left: 70%;
     margin-left: -5px;
     border-width: 5px;
     border-style: solid;
