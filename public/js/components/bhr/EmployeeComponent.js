@@ -969,19 +969,18 @@ var EmployeeComponent = new (function () {
                             </div>
                         </div>
                         <div style="display:flex; width:350px; justify-content:space-between">
-                            <div class="date_join text-muted" style="width:65%;display:flex;align-items:start;">
+                            <div class="date_join text-muted" style="width:230px;display:flex;align-items:start;">
                                 <img class="bhr-icons" src="${main_view.asset_url}/images/icons/calender.svg" />
                                 <p>(${d.start_date}</p><p class="text-danger ml-2 mr-2">-</p><p>${d.end_date})</p>
                             </div>
-                            <p class="text-primary-custom text-nowrap" style="width:35%">
+                            <p class="text-primary-custom text-nowrap" style="width:120px; justify-content:start;text-overflow: ellipsis;word-wrap: break-word;">
                                 <img class="bhr-icons" src="${main_view.asset_url}/images/icons/bag.svg" /> ${d.position}
                             </p>
                         </div>
                         <div class="experience-details" id="details_${d.id}" style="display:none;flex-direction:column; gap:10px; transition: all 0.3s ease;">
-                            <span style="display:flex;width:350px; font-size:12px;font-weight:normal; color:grey">${d.description}</span>
                             <div class="experience-details-dropdown" style="display:flex;width:350px; justify-content:space-between">
-                                <p class="text-primary-custom text-nowrap" style="width:280px">Company: ${d.organization_id}</p>
-                                <div class="d-flex gap-3" style="width:70px;justify-content:end">
+                                <p class="text-primary-custom text-nowrap" style="width:230px;">Company: ${d.organization_id}</p>
+                                <div class="d-flex gap-3" style="width:120px;justify-content:start;">
                                     <a href="javascript:void(0)" data-id="${d.id}" class="btn-experience-modify">
                                         <i class="fa-regular fa-pen-to-square text-success fs-10"></i>
                                     </a>
