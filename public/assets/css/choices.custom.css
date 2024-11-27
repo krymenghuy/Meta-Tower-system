@@ -15,7 +15,6 @@
     border-radius: 2px;
     position: absolute !important;
     z-index: 3000;
-    border:1px solid lightgray;
   }
 
   /* Optionally set a minimum width for the select element itself */
