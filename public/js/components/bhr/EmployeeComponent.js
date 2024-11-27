@@ -2271,8 +2271,8 @@ const EmployeeDialog = (() => {
 
         dialog = new GeneralDialog({
             cssClass: "modal-lg",
-            backdrop: "static", //User click outside form, do not close form
-            keyboard: true, //prevent user from using ESC key
+            backdrop: "static", 
+            keyboard: true, 
             createContent: () => {
                 return [
                     `<div class="row">
