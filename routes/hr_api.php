@@ -295,4 +295,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('holiday')->gr
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/count-employees', [DashboardController::class, 'countEmployees']);
     Route::post('/get-departments', [DashboardController::class, 'getDepartments']);
+    Route::post('/get-levels', [DashboardController::class, 'getLevels']);
+    Route::post('/get-benefits', [DashboardController::class, 'getBenefits']);
 });

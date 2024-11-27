@@ -89,13 +89,96 @@ class Dashboard
 
         $departmentData = $query->get();
 
-        
+
         return [
             'department_count' => $departmentCount,
             'position_count' => $positionCount,
             'department_data' => $departmentData
         ];
     }
+
+    function getLevels($arr, $ss)
+    {
+        $subs_id = $ss->subs_id ?? null;
+        $d = (object) $arr;
+
+        $start_date = $d->start_date ?? null;
+        $end_date = $d->end_date ?? null;
+
+        $str_dates = '1=1';
+
+        // Determine date filter: use today's date if no date range is provided, otherwise use the specified range
+        $today = date('Y-m-d');
+        if ($start_date && $end_date) {
+            $end_date = convertDate($end_date);
+            $start_date = convertDate($start_date);
+
+            if (strtotime($start_date) && strtotime($end_date)) {
+                // Check if there is any overlap between the leave period and the given date range
+                $str_dates = "(
+                    (l.start_date BETWEEN '$start_date' AND '$end_date') OR
+                    (l.end_date BETWEEN '$start_date' AND '$end_date') OR
+                    (l.start_date <= '$start_date' AND l.end_date >= '$end_date')
+                )";
+            }
+        } else {
+            $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
+        }
+
+        $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
+        $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
+
+        // Fetch leave data
+        $query = DB::table('leaves as l')
+            ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->whereRaw($str_dates) // Apply date filter
+            ->selectRaw(
+                'l.id, emp.id as emp_id, emp.name as emp_name, p.title as emp_position, ' .
+                $col_dates . ', l.remarks, emp.photo_file_name as emp_photo, ' . $leave_days_calc
+            )
+            ->orderBy('l.id', 'DESC');
+
+        // Get rows and count
+        $rows = $query->get();
+        $count = $query->count();
+
+        // Process rows
+        foreach ($rows as $row) {
+            $row->image_url = '';
+            if (!empty($row->emp_id) && !empty($row->emp_photo)) {
+                $row->image_url = Employee::profilePicture($row->emp_id);
+            }
+            unset($row->emp_photo);
+        }
+
+        return [
+            'data' => $rows,
+            'count' => $count,
+        ];
+    }
+
+    function getBenefits($arr, $ss)
+    {
+        $d = (object) $arr;
+
+        $query = DB::table('emp_benefits as b')
+            ->selectRaw('
+                SUM(b.amount) as total_amount,
+                SUM(CASE WHEN b.benefit_type_id = 1 THEN b.amount ELSE 0 END) as total_bonuses,
+                SUM(CASE WHEN b.benefit_type_id = 2 THEN b.amount ELSE 0 END) as total_seniority,
+                SUM(CASE WHEN b.benefit_type_id = 3 THEN b.amount ELSE 0 END) as total_life_insurance,
+                SUM(CASE WHEN b.benefit_type_id = 4 THEN b.amount ELSE 0 END) as total_other,
+                MAX(CASE WHEN b.benefit_type_id = 1 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_bonuses,
+                MAX(CASE WHEN b.benefit_type_id = 2 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_seniority,
+                MAX(CASE WHEN b.benefit_type_id = 3 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_life_insurance,
+                MAX(CASE WHEN b.benefit_type_id = 4 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_other
+            ')
+            ->first(); 
+        return $query;
+    }
+
+
 
 
 }

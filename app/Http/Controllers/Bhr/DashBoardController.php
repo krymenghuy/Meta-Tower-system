@@ -33,4 +33,22 @@ class DashboardController extends Controller
         }
         return JDV::result($this->dashboard->getDepartments($req->all(), $ss));
     }
+
+    public function getLevels(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->dashboard->getLevels($req->all(), $ss));
+    }
+
+    public function getBenefits(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->dashboard->getBenefits($req->all(), $ss));
+    }
 }

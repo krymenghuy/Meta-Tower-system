@@ -13,24 +13,11 @@ var LeaveComponent = new function () {
     this.elSearch = this.self.querySelector("#_sdl_search_leave");
 
     this.cols = [
-        {
-            className: 'col_action align-middle',
-            data: function (data, row, display) {
-                return `
-                   <div class="d-flex justify-content-center align-items-center">
-                        <div class="text-center gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
-                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
-                            </a>
-                        </div>
-                    </div>
-                `;
-            }
-        },
+
         {
             title: "Employee ID",
             className: 'align-middle text-capitalize',
-            data: (data, index, tr) => { 
+            data: (data, index, tr) => {
                 return `<span style="font-size: 12px; class=""><span class="text-primary-custom">${data.emp_code ?? 'null'}</span></span>`;
              }
 
@@ -58,7 +45,7 @@ var LeaveComponent = new function () {
                 return `<span style="font-size: 12px; class="p-0 m-0">${data.leave_type ?? ''}</span>`;
             }
         },
-       
+
         {
             title: "Duration",
             className: "align-middle",
@@ -92,7 +79,7 @@ var LeaveComponent = new function () {
 
             }
         },
-        
+
         {
             title: "Status",
             className: 'status text-nowrap text-center align-start',
@@ -120,7 +107,21 @@ var LeaveComponent = new function () {
                         </a>`;
             }
         },
-        
+        {
+            className: 'col_action align-middle',
+            data: function (data, row, display) {
+                return `
+                   <div class="d-flex justify-content-center align-items-center">
+                        <div class="text-center gap-2 d-flex flex-wrap">
+                                <a href="javascript:void(0)" class=" ${data.action_id > 1 ? 'd-none' : 'btn_leave_action'}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
+                                <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }
+        },
+
 
     ];
 
@@ -154,7 +155,7 @@ var LeaveComponent = new function () {
 
         mThis.tblLeaves = mThis.LeaveRequestListView.getTable();
         console.log(122,mThis.tblLeaves);
-        
+
         mThis.initDropdownMenus(mThis.tblLeaves);
         this.sh_container = mThis.LeaveRequestListView.getListContainer();
 
@@ -171,13 +172,13 @@ var LeaveComponent = new function () {
            mThis.LeaveRequestListView.showPage(mThis.getFilterData());
             }
        });
-    
+
         mThis.elSearch.addEventListener('keyup', (e) => {
             e.preventDefault();
             clearTimeout(mThis.search_timeout);
             mThis.search_timeout = setTimeout(() => {
                 mThis.LeaveRequestListView.showPage(mThis.getFilterData());
-    
+
             }, 250);
         });
 
@@ -185,9 +186,9 @@ var LeaveComponent = new function () {
 
 
     };
-    
-   
-  
+
+
+
 
     this.getFilterData = () => {
         let p = {
@@ -243,7 +244,7 @@ var LeaveComponent = new function () {
 
             onClick:(menuLink, id, name)=>{
                 console.log(90,menuLink,80,id,70,name);
-                
+
                 switch(name){
 
                     case 'change_leave_request_status':{
@@ -320,7 +321,7 @@ var LeaveComponent = new function () {
     }
 
     this.editLeaveRequest = (id, menuLink) => {
-        
+
         let op = {
             id: id,
             btn: menuLink,
@@ -377,7 +378,7 @@ var LeaveComponent = new function () {
                 mThis.jm.siblings().hide();
                 mThis.jm.hide().fadeIn(250);
             });
-                
+
     }
 
 
