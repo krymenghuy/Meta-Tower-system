@@ -267,7 +267,7 @@ var EmployeeComponent = new (function () {
 
     this.renderEmployee = (data) => {
         let html = "";
-        html += `<div  class="row mb-5">`;
+        html += `<div  class="row mb-3">`;
         let cmt = 0;
 
         if (Array.isArray(data) && data.length > 0) {
@@ -874,11 +874,7 @@ var EmployeeComponent = new (function () {
                                                     cv_interact.success(
                                                         "Deleted Successfully"
                                                     );
-                                                    if (me && me.dataOptions && me.dataOptions.emp_id) {
-                                                        EmployeeComponent.renderCardCenter(me.dataOptions.emp_id);
-                                                    } else {
-                                                        console.error("Employee ID is undefined.");
-                                                    }
+                                                        EmployeeComponent.renderCardCenter(emp_id);
                                                 }
                                             });
                                     }
@@ -2277,46 +2273,27 @@ const EmployeeDialog = (() => {
                 return [
                     `<div class="row">
                             <div class="col-3">
-                                <div name="div_emp_photo" style="height:165px" class="data-input border border-primary" data-field="image_url" role="button"></div>
+                                <div name="div_emp_photo" style="height:165px;" class="data-input border border-primary" data-field="image_url" role="button"></div>
                             </div>
                             <div class="col-9">
                                 <div class="row">
-                                    <div class="form-group col-6">
-                                        <label for="name" class="form-label" vslang="titles.Name"></label>
+                                    <div class="form-group col-4">
+                                        <label for="name" class="form-label text-primary-custom" vslang="titles.Name"></label>
                                         <span class="text-danger" >*</span>
-                                        <input name="name" class="form-control data-input" data-field="name" />
+                                        <input name="name" class="form-control  data-input" data-field="name" />
                                     </div>
-                                    <div class="form-group col-6">
-                                        <label for="nid" class="form-label" vslang="titles.Identity Card"></label>
+                                    <div class="form-group col-4">
+                                        <label for="nid" class="form-label text-primary-custom" vslang="titles.Identity Card"></label>
                                         <span class="text-danger" >*</span>
-                                        <input name="nid" class="form-control data-input" data-field="nid" />
+                                        <input name="nid" class="form-control  data-input" data-field="nid" />
                                     </div>
-
-                                    <div class="form-group col-6">
-                                        <label for="date_of_birth" class="form-label" vslang="titles.Date Of Birth"></label>
+                                    <div class="form-group col-4">
+                                        <label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>
                                         <span class="text-danger" >*</span>
-                                        <input name="date_of_birth" class="form-control data-input" data-field="date_of_birth" />
+                                        <input name="nationality" class="form-control  data-input" data-field="nationality" />
                                     </div>
-                                    <div class="form-group col-6">
-                                        <label for="nationality" class="form-label" vslang="titles.Nationality"></label>
-                                        <span class="text-danger" >*</span>
-                                        <input name="nationality" class="form-control data-input" data-field="nationality" />
-                                    </div>
-                                </div>
-                            </div>
-                                <div class="row">
-                                  <div class="form-group col-6">
-                                        <label for="phone_number" class="form-label" vslang="titles.Phone"></label>
-                                        <span class="text-danger" >*</span>
-                                        <input name="phone_number" class="form-control data-input" data-field="phone_number" />
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="email" class="form-label" vslang="titles.Email"></label>
-                                        <span class="text-danger" >*</span>
-                                        <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
-                                    </div>
-                                    <div class="form-group col-3">
-                                       <label for="sex" class="form-label" vslang="titles.Sex"></label>
+                                    <div class="form-group col-4">
+                                       <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
                                             <select class="modal-select data-input" data-field="sex">
                                                 <option value="">(Select Sex)</option>
                                                 <option value="M">Male</option>
@@ -2324,38 +2301,59 @@ const EmployeeDialog = (() => {
                                                 <option value="O">Other</option>
                                             </select>
                                     </div>
-                                    <div class="form-group col-3">
-                                        <label for="nssf_id" class="form-label" vslang="titles.NSSF ID"></label>
-                                        <input name="nssf_id" class="form-control data-input form_input" data-field="nssf_id" />
-                                    </div>
-                                    <div class="form-group col-3">
-                                        <label for="type" class="form-label" vslang="titles.Employee Type"></label>
+                                    <div class="form-group col-4">
+                                        <label for="date_of_birth" class="form-label text-primary-custom" vslang="titles.Date Of Birth"></label>
                                         <span class="text-danger" >*</span>
-                                        <select name="type" class=" data-input"  data-field="emp_type_id"></select>
+                                        <input name="date_of_birth" class="form-control  data-input" data-field="date_of_birth" />
                                     </div>
-                                    <div class="form-group col-3">
-                                        <label for="position" class="form-label" vslang="titles.Position"></label>
+                                    <div class="form-group col-4">
+                                        <label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>
+                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                                    </div>
+
+                                   
+                                  
+                                </div>
+                            </div>
+                                <div class="row">
+                                    <div class="form-group col-4">
+                                        <label for="phone_number" class="form-label text-primary-custom" vslang="titles.Phone"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="phone_number" class="form-control data-input" data-field="phone_number" />
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="email" class="form-label text-primary-custom" vslang="titles.Email"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
+                                    </div>
+                                 
+                                    <div class="form-group salary col-4">
+                                        <label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>
+                                        <input name="salary" id="salary" class="form-control data-input"  data-field="salary" />
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="type" class="form-label text-primary-custom " vslang="titles.Employee Type"></label>
+                                        <span class="text-danger" >*</span>
+                                        <select name="type" class="data-input"  data-field="emp_type_id"></select>
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="position" class="form-label text-primary-custom " vslang="titles.Position"></label>
                                         <span class="text-danger" >*</span>
                                         <select name="position" class="data-input"  data-field="position_id"></select>
                                     </div>
-                                    <div class="form-group salary col-3">
-                                        <label for="salary" class="form-label" vslang="titles.salary"></label>
-                                        <input name="salary" id="salary" class="form-control  data-input"  data-field="salary" />
-                                    </div>
-
-
-                                    <div class="form-group col-3">
-                                        <label for="joining_date" class="form-label" vslang="titles.Joining Date"></label>
-                                        <input name="joining_date" class="form-control data-input form_input" data-field="joining_date" />
-                                    </div>
-                                    <div class="form-group col-6">
-                                        <label for="work_shift" class="form-label" vslang="titles.Work Shift"></label>
+                                    
+                                    <div class="form-group col-4">
+                                        <label for="work_shift" class="form-label text-primary-custom " vslang="titles.Work Shift"></label>
                                         <span class="text-danger" >*</span>
                                         <select name="work_shift" class=" data-input"  data-field="work_shift_id"></select>
                                     </div>
+                                      <div class="form-group col-4">
+                                        <label for="joining_date" class="form-label text-primary-custom " vslang="titles.Joining Date"></label>
+                                        <input name="joining_date" class="form-control data-input " data-field="joining_date" />
+                                    </div>
                                     <div class="form-group col-12">
-                                        <label for="address" class="form-label" vslang="titles.Address">Address</label>
-                                        <textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>
+                                        <label for="address" class="form-label text-primary-custom" vslang="titles.Address">Address</label>
+                                        <textarea name="address" id="address" class="form-control  data-input" data-field="address"></textarea>
                                     </div>
 
                                 </div>
