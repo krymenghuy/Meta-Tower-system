@@ -21,6 +21,7 @@ class Experience //extends Model
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
+
         $v_rule = [
             'id' => '0|identify=1',
             'emp_id' => '1|number|exists=employees.id',
@@ -29,23 +30,33 @@ class Experience //extends Model
             'description' => '0|string|0-300',
             'period_type' => '0|string|0-150',
             'start_date' => '1|date',
-            'end_date' => '1|date'
-
+            'end_date' => '1|date',
         ];
+
         $exp_char = ['$', '#', '@', '!', '.', '-', '_', '=', '?'];
-        // $checkUnque = ["$branch_id|emp_experience|emp_id|school_id|period|id=id|text=Employee Eduction is already Save "];
 
-
+        // Validate input
         $res = validateObject($arr, $v_rule, true, ['period_type' => $exp_char], $ss->lang, false, null);
-        if ($res->error) return DV::error($res->error);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
 
         $inputs = $res->values;
-        $id = saveData($ss, 'emp_experiences', ['id' => $id], $inputs, [], 1);
-        if ($id > 0) {
-            return DV::depends(1, ['emp_experiences' => $inputs, 'id' => $id]);
+
+        // Check if a new ID is needed
+        if ($id === null) {
+            $id = DB::table('emp_experiences')->insertGetId(array_merge($inputs, ['branch_id' => $branch_id]));
+        } else {
+            // Update existing record
+            $updated = DB::table('emp_experiences')->where('id', $id)->update($inputs);
+            if (!$updated) {
+                return DV::error('Failed to update experience.');
+            }
         }
-        return DV::depends($id, ['action', 'saved']);
+
+        return DV::depends(1, ['emp_experiences' => $inputs, 'id' => $id]);
     }
+
     function getListAll($arr, $ss)
     {
         $branch_id = $ss->branch_id;
@@ -77,7 +88,7 @@ class Experience //extends Model
             ->where('exp.branch_id', $branch_id)
             ->whereRaw($str_search)
             ->where('exp.emp_id', $emp_id)
-            ->selectRaw('exp.id, exp.description, pos.id, pos.title as position,pos.department_id,d.name as department,org.id as organization_id, org.name as organization_id, exp.period_type,exp.end_date as end_date,exp.start_date as start_date')
+            ->selectRaw('exp.id, exp.description, pos.title as position,pos.department_id,d.name as department,org.id as organization_id, org.name as organization_id, exp.period_type,exp.end_date as end_date,exp.start_date as start_date')
             ->orderBy('exp.id', 'DESC');
 
         $clone_query = clone $query;
@@ -91,7 +102,7 @@ class Experience //extends Model
     function details($id, $ss = null)
     {
         $branch_id = $ss->branch_id;
-        $rows = DB::table('emp_experiences')->selectRaw('id,emp_id,position_id,period_type,organization_id,start_date,end_date')
+        $rows = DB::table('emp_experiences')->selectRaw('id,emp_id,position_id,period_type,description,organization_id,start_date,end_date')
             ->where('branch_id', $branch_id)
             ->where('id', $id)
             ->take(1)->first();
