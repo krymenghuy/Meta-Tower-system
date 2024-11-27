@@ -643,7 +643,7 @@ class PayrollList
                 if ($updateBalance_acc && $withdrawalResult) {
                     PayrollList::updateBalance($account_id, 'accounts', 'out', $withdrawalResult['transactions']['amount'], $withdrawalResult['trx_id'], $ss);
 
-                    // Mark payroll list entry as disbursed
+                   
                     DB::table('payroll_lists')
                       ->where('id', $trx->id)
                       ->update(['disburse' => 1, 'trx_id' => hex2bin($trxResult['trx_id'])]);

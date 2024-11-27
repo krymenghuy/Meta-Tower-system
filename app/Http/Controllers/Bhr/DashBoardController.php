@@ -9,42 +9,28 @@ use App\Services\Umt\AuthService;
 use App\Models\JDV;
 class DashboardController extends Controller
 {
-    protected $supplier = null, $dashboard;
-    function __construct(){
-        $this->dashboard = new Dashboard();
+    protected $dashboard;
+
+    public function __construct(Dashboard $dashboard)
+    {
+        $this->dashboard = $dashboard;
     }
 
-    // function getSuplierListPaginate(Request $req){
-    //     $ss = AuthService::verifyAuth($req,-1);
-    //     if($ss->status_code !==200) return JDV::raw($ss);
-    //     $data = $this->dashboard->getSuplierListPaginate($req->all(),$ss);
-        
-    //     return JDV::result($data);
-    // }
+    public function countEmployees(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->dashboard->countEmployees($req->all(), $ss));
+    }
 
-    // function setSupplierPriceList(Request $req){
-    //     $ss = AuthService::verifyAuth($req,-1);
-    //     if ($ss->status_code !==200) return JDV::raw($ss); //user not authenticated
-    //     $id = $req->supplier_id? $req->supplier_id:$req->id;
-    //     $supplier = new Supplier($id,$ss);
-    //     $res = $supplier->setPriceList($req->price_list_id);
-    //     // return JDV::result($res );
-    //     if ($res->status==='OK') return JDV::success(['list_name'=>$res->list_name,'list_id'=>$res->list_id]);
-    //     return JDV::error($res->error_message);
-    //  }
-    
-    function getCards(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
-        if ($ss->status_code !==200) return JDV::raw($ss);
-         $data = $this->dashboard->getCards($ss); 
-         return JDV::result($data);
-     }
-
-     //GetSummaryData()
-     function getOverviewData(Request $req){
-        $ss = AuthService::verifyAuth($req,-1);
-        if ($ss->status_code !==200) return JDV::raw($ss);
-         $data = $this->dashboard->getoverviewData($ss); 
-         return JDV::result($data);
-     }
+    public function getDepartments(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->dashboard->getDepartments($req->all(), $ss));
+    }
 }
