@@ -51,4 +51,5 @@ class DashboardController extends Controller
         }
         return JDV::result($this->dashboard->getBenefits($req->all(), $ss));
     }
+    
 }
