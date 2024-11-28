@@ -37,7 +37,7 @@
 
     .row {
         display: flex;
-        justify-content: space-between;
+        /* justify-content: space-between; */
     }
 
     .time_cards {
@@ -75,6 +75,8 @@
     }
 
     .shift_card {
+        display: flex;
+        justify-content: space-between;
         background-color: #fff;
         border: 1px solid #545252;
         border-radius: 5px;
@@ -82,6 +84,10 @@
         padding: 10px;
         width: 100%;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .shift_element {
+        text-align: left;
     }
 
     .shift_time {
@@ -321,6 +327,11 @@
         color: #999;
         margin-top: 10px;
     }
+
+    .days.disabled {
+        pointer-events: none;
+        opacity: 0.5;
+    }
 </style>
 
 <div id="_main_workshiftComponent" style="display:none;padding:20px">
@@ -329,21 +340,21 @@
 
             <div class="d-flex align-items-center w-50 gap-2">
                 <input type="text" class="form-control filter-field btn_search" id="_work_shift_search"
-                        placeholder="Search workShift ...">
+                    placeholder="Search workShift ...">
             </div>
         </div>
 
-            <div class="d-flex align-items-center justify-content-end gap-3  w-50">
-                <div class="d-flex align-items-center">
-                    <select id="el_work_shift" name="shifts" class="data-input filter-field" data-field="shifts"></select>
-                </div>
-                <div class="d-flex">
-                    <button type="button" class="btn_add" id="_btnAddShiftDetail">
-                        <i class="fas fa-plus"></i>
-                        <span>Add Shift Scan</span>
-                    </button>
-                </div>
+        <div class="d-flex align-items-center justify-content-end gap-3  w-50">
+            <div class="d-flex align-items-center">
+                <select id="el_work_shift" name="shifts" class="data-input filter-field" data-field="shifts"></select>
             </div>
+            <div class="d-flex">
+                <button type="button" class="btn_add" id="_btnAddShiftDetail">
+                    <i class="fas fa-plus"></i>
+                    <span>Add Shift Scan</span>
+                </button>
+            </div>
+        </div>
     </div>
 
     <div id="_work_shift_header">
