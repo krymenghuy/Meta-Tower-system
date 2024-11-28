@@ -136,6 +136,15 @@ var WorkshiftComponent = new (function () {
 
                     html += `
                     <div class="shift_card ${actionClass}">
+                        <div class="d-flex justify-content-between gap-3">
+                            <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-shift_detail-modify">
+                                <i class="fa-regular fa-pen-to-square text-info fs-10"></i>
+                            </a>
+                            <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-shift_detail-delete">
+                                <i class="fa-solid fa-trash-can text-danger fs-10"></i>
+                            </a>
+                        </div>
+                        
                         <div class="shift_time">${shift.time}</div>
                         <div class="shift_action">${shift.action}</div>
                     </div>
