@@ -54,7 +54,7 @@ var WalletAccountComponent = new (function () {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.balance ?? ''}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + data.balance ?? ''}</p>`;
             }
         },
         {
