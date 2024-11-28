@@ -313,7 +313,7 @@ const ShiftDetailDialog = (() => {
 
     self.show = (op) => {
         dialog =
-            dialog ||
+            
             new GeneralDialog({
                 cssClass: "modal-md",
                 backdrop: "static", // User click outside form, do not close form
