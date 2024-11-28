@@ -37,7 +37,7 @@
 
     .row {
         display: flex;
-        justify-content: space-between;
+        /* justify-content: space-between; */
     }
 
     .time_cards {
