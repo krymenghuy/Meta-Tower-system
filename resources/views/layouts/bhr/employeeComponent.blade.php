@@ -206,7 +206,7 @@
                     </div>
                 </div>
                 <div class="d-flex align-items-center">
-                    <select type="id" id="el_branch" class="data-input filter-field"
+                    <select type="id" id="el_branch" class="data-input  filter-field"
                         data-field="el_branch"></select>
                 </div>
                 <div class="d-flex align-items-center">
