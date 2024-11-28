@@ -303,7 +303,7 @@ var EmployeeComponent = new (function () {
                 }" data-typeid="${
                     d.emp_type_id
                 }" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-4 tool-tip"> <span class="tool-tiptext fs-10">Actions</span></i>
+                                        <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-4 tool-tip"> <span class="tool-tiptext fs-6">Actions</span></i>
                                     </a>
                                 </div>
                             </div>
@@ -2400,7 +2400,7 @@ const EmployeeDialog = (() => {
                                     <div class="form-group col-4">
                                         <label for="work_shift" class="form-label text-primary-custom " vslang="titles.Work Shift"></label>
                                         <span class="text-danger" >*</span>
-                                        <select name="work_shift" class=" data-input"  data-field="work_shift_id"></select>
+                                        <select name="work_shift" class="work_shift data-input"  data-field="work_shift_id"></select>
                                     </div>
                                       <div class="form-group col-4">
                                         <label for="joining_date" class="form-label text-primary-custom " vslang="titles.Joining Date"></label>
@@ -2418,18 +2418,16 @@ const EmployeeDialog = (() => {
             },
             contentCreated: (me) => {
                 const salary = me.divModal.querySelector(".salary");
-                console.log(1234, salary);
                 salary.classList.add("d-none");
                 //Convert field to be DatePicker : start_date and end_date
                 DateTimePicker.init(me.controls.date_of_birth);
                 DateTimePicker.init(me.controls.joining_date);
-                console.log(444);
                 LocaleManager.translateZone(me.divModal);
                 let div_emp_photo = me.divModal.querySelector(
                     '[name="div_emp_photo"]'
                 );
                 me.userImageBox = new ImageBox(div_emp_photo, {
-                    containerclass: "emp-profile-container",
+                    containerClass: "emp-profile-container",
                     imgClass: "data-input",
                     dataset: { field: "image_url" },
                 });
@@ -2437,7 +2435,6 @@ const EmployeeDialog = (() => {
                 me.showProfile = (code) => {
                     let fields = [];
                     let p = { id: code };
-                    console.log(4545, me);
 
                     vsapi
                         .call(
@@ -2457,7 +2454,6 @@ const EmployeeDialog = (() => {
                                 .querySelectorAll(".data-input")
                                 .forEach((el) => {
                                     const f = el.dataset.field;
-                                    console.log(7788899, d);
 
                                     if (fields.indexOf(f) >= 0) {
                                         el.value = d[f] || "";
@@ -2482,7 +2478,7 @@ const EmployeeDialog = (() => {
                         // mThis.chooseImage(div);
                         // let div_emp_photo = div.querySelector('[name="div_emp_photo"]');
                         me.userImageBox = new ImageBox(div, {
-                            containerclass: "emp-profile-container",
+                            containerClass: "emp-profile-container",
                             imgClass: "data-input",
                             dataset: { field: "image_url" },
                         });
@@ -2491,7 +2487,6 @@ const EmployeeDialog = (() => {
                 me.deleteImage(div_emp_photo);
 
                 me.showProfile(me.dataOptions.id);
-                console.log(13, me.dataOptions.id);
             },
             configSelect: [
                 {
@@ -2527,7 +2522,6 @@ const EmployeeDialog = (() => {
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         let p = me.getData();
-                        console.log(123, p);
 
                         p.photo = me.userImageBox
                             ? me.userImageBox.getImage()
@@ -2572,7 +2566,6 @@ const EmployeeDialog = (() => {
                 LocaleManager.translateZone(me.divModal);
                 me.divModal.querySelectorAll(".data-input").forEach((el) => {
                     const data_member = el.dataset.field;
-                    console.log(90, op.id);
                     const salary = me.divModal.querySelector(".salary");
 
                     let id = op.id;
@@ -2590,7 +2583,6 @@ const EmployeeDialog = (() => {
                             }
                         }
                         if (data_member == "salary" || data_member == "nid") {
-                            console.log(12, el);
                             el.disabled = true;
                         }
 

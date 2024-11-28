@@ -2,7 +2,7 @@
 
 var WorkshiftComponent = new (function () {
     const mThis = this;
-    this.title_prop = "Workshifts";
+    this.title_prop = "Work Shifts";
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_workshiftComponent");
     this.self = this.jm[0];
@@ -336,6 +336,7 @@ const ShiftDetailDialog = (() => {
                                     <div class="days" data-value="Sat">Sat</div>
                                     <div class="days" data-value="Sun">Sun</div>
                                 </div>
+                                
                             </div>
                             <div class="form-group col-12">
                                 <label for="time" class="form-label" vslang="titles.Time">Time</label>
