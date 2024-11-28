@@ -26,14 +26,14 @@ class ShiftDetails
         $v_rule = [
             'id' => '0|identity=1',
             'work_shift_id' => '1|number',
-            'days' => '0|string|0-250', // Allows comma-separated days
+            'day' => '0|string|0-250', // Allows comma-separated days
             'time' => '1|string|0-100',
             'action' => '1|string|0-100',
         ];
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ',','|'];
         $checkUnique = ["$branch_id|shiftDetails|name|id=id|text=Shift Detail already exists."];
         // Validate input
-        $res = validateObject($arr, $v_rule, true, ['days' => $pos_char], $ss->lang, false, $checkUnique);
+        $res = validateObject($arr, $v_rule, true, ['day' => $pos_char], $ss->lang, false, $checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -42,7 +42,7 @@ class ShiftDetails
         $inputs = $res->values;
 
         // Split multiple days into an array
-        $days = explode('|', $inputs['days']);
+        $days = explode('|', $inputs['day']);
         $days = array_map('trim', $days); // Remove whitespace from each day
 
         // Prepare response data
@@ -154,7 +154,7 @@ class ShiftDetails
 
             // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
             'shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
-            'shiftdetails' => $shiftdetails,
+            'shift_details' => $shiftdetails,
         ];
     }
 }
