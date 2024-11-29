@@ -27,6 +27,10 @@
     left: 50%;
     margin-left: -72px;
   }
+  .disabled {
+    pointer-events: none;
+    opacity: 0.5; /* Optional: Visual indicator */
+}
   
   .tool-tip .tool-tiptext::after {
     content: "";
