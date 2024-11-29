@@ -10,7 +10,7 @@ class Attendance
 {
 
     protected $id = null;
-    protected $userInfo = null;
+    protected $userInfo = null,$mins=40;
 
     public function __construct($id = null, $userInfo = null)
     {
@@ -18,39 +18,40 @@ class Attendance
         $this->userInfo = $userInfo;
     }
 
-    function save($arr, $id = null, $ss = null)
+    function save($arr=[], $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
+        $mins = $this->mins;
 
-        // Validation rules
+
         $v_rule = [
-            'id' => '0|identity=1',
-            'emp_id' => '1||exists=employees.id',
-            'check_in_time' => '0|time',
-            'check_out_time' => '0|time',
-            'status_id' => '0|enum|DEFAULT=Present',
-            'remark' => '0|string',
+            'emp_id' => '1|number|exists=employees.id',
+            'attendance_date' => '0|date',
+            'scan_time' => '0|string',
+            'scan_action' => '0|string',
+            'status' => '0|string',
+            'remarks' => '0|string',
         ];
-        $remark = [':', "'", '-', '.', '?', '$', '\'', '@'];
-        $res = validateObject($arr, $v_rule, 1, ["remark" => $remark], $ss->lang, 0, null);
+        $remarks = [':', "'", '-', '.', '?', '$', '\'', '@'];
+        $res = validateObject($arr, $v_rule, 1, ["remarks" => $remarks], $ss->lang, 0, null);
         if ($res->error) {
             return DV::error($res->error);
         }
-
         $inputs = $res->values;
         $emp_id = $inputs['emp_id'];
-
-        // Set the attendance date to the current date if not provided
-        $attendance_date = date('Y-m-d');
-
-        // Check if attendance already exists for the employee on the same date
+        $attendance_date = date('Y-m-d',strtotime($inputs['attendance_date']));
+        $today = date('Y-m-d');
+        $day_name = date('D',strtotime($attendance_date));
+        $except_days = ['Sun'];
+        if (in_array($day_name, $except_days)) {
+            return DV::error('The day is a weekend');
+        }
         $existingAttendance = DB::table('attendances')
             ->where('emp_id', $emp_id)
             ->whereDate('attendance_date', $attendance_date)
             ->first();
-
         if ($existingAttendance) {
             if (!$id || $id != $existingAttendance->id) {
                 return DV::error('Attendance for this employee on this date already exists.');
@@ -58,31 +59,25 @@ class Attendance
             $id = $existingAttendance->id; // Use existing ID for updates
         }
 
-        $day_name = date('D', strtotime($attendance_date));
-        $except_days = ['Sun'];
-        if (in_array($day_name, $except_days)) {
-            return DV::error('The day is a weekend');
-        }
+        $d = (object)$inputs;
 
-        // Determine check-in time, check-out time, and status
-        $check_in_time = isset($inputs['check_in_time']) ? date('H:i:s', strtotime($inputs['check_in_time'])) : '00:00:00';
-        $check_out_time = isset($inputs['check_out_time']) ? date('H:i:s', strtotime($inputs['check_out_time'])) : '00:00:00';
 
-        $status_id = ($check_in_time <= '08:00:00') ? 'Present' : 'Late';
-        $remark = isset($inputs['remark']) ? $inputs['remark'] : (($check_in_time < '08:00:00') ? 'On time' : '');
+        $scan_time = isset($inputs['scan_time']) ? date('H:i:s', strtotime($inputs['scan_time'])) : '00:00:00';
+        $scan_action = 
+        $status = ($scan_time <= '08:00:00') ? 'Present' : 'Late';
+        $remarks = isset($inputs['remarks']) ? $inputs['remarks'] : (($scan_time < '08:00:00') ? 'On time' : '');
 
         $arr_attendance = [
             'emp_id' => $emp_id,
-            'check_in_time' => $check_in_time,
-            'check_out_time' => $check_out_time,
+            'scan_time' => $scan_time,
+            'scan_action' => $scan_action,
             'attendance_date' => $attendance_date,
-            'status_id' => $status_id,
-            'remark' => $remark,
+            'status' => $status,
+            'remarks' => $remarks,
         ];
 
-        unset($inputs['status_id']);
+        // unset($inputs['status']);
 
-        // Save the attendance data (insert or update based on ID)
         $newID = saveData($ss, 'attendances', ['id' => $id], $arr_attendance, [], 1, 1);
 
         return DV::depends($newID, ['attendances' => $inputs, 'id' => $newID], $ss);
@@ -286,6 +281,12 @@ class Attendance
         return (object) [
 
             'employees' => GeneralSettings::options_employee(10, $ss),
+            'branches' => GeneralSettings::options_branch($ss),
+            'positions' => DB::table('positions')->selectRaw('id,title')->get(),
+            'departments' => DB::table('departments')->selectRaw('id,name')->get(),
+
+
+
             'attendance' => $attendance,
         ];
     }

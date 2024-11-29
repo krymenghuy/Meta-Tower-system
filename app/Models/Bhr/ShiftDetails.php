@@ -21,7 +21,7 @@ class ShiftDetails
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-
+        $arr['day'] = $arr['days'];
         // Validation rules
         $v_rule = [
             'id' => '0|identity=1',
@@ -40,11 +40,11 @@ class ShiftDetails
 
         $id = $res->id;
         $inputs = $res->values;
+        \Log::info($inputs['day']);
 
         // Split multiple days into an array
         $days = explode('|', $inputs['day']);
         $days = array_map('trim', $days); // Remove whitespace from each day
-
         // Prepare response data
         $savedRows = [];
         foreach ($days as $day) {

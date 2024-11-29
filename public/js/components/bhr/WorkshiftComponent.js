@@ -448,21 +448,27 @@ const ShiftDetailDialog = (() => {
                 },
                 onPrepareForm: (me, data) => {
                       LocaleManager.translateZone(me.divModal);
-                      const days = me.divModal.querySelectorAll(".days");
-
-                    days.forEach((day) => {
-                          if (data.shift_details.day == day.dataset.value) {
-                              day.classList.add("active");
-                          } else day.classList.remove("active");
-
-                      });
+                    
                     
                     me.divModal.querySelectorAll(".data-input").forEach((el) => {
                     const data_member = el.dataset.field;
 
-                    let id = op.id;
+                    const id = op.id;
 
                     if (id) {
+                        const days = me.divModal.querySelectorAll(".days");
+
+                        days.forEach((day) => {
+                            if (data.shift_details.day == day.dataset.value) {
+                                day.classList.add("active");
+                                
+                            } else 
+                                day.classList.remove("active");
+                            
+                                day.classList.add("disabled");
+                        });
+
+                       
                         if (el.tagName.toLowerCase() === "select") {
                             if (
                                 data_member == "shifts" ||
@@ -479,8 +485,9 @@ const ShiftDetailDialog = (() => {
                         // }
 
                         id = null;
-                    }
-                });
+                        
+                    }else day.classList.remove("disabled");
+                }   );
                   
 
 

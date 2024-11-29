@@ -1,7 +1,7 @@
 "use strict";
 
 var StaffAttendanceComponent = new (function () {
-    let mThis = this;
+    const mThis = this;
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_staffAttendanceComponent");
     this.self = this.jm[0];
@@ -9,7 +9,7 @@ var StaffAttendanceComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnAddStaffAttendance");
     this.elSearch = this.self.querySelector("#_staff_attendance_search");
     this.divFilter = this.self.querySelector("#_divFilter_attendance");
-    this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
+    
 
     this.cols = [
         {
@@ -85,7 +85,6 @@ var StaffAttendanceComponent = new (function () {
         },
     ];
 
-    // Initialize component
     this.init = function () {
         if (mThis.initAlready) return;
 

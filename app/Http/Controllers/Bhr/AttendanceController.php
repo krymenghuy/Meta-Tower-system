@@ -19,9 +19,9 @@ class AttendanceController extends Controller
 
     public function saveAttendance(Request $req)
     {
-        $id = $req->id;
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
+        $id = $req->id;
 
         // $id = $req->attendance_id ?? $req->id;
         $attendance = $this->attendance->save($req->all(),$id, $ss);

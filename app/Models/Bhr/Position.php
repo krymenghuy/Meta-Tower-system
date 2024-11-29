@@ -108,7 +108,8 @@ class Position
         return (object) [
 
             // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
-            'departments' => DB::table('departments')->selectRaw('id,name')->get(),
+            
+            'departments' => DB::table('departments as d')->where('d.inactive',0)->selectRaw('id,name')->get(),
             'positions' => $position,
         ];
 
