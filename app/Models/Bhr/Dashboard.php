@@ -31,14 +31,12 @@ class Dashboard
             ->get()
             ->keyBy('status_id');
 
-
         $empTypeCounts = DB::table('employees as e')
             ->join('emp_types as t', 'e.emp_type_id', '=', 't.id')
             ->whereNotIn('e.status_id', [20, 21])
             ->select('t.name', 'e.emp_type_id', DB::raw('COUNT(*) as count'))
             ->groupBy('e.emp_type_id', 't.name')
             ->get();
-
 
         $currentMonth = date('Y-m'); // Format: YYYY-MM
         $newEmployees = DB::table('employees as e')
@@ -158,8 +156,8 @@ class Dashboard
 
             'data' => $rows,
             'count' => $count,
-            'total_payroll' => $total_payroll,
-            'total_wallet' => $total_wallet,
+            'total_payroll' => DBX::cutDigit($total_payroll->total_payroll),
+            'total_wallet' => DBX::cutDigit($total_wallet->total_wallet),
             'count_warning' => $count_warning,
         ];
     }
@@ -182,7 +180,20 @@ class Dashboard
             ')
             ->first();
 
-        return $query;
+        // Format numeric values
+        $result = [
+            'total_amount' => DBX::cutDigit($query->total_amount),
+            'total_bonuses' => DBX::cutDigit($query->total_bonuses),
+            'total_seniority' => DBX::cutDigit($query->total_seniority),
+            'total_life_insurance' => DBX::cutDigit($query->total_life_insurance),
+            'total_other' => DBX::cutDigit($query->total_other),
+            'lud_bonuses' => $query->lud_bonuses,
+            'lud_seniority' => $query->lud_seniority,
+            'lud_life_insurance' => $query->lud_life_insurance,
+            'lud_other' => $query->lud_other,
+        ];
+
+        return $result;
     }
 
 }

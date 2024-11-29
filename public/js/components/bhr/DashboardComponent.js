@@ -12,6 +12,7 @@ var DashboardComponent = new (function () {
     this.dashboard_Bottom  = mThis.self.querySelector('#_dashboard_bottom');
     this.dashboard_Bottom_left = mThis.self.querySelector('#_dashboard_bottom_left');
     this.dashboard_Bottom_right = mThis.self.querySelector('#_dashboard_bottom_right');
+    this.barchart = mThis.self.querySelector('#barchart');
 
 
     this.init = () => {
@@ -31,14 +32,10 @@ var DashboardComponent = new (function () {
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Departments</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
-                <div class="total_bottom">
-                    <div class="">
-                        <div class="d-flex"><span class="text-success" style="width: 60px;">Active </span> <span>: ${data.d_activeCount}</span></div>
-                        <div class="d-flex"><span class="text-danger" style="width: 60px;">Inactive </span> <span>: ${data.d_inactiveCount}</span></div>
-                    </div>
-                    <i class="fa-solid fa-building-user text-black-50" style="font-size: 1.5rem;"></i>
+                 <div class="total_bottom">
+                    <span class="total_number">${data.d_activeCount}</span>
+                 <img class="w-15" src="${main_view.asset_url}/images/icons/department.png" alt=""/>
                 </div>
             </div>
         </div>
@@ -46,14 +43,10 @@ var DashboardComponent = new (function () {
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Positions</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
-                    <div class="">
-                        <div class="d-flex"><span class="text-success" style="width: 60px;">Active </span> <span>: ${data.p_activeCount}</span></div>
-                        <div class="d-flex"><span class="text-danger" style="width: 60px;">Inactive </span> <span>: ${data.p_inactiveCount}</span></div>
-                    </div>
-                    <i class="fa-solid fa-building-user text-black-50" style="font-size: 1.5rem;"></i>
+                    <span class="total_number">${data.p_activeCount}</span>
+                     <img class="w-15" src="${main_view.asset_url}/images/icons/position.png" alt=""/>
                 </div>
             </div>
         </div>
@@ -61,11 +54,10 @@ var DashboardComponent = new (function () {
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Active Employees</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
                     <span class="total_number">${data.active}</span>
-                    <i class="fa fa-users text-black-50" style="font-size: 1.5rem;"></i>
+                   <img class="w-15" src="${main_view.asset_url}/images/icons/employee.png" alt=""/>
                 </div>
             </div>
         </div>
@@ -73,11 +65,10 @@ var DashboardComponent = new (function () {
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Resigned Staff</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
                     <span class="total_number">${data.resigned}</span>
-                    <i class="fa fa-users-slash text-black-50" style="font-size: 1.5rem;"></i>
+                    <img class="w-15" src="${main_view.asset_url}/images/icons/resign.png" alt=""/>
                 </div>
             </div>
         </div>
@@ -85,11 +76,10 @@ var DashboardComponent = new (function () {
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Staff</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
                     <span class="total_number">${empTypesStaff.count}</span>
-                    <i class="fa fa-users text-black-50" style="font-size: 1.5rem;"></i>
+                     <img class="w-15" src="${main_view.asset_url}/images/icons/staff.png" alt=""/>
                 </div>
             </div>
         </div>
@@ -97,11 +87,10 @@ var DashboardComponent = new (function () {
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Internship</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
                     <span class="total_number">${empTypesInternship.count}</span>
-                    <i class="fa fa-users text-black-50" style="font-size: 1.5rem;"></i>
+                   <img class="w-15" src="${main_view.asset_url}/images/icons/internship.png" alt=""/>
                 </div>
             </div>
         </div>
@@ -109,11 +98,10 @@ var DashboardComponent = new (function () {
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">In Probation</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
                     <span class="total_number">${empTypesInProbation.count}</span>
-                    <i class="fa fa-users text-black-50" style="font-size: 1.5rem;"></i>
+                    <img class="w-15" src="${main_view.asset_url}/images/icons/internship.png" alt=""/>
                 </div>
             </div>
         </div>
@@ -122,11 +110,10 @@ var DashboardComponent = new (function () {
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">New Employees</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
                     <span class="total_number">${data.new_employees}</span>
-                    <i class="fa fa-users text-black-50" style="font-size: 1.5rem;"></i>
+                    <img class="w-15" src="${main_view.asset_url}/images/icons/new-employee.png" alt=""/>
                 </div>
             </div>
         </div>
@@ -143,11 +130,10 @@ var DashboardComponent = new (function () {
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Total Payrolls</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
-                    <span class="total_number">${data.total_payroll.total_payroll} ៛</span>
-                    <i class="fa-solid fa-wallet text-black-50" style="font-size: 1.5rem;"></i>
+                    <span class="total_number">${main_view.currency.symbol + data.total_payroll}</span>
+                   <img class="w-15" src="${main_view.asset_url}/images/icons/calculator.png" alt=""/>
                 </div>
             </div>
         </div>
@@ -155,11 +141,10 @@ var DashboardComponent = new (function () {
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Total Wallets</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
-                    <span class="total_number">${data.total_wallet.total_wallet} ៛</span>
-                    <i class="fa-solid fa-wallet text-black-50" style="font-size: 1.5rem;"></i>
+                    <span class="total_number">${main_view.currency.symbol + data.total_wallet}</span>
+                     <img class="w-15" src="${main_view.asset_url}/images/icons/calculator.png" alt=""/>
                 </div>
             </div>
         </div>
@@ -168,11 +153,10 @@ var DashboardComponent = new (function () {
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Total Warnings</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
                     <span class="total_number">${data.count_warning}</span>
-                    <i class="fa-solid fa-triangle-exclamation text-black-50" style="font-size: 1.5rem;"></i>
+                    <img class="w-15" src="${main_view.asset_url}/images/icons/warning.png" alt=""/>
                 </div>
             </div>
         </div>
@@ -180,11 +164,10 @@ var DashboardComponent = new (function () {
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">On Leaves Today</span>
-                    <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
                     <span class="total_number">${data.count}</span>
-                    <i class="fa fa-user-check text-black-50" style="font-size: 1.5rem;"></i>
+                    <img class="w-15" src="${main_view.asset_url}/images/icons/leave.png" alt=""/>
                 </div>
             </div>
         </div>
@@ -296,27 +279,27 @@ var DashboardComponent = new (function () {
                 <tbody>
                     <tr>
                         <td>Bonus</td>
-                        <td>${data.total_bonuses}​ ៛</td>
+                        <td>${main_view.currency.symbol + data.total_bonuses}​</td>
                         <td>${data.lud_bonuses || 'N/A'}</td>
                     </tr>
                     <tr>
                         <td>Seniority</td>
-                        <td>${data.total_seniority} ៛</td>
+                        <td>${main_view.currency.symbol + data.total_seniority}</td>
                         <td>${data.lud_seniority || 'N/A'}</td>
                     </tr>
                     <tr>
                         <td>Life Insurance</td>
-                        <td>${data.total_life_insurance} ៛</td>
+                        <td>${main_view.currency.symbol + data.total_life_insurance}</td>
                         <td>${data.lud_life_insurance || 'N/A'}</td>
                     </tr>
                     <tr>
                         <td>Other</td>
-                        <td>${data.total_other} ៛</td>
+                        <td>${main_view.currency.symbol + data.total_other}</td>
                         <td>${data.lud_other || 'N/A'}</td>
                     </tr>
                     <tr>
                         <td>Total</td>
-                        <td class="text-success">${data.total_amount} ៛</td>
+                        <td class="text-success">${main_view.currency.symbol + data.total_amount}</td>
 
                     </tr>
                 </tbody>
@@ -333,7 +316,7 @@ var DashboardComponent = new (function () {
         let p={};
 
         vsapi.call(`${main_view.base_url}/hr/dashboard/count-employees`,p, null,false,false).then(res => {
-            let data = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data) : {};
+            let data = (res.status_code === 200) ?res.data : {};
             // console.log(123,data);
             mThis.renderDashboardTop(data);
             onFinish();
@@ -343,7 +326,7 @@ var DashboardComponent = new (function () {
     this.loadCardsCenter = (onFinish)=>{
         let p={};
         vsapi.call(`${main_view.base_url}/hr/dashboard/get-departments`,p, null,false,false).then(res => {
-            let data = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data) : {};
+            let data = (res.status_code === 200) ?res.data : {};
             mThis.renderDashboardCenter(data);
             onFinish();
           });
@@ -363,7 +346,7 @@ var DashboardComponent = new (function () {
     this.loadCardsBottomRight = (onFinish)=>{
         let p={};
         vsapi.call(`${main_view.base_url}/hr/dashboard/get-benefits`,p, null,false,false).then(res => {
-            let data = (res.status_code === 200) ? StringSanitizer.sanitizeObject(res.data) : {};
+            let data = (res.status_code === 200) ?res.data : {};
             mThis.renderDashboardBottomRight(data);
             onFinish();
           });

@@ -13,6 +13,10 @@
             </div>
         </div>
 
+        <div class="bar_chart" id="_bar_chart">
+
+        </div>
+
     </div>
     <div id="_dep_list" class="pt-3 px-3"></div>
 </div>

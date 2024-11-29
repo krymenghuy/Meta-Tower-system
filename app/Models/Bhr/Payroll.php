@@ -71,17 +71,15 @@ class Payroll
         $search_authorized = $d->authorized ?? null;
         $search_disbursed = $d->disbursed ?? null;
 
-        $start_date = DBX::formatDate('p.start_date','start_date');
-        $end_date = DBX::formatDate('p.end_date','end_date');
-
-        $str_search = '1=1';
+        $start_date = DBX::formatDate('p.start_date', 'start_date');
+        $end_date = DBX::formatDate('p.end_date', 'end_date');
 
         $query = DB::table('payrolls as p')
-        ->selectRaw('p.id, p.name, p.month_year,
-                    '.$start_date.', '.$end_date.',
-                     p.p_number, p.total, p.authorized, p.disbursed,
-                     p.currency_code, p.exchange_rate')
-        ->where('p.branch_id', $branch_id);
+            ->selectRaw('p.id, p.name, p.month_year,
+                        ' . $start_date . ', ' . $end_date . ',
+                         p.p_number, p.total, p.authorized, p.disbursed,
+                         p.currency_code, p.exchange_rate')
+            ->where('p.branch_id', $branch_id);
 
         if ($search_id) {
             $query->where('p.id', $search_id);
@@ -102,10 +100,12 @@ class Payroll
 
         foreach ($rows as $row) {
             $row->month_year = date('M Y', strtotime($row->month_year));
+            $row->total = DBX::cutDigit($row->total); // Apply cutDigit here
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
 
     function getDetails($id, $ss)
     {
@@ -113,14 +113,16 @@ class Payroll
             ->selectRaw('p.id, p.name, p.month_year, p.start_date, p.end_date, p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
             ->where('p.branch_id', $ss->branch_id)
             ->where('p.id', $id)
-            ->first();  // No need for `take(1)`.
+            ->first();
 
         if ($row) {
             $row->month_year = date('M Y', strtotime($row->month_year));
+            $row->total = DBX::cutDigit($row->total); // Format `total` using `cutDigit`.
         }
 
         return $row;
     }
+
 
     function deletePayroll($id, $ss)
     {
