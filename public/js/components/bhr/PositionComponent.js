@@ -31,15 +31,20 @@ var PositionComponent = new (function () {
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data) => {
                 const formattedSalary = data.salary
-                    ? new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(data.salary)
+                    ? new Intl.NumberFormat('en-US', {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                          useGrouping: true
+                      }).format(data.salary)
                     : "";
                 
                 return `
                     <span class="text-primary-custom" style="font-weight: bold;">
-                        ${formattedSalary}  <span class="text-danger">(KHR)</span>
+                        ${formattedSalary} <span class="text-danger">(KHR)</span>
                     </span>
                 `;
             },
+            
         }
         ,
         

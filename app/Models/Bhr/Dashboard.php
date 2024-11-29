@@ -2,11 +2,8 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\DV;
-use App\Models\JDV;
 use App\Models\Bhr\Dashboard;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
 
 class Dashboard
@@ -22,9 +19,11 @@ class Dashboard
     {
         $d = (object) $arr;
 
-        $count_department = DB::table('departments')->count();
-        $count_position = DB::table('positions')->count();
+        $d_activeCount = DB::table('departments')->where('inactive', 0)->count();
+        $d_inactiveCount = DB::table('departments')->where('inactive', 1)->count();
 
+        $p_activeCount = DB::table('positions')->where('inactive', 0)->count();
+        $p_inactiveCount = DB::table('positions')->where('inactive', 1)->count();
 
         $counts = DB::table('employees as e')
             ->select('e.status_id', DB::raw('COUNT(*) as count'))
@@ -47,8 +46,10 @@ class Dashboard
             ->count();
 
         return [
-            'count_department' => $count_department,
-            'count_position' => $count_position,
+            'd_activeCount' => $d_activeCount,
+            'd_inactiveCount' => $d_inactiveCount,
+            'p_activeCount' => $p_activeCount,
+            'p_inactiveCount' => $p_inactiveCount,
             'total' => $counts->sum('count'),
             'active' => $counts->has(10) ? $counts->get(10)->count : 0,
             'resigned' => $counts->has(20) ? $counts->get(20)->count : 0,
@@ -63,12 +64,7 @@ class Dashboard
         ];
     }
 
-
     function getDepartments() {
-
-        $departmentCount = DB::table('departments')->count();
-        $positionCount = DB::table('positions')->count();
-
 
         $query = DB::table('departments as d')
             ->join('positions as p', 'p.department_id', '=', 'd.id')
@@ -91,8 +87,6 @@ class Dashboard
 
 
         return [
-            'department_count' => $departmentCount,
-            'position_count' => $positionCount,
             'department_data' => $departmentData
         ];
     }
@@ -102,6 +96,17 @@ class Dashboard
         $subs_id = $ss->subs_id ?? null;
         $d = (object) $arr;
 
+        $total_payroll = DB::table('accounts as a')
+            ->where('a.id', '<>', 1) // Exclude rows where id = 1
+            ->selectRaw('SUM(a.balance) as total_payroll')
+            ->first();
+
+
+        $total_wallet =  DB::table('wallet_accounts as w')
+            ->selectRaw(' SUM(w.balance) as total_wallet')
+            ->first();
+
+        $count_warning = DB::table('emp_warnings')->count();
         $start_date = $d->start_date ?? null;
         $end_date = $d->end_date ?? null;
 
@@ -128,7 +133,6 @@ class Dashboard
         $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
         $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
 
-        // Fetch leave data
         $query = DB::table('leaves as l')
             ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
@@ -139,11 +143,9 @@ class Dashboard
             )
             ->orderBy('l.id', 'DESC');
 
-        // Get rows and count
         $rows = $query->get();
         $count = $query->count();
 
-        // Process rows
         foreach ($rows as $row) {
             $row->image_url = '';
             if (!empty($row->emp_id) && !empty($row->emp_photo)) {
@@ -153,8 +155,12 @@ class Dashboard
         }
 
         return [
+
             'data' => $rows,
             'count' => $count,
+            'total_payroll' => $total_payroll,
+            'total_wallet' => $total_wallet,
+            'count_warning' => $count_warning,
         ];
     }
 
@@ -174,12 +180,10 @@ class Dashboard
                 MAX(CASE WHEN b.benefit_type_id = 3 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_life_insurance,
                 MAX(CASE WHEN b.benefit_type_id = 4 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_other
             ')
-            ->first(); 
+            ->first();
+
         return $query;
     }
-
-
-
 
 }
 

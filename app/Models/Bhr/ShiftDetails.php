@@ -5,7 +5,7 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-
+use Illuminate\Support\Facades\Log;
 class ShiftDetails
 {
     protected $id = null;
@@ -21,7 +21,7 @@ class ShiftDetails
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-
+        $arr['day'] = $arr['days'];
         // Validation rules
         $v_rule = [
             'id' => '0|identity=1',
@@ -30,7 +30,7 @@ class ShiftDetails
             'time' => '1|string|0-100',
             'action' => '1|string|0-100',
         ];
-        $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ',','|'];
+        $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ',', '|'];
         $checkUnique = ["$branch_id|shiftDetails|name|id=id|text=Shift Detail already exists."];
         // Validate input
         $res = validateObject($arr, $v_rule, true, ['day' => $pos_char], $ss->lang, false, $checkUnique);
@@ -40,18 +40,18 @@ class ShiftDetails
 
         $id = $res->id;
         $inputs = $res->values;
+        Log::info($inputs['day']);
 
         // Split multiple days into an array
         $days = explode('|', $inputs['day']);
         $days = array_map('trim', $days); // Remove whitespace from each day
-
         // Prepare response data
         $savedRows = [];
         foreach ($days as $day) {
             // Update the 'day' field for each row
             $inputs['day'] = $day;
-            
-            unset($inputs['day']);
+
+            unset($inputs['days']);
             // Save data for each day
             $savedId = saveData($ss, 'shift_details', ['id' => $id], $inputs, [], 1);
             if ($savedId > 0) {
@@ -81,12 +81,12 @@ class ShiftDetails
         $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
         $rows = DB::table('shift_details as sd')
-        ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
-        ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action')
-        ->where('ws.id', $work_shift_id)->get();
+            ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
+            ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action')
+            ->where('ws.id', $work_shift_id)->get();
 
         $data = [];
-        foreach($days as $day){
+        foreach ($days as $day) {
             $ds = self::getScanTimes($rows, $day);
             $data[$day] = $ds;
         }
@@ -94,13 +94,14 @@ class ShiftDetails
         return $data;
     }
 
-    static function getScanTimes($rows, $day){
+    static function getScanTimes($rows, $day)
+    {
         $day = strtolower($day);
-        $founds = $rows->filter(function($x) use($day){
+        $founds = $rows->filter(function ($x) use ($day) {
             return strtolower($x->day) == $day;
         });
         $xs = [];
-        foreach($founds as $row){
+        foreach ($founds as $row) {
             $xs[] = $row;
         }
         return $xs;
@@ -119,7 +120,7 @@ class ShiftDetails
                 $newRows[] = $row;
             }
         }
-        return $newRows ;
+        return $newRows;
     }
 
     function getDetails($id, $ss)

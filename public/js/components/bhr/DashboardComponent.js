@@ -7,16 +7,15 @@ var DashboardComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_dashboardComponent");
     this.self = this.jm[0];
     this.dashboard_top = mThis.self.querySelector('#_dashboard_top');
+    this.dashboard_middle = mThis.self.querySelector('#_dashboard_middle');
     this.dashboard_center = mThis.self.querySelector('#_dashboard_center');
     this.dashboard_Bottom  = mThis.self.querySelector('#_dashboard_bottom');
     this.dashboard_Bottom_left = mThis.self.querySelector('#_dashboard_bottom_left');
     this.dashboard_Bottom_right = mThis.self.querySelector('#_dashboard_bottom_right');
 
 
-    // Initialize component
-    this.init= () => {
-        if(mThis.initAlready) return;
-
+    this.init = () => {
+        if (mThis.initAlready) return;
         mThis.initAlready = true;
     }
 
@@ -28,31 +27,37 @@ var DashboardComponent = new (function () {
         let empTypesInternship = data.emp_types.find((type) => type.name === "Internship") || { count: 0 };
 
         let html = `
-        <div class="employees text-black-50" style="background-color: #7DE5ED; ">
-            <div class="total_employee" >
+        <div class="employees text-black-50" style="background-color: #7DE5ED;">
+            <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Departments</span>
                     <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
-                    <span class="total_number">${data.count_department}</span>
-                   <i class="fa-solid fa-building-user text-black-50" style="font-size: 1.5rem;"></i>
+                    <div class="">
+                        <div class="d-flex"><span class="text-success" style="width: 60px;">Active </span> <span>: ${data.d_activeCount}</span></div>
+                        <div class="d-flex"><span class="text-danger" style="width: 60px;">Inactive </span> <span>: ${data.d_inactiveCount}</span></div>
+                    </div>
+                    <i class="fa-solid fa-building-user text-black-50" style="font-size: 1.5rem;"></i>
                 </div>
             </div>
         </div>
-         <div class="employees text-black-50" style="background-color: #82ACFF;">
+        <div class="employees text-black-50" style="background-color: #7DE5ED;">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Positions</span>
                     <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
-                    <span class="total_number">${data.count_position}</span>
-                   <i class="fa-solid fa-building-user text-black-50" style="font-size: 1.5rem;"></i>
+                    <div class="">
+                        <div class="d-flex"><span class="text-success" style="width: 60px;">Active </span> <span>: ${data.p_activeCount}</span></div>
+                        <div class="d-flex"><span class="text-danger" style="width: 60px;">Inactive </span> <span>: ${data.p_inactiveCount}</span></div>
+                    </div>
+                    <i class="fa-solid fa-building-user text-black-50" style="font-size: 1.5rem;"></i>
                 </div>
             </div>
         </div>
-        <div class="employees text-black-50" style="background-color: #00FF9C">
+        <div class="employees text-black-50" style="background-color: #00FF9C;">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Active Employees</span>
@@ -64,20 +69,31 @@ var DashboardComponent = new (function () {
                 </div>
             </div>
         </div>
-        <div class="employees text-black-50" style="background-color: #FF8A8A">
+        <div class="employees text-black-50" style="background-color: #FF8A8A;">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Resigned Staff</span>
                     <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
-                    <span class="total_number ">${data.resigned}</span>
+                    <span class="total_number">${data.resigned}</span>
                     <i class="fa fa-users-slash text-black-50" style="font-size: 1.5rem;"></i>
                 </div>
             </div>
         </div>
-
-         <div class="employees text-black-50" style="background-color: #BBE9FF">
+        <div class="employees text-black-50" style="background-color: #4CC9FE;">
+            <div class="total_employee">
+                <div class="total_top">
+                    <span class="total_title">Staff</span>
+                    <i class="fa fa-ellipsis-v total_icon"></i>
+                </div>
+                <div class="total_bottom">
+                    <span class="total_number">${empTypesStaff.count}</span>
+                    <i class="fa fa-users text-black-50" style="font-size: 1.5rem;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="employees text-black-50" style="background-color: #BBE9FF;">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">Internship</span>
@@ -89,7 +105,7 @@ var DashboardComponent = new (function () {
                 </div>
             </div>
         </div>
-        <div class="employees text-black-50" style="background-color: #C4D7FF">
+        <div class="employees text-black-50" style="background-color: #C4D7FF;">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">In Probation</span>
@@ -102,7 +118,7 @@ var DashboardComponent = new (function () {
             </div>
         </div>
 
-         <div class="employees text-black-50" style="background-color: #B6FFA1">
+        <div class="employees text-black-50" style="background-color: #45FFCA;">
             <div class="total_employee">
                 <div class="total_top">
                     <span class="total_title">New Employees</span>
@@ -114,21 +130,66 @@ var DashboardComponent = new (function () {
                 </div>
             </div>
         </div>
-         <div class="employees text-black-50" style="background-color: #FF2929">
+
+        `;
+        mThis.dashboard_top.innerHTML = html;
+    };
+
+    this.renderTop = (data) => {
+        if (!data) return;
+
+        let html = `
+        <div class="employees text-black-50" style="background-color: skyblue;">
             <div class="total_employee">
                 <div class="total_top">
-                    <span class="total_title">Terminated</span>
+                    <span class="total_title">Total Payrolls</span>
                     <i class="fa fa-ellipsis-v total_icon"></i>
                 </div>
                 <div class="total_bottom">
-                    <span class="total_number ">${data.terminated}</span>
-                    <i class="fa fa-users-slash text-black-50" style="font-size: 1.5rem;"></i>
+                    <span class="total_number">${data.total_payroll.total_payroll} ៛</span>
+                    <i class="fa-solid fa-wallet text-black-50" style="font-size: 1.5rem;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="employees text-black-50" style="background-color: #00FF9C;">
+            <div class="total_employee">
+                <div class="total_top">
+                    <span class="total_title">Total Wallets</span>
+                    <i class="fa fa-ellipsis-v total_icon"></i>
+                </div>
+                <div class="total_bottom">
+                    <span class="total_number">${data.total_wallet.total_wallet} ៛</span>
+                    <i class="fa-solid fa-wallet text-black-50" style="font-size: 1.5rem;"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="employees text-black-50" style="background-color: #FA7070;">
+            <div class="total_employee">
+                <div class="total_top">
+                    <span class="total_title">Total Warnings</span>
+                    <i class="fa fa-ellipsis-v total_icon"></i>
+                </div>
+                <div class="total_bottom">
+                    <span class="total_number">${data.count_warning}</span>
+                    <i class="fa-solid fa-triangle-exclamation text-black-50" style="font-size: 1.5rem;"></i>
+                </div>
+            </div>
+        </div>
+        <div class="employees text-black-50" style="background-color: #FFC5C5;">
+            <div class="total_employee">
+                <div class="total_top">
+                    <span class="total_title">On Leaves Today</span>
+                    <i class="fa fa-ellipsis-v total_icon"></i>
+                </div>
+                <div class="total_bottom">
+                    <span class="total_number">${data.count}</span>
+                    <i class="fa fa-user-check text-black-50" style="font-size: 1.5rem;"></i>
                 </div>
             </div>
         </div>
         `;
-
-        mThis.dashboard_top.innerHTML = html;
+        mThis.dashboard_middle.innerHTML = html;
     };
 
     this.renderDashboardCenter = data => {
@@ -147,7 +208,6 @@ var DashboardComponent = new (function () {
             </tr>
           `)
           .join("");
-
 
         let html = `
           <div class="em_departement">
@@ -236,27 +296,27 @@ var DashboardComponent = new (function () {
                 <tbody>
                     <tr>
                         <td>Bonus</td>
-                        <td>${data.total_bonuses}</td>
+                        <td>${data.total_bonuses}​ ៛</td>
                         <td>${data.lud_bonuses || 'N/A'}</td>
                     </tr>
                     <tr>
                         <td>Seniority</td>
-                        <td>${data.total_seniority}</td>
+                        <td>${data.total_seniority} ៛</td>
                         <td>${data.lud_seniority || 'N/A'}</td>
                     </tr>
                     <tr>
                         <td>Life Insurance</td>
-                        <td>${data.total_life_insurance}</td>
+                        <td>${data.total_life_insurance} ៛</td>
                         <td>${data.lud_life_insurance || 'N/A'}</td>
                     </tr>
                     <tr>
                         <td>Other</td>
-                        <td>${data.total_other}</td>
+                        <td>${data.total_other} ៛</td>
                         <td>${data.lud_other || 'N/A'}</td>
                     </tr>
                     <tr>
                         <td>Total</td>
-                        <td class="text-success">${data.total_amount}</td>
+                        <td class="text-success">${data.total_amount} ៛</td>
 
                     </tr>
                 </tbody>
@@ -295,6 +355,7 @@ var DashboardComponent = new (function () {
         vsapi.call(`${main_view.base_url}/hr/dashboard/get-levels`,p, null,false,false).then(res => {
             let data = (res.status_code === 200) ?res.data : {};
             mThis.renderDashboardBottomLeft(data);
+            mThis.renderTop(data);
             onFinish();
           });
     }

@@ -2,22 +2,20 @@
     <div class="dashboard_top" id="_dashboard_top">
     </div>
 
+    <div class="dashboard_middle" id="_dashboard_middle"></div>
+
     <div class="dashboard_center" id="_dashboard_center">
     </div>
 
     <div class="dashboard_bottom" id="_dashboard_bottom">
+
         <div class="bottom_left" id="_dashboard_bottom_left">
         </div>
 
         <div class="bottom_right" id="_dashboard_bottom_right">
-
         </div>
+
     </div>
-
-
-
-
-
 </div>
 
 <style>
@@ -34,6 +32,7 @@
         background-color: skyblue;
         cursor: pointer;
     }
+
     .dashboard_top {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -42,7 +41,14 @@
         background-color: #f4f4f4;
     }
 
-    /* Employee Card */
+    .dashboard_middle {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        grid-gap: 20px;
+        padding: 20px;
+        background-color: #f4f4f4;
+    }
+
     .employees {
         background-color: white;
         border-radius: 10px;
@@ -60,7 +66,6 @@
         height: 100%;
     }
 
-
     .total_top {
         display: flex;
         justify-content: space-between;
@@ -73,7 +78,6 @@
         font-weight: bold;
     }
 
-    /* Bottom Section (Number and Icon) */
     .total_bottom {
         display: flex;
         justify-content: space-between;
@@ -98,7 +102,6 @@
     cursor: pointer !important;
     } */
 
-
     .dashboard_center {
         display: flex;
         justify-content: center;
@@ -107,7 +110,6 @@
         gap: 1rem;
     }
 
-    /* Styling for Leave Cards */
     .bottom_left {
         display: flex;
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
@@ -119,6 +121,7 @@
         padding: 10px;
         border-radius: 20px;
     }
+
     .bottom_right {
         display: flex;
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
@@ -127,31 +130,9 @@
         justify-content: space-between;
         background-color: #E1ECF7;
         width: 50%;
-        height: 250px;
+        height: 270px;
         padding: 10px;
         border-radius: 20px;
-    }
-    .details {
-        list-style: none;
-        padding: 0;
-        margin-top: 10px;
-        text-align: left;
-    }
-
-    .details li {
-        display: flex;
-        justify-content: space-between;
-        font-size: 14px;
-        margin: 5px 0;
-    }
-
-    .details li strong {
-        color: #000;
-    }
-
-    .details li span {
-        color: #000;
-        font-weight: bold;
     }
 
     .dashboard_bottom {
@@ -167,7 +148,7 @@
     .em_departement {
         width: 100%;
         display: flex;
-        justify-content:center;
+        justify-content: center;
         flex-direction: column;
         background-color: #E1ECF7;
 
@@ -175,20 +156,5 @@
         padding: 20px;
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
 
-    }
-
-    .staff_wallet {
-        width: 24%;
-        display: flex;
-        align-items: center;
-        flex-direction: column;
-        justify-content: center;
-        height: 350px;
-        background-color: #f5f5f5;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
-
-        flex: 1;
     }
 </style>
