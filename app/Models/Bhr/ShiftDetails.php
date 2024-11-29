@@ -51,7 +51,7 @@ class ShiftDetails
             // Update the 'day' field for each row
             $inputs['day'] = $day;
             
-            unset($inputs['days']);
+            unset($inputs['day']);
             // Save data for each day
             $savedId = saveData($ss, 'shift_details', ['id' => $id], $inputs, [], 1);
             if ($savedId > 0) {

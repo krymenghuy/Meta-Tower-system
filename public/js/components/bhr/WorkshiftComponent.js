@@ -47,7 +47,7 @@ var WorkshiftComponent = new (function () {
             .forEach((el) => {
                 el.onchange = (e) => {
                     e.preventDefault();
-                    mThis.WorkshiftListView.showPage(mThis.getFilterData());
+                   
                 };
             });
         // const pr_tbl = mThis.WorkshiftListView.getListContainer();
@@ -231,7 +231,6 @@ var WorkshiftComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.WorkshiftListView.showPage(mThis.getFilterData());
             },
         };
         console.log(3929, op);
@@ -243,7 +242,6 @@ var WorkshiftComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.WorkshiftListView.showPage();
             },
         };
         cv_interact.confirm(
@@ -268,7 +266,6 @@ var WorkshiftComponent = new (function () {
                                 cv_interact.success(
                                     "WorkShifts Delete Successfully"
                                 );
-                                mThis.WorkshiftListView.showPage();
                             }
                         });
                 }
@@ -450,9 +447,9 @@ const ShiftDetailDialog = (() => {
                       const days = me.divModal.querySelectorAll(".days");
 
                     days.forEach((day) => {
-                          if (data.shift_details.day == day.dataset.value) {
-                              day.classList.add("active");
-                          } else day.classList.remove("active");
+                          if (data.shift_details.day == days.dataset.value) {
+                              days.classList.add("active");
+                          } else days.classList.remove("active");
 
                       });
                     
@@ -472,6 +469,7 @@ const ShiftDetailDialog = (() => {
                                 // el.disabled = true;
                             }
                         }
+                        
                     
                         // if (data_member == ".day") {
                         //     el.disabled = true;
