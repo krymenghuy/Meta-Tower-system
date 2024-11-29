@@ -31,19 +31,19 @@ var PositionComponent = new (function () {
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data) => {
                 const formattedSalary = data.salary
-                    ? new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(data.salary)
+                    ? new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                          .format(data.salary)
+                          .replace(',', '.')
                     : "";
-                
+
                 return `
                     <span class="text-primary-custom" style="font-weight: bold;">
-                        ${formattedSalary}  <span class="text-danger">(KHR)</span>
+                        ${formattedSalary} <span class="text-danger">(KHR)</span>
                     </span>
                 `;
             },
-        }
-        ,
-        
-        
+        },
+
         {
             title: "Last Updated",
             className: "align-middle text-capitalize text-nowrap text-left",
@@ -64,7 +64,7 @@ var PositionComponent = new (function () {
                 </div>
             </div>`,
         },
-       
+
     ];
 
     this.init = () => {
@@ -111,13 +111,13 @@ var PositionComponent = new (function () {
             }, 200);
         });
 
-      
+
 
         mThis.initDropdownMenus(listContainer);
 
         mThis.initAlready = true;
     };
-  
+
     this.getFilterData = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
@@ -220,7 +220,7 @@ var PositionComponent = new (function () {
             }
         );
     };
-    
+
 
     this.show = function () {
         mThis.init();
@@ -230,7 +230,7 @@ var PositionComponent = new (function () {
             mThis.jm.hide().fadeIn(250);
 
         });
-        
+
     };
 })();
 
@@ -259,9 +259,9 @@ const PositionDialog = (()=>{
                  <div class="form-group col-md-6">
                         <label for="salary" class="form-label" vslang="titles.Salary"></label>
                         <span class="text-danger" >*</span>
-                        <input  type="number" class="form-control data-input" data-field="salary">               
+                        <input  type="number" class="form-control data-input" data-field="salary">
                  </div>
-                 
+
 
               </div>`].join('');
             },

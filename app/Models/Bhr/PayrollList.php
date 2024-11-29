@@ -119,7 +119,7 @@ class PayrollList
             $query->where('e.branch_id', $search_branch);
         }
 
-        if (!is_null($search_disburse)) { // Ensure the condition applies for both 0 and 1
+        if (!is_null($search_disburse)) {
             $query->where('pl.disburse', $search_disburse);
         }
 
@@ -139,6 +139,15 @@ class PayrollList
                 ->where('emp_id', $row->emp_id)
                 ->value('allowance');
 
+            $row->salary = DBX::cutDigit($row->salary);
+            $row->benefit = DBX::cutDigit($row->benefit);
+            $row->deduction = DBX::cutDigit($row->deduction);
+            $row->bias = DBX::cutDigit($row->bias);
+            $row->tax_base = DBX::cutDigit($row->tax_base);
+            $row->tax_benefit = DBX::cutDigit($row->tax_benefit);
+            $row->total_salary = DBX::cutDigit($row->total_salary);
+            $row->allowance = DBX::cutDigit($row->allowance);
+
             $row->tax_base = ($row->tax_base ?? 0);
             $row->total_salary = ($row->total_salary ?? 0);
             $row->benefit = ($row->benefit ?? 0);
@@ -148,6 +157,7 @@ class PayrollList
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
 
     function getDetails($id, $ss)
     {
@@ -176,7 +186,6 @@ class PayrollList
                     pl.tax_rate,
                     pl.bias,
                     pl.tax_base,
-                    pl.tax_benefit,
                     pl.tax_benefit,
                     pl.total_salary,
                     pl.disburse,
@@ -643,7 +652,7 @@ class PayrollList
                 if ($updateBalance_acc && $withdrawalResult) {
                     PayrollList::updateBalance($account_id, 'accounts', 'out', $withdrawalResult['transactions']['amount'], $withdrawalResult['trx_id'], $ss);
 
-                   
+
                     DB::table('payroll_lists')
                       ->where('id', $trx->id)
                       ->update(['disburse' => 1, 'trx_id' => hex2bin($trxResult['trx_id'])]);
@@ -703,16 +712,18 @@ class PayrollList
 
         if ($row) {
 
-            $row->allowance = DB::table('tax_allowances')
-                ->where('emp_id', $row->emp_id)
-                ->value('allowance');
+            $row->salary = DBX::cutDigit($row->salary);
+            $row->p_salary = DBX::cutDigit($row->p_salary);
+            $row->benefit = DBX::cutDigit($row->benefit);
+            $row->deduction = DBX::cutDigit($row->deduction);
+            $row->bias = DBX::cutDigit($row->bias);
+            $row->p_bias = DBX::cutDigit($row->p_bias);
+            $row->p_allowance = DBX::cutDigit($row->p_allowance);
+            $row->tax_base = DBX::cutDigit($row->tax_base);
+            $row->tax_benefit = DBX::cutDigit($row->tax_benefit);
+            $row->total_salary = DBX::cutDigit($row->total_salary);
 
-
-            $row->benefit = $row->benefit ?? 0.00;
-            $row->deduction = $row->deduction ?? 0.00;
-            $row->tax_base = $row->tax_base ?? 0.00;
-            $row->total_salary = $row->total_salary ?? 0.00;
-
+            $row->allowance = DBX::cutDigit($row->allowance ?? 0.00);
 
             $row->image_url = $row->emp_photo
                 ? Employee::profilePicture($row->emp_id)
@@ -722,6 +733,7 @@ class PayrollList
 
         return $row;
     }
+
 
 
 }

@@ -66,27 +66,26 @@ class Account
         $sort_by = $d->sort_by ?? 'a.id';
         $sort_order = $d->sort_order ?? 'asc';
         $search_id = $d->id ?? null;
-        $balance_date = DBX::formatDate('a.last_balance_date','last_balance_date');
+        $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
 
         $str_search = '1=1';
 
-                $query = DB::table('accounts as a')
-                ->join('employees as e', 'e.id', '=', 'a.emp_id')
-                ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-                ->selectRaw('
-                    a.id,
-                    a.emp_id,
-                    e.name as emp_name,
-                    pos.title as position,
-                    a.account_type,
-                    a.account_number,
-                    a.balance,
-                    a.currency,
-                    '.$balance_date.        ',
-                    e.photo_file_name as emp_photo
-                ')
-
-                ->where('a.branch_id', $branch_id);
+        $query = DB::table('accounts as a')
+            ->join('employees as e', 'e.id', '=', 'a.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+            ->selectRaw('
+                a.id,
+                a.emp_id,
+                e.name as emp_name,
+                pos.title as position,
+                a.account_type,
+                a.account_number,
+                a.balance,
+                a.currency,
+                ' . $balance_date . ',
+                e.photo_file_name as emp_photo
+            ')
+            ->where('a.branch_id', $branch_id);
 
         if ($search_id) {
             $query->where('a.id', $search_id);
@@ -99,13 +98,12 @@ class Account
             $query->whereRaw($str_search);
         }
 
-
         $query->orderBy($sort_by, $sort_order);
         $count = $query->count('a.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
-
+            $row->balance = DBX::cutDigit($row->balance);
             $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
             unset($row->emp_photo);
         }
@@ -116,19 +114,35 @@ class Account
     function getDetails($id, $ss)
     {
         $row = DB::table('accounts as a')
-            ->join('employees as e', 'e.id', 'a.emp_id')
+            ->join('employees as e', 'e.id', '=', 'a.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('wallet_accounts as wa', 'wa.emp_id', '=', 'a.emp_id')
-            ->selectRaw('a.id, a.emp_id, e.name as emp_name, pos.title as position,a.account_type, a.account_number,a.currency,a.balance,e.photo_file_name as emp_photo,wa.account_number as w_account_number,wa.account_type as w_account_type')
+            ->selectRaw('
+                a.id,
+                a.emp_id,
+                e.name as emp_name,
+                pos.title as position,
+                a.account_type,
+                a.account_number,
+                a.currency,
+                a.balance,
+                e.photo_file_name as emp_photo,
+                wa.account_number as w_account_number,
+                wa.account_type as w_account_type
+            ')
             ->where('a.id', $id)->first();
+
         if ($row) {
+            $row->balance = DBX::cutDigit($row->balance); 
             $row->image_url = Employee::profilePicture($row->emp_id);
             unset($row->emp_photo);
         } else {
             $row = null;
         }
+
         return $row;
     }
+
 
     function deleteAccount($id, $ss)
     {

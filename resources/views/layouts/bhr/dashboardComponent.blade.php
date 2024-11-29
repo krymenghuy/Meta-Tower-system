@@ -16,8 +16,32 @@
         </div>
 
     </div>
+    <div class="dashboard_chart" >
+        <canvas id="myChart"></canvas>
+    </div>
 </div>
+<script>
+    const ctx = document.getElementById('myChart');
 
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        datasets: [{
+          label: '# of Votes',
+          data: [12, 19, 3, 5, 2, 3],
+          borderWidth: 1
+        }]
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true
+          }
+        }
+      }
+    });
+  </script>
 <style>
     #_main_dashboardComponent {
         display: flex;
@@ -155,6 +179,16 @@
         border-radius: 8px;
         padding: 20px;
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
+    }
+    .dashboard_chart{
+        width: 50%;
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        background-color: #E1ECF7;
 
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
     }
 </style>
