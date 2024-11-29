@@ -37,7 +37,8 @@ var WorkshiftComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success("Add Shift Detail successfully");
+                    cv_interact.success("Save Shift Detail successfully");
+                    mThis.updateWorkshiftList();
                 },
             };
             ShiftDetailDialog.show(op);
@@ -50,9 +51,7 @@ var WorkshiftComponent = new (function () {
                     mThis.WorkshiftListView.showPage(mThis.getFilterData());
                 };
             });
-        // const pr_tbl = mThis.WorkshiftListView.getListContainer();
         const sh_parent = list_container;
-        // sh_parent.style.height = window.innerHeight - 225 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
@@ -78,6 +77,20 @@ var WorkshiftComponent = new (function () {
             console.log(1111, mThis.getFilterData());
         };
     });
+    mThis.updateWorkshiftList = () => {
+        vsapi
+            .call(
+                `${mThis.base_url}/hr/shift-details/list-paginate`,
+                mThis.getFilterData(),
+                null,
+                null
+            )
+            .then((res) => {
+                if (res.status_code === 200) {
+                    mThis.renderWorkShift(list_container, res.data);
+                }
+            });
+    };
     mThis.elSearch.addEventListener("keyup", (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
@@ -102,18 +115,15 @@ var WorkshiftComponent = new (function () {
             mThis.beginRenderWorkShift(div, data);
         });
     };
-
-    // Begin rendering the work shifts with a table structure
     this.beginRenderWorkShift = (div, data) => {
         let html = `
         <div class="_work_shift_body col-12">
             <div class="row">
     `;
 
-        // Iterate through the days and create a block for each day
         for (const [day, shifts] of Object.entries(data)) {
             html += `
-            <div class="time_cards col-1-8">
+            <div class="time_cards col-2">
                 <div class="day_card">
         `;
 
@@ -121,7 +131,6 @@ var WorkshiftComponent = new (function () {
                 html += `<div class="no_shifts">No shifts scheduled</div>`;
             } else {
                 shifts.forEach((shift) => {
-                    // Determine the class for the action
                     const actionClass =
                         shift.action === "Check In" ||
                         shift.action === "CheckIn"
@@ -139,7 +148,13 @@ var WorkshiftComponent = new (function () {
                         </div>
                         <div class="d-flex justify-content-start align-items-start">
                             <div class="text-end gap-2 d-flex flex-wrap">
-                                <a href="javascript:void(0)" class="${shift.action_id > 1? "d-none": "btn_shift-details_action"}" data-id="${shift.id}" data-statusid="${shift.status_id}" aria-haspopup="true" aria-expanded="false">
+                                <a href="javascript:void(0)" class="${
+                                    shift.action_id > 1
+                                        ? "d-none"
+                                        : "btn_shift-details_action"
+                                }" data-id="${shift.id}" data-statusid="${
+                        shift.status_id
+                    }" aria-haspopup="true" aria-expanded="false">
                                     <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-5 "></i>
                                 </a>
                             </div>
@@ -162,8 +177,6 @@ var WorkshiftComponent = new (function () {
 
         div.innerHTML = html;
     };
-
-
     this.getFilterData = () => {
         let p = {
             status_id: mThis.elFilter_status.value,
@@ -189,7 +202,6 @@ var WorkshiftComponent = new (function () {
             containerElement: table,
             actionButtonClass: "btn_shift-details_action",
             cssClass: "bg-white shadow",
-            //menuItemClass:"",
             menus: [
                 {
                     html: '<span class="ps-2  " vslang="titles.Edit WorkShift">Edit WorkShift</span>',
@@ -205,8 +217,8 @@ var WorkshiftComponent = new (function () {
                 },
             ],
             onClick: (menuLink, id, name) => {
-                console.log(1, menuLink,2,id,3, name);
-                
+                console.log(1, menuLink, 2, id, 3, name);
+
                 switch (name) {
                     case "edit_shift-details": {
                         mThis.editWorkShift(id, menuLink);
@@ -226,35 +238,32 @@ var WorkshiftComponent = new (function () {
     };
 
     this.editWorkShift = (id, menuLink) => {
-        
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.WorkshiftListView.showPage(mThis.getFilterData());
+                cv_interact.success("Save Shift Detail successfully");
+                mThis.updateWorkshiftList();
             },
         };
         console.log(3929, op);
-        
+
         ShiftDetailDialog.show(op);
     };
     this.deleteWorkShift = (id, menuLink) => {
-        let op = {
+        const op = {
             id: id,
             btn: menuLink,
-            onClose: () => {
-                mThis.WorkshiftListView.showPage();
-            },
         };
         cv_interact.confirm(
-            "Delete this WorkShift?",
+            "Are you sure you want to delete this WorkShift?",
             {
-                title: "Delete this WorkShift?",
+                title: "Delete WorkShift",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
-            function (e) {
-                if (e) {
+            (isConfirmed) => {
+                if (isConfirmed) {
                     vsapi
                         .call(
                             `${main_view.base_url}/hr/shift-details/delete`,
@@ -264,17 +273,28 @@ var WorkshiftComponent = new (function () {
                             false
                         )
                         .then((res) => {
-                            if (res.status_code == 200) {
+                            if (res.status_code === 200) {
                                 cv_interact.success(
-                                    "WorkShifts Delete Successfully"
+                                    "WorkShift deleted successfully!"
                                 );
-                                mThis.WorkshiftListView.showPage();
+                                mThis.updateWorkshiftList();
+                            } else {
+                                cv_interact.error(
+                                    "Failed to delete the WorkShift. Please try again."
+                                );
                             }
+                        })
+                        .catch((error) => {
+                            console.error("Error deleting WorkShift:", error);
+                            cv_interact.error(
+                                "An unexpected error occurred. Please try again."
+                            );
                         });
                 }
             }
         );
     };
+
     this.prepareFormOptions = () => {
         vsapi
             .call(
@@ -312,15 +332,13 @@ const ShiftDetailDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        dialog =
-            
-            new GeneralDialog({
-                cssClass: "modal-md",
-                backdrop: "static", // User click outside form, do not close form
-                keyboard: true, // Prevent user from using ESC key
-                createContent: () => {
-                    return [
-                        `<div class="row">
+        dialog = new GeneralDialog({
+            cssClass: "modal-md",
+            backdrop: "static", // User click outside form, do not close form
+            keyboard: true, // Prevent user from using ESC key
+            createContent: () => {
+                return [
+                    `<div class="row">
                             <div class="form-group col-md-12">
                                 <label for="shifts" class="form-label" vslang="titles.Work Shift"></label>
                                 <span class="text-danger">*</span>
@@ -340,7 +358,7 @@ const ShiftDetailDialog = (() => {
                             </div>
                             <div class="form-group col-12">
                                 <label for="time" class="form-label" vslang="titles.Time">Time</label>
-                                <input class="form-control data-input" data-field="time" />
+                                <input type="time" class="form-control data-input" data-field="time" />
                             </div>                                                                     
                             <div class="form-group col-12">
                                 <label for="action" class="form-label" vslang="titles.Action">Action</label>
@@ -350,119 +368,109 @@ const ShiftDetailDialog = (() => {
                                 </select>
                             </div>                                                                     
                          </div>`,
-                    ].join("");
-                },
-                contentCreated: (me) => {
-                    const days = me.divModal.querySelectorAll(".days");
-                    days.forEach((day) => {
-                        // Add click listener to toggle "active" class
-                        day.addEventListener("click", () => {
-                            day.classList.toggle("active");
-                        });
+                ].join("");
+            },
+            contentCreated: (me) => {
+                const days = me.divModal.querySelectorAll(".days");
+                days.forEach((day) => {
+                    day.addEventListener("click", () => {
+                        day.classList.toggle("active");
                     });
+                });
 
-                    // Preselect active days if they exist in the `op` object
-                    if (op.days) {
-                        const selectedDays = op.days.split("|");
-                        days.forEach((day) => {
-                            if (selectedDays.includes(day.dataset.value)) {
-                                day.classList.add("active");
-                            }
-                        });
-                    }
-                },
-
-                configSelect: [
-                    {
-                        name: "shifts",
-                        data: "shifts",
-                        textField: "name",
-                        valueField: "id",
-                    },
-                ],
-                buttons: [
-                    {
-                        label: '<span class="text-shift-details">Cancel</span>',
-                        cssClass: "btn btn-default",
-                        click: (me, btn) => {
-                            me.hide(false);
-                        },
-                    },
-                    {
-                        label: "<span>Save</span>",
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            const p = me.getData();
-
-                            p.id = me.dataOptions.id;
-                            console.log(9090,p);
-                            
-                            // Collect the selected days as an array
-                            const selectedDays = [];
-                            const days =
-                                me.divModal.querySelectorAll(".days.active");
-                            days.forEach((day) => {
-                                selectedDays.push(day.dataset.value);
-                            });
-
-                            // Convert the array to a string with | separator
-                            p.days = selectedDays.join("|");
-                            // console.log("Selected days: ", p.days);
-
-
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/hr/shift-details/save",
-                                    ].join(""),
-                                    p,
-                                    btn,
-                                    null
-                                )
-                                .then((res) => {
-                                    if (res.status_code == 200) {
-                                        me.hide(true, p);
-                                    } else cv_interact.error(res.error_message);
-                                });
-                        },
-                    },
-                ],
-
-                prepareFormOptions: {
-                    createTitle: "Add Shift Details",
-                    modifyTitle: "Edit Shift Details",
-                    targetProp: "shift_details",
-                    api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/hr/shift-details/form-options",
-                        ].join(""),
-                        params: (op) => {
-                            return { id: op.id };
-                        },
-                    },
-                    onResponse: (me, res) => {
-                        console.log('Result from API "/form-options": ', res);
-                    },
-                },
-                onPrepareForm: (me, data) => {
-                      LocaleManager.translateZone(me.divModal);
-                      const days = me.divModal.querySelectorAll(".days");
-
+                if (op.days) {
+                    const selectedDays = op.days.split("|");
                     days.forEach((day) => {
-                          if (data.shift_details.day == day.dataset.value) {
-                              day.classList.add("active");
-                          } else day.classList.remove("active");
+                        if (selectedDays.includes(day.dataset.value)) {
+                            day.classList.add("active");
+                        }
+                    });
+                }
+            },
 
-                      });
-                    
-                    me.divModal.querySelectorAll(".data-input").forEach((el) => {
+            configSelect: [
+                {
+                    name: "shifts",
+                    data: "shifts",
+                    textField: "name",
+                    valueField: "id",
+                },
+            ],
+            buttons: [
+                {
+                    label: '<span class="text-shift-details">Cancel</span>',
+                    cssClass: "btn btn-default",
+                    click: (me, btn) => {
+                        me.hide(false);
+                    },
+                },
+                {
+                    label: "<span>Save</span>",
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const p = me.getData();
+
+                        p.id = me.dataOptions.id;
+                        console.log(9090, p);
+                        const selectedDays = [];
+                        const days =
+                            me.divModal.querySelectorAll(".days.active");
+                        days.forEach((day) => {
+                            selectedDays.push(day.dataset.value);
+                        });
+                        p.days = selectedDays.join("|");
+                        vsapi
+                            .call(
+                                [
+                                    main_view.base_url,
+                                    "/hr/shift-details/save",
+                                ].join(""),
+                                p,
+                                btn,
+                                null
+                            )
+                            .then((res) => {
+                                if (res.status_code == 200) {
+                                    me.hide(true, p);
+                                } else cv_interact.error(res.error_message);
+                            });
+                    },
+                },
+            ],
+
+            prepareFormOptions: {
+                createTitle: "Add Shift Details",
+                modifyTitle: "Edit Shift Details",
+                targetProp: "shift_details",
+                api: {
+                    endpoint: [
+                        main_view.base_url,
+                        "/hr/shift-details/form-options",
+                    ].join(""),
+                    params: (op) => {
+                        return { id: op.id };
+                    },
+                },
+                onResponse: (me, res) => {
+                    console.log('Result from API "/form-options": ', res);
+                },
+            },
+            onPrepareForm: (me, data) => {
+                LocaleManager.translateZone(me.divModal);
+                me.divModal.querySelectorAll(".data-input").forEach((el) => {
                     const data_member = el.dataset.field;
-
-                    let id = op.id;
-
+                    const id = op.id;
                     if (id) {
+                        const days = me.divModal.querySelectorAll(".days");
+
+                        days.forEach((day) => {
+                            if (data.shift_details.day == day.dataset.value) {
+                                day.classList.add("active");
+                            } else day.classList.remove("active");
+
+                            day.classList.add("disabled");
+                        });
+
                         if (el.tagName.toLowerCase() === "select") {
                             if (
                                 data_member == "shifts" ||
@@ -470,27 +478,21 @@ const ShiftDetailDialog = (() => {
                                 data_member == "emp_type_id"
                             ) {
                                 el.setAttribute("disabled", true);
-                                // el.disabled = true;
                             }
                         }
-                    
-                        // if (data_member == ".day") {
-                        //     el.disabled = true;
-                        // }
-
                         id = null;
+                    } else {
+                        const days = me.divModal.querySelectorAll(".days");
+                        days.forEach((day) => {
+                            day.classList.remove("disabled");
+                        });
                     }
                 });
-                  
-
-
-                },
-            });
-        
+            },
+        });
 
         dialog.show(op);
     };
 
     return self;
 })();
-

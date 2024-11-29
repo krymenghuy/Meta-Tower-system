@@ -10,10 +10,6 @@
             <div class="d-flex align-items-end w-50 gap-2">
                 <input type="text" class="form-control filter-field" id="_sdl_search_attendance"
                     placeholder="Search Attendance">
-
-                <button id="_sdl_btnSearch" role="button" class="btn btn-primary">
-                    <i class="la la-search"></i>
-                </button>
             </div>
         </div>
     </div>
