@@ -20,61 +20,7 @@
 <script>
     const ctx = document.getElementById('myChart');
     const compareChart = document.getElementById('compareChart');
-    new Chart(compareChart, {
-      type: 'bar', // Chart type
-      data: {
-        labels: ['Staffs', 'Internship', 'In Probation', 'New Staff'], // Names to display
-        datasets: [{
-          label: '# of Votes',
-          data: [12, 2, 2, 2], // Data for each category
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)',
-            'rgba(255, 159, 64, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)',
-            'rgba(255, 159, 64, 1)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            display: true,
-          }
-        },
-        scales: {
-          x: {
-            grid: {
-              color: 'rgba(200, 200, 200, 0.2)'
-            }
-          },
-          y: {
-            beginAtZero: true,
-            grid: {
-              color: 'rgba(200, 200, 200, 0.2)'
-            }
-          }
-        },
-        plugins: {
-          // Enable 3D Plugin
-          chart3d: {
-            enabled: true,
-            perspective: 50, // Adjust perspective
-            depth: 30,       // Depth of bars
-            alpha: 15,       // Tilt angle (in degrees)
-            beta: 15,        // Rotation angle (in degrees)
-          }
-        }
-      }
-    });
+
 </script>
 <style>
     #_main_dashboardComponent {
@@ -232,7 +178,7 @@
         align-items: center;
         justify-content: space-between;
         background-color: #E1ECF7;
-        width: 50%;
+        width: 200%;
         height: 300px;
         padding: 10px;
         border-radius: 20px;
