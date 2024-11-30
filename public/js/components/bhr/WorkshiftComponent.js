@@ -231,7 +231,7 @@ var WorkshiftComponent = new (function () {
             id: id,
             btn: menuLink,
             onClose: () => {
-                mThis.WorkshiftListView.showPage(mThis.getFilterData());
+                
             },
         };
         console.log(3929, op);
