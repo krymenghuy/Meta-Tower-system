@@ -501,6 +501,7 @@ class Employee //extends Model
         return (object) [
             'branches' => GeneralSettings::options_branch($ss),
             'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
+            'departments'=>DB::table('departments')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,title')->get(),
             'types' => DB::table('emp_types')->selectRaw('id,name')->get(),
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),

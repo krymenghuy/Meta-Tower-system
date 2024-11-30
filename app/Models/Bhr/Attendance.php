@@ -3,6 +3,7 @@
 namespace App\Models\Bhr;
 
 use App\Models\DV;
+use App\Models\Bhr\Employee;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -20,6 +21,7 @@ class Attendance
 
     function save($arr=[], $id = null, $ss = null)
     {
+        
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
@@ -31,11 +33,11 @@ class Attendance
             'attendance_date' => '0|date',
             'scan_time' => '0|string',
             'scan_action' => '0|string',
-            'status' => '0|string',
+            'action_type' => '0|string',
             'remarks' => '0|string',
         ];
-        $remarks = [':', "'", '-', '.', '?', '$', '\'', '@'];
-        $res = validateObject($arr, $v_rule, 1, ["remarks" => $remarks], $ss->lang, 0, null);
+       
+        $res = validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -48,7 +50,7 @@ class Attendance
         if (in_array($day_name, $except_days)) {
             return DV::error('The day is a weekend');
         }
-        $existingAttendance = DB::table('attendances')
+        $existingAttendance = DB::table('emp_attendances')
             ->where('emp_id', $emp_id)
             ->whereDate('attendance_date', $attendance_date)
             ->first();
@@ -59,123 +61,95 @@ class Attendance
             $id = $existingAttendance->id; // Use existing ID for updates
         }
 
-        $d = (object)$inputs;
-
-
-        $scan_time = isset($inputs['scan_time']) ? date('H:i:s', strtotime($inputs['scan_time'])) : '00:00:00';
-        $scan_action = 
-        $status = ($scan_time <= '08:00:00') ? 'Present' : 'Late';
-        $remarks = isset($inputs['remarks']) ? $inputs['remarks'] : (($scan_time < '08:00:00') ? 'On time' : '');
-
+        $d = (object) $arr;
+        $remarks = $d->remarks;
+        $scan_time = $d->scan_time ? date('H:i:s', strtotime($d->scan_time)): '00:00:00';
+        $scan_action = $d->scan_action;
+        $action_type = $d->action_type;
+        
+        
         $arr_attendance = [
             'emp_id' => $emp_id,
             'scan_time' => $scan_time,
             'scan_action' => $scan_action,
-            'attendance_date' => $attendance_date,
-            'status' => $status,
+            'action_type' => $action_type,
+            'attendance_date' => $attendance_date ?? '', 
             'remarks' => $remarks,
         ];
+        
 
         // unset($inputs['status']);
 
-        $newID = saveData($ss, 'attendances', ['id' => $id], $arr_attendance, [], 1, 1);
+        $newID = saveData($ss, 'emp_attendances', ['id' => $id], $arr_attendance, [], 1, 1);
 
-        return DV::depends($newID, ['attendances' => $inputs, 'id' => $newID], $ss);
+        return DV::depends($newID, ['emp_attendances' => $inputs, 'id' => $newID], $ss);
     }
 
 
 
-    function getStaffAttendanceListPaginate($arr, $ss)
+    function getStaffAttendanceListPaginate($filter=[], $ss=null)
     {
-        $d = (object) $arr;
-        $branch_id = $ss->branch_id;
-
-        $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 20;
-
+        $d = (object) $filter;
         $search_value = $d->search_value ?? null;
-        $search_id = $d->id ?? null;
-        $search_status_id = $d->status_id ?? null;
-        $attendance_date = $d->attendance_date ?? date('Y-m-d');
-        $UNINFORM_LEAVE_TYPE_ID = 8;
-        $attendance_date = date('Y-m-d', strtotime($attendance_date));
-        $query = DB::table('attendances as a')
-            ->join('employees as e', 'e.id', '=', 'a.emp_id')
-            ->leftJoin('leaves as l', function ($join) use ($attendance_date) {
-                $join->on('l.emp_id', '=', 'e.id')
-                    ->whereIn('l.status_id', [2, 3]) // Include Approved (2) and Rejected (3) statuses
-                    ->whereDate('l.start_date', '<=', $attendance_date)
-                    ->whereDate('l.end_date', '>=', $attendance_date);
-            })
-            ->selectRaw(
-                '
-        a.id,
-        e.id as emp_id,
-        e.photo_file_name as emp_photo,
-        e.name,
-        e.name_kh,
-        e.email as email,
-        a.emp_id,
-        a.check_in_time,
-        a.check_out_time,
-        a.attendance_date,
-        a.remark,
-        CASE 
-            WHEN l.id IS NOT NULL AND l.status_id = 3 THEN "Absent" -- Rejected leaves are considered Absent
-            WHEN l.id IS NOT NULL AND l.leave_type_id = ? THEN "Absent"
-            WHEN l.id IS NOT NULL THEN "Permission"
-            ELSE a.status_id
-        END as status_id
-        ',
-                [$UNINFORM_LEAVE_TYPE_ID]
-            );
-
-        // Apply filters if provided
-        if ($search_id) {
-            $query->where('a.id', $search_id);
-        }
-        if ($search_status_id) {
-            $query->where('a.status_id', $search_status_id);
-        }
-        if ($attendance_date) {
-            $query->whereDate('a.attendance_date', $attendance_date);
-        }
-        if ($search_value) {
+        $current_page = $d->current_page ?? 1;
+        $branch_id = $d->branch_id ?? null;
+        $department_id = $d->department_id ?? null;
+        $emp_type_id = $d->emp_type_id ?? null;
+        $work_shift_id = $d->work_shift_id ?? null;
+        $per_page = $d->per_page ?? 10;
+        if(!is_numeric($current_page)) $current_page = 1;
+        $skip_rows = ($current_page -1) * $per_page;
+        $str_search = "1=1";
+        $str_moreWhere = "1=1";
+        if($search_value){
+            $skip_rows = 0;
             $search_value = escape_like_str($search_value);
-            $query->where(function ($q) use ($search_value) {
-                $q->where('e.name', 'LIKE', "%{$search_value}%")
-                    ->orWhere('a.remark', 'LIKE', "%{$search_value}%")
-                    ->orWhere('e.email', 'LIKE', "%{$search_value}%")
-                    ->orWhere('a.attendance_date', 'LIKE', "%{$search_value}%");
-            });
+            $str_search = "(emp.code = '$search_value' OR emp.name LIKE '%$search_value%')";
         }
-
-        $rows = $query->paginate($per_page, ['*'], 'page', $current_page);
-
-        foreach ($rows as $row) {
-            $row->image_url = '';
-            if (isset($row->emp_id) && $row->emp_photo) {
-                $row->image_url = Employee::profilePicture($row->emp_id);
-            }
-            unset($row->emp_photo);
-
-            if ($row->status_id === "Absent" && empty($row->remark)) {
-                $row->remark = "Don't know the reason";
-            }
-
-            // Format the status
-            if ($row->status_id === "Absent") {
-                $row->formatted_status = '<span style="color: red;">Absent</span>';
-            } elseif ($row->status_id === "Late") {
-                $row->formatted_status = '<span style="color: orange;">Late</span>';
-            } elseif ($row->status_id === "Permission") {
-                $row->formatted_status = '<span style="color: blue;">Permission</span>';
-            } else {
-                $row->formatted_status = '<span style="color: green;">Present</span>';
-            }
+        if(!$search_value){
+            if($branch_id) $str_moreWhere .=' AND emp.branch_id = ' . $branch_id;
+            if($department_id) $str_moreWhere .=' AND d.id = ' . $department_id;
+            if($emp_type_id) $str_moreWhere .=' AND emp.emp_type_id = ' . $emp_type_id;
+            if($work_shift_id) $str_moreWhere .= ' AND emp.work_shift_id = ' . $work_shift_id;
         }
+        $selectCols = 'emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code, emp.date_of_birth as dob, ws.name as work_shift, formatDate(a.attendance_date) as attendance_date, a.scan_time, a.scan_action,p.title as position';
+        $query = DB::table('employees as emp')
+            ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
+            ->join('positions as p', 'emp.position_id', '=', 'p.id')
+            ->join('departments as d', 'p.department_id', '=', 'd.id')
+            ->join('emp_attendances as a', 'a.emp_id', '=', 'emp.id')
+            ->whereRaw($str_moreWhere)
+            ->whereRaw($str_search)
+            ->selectRaw($selectCols)
+            ->orderBy('emp.id', 'desc');
+        
+        $rawRows = $query->skip($skip_rows)->take($per_page)->get();
+        
+        $rows = $rawRows->groupBy('emp_id')->map(function ($group) {
+            $first = $group->first();
+            return [
+                'code' => $first->code,
+                'name' => $first->name,
+                'sex' => $first->sex,
+                'position'=>$first->position,
+                'attendance_date' => $first->attendance_date,
+                'work_shift' => $first->work_shift,
+                'scan_info' => $group->map(function ($item) {
+                    return [
+                        'time' => $item->scan_time,
+                        'action' => $item->scan_action,
+                    ];
+                })->values(),
+            ];
+        })->values();
+        
+        // Pagination
+        $count_query = clone $query;
+        $count = $count_query->count('emp.id');
+        
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        
 
-        return $rows;
     }
 
 

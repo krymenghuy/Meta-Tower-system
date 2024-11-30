@@ -1,6 +1,6 @@
 "use strict";
 
-var StaffAttendanceComponent = new (function () {
+var StaffAttendanceComponent = new function () {
     const mThis = this;
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_staffAttendanceComponent");
@@ -8,81 +8,80 @@ var StaffAttendanceComponent = new (function () {
     this.title_prop = "Staff Attendance";
     this.btnAdd = this.self.querySelector("#_btnAddStaffAttendance");
     this.elSearch = this.self.querySelector("#_staff_attendance_search");
-    this.divFilter = this.self.querySelector("#_divFilter_attendance");
-    
+    this.containerFilter = this.self.querySelector('#container_scan_filter');
+
 
     this.cols = [
         {
-            title: "No",
+            title: "",
+            className: "align-middle",
+            data: "",
+        },
+        {
+            title: "Staff ID",
             className: "align-middle text-capitalize text-nowrap",
-            data: (data, index, i) => {
-                return index + 1;
+            data: (data, index, tr) => {
+                return `<span class="text-primary-custom" >${data.code}</span>`;
             },
         },
         {
-            title: "Name",
-            className: "align-middle text-start",
-            data: (data) => `
-            <div style="display: flex; align-items: center;">
-                <img class="image-student-tbl" src="${data.image_url}" alt="" 
-                    style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
-                <div>
-                    <span style="font-size: 14px; font-weight: bold;">${
-                        data.name ?? ""
-                    }</span><br/>
-                    <span style="font-size: 12px; color: gray;">${
-                        data.email ?? ""
-                    }</span>
-                </div>
-            </div>`,
+            title: "Full Name",
+            className: "name text-capitalize align-middle",
+            data: (data, index, tr) => {
+                const sex = data.sex === "M" ? "Male" : data.sex === "F" ? "Female" : "Unknown";
+                return `<p class="d-flex flex-column">
+                    <span class="text-Capitalize">${data.name}</span>
+                    <small class="text-muted">${sex}</small>
+                </p>`;
+            }
         },
         {
-            title: "Check in",
-            className: "align-middle",
-            data: "check_in_time",
-        },
-        {
-            title: "Attendance Date",
-            className: "align-middle",
-            data: "attendance_date",
-        },
-        {
-            title: "Check Out",
-            className: "align-middle",
-            data: "check_out_time",
-        },
-        {
-            title: "Status",
-            className: "align-middle",
-            data: "formatted_status",
-            render: function (data, type, row) {
-                return data;
+            title: "Position",
+            className: "align-middle text-capitalize text-nowrap",
+            data: (data, index, tr) => {
+                return `<span class="text-primary-custom" >${data.position}</span>`;
             },
         },
         {
-            title: "Remark",
-            className: "align-middle",
-            data: "remark",
+            title: "Date",
+            className: "text-capitalize align-middle",
+            data: (data, index, tr) => {
+                return data.attendance_date ?? '';
+            },
         },
         {
-            className: "col_action align-middle",
-            data: (data) => `
-                <div class="d-flex justify-content-end align-items-end">
-                    <div class="text-end gap-2 d-flex flex-wrap">
-                        <a href="javascript:void(0)" class="${
-                            data.action_id > 1
-                                ? "d-none"
-                                : "btn_staffAttendance_action"
-                        }" data-id="${data.id}" data-statusid="${
-                data.status_id
-            }" aria-haspopup="true" aria-expanded="false">
-                            <img src="${
-                                main_view.asset_url
-                            }/images/icons/more_vert (3).svg" />
-                        </a>
-                    </div>
-                </div>`,
+            title: "Work Shift",
+            className: "text-capitalize align-middle",
+            data: "work_shift",
         },
+        {
+            title: "Scan Info",
+            className: "text-capitalize align-middle",
+            data: (data) => {
+                return data.scan_info
+                    .map((info, index) => {
+                        const timeParts = info.time.split(':');
+                        let hours = parseInt(timeParts[0]);
+                        const minutes = timeParts[1];
+                        const ampm = hours >= 12 ? 'PM' : 'AM';
+                        hours = hours % 12 || 12; 
+                        const formattedTime = `${hours}:${minutes} ${ampm}`;
+                        return `
+                            <div class="row d-flex flex-row align-items-center">
+                                <span class="col-5 text-primary-custom text-start">${info.action}</span>
+                                <span class="col-2 px-2">-></span>
+                                <span class="col-5 text-warning text-start">${formattedTime}</span>
+                            </div>
+                            ${index < data.scan_info.length - 1 ? '<hr class="my-1 bg-primary-custom text-secondary" />' : ''}
+                        `;
+                    })
+                    .join("");
+            },
+        },
+        
+       
+        
+        
     ];
 
     this.init = function () {
@@ -93,7 +92,7 @@ var StaffAttendanceComponent = new (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white header-uppercase",
+            tableClass: "table rounded-3 overflow-hidden table--white header-uppercase",
             listContainerClass: null,
         });
 
@@ -106,16 +105,17 @@ var StaffAttendanceComponent = new (function () {
                     mThis.StaffAttendanceListView.showPage();
                 },
             };
-            StaffAttendanceDialog.show(op);
+            alert('pending!');
+            // StaffAttendanceDialog.show(op);
         };
 
         const pr_tbl = mThis.StaffAttendanceListView.getListContainer();
         pr_tbl.classList.add("overflow-y-auto");
         pr_tbl.classList.add("overflow-x-hidden");
 
-        mThis.initDropdownMenus(pr_tbl);
+       
 
-        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+        mThis.containerFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = (e) => {
                 e.preventDefault();
                 mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
@@ -132,113 +132,47 @@ var StaffAttendanceComponent = new (function () {
 
         mThis.initAlready = true;
     };
+    this.prepareFormOptions = () => {
+        vsapi.call(`${main_view.base_url}/hr/employee/form-options`,null,null,null).then((res) => {
+            
+            let d = res.status_code === 200 ? res.data : {};
+
+            if(d)
+            {
+                mThis.containerFilter.querySelectorAll(".filter-field").forEach((el) => {
+                    const f = el.dataset.field;
+                    switch(f)
+                    {
+                        case "branch_id":
+                            VSUtil.setComboItems(el,d.branches,"id","branch_name",false,null,1);
+                            break;
+                        case "emp_type_id":
+                            VSUtil.setComboItems(el,(d.types || []),"id","name",true,'All Type',null);
+                            break;
+                        case "department_id":
+                            VSUtil.setComboItems(el,d.departments,"id","name",true,'All Department',null);
+                            break;
+                        case "work_shift_id":
+                            VSUtil.setComboItems(el,d.work_shifts,"id","name",true,'All Shift',null);
+                            break;
+                        default:
+                            break;
+                    }
+                });
+            };
+        });
+    };
 
     this.getFilterData = () => {
         let p = {
             search_value: mThis.elSearch.value,
         };
-
-        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+        mThis.containerFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-
         return p;
     };
-
-    this.initDropdownMenus = (table) => {
-        const menuOptopns = {
-            containerElement: table,
-            actionButtonClass: "btn_staffAttendance_action",
-            cssClass: "bg-white shadow",
-            menus: [
-                {
-                    html: '<span class="ps-2">Edit Staff Attendance</span>',
-                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "edit_staff_attendance",
-                },
-                {
-                    html: '<span class="ps-2">Delete Staff Attendance</span>',
-                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
-                    cssClass: "border-bottom pb-2",
-                    name: "delete_staff_attendance",
-                },
-            ],
-            onClick: (menulink, id, name) => {
-                if (name === "edit_staff_attendance") {
-                    mThis.editStaffAttendance(id, menulink);
-                } else if (name === "delete_staff_attendance") {
-                    mThis.deleteStaffAttendance(id, menulink);
-                }
-            },
-        };
-        new VSDropdownMenu(menuOptopns);
-    };
-
-    this.editStaffAttendance = (id, menuLink) => {
-        let op = {
-            id: id,
-            btn: menuLink,
-            onClose: () => {
-                mThis.StaffAttendanceListView.showPage();
-            },
-        };
-        StaffAttendanceDialog.show(op);
-    };
-
-    this.deleteStaffAttendance = (id, menulink) => {
-        let op = {
-            id: id,
-            btn: menulink,
-            onClose: () => {
-                mThis.StaffAttendanceListView.showPage();
-            },
-        };
-        cv_interact.confirm(
-            "Delete this Attendance?",
-            {
-                title: "Delete this Attendance?",
-                context: "delete",
-                confirmButtonText: "Delete",
-            },
-            function (e) {
-                if (e) {
-                    vsapi
-                        .call(
-                            `${main_view.base_url}/hr/attendances/delete`,
-                            op,
-                            false,
-                            false,
-                            false
-                        )
-                        .then((res) => {
-                            if (res.status_code == 200) {
-                                cv_interact.success(
-                                    "Attendance deleted successfully"
-                                );
-                                mThis.StaffAttendanceListView.showPage();
-                            }
-                        });
-                }
-            }
-        );
-    };
-
-    this.prepareFormOptions = () => {
-        vsapi
-            .call(
-                `${main_view.base_url}/hr/attendances/form-options`,
-                null,
-                null,
-                null
-            )
-            .then((res) => {
-                const d = res.status_code == 200 ? res.data : {};
-                console.log("Form options prepared", d);
-            });
-    };
-
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
@@ -247,7 +181,7 @@ var StaffAttendanceComponent = new (function () {
         $(mThis.self).siblings().hide();
         $(mThis.self).fadeIn(200);
     };
-})();
+};
 
 const StaffAttendanceDialog = (() => {
     const self = {};
@@ -266,17 +200,25 @@ const StaffAttendanceDialog = (() => {
                                 <label for="employee" class="form-label" vslang="titles.Name"></label>
                                 <select name="employee" class=" data-input"  data-field="emp_id"></select>
                             </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" vslang="titles.Attendance Date">Attendance Date</label>
+                                <div><input name="attendance_date" class="form-control data-input" data-field="attendance_date"></input></div>
+                            </div>
                             <div class="form-group  col-12 d.none">
                                <div id="info"></div>
                             </div>
                             <div class="form-group col-6">
-                                <label for="check_in_time" class="form-label" vslang="titles.Check In Time">Check In Time</label>
-                                <input type="time" name="check_in_time" class="form-control data-input" data-field="check_in_time" />
+                                <label for="scan_time" class="form-label" vslang="titles.Scan Time">Scan Time</label>
+                                <input type="time" name="scan_time" class="form-control data-input" data-field="scan_time" />
                             </div>
                             <div class="form-group col-6">
-                                <label for="check_out_time" class="form-label" vslang="titles.Check Out Time">Check Out Time</label>
-                                <input type="time" name="check_out_time" class="form-control data-input" data-field="check_out_time" />
+                                <label for="action_type" class="form-label" vslang="titles.Action Type">Action Type</label>
+                                <select name="type" class="data-input"  data-field="action_type"></select>
                             </div>
+                            <div class="form-group col-4">
+                                        <label for="joining_date" class="form-label text-primary-custom " vslang="titles.Joining Date"></label>
+                                        <input name="joining_date" class="form-control data-input" data-field="joining_date" />
+                                    </div>
 
                             <div class="form-group col-12">
                                 <label for="remark" class="form-label" vslang="titles.Remark"></label>
@@ -287,9 +229,10 @@ const StaffAttendanceDialog = (() => {
                     ].join("");
                 },
                 contentCreated: (me) => {
-                    //Convert field to be DatePicker : check_in_time and check_out_time
-                    DateTimePicker.init(me.controls.check_in_time);
-                    DateTimePicker.init(me.controls.check_out_time);
+                    console.log(123,me);
+                    
+                DateTimePicker.init(me.controls.joining_date);
+                    
                 },
                 configSelect: [
                     {
