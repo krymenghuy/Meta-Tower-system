@@ -81,6 +81,7 @@ var DashboardComponent = new (function () {
         `;
         mThis.dashboard_top.innerHTML = html;
         mThis.renderPieChart(data);
+        mThis.renderCompareChart(data);
     };
 
     this.renderPieChart = (data) => {
@@ -92,7 +93,7 @@ var DashboardComponent = new (function () {
         this.chartInstance = new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: ['Staffs', 'Internship', 'In Probation'],
+                labels: ['Staff', 'Internship', 'In Probation'],
                 datasets: [{
                     data: [
                         data.emp_types.find((type) => type.name === "Staff")?.count || 0,
@@ -134,6 +135,78 @@ var DashboardComponent = new (function () {
                 }
             },
             // plugins: [ChartDataLabels]
+        });
+    };
+
+    this.renderCompareChart = (data) => {
+        if (!data) return;
+
+        // Select the canvas and its context
+        const canvas = document.getElementById('compareChart');
+        if (!canvas) {
+            console.error("Canvas with id 'compareChart' not found.");
+            return;
+        }
+        const ctx = canvas.getContext('2d');
+
+        // Destroy any existing chart instance
+        if (this.compareChartInstance) {
+            this.compareChartInstance.destroy();
+        }
+
+        // Create a new chart instance
+        this.compareChartInstance = new Chart(ctx, {
+            type: 'bar', // Chart type
+            data: {
+                labels: ['Staffs', 'Internship', 'In Probation', 'New Staff'], // Names to display
+                datasets: [{
+                    label: 'Number of Employees',
+                    data: [
+                        data.emp_types.find((type) => type.name === "Staff")?.count || 0,
+                        data.emp_types.find((type) => type.name === "Internship")?.count || 0,
+                        data.emp_types.find((type) => type.name === "In Probation")?.count || 0,
+                        data.new_staff || 0
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                    },
+                    tooltip: {
+                        enabled: true,
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.2)',
+                        },
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: 'rgba(200, 200, 200, 0.2)',
+                        },
+                    },
+                },
+            },
         });
     };
 
