@@ -72,55 +72,76 @@ var DashboardComponent = new (function () {
                 </div>
             </div>
         </div>
-        <div class="employees text-black-50" style="background-color: #4CC9FE;">
-            <div class="total_employee">
-                <div class="total_top">
-                    <span class="total_title">Staff</span>
-                </div>
-                <div class="total_bottom">
-                    <span class="total_number">${empTypesStaff.count}</span>
-                     <img class="w-15" src="${main_view.asset_url}/images/icons/staff.png" alt=""/>
-                </div>
-            </div>
-        </div>
-        <div class="employees text-black-50" style="background-color: #BBE9FF;">
-            <div class="total_employee">
-                <div class="total_top">
-                    <span class="total_title">Internship</span>
-                </div>
-                <div class="total_bottom">
-                    <span class="total_number">${empTypesInternship.count}</span>
-                   <img class="w-15" src="${main_view.asset_url}/images/icons/internship.png" alt=""/>
-                </div>
-            </div>
-        </div>
-        <div class="employees text-black-50" style="background-color: #C4D7FF;">
-            <div class="total_employee">
-                <div class="total_top">
-                    <span class="total_title">In Probation</span>
-                </div>
-                <div class="total_bottom">
-                    <span class="total_number">${empTypesInProbation.count}</span>
-                    <img class="w-15" src="${main_view.asset_url}/images/icons/internship.png" alt=""/>
-                </div>
-            </div>
-        </div>
-
-        <div class="employees text-black-50" style="background-color: #45FFCA;">
-            <div class="total_employee">
-                <div class="total_top">
-                    <span class="total_title">New Employees</span>
-                </div>
-                <div class="total_bottom">
-                    <span class="total_number">${data.new_employees}</span>
-                    <img class="w-15" src="${main_view.asset_url}/images/icons/new-employee.png" alt=""/>
-                </div>
-            </div>
+        <div class="dashboard_chart" >
+            <canvas id="myChart"></canvas>
         </div>
 
         `;
         mThis.dashboard_top.innerHTML = html;
+        mThis.renderPieChart(data);
     };
+
+    this.renderPieChart = (data) => {
+        if (!data) return;
+
+        // Select the canvas element
+        const ctx = document.getElementById('myChart').getContext('2d');
+
+        // Destroy any existing chart instance to prevent overlap or duplication
+        if (this.chartInstance) {
+            this.chartInstance.destroy();
+        }
+
+        // Create the new chart instance
+        this.chartInstance = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: ['Staffs', 'Internship', 'In Probation'],
+                datasets: [{
+                    data: [
+                        data.emp_types.find((type) => type.name === "Staff")?.count || 0,
+                        data.emp_types.find((type) => type.name === "Internship")?.count || 0,
+                        data.emp_types.find((type) => type.name === "In Probation")?.count || 0,
+                    ],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top', // Position of the legend
+                    },
+                    tooltip: {
+                        enabled: true // Enable tooltips
+                    },
+                    datalabels: {
+                        color: '#000', // Text color
+                        font: {
+                            size: 12, // Font size
+                            weight: 'bold'
+                        },
+                        formatter: function (value, context) {
+                            // Display label name and value
+                            return context.chart.data.labels[context.dataIndex] + '\n' + value;
+                        }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels] // Register the Data Labels plugin
+        });
+    };
+
 
     this.renderTop = (data) => {
         if (!data) return;
@@ -308,6 +329,7 @@ var DashboardComponent = new (function () {
 
         mThis.dashboard_Bottom_right.innerHTML = html;
     };
+
 
 
 
