@@ -31,11 +31,9 @@ var PositionComponent = new (function () {
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data) => {
                 const formattedSalary = data.salary
-                    ? new Intl.NumberFormat('en-US', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                          useGrouping: true
-                      }).format(data.salary)
+                    ? new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                          .format(data.salary)
+                          .replace(',', '.')
                     : "";
 
                 return `
@@ -44,11 +42,8 @@ var PositionComponent = new (function () {
                     </span>
                 `;
             },
-            
-        }
-        ,
-        
-        
+        },
+
         {
             title: "Last Updated",
             className: "align-middle text-capitalize text-nowrap text-left",
