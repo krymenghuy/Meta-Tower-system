@@ -38,29 +38,57 @@ class Dashboard
             ->groupBy('e.emp_type_id', 't.name')
             ->get();
 
-        $currentMonth = date('Y-m'); // Format: YYYY-MM
-        $newEmployees = DB::table('employees as e')
-            ->whereRaw("DATE_FORMAT(e.joining_date, '%Y-%m') = ?", [$currentMonth])
-            ->count();
+        $currentMonth = date('Y-m');
+        $lastThreeMonths = [
+            date('Y-m', strtotime('-1 month')),
+            date('Y-m', strtotime('-2 months')),
+            date('Y-m', strtotime('-3 months')),
+        ];
+
+        $allMonths = collect([$currentMonth, ...$lastThreeMonths])->reverse(); // Reverse to calculate from oldest to newest
+
+        $formattedMonthlyData = [];
+        $cumulativeTotal = 0;
+
+        $allMonths->each(function ($month) use (&$formattedMonthlyData, &$cumulativeTotal) {
+            $totalForMonth = DB::table('employees as e')
+                ->leftJoin('resignations as r', 'e.id', '=', 'r.emp_id')
+                ->leftJoin('rejoins as re', 'e.id', '=', 're.emp_id')
+                ->where(function ($query) use ($month) {
+                    $query->whereRaw("DATE_FORMAT(e.joining_date, '%Y-%m') = ?", [$month])
+                       
+                        ->orWhere(function ($subQuery) use ($month) {
+                            $subQuery->whereRaw("DATE_FORMAT(re.rejoin_date, '%Y-%m') = ?", [$month]);
+                        });
+                })
+                ->count();
+
+            $formattedMonth = date('M Y', strtotime($month));
+            $cumulativeTotal += $totalForMonth;
+
+            $formattedMonthlyData[$formattedMonth] = $totalForMonth;
+            $formattedMonthlyData["total_$formattedMonth"] = $cumulativeTotal;
+        });
 
         return [
-            'd_activeCount' => $d_activeCount,
-            'd_inactiveCount' => $d_inactiveCount,
-            'p_activeCount' => $p_activeCount,
-            'p_inactiveCount' => $p_inactiveCount,
-            'total' => $counts->sum('count'),
-            'active' => $counts->has(10) ? $counts->get(10)->count : 0,
-            'resigned' => $counts->has(20) ? $counts->get(20)->count : 0,
-            'terminated' => $counts->has(21) ? $counts->get(21)->count : 0,
-            'new_employees' => $newEmployees,
-            'emp_types' => $empTypeCounts->map(function ($item) {
-                return [
-                    'name' => $item->name,
-                    'count' => $item->count,
-                ];
-            }),
+                'd_activeCount' => $d_activeCount,
+                'd_inactiveCount' => $d_inactiveCount,
+                'p_activeCount' => $p_activeCount,
+                'p_inactiveCount' => $p_inactiveCount,
+                'total' => $counts->sum('count'),
+                'active' => $counts->has(10) ? $counts->get(10)->count : 0,
+                'resigned' => $counts->has(20) ? $counts->get(20)->count : 0,
+                'terminated' => $counts->has(21) ? $counts->get(21)->count : 0,
+                'emp_types' => $empTypeCounts->map(function ($item) {
+                    return [
+                        'name' => $item->name,
+                        'count' => $item->count,
+                    ];
+                }),
+                'monthly_totals' => $formattedMonthlyData,
         ];
     }
+
 
     function getDepartments() {
 

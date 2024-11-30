@@ -135,7 +135,6 @@
     }
 
     .bottom_left {
-        display: flex;
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
         flex-direction: column;
         align-items: center;

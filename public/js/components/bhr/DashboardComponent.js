@@ -250,7 +250,7 @@ var DashboardComponent = new (function () {
                 <tr>
                   <th>Profile</th>
                   <th>Employee</th>
-                  <th >Position</th>
+                  <th>Position</th>
                   <th>Reason</th>
                 </tr>
               </thead>
