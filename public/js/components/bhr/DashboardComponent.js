@@ -75,7 +75,9 @@ var DashboardComponent = new (function () {
         <div class="dashboard_chart" >
             <canvas id="myChart"></canvas>
         </div>
-
+        <div class="compare_chart">
+            <canvas id="compareChart"></canvas>
+        </div>
         `;
         mThis.dashboard_top.innerHTML = html;
         mThis.renderPieChart(data);
@@ -83,16 +85,10 @@ var DashboardComponent = new (function () {
 
     this.renderPieChart = (data) => {
         if (!data) return;
-
-        // Select the canvas element
         const ctx = document.getElementById('myChart').getContext('2d');
-
-        // Destroy any existing chart instance to prevent overlap or duplication
         if (this.chartInstance) {
             this.chartInstance.destroy();
         }
-
-        // Create the new chart instance
         this.chartInstance = new Chart(ctx, {
             type: 'pie',
             data: {
@@ -120,25 +116,24 @@ var DashboardComponent = new (function () {
                 responsive: true,
                 plugins: {
                     legend: {
-                        position: 'top', // Position of the legend
+                        position: 'top',
                     },
                     tooltip: {
-                        enabled: true // Enable tooltips
+                        enabled: true
                     },
                     datalabels: {
-                        color: '#000', // Text color
+                        color: '#000',
                         font: {
-                            size: 12, // Font size
+                            size: 12,
                             weight: 'bold'
                         },
                         formatter: function (value, context) {
-                            // Display label name and value
                             return context.chart.data.labels[context.dataIndex] + '\n' + value;
                         }
                     }
                 }
             },
-            plugins: [ChartDataLabels] // Register the Data Labels plugin
+            // plugins: [ChartDataLabels]
         });
     };
 
