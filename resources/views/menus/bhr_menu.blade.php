@@ -213,7 +213,7 @@ function v_display($mod_id, $module_ids = null)
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                             <a href="WarningComponent" modid="-1" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/warning.svg') }}" />
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/warning.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Warning"></span>
                             </a>

@@ -10,30 +10,30 @@ class DBX
     public static $updated_at ='updated_at';
     public static $branch_table = 'um_branches';
     /***
-     * query_user_info() returns select SQL for columns "updated_at, update_user, and created_at, create_user". 
+     * query_user_info() returns select SQL for columns "updated_at, update_user, and created_at, create_user".
      * @$include_creation_info =true means to include "fields Created_at , create_user"
-    */ 
+    */
     public static function query_user_info($table_alias= null,$update_date_alias= null,$include_creation_info = true, $create_date_alias =null ){
         if($table_alias) $table_alias = $table_alias.'.';
         if(!$include_creation_info) return self::formatTime($table_alias.self::$updated_at,$update_date_alias);
-        else return self::formatTime($table_alias.self::$updated_at,$update_date_alias).','.self::formatTime($table_alias.self::$created_at,$create_date_alias); 
+        else return self::formatTime($table_alias.self::$updated_at,$update_date_alias).','.self::formatTime($table_alias.self::$created_at,$create_date_alias);
     }
- 
+
     public static function ifNull($col_name, $alt_column_or_value, $col_alias = null)
     {
         $driver = DB::getDriverName();
         $alt = 'NULL';
-    
+
         $sts = explode(':', $alt_column_or_value, 2);
         $key = str_replace(' ', '', strtolower(trim($sts[0])));
-    
+
         if ($key == 'value') {
             $alt = is_numeric($sts[1]) ? $sts[1] : "'" . addslashes($sts[1]) . "'";
         } else {
             $alt = $alt_column_or_value;
         }
-    
-        $exp = ''; 
+
+        $exp = '';
         switch ($driver) {
             case 'mysql':
             case 'pgsql':
@@ -45,10 +45,10 @@ class DBX
             default:
                 throw new \Exception("Unsupported database driver: $driver");
         }
-    
-        return $exp . ($col_alias ? ' AS ' . $col_alias : '');   
+
+        return $exp . ($col_alias ? ' AS ' . $col_alias : '');
     }
-    
+
 
     public static function convertToDate($dateColumn){
             $driver = DB::getDriverName();
@@ -65,7 +65,7 @@ class DBX
                 default:
                     throw new \Exception("Unsupported database driver: $driver");
             }
-         return $dateConversion;   
+         return $dateConversion;
     }
 
     public static function month($DateTimeColumn, $alias= null){
@@ -128,7 +128,7 @@ class DBX
                 throw new \InvalidArgumentException('Unsupported database driver:'. $driver);
         }
     }
- 
+
     public static function formatTime($column, $alias_name = null)
     {
         $driver = DB::getDriverName();
@@ -176,7 +176,7 @@ public static function formatTimeOnly($column, $alias_name = null)
                 throw new \InvalidArgumentException('Unsupported database driver:' . $driver);
         }
     }
-     
+
     public static function getYear($column, $alias_name = null)
     {
         $driver = DB::getDriverName();
@@ -241,4 +241,8 @@ public static function formatTimeOnly($column, $alias_name = null)
         }
     }
 
+    public static function cutDigit($data)
+    {
+        return number_format($data, 2, '.', ' ');
+    }
 }

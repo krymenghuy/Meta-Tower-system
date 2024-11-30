@@ -97,7 +97,7 @@ class WalletAccount
 
 
         foreach ($rows as $row) {
-
+            $row->balance = DBX::cutDigit($row->balance);
             $row->image_url = '';
             if ($row->emp_photo) {
                 $row->image_url = Employee::profilePicture($row->emp_id);
@@ -133,6 +133,7 @@ class WalletAccount
         if ($query) {
             $query->image_url = '';
             if ($query->emp_photo) {
+                $query->balance = DBX::cutDigit($query->balance);
                 $query->image_url = Employee::profilePicture($query->emp_id);
             }
             unset($query->emp_photo);

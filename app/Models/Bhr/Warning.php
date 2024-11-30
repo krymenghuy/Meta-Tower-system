@@ -164,7 +164,7 @@ class Warning
     static function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
-        $row = DB::table('emp_warnings as w')->selectRaw('w.id,w.emp_id,w.remarks,w.position,w.issues,w.promises,w.warning')->where('w.branch_id', $branch_id)->where('w.id', $id)->take(1)->first();
+        $row = DB::table('emp_warnings as w')->selectRaw('w.id,w.emp_id,w.remarks,w.reason,w.warning_type,w.warning_date')->where('w.branch_id', $branch_id)->where('w.id', $id)->take(1)->first();
         return $row;
     }
     static function getFormOptions($id, $ss)

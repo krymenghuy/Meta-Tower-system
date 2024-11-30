@@ -105,7 +105,8 @@ var StaffAttendanceComponent = new function () {
                     mThis.StaffAttendanceListView.showPage();
                 },
             };
-            StaffAttendanceDialog.show(op);
+            alert('pending!');
+            // StaffAttendanceDialog.show(op);
         };
 
         const pr_tbl = mThis.StaffAttendanceListView.getListContainer();

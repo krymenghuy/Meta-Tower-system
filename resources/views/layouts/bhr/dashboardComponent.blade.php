@@ -8,16 +8,20 @@
     </div>
 
     <div class="dashboard_bottom" id="_dashboard_bottom">
-
         <div class="bottom_left" id="_dashboard_bottom_left">
         </div>
 
         <div class="bottom_right" id="_dashboard_bottom_right">
         </div>
-
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{{-- <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script> --}}
+<script>
+    const ctx = document.getElementById('myChart');
+    const compareChart = document.getElementById('compareChart');
 
+</script>
 <style>
     #_main_dashboardComponent {
         display: flex;
@@ -111,7 +115,6 @@
     }
 
     .bottom_left {
-        display: flex;
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
         flex-direction: column;
         align-items: center;
@@ -140,7 +143,6 @@
         display: flex;
         justify-content: space-between;
         gap: 20px;
-        /* margin: 20px; */
         padding: 20px;
 
     }
@@ -155,6 +157,30 @@
         border-radius: 8px;
         padding: 20px;
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
+    }
 
+    .dashboard_chart {
+        display: flex;
+        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #E1ECF7;
+        width: 100%;
+        height: 300px;
+        padding: 10px;
+        border-radius: 20px;
+    }
+    .compare_chart {
+        display: flex;
+        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #E1ECF7;
+        width: 200%;
+        height: 300px;
+        padding: 10px;
+        border-radius: 20px;
     }
 </style>

@@ -31,7 +31,6 @@ class Dashboard
             ->get()
             ->keyBy('status_id');
 
-
         $empTypeCounts = DB::table('employees as e')
             ->join('emp_types as t', 'e.emp_type_id', '=', 't.id')
             ->whereNotIn('e.status_id', [20, 21])
@@ -39,11 +38,46 @@ class Dashboard
             ->groupBy('e.emp_type_id', 't.name')
             ->get();
 
+        $dates = [
+            'cm' => date('Y-m'),
+            'l1m' => date('Y-m', strtotime('-1 month')),
+            'l2m' => date('Y-m', strtotime('-2 months')),
+            'l3m' => date('Y-m', strtotime('-3 months')),
+        ];
 
-        $currentMonth = date('Y-m'); // Format: YYYY-MM
-        $newEmployees = DB::table('employees as e')
-            ->whereRaw("DATE_FORMAT(e.joining_date, '%Y-%m') = ?", [$currentMonth])
+        $formattedDates = array_map(function ($date) {
+            return date('M Y', strtotime($date));
+        }, $dates);
+
+        $monthlyCounts = [];
+
+        foreach ($dates as $key => $month) {
+            $joiningCount = DB::table('employees as e')
+            ->whereRaw("DATE_FORMAT(e.joining_date, '%Y-%m') = ?", [$month])
+            ->whereIn('e.status_id', [10, 20])
             ->count();
+
+
+            $resignationCount = DB::table('resignations as r')
+                ->join('employees as e', 'r.emp_id', '=', 'e.id')
+                ->whereRaw("DATE_FORMAT(r.effective_date, '%Y-%m') = ?", [$month])
+                ->where('e.status_id', 20)
+                ->count();
+
+                $rejoinCount = DB::table('rejoins as rj')
+                ->join('employees as e', 'rj.emp_id', '=', 'e.id')
+                ->whereRaw("DATE_FORMAT(rj.rejoin_date, '%Y-%m') = ?", [$month])
+                ->count();
+
+
+            $monthlyCount = $joiningCount - $resignationCount + $rejoinCount;
+            $monthlyCounts["count_$key"] = $monthlyCount;
+        }
+
+        $total_l3m = $monthlyCounts['count_l3m'] ?? 0;
+        $total_l2m = $total_l3m + ($monthlyCounts['count_l2m'] ?? 0);
+        $total_l1m = $total_l2m + ($monthlyCounts['count_l1m'] ?? 0);
+        $total_cm = $total_l1m + ($monthlyCounts['count_cm'] ?? 0);
 
         return [
             'd_activeCount' => $d_activeCount,
@@ -54,13 +88,28 @@ class Dashboard
             'active' => $counts->has(10) ? $counts->get(10)->count : 0,
             'resigned' => $counts->has(20) ? $counts->get(20)->count : 0,
             'terminated' => $counts->has(21) ? $counts->get(21)->count : 0,
-            'new_employees' => $newEmployees,
             'emp_types' => $empTypeCounts->map(function ($item) {
                 return [
                     'name' => $item->name,
                     'count' => $item->count,
                 ];
             }),
+            'monthly_totals' => [
+                'count_l3m' => $monthlyCounts['count_l3m'] ?? 0,
+                'total_l3m' => $total_l3m,
+                'count_l2m' => $monthlyCounts['count_l2m'] ?? 0,
+                'total_l2m' => $total_l2m,
+                'count_l1m' => $monthlyCounts['count_l1m'] ?? 0,
+                'total_l1m' => $total_l1m,
+                'count_cm' => $monthlyCounts['count_cm'] ?? 0,
+                'total_cm' => $total_cm,
+            ],
+            'dates' => [
+                'l3m' => $formattedDates['l3m'],
+                'l2m' => $formattedDates['l2m'],
+                'l1m' => $formattedDates['l1m'],
+                'cm' => $formattedDates['cm'],
+            ]
         ];
     }
 
@@ -158,8 +207,8 @@ class Dashboard
 
             'data' => $rows,
             'count' => $count,
-            'total_payroll' => $total_payroll,
-            'total_wallet' => $total_wallet,
+            'total_payroll' => DBX::cutDigit($total_payroll->total_payroll),
+            'total_wallet' => DBX::cutDigit($total_wallet->total_wallet),
             'count_warning' => $count_warning,
         ];
     }
@@ -182,7 +231,20 @@ class Dashboard
             ')
             ->first();
 
-        return $query;
+        // Format numeric values
+        $result = [
+            'total_amount' => DBX::cutDigit($query->total_amount),
+            'total_bonuses' => DBX::cutDigit($query->total_bonuses),
+            'total_seniority' => DBX::cutDigit($query->total_seniority),
+            'total_life_insurance' => DBX::cutDigit($query->total_life_insurance),
+            'total_other' => DBX::cutDigit($query->total_other),
+            'lud_bonuses' => $query->lud_bonuses,
+            'lud_seniority' => $query->lud_seniority,
+            'lud_life_insurance' => $query->lud_life_insurance,
+            'lud_other' => $query->lud_other,
+        ];
+
+        return $result;
     }
 
 }

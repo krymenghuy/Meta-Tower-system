@@ -35,9 +35,10 @@
         width: 100%;
     }
 
-    .row {
+    ._work_shift_body .row {
         display: flex;
-        /* justify-content: space-between; */
+        justify-content: space-between;
+        
     }
 
     .time_cards {
@@ -46,8 +47,7 @@
         align-items: center;
         text-align: center;
         flex: 1;
-        /* Ensures equal width for all days */
-        margin: 10px;
+        margin-left:15px;
         padding: 5px;
     }
 
