@@ -31,17 +31,11 @@ var PositionComponent = new (function () {
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data) => {
                 const formattedSalary = data.salary
-<<<<<<< HEAD
-                    ? new Intl.NumberFormat('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                          .format(data.salary)
-                          .replace(',', '.')
-=======
                     ? new Intl.NumberFormat('en-US', {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                           useGrouping: true
                       }).format(data.salary)
->>>>>>> f79f1fa368c483d0ffefa1becf4187f233271c3e
                     : "";
 
                 return `
@@ -50,16 +44,11 @@ var PositionComponent = new (function () {
                     </span>
                 `;
             },
-<<<<<<< HEAD
-        },
-
-=======
             
         }
         ,
         
         
->>>>>>> f79f1fa368c483d0ffefa1becf4187f233271c3e
         {
             title: "Last Updated",
             className: "align-middle text-capitalize text-nowrap text-left",

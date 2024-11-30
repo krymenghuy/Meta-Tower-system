@@ -20,28 +20,56 @@
         <canvas id="myChart"></canvas>
     </div>
 </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 <script>
     const ctx = document.getElementById('myChart');
 
     new Chart(ctx, {
-      type: 'bar',
+      type: 'pie',
       data: {
-        labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+        labels: ['Staffs', 'Internship', 'In Probation'],
         datasets: [{
-          label: '# of Votes',
-          data: [12, 19, 3, 5, 2, 3],
+        //   label: '# of Votes',
+          data: [10, 29, 52],
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.2)',
+            'rgba(54, 162, 235, 0.2)',
+            'rgba(255, 206, 86, 0.2)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 1)',
+            'rgba(54, 162, 235, 1)',
+            'rgba(255, 206, 86, 1)'
+          ],
           borderWidth: 1
         }]
       },
       options: {
-        scales: {
-          y: {
-            beginAtZero: true
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top', // Position of the legend
+          },
+          tooltip: {
+            enabled: true // Enable tooltips
+          },
+          datalabels: {
+            color: '#000', // Text color
+            font: {
+              size: 12, // Font size
+              weight: 'bold'
+            },
+            formatter: function (value, context) {
+              // Display label name and value
+              return context.chart.data.labels[context.dataIndex] + '\n' + value;
+            }
           }
         }
-      }
+      },
+      plugins: [ChartDataLabels] // Register the Data Labels plugin
     });
-  </script>
+</script>
 <style>
     #_main_dashboardComponent {
         display: flex;
@@ -181,14 +209,16 @@
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
     }
     .dashboard_chart{
-        width: 50%;
         display: flex;
-        justify-content: center;
-        flex-direction: column;
-        background-color: #E1ECF7;
-
-        border-radius: 8px;
-        padding: 20px;
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
+        background-color: #E1ECF7;
+        width: 47.5%; /* Set the desired width of the container */
+        height: 400px;
+        padding: 10px;
+        margin: 20px;
+        border-radius: 20px;
     }
 </style>
