@@ -16,59 +16,14 @@
         </div>
 
     </div>
-    <div class="dashboard_chart" >
-        <canvas id="myChart"></canvas>
-    </div>
+
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 <script>
     const ctx = document.getElementById('myChart');
 
-    new Chart(ctx, {
-      type: 'pie',
-      data: {
-        labels: ['Staffs', 'Internship', 'In Probation'],
-        datasets: [{
-        //   label: '# of Votes',
-          data: [10, 29, 52],
-          backgroundColor: [
-            'rgba(255, 99, 132, 0.2)',
-            'rgba(54, 162, 235, 0.2)',
-            'rgba(255, 206, 86, 0.2)'
-          ],
-          borderColor: [
-            'rgba(255, 99, 132, 1)',
-            'rgba(54, 162, 235, 1)',
-            'rgba(255, 206, 86, 1)'
-          ],
-          borderWidth: 1
-        }]
-      },
-      options: {
-        responsive: true,
-        plugins: {
-          legend: {
-            position: 'top', // Position of the legend
-          },
-          tooltip: {
-            enabled: true // Enable tooltips
-          },
-          datalabels: {
-            color: '#000', // Text color
-            font: {
-              size: 12, // Font size
-              weight: 'bold'
-            },
-            formatter: function (value, context) {
-              // Display label name and value
-              return context.chart.data.labels[context.dataIndex] + '\n' + value;
-            }
-          }
-        }
-      },
-      plugins: [ChartDataLabels] // Register the Data Labels plugin
-    });
+
 </script>
 <style>
     #_main_dashboardComponent {
@@ -214,8 +169,7 @@
         align-items: center;
         justify-content: space-between;
         background-color: #E1ECF7;
-        width: 47.5%; /* Set the desired width of the container */
-        height: 400px;
+        width:100%; /* Set the desired width of the container */
         padding: 10px;
         margin: 20px;
         border-radius: 20px;
