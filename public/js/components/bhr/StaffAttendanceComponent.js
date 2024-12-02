@@ -64,20 +64,24 @@ var StaffAttendanceComponent = new function () {
                         let hours = parseInt(timeParts[0]);
                         const minutes = timeParts[1];
                         const ampm = hours >= 12 ? 'PM' : 'AM';
-                        hours = hours % 12 || 12; 
+                        hours = hours % 12 || 12;
                         const formattedTime = `${hours}:${minutes} ${ampm}`;
+                        
                         return `
-                            <div class="row d-flex flex-row align-items-center">
-                                <span class="col-5 text-primary-custom text-start">${info.action}</span>
-                                <span class="col-2 px-2">-></span>
-                                <span class="col-5 text-warning text-start">${formattedTime}</span>
+                            <div class="d-flex flex-column mb-2">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span class="text-primary-custom fw-bold">${info.action}</span>
+                                    <span class="text-secondary px-2">→</span>
+                                    <span class="text-warning fw-bold">${formattedTime}</span>
+                                </div>
+                                ${index < data.scan_info.length - 1 ? '<hr class="my-1 border-primary-custom">' : ''}
                             </div>
-                            ${index < data.scan_info.length - 1 ? '<hr class="my-1 bg-primary-custom text-secondary" />' : ''}
                         `;
                     })
                     .join("");
             },
-        },
+        }
+        
         
        
         
@@ -105,8 +109,7 @@ var StaffAttendanceComponent = new function () {
                     mThis.StaffAttendanceListView.showPage();
                 },
             };
-            alert('pending!');
-            // StaffAttendanceDialog.show(op);
+            StaffAttendanceDialog.show(op);
         };
 
         const pr_tbl = mThis.StaffAttendanceListView.getListContainer();
@@ -187,12 +190,10 @@ const StaffAttendanceDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
-        dialog =
-            dialog ||
-            new GeneralDialog({
-                cssClass: "modal-md",
-                backdrop: "static", //User click outside form, do not close form
-                keyboard: true, //prevent user from using ESC key
+        dialog = new GeneralDialog({
+                cssClass: "modal-lg",
+                backdrop: "static", 
+                keyboard: true, 
                 createContent: () => {
                     return [
                         `<div class="row">
@@ -202,10 +203,7 @@ const StaffAttendanceDialog = (() => {
                             </div>
                             <div class="form-group col-md-6">
                                 <label class="form-label" vslang="titles.Attendance Date">Attendance Date</label>
-                                <div><input name="attendance_date" class="form-control data-input" data-field="attendance_date"></input></div>
-                            </div>
-                            <div class="form-group  col-12 d.none">
-                               <div id="info"></div>
+                                <div><input  name="attendance_date" class="form-control data-input" data-field="attendance_date"></input></div>
                             </div>
                             <div class="form-group col-6">
                                 <label for="scan_time" class="form-label" vslang="titles.Scan Time">Scan Time</label>
@@ -213,27 +211,25 @@ const StaffAttendanceDialog = (() => {
                             </div>
                             <div class="form-group col-6">
                                 <label for="action_type" class="form-label" vslang="titles.Action Type">Action Type</label>
-                                <select name="type" class="data-input"  data-field="action_type"></select>
+                                <select class="modal-select data-input" data-field="action_type">
+                                    <option value="">(Select)</option>
+                                    <option value="Check In">Check In</option>
+                                    <option value="Check Out">Check Out</option>
+                                </select>
                             </div>
-                            <div class="form-group col-4">
-                                        <label for="joining_date" class="form-label text-primary-custom " vslang="titles.Joining Date"></label>
-                                        <input name="joining_date" class="form-control data-input" data-field="joining_date" />
-                                    </div>
-
+                            <div class="form-group col-6">
+                                <label for="scan_action" class="form-label" vslang="titles.Scan Action">Scan Action</label>
+                                <input type="" name="scan_action" class="form-control data-input" data-field="scan_action" />
+                            </div>
                             <div class="form-group col-12">
                                 <label for="remark" class="form-label" vslang="titles.Remark"></label>
-                                <textarea  type="text" class="form-control data-input" data-field="remark"></textarea>
+                                <textarea  type="text" class="form-control data-input" data-field="remarks"></textarea>
                             </div>
 
                          </div>`,
                     ].join("");
                 },
-                contentCreated: (me) => {
-                    console.log(123,me);
-                    
-                DateTimePicker.init(me.controls.joining_date);
-                    
-                },
+                
                 configSelect: [
                     {
                         name: "employee",
@@ -260,7 +256,9 @@ const StaffAttendanceDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
 
-                            p.id = me.dataOptions.id; //get "id" from op
+                            p.id = me.dataOptions.id;
+                            console.log(90,p);
+                            
 
                             vsapi
                                 .call(
@@ -276,7 +274,7 @@ const StaffAttendanceDialog = (() => {
                                     if (res.status_code == 200) {
                                         me.hide(true, p);
                                         cv_interact.success(
-                                            "attendance ssave successfully"
+                                            "attendance save successfully"
                                         );
                                     } else cv_interact.error(res.error_message);
                                     StaffAttendanceComponent.saveStaffAttendance();
@@ -285,12 +283,15 @@ const StaffAttendanceDialog = (() => {
                     },
                 ],
                 contentCreated: (me, divModal) => {
+                    console.log(123,me);
+                    DateTimePicker.init(me.controls.attendance_date);
+                        
                     me.saveStaffAttendance = (p) => {
                         alert("Data saved.");
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add Attendance",
+                    createTitle: "Create Attendance",
                     modifyTitle: "Edit Attendance",
                     targetProp: "attendance",
                     api: {

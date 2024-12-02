@@ -9,6 +9,7 @@ var EmployeeComponent = new (function () {
 
     this.elEmployeeStatus = this.self.querySelector("#filter_employee_status");
     this.el_branch = this.self.querySelector("#el_branch");
+    this.el_work_shift = this.self.querySelector("#el_work_shift");
     this.elEmployeeType = this.self.querySelector("#filter_employee_type");
     this.btnAdd = this.self.querySelector("#_btn_add_employee");
     this.btnBack = this.self.querySelector("#_btn_backTo_employee");
@@ -104,6 +105,7 @@ var EmployeeComponent = new (function () {
         p.status_id = mThis.elEmployeeStatus.value;
         p.emp_type_id = mThis.elEmployeeType.value;
         p.branch_id = mThis.el_branch.value;
+        p.work_shift_id = mThis.el_work_shift.value;
         p.search_value = mThis.elSearch.value;
         mThis.div_filter_fields
             .querySelectorAll(".filter-field")
@@ -1942,6 +1944,15 @@ var EmployeeComponent = new (function () {
                     "branch_name",
                     true,
                     "All Branch",
+                    null
+                );
+                VSUtil.setComboItems(
+                    mThis.el_work_shift,
+                    d.work_shifts,
+                    "id",
+                    "name",
+                    true,
+                    "All Shift",
                     null
                 );
             });

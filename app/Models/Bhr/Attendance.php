@@ -50,16 +50,7 @@ class Attendance
         if (in_array($day_name, $except_days)) {
             return DV::error('The day is a weekend');
         }
-        $existingAttendance = DB::table('emp_attendances')
-            ->where('emp_id', $emp_id)
-            ->whereDate('attendance_date', $attendance_date)
-            ->first();
-        if ($existingAttendance) {
-            if (!$id || $id != $existingAttendance->id) {
-                return DV::error('Attendance for this employee on this date already exists.');
-            }
-            $id = $existingAttendance->id; // Use existing ID for updates
-        }
+        
 
         $d = (object) $arr;
         $remarks = $d->remarks;
