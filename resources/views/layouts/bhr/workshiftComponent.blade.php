@@ -78,7 +78,7 @@
         display: flex;
         justify-content: space-between;
         background-color: #fff;
-        border: 1px solid #545252;
+        /* border: 1px solid #545252; */
         border-radius: 5px;
         margin: 5px 0;
         padding: 10px;
@@ -101,11 +101,7 @@
         color: #555;
     }
 
-    .no_shifts {
-        font-size: 0.9em;
-        color: #999;
-        margin-top: 10px;
-    }
+ 
 
     .shift_header:hover,
     .shift_date:hover {
@@ -283,7 +279,7 @@
 
     .bg-green {
         background-color: #57c899;
-        border: #02ffc4 2px solid;
+        /* border: #02ffc4 2px solid; */
         color: white;
         border-radius: 5px;
         padding: 10px;
@@ -308,7 +304,7 @@
 
     .shift_card {
         padding: 10px;
-        border: 1px solid #314166;
+        /* border: 1px solid #314166; */
         border-radius: 5px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         text-align: center;
@@ -325,7 +321,7 @@
     .no_shifts {
         font-size: 0.9em;
         color: #999;
-        margin-top: 10px;
+        margin-top: 5px;
     }
 
     .days.disabled {
