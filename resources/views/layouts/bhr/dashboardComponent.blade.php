@@ -1,6 +1,6 @@
 <div id="_main_dashboardComponent" style="display:none;padding:10px 0 0;">
-    <div class="mt-3 p-3" id="_dashboard_top">
-        
+    <div class="dashboard_top" id="_dashboard_top">
+
     </div>
 
     <div class="dashboard_middle" id="_dashboard_middle"></div>
@@ -21,6 +21,7 @@
 <script>
     const ctx = document.getElementById('myChart');
     const compareChart = document.getElementById('compareChart');
+    const acc = document.getElementById('accountChart');
 
 </script>
 <style>
@@ -37,7 +38,6 @@
         background-color: skyblue;
         cursor: pointer;
     }
-
     .dashboard_top {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -50,63 +50,8 @@
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         grid-gap: 20px;
-        padding: 20px;
         background-color: #f4f4f4;
     }
-
-    /* .employees {
-        background-color: white;
-        border-radius: 10px;
-        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
-        padding: 20px;
-        display: flex;
-        flex-direction: column;
-        grid-gap: 20px;
-        justify-content: space-between;
-    } */
-
-    /* .total_employee {
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        height: 100%;
-    }
-
-    .total_top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-
-    .total_title {
-        font-size: 1rem;
-        font-weight: bold;
-    }
-
-    .total_bottom {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
-    .total_number {
-        font-size: 1.5rem;
-        font-weight: bold;
-    }
-
-    .total_icon {
-        font-size: 1.2rem;
-    } */
-
-    .fa-ellipsis-v {
-        cursor: pointer;
-    }
-
-    /* div.employees:hover {
-    background-color: #0079FF !important;
-    cursor: pointer !important;
-    } */
 
     .dashboard_center {
         display: flex;
@@ -173,16 +118,5 @@
         padding: 10px;
         border-radius: 20px;
     }
-    .compare_chart {
-        display: flex;
-        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-        background-color: #E1ECF7;
-        width: 200%;
-        height: 300px;
-        padding: 10px;
-        border-radius: 20px;
-    }
+
 </style>
