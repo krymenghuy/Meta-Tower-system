@@ -58,19 +58,25 @@ class Dashboard
             ->count();
 
 
-            $resignationCount = DB::table('resignations as r')
+            // $resignationCount = DB::table('resignations as r')
+            //     ->join('employees as e', 'r.emp_id', '=', 'e.id')
+            //     ->whereRaw("DATE_FORMAT(r.effective_date, '%Y-%m') = ?", [$month])
+            //     ->where('e.status_id', 20)
+            //     ->count();
+
+            $afterRisign = DB::table('resignations as r')
                 ->join('employees as e', 'r.emp_id', '=', 'e.id')
-                ->whereRaw("DATE_FORMAT(r.effective_date, '%Y-%m') = ?", [$month])
+                ->whereRaw("DATE_FORMAT(r.effective_date, '%Y-%m') < ?", [$month])
                 ->where('e.status_id', 20)
                 ->count();
 
-                $rejoinCount = DB::table('rejoins as rj')
-                ->join('employees as e', 'rj.emp_id', '=', 'e.id')
-                ->whereRaw("DATE_FORMAT(rj.rejoin_date, '%Y-%m') = ?", [$month])
-                ->count();
+                // $rejoinCount = DB::table('rejoins as rj')
+                // ->join('employees as e', 'rj.emp_id', '=', 'e.id')
+                // ->whereRaw("DATE_FORMAT(rj.rejoin_date, '%Y-%m') = ?", [$month])
+                // ->count();
 
 
-            $monthlyCount = $joiningCount - $resignationCount + $rejoinCount;
+            $monthlyCount =  $joiningCount - $afterRisign ;
             $monthlyCounts["count_$key"] = $monthlyCount;
         }
 
