@@ -35,44 +35,54 @@ class Warning
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-    
+
         $v_rule = [
             'id' => '0|identity=1',
-            'emp_id' => '1|number|exits.employees.id',
-            'warning_type' => '0|string|50',
+            'emp_id' => '1|number|exists.employees.id',
+            'warning_type' => '1|string|50',
             'warning_date' => '1|date',
             'reason' => '0|string|255',
             'remarks' => '0|string|255',
         ];
-    
+
         // Validate input
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) {
             return DV::error($res->error);
         }
-    
+
         $id = $res->id;
         $inputs = $res->values;
-    
+
+        // Check for duplicate warning_type for the employee
+        $exists = DB::table('emp_warnings')
+        ->where('emp_id', $inputs['emp_id'])
+        ->where('warning_type', $inputs['warning_type'])
+        ->exists();
+
+        if ($exists) {
+            return DV::error("The employee already has a warning of this type.");
+        }
+
         // Save warning data
         $warning = saveData($ss, 'emp_warnings', ['id' => $id], $inputs, [], 1);
         if ($warning > 0) {
             // Define event details
             $event_name = 'Employee Warnings';
             $event_id = Employee::getEventId($event_name);
-    
+
             // If event ID doesn't exist, create a new event
             if (!$event_id) {
                 $event_arr = ['name' => $event_name];
                 $event_res = Event::createEvent($event_arr, $ss);
-    
+
                 if ($event_res->status_code == 200 && !empty($event_res->data['id'])) {
                     $event_id = $event_res->data['id'];
                 } else {
                     return DV::error("Failed to create or fetch event for: {$event_name}");
                 }
             }
-    
+
             // Prepare event inputs
             $event_date = $inputs['warning_date'];
             $event_inputs = [
@@ -83,18 +93,19 @@ class Warning
                 'event_date' => $event_date,
                 'branch_id' => $branch_id
             ];
-    
+
             // Save event data
             $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
             if (!$event_saved) {
                 return DV::error('Failed to log event.');
             }
-    
+
             return DV::depends(1, ['emp_warnings' => $inputs, 'id' => $id]);
         }
-    
+
         return DV::depends($warning, ['emp_warnings' => $inputs, 'id' => $id]);
     }
+
     
 
     function getWarningsListPaginate($arr, $ss)
