@@ -38,6 +38,15 @@ class WalletAccount
         $id = $res->id;
         $inputs = $res->values;
 
+        $existingAccount = DB::table('wallet_accounts')
+        ->where('branch_id', $branch_id)
+        ->where('emp_id', $inputs['emp_id'])
+        ->first();
+
+    if ($existingAccount) {
+        return DV::error('The employee already has an account.');
+    }
+
         $id = saveData($ss,'wallet_accounts', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['wallet_accounts' => $inputs, 'id' => $id]);

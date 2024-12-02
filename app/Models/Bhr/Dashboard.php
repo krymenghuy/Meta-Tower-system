@@ -25,6 +25,19 @@ class Dashboard
         $p_activeCount = DB::table('positions')->where('inactive', 0)->count();
         $p_inactiveCount = DB::table('positions')->where('inactive', 1)->count();
 
+        $total_payroll = DB::table('accounts as a')
+            ->where('a.id', '<>', 1) // Exclude rows where id = 1
+            ->selectRaw('SUM(a.balance) as total_payroll')
+            ->first();
+
+
+        $total_wallet =  DB::table('wallet_accounts as w')
+            ->selectRaw(' SUM(w.balance) as total_wallet')
+            ->first();
+
+        $start_date = $d->start_date ?? null;
+        $end_date = $d->end_date ?? null;
+
         $counts = DB::table('employees as e')
             ->select('e.status_id', DB::raw('COUNT(*) as count'))
             ->groupBy('e.status_id')
@@ -57,24 +70,11 @@ class Dashboard
             ->whereIn('e.status_id', [10, 20])
             ->count();
 
-
-            // $resignationCount = DB::table('resignations as r')
-            //     ->join('employees as e', 'r.emp_id', '=', 'e.id')
-            //     ->whereRaw("DATE_FORMAT(r.effective_date, '%Y-%m') = ?", [$month])
-            //     ->where('e.status_id', 20)
-            //     ->count();
-
             $afterRisign = DB::table('resignations as r')
                 ->join('employees as e', 'r.emp_id', '=', 'e.id')
                 ->whereRaw("DATE_FORMAT(r.effective_date, '%Y-%m') < ?", [$month])
                 ->where('e.status_id', 20)
                 ->count();
-
-                // $rejoinCount = DB::table('rejoins as rj')
-                // ->join('employees as e', 'rj.emp_id', '=', 'e.id')
-                // ->whereRaw("DATE_FORMAT(rj.rejoin_date, '%Y-%m') = ?", [$month])
-                // ->count();
-
 
             $monthlyCount =  $joiningCount - $afterRisign ;
             $monthlyCounts["count_$key"] = $monthlyCount;
@@ -90,6 +90,8 @@ class Dashboard
             'd_inactiveCount' => $d_inactiveCount,
             'p_activeCount' => $p_activeCount,
             'p_inactiveCount' => $p_inactiveCount,
+            'total_payroll' => DBX::cutDigit($total_payroll->total_payroll),
+            'total_wallet' => DBX::cutDigit($total_wallet->total_wallet),
             'total' => $counts->sum('count'),
             'active' => $counts->has(10) ? $counts->get(10)->count : 0,
             'resigned' => $counts->has(20) ? $counts->get(20)->count : 0,
@@ -167,14 +169,12 @@ class Dashboard
 
         $str_dates = '1=1';
 
-        // Determine date filter: use today's date if no date range is provided, otherwise use the specified range
         $today = date('Y-m-d');
         if ($start_date && $end_date) {
             $end_date = convertDate($end_date);
             $start_date = convertDate($start_date);
 
             if (strtotime($start_date) && strtotime($end_date)) {
-                // Check if there is any overlap between the leave period and the given date range
                 $str_dates = "(
                     (l.start_date BETWEEN '$start_date' AND '$end_date') OR
                     (l.end_date BETWEEN '$start_date' AND '$end_date') OR
@@ -191,7 +191,7 @@ class Dashboard
         $query = DB::table('leaves as l')
             ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
-            ->whereRaw($str_dates) // Apply date filter
+            ->whereRaw($str_dates)
             ->selectRaw(
                 'l.id, emp.id as emp_id, emp.name as emp_name, p.title as emp_position, ' .
                 $col_dates . ', l.remarks, emp.photo_file_name as emp_photo, ' . $leave_days_calc
@@ -237,7 +237,6 @@ class Dashboard
             ')
             ->first();
 
-        // Format numeric values
         $result = [
             'total_amount' => DBX::cutDigit($query->total_amount),
             'total_bonuses' => DBX::cutDigit($query->total_bonuses),
