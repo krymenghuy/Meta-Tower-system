@@ -28,55 +28,86 @@ var DashboardComponent = new (function () {
         let empTypesInternship = data.emp_types.find((type) => type.name === "Internship") || { count: 0 };
 
         let html = `
-        <div class="employees text-black-50" style="background-color: #7DE5ED;">
-            <div class="total_employee">
-                <div class="total_top">
-                    <span class="total_title">Departments</span>
+        <div>
+            <div class="row">
+                <div class="employees card col-md-3 ">
+                    <div class=" card-title">
+                        <div class="total_top">
+                            <span class="total_title">Departments</span>
+                        </div>
+                        <div class="total_bottom">
+                            <span class="total_number">${data.d_activeCount}</span>
+                        <img class="w-15" src="${main_view.asset_url}/images/icons/department.png" alt=""/>
+                        </div>
+                    </div>
                 </div>
-                 <div class="total_bottom">
-                    <span class="total_number">${data.d_activeCount}</span>
-                 <img class="w-15" src="${main_view.asset_url}/images/icons/department.png" alt=""/>
+                <div class="employees card col-md-3">
+                    <div class="total_employee">
+                        <div class="total_top">
+                            <span class="total_title">Positions</span>
+                        </div>
+                        <div class="total_bottom">
+                            <span class="total_number">${data.p_activeCount}</span>
+                            <img class="w-15" src="${main_view.asset_url}/images/icons/position.png" alt=""/>
+                        </div>
+                    </div>
+                </div>
+                <div class="card col-md-3">
+                    <div class="total_employee">
+                        <div class="total_top">
+                            <span class="total_title">Active Employees</span>
+                        </div>
+                        <div class="total_bottom">
+                            <span class="total_number">${data.active}</span>
+                        <img class="w-15" src="${main_view.asset_url}/images/icons/employee.png" alt=""/>
+                        </div>
+                    </div>
+                </div>
+                <div class="card col-md-3">
+                    <div class="total_employee">
+                        <div class="total_top">
+                            <span class="total_title">Resigned Employees</span>
+                        </div>
+                        <div class="total_bottom">
+                            <span class="total_number">${data.resigned}</span>
+                            <img class="w-15" src="${main_view.asset_url}/images/icons/resign.png" alt=""/>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="employees text-black-50" style="background-color: #7DE5ED;">
-            <div class="total_employee">
-                <div class="total_top">
-                    <span class="total_title">Positions</span>
+            <div class="row">
+                <div class="dashboard_chart col-3 m-2" >
+                    <canvas id="myChart"></canvas>
                 </div>
-                <div class="total_bottom">
-                    <span class="total_number">${data.p_activeCount}</span>
-                     <img class="w-15" src="${main_view.asset_url}/images/icons/position.png" alt=""/>
+                <div class="compare_chart col-5 m-2">
+                    <canvas id="compareChart"></canvas>
+                </div>
+
+                <div class="col-3">
+                    <div class="employees text-black-50 m-2" style="background-color: #FF8A8A; height: 100px;">
+                        <div class="total_employee">
+                            <div class="total_top">
+                                <span class="total_title">Terminated Employees</span>
+                            </div>
+                            <div class="total_bottom">
+                                <span class="total_number">${data.terminated}</span>
+                                <img class="w-15" src="${main_view.asset_url}/images/icons/resign.png" alt=""/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="employees text-black-50 m-2" style="background-color: #45FFCA; height: 100px; ">
+                        <div class="total_employee">
+                            <div class="total_top">
+                                <span class="total_title">New Employees</span>
+                            </div>
+                            <div class="total_bottom">
+                                <span class="total_number">${data.new_employees}</span>
+                                <img class="w-15" src="${main_view.asset_url}/images/icons/new-employee.png" alt=""/>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="employees text-black-50" style="background-color: #00FF9C;">
-            <div class="total_employee">
-                <div class="total_top">
-                    <span class="total_title">Active Employees</span>
-                </div>
-                <div class="total_bottom">
-                    <span class="total_number">${data.active}</span>
-                   <img class="w-15" src="${main_view.asset_url}/images/icons/employee.png" alt=""/>
-                </div>
-            </div>
-        </div>
-        <div class="employees text-black-50" style="background-color: #FF8A8A;">
-            <div class="total_employee">
-                <div class="total_top">
-                    <span class="total_title">Resigned Staff</span>
-                </div>
-                <div class="total_bottom">
-                    <span class="total_number">${data.resigned}</span>
-                    <img class="w-15" src="${main_view.asset_url}/images/icons/resign.png" alt=""/>
-                </div>
-            </div>
-        </div>
-        <div class="dashboard_chart" >
-            <canvas id="myChart"></canvas>
-        </div>
-        <div class="compare_chart">
-            <canvas id="compareChart"></canvas>
         </div>
         `;
         mThis.dashboard_top.innerHTML = html;
@@ -101,7 +132,7 @@ var DashboardComponent = new (function () {
                         data.emp_types.find((type) => type.name === "In Probation")?.count || 0,
                     ],
                     backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(51, 255, 51,0.2 )',
                         'rgba(54, 162, 235, 0.2)',
                         'rgba(255, 206, 86, 0.2)'
                     ],
@@ -138,10 +169,14 @@ var DashboardComponent = new (function () {
         });
     };
 
-    this.renderCompareChart = (data) => {
-        if (!data) return;
+    this.renderCompareChart = (responseData) => {
+        console.log(222,responseData.data);
 
-        // Select the canvas and its context
+        if (!responseData) {
+            console.error("Invalid data format or missing data.");
+            return;
+        }
+
         const canvas = document.getElementById('compareChart');
         if (!canvas) {
             console.error("Canvas with id 'compareChart' not found.");
@@ -149,35 +184,42 @@ var DashboardComponent = new (function () {
         }
         const ctx = canvas.getContext('2d');
 
-        // Destroy any existing chart instance
         if (this.compareChartInstance) {
             this.compareChartInstance.destroy();
         }
 
-        // Create a new chart instance
+        const { monthly_totals, dates } = responseData;
+        const labels = [
+            dates.l3m || 'Last 3 Months',
+            dates.l2m || 'Last 2 Months',
+            dates.l1m || 'Last Month',
+            dates.cm || 'Current Month',
+        ];
+        const counts = [
+            monthly_totals.total_l3m || 0,
+            monthly_totals.total_l2m || 0,
+            monthly_totals.total_l1m || 0,
+            monthly_totals.total_cm || 0,
+        ];
+
         this.compareChartInstance = new Chart(ctx, {
-            type: 'bar', // Chart type
+            type: 'bar',
             data: {
-                labels: ['Staffs', 'Internship', 'In Probation', 'New Staff'], // Names to display
+                labels: labels,
                 datasets: [{
-                    label: 'Number of Employees',
-                    data: [
-                        data.emp_types.find((type) => type.name === "Staff")?.count || 0,
-                        data.emp_types.find((type) => type.name === "Internship")?.count || 0,
-                        data.emp_types.find((type) => type.name === "In Probation")?.count || 0,
-                        data.new_staff || 0
-                    ],
+                    label: 'Employees',
+                    data: counts,
                     backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
                     ],
                     borderColor: [
                         'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(255, 159, 64, 1)'
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 99, 132, 1)',
                     ],
                     borderWidth: 1
                 }]

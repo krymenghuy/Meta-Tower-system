@@ -1,5 +1,6 @@
-<div id="_main_dashboardComponent" style="display:none;padding:10px 0 0; overflow:auto;">
-    <div class="dashboard_top" id="_dashboard_top">
+<div id="_main_dashboardComponent" style="display:none;padding:10px 0 0;">
+    <div class="mt-3 p-3" id="_dashboard_top">
+        
     </div>
 
     <div class="dashboard_middle" id="_dashboard_middle"></div>
@@ -16,7 +17,7 @@
     </div>
 </div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-{{-- <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script> --}}
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 <script>
     const ctx = document.getElementById('myChart');
     const compareChart = document.getElementById('compareChart');
@@ -53,17 +54,18 @@
         background-color: #f4f4f4;
     }
 
-    .employees {
+    /* .employees {
         background-color: white;
         border-radius: 10px;
         box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
         padding: 20px;
         display: flex;
         flex-direction: column;
+        grid-gap: 20px;
         justify-content: space-between;
-    }
+    } */
 
-    .total_employee {
+    /* .total_employee {
         display: flex;
         flex-direction: column;
         justify-content: space-between;
@@ -95,7 +97,7 @@
 
     .total_icon {
         font-size: 1.2rem;
-    }
+    } */
 
     .fa-ellipsis-v {
         cursor: pointer;
