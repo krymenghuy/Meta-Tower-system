@@ -128,7 +128,7 @@ var WorkshiftComponent = new (function () {
         `;
 
             if (shifts.length === 0) {
-                html += `<div class="no_shifts">No shifts scheduled</div>`;
+                html += `<div class="card p-4 bg-secondary no_shifts">No Shift</div>`;
             } else {
                 shifts.forEach((shift) => {
                     const actionClass =
@@ -311,9 +311,9 @@ var WorkshiftComponent = new (function () {
                         d.shifts,
                         "id",
                         "name",
-                        true,
-                        "All work shifts",
-                        null
+                        false,
+                        null,
+                        1
                     );
                 }
             });
