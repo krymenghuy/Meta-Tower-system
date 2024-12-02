@@ -70,9 +70,9 @@ var StaffAttendanceComponent = new function () {
                         return `
                             <div class="d-flex flex-column mb-2">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <span class="text-primary-custom fw-bold">${info.action}</span>
-                                    <span class="text-secondary px-2">→</span>
-                                    <span class="text-warning fw-bold">${formattedTime}</span>
+                                    <small class="text-primary-custom fw-bold">${info.action}</small>
+                                    <small class="text-secondary px-2">→</small>
+                                    <small class="text-warning fw-bold">${formattedTime}</small>
                                 </div>
                                 ${index < data.scan_info.length - 1 ? '<hr class="my-1 border-primary-custom">' : ''}
                             </div>
@@ -81,6 +81,7 @@ var StaffAttendanceComponent = new function () {
                     .join("");
             },
         }
+        
         
         
        
@@ -106,7 +107,7 @@ var StaffAttendanceComponent = new function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.StaffAttendanceListView.showPage();
+                    mThis.StaffAttendanceListView.showPage(mThis.getFilterData());
                 },
             };
             StaffAttendanceDialog.show(op);
@@ -147,7 +148,7 @@ var StaffAttendanceComponent = new function () {
                     switch(f)
                     {
                         case "branch_id":
-                            VSUtil.setComboItems(el,d.branches,"id","branch_name",false,null,1);
+                            VSUtil.setComboItems(el,d.branches,"id","branch_name",null,null,1);
                             break;
                         case "emp_type_id":
                             VSUtil.setComboItems(el,(d.types || []),"id","name",true,'All Type',null);
@@ -174,6 +175,8 @@ var StaffAttendanceComponent = new function () {
             const f = el.dataset.field;
             p[f] = el.value;
         });
+        console.log(12,JSON.stringify(p));
+        
         return p;
     };
     this.show = function () {
@@ -277,7 +280,6 @@ const StaffAttendanceDialog = (() => {
                                             "attendance save successfully"
                                         );
                                     } else cv_interact.error(res.error_message);
-                                    StaffAttendanceComponent.saveStaffAttendance();
                                 });
                         },
                     },

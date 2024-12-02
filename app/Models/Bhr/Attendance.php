@@ -103,26 +103,32 @@ class Attendance
             if($emp_type_id) $str_moreWhere .=' AND emp.emp_type_id = ' . $emp_type_id;
             if($work_shift_id) $str_moreWhere .= ' AND emp.work_shift_id = ' . $work_shift_id;
         }
-        $selectCols = 'emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code, emp.date_of_birth as dob, ws.name as work_shift, formatDate(a.attendance_date) as attendance_date, a.scan_time, a.scan_action,p.title as position';
-        $query = DB::table('employees as emp')
-            ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
-            ->join('positions as p', 'emp.position_id', '=', 'p.id')
-            ->join('departments as d', 'p.department_id', '=', 'd.id')
-            ->join('emp_attendances as a', 'a.emp_id', '=', 'emp.id')
-            ->whereRaw($str_moreWhere)
-            ->whereRaw($str_search)
-            ->selectRaw($selectCols)
-            ->orderBy('emp.id', 'desc');
-        
-        $rawRows = $query->skip($skip_rows)->take($per_page)->get();
-        
-        $rows = $rawRows->groupBy('emp_id')->map(function ($group) {
+        $selectCols = 'emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code, emp.date_of_birth as dob, ws.name as work_shift, formatDate(a.attendance_date) as attendance_date, a.scan_time, a.scan_action, p.title as position';
+
+    $query = DB::table('employees as emp')
+        ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
+        ->join('positions as p', 'emp.position_id', '=', 'p.id')
+        ->join('departments as d', 'p.department_id', '=', 'd.id')
+        ->join('emp_attendances as a', 'a.emp_id', '=', 'emp.id')
+        ->whereRaw($str_moreWhere)
+        ->whereRaw($str_search)
+        ->selectRaw($selectCols)
+        ->orderBy('a.attendance_date', 'desc')
+        ->orderBy('emp.id', 'desc'); // Order by attendance date first
+
+    $rawRows = $query->skip($skip_rows)->take($per_page)->get();
+
+    $rows = $rawRows
+        ->groupBy(function ($item) {
+            return $item->emp_id . '_' . $item->attendance_date; // Group by emp_id and attendance_date
+        })
+        ->map(function ($group) {
             $first = $group->first();
             return [
                 'code' => $first->code,
                 'name' => $first->name,
                 'sex' => $first->sex,
-                'position'=>$first->position,
+                'position' => $first->position,
                 'attendance_date' => $first->attendance_date,
                 'work_shift' => $first->work_shift,
                 'scan_info' => $group->map(function ($item) {
@@ -133,6 +139,7 @@ class Attendance
                 })->values(),
             ];
         })->values();
+
         
         // Pagination
         $count_query = clone $query;
