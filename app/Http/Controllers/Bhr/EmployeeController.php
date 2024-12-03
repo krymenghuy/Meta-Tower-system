@@ -163,6 +163,14 @@ class EmployeeController extends Controller
     $res = $employee->promoteStaff($req->all(),$id,$ss);
     return JDV::raw($res);
    }
+   public function getEmployeeList(Request $req){
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $emp = new Employee();
+        return JDV::result($emp->getEmployeeList($req->all(), $ss));
+   }
 
 }
 

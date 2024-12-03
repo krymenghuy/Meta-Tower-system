@@ -11,7 +11,7 @@ class Attendance
 {
 
     protected $id = null;
-    protected $userInfo = null,$mins=40;
+    protected $userInfo = null, $mins = 40;
 
     public function __construct($id = null, $userInfo = null)
     {
@@ -19,9 +19,9 @@ class Attendance
         $this->userInfo = $userInfo;
     }
 
-    function save($arr=[], $id = null, $ss = null)
+    function save($arr = [], $id = null, $ss = null)
     {
-        
+
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
@@ -36,16 +36,16 @@ class Attendance
             'action_type' => '0|string',
             'remarks' => '0|string',
         ];
-       
+
         $res = validateObject($arr, $v_rule, 1, [], $ss->lang, 0, null);
         if ($res->error) {
             return DV::error($res->error);
         }
         $inputs = $res->values;
         $emp_id = $inputs['emp_id'];
-        $attendance_date = date('Y-m-d',strtotime($inputs['attendance_date']));
+        $attendance_date = date('Y-m-d', strtotime($inputs['attendance_date']));
         $today = date('Y-m-d');
-        $day_name = date('D',strtotime($attendance_date));
+        $day_name = date('D', strtotime($attendance_date));
         $except_days = ['Sun'];
         if (in_array($day_name, $except_days)) {
             return DV::error('The day is a weekend');
@@ -54,20 +54,20 @@ class Attendance
 
         $d = (object) $arr;
         $remarks = $d->remarks;
-        $scan_time = $d->scan_time ? date('H:i:s', strtotime($d->scan_time)): '00:00:00';
+        $scan_time = $d->scan_time ? date('H:i:s', strtotime($d->scan_time)) : '00:00:00';
         $scan_action = $d->scan_action;
         $action_type = $d->action_type;
-        
-        
+
+
         $arr_attendance = [
             'emp_id' => $emp_id,
             'scan_time' => $scan_time,
             'scan_action' => $scan_action,
             'action_type' => $action_type,
-            'attendance_date' => $attendance_date ?? '', 
+            'attendance_date' => $attendance_date ?? '',
             'remarks' => $remarks,
         ];
-        
+
 
         // unset($inputs['status']);
 
@@ -78,7 +78,7 @@ class Attendance
 
 
 
-    function getStaffAttendanceListPaginate($filter=[], $ss=null)
+    function getStaffAttendanceListPaginate($filter = [], $ss = null)
     {
         $d = (object) $filter;
         $search_value = $d->search_value ?? null;
@@ -88,22 +88,22 @@ class Attendance
         $emp_type_id = $d->emp_type_id ?? null;
         $work_shift_id = $d->work_shift_id ?? null;
         $per_page = $d->per_page ?? 10;
-        if(!is_numeric($current_page)) $current_page = 1;
-        $skip_rows = ($current_page -1) * $per_page;
+        if (!is_numeric($current_page)) $current_page = 1;
+        $skip_rows = ($current_page - 1) * $per_page;
         $str_search = "1=1";
         $str_moreWhere = "1=1";
-        if($search_value){
+        if ($search_value) {
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
             $str_search = "(emp.code = '$search_value' OR emp.name LIKE '%$search_value%')";
         }
-        if(!$search_value){
-            if($branch_id) $str_moreWhere .=' AND emp.branch_id = ' . $branch_id;
-            if($department_id) $str_moreWhere .=' AND d.id = ' . $department_id;
-            if($emp_type_id) $str_moreWhere .=' AND emp.emp_type_id = ' . $emp_type_id;
-            if($work_shift_id) $str_moreWhere .= ' AND emp.work_shift_id = ' . $work_shift_id;
+        if (!$search_value) {
+            if ($branch_id) $str_moreWhere .= ' AND emp.branch_id = ' . $branch_id;
+            if ($department_id) $str_moreWhere .= ' AND d.id = ' . $department_id;
+            if ($emp_type_id) $str_moreWhere .= ' AND emp.emp_type_id = ' . $emp_type_id;
+            if ($work_shift_id) $str_moreWhere .= ' AND emp.work_shift_id = ' . $work_shift_id;
         }
-        $selectCols = 'emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code, emp.date_of_birth as dob, ws.name as work_shift, formatDate(a.attendance_date) as attendance_date, a.scan_time, a.scan_action, p.title as position';
+        $selectCols = 'emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code, emp.date_of_birth as dob, ws.name as work_shift, DATE_FORMAT(a.attendance_date, "%d %b %Y") as attendance_date, a.scan_time, a.scan_action, p.title as position';
 
     $query = DB::table('employees as emp')
         ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
@@ -144,64 +144,29 @@ class Attendance
         // Pagination
         $count_query = clone $query;
         $count = $count_query->count('emp.id');
-        
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-        
 
+        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
 
-    function attendanceList($filter = [], $ss = null)
+    function attendanceList($arr, $ss = null)
     {
-        $branch_id = $ss->branch_id;
-        $d = (object)$filter;
-        $current_page = isset($d->current_page) && is_numeric($d->current_page) ? $d->current_page : 1;
-        $per_page = isset($d->per_page) && is_numeric($d->per_page) ? $d->per_page : 10;
-        $search_value = isset($d->search_value) ? escape_like_str($d->search_value) : null;
-        $employee_id = isset($d->emp_id) ? $d->emp_id : null;
-        $attendance_date = isset($d->attendance_date) ? date('Y-m-d', strtotime($d->attendance_date)) : null;
-        $skip_rows = ($current_page - 1) * $per_page;
+        $d = (object) $arr;
 
-        // Start building the query
-        $query = DB::table('attendances as a')
-            // ->join('attendances as a', 'a.emp_id', '=', 'emp.id')
-            ->join('employees as emp', 'emp.id', '=', 'a.emp_id')
-            ->join('employee_statuses as e', 'e.id', '=', 'a.status_id')
-            ->where('a.branch_id', $branch_id)
-            ->where('a.attendance_date', '>=', date('Y-m-d', strtotime('-30 days')))
-            ->where('a.attendance_date', '<=', date('Y-m-d'))
-            ->selectRaw('a.id, emp.id as employee_id, emp.gender, emp.name, emp.name_kh, emp.email, emp.code, emp.date_of_birth as dob, a.attendance_date, a.check_in_time, a.check_out_time, a.remark, a.status_id, e.photo_file_name as emp_photo')
-            ->orderBy('emp.name', 'asc');
-        // ->selectRaw('a.id, emp.id as employee_id, emp.gender, emp.name, emp.name_kh, emp.email, emp.code, emp.date_of_birth as dob, a.attendance_date, a.check_in_time, a.check_out_time, a.remark, a.status_id, e.photo_file_name as emp_photo')
-        // ->distinct();
+        $search_value = $d->search_value ?? null;
 
-        // Build the search conditions
         $str_search = '1=1';
 
         if ($search_value) {
-            $str_search .= " AND (emp.name LIKE '%$search_value%' OR emp.code LIKE '%$search_value%')";
+            $search_value = escape_like_str($search_value);
+            $query->whereRaw("emp.name LIKE '%" . $search_value . "%' OR emp.code LIKE '%" . $search_value . "%'");
         }
 
-        if ($attendance_date) {
-            $str_search .= " AND a.attendance_date = '$attendance_date'";
-        }
+        // Execute the query and fetch all matching records
+        $rows = $query->get();
 
-        // Apply search conditions
-        $query->whereRaw($str_search);
-
-        // Clone query for count
-        $count_query = clone $query;
-        $count = $count_query->count();
-
-        // Filter by employee_id if provided
-        if ($employee_id) {
-            $query->where('emp.id', $employee_id);
-        }
-
-        // Get the rows with pagination
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
-
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        // Return the rows as a result
+        return $rows;
     }
 
 

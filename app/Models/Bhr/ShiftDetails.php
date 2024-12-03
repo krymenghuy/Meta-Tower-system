@@ -158,4 +158,27 @@ class ShiftDetails
             'shift_details' => $shiftdetails,
         ];
     }
+    function getShiftDetail($arr, $ss)
+    {
+        $d = (object) $arr;
+
+        $search_value = $d->search_value ?? null;
+
+        $str_search = '1=1';
+
+        // Query to fetch attendance records
+        $query = DB::table('shift_details as sd')
+        ->selectRaw('sd.id,sd.work_shift_id,sd.day, sd.time, sd.action')
+        ->where('sd.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
+
+        // Aply search filters if a search value is provided
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->whereRaw("sd.work_shift_id LIKE '%" . $search_value . "%'");
+        }
+        $rows = $query->get();
+
+        // Return the rows as a result
+        return $rows;
+    }
 }

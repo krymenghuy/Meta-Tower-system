@@ -125,6 +125,7 @@ class ScriptProvider
                 '/js/components/bhr/HolidayComponent.js',
                 '/js/components/bhr/WorkshiftComponent.js',
                 '/js/components/bhr/WorkShiftListComponent.js',
+                '/js/components/bhr/RenderTableReportComponent.js',
                 
 
             ]
