@@ -47,14 +47,14 @@ var PayrollListComponent = new (function () {
             title: "Salary",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.salary ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${data.salary + main_view.currency.symbol ?? '0.00'}</p>`;
             }
         },
         {
             title: "Benefit",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.benefit ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${data.benefit + main_view.currency.symbol ?? '0.00'}</p>`;
             }
         },
 
@@ -62,14 +62,14 @@ var PayrollListComponent = new (function () {
             title: "Deduction",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.deduction ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${data.deduction + main_view.currency.symbol ?? '0.00'}</p>`;
             }
         },
         {
             title: "Allowance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.allowance ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${data.allowance + main_view.currency.symbol ?? '0.00'}</p>`;
             }
         },
 
@@ -84,7 +84,7 @@ var PayrollListComponent = new (function () {
             title: "Bias",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.bias ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${data.bias + main_view.currency.symbol ?? '0.00'}</p>`;
             }
         },
 
@@ -93,21 +93,21 @@ var PayrollListComponent = new (function () {
             title: "Tax Base",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_base ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${data.tax_base ?? '0.00'}</p>`;
             }
         },
         {
             title: "Tax Benefit",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.tax_benefit ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${data.tax_benefit ?? '0.00'}</p>`;
             }
         },
         {
             title: "Total",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol +data.total_salary ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${data.total_salary ?? '0.00'}</p>`;
             }
         },
         {

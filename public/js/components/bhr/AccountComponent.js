@@ -487,9 +487,9 @@ const AccountDialog = (() => {
                     </div>
                     <div class="form-group col-6">
                         <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
-                                            <select class="modal-select data-input" data-field="account_type">
-                                                <option value="Payroll">Payroll</option>
-                                            </select>
+                        <select class="modal-select data-input" name="account_type" data-field="account_type">
+                            <option value="Payroll">Payroll</option>
+                        </select>
                     </div>
                     <div class="form-group col-6">
                         <label for="account_number" class="form-label" vslang="titles.Account Number"></label>
@@ -500,12 +500,11 @@ const AccountDialog = (() => {
                         <input name="ballance" class="form-control data-input" data-field="balance"  />
                     </div>
                     <div class="form-group col-6">
-                         <label for="currency" class="form-label" vslang="titles.Currency"></label>
-                                            <select class="modal-select data-input" data-field="currency">
-                                                <option value="">(Select Currency)</option>
-                                                <option value="KHR">Cambodian Riel</option>
-                                                <option value="USD">US Dollar</option>
-                                            </select>
+                        <label for="currency" class="form-label" vslang="titles.Currency"></label>
+                        <select class="modal-select data-input" name="currency" data-field="currency">
+                            <option value="KHR">KHR</option>
+                            <option value="USD">USA</option>
+                        </select>
                     </div>
                     </div>
 
@@ -513,7 +512,16 @@ const AccountDialog = (() => {
               </div>`,
                     ].join("");
                 },
-
+                contentCreated: (me) => {
+                    const currencyField = me.controls.currency;
+                    if (currencyField && !currencyField.value) {
+                        currencyField.value = "USD";
+                    }
+                    const accountField = me.controls.account_type;
+                    if (accountField && !accountField.value) {
+                        accountField.value = "Payroll";
+                    }
+                },
                 configSelect: [
                     {
                         name: "employee",
@@ -523,7 +531,6 @@ const AccountDialog = (() => {
                         },
                         valueField: "id",
                     },
-
                 ],
                 buttons: [
                     {
@@ -541,7 +548,6 @@ const AccountDialog = (() => {
                             const p = me.getData();
 
                             p.id = me.dataOptions.id; //get "id" from op
-
 
                             vsapi
                                 .call(
@@ -582,7 +588,9 @@ const AccountDialog = (() => {
                 onPrepareForm: (me) => {
                     LocaleManager.translateZone(me.divModal);
 
-                    const balanceField = me.divModal.querySelector('[data-field="balance"]');
+                    const balanceField = me.divModal.querySelector(
+                        '[data-field="balance"]'
+                    );
                     if (balanceField) {
                         if (me.dataOptions && me.dataOptions.id) {
                             balanceField.disabled = true;
@@ -591,8 +599,6 @@ const AccountDialog = (() => {
                         }
                     }
                 },
-
-
             });
 
         dialog.show(op);
@@ -619,21 +625,20 @@ const TransferDialog = (() => {
                         <select name="employee" class=" data-input"  data-field="emp_id"></select>
                     </div>
                     <div class="form-group col-6">
-                         <label for="currency" class="form-label" vslang="titles.Currency"></label>
-                                            <select class="modal-select data-input" data-field="currency" >
-                                                <option value="">(Select Currency)</option>
-                                                <option value="KHR">Cambodian Riel</option>
-                                                <option value="USD">US Dollar</option>
-                                            </select>
+                        <label for="currency" class="form-label" vslang="titles.Currency"></label>
+                        <select class="modal-select data-input" data-field="currency" >
+                            <option value="KHR">KHR</option>
+                            <option value="USD">USA</option>
+                        </select>
                     </div>
                     <div class="form-group  col-12 d.none">
                         <div id="info"></div>
                     </div>
                     <div class="form-group col-4">
                         <label for="account_type" class="form-label" vslang="titles.From Account"></label>
-                                            <select class="modal-select data-input" data-field="account_type" disabled>
-                                                <option value="Payroll" >Payroll</option>
-                                            </select>
+                        <select class="modal-select data-input" name="account_type" data-field="account_type" disabled>
+                            <option value="Payroll" >Payroll</option>
+                        </select>
                     </div>
                     <div class="form-group col-4">
                         <label for="account_number" class="form-label" vslang="titles.From Account Number"></label>
@@ -645,9 +650,9 @@ const TransferDialog = (() => {
                     </div>
                     <div class="form-group col-4">
                         <label for="w_account_type" class="form-label" vslang="titles.To Account "></label>
-                                            <select class="modal-select data-input" data-field="w_account_type" disabled>
-                                                <option value="Wallet">Wallet</option>
-                                            </select>
+                        <select class="modal-select data-input" name="w_account_type" data-field="w_account_type" disabled>
+                            <option value="Wallet">Wallet</option>
+                        </select>
                     </div>
                     <div class="form-group col-4">
                         <label for="w_account_number" class="form-label" vslang="titles.To Account Number"></label>
@@ -663,7 +668,7 @@ const TransferDialog = (() => {
               </div>`,
                     ].join("");
                 },
-
+                
                 configSelect: [
                     {
                         name: "employee",
@@ -673,7 +678,6 @@ const TransferDialog = (() => {
                         },
                         valueField: "id",
                     },
-
                 ],
                 buttons: [
                     {
@@ -691,8 +695,7 @@ const TransferDialog = (() => {
                             const p = me.getData();
 
                             p.id = me.dataOptions.id; //get "id" from op
-                            console.log(123,p);
-
+                            console.log(123, p);
 
                             vsapi
                                 .call(
