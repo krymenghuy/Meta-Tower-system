@@ -237,6 +237,7 @@ class Employee //extends Model
         $type = $d->emp_type_id ?? 3;
         $search_value = $d->search_value ?? null;
         $branch = $d->branch_id ?? null;
+        $work_shift = $d->work_shift_id ?? null;
         $str_srch = '1=1';
         $str_where = '2=2';
 
@@ -254,6 +255,9 @@ class Employee //extends Model
         }
         if ($branch) {
             $str_where .= ' AND emp.branch_id=\'' . $branch . '\'';
+        }
+        if ($work_shift) {
+            $str_where .= ' AND emp.work_shift_id=\'' . $work_shift . '\'';
         }
 
         $query = DB::table('employees as emp')

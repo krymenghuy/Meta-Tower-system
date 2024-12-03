@@ -23,6 +23,7 @@ class Account
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
+
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
@@ -30,8 +31,8 @@ class Account
             'balance' => '0|number',
             'currency' => '1|string',
             'account_type' => '1|string',
-
         ];
+
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
@@ -41,6 +42,17 @@ class Account
         $id = $res->id;
         $inputs = $res->values;
 
+
+        $existingAccount = DB::table('accounts')
+            ->where('branch_id', $branch_id)
+            ->where('emp_id', $inputs['emp_id'])
+            ->first();
+
+        if ($existingAccount) {
+            return DV::error('The employee already has an account.');
+        }
+
+
         $id = saveData($ss, 'accounts', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['accounts' => $inputs, 'id' => $id]);
@@ -48,6 +60,7 @@ class Account
 
         return DV::error('Error saving account');
     }
+
 
     function getAccountListPaginate($arr, $ss)
     {
@@ -133,7 +146,7 @@ class Account
             ->where('a.id', $id)->first();
 
         if ($row) {
-            $row->balance = DBX::cutDigit($row->balance); 
+            $row->balance = DBX::cutDigit($row->balance);
             $row->image_url = Employee::profilePicture($row->emp_id);
             unset($row->emp_photo);
         } else {

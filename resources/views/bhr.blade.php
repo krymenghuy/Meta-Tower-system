@@ -132,12 +132,12 @@ echo $user->lang ?? 'en'; ?>">
                                             data-menu="lang">
                                             <img class="mr-1" src="{{ asset('assets/images/icons/khmer.png') }}"
                                                 style="height:25px" />
-                                            <span id="_main_lang_name">
+                                            <span id="_main_lang_name" class="text-primary-custom">
                                                 <?php
                                                 echo Session::get('lang_name', 'Khmer');
                                                 ?>
                                             </span>
-                                            <i class="fa-solid fa-caret-down ps-2 fs-5"></i>
+                                            <i class="fa-solid fa-caret-down ps-2 fs-5" style="color:#e2c555;"></i>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <span class="lang-menu-header"></span>
@@ -164,7 +164,7 @@ echo $user->lang ?? 'en'; ?>">
                                     <div class="dropdown  shadow-lg rounded-5 bg-white nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
-                                            <i class="fa-regular fa-bell fs-4"></i>
+                                            <i class="fa-regular fa-bell fs-4" style="color:#e2c555;"></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">0</span>
                                         </button>
