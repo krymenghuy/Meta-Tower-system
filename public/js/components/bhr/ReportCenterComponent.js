@@ -1,711 +1,774 @@
 "use strict";
-
 var ReportCenterComponent = new (function () {
-    let mThis = this;
-    this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_bhr_reportCenterComponent");
-    this.self = this.jm[0];
+    const mThis = this;
     this.title_prop = "Report Center";
-    this.api_fetch_report_list = [this.base_url,'/dms/report-center/report-list'].join('');
-    this.api_fetch_report_list_by_category = [this.base_url,'/api/report-center/reports-by-category'].join('');
-    // this.api_fetch_report_filter_options = [this.base_url,'/api/report-center/filter-options'].join('');
-    this.api_fetch_report_filter_options = [this.base_url,'/abm/settings/report-filter-options'].join('');
+    this.self = main_view.appContent.children("#_main_reportCenterComponent");
+    this.options = {};
+    this.permissionID = null;
 
-    //** This is default report route
-    this.report_url =[this.base_url,'/abm-gen-report'].join(''); 
-
-    //*** Special report route by report name or code
-    this.special_routes = {
-        'hs_merchant_invoice': [this.base_url,'/hs-merchant-invoice'].join(''),
-        'hs_merchant_invoice_v2': [this.base_url,'/hs-merchant-invoice-v2'].join(''),
-        'merchant_invoice': [this.base_url,'/merchant-invoice'].join(''),
-        'salesmodule_lead_list': [this.base_url,'/sales-module-report'].join(''),
-        'salesmodule_package_count_by_merchant': [this.base_url,'/sales-module-report'].join(''),
-        'salesmodule_commission_summary': [this.base_url,'/sales-module-report'].join(''),
-        'salessmodule_commission_payments': [this.base_url,'/sales-module-report'].join(''),
+    this.init = () => {
+        if (mThis.initAlready) return;
+        mThis.initAlready = true;
     };
 
-    //*** Report route by category of report
-    // //Route report by category. NOTE category name is Case -sensitive text
-    this.routeByCategory = { 
-       "Sales Module": [this.base_url,'/sales-module-report'].join('')
-    };
-
-    this.div_report_list = this.self.querySelector('#_rpc_reportlist');
-    this.div_filter_fields = this.self.querySelector('#_rpc_filter_fields');
-    this.no_filter_wrapper = this.self.querySelector('#_rpc_no_filter_text_wrapper');
-    this.selected_report_name = this.self.querySelector('#_rpc_selected_report_name');
-    this.api_encrypt = [`${mThis.base_url}/api/vs-encrypt031181`].join('');
- 
-    /** object to store report information */
-    this.reports = {};
-
-    // this.btnExportPackages = this.self.querySelector('#_rpc_btnExport');
-    this.btnRunReport = this.self.querySelector('#_rpc_btnRunReport');
     this.filter_fields = [
         {
-            'visible':false,
-            'type':'select',
-            'width':'full',
-            'label':'Warehouse',
-            'data':"warehouses",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-warehouse`,
-            //'api_params':{},
-            'name':'wid',
-            'value_field':'id',
-            'text_field':'warehouse_name'
+            type: "select",
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: "group_id",
+            value_field: "id",
+            text_field: "name",
+            required: true,
+            dot_object: "groups",
         },
         {
-            'type':'select',
-            'label':'Customer',
-            'data':"customers",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-driver`,
-            //'api_params':{},
-            'multiple':false,
-            'name':'customer_id',
-            'value_field':'id',
-            'text_field':'customer_name'
-        }, 
-        {
-            'type':'select',
-            'label':'Supplier',
-            'data':"suppliers",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-driver`,
-            //'api_params':{},
-            'multiple':false,
-            'name':'supplier_id',
-            'value_field':'id',
-            'text_field':'supplier_name'
-        }, 
-        {
-            'type':'select',
-            'label':'Primary Contact Person',
-            'data':"primary_cps",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-driver`,
-            //'api_params':{},
-            'multiple':false,
-            'name':'primary_cp_id',
-            'value_field':'id',
-            'text_field':'primary_cp_name'
-        }, 
-        {
-            'type':'select',
-            'label':'Secondary Contact Person',
-            'data':"secondary_cps",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-driver`,
-            //'api_params':{},
-            'multiple':false,
-            'name':'secondary_cp_id',
-            'value_field':'id',
-            'text_field':'secondary_cp_name'
-        }, 
-        {
-            type:'select',
-            allow_choose_all:['All Merchant Status'],
-            'data':"sender_statuses",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-sender`,
-            //'api_params':{},
-            'label':'Merchant Status',
-            'name':'sender_status',
-            'multiple':false,
-            'value_field':'sender_status',
-            'text_field':'sender_status'
+            type: "select",
+            api_fetch: `${main_view.base_url}/api/reports/options-receiver`,
+            api_params: {},
+            name: "receiver_uid",
+            value_field: "id",
+            text_field: "name",
+            required: false,
         },
         {
-            'type':'select',
-            'allow_choose_all':['daily_packages'],
-            'data':"senders",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-sender`,
-            //'api_params':{},
-            'label':'Merchant',
-            'name':'sender_id',
-            'multiple':false,
-            'value_field':'id',
-            'text_field':'sender_name'
+            type: "select",
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: "is_paid",
+            value_field: "is_paid",
+            text_field: "name",
+            required: false,
+            dot_object: "pmt_status",
         },
         {
-            'name':'start_date',
-            'label':'From',
-            'width':'half'
+            type: "select",
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: "campus_id",
+            value_field: "id",
+            text_field: "campus",
+            required: false,
+            dot_object: "campuses",
         },
         {
-            'name':'end_date',
-            'label':'To',
-            'width':'half'
+            type: "select",
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: "from_campus_id",
+            value_field: "id",
+            text_field: "campus",
+            required: false,
+            dot_object: "campuses",
         },
         {
-            'type':'select',
-            'name':'pmt_status_id',
-            'label':'Payment Status',
-            'data':"pmt_statuses",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
-            //'api_params':{},
-            'value_field':'id',
-            'text_field':'pmt_status',
-            'width':'half'
+            type: "select",
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: "to_campus_id",
+            value_field: "id",
+            text_field: "campus",
+            required: false,
+            dot_object: "campuses",
         },
         {
-            'type':'select',
-            'name':'shipment_pmt_status_id',
-            'label':'Payment Status',
-            'data':"pmt_statuses",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
-            //'api_params':{},
-            'value_field':'id',
-            'text_field':'pmt_status',
-            'width':'half'
+            type: "select",
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: "fee_type_id",
+            value_field: "id",
+            text_field: "name",
+            required: false,
+            dot_object: "non_fee_types",
         },
         {
-            'type':'select',
-            'name':'sales_agent_type',
-            'label':'Agent Type',
-            'data':"sales_agent_types",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
-            //'api_params':{},
-            'value_field':'sales_agent_type_id',
-            'text_field':'agent_type',
-            'width':'half'
+            type: "select",
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: "level_id",
+            value_field: "id",
+            text_field: "level",
+            required: false,
+            dot_object: "levels",
         },
         {
-            'type':'select',
-            'name':'sales_agent_id',
-            'label':'Sales Agent',
-            'data':"sales_agents",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
-            //'api_params':{},
-            'value_field':'id',
-            'text_field':'agent_name',
-            'width':'half'
+            type: "select",
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: "leave_type_id",
+            value_field: "id",
+            text_field: "name",
+            required: false,
+            dot_object: "leave_types",
         },
         {
-            'type':'select',
-            'name':'delivery_status_id',
-            'label':'Delivery Status',
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-delivery-status`,
-            //'api_params':{},
-            'value_field':'id',
-            'text_field':'delivery_status',
-            'width':'half'
+            type: "select",
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: "student_id",
+            value_field: "id",
+            text_field: "name",
+            required: false,
+            dot_object: "students",
         },
         {
-            'type':'select',
-            'name':'agent_id',
-            'label':'Sale Agent',
-            'data':"sales_agents",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-sales-agent`,
-            //'api_params':{},
-            'value_field':'id',
-            'text_field':'agent_name',
-            'width':'half'
+            type: "select",
+            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_params: {},
+            name: "request_type_id",
+            value_field: "id",
+            text_field: "name",
+            required: false,
+            dot_object: "request_type",
         },
         {
-            'type':'select',
-            'name':'month_year',
-            'label':'Month',
-            'data':"months",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
-            //'api_params':{},
-            'value_field':'month',
-            'text_field':'month_year',
-            'width':'half'
+            type: "date",
+            name: "start_date",
         },
         {
-            'type':'select',
-            'name':'start_month',
-            'label':'From Month',
-            'data':"months",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
-            //'api_params':{},
-            'value_field':'month',
-            'text_field':'month_year',
-            'width':'half'
+            type: "date",
+            name: "end_date",
         },
-        {
-            'type':'select',
-            'name':'end_month',
-            'label':'To Month',
-            'data':"months",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-pmt-status`,
-            //'api_params':{},
-            'value_field':'month',
-            'text_field':'month_year',
-            'width':'half'
-        },
-        {
-            'type':'select',
-            'name':'completed',
-            'label':'Status',
-            'data':"complete_statuses",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-complete-status`,
-            //'api_params':{},
-            'value_field':'id',
-            'text_field':'c_status',
-            'width':'half'
-        },
-        {
-            'type':'select',
-            'name':'delivery_type',
-            'label':'Delivery Type',
-            'data':"drivers",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-driver`,
-            //'api_params':{},
-            'value_field':'id',
-            'text_field':'driver_name',
-            'width':'half'
-        },
-        {
-            'type':'select',
-            'name':'trx_type',
-            'label':'Trans Type',
-            'data':"trx_types",
-            //'api_fetch':`${mThis.base_url}/dms/settings/options-trxtype`,
-            //'api_params':{},
-            'value_field':'trx_type',
-            'text_field':'name',
-            'width':'half'
-        }
     ];
 
-    mThis.required_filters = {
-        'invoice_list':['customer_id'], /* This means that report named "vd_summary" requires filter option "sender_id" */
-        // 'dr_summary':['driver_id']
-    }
-
-    this.loadFilterOptions = (filter_height) =>{
-       vsapi.call(mThis.api_fetch_report_filter_options,null,false,null).then(res =>{
-         if(res.status_code === 200){
-            mThis.renderFilterFields(res.data,filter_height);
-         }
-       });
-    }
-
-    this.renderFilterFields =(d = {}, filterHeight=350)=>{
-        let cnt =0;
-        //mThis.div_filter_fields.hide();
-        mThis.filter_fields.map(f=>{
-            // if (!f.id) f.id = [mThis.div_filter_fields.getAttribute('id'),'-',(cnt+1)].join('');
-            if (!f.id) {
-                var divFilterFieldsId = mThis.div_filter_fields.getAttribute('id');
-                f.id = [divFilterFieldsId, '-', (cnt + 1)].join('');
-            }
-            let width_class = 'col-lg-12';
-            if(f.width ==='half') width_class= 'col-lg-6';
-
-            let is_date='';
-            if(f.type==='date' || f.name ==='start_date' || f.name ==='end_date' ){
-                is_date = ` type="text"`; //  'date' => `data-select="datepicker"`;
-                f.type ='date';
-            }
-
-            let html ="";
-            if (f.type ==='select')
-            {
-                let multiple = f.multiple? ' multiple':'';
-                html = `<div style="display:none" class="form-group ${width_class}">
-                <label for="">${f.label}</label>
-                <div><select id="${f.id}" class="modal-select2 rpt-filter"
-                   data-field="${f.name?f.name:f.value_field}" data-used="1" ${multiple}></select> </div>
-                </div>`;
-            }
-            else {
-                html =`<div style="display:none" class="form-group ${width_class}">
-                <label for="">${f.label}</label>
-                <div><input id="${f.id}" ${is_date}
-                        class="form-control rpt-filter height" data-field="${f.name? f.name:f.value_field}" autocomplete="off"></div>
-                </div>`;
-            }
-                // console.log(1,mThis.div_filter_fields);
-             mThis.div_filter_fields.insertAdjacentHTML('beforeend', html);
-                // console.log(2,mThis.div_filter_fields);
-                let el = mThis.div_filter_fields.querySelector(`#${f.id}`);
-
-             if(f.type ==='date'){
-                //el.datePicker({'format':'dd M Y'});
-                el.setAttribute('autocomplete','off"');
-                DateTimePicker.init($(el));
-                //el.attr('autocomplete','chrome-off"');
-            
-             }else if (f.type==='select'){
-  
-                 //VSUtil.initSelect(el);
-                 const items = d[f.data]? d[f.data]: [];
-                 if(f.multiple || f.multiple==1){
-                     let option_all = {};
-                     option_all[f.text_field] ='(All)';
-                     option_all[f.value_field] =0;
-                     items.unshift(option_all);
-                 }
-                //  console.log('item',items);
-                 if(f.name =='customer_id') items.unshift({'id': 0, 'customer_name':'(All Customers)'});
-                 if(f.name =='supplier_id') items.unshift({'id': 0, 'supplier_name':'(All Suppliers)'});
-                 if(f.name =='primary_cp_id') items.unshift({'id': 0, 'primary_cp_name':'(Select Contact Person)'});
-                 if(f.name =='secondary_cp_id') items.unshift({'id': 0, 'secondary_cp_name':'(Select Contact Person)'});   
-                 VSUtil.setComboItems(el,items,f.value_field,f.text_field,false,null,0);
-                 if(!f.def_value) f.def_value = items[0]?items[0][f.value_field]:0; 
-                 if(f.def_value){
-                    el.value = f.def_value ;
-                    el.dispatchEvent(new Event('change'));
+    this.displayMainOptions = (onFinish = null) => {
+        const op = { app_id: main_view.app_id };
+        vsapi
+            .call(
+                `${main_view.base_url}/api/report-center/report-list`,
+                op,
+                null,
+                null,
+                main_view.apiCluster
+            )
+            .then((res) => {
+                let data = [];
+                if (res.status_code === 200) {
+                    data = res.data;
                 }
-                    
-                 else{
-                     if(items[0] && !items[1]){
-                         el.value = items[0][f.value_field];
-                         el.dispatchEvent(new Event('change'));    
-                     }
-                 }
-                
-             }
-            
-             cnt++;
+                // console.log(6666,data);
+                mThis.renderPanelBox(data);
+            });
+        if (typeof onFinish === "function") onFinish();
+    };
+
+    this.renderPanelBox = (data) => {
+        const html = [
+            `<div id="_div_filter" class="d-none">
+            <div class="d-flex p-3 justify-content-between align-items-center bg-white rounded-3 overflow-hidden">
+                <div>
+                    <button id="_rpt_filter" class="btn-filter me-2" style="width: 80px;" type="button">
+                        <span class="" vslang="buttons.Filter"></span>
+                    </button>
+                </div>
+                <div id="_div_filter_top" style="height:  ; max-width: 80% overflow-y: scroll;"></div>
+
+                <div>
+                    <div class="d-flex justify-content-end gap-2">
+                        <button id="_rpt_pdf" class="btn-print" type="button">
+                            <i class="fa-solid fa-print"></i>
+                            <span class="" vslang="buttons.Print"></span>
+                        </button>
+                        <button id="_rpt_excel" class="btn-pdf" type="button">
+                            <i class="fa-regular fa-file-pdf"></i>
+                            <span class="" vslang="buttons.Export"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="_rpt_container" style="position: ; z-index: 99;">
+            <div class="row row-cols-lg-2 gy-2 d-flex mt-3" >
+                <div id="_rpt_list" class="col-sm-12 col-md-6 col-lg-6">
+                    <div class="card-report">
+                        <div class="row gy-2 w-100 h-100">
+                            <div id="_rpt_name" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                <h6 class="text-uppercase">List of report</h6>
+                                <ul class="del-marker h-100" style=" max-height: ${
+                                    window.innerHeight - 160 + "px"
+                                }; ">  `,
+            mThis.renderReportType(data),
+            `</ul>
+                            </div>`,
+            // `<div class="col-sm-12 col-md-12 col-lg-6 d-none d-sm-none d-md-none d-lg-none d-xl-block d-xxl-block">
+            //     <div class="h-img-report">
+            //         <img src="${main_view.base_url}/assets/images/logo/report.png" alt=""/>
+            //     </div>
+            //  </div>`,
+            `</div>
+                    </div>
+                </div>
+                <!-- <div class="col-sm-12 col-md-6 col-lg-6 m-0">
+                    <div id="_rpt_input_filter" class="card-report d-block"></div>
+                </div> -->
+                <div class="col">
+                <div id="_rpt_input_filter" class=" d-block"></div>
+                </div> 
+            </div>
+        </div>
+        <div id="_rpt_table" class="container-table overflow-hover-auto" ></div>`,
+        ].join("");
+
+        mThis.self.html(html);
+        mThis.getValueWhenClick(mThis.self.find("#_rpt_name"));
+        mThis.controlPanel(mThis.self);
+        LocaleManager.translateZone(mThis.self);
+    };
+
+
+    this.controlPanel = (container) => {
+        const reportTable = container.find("#_rpt_table").children();
+        container.find("#_rpt_filter").on("click", function (e) {
+            e.preventDefault();
+
+            const reportList = container.find("#_rpt_list");
+            const filterContainer = mThis.self.find("#_div_filter");
+            const filterInputs = mThis.self.find("#_rpt_input_filter");
+            const filterElements =
+                filterInputs[0]?.querySelectorAll("div.el_filter");
+
+            if (reportList.length) reportList.slideToggle("slow");
+            if (filterContainer.length) filterContainer.toggleClass("d-none");
+
+            if (filterElements) {
+                filterElements.forEach((element) => {
+                    element.classList.toggle("col-lg-2");
+                    element.classList.toggle("col-lg-6");
+                });
+            }
+
+            filterInputs.find("#_rpt_btn_list").slideToggle("slow");
+            filterInputs.find("#_rpt_btn_print").slideToggle("slow");
+            filterInputs.children().slideToggle("slow");
         });
 
-        if(cnt===0){
-            mThis.div_filter_fields.innerHTML = 
-            `<div style="diplay:none" id="_rpc_no_filter_text_wrapper" class="form-group col-lg-12 no-filter-text-wrapper">
-                <div class="alert alert-primary">
-                    No filter required :)
+        container
+            .find("#_rpt_pdf")
+            .off("click")
+            .on("click", function (e) {
+                e.preventDefault();
+                if (!AuthManager.allowed(`${mThis.permissionID}.print`)) return;
+                windowPrint();
+            });
+
+        container
+            .find("#_rpt_excel")
+            .off("click")
+            .on("click", function (e) {
+                e.preventDefault();
+                if (!AuthManager.allowed(`${mThis.permissionID}.excel`)) return;
+                exportToExcel();
+            });
+    };
+
+    this.renderReportType = (d) => {
+        d = d || [];
+        let html = null;
+        d.map((item) => {
+            console.log(3434,item)
+            const filter = JSON.stringify(item.params).replace(/\"/g, "'");
+            html = [
+                html,
+                `<li class="report-name" data-filter="${filter}" data-code="${
+                    item.code
+                }" data-permissionid="${item.permission_id}">
+                <i class="fa-regular fa-rectangle-list"></i>
+                <span class="text-capitalize">${item.name || ""}</span>
+            </li>`,
+            ].join("");
+        });
+        return html || "";
+    };
+
+    this.getFormGroupLabelText = (key) => {
+        let label = {
+            student_id: "Student",
+            campus_id: "Campus",
+            level_id: "Level",
+            leave_type_id: "Leave Type",
+            is_paid: "Pmt Status",
+            from_campus_id: "From Campus",
+            to_campus_id: "To Campus",
+            fee_type_id: "Fee Type",
+            start_date: "Start Date",
+            end_date: "End Date",
+            group_id: "Group",
+        };
+        return label[key] ?? key;
+    };
+
+    this.renderFilters = (div, p) => {
+        p = p || {};
+        let html = null,
+            inner_html = null;
+        if (p.param) {
+            const values = p.param.split("|");
+            // Trim whitespace from each value (optional, but recommended)
+            const param = values.map((value) => value.trim());
+            param.map((item) => {
+                // // console.log(111,item.key);
+                mThis.filter_fields.map((f) => {
+                    //console.log(222,f.type,'|',f.name,'|',item);
+                    if (f.type === "select" && f.name === item) {
+                        const id = ["select_", f.name].join("");
+                        inner_html = [
+                            inner_html,
+                            `<div class="el_filter col-lg-6">
+                            <div class="form-group">
+                                <label for="${
+                                    item.key
+                                }" class="form-label text-capitalize " vslang="titles.${
+                                mThis.getFormGroupLabelText(item) || ""
+                            }"></label>
+                                <div class="width-select-in-form">
+                                    <select id="${id}" class="${
+                                f.name
+                            } modal-select2 data-input data-filter" data-field="${item}"></select>
+                                </div>
+                            </div>
+                        </div>`,
+                        ].join("");
+                        mThis.getDataOption(
+                            f.api_fetch,
+                            f.api_params,
+                            f.value_field,
+                            f.text_field,
+                            f.required,
+                            f.dot_object,
+                            id
+                        );
+                    } else if (f.type === "date" && f.name === item) {
+                        inner_html = [
+                            inner_html,
+                            `<div class="el_filter col-lg-6">
+                            <div class="form-group">
+                                <label for="${item}" class="form-label text-capitalize " vslang="titles.${
+                                mThis.getFormGroupLabelText(item) || ""
+                            }"></label>
+                                <input data-select="datepicker" class="form-control data-input data-filter" data-field="${item}"/>
+                            </div>
+                        </div>`,
+                        ].join("");
+                    }
+                });
+            });
+        } else {
+            inner_html = `<div class="col">
+                <div class="d-flex align-items-center justify-content-center">
+                    <h4 class="text-muted">No Filter</h4>
                 </div>
             </div>`;
         }
-        // if (mThis.div_filter_fields) {
-        //     mThis.div_filter_fields.style.setProperty('height', filterHeight + 'px');
-        // }
-        //mThis.div_filter_fields.show();
-    }
-
-    //  this.initSelect2 = (el,width,value=null,multiple=false) =>{
-    //     if(!el) return;     
-    //         let init_op ={width:width?width:'100%','multiple':multiple};
-    //         VSUtil.initSelect(el);
-    //         if(value) el.val(value).trigger('change');
-    //  }
-
-    this.initOnce = ()=>{
-        if (mThis.initAlready) return;
-      
-        mThis.loadReportsByCategory(() =>{
-            mThis.loadFilterOptions(mThis.div_report_list.offsetHeight);
-            //mThis.renderFilterFields(e.wrapper.height());
-        });
-
-        // mThis.loadReportItems((e)=>{
-
-        // });
-
-        mThis.div_report_list.addEventListener('click', e =>{
-            e.preventDefault();
-            let d = VSUtil.closestLimited(e.target,'a.rpc-group-header');
-            if(d){
-               const div = d.nextSibling; 
-               mThis.toggleShow(div);
-               return;
-            }
-
-            d = VSUtil.closestLimited(e.target,'a.rpc-report');
-            if(d){
-                let id = d.dataset.id; 
-                let code = d.dataset.code;
-                mThis.selectReportItem(id,code);
-                return;
-            }
-        });
-
-        mThis.div_report_list.addEventListener('mouseover', e =>{
-            e.preventDefault();
-            let d = VSUtil.closestLimited(e.target,'.div-row');
-            if(d){
-                mThis.setReportItemState(d,'hover');
-            }
-           
-        });
-
-        mThis.div_report_list.addEventListener('mouseleave',e=>{
-            e.preventDefault();
-            let d = VSUtil.closestLimited(e.target,'.div-row');
-            mThis.setReportItemState(d,'normal');
-        });
-
-        // mThis.div_report_list.addEventListener('click','.div-row',function(e){
-        //     e.preventDefault();
-        //    mThis.selectReportItem($(this));
-        // });
-        
-        // this.btnExportPackages.addEventListener('click',(e)=>{
-        //     e.preventDefault();
-        //     let p = mThis.getReportFilterData();
-        //     if (!p.start_date || !p.end_date){
-        //         cv_interact.error('Start date and end date are required');
-        //         return;
-        //     } 
-        //     vsapi.call(`${mThis.base_url}/dms/export/packages`,p).then(res=>{
-        //         if (res.status_code===200){
-        //             let rows = res.data;
-        //             if(!rows[0]){
-        //                 cv_interact.warning('No packages to export!');
-        //                 return;
-        //             }
-        //             let file_name ='dms-packages';
-        //             let titles = null;
-        //             JsonToExcel.exportToCSV(rows,file_name,titles,true,[]);
-        //         }
-        //         else {
-        //             cv_interact.error(res.error_message);
-        //         }
-        //     });
-        // });
-
-        mThis.btnRunReport.onclick = (e)=>{
-            let rpt = mThis.getSelectedReport();
-            let params = mThis.getReportFilterData();
-
-            //Check required report filters
-            let req_filters = mThis.required_filters[rpt.code];
-            if(!req_filters || !req_filters[0]){
-                mThis.showReport(rpt,params);
-                return;
-            }
-
-            (req_filters || []).map(f=>{
-                if(!params[f]){
-                    cv_interact.warning(`${f.replace('_',' ')} is required`);
-                    return false;
-                }else{
-                    this.showReport(rpt,params);
+        // console.log(333,inner_html);
+        html = `<div class="row card-report m-0" style="max-height:; display: none;">
+                <div id="_div_filter" class="col d-flex row-cols-lg-2 justify-content-between align-items-center" >
+                    <div id="_rpt_btn_list" class="p-0 text-end" style="display: none; width: 80px">
+                        <button  class="btn-filter" type="button">
+                            <span class="" vslang="buttons.Filter"></span>
+                        </button>
+                    </div>
+                    ${
+                        inner_html ||
+                        `<div class="col">
+                        <h4 class="text-muted text-center">No Filter</h4>
+                    </div>`
+                    }
                     
+                    <div id="_rpt_btn_print" class="col text-nowrap" style="display: none;">
+                        <button data-name="btn_pdf" class="btn-print" type="button">
+                            <i class="fa-solid fa-print"></i>
+                            <span class="" vslang="buttons.Print"></span>
+                        </button>
+                        <button data-name="btn_excel" class="btn-pdf" type="button">
+                            <i class="fa-regular fa-file-pdf"></i>
+                            <span class="" vslang="buttons.Export"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="">
+                <button id="_rpt_btn_report" class="btn-filter d-none" type="button">
+                    <span class="" vslang="buttons.Run Report"></span>
+                </button>
+            </div>`;
+
+        div.html(html);
+        mThis.renderSelect(div, p.code);
+        mThis.runReport(div, p.code);
+
+        div.find("[data-select='datepicker']").each(function () {
+            DateTimePicker.init($(this));
+        });
+        div.find("select.modal-select2").select2();
+        LocaleManager.translateZone("_rpt_input_filter");
+    };
+
+    this.getDataOption = (
+        api,
+        param,
+        value,
+        text,
+        required,
+        dot_object,
+        id
+    ) => {
+        mThis.options.params = mThis.options.params ? mThis.options.params : [];
+        mThis.options.params.push({
+            api: api,
+            param: param,
+            value: value,
+            text: text,
+            required: required,
+            dot_object: dot_object,
+            dom_id: id,
+        });
+    };
+
+    this.renderSelect = (div, code = null) => {
+        mThis.options.params.map((item, index, array) => {
+            let data = [];
+            vsapi.call(item.api, item.param, null, false).then((res) => {
+                if (res.status_code === 200) {
+                    data = res.data;
+                    data = item.dot_object ? data[item.dot_object] : data;
+                    const el = div.find(`#${item.dom_id}`);
+                    if (el) {
+                        item.required
+                            ? el.attr("data-required", item.required)
+                            : false;
+                        let has = null,
+                            all_text = null,
+                            default_id = null;
+                        if (
+                            code === "total_student_payment_history" &&
+                            item.text == "level"
+                        ) {
+                            has = true;
+                            all_text = "All Level";
+                        } else if (
+                            code === "income_by_class" &&
+                            item.text == "level"
+                        ) {
+                            has = true;
+                            all_text = "All Level";
+                        } else if (
+                            code === "non_tuition_fee" &&
+                            item.text == "level"
+                        ) {
+                            has = true;
+                            all_text = "All Level";
+                        } else if (code === "referral" && item.text == "name") {
+                            console.log(1234,item.api);
+                        }
+                        // console.log(234,item);
+                        VSUtil.setComboItems(
+                            el,
+                            data || [],
+                            item.value,
+                            item.text,
+                            has,
+                            all_text,
+                            null
+                        );
+                        if (el.hasClass("fee_type_id")) {
+                            el.find("option").each(function () {
+                                const option = this;
+                                if (option.textContent == "Tuition Fee")
+                                    option.remove();
+                            });
+                        }
+                        if (index === array.length - 1) {
+                            const btn =
+                                div[0].querySelector("#_rpt_btn_report");
+                            if (btn) {
+                                btn.click();
+                            }
+                        }
+                    }
                 }
             });
-           
-         
-        };
-
-        //mThis.init_custom();
-        mThis.initAlready = true;
-    }
-
-    this.toggleShow = (div) => {
-       let v_show = div.style.display;
-       if(v_show ==='none'){
-           div.classList.add('d-flex');
-           div.style.display ='block';
-       }else{
-        div.classList.remove('d-flex');
-        div.style.display ='none';
-       } 
-    }
-     
-        //rpt_params is object
-        this.showReport = (rpt, rpt_params)=>{
-            const rpt_code = rpt.code;
-            let qstring = mThis.translateToQueryString(rpt_params);
-            let sp = '';
-            if (qstring) sp ='&';
-            console.log('rpt code',rpt.code);
-            let p = {'data':`${qstring}${sp}rtype=${rpt_code}`};
-            let report_route = mThis.routeByCategory[rpt.category];
-            report_route = report_route ||  (mThis.special_routes[rpt_code] ? mThis.special_routes[rpt_code] : mThis.report_url);
-            //report_route = mThis.special_routes[rpt_code] ? mThis.special_routes[rpt_code] : mThis.report_url;
-            console.log('p',p);
-            console.error(`${report_route}/${p.data}`);
-            vsapi.call(mThis.api_encrypt,p,null,false).then(res=>{
-                let d = res.data?res.data:res; 
-                if(res.error_message){
-                    cv_interact.error(res.error_message);
-                    return false;  
-                }
-                
-                window.open(`${report_route}/${d}`,'_blank');
-                return false;
-            });
-       }
-    
-    this.translateToQueryString = (params)=>{
-        let q ='';
-        for(let prop in params){
-            let sp = '';
-            if (q) sp='&';
-            let var_name = prop.replace(/_/g, '');
-            q = [q,sp,var_name,'=',params[prop]].join('');
-        }
-        return q;
-    }
-
-    this.setReportItemState = (div_row,state_name ='hover')=>{
-        if(!div_row) return;
-        let hover_color ='orange';
-        let normal_color = 'grey';
-
-        let selected = div_row.classList.contains('report-selected');
-        if (state_name ==='hover'){
-            div_row.querySelector('span').style.color = hover_color;
-        }
-        else{
-            div_row.querySelector('span').style.color = normal_color;
-            if (!selected)
-                div_row.querySelectorAll('i').forEach(x => {
-                    x.classList.remove('fa-check');
-                    x.classList.add('fa-list-alt');
-                    x.style.color = normal_color;
-                }); 
-        }
-    }
-  
-    this.selectReportItem = (report_id, rpt_code)=>{
-        mThis.div_report_list.querySelectorAll('.rpc-report').forEach( el =>{
-            let id = el.dataset.id;
-            if(id == report_id){
-                el.classList.add('report-selected');
-            }else   el.classList.remove('report-selected');
         });
-         
-        // div_row.querySelectorAll('i').forEach(x =>{
-        //     x.classList.remove('fa-list-alt');
-        //     x.classList.add('fa-check');
-        //     x.style.color = 'green';
-        // });
-        
-        //const rpt_code = div_row.dataset.code;
-        let rpt = mThis.reports[rpt_code];
-        if(!rpt) return null; 
-        mThis.selected_report_name.textContent = rpt.name; 
-        mThis.showReportFilters(rpt.params);
-    }
+    };
 
-    /** render Reports V2 */
-    this.loadReportsByCategory = (onFinish) => {
-        mThis.div_report_list.innerHTML = '<div class="d-flex flex-column justify-content-center align-items-center h-100 w-100"><div class="animation-line" style="height:2px;margin:0;"></div></div>';
-        let p = {app_id: main_view.app_id };
-        vsapi.call(mThis.api_fetch_report_list_by_category, p, false, false)
-        .then(res => {
-            const data = res.status_code === 200 ? res.data : {};
-            let html = '';
-            Object.values(data).forEach(cat => {
-                let item_html = '';
-                cat.list.map(rpt =>{
-                    item_html = [item_html,`<a class="rpc-report text-black" href="javascript:void(0)" data-code="`,rpt.code,`" data-id="`,rpt.id,`">`,'<i class="fs-5 fa fa-pointer text-muted"></i> ',rpt.name,`</a>`].join('');
-                    mThis.reports[rpt.code] = rpt;
-                });
-                
-                let group_html = ['<a href="javascript:void(0)" class="rpc-group-header fs-5 d-block" data-category="',cat.category,'" data-categoryid="',cat.id,'">','<span class="text-nowrap fw-semibold p-2">','<img class="rpc-category-icon" src="', main_view.asset_url,'/images/icons/report.png','"> ',cat.category,'</span>','</a>'].join('');
-                group_html = [group_html,`<div class="rpc-reports d-flex flex-column gap-2 justify-content-start align-items-start flex-wrap p-2 overflow-hidden">`,item_html,`</div>`].join('');
-                html = [html, group_html].join('');
-            });
-            mThis.div_report_list.innerHTML = html;
-            onFinish();
-        });
-    }
-    
-    
-    this.getSelectedReport = ()=>{
-        let div_row = mThis.div_report_list.querySelector('.report-selected');
-        console.log('dic-row',div_row);
-        const rpt_code = div_row.dataset.code;
-        return mThis.reports[rpt_code];
-    }
-
-    this.loadReportItems = (onFinish)=>{
-        vsapi.call(mThis.api_fetch_report_list,null).then(res=>{
-            mThis.div_report_list.empty();
-            let items = StringSanitizer.sanitizeObject(res.data,null,['params']);
-            let i=0,c;
-             
-            do{
-                c = items[i];
-                if(!c) break;
-                mThis.reports[c.code]= {
-                  "id":c.id, 
-                  "name":c.name,
-                  "code":c.code,  
-                  "params":c.params,
-                  "category":c.category,
-                  "module_id":c.module_id
+    this.getDataFilter = (div = null) => {
+        div = div || mThis.self.find("#_rpt_input_filter");
+        let p = {};
+        div.find(".data-input").each(function () {
+            const el = $(this);
+            const title = el.is("input")
+                ? el.prev().text()
+                : el.parent().prev().text();
+            const f = el.data("field");
+            if (el.data("required")) {
+                p["required"] = {
+                    text: [mThis.capitalize(title), "cannot empty!"].join(" "),
+                    value: el.val(),
                 };
-               
-                mThis.div_report_list.insertAdjacentHTML('beforeend',`
-                    <div class="div-row" data-code="${c.code}" data-id="${c.id}">
-                        <div class="div-cell report-icon">
-                            <i class="fa fa-list-alt"></i> 
-                        </div>
-                        <div class="div-cell">
-                            <span class="report-text" data-category="${c.category}">${c.name}</span>
-                        </div>
-                    </div>`);
-               i++;
-            }while(c);
-            mThis.div_report_list.style.minHeight = '350px';
-            mThis.div_report_list.style.display == 'block';
-            if (typeof onFinish ==='function') onFinish({'wrapper':mThis.div_report_list});
-          
-            //mThis.reports = items;
-        });
-    }
-  
-    // this.init_custom = ()=>{
-
-    // }
-
-    this.showReportFilters = (rpt_params='')=>{
-        if(!rpt_params) rpt_params = '';
-        let fields = rpt_params.split('|');
-         
-        let filter_count =0;
-        if(mThis.no_filter_wrapper)
-        mThis.no_filter_wrapper.style.display = 'none';
-
-        mThis.div_filter_fields.querySelectorAll('.rpt-filter').forEach((el)=>{
-            let field = (el.dataset.field +'').trim().toLowerCase();
-
-            if (fields.indexOf(field) >=0) {
-                el.dataset.used = 1;
-                // el.closest('div.form-group').style.display = 'block';
-                VSUtil.closestLimited(el,'div.form-group').style.display = 'block';
-                filter_count++;
-            }else{
-                el.dataset.used = 0;
-                // el.parentElement.parentElement.parentElement.parentElement.style.display = 'none';
-                // el.closest('div.form-group').style.display = 'none';
-                VSUtil.closestLimited(el,'div.form-group').style.display = 'none';
             }
+            if (el.data("form") == "simple") {
+                p["simple"] = true;
+            }
+            p[f] = el.val();
+        });
+        return p;
+    };
+
+    this.runReport = (div, code) => {
+        div.find("#_rpt_btn_report").on("click", function (e) {
+            e.preventDefault();
+            let p = {};
+            div.find(".data-input").each(function () {
+                const el = $(this);
+                const title = el.is("input")
+                    ? el.prev().text()
+                    : el.parent().prev().text();
+                const f = el.data("field");
+                if (el.data("required")) {
+                    p["required"] = {
+                        text: [mThis.capitalize(title), "cannot empty!"].join(
+                            " "
+                        ),
+                        value: el.val(),
+                    };
+                }
+                if (el.data("form") == "simple") {
+                    p["simple"] = true;
+                }
+                p[f] = el.val();
+                p.code = code;
+            });
+            // console.log(222333,p);
+
+            if (p.required && !p.required.value && p.required.text)
+                cv_interact.warning(p.required.text);
+            else mThis.getDataTable(div.closest(".main-container"), p);
         });
 
-        mThis.div_filter_fields.style.display = 'flex';
-        if (filter_count === 0){
-            mThis.no_filter_wrapper.style.display = 'block';
+        div[0].querySelectorAll(".data-filter").forEach((el) => {
+            el.onchange = (e) => {
+                e.preventDefault();
+                let op = mThis.getDataFilter();
+                // console.log(9999,e);
+                const btn = div[0].querySelector("#_rpt_btn_report");
+                if (
+                    e.target.dataset.field == "start_date" ||
+                    e.target.dataset.field == "end_date"
+                )
+                    if (op.start_date == "" || op.end_date == "") return;
+                if (btn) btn.click();
+                else if (btn) btn.click();
+            };
+        });     
+
+        div.find("#_rpt_btn_list").on("click", function (e) {
+            e.preventDefault();
+            const filterTop = mThis.self.find("#_rpt_filter");
+            filterTop.click();
+        });
+
+        div.find("#_rpt_btn_print").on("click", function (e) {
+            e.preventDefault();
+            let btn = e.target.closest("button");
+            // console.log(3,btn);
+            if (btn.dataset.name == "btn_pdf") {
+                mThis.self.find("#_rpt_pdf").click();
+            } else if (btn.dataset.name == "btn_excel") mThis.self.find("#_rpt_excel").click();
+        });
+    };
+
+    this.capitalize = (str, lower = false) =>
+        (lower ? str.toLowerCase() : str).replace(
+            /(?:^|\s|["'([{])+\S/g,
+            (match) => match.toUpperCase()
+        );
+
+    this.getDataTable = (div, p) => {
+        let end_point = null;
+        if (mThis.isBusy) {
+            setTimeout(() => {
+                mThis.getDataTable(div, p);
+            }, 500);
+            return;
         }
-    }
+        mThis.isBusy = true;
+        switch (p.code) {
+            case "staff_attendance":
+                end_point = "/hr/reports/employee/list";
+                break;
+            case "daily_cash":
+                end_point = "api/hr/attendances/list";
+                break;
+            case "monthly_cash":
+                end_point = "api/reports/leave/list";
+                break;
+            case "referral":
+                end_point = "api/reports/finance/referral-fee-list";
+                break;
+            case "non_tuition_fee":
+                end_point = "api/reports/finance/non-tuition-fee-list";
+                break;
+            case "income_by_category":
+                end_point = "api/reports/finance/income-by-categories";
+                break;
+            case "deposit":
+                end_point = "api/reports/finance/deposite-list";
+                break;
+            case "payment_by_month":
+                end_point = "api/reports/finance/total-by-month";
+                break;
+            case "payment_by_year":
+                end_point = "api/reports/finance/total-by-year";
+                break;
+            case "total_student_payment_history":
+                end_point = "api/reports/finance/total-student-payment-history";
+                break;
+            case "total_payment_history_by_year":
+                end_point = "api/reports/finance/total-payment-history-year";
+                break;
+            case "leave_students":
+                end_point = "api/reports/enrollment/dropped-out-students";
+                break;
+            case "comeback_student":
+                end_point = "api/reports/enrollment/comeback-students";
+                break;
+            case "school_fee":
+                end_point = "api/reports/finance/school-fee-list";
+                break;
+            case "student_payment_history":
+                end_point = "api/reports/finance/student-payment-history";
+                break;
+            case "income_by_class":
+                end_point = "api/reports/finance/income-by-class";
+                break;
+            case "transferred_in_student_by_campus":
+                end_point = "api/reports/enrollment/request-change";
+                break;
+            case "cross_year_payment":
+                end_point = "api/reports/finance/cross-year-payment";
+                break;
+            case "upgrade_fees":
+                end_point = "api/reports/finance/upgrade-fee";
+                break;
+            default:
+                end_point = null;
+                break;
+        }
 
-   //Return filter data in JSON format, depending on which filter (or param) is used (or not) by a currently selected report 
-   this.getReportFilterData = ()=>{
-    let p = {};
-    mThis.div_filter_fields.querySelectorAll('.rpt-filter').forEach((el)=>{
-        let filter_is_used = el.dataset.used;
-        if (filter_is_used){
-           let field = el.dataset.field;
-           let val = el.value;
-           if(Array.isArray(val)){
-              let c_val ='';
-              val.map(v=>{
-                   c_val = [c_val,(c_val?'|':''),v].join('');
-              });
-              p[field] = c_val;
-           }else p[field] = val;
-        } 
-    });
+        if (end_point) {
+            const containerTable = div.find("#_rpt_table");
 
-    return p;
-  }
+            ["required", "code"].forEach((key) => {
+                delete p[key];
+            });
+            Object.keys(p).forEach((key) => {
+                if (p[key] === "null") p[key] = null;
+            });
 
- 
-    this.show = (option, onClose= null)=>{
-        mThis.initOnce();
-        if (!option) option={};
-        mThis.onClose = onClose;
-        mThis.filter = option.filter;
-        mThis.jm.siblings().hide();
+            vsapi
+                .call(`${main_view.base_url}/${end_point}`, p, null, false)
+                .then((res) => {
+                    let d = {};
+
+                    if (res.status_code === 200) {
+                        d = res.data;
+                    } else {
+                        cv_interact.error(
+                            res.error_message || "Something went wrong!"
+                        );
+                        mThis.isBusy = false;
+                    }
+                    // console.log(22223,d);
+
+                    if (d && !$.isEmptyObject(d)) {
+                        switch (d.form) {
+                            case "simple":
+                                jsonToTable(containerTable, d);
+                                break;
+                            case "referral":
+                                referralFeeTable(containerTable, d);
+                                break;
+                            case "school_fee":
+                            case "non_tuition":
+                                nonTuitionFeeTable(containerTable, d);
+                                break;
+                            case "income_by_category":
+                                incomeByCategoryTable(containerTable, d);
+                                break;
+                            case "payrolls":
+                                totalPaymentByYear(containerTable, d);
+                                break;
+                            case "total_student_payment_history":
+                                totalStudentPaymentHistory(containerTable, d);
+                                break;
+                            case "leave_student":
+                                leaveStudent(containerTable, d);
+                                break;
+                            case "attendanceList":
+                                attendanceList(containerTable, d);
+                                break;
+                            case "student_payment_history":
+                                studentPaymentHistory(containerTable, d);
+                                break;
+                            case "income_by_class":
+                                incomeByClassTable(containerTable, d);
+                                break;
+                            case "student_change_campus":
+                                studentChangeCampus(containerTable, d);
+                                break;
+                            case "cross_year_payment":
+                                crossYearPayment(containerTable, d);
+                                break;
+                            case "upgrade_fee":
+                                upgradeFee(containerTable, d);
+                                break;
+                            default:
+                                studentAttendance(containerTable, d);
+                                break;
+                        }
+                        mThis.isBusy = false;
+                    }
+                });
+
+            containerTable[0].style.height = window.innerHeight - 240 + "px";
+            window.onresize = () => {
+                containerTable[0].style.height =
+                    window.innerHeight - 240 + "px";
+            };
+        } else {
+            cv_interact.warning("This report doesn't exist!");
+            mThis.isBusy = false;
+        }
+    };
+
+    this.getValueWhenClick = (div) => {
+        div.on("click", "li.report-name", function (e) {
+            e.preventDefault();
+            mThis.permissionID = e.currentTarget.dataset.permissionid;
+            console.log(2342,$(this));
+            
+            let params = $(this).data("filter").replaceAll("'", '"');
+            params = JSON.parse(params);
+            mThis.options.params = [];
+            $(this)
+                .addClass("text-primary")
+                .siblings()
+                .removeClass("text-primary");
+            let p = {
+                code: $(this).data("code"),
+                param: params,
+            };
+            mThis.renderFilters(mThis.self.find("#_rpt_input_filter"), p);
+            mThis.self.find(".div_filter_top").html = "<div></div>";
+        });
+    };
+
+    this.show = (options) => {
+        mThis.init(); //NOTE: initOnce init one time only
+        if (!options) options = {};
         main_view.setTitle(mThis.title_prop);
-        mThis.jm.hide().fadeIn(250);
-    }
-
-    this.hide = function(){
-        mThis.self.style.display = 'none';
-    }
+        mThis.displayMainOptions(() => {
+            mThis.self.siblings().hide();
+            mThis.self.fadeIn(200);
+        });
+    };
 })();

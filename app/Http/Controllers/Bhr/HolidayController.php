@@ -61,4 +61,13 @@ class HolidayController extends Controller
         $data = $holiday->getHolidayListPaginate($req->all(), $ss);
         return JDV::result($data);
     }
+    public function getHolidayList(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $war = new Holiday();
+        return JDV::result($war->getHolidayList($req->all(), $ss));
+    }
 }

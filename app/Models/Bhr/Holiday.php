@@ -185,4 +185,22 @@ class Holiday
             'holidays' => $holidays,
         ];
     }
+    function getHolidayList($arr, $ss = null)
+    {
+        $d = (object) $arr;
+
+        $search_value = $d->search_value ?? null;
+
+        $str_search = '1=1';
+        $query = DB::table('holidays as hd')
+        ->join('holiday_types as ht', 'ht.id', '=', 'hd.holiday_type_id')
+        ->selectRaw('hd.id, hd.holiday_type_id, hd.name, hd.start_date, hd.end_date, hd.description')
+        ->where('hd.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->whereRaw("hd.name LIKE '%" . $search_value . "%' OR hd.code LIKE '%" . $search_value . "%'");
+        }
+        $rows = $query->get();
+        return $rows;
+    } 
 }

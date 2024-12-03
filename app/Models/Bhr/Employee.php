@@ -937,5 +937,21 @@ class Employee //extends Model
         return null;
     }
 
-    
+    function getEmployeeList($arr, $ss=null) {
+        $d = (object) $arr;
+
+        $search_value = $d->search_value ?? null;
+
+        $str_search = '1=1';
+        $query = DB::table('employees as emp')
+        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality,emp.address,emp.joining_date')
+        ->where('emp.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->whereRaw("emp.name LIKE '%" . $search_value . "%' OR emp.code LIKE '%" . $search_value . "%'");
+        }
+        $rows = $query->get();
+        return $rows;
+   } 
 }

@@ -74,6 +74,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/set-terminate-status', [EmployeeController::class, 'setTerminateStatus']);
     Route::post('/set-resign-status',[EmployeeController::class,'setResignStatus']);
     Route::post('/set-rejoin-status',[EmployeeController::class,'setRejoinStatus']);
+    Route::post('/list', [EmployeeController::class, 'getEmployeeList']);
 
     //Route::post('updateSenderStatus', [SenderController::class, 'updateSenderStatus']);
 });
@@ -100,6 +101,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave')->grou
     Route::post('/delete', [LeaveController::class, 'delete']);
     Route::post('/form-options', [LeaveController::class, 'getFormOptions']);
     Route::post('/update-status', [LeaveController::class, 'updateStatus']);
+    Route::post('/list', [LeaveController::class, 'getLeaveList']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/benefit')->group(function () {
 
@@ -121,6 +123,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->gr
     Route::post('/form-options', [PayrollController::class, 'getFormOptions']);
     Route::post('/update-authorize', [PayrollController::class, 'updateAuthorize']);
     Route::post('/update-disburse', [PayrollController::class, 'updateDisburse']);
+    Route::post('/list', [PayrollController::class, 'getPayrollList']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list')->group(function () {
 
@@ -134,6 +137,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list'
     Route::post('disburse', [PayrollListController::class, 'disbursePayrollList']);
     Route::post('disburse-all', [PayrollListController::class, 'disburseAllPayrollList']);
     Route::post('pay-slip', [PayrollListController::class, 'paySlip']);
+    Route::post('/list', [PayrollListController::class, 'getListPayrollList']);
 
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('report')->group(function () {
@@ -153,6 +157,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('warning')->gr
     Route::post('/delete', [WarningController::class, 'deleteWarning']);
     Route::post('/form-options', [WarningController::class, 'getFormOptions']);
     Route::post('/update-status', [WarningController::class, 'updateStatus']);
+    Route::post('/list', [WarningController::class, 'warningList']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('work-shifts')->group(function () {
 
@@ -169,6 +174,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('shift-details
     Route::post('/details', [ShiftDetailsController::class, 'getDetails']);
     Route::post('/delete', [ShiftDetailsController::class, 'deleteShiftDetails']);
     Route::post('/form-options', [ShiftDetailsController::class, 'getFormOptions']);
+    Route::post('/list', [ShiftDetailsController::class, 'getShiftDetail']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('scan-plan')->group(function () {
 
@@ -289,6 +295,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('holiday')->gr
     Route::post('/details', [HolidayController::class, 'getDetails']);
     Route::post('/delete', [HolidayController::class, 'deleteHoliday']);
     Route::post('/form-options', [HolidayController::class, 'getFormOptions']);
+    Route::post('/list', [HolidayController::class, 'getHolidayList']);
 });
 
 

@@ -216,4 +216,27 @@ class Payroll
         ]);
         return DV::depends($x, ['Payroll  disbursed', 'updated']);
     }
+    function getPayrollList($arr, $ss)
+    {
+        $d = (object) $arr;
+
+        $search_value = $d->search_value ?? null;
+
+        $str_search = '1=1';
+
+        // Query to fetch attendance records
+        $query = DB::table('payrolls as pay')
+        ->selectRaw('pay.id, pay.name, pay.month_year, pay.start_date, pay.end_date,pay.p_number, pay.total')
+        ->where('pay.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
+
+        // Apply search filters if a search value is provided
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->whereRaw("pay.name LIKE '%" . $search_value . "%'");
+        }
+        $rows = $query->get();
+
+        // Return the rows as a result
+        return $rows;
+    }
 }

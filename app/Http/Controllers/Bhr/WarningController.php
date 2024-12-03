@@ -37,6 +37,15 @@ class WarningController extends Controller
 
         return JDV::result($this->warnings->getWarningsListPaginate($req->all(), $ss));
     }
+    public function warningList(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $war = new Warning();
+        return JDV::result($war->warningList($req->all(), $ss));
+    }
     public function deleteWarning(Request $req)
     {
         // Verify the user's authentication status

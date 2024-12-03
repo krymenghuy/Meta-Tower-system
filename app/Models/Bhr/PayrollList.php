@@ -734,6 +734,29 @@ class PayrollList
         return $row;
     }
 
+    function getListPayrollList($arr, $ss)
+    {
+        $d = (object) $arr;
 
+        $search_value = $d->search_value ?? null;
+
+        $str_search = '1=1';
+
+        // Query to fetch attendance records
+        $query = DB::table('payroll_lists as pl')
+        ->join('employees as e', 'e.id', '=', 'pl.emp_id')
+        ->selectRaw('pl.id, pl.payroll_id, pl.emp_id,pl.salary,pl.benefit, pl.deduction, pl.tax_rate,pl.count_day, pl.bias, pl.tax_base, pl.tax_benefit, pl.total_salary')
+        ->where('pl.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
+
+        // Apply search filters if a search value is provided
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->whereRaw("pl.salary LIKE '%" . $search_value . "%'");
+        }
+        $rows = $query->get();
+
+        // Return the rows as a result
+        return $rows;
+    }
 
 }

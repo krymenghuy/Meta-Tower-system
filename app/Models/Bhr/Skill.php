@@ -6,7 +6,7 @@ use App\Models\Bhr\GeneralSettings;
 use App\Models\DBX;
 use App\Models\DV;
 use App\Models\PublicStorage;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class Skill

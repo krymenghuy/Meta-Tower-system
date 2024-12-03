@@ -7,15 +7,15 @@ use Illuminate\Support\Facades\DB;
 use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 
-class Warning 
+class Warning
 {
     protected $table = 'emp_warnings';
     protected $id = null;
     protected $userInfo = null;
-    public function __construct($id=null , $userInfo = null){
+    public function __construct($id = null, $userInfo = null)
+    {
         $this->id = $id;
         $this->$userInfo = $userInfo;
-
     }
     protected $fillable = [
         'name',
@@ -27,7 +27,7 @@ class Warning
         'promises',
         'warning',
         'subs_id'
-    ]; 
+    ];
 
     protected static $img_dir = 'warnings/profile';
 
@@ -56,9 +56,9 @@ class Warning
 
         // Check for duplicate warning_type for the employee
         $exists = DB::table('emp_warnings')
-        ->where('emp_id', $inputs['emp_id'])
-        ->where('warning_type', $inputs['warning_type'])
-        ->exists();
+            ->where('emp_id', $inputs['emp_id'])
+            ->where('warning_type', $inputs['warning_type'])
+            ->exists();
 
         if ($exists) {
             return DV::error("The employee already has a warning of this type.");
@@ -106,7 +106,7 @@ class Warning
         return DV::depends($warning, ['emp_warnings' => $inputs, 'id' => $id]);
     }
 
-    
+
 
     function getWarningsListPaginate($arr, $ss)
     {
@@ -122,16 +122,16 @@ class Warning
 
         $search_value = $d->search_value ?? null;
         $str_search = '1=1';
-        if($search_value){
+        if ($search_value) {
             $skip_rows = 0;
-            $str_search = "(emp.name LIKE '%".$search_value."%' OR emp.code = '".$search_value."')";
+            $str_search = "(emp.name LIKE '%" . $search_value . "%' OR emp.code = '" . $search_value . "')";
         }
         $query = DB::table('emp_warnings as w')
             ->join('employees as emp', 'emp.id', '=', 'w.emp_id')
             ->whereRaw($str_search)
             ->selectRaw('w.id, emp.id as emp_id, emp.name, emp.name_kh,DATE_FORMAT(w.warning_date, "%d %b %Y") as warning_date,w.warning_type,w.remarks,w.reason,emp.position_id, emp.photo_file_name as emp_photo,w.updated_at,w.update_user')
             ->orderBy('w.id', 'ASC');
-       
+
         $clone_query = clone $query;
         $count = $clone_query->count('w.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -195,5 +195,31 @@ class Warning
             'employees' => GeneralSettings::options_employee(10, $ss),
             'warnings' => $warning,
         ];
+    }
+    function warningList($arr, $ss = null)
+    {
+        $d = (object) $arr;
+
+        $search_value = $d->search_value ?? null;
+
+        $str_search = '1=1';
+
+        // Query to fetch attendance records
+        $query = DB::table('emp_warnings as war')
+            ->join('employees as emp', 'emp.id', '=', 'war.emp_id')  // Join with the employees table
+            ->selectRaw('war.id, war.emp_id, war.warning_date, war.reason, war.remarks')
+            ->where('war.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
+
+        // Apply search filters if a search value is provided
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->whereRaw("war.name LIKE '%" . $search_value . "%' OR emp.code LIKE '%" . $search_value . "%' OR warning 'warning_type' '%" . $search_value . "%'");
+        }
+
+        // Execute the query and fetch all matching records
+        $rows = $query->get();
+
+        // Return the rows as a result
+        return $rows;
     }
 }

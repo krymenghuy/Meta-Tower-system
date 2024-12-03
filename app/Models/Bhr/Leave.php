@@ -218,7 +218,7 @@ class Leave
         ->where('l.id', $id)
         //->where('l.status_id',2
 
-        ->selectRaw('l.id as emp_id,emp.code as emp_code, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,'.$col_update_date)
+        ->selectRaw('l.id ,l.emp_id,emp.code as emp_code, emp.name as employee, p.title, l.leave_type_id, lt.name as leave_type,'.$leave_dates.', ls.name as status, l.remarks, l.update_user, emp.photo_file_name as emp_photo,'.$col_update_date)
 
         ->first();
         return $leave;
@@ -257,7 +257,30 @@ class Leave
         ]);
         return DV::depends($x, ['Leave  status', 'updated']);
     }
+    function getLeaveList($arr, $ss)
+    {
+        $d = (object) $arr;
 
+        $search_value = $d->search_value ?? null;
+
+        $str_search = '1=1';
+
+        // Query to fetch attendance records
+        $query = DB::table('leaves as l')
+        ->join('employees as e', 'e.id', '=', 'l.emp_id')
+        ->selectRaw('l.id, l.emp_id,l.leave_type_id,l.start_date, l.end_date, l.remarks,l.status_id')
+        ->where('l.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
+
+        // Aply search filters if a search value is provided
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->whereRaw("l.remarks LIKE '%" . $search_value . "%'");
+        }
+        $rows = $query->get();
+
+        // Return the rows as a result
+        return $rows;
+    }
 
 
 

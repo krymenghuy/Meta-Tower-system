@@ -270,7 +270,7 @@ const WarningDialog = (() => {
         dialog =
             dialog ||
             new GeneralDialog({
-                cssClass: "modal-lg",
+                cssClass: "modal-md",
                 backdrop: "static", 
                 keyboard: true, 
                 createContent: () => {
@@ -293,10 +293,10 @@ const WarningDialog = (() => {
                             <div class="form-group col-md-6">
                                 <label for="warning_date" class="form-label" vslang="titles.Warning Date"></label>
                                 <span class="text-danger" >*</span>
-                                <input name="warning_date" class="form-control data-input" data-field="warning_date">
+                                <input name="warning_date" class="form-control form_input data-input" data-field="warning_date">
                             </div>
                             
-                            <div class="form-group col-md-6">
+                            <div class="form-group col-md-12">
                                 <label for="reason" class="form-label">reason</label>
                                 <input class="form-control data-input" data-field="reason" id="reason"></input>                            
                             </div>

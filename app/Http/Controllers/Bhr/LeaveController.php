@@ -74,4 +74,13 @@ class LeaveController extends Controller
 
         return JDV::raw($res);
     }
+    public function getLeaveList(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $war = new Leave();
+        return JDV::result($war->getLeaveList($req->all(), $ss));
+    }
 }
