@@ -5,7 +5,7 @@ echo $user->lang ?? 'en'; ?>">
     <base href="../">
     <meta charset="utf-8" />
     <title>BHR</title>
-    <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/logo.jpg') }}" />
+    <link type="images/png" rel="icon" href="{{ asset('assets/images/logo/lc_logo.svg') }}" />
     <meta name="description" content="Updates and statistics">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="csrf-token" content="{{ csrf_token() }}" />

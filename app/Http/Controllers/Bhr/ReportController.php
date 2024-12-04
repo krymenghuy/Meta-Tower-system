@@ -10,55 +10,238 @@ use Illuminate\Http\Request;
 
 class ReportController extends Controller
 {
-    protected $reportModel;
-
-    public function __construct(Report $report)
+    function getReportList(Request $req)
     {
-        $this->reportModel = $report;
+      $ss = AuthService::verifyAuth($req, -1);
+      if ($ss->status_code != 200) return $ss; //user not authenticated
+      //$branch_id = $ss->branch_id;
+      return JDV::result(Report::list($ss));
     }
-
-    public function saveReport(Request $req)
-    {
+    public function getEmployeeList(Request $req){
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return $this->reportModel->save($req->all(), $ss);
+        return JDV::result(Report::getEmployeeList($ss));
+   }
+   public function getEmployeeListByType(Request $req){
+    $ss = AuthService::verifyAuth($req, -1);
+    if ($ss->status_code !== 200) {
+        return JDV::raw($ss);
     }
-
-    public function getReportListPaginate(Request $req)
+    return JDV::result(Report::getEmployeeListByType($ss));
+}
+  
+    //api getReportFilterOptions()| not web get
+    function getReportFilterOptions(Request $req)
     {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        return JDV::result($this->reportModel->getReportListPaginate($req->all(), $ss));
+      $ss = AuthService::verifyAuth($req, -1);
+      if ($ss->status_code != 200) return $ss; //user not authenticated
+      //$branch_id = $ss->branch_id;
+      $data = (object)[];
+      $data->users =[]; //GeneralSettings::options_user($ss);
+      return JDV::json($data);
     }
-
-    public function getDetails(Request $req)
-    {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        // Assuming id is passed in the request (POST body), access it like this
-        if (!isset($req->id) || !is_numeric($req->id)) {
-            return JDV::error('Invalid ID');
-        }
-        return JDV::result($this->reportModel->getDetails($req->id, $ss));
+  
+   function getActivities(Request $req){
+      $ss = AuthService::verifyAuth($req, -1);
+      if ($ss->status_code != 200) return $ss; //user not authenticated
+      //$branch_id = $ss->branch_id;
+      $rpt = new Report();
+      return JDV::result($rpt->getActivities($req->start_date,$req->end_date));
+   }
+  
+    function getStudentList(Request $req){
+      $ss = AuthService::verifyAuth($req, -1);
+      if ($ss->status_code != 200) return $ss; //user not authenticated
+      //$branch_id = $ss->branch_id;
+      $rpt = new Report();
+      return JDV::result($rpt->getStudentList($req->term_id,$req->new_student));
     }
-
-    public function deleteReport(Request $req)
-    {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        // Assuming id is passed in the request (POST body), access it like this
-        if (!isset($req->id) || !is_numeric($req->id)) {
-            return JDV::error('Invalid ID');
-        }
-        return JDV::result($this->reportModel->deleteReport($req->id, $ss));
+  
+    function getNewStudents(Request $req){
+      $ss = AuthService::verifyAuth($req, -1);
+      if ($ss->status_code != 200) return $ss; //user not authenticated
+      //$branch_id = $ss->branch_id;
+      $rpt = new Report();
+      return JDV::result($rpt->getStudentList($req->term_id,1));
+    }
+  
+    function getInvoicePayments(Request $req){
+      $ss = AuthService::verifyAuth($req, -1);
+      if ($ss->status_code != 200) return $ss; //user not authenticated
+      //$branch_id = $ss->branch_id;
+      $rpt = new Report();
+      return JDV::result($rpt->getInvoicePaymnents($req->all()));
+    }
+  
+    function getInvoiceList(Request $req){
+      $ss = AuthService::verifyAuth($req, -1);
+      if ($ss->status_code != 200) return $ss; //user not authenticated
+      //$branch_id = $ss->branch_id;
+      $rpt = new Report();
+      return JDV::result($rpt->getInvoiceList($req->all()));
+    }
+  
+    function getAttendanceList(Request $req){
+      $ss = AuthService::verifyAuth($req, 277);
+      if ($ss->status_code != 200) return $ss;
+      $rpt = new Report();
+      return JDV::result($rpt->attendanceListReport($req->all(),$ss));
+    }
+  
+    function getStudentInfoList(Request $req){
+      $ss = AuthService::verifyAuth($req, -1);
+      if ($ss->status_code != 200) return $ss;
+      $rpt = new Report();
+      return JDV::result($rpt->getStudentListReport($req->all(),$ss));
+    }
+  
+    function getFamilyInfoList(Request $req){
+      $ss = AuthService::verifyAuth($req, -1);
+      if ($ss->status_code != 200) return $ss;
+      $rpt = new Report();
+      return JDV::result($rpt->getFamilyListReport($req->all(),$ss));
+    }
+  
+    function optionsTerm(Request $req){
+      $ss = AuthService::verifyAuth($req,-1);
+      if($ss->status_code != 200) return $ss;
+      $x = new Report();
+      return JDV::result($x->optionsTerm($req->academic_year,$ss));
+    }
+  
+    function getDailyCashList(Request $req){
+      $ss = AuthService::verifyAuth($req,279);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getDailyCash($req->all(),$ss));
+    }
+    function getMonthlyCashList(Request $req){
+      $ss = AuthService::verifyAuth($req,280);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getMonthlyCash($req->all(),$ss));
+    }
+  
+  
+    function getReferalFeeList(Request $req){
+      $ss = AuthService::verifyAuth($req,278);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getReferalFeeList($req->all(),$ss));
+    }
+  
+    function getNonTuitionFeeList(Request $req){
+      $ss = AuthService::verifyAuth($req,281);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getNonTuitionFee($req->all(),$ss));
+    }
+  
+    function getReceivers(Request $req){
+      $ss = AuthService::verifyAuth($req,-1);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getReceivers());
+    }
+  
+    function getIncomeByCategories(Request $req){
+      $ss = AuthService::verifyAuth($req,'282.view');
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getIncomeByCategories($req->all(),$ss));
+    }
+  
+    function getIncomeByClass(Request $req){
+      $ss = AuthService::verifyAuth($req,283);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getIncomeByClass($req->all(),$ss));
+    }
+  
+    function getStudentDepositeList(Request $req){
+      $ss = AuthService::verifyAuth($req,284);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getStudentDeposit($req->all(),$ss));
+    }
+  
+    function getTotalPaymentByMonth(Request $req){
+      $ss = AuthService::verifyAuth($req,285);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getTotalPaymentByMonth($req->all(),$ss));
+    }
+  
+    function getTotalPaymentByYear(Request $req){
+      $ss = AuthService::verifyAuth($req,286);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getTotalPaymentByYear($req->all(),$ss));
+    }
+  
+    function getTotalStudentPaymentHistory(Request $req){
+      $ss = AuthService::verifyAuth($req,290);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getTotalStudentPaymentHistory($req->all(),$ss));
+    }
+  
+    function getLeaveStudent(Request $req){
+      $ss = AuthService::verifyAuth($req,287);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->LeaveStudents($req->all(),$ss));
+    }
+  
+    function getComeBackStudents(Request $req){
+      $ss = AuthService::verifyAuth($req,287);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->ComeBackStudents($req->all(),$ss));
+    }
+  
+    function getTotalPaymentHistoryByYear(Request $req){
+      $ss = AuthService::verifyAuth($req,288);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getTotalPaymentHistoryByYear($req->all(),$ss));
+    }
+  
+    function getSchoolFee(Request $req){
+      $ss = AuthService::verifyAuth($req,291);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->getSchoolFee($req->all(),$ss));
+    }
+  
+    function getStudentPaymentHistory(Request $req){
+      $ss = AuthService::verifyAuth($req,289);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::raw($report->getStudentPaymentHistory($req->all(),$ss));
+    }
+  
+    function studentRequestChange(Request $req){
+      $ss = AuthService::verifyAuth($req,289);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->studentRequestChange($req->all(),$ss));
+    }
+  
+    function crossYearReceipt(Request $req){
+      $ss = AuthService::verifyAuth($req,289);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->crossYearReceipt($req->all(),$ss));
+    }
+  
+    function upgradeFee(Request $req){
+      $ss = AuthService::verifyAuth($req,289);
+      if($ss->status_code != 200) return $ss;
+      $report = new Report();
+      return JDV::result($report->upgradeFee($req->all(),$ss));
     }
 
 }

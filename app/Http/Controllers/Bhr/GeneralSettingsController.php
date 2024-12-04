@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\Bhr\GeneralSettings;
 use App\Models\JDV;
 use App\Models\UM;
+use App\Services\Umt\AuthService;
+
 
 class GeneralSettingsController extends Controller
 {
@@ -15,6 +17,13 @@ class GeneralSettingsController extends Controller
     {
         $this->settingModel = new GeneralSettings();
     }
+    function select_options(Request $req){
+      $ss = AuthService::verifyAuth($req,-1);
+      if($ss->status_code !==200) return JDV::raw($ss);
+
+      $options = GeneralSettings::select_options($req->all(),$ss);
+      return JDV::result($options);
+  }
 
     function options_agent_status(){
       $data = [
@@ -134,4 +143,5 @@ class GeneralSettingsController extends Controller
         else if ($r =='@') return makeJsonResponse($r,360); // need permision to access or do this task
         return makeJsonResponse($r);
    }
+
 }

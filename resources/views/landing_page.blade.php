@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- <link rel="icon" type="image/png" href="background-image.png" /> -->
-  <link type="images/png" sizes="32x32" rel="icon" href="{{ asset('assets/images/logo/jto2.jpg') }}"/>
+  <link type="images/png" sizes="32x32" rel="icon" href="{{ asset('assets/images/logo/lc_logo.svg') }}"/>
 
   <title>LANDING PAGE</title>
   <script>

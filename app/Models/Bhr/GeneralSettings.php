@@ -53,6 +53,7 @@ class GeneralSettings //extends Model
         ->first();
        return $row;
     }
+  
 
     static function getExchangeRate($end_date = null,$ss=null){
         $str_branch_id = $ss? $ss->branch_id:'1=1';
@@ -342,6 +343,9 @@ class GeneralSettings //extends Model
     static function options_position($ss){
         return DB::table('positions')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,title AS position')->get();
     }
+    static function options_emp_type($ss){
+        return DB::table('emp_types')->selectRaw('id,name AS emp_type')->get();
+    }
     static function options_organization($ss){
         return DB::table('organizations')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS organization')->get();
     }
@@ -362,6 +366,7 @@ class GeneralSettings //extends Model
     static function options_branch($ss){
         return DB::table('um_branches')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS branch_name')->get();
     }
+   
     static function options_payroll($ss){
         return DB::table('payrolls')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS payroll_name')->get();
     }
@@ -413,32 +418,45 @@ class GeneralSettings //extends Model
             return $response;
     }
 
-    function getProductTypes($d){
-        $ss = UM::getUserInfoByToken($d);
-        if($ss->status_code !==200) return $ss; //user not authenticated
-         //need permission to do this task
-        $branch_id = Sanitizer::sanitize($ss->branch_id);
-        $sender_id = isset($d->sender_id)?Sanitizer::sanitize($d->sender_id):null;
-        $id =isset($d->id)?Sanitizer::sanitize($d->id):0;
-        DB::table('sender_base_price')->where('id',$id)->where('branch_id',$branch_id)->delete();
-        return null;
-    }
+//     function getProductTypes($d){
+//         $ss = UM::getUserInfoByToken($d);
+//         if($ss->status_code !==200) return $ss; //user not authenticated
+//          //need permission to do this task
+//         $branch_id = Sanitizer::sanitize($ss->branch_id);
+//         $sender_id = isset($d->sender_id)?Sanitizer::sanitize($d->sender_id):null;
+//         $id =isset($d->id)?Sanitizer::sanitize($d->id):0;
+//         DB::table('sender_base_price')->where('id',$id)->where('branch_id',$branch_id)->delete();
+//         return null;
+//     }
 
-   static function options_lead_status($ss =null){
-     $branch_id =1;
-     return DB::table('lead_statuses as ls')->selectRaw('id,`name` as status')->get();
-   }
-   static function options_lead_category($ss =null){
-    $branch_id =1;
-    return DB::table('lead_categories as c')->selectRaw('c.id,c.`name` as category')->get();
-  }
-  static function options_business_type($ss =null){
-    $branch_id =1;
-    return DB::table('sender_business_types as b')->selectRaw('b.`business_type` AS code, b.`business_type`, b.allow_register')->get();
-  }
+//    static function options_lead_status($ss =null){
+//      $branch_id =1;
+//      return DB::table('lead_statuses as ls')->selectRaw('id,`name` as status')->get();
+//    }
+//    static function options_lead_category($ss =null){
+//     $branch_id =1;
+//     return DB::table('lead_categories as c')->selectRaw('c.id,c.`name` as category')->get();
+//   }
+//   static function options_business_type($ss =null){
+//     $branch_id =1;
+//     return DB::table('sender_business_types as b')->selectRaw('b.`business_type` AS code, b.`business_type`, b.allow_register')->get();
+//   }
 
   //warning
   static function options_warning_types($ss =null){
     return DB::table('warning_types as t')->selectRaw('id, name as warning_types')->get();
   }
+  static function select_options($arr,$ss){
+    $d = (object)$arr;
+    $str_where = '1=1';
+    
+    $res = [
+        'branches' => self::options_branch($ss),
+        'leave_types' => self::options_leave_type($ss),
+        'emp_types' => self::options_emp_type($ss),
+        'payrolls' => self::options_payroll($ss),
+    ];
+    return $res;
+}
+  
 }
