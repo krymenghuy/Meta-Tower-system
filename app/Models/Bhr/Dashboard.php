@@ -90,8 +90,8 @@ class Dashboard
             'd_inactiveCount' => $d_inactiveCount,
             'p_activeCount' => $p_activeCount,
             'p_inactiveCount' => $p_inactiveCount,
-            'total_payroll' => DBX::cutDigit($total_payroll->total_payroll),
-            'total_wallet' => DBX::cutDigit($total_wallet->total_wallet),
+            'total_payroll' => $total_payroll->total_payroll,
+            'total_wallet' => $total_wallet->total_wallet,
             'total' => $counts->sum('count'),
             'active' => $counts->has(10) ? $counts->get(10)->count : 0,
             'resigned' => $counts->has(20) ? $counts->get(20)->count : 0,
@@ -213,8 +213,8 @@ class Dashboard
 
             'data' => $rows,
             'count' => $count,
-            'total_payroll' => DBX::cutDigit($total_payroll->total_payroll),
-            'total_wallet' => DBX::cutDigit($total_wallet->total_wallet),
+            'total_payroll' => $total_payroll->total_payroll,
+            'total_wallet' => $total_wallet->total_wallet,
             'count_warning' => $count_warning,
         ];
     }
@@ -238,11 +238,11 @@ class Dashboard
             ->first();
 
         $result = [
-            'total_amount' => DBX::cutDigit($query->total_amount),
-            'total_bonuses' => DBX::cutDigit($query->total_bonuses),
-            'total_seniority' => DBX::cutDigit($query->total_seniority),
-            'total_life_insurance' => DBX::cutDigit($query->total_life_insurance),
-            'total_other' => DBX::cutDigit($query->total_other),
+            'total_amount' => $query->total_amount,
+            'total_bonuses' => $query->total_bonuses,
+            'total_seniority' => $query->total_seniority,
+            'total_life_insurance' => $query->total_life_insurance,
+            'total_other' => $query->total_other,
             'lud_bonuses' => $query->lud_bonuses,
             'lud_seniority' => $query->lud_seniority,
             'lud_life_insurance' => $query->lud_life_insurance,

@@ -10,6 +10,18 @@ var WalletAccountComponent = new (function () {
     this.elSearch = this.self.querySelector("#_sdl_search_wallet_account");
     this.elSortBy = this.self.querySelector("#el_sort_by");
     this.btnBack = this.self.querySelector("#_btn_backTo_wallet_account");
+
+    const formattedNumber = (number) => {
+        number = Number(number) || 0;
+        return number
+            .toLocaleString('en-US', {
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+            .replace(/,/g, ' ');
+    };
+
     this.cols = [
         {
             title: "No",
@@ -60,9 +72,7 @@ var WalletAccountComponent = new (function () {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${
-                    main_view.currency.symbol + data.balance ?? ""
-                }</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol} ${formattedNumber(data.balance ?? 0)}</p>`;
             },
         },
         {
@@ -581,7 +591,7 @@ const WalletAccountDialog = (() => {
                             balanceField.disabled = false;
                         }
                     }
-                    
+
                 },
             });
 

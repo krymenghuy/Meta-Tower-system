@@ -9,6 +9,17 @@ var TaxBracketComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnAddTaxBracket");
     this.divFilter = this.self.querySelector("#_divFilter");
 
+    const formattedNumber = (number) => {
+        number = Number(number) || 0;
+        return number
+            .toLocaleString('en-US', {
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+            .replace(/,/g, ' ');
+    };
+
     this.cols = [
         {
             title: "No",
@@ -21,7 +32,7 @@ var TaxBracketComponent = new (function () {
             title: "Lower Amount",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + data.lower_amount ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.lower_amount) ?? '0.00'}</p>`;
             }
         },
 
@@ -29,7 +40,7 @@ var TaxBracketComponent = new (function () {
             title: "Upper Amount",
             className: "align-middle",
             data: (data, index, tr) => {
-                let upperAmount = Number(data.upper_amount) === -1 ? '∞' : (main_view.currency.symbol + (data.upper_amount ?? '0.00'));
+                let upperAmount = Number(data.upper_amount) === -1 ? '∞' : (main_view.currency.symbol + formattedNumber(data.upper_amount) ?? '0.00');
                 return `<p class="p-0 m-0">${upperAmount}</p>`;
             }
         },
@@ -44,7 +55,7 @@ var TaxBracketComponent = new (function () {
             title: "Bias",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + data.bias ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.bias)}</p>`;
             }
         },
 

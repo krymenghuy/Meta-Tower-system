@@ -34,22 +34,24 @@ class Account
         ];
 
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, ['balance'=>['.']], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $id = $res->id;
         $inputs = $res->values;
+        $inputs['balance'] = (float) str_replace(',', '', $inputs['balance']) ;
 
+        if (empty($id)) {
+            $existingAccount = DB::table('accounts')
+                ->where('branch_id', $branch_id)
+                ->where('emp_id', $inputs['emp_id'])
+                ->first();
 
-        $existingAccount = DB::table('accounts')
-            ->where('branch_id', $branch_id)
-            ->where('emp_id', $inputs['emp_id'])
-            ->first();
-
-        if ($existingAccount) {
-            return DV::error('The employee already has an account.');
+            if ($existingAccount) {
+                return DV::error('The employee already has an account.');
+            }
         }
 
 
@@ -116,7 +118,7 @@ class Account
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
-            $row->balance = DBX::cutDigit($row->balance);
+            // $row->balance = DBX::cutDigit($row->balance);
             $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
             unset($row->emp_photo);
         }
@@ -146,7 +148,6 @@ class Account
             ->where('a.id', $id)->first();
 
         if ($row) {
-            $row->balance = DBX::cutDigit($row->balance);
             $row->image_url = Employee::profilePicture($row->emp_id);
             unset($row->emp_photo);
         } else {
@@ -208,7 +209,6 @@ class Account
         $trx->amount = $trx->w_balance;
         $trx->account_id = $w_account_id;
         $trx->remarks = 'From Payroll to Wallet';
-
         if($trx->balance < $trx->amount){
             return DV::error('Insufficient Balance');
         }
