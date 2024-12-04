@@ -454,6 +454,7 @@ class GeneralSettings //extends Model
         'branches' => self::options_branch($ss),
         'leave_types' => self::options_leave_type($ss),
         'emp_types' => self::options_emp_type($ss),
+        'payrolls' => self::options_payroll($ss),
     ];
     return $res;
 }

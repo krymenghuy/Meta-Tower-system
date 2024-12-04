@@ -12,16 +12,7 @@ var ReportCenterComponent = new (function () {
     };
 
     this.filter_fields = [
-        {
-            type: "select",
-            api_fetch: `${main_view.base_url}/api/form-option`,
-            api_params: {},
-            name: "group_id",
-            value_field: "id",
-            text_field: "name",
-            required: true,
-            dot_object: "groups",
-        },
+       
         {
             type: "select",
             api_fetch: `${main_view.base_url}/api/reports/options-receiver`,
@@ -50,6 +41,16 @@ var ReportCenterComponent = new (function () {
             text_field: "branch_name",
             required: false,
             dot_object: "branches",
+        },
+        {
+            type: "select",
+            api_fetch: `${main_view.base_url}/hr/form-option`,
+            api_params: {},
+            name: "payroll_id",
+            value_field: "id",
+            text_field: "payroll_name",
+            required: false,
+            dot_object: "payrolls",
         },
         {
             type: "select",
@@ -289,10 +290,10 @@ var ReportCenterComponent = new (function () {
             is_paid: "Pmt Status",
             from_campus_id: "From Campus",
             to_campus_id: "To Campus",
-            fee_type_id: "Fee Type",
+            payroll_id: "Payroll",
             start_date: "Start Date",
             end_date: "End Date",
-            group_id: "Group",
+            branch_id: "Branch",
         };
         return label[key] ?? key;
     };
@@ -318,7 +319,7 @@ var ReportCenterComponent = new (function () {
                             <div class="form-group">
                                 <label for="${
                                     item.key
-                                }" class="form-label text-capitalize " vslang="titles.${
+                                }" class="form-label text-capitalize " style="color:#eccf67;" vslang="titles.${
                                 mThis.getFormGroupLabelText(item) || ""
                             }"></label>
                                 <div class="width-select-in-form">
@@ -346,7 +347,7 @@ var ReportCenterComponent = new (function () {
                                 <label for="${item}" class="form-label text-capitalize" style="color:#eccf67;" vslang="titles.${
                                 mThis.getFormGroupLabelText(item) || ""
                             }"></label>
-                                <input data-select="datepicker" class="form-control data-input data-filter" data-field="${item}"/>
+                                <input data-select="datepicker" class="form-control rounded-5 data-input data-filter" data-field="${item}"/>
                             </div>
                         </div>`,
                         ].join("");
@@ -362,9 +363,10 @@ var ReportCenterComponent = new (function () {
         }
         // console.log(333,inner_html);
         html = `<div class="row card-report m-0" style="max-height:; display: none;">
-                <div id="_div_filter" class="col d-flex row-cols-lg-2 justify-content-between align-items-center" >
+                <div id="_div_filter" class="col d-flex row-cols-lg-2 justify-content-between align-items-center gap-3" >
                     <div id="_rpt_btn_list" class="p-0 text-end" style="display: none; width: 80px">
                         <button  class="btn-filter" type="button">
+                            <i class="fa-solid px-1 fa-paper-plane"></i>
                             <span class="" vslang="buttons.Filter"></span>
                         </button>
                     </div>
@@ -377,12 +379,12 @@ var ReportCenterComponent = new (function () {
                     
                     <div id="_rpt_btn_print" class="col text-nowrap" style="display: none;">
                         <button data-name="btn_pdf" class="btn-print" type="button">
-                            <i class="fa-solid fa-print"></i>
+                            <i class="fa-solid px-1 fa-print"></i>
                             <span class="" vslang="buttons.Print"></span>
                         </button>
                         <button data-name="btn_excel" class="btn-pdf" type="button">
-                            <i class="fa-regular fa-file-pdf"></i>
-                            <span class="" vslang="buttons.Export"></span>
+                            <i class="fa-solid px-1 text-primary-custom fa-file-pdf"></i>
+                            <span class="text-primary-custom" vslang="buttons.Export"></span>
                         </button>
                     </div>
                 </div>
@@ -611,9 +613,9 @@ var ReportCenterComponent = new (function () {
             case "employee_list_by_type":
                 end_point = "hr/reports/employee/list-by-type";
                 break;
-            // case "monthly_cash":
-            //     end_point = "api/reports/leave/list";
-            //     break;
+            case "payroll_list_by_name":
+                end_point = "hr/reports/employee/list-by-branch";
+                break;
             // case "referral":
             //     end_point = "api/reports/finance/referral-fee-list";
             //     break;
