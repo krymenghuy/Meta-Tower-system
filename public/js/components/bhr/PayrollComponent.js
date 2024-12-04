@@ -21,12 +21,12 @@ var PayrollComponent = new (function () {
         {
             title: "Payroll Name",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.name ?? ''}</p>`
+            data: (data) => `<p class="p-0 m-0">${data.name ?? ""}</p>`,
         },
         {
             title: "Month Year",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.month_year ?? ''}</p>`
+            data: (data) => `<p class="p-0 m-0">${data.month_year ?? ""}</p>`,
         },
 
         // {
@@ -37,12 +37,15 @@ var PayrollComponent = new (function () {
         {
             title: "Payroll Number",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.p_number ?? ''}</p>`
+            data: (data) => `<p class="p-0 m-0">${data.p_number ?? ""}</p>`,
         },
         {
             title: "Total",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.total + main_view.currency.symbol ?? ''}</p>`
+            data: (data) =>
+                `<p class="p-0 m-0">${
+                    main_view.currency.symbol + data.total ?? ""
+                }</p>`,
         },
         // {
         //     title: "Currency",
@@ -52,52 +55,60 @@ var PayrollComponent = new (function () {
         {
             title: "Exchange Rate",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.exchange_rate ?? ''}`//<span class="p-0 m-0 text-primary-custom">%</span></p>`
+            data: (data) => `<p class="p-0 m-0">${data.exchange_rate ?? ""}`, //<span class="p-0 m-0 text-primary-custom">%</span></p>`
         },
-          {
+        {
             title: "Authorize",
-            className: 'authorized text-nowrap align-middle',
+            className: "authorized text-nowrap align-middle",
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
-                let bg_color = '';
+                let bg_color = "";
 
                 if (data.authorized === 1) {
-                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#28a745';
+                    cls_class =
+                        "text-white text-center border border-success rounded-5 p-1";
+                    bg_color = "#28a745";
                 } else if (data.authorized === 0) {
-                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
-                    bg_color = '#ffc107';
+                    cls_class =
+                        "text-white text-center border border-warning rounded-5 p-1";
+                    bg_color = "#ffc107";
                 }
-                console.log(2222,data.authorized);
+                console.log(2222, data.authorized);
 
-                return `<div><a class="d-block" data-authorized="${data.authorized}" data-id="${data.id}" href="javascript:void(0)">
+                return `<div><a class="d-block" data-authorized="${
+                    data.authorized
+                }" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${data.authorized == 0 ? 'Pending' : 'Approved'}
+                                ${data.authorized == 0 ? "Pending" : "Approved"}
                             </span>
                         </a></div>`;
-            }
+            },
         },
         {
             title: "Disbursed",
-            className: 'status text-nowrap align-middle',
+            className: "status text-nowrap align-middle",
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
-                let bg_color = '';
+                let bg_color = "";
 
                 if (data.disbursed === 1) {
-                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#28a745';
+                    cls_class =
+                        "text-white text-center border border-success rounded-5 p-1";
+                    bg_color = "#28a745";
                 } else if (data.disbursed === 0) {
-                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
-                    bg_color = '#ffc107';
+                    cls_class =
+                        "text-white text-center border border-warning rounded-5 p-1";
+                    bg_color = "#ffc107";
                 }
 
-                return `<div><a class="d-block" data-status="${data.disbursed}" data-id="${data.id}" href="javascript:void(0)">
+                return `<div><a class="d-block" data-status="${
+                    data.disbursed
+                }" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${data.disbursed == 0 ? 'Pending' : 'Success'}
+                                ${data.disbursed == 0 ? "Pending" : "Success"}
                             </span>
                         </a></div>`;
-            }
+            },
         },
         {
             title: "",
@@ -105,11 +116,17 @@ var PayrollComponent = new (function () {
             data: (data) => `
                 <div class="d-flex justify-content-end align-items-end">
                     <a href="javascript:void(0)"
-                       class="btn_payroll_action ${data.disbursed === 1 ? " d-none" : ""}"
-                       data-id="${data.id}" data-authorized="${data.authorized}" >
-                        <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
+                       class="btn_payroll_action ${
+                           data.disbursed === 1 ? " d-none" : ""
+                       }"
+                       data-id="${data.id}" data-authorized="${
+                data.authorized
+            }" >
+                        <img src="${
+                            main_view.asset_url
+                        }/images/icons/more_vert (3).svg" />
                     </a>
-                </div>`
+                </div>`,
         },
     ];
 
@@ -415,7 +432,7 @@ const AddPayRollListDailog = (() => {
                         </div>
                         <div class="form-group col-6">
                             <label for="month_year" class="form-label" vslang="titles.Month Year"></label>
-                            <input name="month_year" type="month" class="form-control data-input" data-field="month_year" />
+                            <input name="month_year" class="form-control data-input" data-field="month_year" />
                         </div>
                         <div class="form-group col-6">
                             <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
