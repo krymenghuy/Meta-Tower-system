@@ -13,13 +13,13 @@ var PayrollComponent = new (function () {
     this.elSearch = this.self.querySelector("#_sdl_search_payroll");
     let cloneTable = null;
     this.cols = [
+        // {
+        //     title: "No",
+        //     className: 'align-middle text-capitalize text-nowrap',
+        //     data: (data, index) => index + 1,
+        // },
         {
-            title: "No",
-            className: 'align-middle text-capitalize text-nowrap',
-            data: (data, index) => index + 1,
-        },
-        {
-            title: "Name",
+            title: "Payroll Name",
             className: "align-middle",
             data: (data) => `<p class="p-0 m-0">${data.name ?? ''}</p>`
         },
@@ -29,44 +29,44 @@ var PayrollComponent = new (function () {
             data: (data) => `<p class="p-0 m-0">${data.month_year ?? ''}</p>`
         },
 
+        // {
+        //     title: "Duration",
+        //     className: "align-middle w-15",
+        //     data: (data) => `<p class="p-0 m-0">${data.start_date?? ''}​ <span class="text-danger"> - </span> ${data.end_date ?? ''}</p>`
+        // },
         {
-            title: "Duration",
-            className: "align-middle w-15",
-            data: (data) => `<p class="p-0 m-0">${data.start_date?? ''}​ <span class="text-danger"> - </span> ${data.end_date ?? ''}</p>`
-        },
-        {
-            title: "Employee",
+            title: "Payroll Number",
             className: "align-middle",
             data: (data) => `<p class="p-0 m-0">${data.p_number ?? ''}</p>`
         },
         {
             title: "Total",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.total ?? ''}</p>`
+            data: (data) => `<p class="p-0 m-0">${data.total + main_view.currency.symbol ?? ''}</p>`
         },
-        {
-            title: "Currency",
-            className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.currency_code ?? ''}</p>`
-        },
+        // {
+        //     title: "Currency",
+        //     className: "align-middle",
+        //     data: (data) => `<p class="p-0 m-0">${data.currency_code ?? ''}</p>`
+        // },
         {
             title: "Exchange Rate",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.exchange_rate ?? ''}</p>`
+            data: (data) => `<p class="p-0 m-0">${data.exchange_rate ?? ''}`//<span class="p-0 m-0 text-primary-custom">%</span></p>`
         },
           {
             title: "Authorize",
             className: 'authorized text-nowrap align-middle',
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
-                let bg_color = ''; // Default background color
+                let bg_color = '';
 
                 if (data.authorized === 1) {
                     cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#28a745'; // Green background for success
+                    bg_color = '#28a745';
                 } else if (data.authorized === 0) {
                     cls_class = 'text-white text-center border border-warning rounded-5 p-1';
-                    bg_color = '#ffc107'; // Yellow background for pending
+                    bg_color = '#ffc107';
                 }
                 console.log(2222,data.authorized);
 
@@ -82,14 +82,14 @@ var PayrollComponent = new (function () {
             className: 'status text-nowrap align-middle',
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
-                let bg_color = ''; // Default background color
+                let bg_color = '';
 
                 if (data.disbursed === 1) {
                     cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#28a745'; // Green background for success
+                    bg_color = '#28a745';
                 } else if (data.disbursed === 0) {
                     cls_class = 'text-white text-center border border-warning rounded-5 p-1';
-                    bg_color = '#ffc107'; // Yellow background for pending
+                    bg_color = '#ffc107';
                 }
 
                 return `<div><a class="d-block" data-status="${data.disbursed}" data-id="${data.id}" href="javascript:void(0)">
@@ -137,7 +137,6 @@ var PayrollComponent = new (function () {
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
-            // let content = mThis.bookingListView.getListContainer();
 
             let op = {
                 id: null,
@@ -394,123 +393,128 @@ var PayrollComponent = new (function () {
 
 });
 
-const AddPayRollListDailog = (()=>{
-
+const AddPayRollListDailog = (() => {
     const self = {};
     let dialogAdd = null;
-     self.show = (op)=>{
-    console.log(999,op);
 
-    dialogAdd = dialogAdd || new GeneralDialog({
-            cssClass:'modal-lg',
-            backdrop: 'static', //User click outside form, do not close form
-            keyboard:true, //prevent user from using ESC key
-            createContent:()=>{
-                 return [
-                     `<div class="row">
-                 <div class="form-group col-6">
-                    <label for="name" class="form-label" vslang="titles.Name "></label>
-                    <input name="name" class="form-control data-input form_input" data-field="name" />
-                </div>
-                <div class="form-group col-6">
-                    <label for="month_year" class="form-label" vslang="titles.Month Year"></label>
-                    <input name="month_year" type="month" class="form-control data-input" data-field="month_year" />
-                </div>
-                <div class="form-group col-6">
-                  <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
-                  <input name="start_date" class="form-control data-input form_input" data-field="start_date" />
-                </div>
-                <div class="form-group col-6">
-                  <label for="end_date" class="form-label" vslang="titles.End Date"></label>
-                  <input name="end_date" class="form-control data-input" data-field="end_date" />
-                </div>
-                <div class="form-group col-6">
-                    <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
-                        <select class="modal-select data-input form_input" data-field="currency_code">
-                            <option value="">(Select Currency)</option>
-                            <option value="USD">USD</option>
-                            <option value="KHR">KHR</option>
-                        </select>
-                </div>
-                <div class="form-group col-6">
-                    <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate "></label>
-                    <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
-                </div>
-                <div class="form-group col-6">
-                    <label for="p_number" class="form-label" vslang="titles.Payroll Number "></label>
-                    <input type="number" name="p_number" class="form-control data-input form_input" data-field="p_number" />
-                </div>
-                <div class="form-group col-6">
-                    <label for="total" class="form-label" vslang="titles.Total "></label>
-                    <input name="total" class="form-control data-input" data-field="total" />
-                </div>
-              </div>`,
-                 ].join("");
-            },
-            contentCreated:(me)=>{
-                //Convert field to be DatePicker : start_date and end_date
-                DateTimePicker.init(me.controls.start_date);
-                DateTimePicker.init(me.controls.end_date);
-                // DateTimePicker.init(me.controls.month_year);
+    self.show = (op) => {
+        console.log(999, op);
 
+        dialogAdd =
+            dialogAdd ||
+            new GeneralDialog({
+                cssClass: "modal-lg",
+                backdrop: "static", // Prevent closing form by clicking outside
+                keyboard: true, // Prevent closing form with ESC key
+                createContent: () => {
+                    return [
+                        `<div class="row">
+                        <div class="form-group col-6">
+                            <label for="name" class="form-label" vslang="titles.Name"></label>
+                            <input name="name" class="form-control data-input form_input" data-field="name" />
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="month_year" class="form-label" vslang="titles.Month Year"></label>
+                            <input name="month_year" type="month" class="form-control data-input" data-field="month_year" />
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
+                            <input name="start_date" class="form-control data-input form_input" data-field="start_date" />
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="end_date" class="form-label" vslang="titles.End Date"></label>
+                            <input name="end_date" class="form-control data-input" data-field="end_date" />
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
+                            <select name="currency_code" class="modal-select data-input form_input" data-field="currency_code">
+                                <option value="">(Select Currency)</option>
+                                <option value="USD">USD</option>
+                                <option value="KHR">KHR</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
+                            <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="p_number" class="form-label" vslang="titles.Payroll Number"></label>
+                            <input type="number" name="p_number" class="form-control data-input form_input" data-field="p_number" />
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="total" class="form-label" vslang="titles.Total"></label>
+                            <input name="total" class="form-control data-input" data-field="total" />
+                        </div>
+                    </div>`,
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                    // Convert fields to DatePickers: start_date and end_date
+                    DateTimePicker.init(me.controls.start_date);
+                    DateTimePicker.init(me.controls.end_date);
 
-             },
-            // configSelect:[
-            //    {
-            //      name:"payroll_name",
-            //      data:'payrolls',
-            //      textField:"name",
-            //      valueField:'id'
-            //    },
-            // ],
-            buttons:[
-               {
-                label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
-                click:(me,btn)=>{
-                    //Close with Cancel button
-                    me.hide(false);
-                }
-               },
-               {
-                label:'<span>Save</span>',
-                cssClass:'btn btn-primary',
-                click:(me,btn)=>{
-                    const p = me.getData();
+                    // Set default currency to USD if not already set
+                    const currencyField = me.controls.currency_code;
+                    if (currencyField && !currencyField.value) {
+                        currencyField.value = "USD";
+                    }
+                },
+                buttons: [
+                    {
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            me.hide(false); // Close form on Cancel
+                        },
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+                            p.id = me.dataOptions.id; // Get "id" from op
 
-                    p.id = me.dataOptions.id; //get "id" from op
-
-                    vsapi.call( [main_view.base_url,'/hr/payroll/save'].join(''), p,btn,null).then(res=>{
-                       if(res.status_code ==200){
-                         me.hide(true,p);
-                       }else cv_interact.error(res.error_message);
-                    });
-                }
-               }
-            ],
-            prepareFormOptions:{
-               createTitle:'Add Payroll',
-               modifyTitle:'Edit Payroll',
-               targetProp: 'payrolls',
-               api:{
-                 endpoint: [main_view.base_url,'/hr/payroll/form-options'].join(''),
-                 params:(op)=>{
-                    return {'id':op.id};
-                 }
-               },
-            //    onResponse: (me, res)=>{
-            //      console.log('result from api "/form-options": ', res);
-            //    }
-            },
-
-            onPrepareForm:(me, data)=>{
-                 LocaleManager.translateZone(me.divModal);
-            }
-
-        });
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/payroll/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Add Payroll",
+                    modifyTitle: "Edit Payroll",
+                    targetProp: "payrolls",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/hr/payroll/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
 
         dialogAdd.show(op);
-     }
+    };
 
     return self;
 })();

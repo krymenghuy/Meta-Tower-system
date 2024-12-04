@@ -8,68 +8,76 @@ var WalletAccountComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnWalletAddAccount");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_wallet_account");
-    this.elSortBy = this.self.querySelector('#el_sort_by');
+    this.elSortBy = this.self.querySelector("#el_sort_by");
     this.btnBack = this.self.querySelector("#_btn_backTo_wallet_account");
     this.cols = [
-
         {
             title: "No",
-            className: 'align-middle',
-            data: (data, index, i) => { return (index + 1) },
-
+            className: "align-middle",
+            data: (data, index, i) => {
+                return index + 1;
+            },
         },
         {
             title: "Employee",
             className: "align-middle text-capitalize text-nowrap w-15",
             data: (data, index, tr) => {
                 return `<div style="display: flex; align-items: center;">
-                            <img class="image-student-tbl" src="${data.image_url}" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                            <img class="image-student-tbl" src="${
+                                data.image_url
+                            }" alt="" style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                             <div>
-                                <span style="font-size: 14px; font-weight: bold;">${data.emp_name ?? ''}</span>
+                                <span style="font-size: 14px; font-weight: bold;">${
+                                    data.emp_name ?? ""
+                                }</span>
                                 <br/>
-                                <span style="font-size: 11px; color: gray;">${data.position ?? ''}</span>
+                                <span style="font-size: 11px; color: gray;">${
+                                    data.position ?? ""
+                                }</span>
                             </div>
                         </div>`;
-            }
+            },
         },
         {
             title: "Account Type",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-1 m-0 text-center rounded-5 border text-white w-50 bg-info bg-gradient">${data.account_type ?? ""}</p>`;
+                return `<p class="p-1 m-0 text-center rounded-5 border text-white w-50 bg-info bg-gradient">${
+                    data.account_type ?? ""
+                }</p>`;
             },
         },
-
 
         {
             title: "Account Number",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.account_number ?? ''}</p>`;
-            }
+                return `<p class="p-0 m-0">${data.account_number ?? ""}</p>`;
+            },
         },
-
 
         {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + data.balance ?? ''}</p>`;
-            }
+                return `<p class="p-0 m-0">${
+                    main_view.currency.symbol + data.balance ?? ""
+                }</p>`;
+            },
         },
         {
             title: "Last Balance Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.last_balance_date ?? ''}</p>`;
-            }
+                return `<p class="p-0 m-0">${data.last_balance_date ?? ""}</p>`;
+            },
         },
         {
             title: "Currency",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.currency ?? ''}</p>`;
-            }
+                return `<p class="p-0 m-0">${data.currency ?? ""}</p>`;
+            },
         },
         {
             className: "col_action align-middle",
@@ -77,8 +85,12 @@ var WalletAccountComponent = new (function () {
             <div class="d-flex justify-content-end align-items-end">
                 <div class="text-end gap-2 d-flex flex-wrap">
                     <a href="javascript:void(0)" class="${
-                        data.action_id > 1 ? "d-none" : "btn_wallet_account_action"
-                    }" data-id="${data.id}" data-emp_id="${data.emp_id}" data-statusid="${
+                        data.action_id > 1
+                            ? "d-none"
+                            : "btn_wallet_account_action"
+                    }" data-id="${data.id}" data-emp_id="${
+                data.emp_id
+            }" data-statusid="${
                 data.status_id
             }" aria-haspopup="true" aria-expanded="false">
                         <img src="${
@@ -99,24 +111,27 @@ var WalletAccountComponent = new (function () {
         },
         {
             title: "Trx Type",
-            className: 'trx_type text-nowrap align-middle',
+            className: "trx_type text-nowrap align-middle",
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
-                let bg_color = '';
-                let trx_label = '';
+                let bg_color = "";
+                let trx_label = "";
 
                 if (data.trx_type === 1) {
-                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#skyblue';
-                    trx_label = 'Deposit';
+                    cls_class =
+                        "text-white text-center border border-success rounded-5 p-1";
+                    bg_color = "#skyblue";
+                    trx_label = "Deposit";
                 } else if (data.trx_type === 2) {
-                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
-                    bg_color = '#ffc107';
-                    trx_label = 'Withdrawal';
+                    cls_class =
+                        "text-white text-center border border-warning rounded-5 p-1";
+                    bg_color = "#ffc107";
+                    trx_label = "Withdrawal";
                 } else if (data.trx_type === 3) {
-                    cls_class = 'text-white text-center border border-primary rounded-5 p-1';
-                    bg_color = '#88C273';
-                    trx_label = 'Transfer';
+                    cls_class =
+                        "text-white text-center border border-primary rounded-5 p-1";
+                    bg_color = "#88C273";
+                    trx_label = "Transfer";
                 }
 
                 return `<div><a class="d-block" data-trx_type="${data.trx_type}" data-id="${data.id}" href="javascript:void(0)">
@@ -124,7 +139,7 @@ var WalletAccountComponent = new (function () {
                                 ${trx_label}
                             </span>
                         </a></div>`;
-            }
+            },
         },
         {
             title: "From Account",
@@ -159,17 +174,19 @@ var WalletAccountComponent = new (function () {
             className: "status text-nowrap align-middle",
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
-                let bg_color = '';
-                let status_label = '';
+                let bg_color = "";
+                let status_label = "";
 
-                if (data.status === 'in') {
-                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
-                    bg_color = '#73EC8B';
-                    status_label = 'In';
-                } else if (data.status === 'out') {
-                    cls_class = 'text-white text-center border border-danger rounded-5 p-1';
-                    bg_color = '#FF6B6B';
-                    status_label = 'Out';
+                if (data.status === "in") {
+                    cls_class =
+                        "text-white text-center border border-success rounded-5 p-1";
+                    bg_color = "#73EC8B";
+                    status_label = "In";
+                } else if (data.status === "out") {
+                    cls_class =
+                        "text-white text-center border border-danger rounded-5 p-1";
+                    bg_color = "#FF6B6B";
+                    status_label = "Out";
                 }
 
                 return `<div>
@@ -177,7 +194,7 @@ var WalletAccountComponent = new (function () {
                                 ${status_label}
                             </span>
                         </div>`;
-            }
+            },
         },
         {
             title: "Remarks",
@@ -186,7 +203,6 @@ var WalletAccountComponent = new (function () {
                 return `<p class="p-0 m-0">${data.remarks ?? ""}</p>`;
             },
         },
-
     ];
     this.initTransaction = () => {
         if (mThis.initTransactionAlready) return;
@@ -198,22 +214,20 @@ var WalletAccountComponent = new (function () {
             tableClass: "table table--white overflow-hidden  header-uppercase",
             listContainerClass: null,
         });
-        console.log(222,mThis.TransactionListView);
-
+        console.log(222, mThis.TransactionListView);
 
         mThis.initTransactionAlready = true;
-
     };
     this.init = () => {
         if (mThis.initAlready) return;
 
-        mThis.WalletAccountListView = new ListView('_wallet_account_list',{
-            fetchApi : `${main_view.base_url}/hr/wallet-account/list-paginate`,
+        mThis.WalletAccountListView = new ListView("_wallet_account_list", {
+            fetchApi: `${main_view.base_url}/hr/wallet-account/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: 'table table--white overflow-hidden  header-uppercase',
-            listContainerClass: null
+            tableClass: "table table--white overflow-hidden  header-uppercase",
+            listContainerClass: null,
         });
 
         mThis.btnAdd.onclick = function (e) {
@@ -222,16 +236,18 @@ var WalletAccountComponent = new (function () {
             let op = {
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success('Account Added Successfully');
+                    cv_interact.success("Account Added Successfully");
                     mThis.WalletAccountListView.showPage();
-                }
+                },
             };
 
             WalletAccountDialog.show(op);
         };
         mThis.btnBack.onclick = function (e) {
             e.preventDefault();
-            let view_see_info = mThis.self.querySelector("#view_wallet_transaction_info");
+            let view_see_info = mThis.self.querySelector(
+                "#view_wallet_transaction_info"
+            );
             view_see_info.classList.add("d-none");
             let sub_content = mThis.self.querySelector("#sub_wallet_content");
             sub_content.classList.remove("d-none");
@@ -239,20 +255,19 @@ var WalletAccountComponent = new (function () {
 
         const pr_tbl = mThis.WalletAccountListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.classList.add('overflow-y-auto');
-        sh_parent.classList.add('overflow-x-hidden');
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
 
         mThis.initDropdownMenus(pr_tbl);
 
-        mThis.divFilter.addEventListener('change', (e) => {
+        mThis.divFilter.addEventListener("change", (e) => {
             e.preventDefault();
             mThis.WalletAccountListView.showPage(mThis.getDataFormFilter());
-        })
+        });
 
         mThis.initAlready = true;
-
     };
-    mThis.elSearch.addEventListener('keyup', (e) => {
+    mThis.elSearch.addEventListener("keyup", (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
             if (mThis.WalletAccountListView) {
@@ -263,13 +278,13 @@ var WalletAccountComponent = new (function () {
         }, 200);
     });
 
-    this.initDropdownMenus = (table)=>{
+    this.initDropdownMenus = (table) => {
         const menuOptopns = {
             containerElement: table,
-            actionButtonClass:"btn_wallet_account_action",
-            cssClass:"bg-white shadow",
+            actionButtonClass: "btn_wallet_account_action",
+            cssClass: "bg-white shadow",
             //menuItemClass:"",
-            menus:[
+            menus: [
                 {
                     html: '<span class="ps-2  " vslang="titles.View Transaction">View Transaction</span>',
                     icon: `<i class="fa-regular fa-eye"></i>`,
@@ -277,111 +292,120 @@ var WalletAccountComponent = new (function () {
                     name: "view_wallet_transaction",
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Modify Account">Modify Account</span>',
-                    icon:`<i class="fa-regular fa-edit fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"edit_wallet_account"
+                    html: '<span class="ps-2  " vslang="titles.Modify Account">Modify Account</span>',
+                    icon: `<i class="fa-regular fa-edit fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "edit_wallet_account",
                 },
                 {
-                    html:'<span class="ps-2  " vslang="titles.Delete Account">Delete Account</span>',
-                    icon:`<i class="fa-regular fa-trash-can fs-5"></i>`,
-                    cssClass:"border-bottom pb-2",
-                    name:"delete_wallet_account"
+                    html: '<span class="ps-2  " vslang="titles.Delete Account">Delete Account</span>',
+                    icon: `<i class="fa-regular fa-trash-can fs-5"></i>`,
+                    cssClass: "border-bottom pb-2",
+                    name: "delete_wallet_account",
                 },
-
             ],
 
-            onClick:(menuLink, id, name)=>{
-                switch(name){
-                    case 'view_wallet_transaction':{
+            onClick: (menuLink, id, name) => {
+                switch (name) {
+                    case "view_wallet_transaction": {
                         mThis.viewTransaction(id, menuLink);
                         break;
                     }
-                    case 'edit_wallet_account':{
-                      mThis.editWalletAccount(id, menuLink);
-                      break;
+                    case "edit_wallet_account": {
+                        mThis.editWalletAccount(id, menuLink);
+                        break;
                     }
-                    case 'delete_wallet_account':{
+                    case "delete_wallet_account": {
                         mThis.deleteWalletAccount(id, menuLink);
                         break;
-                      }
+                    }
 
-                    default:{
-                      break;
+                    default: {
+                        break;
                     }
                 }
-            }
-        }
+            },
+        };
         new VSDropdownMenu(menuOptopns);
-    }
+    };
     this.viewTransaction = (id, menuLink) => {
-        console.log(321,menuLink );
+        console.log(321, menuLink);
         let emp_id = menuLink.dataset.emp_id;
         let p = {
-            emp_id:emp_id,
-            account_id:id
-
-        }
-        const viewTran = this.self.querySelector("#view_wallet_transaction_info");
+            emp_id: emp_id,
+            account_id: id,
+        };
+        const viewTran = this.self.querySelector(
+            "#view_wallet_transaction_info"
+        );
         const sub_content = this.self.querySelector("#sub_wallet_content");
         // this.show = function () {
-            mThis.initTransaction();
-            $(mThis.self).siblings().hide();
-            $(mThis.self).fadeIn(200);
-            mThis.TransactionListView.showPage(p);
+        mThis.initTransaction();
+        $(mThis.self).siblings().hide();
+        $(mThis.self).fadeIn(200);
+        mThis.TransactionListView.showPage(p);
 
-            viewTran.classList.remove("d-none");
-            sub_content.classList.add("d-none");
+        viewTran.classList.remove("d-none");
+        sub_content.classList.add("d-none");
 
         // };
-
-    }
-
+    };
 
     this.editWalletAccount = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success('Account Updated Successfully');
+                cv_interact.success("Account Updated Successfully");
                 mThis.WalletAccountListView.showPage();
-            }
+            },
         };
 
         WalletAccountDialog.show(op);
-    }
+    };
 
     this.deleteWalletAccount = (id, menuLink) => {
         let op = {
             id: id,
             btn: menuLink,
             onClose: () => {
-                cv_interact.success('Deleted Successfully');
+                cv_interact.success("Deleted Successfully");
                 mThis.WalletAccountListView.showPage();
-            }
+            },
         };
-        cv_interact.confirm('Delete this Account?',{
-            title: 'Delete Account',
-            context: 'delete',
-            confirmButtonText:"Delete"
-        },function(e){
-            if(e){
-                vsapi.call(`${main_view.base_url}/hr/wallet-account/delete`,op,false,false,false).then(res => {
-                    if(res.status_code == 200){
-                        cv_interact.success('Deleted Successfully');
-                        mThis.WalletAccountListView.showPage();
-                    }
-                })
+        cv_interact.confirm(
+            "Delete this Account?",
+            {
+                title: "Delete Account",
+                context: "delete",
+                confirmButtonText: "Delete",
+            },
+            function (e) {
+                if (e) {
+                    vsapi
+                        .call(
+                            `${main_view.base_url}/hr/wallet-account/delete`,
+                            op,
+                            false,
+                            false,
+                            false
+                        )
+                        .then((res) => {
+                            if (res.status_code == 200) {
+                                cv_interact.success("Deleted Successfully");
+                                mThis.WalletAccountListView.showPage();
+                            }
+                        });
+                }
             }
-        });
-
-    }
+        );
+    };
 
     this.getDataFormFilter = () => {
         let p = {};
 
-        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
-        main_filters.forEach(el => {
+        let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
+        main_filters.forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
@@ -390,42 +414,52 @@ var WalletAccountComponent = new (function () {
         return p;
     };
     this.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/wallet-account/form-options`,
+                null,
+                null,
+                null
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+                console.log(1111, this.elSortBy);
 
-        vsapi.call(`${main_view.base_url}/hr/wallet-account/form-options`,null,null,null).then(res => {
-            const d = res.status_code == 200 ? res.data : {};
-            console.log(1111,this.elSortBy);
-
-            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
-
-
-        });
-    }
-
+                VSUtil.setComboItems(
+                    mThis.elSortBy,
+                    d.sort_by,
+                    "id",
+                    "name",
+                    true,
+                    "Default",
+                    null
+                );
+            });
+    };
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-            mThis.WalletAccountListView.showPage();
-                $(mThis.self).siblings().hide();
-                $(mThis.self).fadeIn(200);
-            };
+        mThis.WalletAccountListView.showPage();
+        $(mThis.self).siblings().hide();
+        $(mThis.self).fadeIn(200);
+    };
+})();
 
-})()
-
-const WalletAccountDialog = (()=>{
-
+const WalletAccountDialog = (() => {
     const self = {};
     let dialog = null;
-     self.show = (op)=>{
-
-        dialog = dialog || new GeneralDialog({
-            cssClass:'modal-lg',
-            backdrop: 'static',
-            keyboard:true,
-            createContent:()=>{
-                 return [
-                     `<div class="row">
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row">
                     <div class="form-group col-12">
                         <label for="employee" class="form-label" vslang="titles.Employee"></label>
                         <select name="employee" class=" data-input"  data-field="emp_id"></select>
@@ -434,10 +468,10 @@ const WalletAccountDialog = (()=>{
                         <div id="info"></div>
                     </div>
                   <div class="form-group col-6">
-                        <label for="w_account_type" class="form-label" vslang="titles.Account Type"></label>
-                                            <select class="modal-select data-input" data-field="account_type">
-                                                <option value="Wallet">Wallet</option>
-                                            </select>
+                        <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
+                        <select class="modal-select data-input" name="account_type" data-field="account_type">
+                            <option value="Wallet">Wallet</option>
+                        </select>
                     </div>
                     <div class="form-group col-6">
                         <label for="w_account_number" class="form-label" vslang="titles.Account Number"></label>
@@ -445,90 +479,114 @@ const WalletAccountDialog = (()=>{
                     </div>
                     <div class="form-group col-6">
                         <label for="w_balance" class="form-label" vslang="titles.Balance"></label>
-                        <input name="w_balance" class="form-control data-input" data-field="balance" disabled />
+                        <input name="w_balance" class="form-control data-input" data-field="balance" />
                     </div>
                     <div class="form-group col-6">
-                         <label for="currency" class="form-label" vslang="titles.Currency"></label>
-                                            <select class="modal-select data-input" data-field="currency">
-                                                <option value="">(Select Currency)</option>
-                                                <option value="KHR">Cambodian Riel</option>
-                                                <option value="USD">US Dollar</option>
-                                            </select>
+                        <label for="currency" class="form-label" vslang="titles.Currency"></label>
+                        <select class="modal-select data-input" name="currency" data-field="currency">
+                            <option value="KHR">KHR</option>
+                            <option value="USD">USA</option>
+                        </select>
                     </div>
                     </div>
 
 
               </div>`,
-                 ].join("");
-            },
-
-            configSelect:[
-               {
-                 name:"employee",
-                 data:'employees',
-                 textField:(me, d)=> {return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`; },
-                // textField:"name",
-                 valueField:'id'
-               },
-
-            ],
-            buttons:[
-               {
-                label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
-                click:(me,btn)=>{
-                    //Close with Cancel button
-                    me.hide(false);
-                }
-               },
-               {
-                label:'<span>Save</span>',
-                cssClass:'btn btn-primary',
-                click:(me,btn)=>{
-                    const p = me.getData();
-
-                    p.id = me.dataOptions.id; //get "id" from op
-
-                    vsapi.call( [main_view.base_url,'/hr/wallet-account/save'].join(''), p,btn,null).then(res=>{
-                       if(res.status_code ==200){
-                         me.hide(true,p);
-                       }else cv_interact.error(res.error_message);
-                    });
-                }
-               }
-            ],
-            prepareFormOptions:{
-               createTitle:'Add Account',
-               modifyTitle:'Edit Account',
-               targetProp: 'wallet_account',
-               api:{
-                 endpoint: [main_view.base_url,'/hr/wallet-account/form-options'].join(''),
-                 params:(op)=>{
-                    return {'id':op.id};
-                 }
-               },
-            //    onResponse: (me, res)=>{
-            //      console.log('result from api "/form-options": ', res);
-            //    }
-            },
-
-            onPrepareForm: (me) => {
-                LocaleManager.translateZone(me.divModal);
-
-                const balanceField = me.divModal.querySelector('[data-field="balance"]');
-                if (balanceField) {
-                    if (me.dataOptions && me.dataOptions.id) {
-                        balanceField.disabled = true;
-                    } else {
-                        balanceField.disabled = false;
+                    ].join("");
+                },
+                contentCreated: (me) => {
+                    const currencyField = me.controls.currency;
+                    if (currencyField && !currencyField.value) {
+                        currencyField.value = "USD";
                     }
-                }
-            },
+                    const accountField = me.controls.account_type;
+                    if (accountField && !accountField.value) {
+                        accountField.value = "Wallet";
+                    }
+                },
+                configSelect: [
+                    {
+                        name: "employee",
+                        data: "employees",
+                        textField: (me, d) => {
+                            return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`;
+                        },
+                        // textField:"name",
+                        valueField: "id",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
 
-        });
+                            p.id = me.dataOptions.id; //get "id" from op
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/wallet-account/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Add Account",
+                    modifyTitle: "Edit Account",
+                    targetProp: "wallet_account",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/hr/wallet-account/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                    //    onResponse: (me, res)=>{
+                    //      console.log('result from api "/form-options": ', res);
+                    //    }
+                },
+
+                onPrepareForm: (me) => {
+                    LocaleManager.translateZone(me.divModal);
+
+                    const balanceField = me.divModal.querySelector(
+                        '[data-field="balance"]'
+                    );
+                    if (balanceField) {
+                        if (me.dataOptions && me.dataOptions.id) {
+                            balanceField.disabled = true;
+                        } else {
+                            balanceField.disabled = false;
+                        }
+                    }
+                    
+                },
+            });
 
         dialog.show(op);
-     }
+    };
 
     return self;
 })();
