@@ -5,19 +5,33 @@ var HolidayComponent = new (function () {
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_holidayComponent");
     this.self = this.jm[0];
-    this.title_prop = "Holiday";
+    this.title_prop = "Manage Holiday";
     this.btnAdd = this.self.querySelector("#_btnAddHoliday");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_holiday");
     this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
     this.cols = [
         {
-            title: "No",
+            title: "",
             className: "align-middle",
-            data: (data, index, i) => {
-                return index + 1;
+            // data: (data, index, i) => {
+                
+            // },
+        },
+        {
+            title: "Holiday Date",
+            className: "align-middle",
+            data: (data)=>{
+                return ` <div class="d-flex flex-column">
+                                <div class="d-flex justify-content-start align-items-center">
+                                    <span class="text-muted fw-bold" style="font-size: 90%;">${data.start_date}</span>
+                                    <span class="text-primary-custom px-1">→</span>
+                                    <span class="text-muted  fw-bold" style="font-size: 90%;">${data.end_date}</span>
+                                </div>
+                            </div>`
             },
         },
+        
         {
             title: "Holiday",
             className: "align-middle fw-bold",
@@ -31,31 +45,30 @@ var HolidayComponent = new (function () {
             data: "holiday_type",
         },
         {
-            title: "description",
+            title: "Updated",
             className: "align-middle",
-            data: "description",
+            data: (data, index, tr) => {
+                //return `<p class="p-0 m-0">${data.leave_date.replace(/-/g, '/') ?? ''} - ${data.return_date.replace(/-/g, '/') ?? ''}</p>`;
+                return `<div class="d-flex flex-column">
+                    <span class="text-primary-custom fw-semibold">${data.update_user}</span>
+                    <span>
+                        <small class="text-muted">${data.updated_at}</small>
+                    </span>
+                </div>`;
+
+            }
         },
         {
-            title: "Start date",
-            className: "align-middle",
-            data: "start_date",
-        },
-        {
-            title: "End date",
-            className: "align-middle",
-            data: "end_date",
-        },
-        {
-            title: "",
-            className: "col_action align-end",
+            title: "Actions",
+            className: "align-middle col_action",
             data: function (data, row, display) {
                 return `
                     <div class="d-flex align-items-center gap-3">
                         <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-holiday-modify">
-                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                            <i class="fa-solid fa-pen-to-square text-primary-custom fs-6"></i>
                         </a>
                         <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-holiday-delete">
-                            <i class="fa-solid fa-trash-can text-danger fs-5"></i>
+                            <i class="fa-regular fa-calendar-xmark text-danger fs-6"></i>
                         </a>
                     </div>
                 `;
@@ -95,7 +108,6 @@ var HolidayComponent = new (function () {
         };
         const listContainer = mThis.HolidayListView.getListContainer();
         const sh_parent = listContainer;
-        // sh_parent.style.height = window.innerHeight - 275 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
@@ -126,46 +138,7 @@ var HolidayComponent = new (function () {
 
         return p;
     };
-    // this.initDropdownMenus = (table) => {
-    //     const menuOptopns = {
-    //         containerElement: table,
-    //         actionButtonClass: "btn_holiday_action",
-    //         cssClass: "bg-white shadow",
-    //         //menuItemClass:"",
-    //         menus: [
-    //             {
-    //                 html: '<span class="ps-2  " vslang="titles.Modify Holiday">Modify Holiday</span>',
-    //                 icon: `<i class="fa-regular text-warning fa-edit fs-5"></i>`,
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "edit_holiday",
-    //             },
-    //             {
-    //                 html: '<span class="ps-2  " vslang="titles.Delete Holiday">Delete Holiday</span>',
-    //                 icon: `<i class="fa-regular text-danger fa-trash-can fs-5"></i>`,
-    //                 cssClass: "border-bottom pb-2",
-    //                 name: "delete_holiday",
-    //             },
-    //         ],
 
-    //         onClick: (menuLink, id, name) => {
-    //             switch (name) {
-    //                 case "edit_holiday": {
-    //                     mThis.editHoliday(id, menuLink);
-    //                     break;
-    //                 }
-    //                 case "delete_holiday": {
-    //                     mThis.deleteHoliday(id, menuLink);
-    //                     break;
-    //                 }
-
-    //                 default: {
-    //                     break;
-    //                 }
-    //             }
-    //         },
-    //     };
-    //     new VSDropdownMenu(menuOptopns);
-    // };
     this.initDropdownMenus = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(e.target, ".btn-holiday-modify");
@@ -176,11 +149,9 @@ var HolidayComponent = new (function () {
             if (btn) {
                 mThis.deleteHoliday(btn.dataset.id, btn);
             }
-            console.log(123, btn);
         });
     };
     this.editHoliday = (id, menuLink) => {
-        console.log(234, id);
 
         let op = {
             id: id,
@@ -193,9 +164,7 @@ var HolidayComponent = new (function () {
     };
 
     this.deleteHoliday = (id, menuLink) => {
-        // Prevent multiple clicks on the delete button
         menuLink.disabled = true;
-
         let op = {
             id: id,
             btn: menuLink,
@@ -226,7 +195,6 @@ var HolidayComponent = new (function () {
                                 cv_interact.success("Deleted Successfully");
                                 mThis.HolidayListView.showPage();
                             } else {
-                                // Display an error if the deletion fails
                                 cv_interact.error(
                                     "Deletion failed. Try again."
                                 );
@@ -238,18 +206,15 @@ var HolidayComponent = new (function () {
                             );
                         })
                         .finally(() => {
-                            // Re-enable the button after completion
                             menuLink.disabled = false;
                         });
                 } else {
-                    // Re-enable the button if the user cancels the confirmation
                     menuLink.disabled = false;
                 }
             }
         );
     };
 
-    // Show component
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
@@ -265,34 +230,33 @@ const HolidayDialog = (() => {
     self.show = (op) => {
         dialog = new GeneralDialog({
             cssClass: "modal-md",
-            backdrop: "static", //User click outside form, do not close form
-            keyboard: true, //prevent user from using ESC key
+            backdrop: "static",
+            keyboard: true, 
             createContent: () => {
                 return [
                     `<div class="row">
-                        <div class="form-group col-md-12">
-                           <label for="name" class="form-label" vslang="titles.name"></label>
+                        <div class="form-group col-md-6">
+                           <label for="name" class="form-label" vslang="titles.Holiday"></label>
                             <span class="text-danger" >*</span>
-                           <input type="string" class="form-control data-input" data-field="name">
+                           <input type="text" class="rounded-5 form-control data-input" data-field="name">
                         </div>
-                        <div class="form-group col-md-12">
+                        <div class="form-group col-md-6">
                             <label for="holiday_type" class="form-label" vslang="titles.Holiday Type"></label>
                             <span class="text-danger" >*</span>
                             <select name="holiday_type" class=" form-control data-input"  data-field="holiday_type_id"></select>
                         </div>
-                        <div class="form-group col-md-12">
+                     
+                        <div class="form-group col-md-6">
                            <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
-                           <span class="text-danger" >*</span>
-                           <input name="start_date" class="form-control data-input" data-field="start_date">
+                           <input name="start_date" class="rounded-5 form-control data-input" data-field="start_date">
                         </div>
-                        <div class="form-group col-12">
+                        <div class="form-group col-md-6">
                             <label for="end_date" class="form-label" vslang="titles.End Date"></label>
-                            <span class="text-danger" >*</span>
-                            <input name="end_date" class="form-control data-input" data-field="end_date" />
+                            <input name="end_date" class="rounded-5 form-control data-input" data-field="end_date" />
                         </div>
                         <div class="form-group col-md-12">
                            <label for="description" class="form-label" vslang="titles.Description"></label>
-                           <input type="text" class="form-control data-input" data-field="description">               
+                           <textarea class="form-control data-input" data-field="description"></textarea>             
                         </div>
                     </div>`,
                 ].join("");
@@ -300,6 +264,7 @@ const HolidayDialog = (() => {
             contentCreated: (me) => {
                 DateTimePicker.init(me.controls.start_date);
                 DateTimePicker.init(me.controls.end_date);
+
             },
             configSelect: [
                 {
@@ -323,7 +288,7 @@ const HolidayDialog = (() => {
                     click: (me, btn) => {
                         const p = me.getData();
 
-                        p.id = me.dataOptions.id; //get "id" from op
+                        p.id = me.dataOptions.id;
 
                         vsapi
                             .call(
@@ -343,8 +308,8 @@ const HolidayDialog = (() => {
                 },
             ],
             prepareFormOptions: {
-                createTitle: "Add Holiday",
-                modifyTitle: "Edit Holiday",
+                createTitle: "Create Holiday",
+                modifyTitle: "Modify Holiday",
                 targetProp: "holidays",
                 api: {
                     endpoint: [
