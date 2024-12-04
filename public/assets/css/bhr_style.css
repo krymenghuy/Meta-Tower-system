@@ -889,7 +889,7 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .btn-filter {
-    background-color: var(--bs-primary);
+    background-color: #2b3991;
     color: #fff;
     padding: 0.65rem 1rem;
     border: none;
@@ -898,7 +898,7 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .btn-print {
-    background-color: #ffb800;
+    background-color: #2b3991;
     color: #fff;
     padding: 0.65rem 1rem;
     border: none;
@@ -908,7 +908,7 @@ a.menu-selected .kt-menu__link-text {
 
 .btn-add,
 .btn-pdf {
-    background-color: #01b0ff;
+    background-color: #eccf67;
     color: #fff;
     padding: 0.65rem 1rem;
     border: none;
@@ -919,7 +919,7 @@ a.menu-selected .kt-menu__link-text {
 .card-report {
     display: flex;
     align-items: center;
-    border: 1px solid #6c757d;
+    border: 1px solid #2b3991;
     border-radius: var(--bs-border-radius-lg);
     padding: 1rem;
     background-color: #fff;

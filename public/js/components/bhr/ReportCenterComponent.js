@@ -12,16 +12,7 @@ var ReportCenterComponent = new (function () {
     };
 
     this.filter_fields = [
-        {
-            type: "select",
-            api_fetch: `${main_view.base_url}/api/form-option`,
-            api_params: {},
-            name: "group_id",
-            value_field: "id",
-            text_field: "name",
-            required: true,
-            dot_object: "groups",
-        },
+       
         {
             type: "select",
             api_fetch: `${main_view.base_url}/api/reports/options-receiver`,
@@ -43,23 +34,33 @@ var ReportCenterComponent = new (function () {
         },
         {
             type: "select",
-            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_fetch: `${main_view.base_url}/hr/form-option`,
             api_params: {},
-            name: "campus_id",
+            name: "branch_id",
             value_field: "id",
-            text_field: "campus",
+            text_field: "branch_name",
             required: false,
-            dot_object: "campuses",
+            dot_object: "branches",
         },
         {
             type: "select",
-            api_fetch: `${main_view.base_url}/api/form-option`,
+            api_fetch: `${main_view.base_url}/hr/form-option`,
             api_params: {},
-            name: "from_campus_id",
+            name: "payroll_id",
             value_field: "id",
-            text_field: "campus",
+            text_field: "payroll_name",
             required: false,
-            dot_object: "campuses",
+            dot_object: "payrolls",
+        },
+        {
+            type: "select",
+            api_fetch: `${main_view.base_url}/hr/form-option`,
+            api_params: {},
+            name: "emp_type_id",
+            value_field: "id",
+            text_field: "emp_type",
+            required: false,
+            dot_object: "emp_types",
         },
         {
             type: "select",
@@ -183,7 +184,7 @@ var ReportCenterComponent = new (function () {
                     <div class="card-report">
                         <div class="row gy-2 w-100 h-100">
                             <div id="_rpt_name" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                                <h6 class="text-uppercase">List of report</h6>
+                                <h6 class="text-uppercase" style="color:#eccf67;">List of report</h6>
                                 <ul class="del-marker h-100" style=" max-height: ${
                                     window.innerHeight - 160 + "px"
                                 }; ">  `,
@@ -272,8 +273,8 @@ var ReportCenterComponent = new (function () {
                 `<li class="report-name" data-filter="${filter}" data-code="${
                     item.code
                 }" data-permissionid="${item.permission_id}">
-                <i class="fa-regular fa-rectangle-list"></i>
-                <span class="text-capitalize">${item.name || ""}</span>
+                <i class="fa-brands text-primary-custom fa-pushed"></i>
+                <span class="text-capitalize text-primary-custom">${item.name || ""}</span>
             </li>`,
             ].join("");
         });
@@ -289,16 +290,17 @@ var ReportCenterComponent = new (function () {
             is_paid: "Pmt Status",
             from_campus_id: "From Campus",
             to_campus_id: "To Campus",
-            fee_type_id: "Fee Type",
+            payroll_id: "Payroll",
             start_date: "Start Date",
             end_date: "End Date",
-            group_id: "Group",
+            branch_id: "Branch",
         };
         return label[key] ?? key;
     };
 
     this.renderFilters = (div, p) => {
         p = p || {};
+        
         let html = null,
             inner_html = null;
         if (p.param) {
@@ -317,7 +319,7 @@ var ReportCenterComponent = new (function () {
                             <div class="form-group">
                                 <label for="${
                                     item.key
-                                }" class="form-label text-capitalize " vslang="titles.${
+                                }" class="form-label text-capitalize " style="color:#eccf67;" vslang="titles.${
                                 mThis.getFormGroupLabelText(item) || ""
                             }"></label>
                                 <div class="width-select-in-form">
@@ -342,10 +344,10 @@ var ReportCenterComponent = new (function () {
                             inner_html,
                             `<div class="el_filter col-lg-6">
                             <div class="form-group">
-                                <label for="${item}" class="form-label text-capitalize " vslang="titles.${
+                                <label for="${item}" class="form-label text-capitalize" style="color:#eccf67;" vslang="titles.${
                                 mThis.getFormGroupLabelText(item) || ""
                             }"></label>
-                                <input data-select="datepicker" class="form-control data-input data-filter" data-field="${item}"/>
+                                <input data-select="datepicker" class="form-control rounded-5 data-input data-filter" data-field="${item}"/>
                             </div>
                         </div>`,
                         ].join("");
@@ -361,9 +363,10 @@ var ReportCenterComponent = new (function () {
         }
         // console.log(333,inner_html);
         html = `<div class="row card-report m-0" style="max-height:; display: none;">
-                <div id="_div_filter" class="col d-flex row-cols-lg-2 justify-content-between align-items-center" >
+                <div id="_div_filter" class="col d-flex row-cols-lg-2 justify-content-between align-items-center gap-3" >
                     <div id="_rpt_btn_list" class="p-0 text-end" style="display: none; width: 80px">
                         <button  class="btn-filter" type="button">
+                            <i class="fa-solid px-1 fa-paper-plane"></i>
                             <span class="" vslang="buttons.Filter"></span>
                         </button>
                     </div>
@@ -376,12 +379,12 @@ var ReportCenterComponent = new (function () {
                     
                     <div id="_rpt_btn_print" class="col text-nowrap" style="display: none;">
                         <button data-name="btn_pdf" class="btn-print" type="button">
-                            <i class="fa-solid fa-print"></i>
+                            <i class="fa-solid px-1 fa-print"></i>
                             <span class="" vslang="buttons.Print"></span>
                         </button>
                         <button data-name="btn_excel" class="btn-pdf" type="button">
-                            <i class="fa-regular fa-file-pdf"></i>
-                            <span class="" vslang="buttons.Export"></span>
+                            <i class="fa-solid px-1 text-primary-custom fa-file-pdf"></i>
+                            <span class="text-primary-custom" vslang="buttons.Export"></span>
                         </button>
                     </div>
                 </div>
@@ -394,6 +397,7 @@ var ReportCenterComponent = new (function () {
 
         div.html(html);
         mThis.renderSelect(div, p.code);
+        
         mThis.runReport(div, p.code);
 
         div.find("[data-select='datepicker']").each(function () {
@@ -427,8 +431,13 @@ var ReportCenterComponent = new (function () {
     this.renderSelect = (div, code = null) => {
         mThis.options.params.map((item, index, array) => {
             let data = [];
+            
+            
             vsapi.call(item.api, item.param, null, false).then((res) => {
+                console.log(2222,res);
+
                 if (res.status_code === 200) {
+                    
                     data = res.data;
                     data = item.dot_object ? data[item.dot_object] : data;
                     const el = div.find(`#${item.dom_id}`);
@@ -514,6 +523,7 @@ var ReportCenterComponent = new (function () {
     };
 
     this.runReport = (div, code) => {
+
         div.find("#_rpt_btn_report").on("click", function (e) {
             e.preventDefault();
             let p = {};
@@ -537,7 +547,7 @@ var ReportCenterComponent = new (function () {
                 p[f] = el.val();
                 p.code = code;
             });
-            // console.log(222333,p);
+            console.log(222333,p);
 
             if (p.required && !p.required.value && p.required.text)
                 cv_interact.warning(p.required.text);
@@ -561,6 +571,8 @@ var ReportCenterComponent = new (function () {
         });     
 
         div.find("#_rpt_btn_list").on("click", function (e) {
+            console.log(23567111);
+
             e.preventDefault();
             const filterTop = mThis.self.find("#_rpt_filter");
             filterTop.click();
@@ -591,64 +603,67 @@ var ReportCenterComponent = new (function () {
             return;
         }
         mThis.isBusy = true;
+        console.log(14,p.code);
+        
         switch (p.code) {
-            case "staff_attendance":
-                end_point = "/hr/reports/employee/list";
+
+            case "employee_list_by_branch":
+                end_point = "hr/reports/employee/list-by-branch";
                 break;
-            case "daily_cash":
-                end_point = "api/hr/attendances/list";
+            case "employee_list_by_type":
+                end_point = "hr/reports/employee/list-by-type";
                 break;
-            case "monthly_cash":
-                end_point = "api/reports/leave/list";
+            case "payroll_list_by_name":
+                end_point = "hr/reports/employee/list-by-branch";
                 break;
-            case "referral":
-                end_point = "api/reports/finance/referral-fee-list";
-                break;
-            case "non_tuition_fee":
-                end_point = "api/reports/finance/non-tuition-fee-list";
-                break;
-            case "income_by_category":
-                end_point = "api/reports/finance/income-by-categories";
-                break;
-            case "deposit":
-                end_point = "api/reports/finance/deposite-list";
-                break;
-            case "payment_by_month":
-                end_point = "api/reports/finance/total-by-month";
-                break;
-            case "payment_by_year":
-                end_point = "api/reports/finance/total-by-year";
-                break;
-            case "total_student_payment_history":
-                end_point = "api/reports/finance/total-student-payment-history";
-                break;
-            case "total_payment_history_by_year":
-                end_point = "api/reports/finance/total-payment-history-year";
-                break;
-            case "leave_students":
-                end_point = "api/reports/enrollment/dropped-out-students";
-                break;
-            case "comeback_student":
-                end_point = "api/reports/enrollment/comeback-students";
-                break;
-            case "school_fee":
-                end_point = "api/reports/finance/school-fee-list";
-                break;
-            case "student_payment_history":
-                end_point = "api/reports/finance/student-payment-history";
-                break;
-            case "income_by_class":
-                end_point = "api/reports/finance/income-by-class";
-                break;
-            case "transferred_in_student_by_campus":
-                end_point = "api/reports/enrollment/request-change";
-                break;
-            case "cross_year_payment":
-                end_point = "api/reports/finance/cross-year-payment";
-                break;
-            case "upgrade_fees":
-                end_point = "api/reports/finance/upgrade-fee";
-                break;
+            // case "referral":
+            //     end_point = "api/reports/finance/referral-fee-list";
+            //     break;
+            // case "non_tuition_fee":
+            //     end_point = "api/reports/finance/non-tuition-fee-list";
+            //     break;
+            // case "income_by_category":
+            //     end_point = "api/reports/finance/income-by-categories";
+            //     break;
+            // case "deposit":
+            //     end_point = "api/reports/finance/deposite-list";
+            //     break;
+            // case "payment_by_month":
+            //     end_point = "api/reports/finance/total-by-month";
+            //     break;
+            // case "payment_by_year":
+            //     end_point = "api/reports/finance/total-by-year";
+            //     break;
+            // case "total_student_payment_history":
+            //     end_point = "api/reports/finance/total-student-payment-history";
+            //     break;
+            // case "total_payment_history_by_year":
+            //     end_point = "api/reports/finance/total-payment-history-year";
+            //     break;
+            // case "leave_students":
+            //     end_point = "api/reports/enrollment/dropped-out-students";
+            //     break;
+            // case "comeback_student":
+            //     end_point = "api/reports/enrollment/comeback-students";
+            //     break;
+            // case "school_fee":
+            //     end_point = "api/reports/finance/school-fee-list";
+            //     break;
+            // case "student_payment_history":
+            //     end_point = "api/reports/finance/student-payment-history";
+            //     break;
+            // case "income_by_class":
+            //     end_point = "api/reports/finance/income-by-class";
+            //     break;
+            // case "transferred_in_student_by_campus":
+            //     end_point = "api/reports/enrollment/request-change";
+            //     break;
+            // case "cross_year_payment":
+            //     end_point = "api/reports/finance/cross-year-payment";
+            //     break;
+            // case "upgrade_fees":
+            //     end_point = "api/reports/finance/upgrade-fee";
+            //     break;
             default:
                 end_point = null;
                 break;
@@ -680,6 +695,7 @@ var ReportCenterComponent = new (function () {
                     // console.log(22223,d);
 
                     if (d && !$.isEmptyObject(d)) {
+                        
                         switch (d.form) {
                             case "simple":
                                 jsonToTable(containerTable, d);
@@ -687,6 +703,7 @@ var ReportCenterComponent = new (function () {
                             case "referral":
                                 referralFeeTable(containerTable, d);
                                 break;
+                                
                             case "school_fee":
                             case "non_tuition":
                                 nonTuitionFeeTable(containerTable, d);
@@ -750,9 +767,9 @@ var ReportCenterComponent = new (function () {
             params = JSON.parse(params);
             mThis.options.params = [];
             $(this)
-                .addClass("text-primary")
+                .addClass("text-primary-custom")
                 .siblings()
-                .removeClass("text-primary");
+                .removeClass("text-primary-custom");
             let p = {
                 code: $(this).data("code"),
                 param: params,

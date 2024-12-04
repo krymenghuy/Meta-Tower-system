@@ -480,7 +480,7 @@ const ShiftDetailDialog = (() => {
                                 el.setAttribute("disabled", true);
                             }
                         }
-                        id = null;
+                        // id = null;
                     } else {
                         const days = me.divModal.querySelectorAll(".days");
                         days.forEach((day) => {
