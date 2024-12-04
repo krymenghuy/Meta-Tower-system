@@ -919,7 +919,7 @@ a.menu-selected .kt-menu__link-text {
 .card-report {
     display: flex;
     align-items: center;
-    border: 1px solid #6c757d;
+    border: 1px solid #2b3991;
     border-radius: var(--bs-border-radius-lg);
     padding: 1rem;
     background-color: #fff;

@@ -35,6 +35,7 @@ use App\Http\Controllers\Bhr\TransactionController;
 use App\Http\Controllers\Bhr\WalletAccountController;
 use App\Http\Controllers\Bhr\PromoteEmployeeController;
 use App\Http\Controllers\Bhr\ShiftDetailsController;
+use App\Http\Controllers\Bhr\GeneralSettingsController;
 
 
 //begin:: api without Authentication
@@ -140,16 +141,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll-list'
     Route::post('/list', [PayrollListController::class, 'getListPayrollList']);
 
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('report')->group(function () {
 
-    Route::post('/save', [ReportController::class, 'saveReport']);
-    Route::post('/list-paginate', [ReportController::class, 'getReportListPaginate']);
-    Route::post('/details', [ReportController::class, 'getDetails']);
-    Route::post('/delete', [ReportController::class, 'deleteReport']);
-    Route::post('/form-options', [ReportController::class, 'getFormOptions']);
-
-
-});
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('warning')->group(function () {
     Route::post('/save', [WarningController::class, 'saveWarning']);
     Route::post('/list-paginate', [WarningController::class, 'getWarningListPaginate']);
@@ -304,4 +296,60 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('dashboard')->
     Route::post('/get-departments', [DashboardController::class, 'getDepartments']);
     Route::post('/get-levels', [DashboardController::class, 'getLevels']);
     Route::post('/get-benefits', [DashboardController::class, 'getBenefits']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
+    Route::post('/form-option',[GeneralSettingsController::class,'select_options']);
+});
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->group(function(){
+    Route::post('/list',[ReportController::class,'getReportList']);
+    Route::post('employee/list-by-branch', [ReportController::class, 'getEmployeeList']);
+    Route::post('employee/list-by-type', [ReportController::class, 'getEmployeeListByType']);
+
+    // Route::post('/filter-options', [ReportController::class, 'getReportFilterOptions']);
+    // Route::post('/options-receiver',[ReportController::class,'getReceivers']);
+
+    // Route::post('finance/activities',[ReportController::class,'getActivities']);
+    // Route::post('finance/payments',[ReportController::class,'getInvoicePayments']);
+    // Route::post('finance/invoice-list',[ReportController::class,'getInvoiceList']);
+    // Route::post('finance/invoice-paid',[ReportController::class,'getPaidInvoices']);
+    // Route::post('finance/expired-students',[ReportController::class,'getExpiredStudents']);
+    // Route::post('finance/students-with-sepcial-discount',[ReportController::class,'getStudentsWithSpecialDiscount']);
+    // Route::post('finance/student-counts-by-pmt-option',[ReportController::class,'countStudentsByPmtOptions']);
+    // Route::post('finance/daily-cash-list',[ReportController::class,'getDailyCashList']);
+    // Route::post('finance/monthly-cash-list',[ReportController::class,'getMonthlyCashList']);
+    // Route::post('finance/referral-fee-list',[ReportController::class,'getReferalFeeList']);
+    // Route::post('finance/school-fee-list',[ReportController::class,'getSchoolFee']);
+    // Route::post('finance/non-tuition-fee-list',[ReportController::class,'getNonTuitionFeeList']);
+    // Route::post('finance/income-by-categories',[ReportController::class,'getIncomeByCategories']);
+    // Route::post('finance/income-by-class',[ReportController::class,'getIncomeByClass']);
+    // Route::post('finance/deposite-list',[ReportController::class,'getStudentDepositeList']);
+    // Route::post('finance/total-by-month',[ReportController::class,'getTotalPaymentByMonth']);
+    // Route::post('finance/total-by-year',[ReportController::class,'getTotalPaymentByYear']);
+    // Route::post('finance/total-payment-history-year',[ReportController::class,'getTotalPaymentHistoryByYear']);
+    // Route::post('finance/total-student-payment-history',[ReportController::class,'getTotalStudentPaymentHistory']);
+    // Route::post('finance/student-payment-history',[ReportController::class,'getStudentPaymentHistory']);
+    // Route::post('finance/cross-year-payment',[ReportController::class,'crossYearReceipt']);
+    // Route::post('finance/upgrade-fee',[ReportController::class,'upgradeFee']);
+    
+
+    // Route::post('enrollment/dropped-out-students',[ReportController::class,'getLeaveStudent']);
+    // Route::post('enrollment/comeback-students',[ReportController::class,'getComeBackStudents']);
+    // Route::post('enrollment/leave-student',[ReportController::class,'getLeaveStudent']);
+    // Route::post('enrollment/student-referrers',[ReportController::class,'getStudentReferers']);
+    // // Route::post('enrollment/family-list',[ReportController::class,'getFamilyList']);
+    // Route::post('enrollment/family-list',[ReportController::class,'getFamilyInfoList']);
+    // Route::post('enrollment/activities',[ReportController::class,'getActivities']);
+    // // Route::post('/attendance-summary',[ReportController::class,'getAttendanceSummary']);
+    // Route::post('enrollment/attendance-summary',[ReportController::class,'getAttendanceList']);
+    // Route::post('enrollment/student-list',[ReportController::class,'getStudentList']);
+    // Route::post('enrollment/new-students',[ReportController::class,'getNewStudents']);
+
+    // Route::post('enrollment/request-change',[ReportController::class,'studentRequestChange']);
+
+    // //** */
+    // Route::post('enrollment/student-info',[ReportController::class,'getStudentInfoList']);
+    // Route::post('enrollment/family-info',[ReportController::class,'getFamilyInfoList']);
+    // Route::post('enrollment/attendance/list',[ReportController::class,'getAttendanceList']);
+    // //** */
+
 });
