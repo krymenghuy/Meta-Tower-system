@@ -11,6 +11,19 @@ var AccountMenagmentComponent = new (function () {
     this.elSortBy = this.self.querySelector("#el_sort_by");
     this.btnBack = this.self.querySelector("#_btn_backTo_account");
 
+    const formattedNumber = (number) => {
+        number = Number(number) || 0;
+        return number
+            .toLocaleString('en-US', {
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+            .replace(/,/g, ' '); 
+    };
+
+
+
     this.cols = [
         {
             title: "No",
@@ -53,28 +66,27 @@ var AccountMenagmentComponent = new (function () {
                 return `<p class="p-0 m-0">${data.account_number ?? ""}</p>`;
             },
         },
-
         {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + data.balance ?? ""}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol} ${formattedNumber(data.balance ?? 0)}</p>`;
             },
-
         },
+
         {
             title: "Last Balance Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.last_balance_date ?? ''}</p>`;
-            }
+                return `<p class="p-0 m-0">${data.last_balance_date ?? ""}</p>`;
+            },
         },
         {
             title: "Currency",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.currency ?? ''}</p>`;
-            }
+                return `<p class="p-0 m-0">${data.currency ?? ""}</p>`;
+            },
         },
         {
             className: "col_action align-middle",
@@ -94,6 +106,7 @@ var AccountMenagmentComponent = new (function () {
             </div>`,
         },
     ];
+
 
     this.cols2 = [
         {
@@ -548,7 +561,8 @@ const AccountDialog = (() => {
                             const p = me.getData();
 
                             p.id = me.dataOptions.id; //get "id" from op
-                            
+                            console.log(555,p);
+
                             vsapi
                                 .call(
                                     [
@@ -668,7 +682,7 @@ const TransferDialog = (() => {
               </div>`,
                     ].join("");
                 },
-                
+
                 configSelect: [
                     {
                         name: "employee",

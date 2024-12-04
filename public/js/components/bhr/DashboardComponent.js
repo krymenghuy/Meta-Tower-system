@@ -14,6 +14,16 @@ var DashboardComponent = new (function () {
     this.dashboard_Bottom_right = mThis.self.querySelector('#_dashboard_bottom_right');
     this.barchart = mThis.self.querySelector('#barchart');
 
+    const formattedNumber = (number) => {
+        number = Number(number) || 0;
+        return number
+            .toLocaleString('en-US', {
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+            .replace(/,/g, ' ');
+    };
 
     this.init = () => {
         if (mThis.initAlready) return;
@@ -447,27 +457,27 @@ var DashboardComponent = new (function () {
                 <tbody>
                     <tr>
                         <td>Bonus</td>
-                        <td>${main_view.currency.symbol + data.total_bonuses}​</td>
+                        <td>${main_view.currency.symbol + formattedNumber(data.total_bonuses)}​</td>
                         <td>${data.lud_bonuses || 'N/A'}</td>
                     </tr>
                     <tr>
                         <td>Seniority</td>
-                        <td>${main_view.currency.symbol + data.total_seniority}</td>
+                        <td>${main_view.currency.symbol + formattedNumber(data.total_seniority)}</td>
                         <td>${data.lud_seniority || 'N/A'}</td>
                     </tr>
                     <tr>
                         <td>Life Insurance</td>
-                        <td>${main_view.currency.symbol + data.total_life_insurance}</td>
+                        <td>${main_view.currency.symbol + formattedNumber(data.total_life_insurance)}</td>
                         <td>${data.lud_life_insurance || 'N/A'}</td>
                     </tr>
                     <tr>
                         <td>Other</td>
-                        <td>${main_view.currency.symbol + data.total_other}</td>
+                        <td>${main_view.currency.symbol + formattedNumber(data.total_other)}</td>
                         <td>${data.lud_other || 'N/A'}</td>
                     </tr>
                     <tr>
                         <td>Total</td>
-                        <td class="text-success">${main_view.currency.symbol + data.total_amount}</td>
+                        <td class="text-success">${main_view.currency.symbol + formattedNumber(data.total_amount)}</td>
 
                     </tr>
                 </tbody>

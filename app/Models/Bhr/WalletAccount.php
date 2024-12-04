@@ -38,14 +38,25 @@ class WalletAccount
         $id = $res->id;
         $inputs = $res->values;
 
-        $existingAccount = DB::table('wallet_accounts')
-        ->where('branch_id', $branch_id)
-        ->where('emp_id', $inputs['emp_id'])
-        ->first();
+        $res = validateObject($arr, $v_rule, true, ['balance'=>['.']], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
 
-    if ($existingAccount) {
-        return DV::error('The employee already has an account.');
-    }
+        $id = $res->id;
+        $inputs = $res->values;
+        $inputs['balance'] = (float) str_replace(',', '', $inputs['balance']) ;
+
+        if (empty($id)) {
+            $existingAccount = DB::table('accounts')
+                ->where('branch_id', $branch_id)
+                ->where('emp_id', $inputs['emp_id'])
+                ->first();
+
+            if ($existingAccount) {
+                return DV::error('The employee already has an account.');
+            }
+        }
 
         $id = saveData($ss,'wallet_accounts', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
@@ -106,7 +117,6 @@ class WalletAccount
 
 
         foreach ($rows as $row) {
-            $row->balance = DBX::cutDigit($row->balance);
             $row->image_url = '';
             if ($row->emp_photo) {
                 $row->image_url = Employee::profilePicture($row->emp_id);
@@ -142,7 +152,6 @@ class WalletAccount
         if ($query) {
             $query->image_url = '';
             if ($query->emp_photo) {
-                $query->balance = DBX::cutDigit($query->balance);
                 $query->image_url = Employee::profilePicture($query->emp_id);
             }
             unset($query->emp_photo);
