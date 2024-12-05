@@ -254,7 +254,7 @@ class Benefit
         $query = DB::table('emp_bonuses as bs')
             ->join('emp_benefits as b', 'b.id', '=', 'bs.benefit_id')
             ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
-            ->join('benefit_categories as bc', 'bc.id', '=', 'b.benefit_type_id')
+            ->join('benefit_types as bc', 'bc.id', '=', 'b.benefit_type_id')
             ->where('bs.branch_id', $branch_id)
             ->whereRaw($str_search)
             ->whereRaw($str_bonus_type)
@@ -385,7 +385,7 @@ class Benefit
         }
         return $data = (object) [
             'employees' => GeneralSettings::options_employee(10, $ss),
-            'categories' => DB::table('benefit_categories')->selectRaw('id,name')->get(),
+            'categories' => DB::table('benefit_types')->selectRaw('id,name')->get(),
             'benefit' => $benefit
         ];
     }
