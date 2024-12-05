@@ -24,6 +24,18 @@ var EmployeeComponent = new (function () {
         "#container_pagination"
     );
     let div = mThis.self.querySelector("#_employee_list");
+
+    const formattedNumber = (number) => {
+        number = Number(number) || 0;
+        return number
+            .toLocaleString('en-US', {
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+            .replace(/,/g, ' ');
+    };
+
     this.init = () => {
         if (mThis.initAlready) return;
 
@@ -1155,9 +1167,9 @@ var EmployeeComponent = new (function () {
                     html += `
                         <div class="row mt-2 py-4 border-bottom">
                             <div class="col-md-8">
-                                <p class="text-success" style="width:180px; height:20px">Amount: ${d.amount}</p>
+                                <p class="text-success" style="width:180px; height:20px">Amount: ${formattedNumber(d.amount)}</p>
                                 <p class="text-success" style="width:180px; height:20px">Quantity: ${d.qty}</p>
-                                <p class="text-success" style="width:180px; height:20px">Allowance: ${d.allowance}</p>
+                                <p class="text-success" style="width:180px; height:20px">Allowance: ${formattedNumber(d.allowance)}</p>
 
                                 <p class="text-nowrap" style="width:180px; height:20px">Remarks: ${d.remarks}</p>
                             </div>
@@ -1292,10 +1304,10 @@ var EmployeeComponent = new (function () {
                         <div class="d-flex align-items-center gap-3 border-bottom">
                             <input data-target="div_branch" name="change_branch" class="mb-2 change-option" type="checkbox" id="branch" name="items" value="branch" />
                             <label for="branch" class="text-primary-custom">Change Branch</label>
-                       
+
                             <input data-target="div_position" name="change_position" class="mb-2 change-option" type="checkbox" id="position" name="items" value="position" />
                             <label for="position" class="text-primary-custom">Change Position</label>
-                        
+
                             <input data-target="div_salary" name="change_salary" class="mb-2 change-option" type="checkbox" id="salary" name="items" value="salary" />
                             <label for="salary" class="text-primary-custom">Change Salary</label>
                         </div>
@@ -1306,7 +1318,7 @@ var EmployeeComponent = new (function () {
                             <div class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Change Branch"></label>
                                 <select name="branch" id="branch" class="form-control data-input" data-field="branch_id">
-                                
+
                                 </select>
                             </div>
                             <div class=" form-group col-md-4">
@@ -1318,14 +1330,14 @@ var EmployeeComponent = new (function () {
                                 <input name="branch_remarks" class="form-control  data-input" placeholder="" data-field="remarks">
                             </div>
                         </div>
-                        
+
                     </div>
                     <div name="div_position" class="p-2" style="display:none;">
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Change Position"></label>
                                 <select name="position" id="position" class="form-control data-input" data-field="position_id">
-                                    
+
                                 </select>
                             </div>
                               <div class=" form-group col-md-4">
@@ -1339,7 +1351,7 @@ var EmployeeComponent = new (function () {
                         </div>
                     </div>
 
-                    
+
                     <div name="div_salary" class="p-2" style="display:none;">
                         <div class="row">
                             <div id="salary" class="form-group col-md-3">
@@ -1350,7 +1362,7 @@ var EmployeeComponent = new (function () {
                                 <label class="form-label" vslang="titles.New Salary"></label>
                                 <input name="new_salary" class="form-control  data-input" placeholder="" data-field="new_salary" />
                             </div>
-                           
+
                             <div id="remarks" class="form-group col-md-5">
                                 <label class="form-label" vslang="titles.Remarks"></label>
                                 <input name="salary_remarks" class="form-control  data-input" placeholder="" data-field="remarks" />
@@ -2377,8 +2389,8 @@ const EmployeeDialog = (() => {
                                         <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
                                     </div>
 
-                                   
-                                  
+
+
                                 </div>
                             </div>
                                 <div class="row">
@@ -2392,7 +2404,7 @@ const EmployeeDialog = (() => {
                                         <span class="text-danger" >*</span>
                                         <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
                                     </div>
-                                 
+
                                     <div class="form-group salary col-4">
                                         <label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>
                                         <input name="salary" id="salary" class="form-control data-input"  data-field="salary" />
@@ -2407,7 +2419,7 @@ const EmployeeDialog = (() => {
                                         <span class="text-danger" >*</span>
                                         <select name="position" class="data-input"  data-field="position_id"></select>
                                     </div>
-                                    
+
                                     <div class="form-group col-4">
                                         <label for="work_shift" class="form-label text-primary-custom " vslang="titles.Work Shift"></label>
                                         <span class="text-danger" >*</span>

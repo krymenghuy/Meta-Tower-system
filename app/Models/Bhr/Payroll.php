@@ -25,7 +25,8 @@ class Payroll
         $v_rule = [
             'id' => '0|identity=1',
             'name' => '1|string',
-            'month_year' => '1|date',
+            'month' => '1|number',
+            'year' => '1|number',
             'start_date' => '1|date',
             'end_date' => '1|date',
             'p_number' => '1|number',
@@ -75,7 +76,7 @@ class Payroll
         $end_date = DBX::formatDate('p.end_date', 'end_date');
 
         $query = DB::table('payrolls as p')
-            ->selectRaw('p.id, p.name, p.month_year,
+            ->selectRaw('p.id, p.name, p.month, p.year,
                         ' . $start_date . ', ' . $end_date . ',
                          p.p_number, p.total, p.authorized, p.disbursed,
                          p.currency_code, p.exchange_rate')
@@ -98,11 +99,6 @@ class Payroll
         $count = $clone_query->count('p.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        foreach ($rows as $row) {
-            $row->month_year = date('M Y', strtotime($row->month_year));
-            $row->total = DBX::cutDigit($row->total); // Apply cutDigit here
-        }
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
@@ -110,15 +106,11 @@ class Payroll
     function getDetails($id, $ss)
     {
         $row = DB::table('payrolls as p')
-            ->selectRaw('p.id, p.name, p.month_year, p.start_date, p.end_date, p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
+            ->selectRaw('p.id, p.name, p.month, p.year, p.start_date, p.end_date, p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
             ->where('p.branch_id', $ss->branch_id)
             ->where('p.id', $id)
             ->first();
-
-        if ($row) {
-            $row->month_year = date('M Y', strtotime($row->month_year));
-            $row->total = DBX::cutDigit($row->total); // Format `total` using `cutDigit`.
-        }
+        // $row->p_number = 1;
 
         return $row;
     }
@@ -216,27 +208,5 @@ class Payroll
         ]);
         return DV::depends($x, ['Payroll  disbursed', 'updated']);
     }
-    function getPayrollList($arr, $ss)
-    {
-        $d = (object) $arr;
 
-        $search_value = $d->search_value ?? null;
-
-        $str_search = '1=1';
-
-        // Query to fetch attendance records
-        $query = DB::table('payrolls as pay')
-        ->selectRaw('pay.id, pay.name, pay.month_year, pay.start_date, pay.end_date,pay.p_number, pay.total')
-        ->where('pay.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
-
-        // Apply search filters if a search value is provided
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $query->whereRaw("pay.name LIKE '%" . $search_value . "%'");
-        }
-        $rows = $query->get();
-
-        // Return the rows as a result
-        return $rows;
-    }
 }
