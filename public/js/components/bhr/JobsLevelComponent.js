@@ -11,8 +11,6 @@ var JobsLevelComponent = new (function () {
     this.elSearch = this.self.querySelector("#_job_level_search");
     this.elCard = this.self.querySelector(".top_level_card");
     this._searchJobLevel = this.self.querySelector("#container_jobLevel");
-    this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
-    // Define table columns
     this.cols = [
         {
             title: "No",
@@ -103,7 +101,7 @@ var JobsLevelComponent = new (function () {
 
         mThis._searchJobLevel.addEventListener("change", (e) => {
             e.preventDefault();
-            mThis.JobLevelListView.showPage(mThis.getDataFormFilter());
+            mThis.JobLevelListView.showPage(mThis.getFilterData());
         });
         mThis.initAlready = true;
     };
@@ -111,25 +109,19 @@ var JobsLevelComponent = new (function () {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
             if (mThis.JobLevelListView) {
-                mThis.JobLevelListView.showPage(mThis.getDataFormFilter());
+                mThis.JobLevelListView.showPage(mThis.getFilterData());
             } else {
                 console.error("jobLevel is not defined");
             }
         }, 200);
     });
 
-    mThis.btnSearch.onclick = (e) => {
-        if (mThis.JobLevelListView) {
-            mThis.JobLevelListView.showPage(mThis.getDataFormFilter());
-        } else {
-            console.error("jobLevel  is not defined");
-        }
-    };
+   
     this.setFilterPeriod = (p, name, start_date, end_date) => {
         return p;
     };
 
-    this.getDataFormFilter = () => {
+    this.getFilterData = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
         let main_filters =
@@ -235,7 +227,6 @@ var JobsLevelComponent = new (function () {
     };
 })();
 
-// Initialize the component
 const JobLevelDialog = (() => {
     const self = {};
     let dialog = null;

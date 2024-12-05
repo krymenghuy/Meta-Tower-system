@@ -55,9 +55,7 @@
             <div class="d-flex align-items-center w-50 gap-2">
                 <input type="text" class="form-control filter-field btn_search" id="_job_level_search" placeholder="Search job level ...">
 
-                <button id="_sdl_btnSearch" role="button" class="btn btn-primary rounded-5">
-                    <i class="la la-search"></i>
-                </button>
+          
             </div>
         </div>
         <div class="d-flex align-items-center justify-content-end gap-2 w-100 mr-4">
