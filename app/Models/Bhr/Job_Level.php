@@ -29,12 +29,14 @@ class Job_Level //extends Model
         $v_rule = [
             'id' => '0|identify=1',
             'name' => '1|string|0-100',
-            'description' => '1|string|0-250',
+            'description' => '0|string|0-250',
             'rank' => '1|number|0-100',
         ];
+        $job_char = ['$','#','@','!','/','.','-','_','=','?'];
+
 
         $checkUnque = ["$branch_id|job_levels|name|id=id|text= job name already exists."];
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, $checkUnque);
+        $res = validateObject($arr, $v_rule, true, ['name'=>$job_char,'description'=>$job_char], $ss->lang, false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }

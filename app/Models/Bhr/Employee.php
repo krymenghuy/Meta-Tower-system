@@ -64,6 +64,7 @@ class Employee //extends Model
             'address' => '0|string|0-250',
             'position_id' => '0|number',
             'emp_type_id' => '1|number',
+            // 'branch_id' => '1|number',
             'salary' => '0|number',
             'work_shift_id' => '1|number',
             'joining_date' => '1|date',
