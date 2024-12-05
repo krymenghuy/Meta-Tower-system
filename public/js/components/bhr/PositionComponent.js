@@ -22,6 +22,12 @@ var PositionComponent = new (function () {
             data:(data)=>`<span class="text-primary-custom">${data.title}</span>`,
         },
         {
+            title: "Job Level",
+            className: "align-middle text-capitalize",
+            data:(data)=>`<span class="text-capitalize">${data.level}</span>`,
+        },
+        
+        {
             title: "Department",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: "department",
@@ -251,6 +257,11 @@ const PositionDialog = (()=>{
                      <span class="text-danger" >*</span>
                      <select name="department" class="data-input"  data-field="department_id"></select>
                  </div>
+                 <div class="form-group col-md-12">
+                     <label for="job_level" class="form-label" vslang="titles.Job Level"></label>
+                     <span class="text-danger" >*</span>
+                     <select name="job_level" class="data-input"  data-field="job_level_id"></select>
+                 </div>
                  <div class="form-group col-md-6">
                      <label for="title" class="form-label" vslang="titles.Position"></label>
                      <span class="text-danger" >*</span>
@@ -273,6 +284,12 @@ const PositionDialog = (()=>{
                  textField:"name",
                  valueField:'id'
                },
+               {
+                name:"job_level",
+                data:"job_levels",
+                textField:"level",
+                valueField:'id'
+               }
             ],
             buttons:[
                {

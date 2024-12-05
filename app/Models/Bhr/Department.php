@@ -24,8 +24,8 @@ class Department
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'name' => '1|string|0-100',
-            'shortcut' => '1|string|0-10',
+            'name' => '0|string|0-100',
+            'shortcut' => '0|string|0-10',
             'description' => '0|string|255',
             'inactive' => '1|number|default = 0',
         ];
@@ -71,7 +71,7 @@ class Department
         $query = DB::table('departments as d')
             ->where('d.inactive',0)
             ->whereRaw($str_search)
-            ->selectRaw('d.id, d.name, d.shortcut, d.description, d.inactive,d.updated_at,d.update_user')->orderBy('d.id','DESC');
+            ->selectRaw('d.id, d.name, d.shortcut, d.description, d.inactive,d.updated_at,d.update_user')->orderBy('d.id','ASC');
         $clone_query = clone  $query;
         $count = $clone_query->count('d.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();

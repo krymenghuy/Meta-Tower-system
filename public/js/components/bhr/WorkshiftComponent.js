@@ -178,7 +178,7 @@ var WorkshiftComponent = new (function () {
         div.innerHTML = html;
     };
     this.getFilterData = () => {
-        let p = {
+        const p = {
             status_id: mThis.elFilter_status.value,
             search_value: mThis.elSearch.value,
             work_shift_id: mThis.elFilter_status.value,
@@ -332,6 +332,8 @@ const ShiftDetailDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
+        // console.log(16,WorkshiftComponent.getFilterData());
+
         dialog = new GeneralDialog({
             cssClass: "modal-md",
             backdrop: "static", // User click outside form, do not close form
@@ -459,7 +461,7 @@ const ShiftDetailDialog = (() => {
                 LocaleManager.translateZone(me.divModal);
                 me.divModal.querySelectorAll(".data-input").forEach((el) => {
                     const data_member = el.dataset.field;
-                    const id = op.id;
+                    let id = op.id;
                     if (id) {
                         const days = me.divModal.querySelectorAll(".days");
 
@@ -486,6 +488,12 @@ const ShiftDetailDialog = (() => {
                         days.forEach((day) => {
                             day.classList.remove("disabled");
                         });
+                    }
+                    const shift = WorkshiftComponent.getFilterData().work_shift_id;
+                    // console.log(12,shift);
+                    
+                    if(shift) {
+                        me.controls.shifts.value = shift;
                     }
                 });
             },
