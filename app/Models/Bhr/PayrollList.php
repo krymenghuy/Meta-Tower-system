@@ -8,6 +8,7 @@ use App\Models\Bhr\PayrollList;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
+use App\Models\Bhr\employee;
 // use App\Models\Bhr\PayrollListSettings;
 
 class PayrollList
@@ -39,7 +40,6 @@ class PayrollList
             // 'total_salary' => '0|number',
         ];
 
-
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
@@ -55,7 +55,6 @@ class PayrollList
 
         return DV::error('Error saving payroll');
     }
-
 
     function getPayrollListPaginate($arr, $ss)
     {
@@ -333,6 +332,11 @@ class PayrollList
                 ->where('payroll_id', $inputs['payroll_id'])
                 ->first();
 
+            $payroll_id = $inputs['payroll_id'];
+            $emp_id = $inputs['emp_id'];
+            return $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp_id);
+            $inputs['benefit']= $payroll_list_benefit->use_amount;
+            return $inputs;
             $payroll_list_id = $checkExist ? $checkExist->id : saveData($ss, 'payroll_lists', ['id' => null], $inputs, [], 1);
 
             if ($payroll_list_id > 0) {

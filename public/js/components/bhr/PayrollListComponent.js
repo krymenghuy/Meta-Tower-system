@@ -869,7 +869,6 @@ console.log(999,op);
     return self;
 })();
 
-
 function windowPrint(html=null)
 {
     let HtmlString = null;
