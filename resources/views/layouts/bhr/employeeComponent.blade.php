@@ -189,9 +189,9 @@
     }
 </style>
 
-<div id="_main_employeeComponent" style="display:none;padding:10px 0 0">
+<div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
     <div id="sub_content" class="p-4">
-        <div class="d-flex justify-content-between w-100" id="div_filter_filed">
+        <div class="d-flex justify-content-between bg-white shadow p-3 rounded-3 w-100" id="div_filter_filed">
             <div class="d-flex align-items-start justify-content-start w-25">
                 <button type="button" class="btn_add" style="background-color:#2b3991;" id="_btn_add_employee">
                 <i class="fa-solid fa-share"></i>

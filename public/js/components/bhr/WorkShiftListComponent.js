@@ -6,37 +6,34 @@ var WorkShiftListComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_workShiftListComponent");
     this.self = this.jm[0];
     this.title_prop = "WorkShiftList";
-    this.elSearch = this.self.querySelector("#_work_shift_list_search");
     this.btnAdd = this.self.querySelector("#_btnAddWorkShift");
     this.divFilter = this.self.querySelector("#_divFilter");
-    this.elFilter_status = this.self.querySelector("#el_work_shift_list");
     this.cols = [
         {
-            title: "No",
+            title: "",
             className: "align-middle",
-            data: (data, index, i) => {
-                return index + 1;
+           
+        },
+        {
+            title: "Work Shift",
+            className: "align-middle fw-bold",
+            data: (data) => {
+                return `<span class="text-primary-custom">${data.name}</span>`;
+            },
+        },
+        
+        {
+            title: "Update By",
+            className: "align-middle fw-bold",
+            data: (data) => {
+                return `<span class="text-Capitalize">${data.update_user}</span>`;
             },
         },
         {
-            title: "Name",
-            className: "align-middle fw-bold",
+            title: "Last Updated",
+            className: "align-middle",
             data: (data) => {
-                return `<span class="text-danger">${data.name}</span>`;
-            },
-        },
-        {
-            title: "Create Date",
-            className: "align-middle fw-bold",
-            data: (data) => {
-                return `<span class="text-info">${data.update_date}</span>`;
-            },
-        },
-        {
-            title: "Create By",
-            className: "align-middle fw-bold",
-            data: (data) => {
-                return `<span class="text-info">${data.update_user}</span>`;
+                return `<span class="text-muted" style="font-size:80%;">${data.update_date}</span>`;
             },
         },
         {
@@ -46,10 +43,10 @@ var WorkShiftListComponent = new (function () {
                 return `
                     <div class="d-flex align-items-center gap-3">
                         <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-work-shift-modify">
-                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                            <i class="fa-regular fa-pen-to-square text-warning fs-6"></i>
                         </a>
                         <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-work-shift-delete">
-                            <i class="fa-solid fa-trash-can text-danger fs-5"></i>
+                            <i class="fa-regular fa-trash-can text-danger fs-6"></i>
                         </a>
                     </div>
                 `;
@@ -63,7 +60,7 @@ var WorkShiftListComponent = new (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white header-uppercase",
+            tableClass: "table table--white rounded-3 overflow-hidden header-uppercase",
             listContainerClass: null,
         });
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -90,29 +87,19 @@ var WorkShiftListComponent = new (function () {
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
-        mThis.elSearch.addEventListener("keyup", (e) => {
-            clearTimeout(mThis.search_timeout);
-            mThis.search_timeout = setTimeout(() => {
-                if (mThis.WorkShiftListsView) {
-                    mThis.WorkShiftListsView.showPage(mThis.getFilterData());
-                } else {
-                    console.error("Work Shift is not defined");
-                }
-            }, 200);
-        });
+       
         mThis.initDropdownMenus(listContainer);
         mThis.initAlready = true;
     };
     this.getFilterData = () => {
         let p = {
-            search_value: mThis.elSearch.value,
+            // search_value: mThis.elSearch.value,
         };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(345, p);
 
         return p;
     };
@@ -189,33 +176,9 @@ var WorkShiftListComponent = new (function () {
             }
         );
     };
-    this.prepareFormOptions = () => {
-        vsapi
-            .call(
-                `${main_view.base_url}/hr/work-shifts/form-options`,
-                null,
-                null,
-                null
-            )
-            .then((res) => {
-                const d = res.status_code == 200 ? res.data : {};
-
-                VSUtil.setComboItems(
-                    mThis.elFilter_status,
-                    d.shifts,
-                    "id",
-                    "name",
-                    true,
-                    "All work shift",
-                    null
-                );
-            });
-    };
-    // Show component
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.prepareFormOptions();
         mThis.WorkShiftListsView.showPage(
             mThis.getFilterData(),
             null,
@@ -232,8 +195,8 @@ const WorkShiftListDialog = (() => {
     self.show = (op) => {
         dialog = new GeneralDialog({
             cssClass: "modal-md",
-            backdrop: "static", //User click outside form, do not close form
-            keyboard: true, //prevent user from using ESC key
+            backdrop: "static",
+            keyboard: true, 
             createContent: () => {
                 return [
                     `<div class="row">
@@ -267,7 +230,7 @@ const WorkShiftListDialog = (() => {
                     click: (me, btn) => {
                         const p = me.getData();
 
-                        p.id = me.dataOptions.id; //get "id" from op
+                        p.id = me.dataOptions.id; 
 
                         vsapi
                             .call(
@@ -287,7 +250,7 @@ const WorkShiftListDialog = (() => {
                 },
             ],
             prepareFormOptions: {
-                createTitle: "Add Work Shift",
+                createTitle: "Create Work Shift",
                 modifyTitle: "Edit Work Shift",
                 targetProp: "work_shifts",
                 api: {

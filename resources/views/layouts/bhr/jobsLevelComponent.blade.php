@@ -1,5 +1,5 @@
-<div id="_main_jobsLevelComponent" style="display:none;padding:20px 0 0">
-    <div class="top_level_card">
+<div id="_main_jobsLevelComponent" style="display:none;padding:20px;">
+    <!-- <div class="top_level_card">
         <div class="top_job_title">TOP JOBS</div>
         <div class="top_level_cards">
             <div class="top_level_card1">
@@ -49,23 +49,20 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="d-flex justify-content-between w-200 " id="container_jobLevel">
-        <div class="d-flex align-items-center w-100 gap-2 ml-4">
+    </div> -->
+    <div class="d-flex justify-content-between bg-white rounded-3 shadow mt-3 py-3 w-100 " id="container_jobLevel">
+        <div class="d-flex align-items-center w-100 px-3">
             <div class="d-flex align-items-center w-50 gap-2">
                 <input type="text" class="form-control filter-field btn_search" id="_job_level_search" placeholder="Search job level ...">
-
-          
             </div>
         </div>
-        <div class="d-flex align-items-center justify-content-end gap-2 w-100 mr-4">
+        <div class="d-flex align-items-center justify-content-end px-3 w-100">
             <button type="button" class="btn_add" id="_btnAddJobLevel">
-                <i class="fas fa-plus"></i>
-                <span>Add Job level </span>
+                <span>Create Job Level</span>
             </button>
         </div>
     </div>
-    <div id="_job_level_list" class="m-4">
+    <div id="_job_level_list" class="mt-4">
     </div>
 </div>
 <style>
@@ -78,10 +75,10 @@
     }
 
     /* form */
-    #container_jobLevel {
+    /* #container_jobLevel {
         display: flex;
         height: 50px;
-    }
+    } */
 
     /* endform */
 
@@ -149,7 +146,7 @@
     }
 
     #_job_level_list {
-        height: 350px;
+        height: 550px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;

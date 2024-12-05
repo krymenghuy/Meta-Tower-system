@@ -2,8 +2,7 @@
     <div class="d-flex  p-4 justify-content-between w-100 " id="_divFilter">
         <div class="d-flex align-items-center justify-content-start gap-2 w-100">
             <button type="button" class="btn_add" id="_btnAddDepartment">
-                <i class="fas fa-plus"></i>
-                <span>Add New</span>
+                <span>Create Department</span>
             </button>
         </div>
         <div class="d-flex align-items-center justify-content-end w-100 gap-2">
