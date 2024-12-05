@@ -448,11 +448,9 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Sex</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${
-                                        data.sex == "M" ? "Male" : ""
-                                    }${data.sex == "F" ? "Female" : ""}${
-            data.sex == "O" ? "Other" : ""
-        }</p>
+                                    <p class="text-nowrap">
+                                    ${data.sex == "M" ? "Male" : ""}${data.sex == "F" ? "Female" : ""}${data.sex == "O" ? "Other" : ""
+                                    }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Nationality</p>
@@ -544,13 +542,14 @@ var EmployeeComponent = new (function () {
                                         data.nssf_id
                                     }</p>
                                 </div>
-                               <div class="d-flex align-items-center">
-                                    <p class="text-nowrap width-bp" vslang="titles.Address">Address</p>
+                                <div class="d-flex">
+                                    <p class="text-nowrap    width-p" vslang="titles.Address">Address</p>
                                     <p class="px-2">:</p>
-                                    <p class="address text-nowrap text-capitalize">${
+                                    <p class="text-nowrap text-capitalize">${
                                         data.address
                                     }</p>
                                 </div>
+
 
                             </div>
 

@@ -115,14 +115,5 @@ class PayrollListController extends Controller
         }
         return JDV::result($this->payrollListModel->paySlip($req->all(), $ss));
     }
-    
-    public function getListPayrollList(Request $req)
-    {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        $war = new PayrollList();
-        return JDV::result($war->getListPayrollList($req->all(), $ss));
-    }
+
 }
