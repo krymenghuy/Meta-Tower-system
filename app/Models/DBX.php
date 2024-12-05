@@ -241,8 +241,5 @@ public static function formatTimeOnly($column, $alias_name = null)
         }
     }
 
-    public static function cutDigit($data)
-    {
-        return number_format($data, 2, '.', ' ');
-    }
+
 }
