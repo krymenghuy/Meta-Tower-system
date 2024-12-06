@@ -9,9 +9,7 @@
     <div id="_taxBracket_list" class="mt-4"></div>
 </div>
 <style>
-    #_taxBracket_list_paginator {
-        bottom: 0;
-    }
+
     #_taxBracket_list{
         overflow-y: auto;
         overflow-x: hidden;
