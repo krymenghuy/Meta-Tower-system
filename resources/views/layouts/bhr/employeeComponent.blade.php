@@ -160,7 +160,6 @@
         display: flex;
         flex-direction: column;
         height: 400px;
-        margin-top: 20px;
         padding: 0;
         width: 100%;
         overflow-y: auto;
@@ -190,7 +189,7 @@
 </style>
 
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
-    <div id="sub_content" class="p-4">
+    <div id="sub_content" class="pt-3">
         <div class="d-flex justify-content-between bg-white shadow p-3 rounded-3 w-100" id="div_filter_filed">
             <div class="d-flex align-items-start justify-content-start w-25">
                 <button type="button" class="btn_add" style="background-color:#2b3991;" id="_btn_add_employee">
@@ -223,7 +222,7 @@
                 </div>
             </div>
         </div>
-        <div id="_employee_list"></div>
+        <div id="_employee_list" class="mt-3 px-3"></div>
         <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-5 d-flex justify-content-end"></div>
     </div>
 
