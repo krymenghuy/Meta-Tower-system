@@ -242,21 +242,22 @@ const JobLevelDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row">
-                            <div class="form-group col-12">
+                            <div class="form-group col-md-6">
                                 <label for="name" class="form-label">Name</label>
-                                <input type="text" class="form-control data-input" data-field="name" id="name" placeholder="job name" required>
+                                <span class="text-danger">*</span>
+                                <input type="text" class="form-control data-input" data-field="name" id="name" required>
                             </div>
-                            <div class="form-group col-12">
+                             <div class="form-group col-md-6">
+                                <label for="rank" class="form-label">Rank</label>
+                                <span class="text-danger">*<small>(1-100)</small></span>
+                                <input type="number" class="form-control data-input" data-field="rank" id="job_ranking" rows="2" placeholder="" required>                        
+                            </div>
+                            <div class="form-group col-md-12">
                                 <label for="description" class="form-label">Description</label>
-                                <input type="text" class="form-control data-input" data-field="description" id="description" placeholder="job description">
+                                <textarea type="text" class="form-control data-input" data-field="description" id="description" placeholder="job description"></textarea>
                             </div>
-                            <div class="form-group  col-12 d.none">
-                               <div id="info"></div>
-                            </div>
-                            <div class="form-group col-12">
-                                <label for="rank" class="form-label">Ranking</label>
-                                <input type="number" class="form-control data-input" data-field="rank" id="job_ranking" rows="2" placeholder="Input ranking here" required></input>                            
-                            </div>
+                            
+                           
                            
                          </div>`,
                     ].join("");
@@ -266,7 +267,7 @@ const JobLevelDialog = (() => {
                         label: '<span class="text-warning">Cancel</span>',
                         cssClass: "btn btn-default",
                         click: (me, btn) => {
-                            //Close with Cancel button
+                          
                             me.hide(false);
                         },
                     },
@@ -276,7 +277,7 @@ const JobLevelDialog = (() => {
                         click: (me, btn) => {
                             const jl = me.getData();
 
-                            jl.id = me.dataOptions.id; //get "id" from op
+                            jl.id = me.dataOptions.id;
 
                             vsapi
                                 .call(

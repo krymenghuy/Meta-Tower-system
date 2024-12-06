@@ -20,14 +20,14 @@ var DepartmentComponent = new (function () {
             title: "Department",
             className: "align-middle text-capitalize p-3  text-left",
             data: (data)=>`
-                <span class="text-primary-custom">${data.name ?? 'Head of Department'}</span>`,
+                <span class="text-primary-custom">${data.name}</span>`,
         
         },
         {
             title: "Short Name",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data)=>
-                `<span class="text-warning ">${data.shortcut ?? 'HD'}</span>`,
+                `<span class="text-warning ">${data.shortcut}</span>`,
             
         },
         {
@@ -221,10 +221,12 @@ const DepartmentDialog = (()=>{
                  return [`<div class="row">
                  <div class="form-group col-md-6">
                      <label for="name" class="form-label" vslang="titles.Department"></label>
+                     <span class="text-danger">*</span>
                      <input  type="text" class="form-control data-input" data-field="name">
                  </div>
                  <div class="form-group col-md-6">
                      <label for="shortcut" class="form-label" vslang="titles.Short Name"></label>
+                     <span class="text-danger">*</span>
                      <input  type="text" class="form-control data-input" data-field="shortcut">
                  </div>
                  <div class="form-group col-12">

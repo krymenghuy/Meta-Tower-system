@@ -24,8 +24,8 @@ class Department
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'name' => '0|string|0-100',
-            'shortcut' => '0|string|0-10',
+            'name' => '1|string|0-100',
+            'shortcut' => '1|string|0-10',
             'description' => '0|string|255',
             'inactive' => '1|number|default = 0',
         ];

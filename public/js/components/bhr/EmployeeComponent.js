@@ -297,7 +297,7 @@ var EmployeeComponent = new (function () {
                         statusColor = "background-color: #cab54a;";
                         break;
                     default:
-                        statusColor = "background-color: #2B3991;";
+                        statusColor = "background-color: #fff;";
                         break;
                 }
 
@@ -307,7 +307,7 @@ var EmployeeComponent = new (function () {
                     }">
                         <div class="card d-flex">
                             <div class="card-header">
-                                <div class="status_employee" style="${statusColor} color: white; padding: 3px; border-radius: 20px;">
+                                <div class="status_employee" style="${statusColor} color: #062774; padding: 3px; border-radius: 20px;">
                                     <span>${status}</span>
                                 </div>
                                 <div class="dropdown">
@@ -318,11 +318,11 @@ var EmployeeComponent = new (function () {
                 }" data-typeid="${
                     d.emp_type_id
                 }" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-4 tool-tip"> <span class="tool-tiptext fs-6">Actions</span></i>
+                                        <i class="fa-solid fa-ellipsis-vertical text-white fs-4 tool-tip"> <span class="tool-tiptext fs-6">Actions</span></i>
                                     </a>
                                 </div>
                             </div>
-                            <div class="card-body text-center j">
+                            <div class="card-body text-center" style="background-image:url('https://t3.ftcdn.net/jpg/09/88/21/46/360_F_988214699_qSXAYBoo2jaMUDvUOHIdCTnBSb6uP6RV.jpg');  background-position: center;background-size: cover;background-repeat: no-repeat; ">
                                 <img src="${
                                     d.image_url ||
                                     "../assets/images/logo/default_image_user.avif"
@@ -363,7 +363,7 @@ var EmployeeComponent = new (function () {
                                     </div>
                                 </div>
                                 <div class="card_bottom pt-3">
-                                    <div class="text-muted" style="font-size:11px;">Joining Date : <span class="text-primary-custom">${
+                                    <div class="text-white" style="font-size:11px;">Joining Date : <span class="text-warning">${
                                         d.joining_date || "null"
                                     }</span></div>
                                     <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${
@@ -371,7 +371,7 @@ var EmployeeComponent = new (function () {
                                     }" aria-haspopup="true" aria-expanded="false">
                                         <i data-id="${
                                             d.id
-                                        }" class="fa-regular  fa-eye text-primary-custom fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
+                                        }" class="fa-regular  fa-eye text-warning fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
                                     </a>
                                 </div>
                             </div>
@@ -1317,12 +1317,14 @@ var EmployeeComponent = new (function () {
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Change Branch"></label>
+                                <span class="text-danger" >*</span>
                                 <select name="branch" id="branch" class="form-control data-input" data-field="branch_id">
 
                                 </select>
                             </div>
                             <div class=" form-group col-md-4">
                                 <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
+                                <span class="text-danger" >*</span>
                                 <input  name="effective_date" class="form-control data-input" data-field="effective_date"></input>
                             </div>
                             <div id="remarks" class="form-group col-md-5">
@@ -1336,12 +1338,14 @@ var EmployeeComponent = new (function () {
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Change Position"></label>
+                                <span class="text-danger" >*</span>
                                 <select name="position" id="position" class="form-control data-input" data-field="position_id">
 
                                 </select>
                             </div>
                               <div class=" form-group col-md-4">
                                 <label class="form-label" vslang="titles.Start Date">Start Date</label>
+                                <span class="text-danger" >*</span>
                                 <input  name="start_date" class="form-control data-input" data-field="start_date"></input>
                             </div>
                             <div id="remarks" class="form-group col-md-5">
@@ -1360,6 +1364,7 @@ var EmployeeComponent = new (function () {
                             </div>
                             <div id="salary" class="form-group col-md-4">
                                 <label class="form-label" vslang="titles.New Salary"></label>
+                                <span class="text-danger" >*</span>
                                 <input name="new_salary" class="form-control  data-input" placeholder="" data-field="new_salary" />
                             </div>
 
@@ -1519,10 +1524,12 @@ var EmployeeComponent = new (function () {
                 return [
                     ` <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Resign Date">Resign Date</label>
+                            <span class="text-danger" >*</span>
                             <div><input  name="resign_date" class="form-control data-input" placeholder="" data-field="resign_date"/></div>
                         </div>
                         <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
+                            <span class="text-danger" >*</span>
                             <div><input  name="effective_date" class="form-control data-input" placeholder="" data-field="effective_date"/></div>
                         </div>
                       <div class="form-group col-md-12">
@@ -2426,6 +2433,7 @@ const EmployeeDialog = (() => {
                                     </div>
                                       <div class="form-group col-4">
                                         <label for="joining_date" class="form-label text-primary-custom " vslang="titles.Joining Date"></label>
+                                        <span class="text-danger" >*</span>
                                         <input name="joining_date" class="form-control data-input " data-field="joining_date" />
                                     </div>
                                     <div class="form-group col-12">

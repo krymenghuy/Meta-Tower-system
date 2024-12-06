@@ -1,9 +1,8 @@
-<div id="_main_dashboardComponent" style="display:none;padding:10px 0 0;">
+<div id="_main_dashboardComponent" style="display:none;padding:20px;">
     <div class="dashboard_top" id="_dashboard_top">
 
     </div>
 
-    <div class="dashboard_middle" id="_dashboard_middle"></div>
 
     <div class="dashboard_center" id="_dashboard_center">
     </div>
@@ -19,9 +18,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script>
 <script>
-    const ctx = document.getElementById('myChart');
+    const ctx = document.getElementById('empChart');
     const compareChart = document.getElementById('compareChart');
-    const acc = document.getElementById('accountChart');
+    const acc = document.getElementById('myChart');
 
 </script>
 <style>
@@ -29,29 +28,25 @@
         display: flex;
         flex-direction: column;
         height: 550px;
+        /* background-color: #fff; */
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
     }
 
-    #_main_dashboardComponent tr:hover {
+    /* #_main_dashboardComponent tr:hover {
         background-color: skyblue;
         cursor: pointer;
-    }
-    .dashboard_top {
+    } */
+    /* .dashboard_top {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
         grid-gap: 20px;
         padding: 20px;
         background-color: #f4f4f4;
-    }
+    } */
 
-    .dashboard_middle {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        grid-gap: 20px;
-        background-color: #f4f4f4;
-    }
+
 
     .dashboard_center {
         display: flex;
