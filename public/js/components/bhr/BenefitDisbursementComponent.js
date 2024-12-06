@@ -1,13 +1,13 @@
 "use strict";
 
-var EmployeeBenefitDisbursePolicyComponent = new (function () {
+var BenefitDisbursementComponent = new (function () {
     let mThis = this;
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children(
-        "#_main_benefit_disbursement_policy_component"
+        "#_main_benefit_disbursement_component"
     );
     this.self = this.jm[0];
-    this.title_prop = "Benefits Disbursement Policy";
+    this.title_prop = "Benefits Disbursement";
 
     this.init = () => {
         if (mThis.initAlready) return;
