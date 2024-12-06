@@ -448,7 +448,7 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
-                            <a href="EmployeeBenefitDisbursementPolicyComponent" modid="105" class="menu-item kt-menu__link">
+                            <a href="EmployeeBenefitDisbursePolicyComponent" modid="105" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/sales_commissions.svg') }}" />
                                 </span>
