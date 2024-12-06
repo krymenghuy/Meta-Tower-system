@@ -430,6 +430,15 @@ function v_display($mod_id, $module_ids = null)
                 <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
                     <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
+                            <a href="BenefitComponent" modid="202" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" /> 
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Benefits"></span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(202); ?>>
                             <a href="EmployeeBenefitComponent" modid="202" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
@@ -439,7 +448,7 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
-                            <a href="EmployeeBenefitDisbursementComponent" modid="-1" class="menu-item kt-menu__link">
+                            <a href="BenefitDisbursementComponent" modid="-1" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/bhr/position.svg') }}" />
@@ -448,7 +457,7 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
-                            <a href="EmployeeBenefitDisbursePolicyComponent" modid="105" class="menu-item kt-menu__link">
+                            <a href="BenefitDisbursePolicyComponent" modid="105" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/icons/sales_commissions.svg') }}" />
                                 </span>
