@@ -28,6 +28,7 @@ use App\Http\Controllers\Bhr\EmployeeEventController;
 use App\Http\Controllers\Bhr\EducationController;
 use App\Http\Controllers\Bhr\ExperienceController;
 use App\Http\Controllers\Bhr\AccountController;
+use App\Http\Controllers\Bhr\BenefitCategoryController;
 use App\Http\Controllers\Bhr\HolidayController;
 use App\Http\Controllers\Bhr\TaxAllowanceController;
 use App\Http\Controllers\Bhr\TaxBracketController;
@@ -115,6 +116,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/bene
     Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
     Route::post('/form-options', [BenefitController::class, 'getFormOptions']);
     Route::post('/all-list', [BenefitController::class, 'getAllBenefitList']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/benefit-category')->group(function () {
+
+    Route::post('/save', [BenefitCategoryController::class, 'saveBenefitCategory']);
+    Route::post('/details', [BenefitCategoryController::class, 'getDetails']);
+    Route::post('/delete', [BenefitCategoryController::class, 'deleteBenefitCategory']);
+    Route::post('/form-options', [BenefitCategoryController::class, 'getFormOptions']);
+    Route::post('/list-paginate', [BenefitCategoryController::class, 'getBenefitCategoryListPaginate']);
+    Route::post('/all-list', [BenefitCategoryController::class, 'getBenefitCategoryList']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->group(function () {
 
