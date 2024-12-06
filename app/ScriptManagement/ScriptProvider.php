@@ -127,8 +127,8 @@ class ScriptProvider
                 '/js/components/bhr/WorkShiftListComponent.js',
                 '/js/components/bhr/RenderTableReportComponent.js',
                 '/js/components/bhr/EmployeeBenefitDisbursementComponent.js',
-                'js/components/bhr/EmployeeBenefitDisbursePolicyComponent.js',
-                
+                'js/components/bhr/EmployeeBenefitDisbursePolicyComponent.js', 
+
 
             ]
         ],

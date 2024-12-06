@@ -13,9 +13,9 @@
         bottom: 0;
     }
     #_taxBracket_list{
-        height: 500px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
+        max-height: 500px;
     }
 </style>
