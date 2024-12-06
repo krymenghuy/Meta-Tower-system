@@ -162,8 +162,9 @@ function jsonToTable(div,d)
     d = d ?? {};
     let header = null, body = null, tr = null;
     const thead = d.header ?? [],
-    tbody = d.list.fee ?? [],
+    tbody = d.list.data ?? [],
     company_info = d.company_profile ?? d.company_info ?? {};
+    console.log(d.list.data);
 
     const html = [`<div class="d-block position-relative min-height-top">
         <div class="height-logo-report position-absolute float-start">
@@ -202,27 +203,7 @@ function jsonToTable(div,d)
                     }),
                 body ?? ''}
             </tbody>
-            <tfoot>${footerHtml(d)}</tfoot>
         </table>
-    </div>
-    <div class="d-flex justify-content-between">
-        <div class="d-block">
-            <p>Prepared By</p>
-            <hr class="bg-dark pb-0 mb-1 mt-5"/>
-            <p class="pb-0 mb-1">Finance Officer</p>
-            <p>Date: ${(('.').repeat(15)+'/').repeat(3).slice(0,-1)}</p>
-        </div>
-        <div class="d-block">
-            <p>Checked By</p>
-            <hr class="bg-dark pb-0 mb-1 mt-5"/>
-            <p class="pb-0 mb-1">Finance Manager</p>
-            <p>Date: ${(('.').repeat(15)+'/').repeat(3).slice(0,-1)}</p>
-        </div>
-        <div class="d-block">
-            <p>Approved By</p>
-            <hr class="bg-dark mt-5"/>
-            <p>Date: ${(('.').repeat(15)+'/').repeat(3).slice(0,-1)}</p>
-        </div>
     </div>`].join('');
 
     div.html(html);
