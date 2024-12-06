@@ -215,14 +215,13 @@ echo $user->lang ?? 'en'; ?>">
                                     <div class="dropdown shadow-lg rounded-5 bg-white user--info">
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
-                                            <i class="fa-solid fa-database tool-tip fs-4" style="color:#2b3991;"><span class="tool-tiptext fs-6">About BHR</span></i>
-
-                                            <span></span>
-                                            <!-- <span>
+                                            <img class="mr-1" src="{{ asset('assets/images/bhr/junior.png') }}" style="height:30px" />
+                                                <span class="text-primary-custom">
                                                     <?php
-                                                    //echo Session::get('login_name', 'Unknown');
+                                                        $user = App\Services\Umt\AuthService::user();
+                                                        echo $user ? $user->full_name : '';
                                                     ?>
-                                                </span> -->
+                                                </span>
                                         </button>
 
                                         <div class="dropdown-menu dropdown-menu-left bg-white shadow-lg mt-3"
@@ -233,7 +232,7 @@ echo $user->lang ?? 'en'; ?>">
                                                     <a id="_main_mnu_about" class="dropdown-item"
                                                         href="javascript:void(0)">
                                                         <i class="fas fa-cog"></i>
-                                                        About DMS
+                                                        About BHR
                                                     </a>
                                                 </span>
                                                 <div class="dropdown-divider"></div>

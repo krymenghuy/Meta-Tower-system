@@ -1,5 +1,5 @@
 <div id="_main_warningComponent" style="display:none;padding:20px 0 0">
-    <div class="d-flex  p-4 justify-content-between w-200 " id="_warning_component">
+    <div class="d-flex  px-3 mt-3 justify-content-between w-100 " id="_warning_component">
         <div class="d-flex align-items-center w-100 gap-2">
         <button type="button" class="btn_add" id="_btnAddWarning">
                 <span>Employee Warning</span>
@@ -14,7 +14,7 @@
             </div>
         </div>
     </div>
-    <div id="_warning_list" class="m-4"></div>
+    <div id="_warning_list" class="px-3 mt-4"></div>
 </div>
 
 <style>

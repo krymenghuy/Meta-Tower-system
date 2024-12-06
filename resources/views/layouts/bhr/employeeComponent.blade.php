@@ -30,7 +30,9 @@
         display: flex;
         justify-content: space-between;
         padding: 20px;
+        border: none;
         align-items: center;
+        background-color: #083caa;
     }
 
     .status_employee {
@@ -49,7 +51,7 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        background-color: #EAF0F7;
+        background-color: #f4f4f473;
         padding: 10px;
         border-radius: 10px;
         font-size: 10px;
