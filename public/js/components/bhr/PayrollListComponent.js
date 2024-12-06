@@ -18,6 +18,16 @@ var PayrollListComponent = new (function () {
     this.payment_info = this.self.querySelector("#payment_info");
     this.btnPrint = this.self.querySelector("#_btnPrint");
 
+    const formattedNumber = (number) => {
+        number = Number(number) || 0;
+        return number
+            .toLocaleString('en-US', {
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+            .replace(/,/g, ' ');
+    };
 
     this.cols = [
 
@@ -47,14 +57,14 @@ var PayrollListComponent = new (function () {
             title: "Salary",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + data.salary ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.salary ?? '0.00')}</p>`;
             }
         },
         {
             title: "Benefit",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + data.benefit ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit ?? '0.00')}</p>`;
             }
         },
 
@@ -62,14 +72,14 @@ var PayrollListComponent = new (function () {
             title: "Deduction",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + data.deduction ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.deduction ?? '0.00')}</p>`;
             }
         },
         {
             title: "Allowance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + data.allowance ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.allowance ?? '0.00')}</p>`;
             }
         },
 
@@ -84,7 +94,7 @@ var PayrollListComponent = new (function () {
             title: "Bias",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + data.bias ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.bias ?? '0.00')}</p>`;
             }
         },
 
@@ -93,21 +103,21 @@ var PayrollListComponent = new (function () {
             title: "Tax Base",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.tax_base ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.tax_base ?? '0.00')}</p>`;
             }
         },
         {
-            title: "Tax Benefit",
+            title: "Benefit Tax",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.tax_benefit ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.benefit_tax ?? '0.00')}</p>`;
             }
         },
         {
             title: "Total",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.total_salary ?? '0.00'}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.total_salary ?? '0.00')}</p>`;
             }
         },
         {
@@ -446,15 +456,15 @@ var PayrollListComponent = new (function () {
                         <tbody>
                             <tr>
                                 <td>Bese Salary</td>
-                                <td>${data.salary}</td>
+                                <td>${formattedNumber(data.salary || 0.00)}</td>
                             </tr>
                             <tr>
                                 <td>Base Allowance</td>
-                                <td>${data.allowance || 0.00} </td>
+                                <td>${formattedNumber(data.allowance || 0.00)} </td>
                             </tr>
                             <tr>
                                 <td>Base Bias</td>
-                                <td>${data.bias}</td>
+                                <td>${formattedNumber(data.bias || 0.00)}</td>
                             </tr>
                              <tr>
                                 <td>Days</td>
@@ -462,11 +472,11 @@ var PayrollListComponent = new (function () {
                             </tr>
                             <tr>
                                 <td>Benefit</td>
-                                <td class="text-success">${data.benefit}</td>
+                                <td class="text-success">${formattedNumber(data.benefit || 0.00)}</td>
                             </tr>
                             <tr>
                                 <td>Deduction</td>
-                                <td class="text-danger">${data.deduction}</td>
+                                <td class="text-danger">${formattedNumber(data.deduction || 0.00)}</td>
                             </tr>
 
                         </tbody>
@@ -484,34 +494,34 @@ var PayrollListComponent = new (function () {
                         <tbody>
                             <tr>
                                 <td> Salary </td>
-                                <td>${data.p_salary}</td>
+                                <td>${formattedNumber(data.p_salary || 0.00)}</td>
                             </tr>
                             <tr>
                                 <td>Allowance</td>
-                                <td>${data.p_allowance}</td>
+                                <td>${formattedNumber(data.p_allowance || 0.00)}</td>
                             </tr>
                             <tr>
                                 <td>Bias</td>
-                                <td>${data.p_bias}</td>
+                                <td>${formattedNumber(data.p_bias || 0.00)}</td>
                             </tr>
                              <tr>
                                 <td>Tax Rate</td>
                                 <td>${data.tax_rate }%</td>
                             </tr>
                             <tr>
-                                <td>Tax Benefit</td>
-                                <td class="text-danger">${data.tax_benefit}</td>
+                                <td>Benefit Tax</td>
+                                <td class="text-danger">${formattedNumber(data.benefit_tax || 0.00)}</td>
                             </tr>
                             <tr>
                                 <td>Tax Base</td>
-                                <td class ="text-danger">${data.tax_base}</td>
+                                <td class ="text-danger">${formattedNumber(data.tax_base || 0.00)}</td>
                             </tr>
                         </tbody>
 
                     </table>
                     </div>
                        <div class="col-12 d-flex justify-content-center pb-1">
-                            <p class=" text-success rounded-5 m-0 border p-2 bg-light">Total Salary : ${data.total_salary ?? ""}</p>
+                            <p class=" text-success rounded-5 m-0 border p-2 bg-light">Total Salary : ${formattedNumber(data.total_salary || 0.00)}</p>
                        </div>
 
                 </div>
@@ -858,7 +868,6 @@ console.log(999,op);
 
     return self;
 })();
-
 
 function windowPrint(html=null)
 {

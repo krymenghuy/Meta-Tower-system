@@ -8,6 +8,7 @@ use App\Models\Bhr\PayrollList;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
+use App\Models\Bhr\employee;
 // use App\Models\Bhr\PayrollListSettings;
 
 class PayrollList
@@ -39,7 +40,6 @@ class PayrollList
             // 'total_salary' => '0|number',
         ];
 
-
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
         if ($res->error) {
             return DV::error($res->error);
@@ -55,7 +55,6 @@ class PayrollList
 
         return DV::error('Error saving payroll');
     }
-
 
     function getPayrollListPaginate($arr, $ss)
     {
@@ -98,8 +97,8 @@ class PayrollList
                         pl.tax_rate,
                         pl.bias,
                         pl.tax_base,
-                        pl.tax_benefit,
-                        pl.tax_benefit,
+                        pl.benefit_tax,
+                        pl.benefit_tax,
                         pl.total_salary,
                         pl.disburse,
                         e.photo_file_name as emp_photo')
@@ -119,7 +118,7 @@ class PayrollList
             $query->where('e.branch_id', $search_branch);
         }
 
-        if (!is_null($search_disburse)) {
+        if (!is_null($search_disburse)) { // Ensure the condition applies for both 0 and 1
             $query->where('pl.disburse', $search_disburse);
         }
 
@@ -139,15 +138,6 @@ class PayrollList
                 ->where('emp_id', $row->emp_id)
                 ->value('allowance');
 
-            $row->salary = DBX::cutDigit($row->salary);
-            $row->benefit = DBX::cutDigit($row->benefit);
-            $row->deduction = DBX::cutDigit($row->deduction);
-            $row->bias = DBX::cutDigit($row->bias);
-            $row->tax_base = DBX::cutDigit($row->tax_base);
-            $row->tax_benefit = DBX::cutDigit($row->tax_benefit);
-            $row->total_salary = DBX::cutDigit($row->total_salary);
-            $row->allowance = DBX::cutDigit($row->allowance);
-
             $row->tax_base = ($row->tax_base ?? 0);
             $row->total_salary = ($row->total_salary ?? 0);
             $row->benefit = ($row->benefit ?? 0);
@@ -157,7 +147,6 @@ class PayrollList
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
 
     function getDetails($id, $ss)
     {
@@ -186,7 +175,7 @@ class PayrollList
                     pl.tax_rate,
                     pl.bias,
                     pl.tax_base,
-                    pl.tax_benefit,
+                    pl.benefit_tax,
                     pl.total_salary,
                     pl.disburse,
                     '.$joining_date.',
@@ -343,6 +332,11 @@ class PayrollList
                 ->where('payroll_id', $inputs['payroll_id'])
                 ->first();
 
+            $payroll_id = $inputs['payroll_id'];
+            $emp_id = $inputs['emp_id'];
+            return $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp_id);
+            $inputs['benefit']= $payroll_list_benefit->use_amount;
+            return $inputs;
             $payroll_list_id = $checkExist ? $checkExist->id : saveData($ss, 'payroll_lists', ['id' => null], $inputs, [], 1);
 
             if ($payroll_list_id > 0) {
@@ -459,7 +453,7 @@ class PayrollList
                 ->value('apply_payroll_tax');
             $benefit = $payroll->benefit ?? 0;
             $deduction = $payroll->deduction;
-            $tax_benefit = 0;
+            $benefit_tax = 0;
 
             if ($payroll->apply_payroll_tax == 0) {
                 $tax_info = DB::table('tax_brackets')
@@ -479,8 +473,8 @@ class PayrollList
                     if ($payroll->tax_base < 0) {
                         $payroll->tax_base = 0;
                     }
-                    $tax_benefit = $benefit * (20 / 100);
-                    $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $tax_benefit + $deduction);
+                    $benefit_tax = $benefit * (20 / 100);
+                    $payroll->total = ($last_salary + $benefit) - ($payroll->tax_base + $benefit_tax + $deduction);
 
                 } else {
                     $payroll->tax_base = ($last_salary - $last_allowance) * ($tax_rate / 100) - $last_bias;
@@ -495,7 +489,7 @@ class PayrollList
             }
             $row = DB::table('payroll_lists')->where('id', $payroll->id)->update([
                 'tax_base' => $payroll->tax_base,
-                'tax_benefit' => $tax_benefit,
+                'benefit_tax' => $benefit_tax,
                 'count_day' => $count_date,
                 'p_salary' => $last_salary,
                 'p_allowance' => $last_allowance,
@@ -704,7 +698,7 @@ class PayrollList
                         pl.p_bias,
                         pl.p_allowance,
                         pl.tax_base,
-                        pl.tax_benefit,
+                        pl.benefit_tax,
                         pl.total_salary,
                         ' . $joining_date . ',
                         e.photo_file_name as emp_photo')
@@ -712,18 +706,16 @@ class PayrollList
 
         if ($row) {
 
-            $row->salary = DBX::cutDigit($row->salary);
-            $row->p_salary = DBX::cutDigit($row->p_salary);
-            $row->benefit = DBX::cutDigit($row->benefit);
-            $row->deduction = DBX::cutDigit($row->deduction);
-            $row->bias = DBX::cutDigit($row->bias);
-            $row->p_bias = DBX::cutDigit($row->p_bias);
-            $row->p_allowance = DBX::cutDigit($row->p_allowance);
-            $row->tax_base = DBX::cutDigit($row->tax_base);
-            $row->tax_benefit = DBX::cutDigit($row->tax_benefit);
-            $row->total_salary = DBX::cutDigit($row->total_salary);
+            $row->allowance = DB::table('tax_allowances')
+                ->where('emp_id', $row->emp_id)
+                ->value('allowance');
 
-            $row->allowance = DBX::cutDigit($row->allowance ?? 0.00);
+
+            $row->benefit = $row->benefit ?? 0.00;
+            $row->deduction = $row->deduction ?? 0.00;
+            $row->tax_base = $row->tax_base ?? 0.00;
+            $row->total_salary = $row->total_salary ?? 0.00;
+
 
             $row->image_url = $row->emp_photo
                 ? Employee::profilePicture($row->emp_id)
@@ -734,29 +726,5 @@ class PayrollList
         return $row;
     }
 
-    function getListPayrollList($arr, $ss)
-    {
-        $d = (object) $arr;
-
-        $search_value = $d->search_value ?? null;
-
-        $str_search = '1=1';
-
-        // Query to fetch attendance records
-        $query = DB::table('payroll_lists as pl')
-        ->join('employees as e', 'e.id', '=', 'pl.emp_id')
-        ->selectRaw('pl.id, pl.payroll_id, pl.emp_id,pl.salary,pl.benefit, pl.deduction, pl.tax_rate,pl.count_day, pl.bias, pl.tax_base, pl.tax_benefit, pl.total_salary')
-        ->where('pl.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
-
-        // Apply search filters if a search value is provided
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $query->whereRaw("pl.salary LIKE '%" . $search_value . "%'");
-        }
-        $rows = $query->get();
-
-        // Return the rows as a result
-        return $rows;
-    }
 
 }

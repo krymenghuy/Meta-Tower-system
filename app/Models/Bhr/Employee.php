@@ -64,6 +64,7 @@ class Employee //extends Model
             'address' => '0|string|0-250',
             'position_id' => '0|number',
             'emp_type_id' => '1|number',
+            // 'branch_id' => '1|number',
             'salary' => '0|number',
             'work_shift_id' => '1|number',
             'joining_date' => '1|date',
@@ -193,6 +194,60 @@ class Employee //extends Model
         return DB::table('leaves as l')->join('leave_types as t', 't.id', '=', 'l.leave_type_id')->where('l.id', $id)->whereRaw($str_dates)->selectRaw("l.id,$col_start_date, $col_end_date, l.leave_type_id, t.name AS leave_type, remarks, update_user, $col_update_date")->first();
     }
 
+    static function getPayrollListBenefit($payroll_id, $emp_id)
+    {
+        $withdraw_rate = 0;
+        $benefit_id = 0;
+        $full_amount = 0;
+        $tax_option_id = 0;
+        $use_amount = 0;
+
+        $payroll = DB::table('payrolls as p')
+            ->where('id', $payroll_id)
+            ->selectRaw('p.month, p.year')
+            ->first();
+
+        if ($payroll) {
+            $bdp = DB::table('benefit_disburse_policies')
+                ->where('target_month', $payroll->month)
+                ->where('target_year', $payroll->year)
+                ->selectRaw('id,withdraw_rate, benefit_id')
+                ->first();
+        }
+        $withdraw_rate = $bdp->withdraw_rate ?? 0;
+        $benefit_id = $bdp->benefit_id ?? 0;
+
+        $bd = DB::table('benefit_disbursements')
+            ->where('benefit_id', $benefit_id)
+            ->where('emp_id', $emp_id)
+            ->selectRaw('id,withdraw_rate,target_month,target_year')
+            ->first();
+
+        if($bd)$withdraw_rate = $bd->withdraw_rate;
+
+        $emp_benefit = DB::table('emp_benefits')
+            ->where("emp_id", $emp_id)
+            ->where("id", $benefit_id)
+            ->selectRaw('id,amount, tax_option_id,flat_tax_rate')
+            ->first();
+
+        $full_amount = $emp_benefit->amount ?? 0;
+        $tax_option_id = $emp_benefit->tax_option_id ?? 0;
+
+        $use_amount = $full_amount * ($withdraw_rate / 100);
+
+        $result = (object) [
+            "emp_id" => $emp_id,
+            "payroll_id" => $payroll_id,
+            "withdraw_rate"=> $withdraw_rate,
+            "benefit_id" => $benefit_id,
+            "full_amount"=> $full_amount,
+            "tax_option_id" => $tax_option_id,
+            "use_amount"=> $use_amount,
+        ];
+        
+        return $result;
+    }
 
     function deleteProfilePicture($id = null, $ss = null)
     {
@@ -521,22 +576,22 @@ class Employee //extends Model
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
-    
-        
+
+
         $events = [
             'active.30' => 'Terminated'
         ];
         $key = $emp->status_id . '.' . $status_id;
         $event_name = $events[$key] ?? 'Terminated';
-    
+
         $event_id = self::getEventId($event_name);
         if (!$event_id) {
             $event_data = ['name' => $event_name];
             $event_result = Event::createEvent($event_data, $ss);
             $event_id = $event_result->status_code == 200 ? $event_result->data['id'] : '';
         }
-    
-        
+
+
         if (!$event_id) {
             return DV::error('Failed to create or retrieve terminated event.');
         }
@@ -549,7 +604,7 @@ class Employee //extends Model
             'remarks' => 'terminated',
             'event_date' => $event_date
         ];
-    
+
         $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
         if (!$event_saved) {
             return DV::error('Failed to log resignation event.');
@@ -624,45 +679,45 @@ class Employee //extends Model
     {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
-    
+
         $v_rule = [
             'effective_date' => '1|date',
             'resign_date' => '1|date',
             'remarks' => '0|string|1-300'
         ];
-    
-        
+
+
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
-    
+
         $inputs = $res->values;
         $inputs['emp_id'] = $id;
-    
-       
+
+
         $emp = $this->getProps($id, 'status_id');
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
-    
-        
+
+
         $events = [
             'active.20' => 'Resignation'
         ];
         $key = $emp->status_id . '.' . $status_id;
         $event_name = $events[$key] ?? 'Resignation';
-    
+
         $event_id = self::getEventId($event_name);
         if (!$event_id) {
             $event_data = ['name' => $event_name];
             $event_result = Event::createEvent($event_data, $ss);
             $event_id = $event_result->status_code == 200 ? $event_result->data['id'] : '';
         }
-    
-        
+
+
         if (!$event_id) {
             return DV::error('Failed to create or retrieve resignation event.');
         }
-    
+
         $event_date = date('Y-m-d', strtotime($inputs['resign_date']));
         // $impact = $status_id > $emp->status_id ? 'Positive' : ($status_id < $emp->status_id ? 'Negative' : 'Neutral');
         $event_inputs = [
@@ -672,21 +727,21 @@ class Employee //extends Model
             'remarks' => $inputs['remarks'] ?? '',
             'event_date' => $event_date
         ];
-    
+
         $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
         if (!$event_saved) {
             return DV::error('Failed to log resignation event.');
         }
-    
-        
+
+
         $resign_id = saveData($ss, 'resignations', ['id' => null], $inputs, [], 1);
         if ($resign_id) {
-           
+
             DB::table('employees')->where('id', $id)->update(['status_id' => 20]);
-    
+
             return DV::depends(1, ['new resign' => $inputs], 'Resignation processed successfully.');
         }
-    
+
         return DV::error('Failed to save resignation record.');
     }
     public function setRejoinStatus($arr = [], $id = null, $ss = null, $status_id)
@@ -705,14 +760,14 @@ class Employee //extends Model
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
-    
-        
+
+
         $events = [
             'active.10' => 'Rejoin'
         ];
         $key = $emp->status_id . '.' . $status_id;
         $event_name = $events[$key] ?? 'Rejoin';
-    
+
         $event_id = self::getEventId($event_name);
         if (!$event_id) {
             $event_data = ['name' => $event_name];
@@ -722,7 +777,7 @@ class Employee //extends Model
         if (!$event_id) {
             return DV::error('Failed to create or retrieve rejoin event.');
         }
-    
+
         $event_date = date('Y-m-d', strtotime($inputs['rejoin_date']));
         // $impact = $status_id > $emp->status_id ? 'Positive' : ($status_id < $emp->status_id ? 'Negative' : 'Neutral');
         $event_inputs = [
@@ -732,21 +787,21 @@ class Employee //extends Model
             'remarks' => $inputs['remarks'] ?? '',
             'event_date' => $event_date
         ];
-    
+
         $event_saved = saveData($ss, 'emp_events', [], $event_inputs, [], 1, false);
         if (!$event_saved) {
             return DV::error('Failed to log rejoin event.');
         }
-    
-        
+
+
         $rejoin_id = saveData($ss, 'rejoins', ['id' => null], $inputs, [], 1);
         if ($rejoin_id) {
-           
+
             DB::table('employees')->where('id', $id)->update(['status_id' => 10]);
-    
+
             return DV::depends(1, ['rejoin' => $inputs], 'rejoin processed successfully.');
         }
-    
+
         return DV::error('Failed to save rejoin record.');
     }
 
@@ -758,51 +813,51 @@ class Employee //extends Model
         $change_branch = $d->change_branch ?? null;
         $change_position = $d->change_position ?? null;
         $change_salary = $d->change_salary ?? null;
-    
+
         if (!$change_branch && !$change_position && !$change_salary) {
             return DV::error('No Promotion Request!');
         }
-    
+
         // Create promotion record
         $promo_id = self::createPromotion($arr, $ss);
         if (!$promo_id) return DV::error('Failed to create promotion');
-    
+
         $event_names = [];
         $remarks = $d->remarks ?? null;
         $event_date = $d->event_date ?? date('Y-m-d');
-    
+
         if ($change_branch) {
             $resBranch = self::changeBranch($ss, $id, $promo_id, $change_branch);
             if ($resBranch) $event_names[] = 'Change Branch';
         }
-    
+
         if ($change_position) {
             $resPosition = self::changePosition($ss, $id, $promo_id, $change_position);
             if ($resPosition) $event_names[] = 'Change Position';
         }
-    
+
         if ($change_salary) {
             $resSalary = self::changeSalary($ss, $id, $promo_id, $change_salary);
             if ($resSalary) $event_names[] = 'Change Salary';
         }
-    
+
         foreach ($event_names as $event_name) {
             $event_data = [
                 'name' => $event_name,
                 'remarks' => $remarks,
                 'event_date' => $event_date,
             ];
-    
+
             $event_id = self::getEventId($event_name);
             if (!$event_id) {
                 $event = Event::createEvent($event_data, $ss);
                 $event_id = $event->status_code == 200 ? $event->data['id'] : null;
             }
-    
+
             if (!$event_id) {
                 return DV::error("Failed to create or fetch event: $event_name.");
             }
-    
+
             $inputs = [
                 'emp_id' => $id,
                 'event_id' => $event_id,
@@ -810,13 +865,13 @@ class Employee //extends Model
                 'remarks' => $remarks,
                 'event_date' => $event_date,
             ];
-    
+
             saveData($ss, 'emp_events', [], $inputs, [], 1, false);
         }
-    
+
         return DV::success(['message' => 'Employee promotion updated successfully.']);
     }
-    
+
     static function changeBranch($ss, $emp_id,$promo_id,$arr)
     {
 
@@ -861,7 +916,7 @@ class Employee //extends Model
         $id = saveData($ss,'emp_positions',['id'=>null],$inputs,[],1,false);
         $position_id = $arr['position_id'];
         $updated = DB::table('employees')->where('id',$emp_id)->update(['position_id'=>$position_id]);
-     
+
 
         return DV::depends(1,null);
 
@@ -891,7 +946,7 @@ class Employee //extends Model
             $id = saveData($ss,'emp_salary_histories',['id'=>null],$inputs,[],1,false);
             $salary = $arr['new_salary'];
             $updated = DB::table('employees')->where('id',$emp_id)->update(['salary'=>$salary]);
-       
+
 
         return DV::depends(1,null);
 
@@ -900,7 +955,7 @@ class Employee //extends Model
     static function createPromotion($arr,$ss = null){
         $ss = $ss ?? self::userInfo;
         $branch_id = $ss->branch_id;
-       
+
           $v_rule = [
             'id' => '0|identity=1',
             'emp_id'=>'1|number',
@@ -923,7 +978,7 @@ class Employee //extends Model
         $change_branch = !empty($d->change_branch) ? 1 : 0;
         $change_position = !empty($d->change_position) ? 1 : 0;
         $change_salary = !empty($d->change_salary) ? 1 : 0;
-    
+
         $promo_inputs = [
             'emp_id' => $emp_id,
             'promotion_date' => $promotion_date,
@@ -931,8 +986,8 @@ class Employee //extends Model
             'change_position' => $change_position,
             'change_salary' => $change_salary,
         ];
-      
-        
+
+
         $id = saveData($ss, 'emp_promotions', ['id' => $id], $promo_inputs, [], 1,false);
         if ($id > 0) {
             return $id;
@@ -957,5 +1012,5 @@ class Employee //extends Model
         }
         $rows = $query->get();
         return $rows;
-   } 
+   }
 }

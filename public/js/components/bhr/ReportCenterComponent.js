@@ -268,7 +268,7 @@ var ReportCenterComponent = new (function () {
                 filterInputs[0]?.querySelectorAll("div.el_filter");
 
             if (reportList.length) reportList.slideToggle("slow");
-            if (filterContainer.length) filterContainer.toggleClass("d-none");
+            // if (filterContainer.length) filterContainer.toggleClass("d-none");
 
             if (filterElements) {
                 filterElements.forEach((element) => {

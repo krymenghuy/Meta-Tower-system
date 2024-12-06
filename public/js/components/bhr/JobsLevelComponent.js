@@ -11,58 +11,56 @@ var JobsLevelComponent = new (function () {
     this.elSearch = this.self.querySelector("#_job_level_search");
     this.elCard = this.self.querySelector(".top_level_card");
     this._searchJobLevel = this.self.querySelector("#container_jobLevel");
-    this.btnSearch = mThis.self.querySelector("#_sdl_btnSearch");
-    // Define table columns
     this.cols = [
         {
-            title: "No",
+            title: "",
             className: "align-middle text-capitalize text-nowrap",
-            data: (data, index, i) => {
-                return index + 1;
-            },
+            // data: (data, index, i) => {
+            //     return index + 1;
+            // },
         },
+      
         {
             title: "Job Level",
-            className: "align-middle",
-            data: "name",
+            className: "align-middle ",
+            data: (data)=>
+                `<span class="text-primary-custom">${data.name ?? 'HD'}</span>`,
         },
-        {
-            title: "Description",
-            className: "align-middle",
-            data: "description",
-        },
+       
         {
             title: "Ranking",
             className: "align-middle",
-            data: "rank",
-            render: function (data) {
-                const maxStars = 5;
-                const rating = Math.min(Math.max(parseInt(data), 1), maxStars); // Ensures the rating is between 1 and maxStars
-
-                // Generate the star icons using Font Awesome
-                let starIcons = "";
-                for (let i = 0; i < maxStars; i++) {
-                    if (i < rating) {
-                        starIcons += '<i class="fa fa-star"></i>'; // Filled star
-                    } else {
-                        starIcons += '<i class="fa fa-star-o"></i>'; // Empty star
-                    }
-                }
-
-                return starIcons;
-            },
+            data: (data)=>
+                `<span class="text-primary-custom">${data.rank}</span>`,
+         
         },
+        {
+            title: "Last Updated",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data) => `
+            <div style="display: block; align-items: center;">
+                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
+                <span style="font-size: 12px; color: #2b3991;">${data.updated_at ?? ""}</span>
+            </div>`,
+        },
+        {
+            title: "Description",
+            className: "align-middle ",
+            data: (data)=>
+                `<span class="text-nowrap">${data.description}</span>`,
+        },
+    
         {
             title: "Action",
             className: "col_action align-middle",
             data: function (data, row, display) {
                 return `
-                    <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-center justify-content-center gap-3">
                         <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-job-level-modify">
-                            <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                            <i class="fa-solid fa-pencil text-warning fs-6"></i>
                         </a>
                         <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-job-level-delete">
-                            <i class="fa-solid fa-trash-can text-danger fs-5"></i>
+                            <i class="fa-solid fa-xmark text-danger fs-6"></i>
                         </a>
                     </div>
                 `;
@@ -78,7 +76,7 @@ var JobsLevelComponent = new (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white header-uppercase",
+            tableClass: "table table--white rounded-3 overflow-hidden header-uppercase",
             listContainerClass: null,
         });
 
@@ -95,15 +93,17 @@ var JobsLevelComponent = new (function () {
         };
         const pr_tbl = mThis.JobLevelListView.getListContainer();
         const sh_parent = pr_tbl;
-        // sh_parent.style.height = window.innerHeight - 225 + "px";
+        sh_parent.style.height = window.innerHeight - 225 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+
+       
 
         mThis.initDropdownMenus(pr_tbl);
 
         mThis._searchJobLevel.addEventListener("change", (e) => {
             e.preventDefault();
-            mThis.JobLevelListView.showPage(mThis.getDataFormFilter());
+            mThis.JobLevelListView.showPage(mThis.getFilterData());
         });
         mThis.initAlready = true;
     };
@@ -111,25 +111,19 @@ var JobsLevelComponent = new (function () {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
             if (mThis.JobLevelListView) {
-                mThis.JobLevelListView.showPage(mThis.getDataFormFilter());
+                mThis.JobLevelListView.showPage(mThis.getFilterData());
             } else {
                 console.error("jobLevel is not defined");
             }
         }, 200);
     });
 
-    mThis.btnSearch.onclick = (e) => {
-        if (mThis.JobLevelListView) {
-            mThis.JobLevelListView.showPage(mThis.getDataFormFilter());
-        } else {
-            console.error("jobLevel  is not defined");
-        }
-    };
+   
     this.setFilterPeriod = (p, name, start_date, end_date) => {
         return p;
     };
 
-    this.getDataFormFilter = () => {
+    this.getFilterData = () => {
         let p = {};
         p.search_value = mThis.elSearch.value;
         let main_filters =
@@ -235,7 +229,6 @@ var JobsLevelComponent = new (function () {
     };
 })();
 
-// Initialize the component
 const JobLevelDialog = (() => {
     const self = {};
     let dialog = null;

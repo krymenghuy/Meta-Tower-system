@@ -115,27 +115,14 @@
     }
 </style>
 
-<div id="_main_workShiftListComponent" style="display:none;padding:50px 20px ">
-    <div class="d-flex py-2 pt-2 justify-content-between w-200" id="_divFilter">
-        <div class="d-flex align-items-center w-100 gap-2">
-            <div class="d-flex align-items-center w-50 gap-2">
-                <input type="text" class="form-control filter-field btn_search" id="_work_shift_list_search"
-                    placeholder="Search.........">
-                <button id="_sdl_btnSearch" role="button" class="btn btn-primary rounded-5">
-                    <i class="la la-search"></i>
-                </button>
-            </div>
-        </div>
-        <div class="d-flex align-items-center justify-content-end w-100 gap-2">
-            <div class="d-flex align-items-center" style="width:200px">
-                <select id="el_work_shift_list" name="shifts" class="data-input filter-field" data-field="shifts"></select>
-            </div>
+<div id="_main_workShiftListComponent" style="display:none;padding:20px ">
+    <div class="d-flex py-3 mt-3 justify-content-between bg-white rounded-3 shadow w-100" id="_divFilter">
+        <div class="d-flex align-items-center justify-content-start w-100 px-3">
             <button type="button" class="btn_add" id="_btnAddWorkShift">
-                <i class="fas fa-plus"></i>
                 <span>Add Work Shift</span>
             </button>
         </div>
     </div>
-    <div id="_work_shift_lists" class="mt-5"></div>
+    <div id="_work_shift_lists" class="mt-4"></div>
 </div>
 

@@ -12,103 +12,108 @@ var PayrollComponent = new (function () {
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_payroll");
     let cloneTable = null;
+
+    const formattedNumber = (number) => {
+        number = Number(number) || 0;
+        return number
+            .toLocaleString('en-US', {
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+            .replace(/,/g, ' ');
+    };
+
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
     this.cols = [
-        // {
-        //     title: "No",
-        //     className: 'align-middle text-capitalize text-nowrap',
-        //     data: (data, index) => index + 1,
-        // },
         {
-            title: "Payroll Name",
+            title: "No",
+            className: 'align-middle text-capitalize text-nowrap',
+            data: (data, index) => index + 1,
+        },
+        {
+            title: "Name",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.name ?? ""}</p>`,
+            data: (data) => `<p class="p-0 m-0">${data.name ?? ''}</p>`
         },
         {
             title: "Month Year",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.month_year ?? ""}</p>`,
+            data: (data) => {
+                const month = monthNames[data.month - 1] ?? '';
+                const year = data.year ?? '';
+                return `<p class="p-0 m-0">${month} ${year}</p>`;
+            }
         },
-
-        // {
-        //     title: "Duration",
-        //     className: "align-middle w-15",
-        //     data: (data) => `<p class="p-0 m-0">${data.start_date?? ''}​ <span class="text-danger"> - </span> ${data.end_date ?? ''}</p>`
-        // },
+        {
+            title: "Duration",
+            className: "align-middle w-15",
+            data: (data) => `<p class="p-0 m-0">${data.start_date ?? ''}​ <span class="text-danger"> - </span> ${data.end_date ?? ''}</p>`
+        },
         {
             title: "Payroll Number",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.p_number ?? ""}</p>`,
+            data: (data) => `<p class="p-0 m-0">${data.p_number ?? ''}</p>`
         },
         {
             title: "Total",
             className: "align-middle",
-            data: (data) =>
-                `<p class="p-0 m-0">${
-                    main_view.currency.symbol + data.total ?? ""
-                }</p>`,
+            data: (data) => `<p class="p-0 m-0">${formattedNumber(data.total) ?? 0.00}</p>`
         },
-        // {
-        //     title: "Currency",
-        //     className: "align-middle",
-        //     data: (data) => `<p class="p-0 m-0">${data.currency_code ?? ''}</p>`
-        // },
+        {
+            title: "Currency",
+            className: "align-middle",
+            data: (data) => `<p class="p-0 m-0">${data.currency_code ?? ''}</p>`
+        },
         {
             title: "Exchange Rate",
-            className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.exchange_rate ?? ""}`, //<span class="p-0 m-0 text-primary-custom">%</span></p>`
+            className: "align-middle w-12",
+            data: (data) => `<p class="p-0 m-0">${data.exchange_rate ?? ''}</p>`
         },
         {
             title: "Authorize",
-            className: "authorized text-nowrap align-middle",
+            className: 'authorized text-nowrap align-middle',
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
-                let bg_color = "";
+                let bg_color = '';
 
                 if (data.authorized === 1) {
-                    cls_class =
-                        "text-white text-center border border-success rounded-5 p-1";
-                    bg_color = "#28a745";
+                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
+                    bg_color = '#28a745';
                 } else if (data.authorized === 0) {
-                    cls_class =
-                        "text-white text-center border border-warning rounded-5 p-1";
-                    bg_color = "#ffc107";
+                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
+                    bg_color = '#ffc107';
                 }
-                console.log(2222, data.authorized);
 
-                return `<div><a class="d-block" data-authorized="${
-                    data.authorized
-                }" data-id="${data.id}" href="javascript:void(0)">
+                return `<div><a class="d-block" data-authorized="${data.authorized}" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${data.authorized == 0 ? "Pending" : "Approved"}
+                                ${data.authorized == 0 ? 'Pending' : 'Approved'}
                             </span>
                         </a></div>`;
-            },
+            }
         },
         {
             title: "Disbursed",
-            className: "status text-nowrap align-middle",
+            className: 'status text-nowrap align-middle',
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
-                let bg_color = "";
+                let bg_color = '';
 
                 if (data.disbursed === 1) {
-                    cls_class =
-                        "text-white text-center border border-success rounded-5 p-1";
-                    bg_color = "#28a745";
+                    cls_class = 'text-white text-center border border-success rounded-5 p-1';
+                    bg_color = '#28a745';
                 } else if (data.disbursed === 0) {
-                    cls_class =
-                        "text-white text-center border border-warning rounded-5 p-1";
-                    bg_color = "#ffc107";
+                    cls_class = 'text-white text-center border border-warning rounded-5 p-1';
+                    bg_color = '#ffc107';
                 }
 
-                return `<div><a class="d-block" data-status="${
-                    data.disbursed
-                }" data-id="${data.id}" href="javascript:void(0)">
+                return `<div><a class="d-block" data-status="${data.disbursed}" data-id="${data.id}" href="javascript:void(0)">
                             <span style="display:block;width:auto; background: ${bg_color}" class="p-1 ${cls_class}">
-                                ${data.disbursed == 0 ? "Pending" : "Success"}
+                                ${data.disbursed == 0 ? 'Pending' : 'Success'}
                             </span>
                         </a></div>`;
-            },
+            }
         },
         {
             title: "",
@@ -116,19 +121,14 @@ var PayrollComponent = new (function () {
             data: (data) => `
                 <div class="d-flex justify-content-end align-items-end">
                     <a href="javascript:void(0)"
-                       class="btn_payroll_action ${
-                           data.disbursed === 1 ? " d-none" : ""
-                       }"
-                       data-id="${data.id}" data-authorized="${
-                data.authorized
-            }" >
-                        <img src="${
-                            main_view.asset_url
-                        }/images/icons/more_vert (3).svg" />
+                       class="btn_payroll_action ${data.disbursed === 1 ? " d-none" : ""}"
+                       data-id="${data.id}" data-authorized="${data.authorized}" >
+                        <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
                     </a>
-                </div>`,
+                </div>`
         },
     ];
+
 
     this.init = () => {
         if (mThis.initAlready) return;
@@ -154,6 +154,7 @@ var PayrollComponent = new (function () {
 
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
+            // let content = mThis.bookingListView.getListContainer();
 
             let op = {
                 id: null,
@@ -413,26 +414,49 @@ var PayrollComponent = new (function () {
 const AddPayRollListDailog = (() => {
     const self = {};
     let dialogAdd = null;
-
     self.show = (op) => {
         console.log(999, op);
 
-        dialogAdd =
-            dialogAdd ||
-            new GeneralDialog({
-                cssClass: "modal-lg",
-                backdrop: "static", // Prevent closing form by clicking outside
-                keyboard: true, // Prevent closing form with ESC key
-                createContent: () => {
-                    return [
-                        `<div class="row">
+        dialogAdd = dialogAdd || new GeneralDialog({
+            cssClass: 'modal-lg',
+            backdrop: 'static',
+            keyboard: true,
+            createContent: () => {
+                const months = [
+                    { value: 1, name: "Jan" },
+                    { value: 2, name: "Feb" },
+                    { value: 3, name: "Mar" },
+                    { value: 4, name: "Apr" },
+                    { value: 5, name: "May" },
+                    { value: 6, name: "Jun" },
+                    { value: 7, name: "Jul" },
+                    { value: 8, name: "Aug" },
+                    { value: 9, name: "Sep" },
+                    { value: 10, name: "Oct" },
+                    { value: 11, name: "Nov" },
+                    { value: 12, name: "Dec" },
+                ];
+
+                const currentYear = new Date().getFullYear();
+                const years = Array.from({ length: 10 }, (_, i) => currentYear + i);
+
+                return [
+                    `<div class="row">
                         <div class="form-group col-6">
                             <label for="name" class="form-label" vslang="titles.Name"></label>
                             <input name="name" class="form-control data-input form_input" data-field="name" />
                         </div>
-                        <div class="form-group col-6">
-                            <label for="month_year" class="form-label" vslang="titles.Month Year"></label>
-                            <input name="month_year" class="form-control data-input" data-field="month_year" />
+                        <div class="form-group col-3">
+                            <label for="month" class="form-label" vslang="titles.Month"></label>
+                            <select name="month" class="form-control data-input" data-field="month">
+                                ${months.map(month => `<option value="${month.value}">${month.name}</option>`).join("")}
+                            </select>
+                        </div>
+                        <div class="form-group col-3">
+                            <label for="year" class="form-label" vslang="titles.Year"></label>
+                            <select name="year" class="form-control data-input" data-field="year">
+                                ${years.map(year => `<option value="${year}">${year}</option>`).join("")}
+                            </select>
                         </div>
                         <div class="form-group col-6">
                             <label for="start_date" class="form-label" vslang="titles.Start Date"></label>
@@ -456,82 +480,92 @@ const AddPayRollListDailog = (() => {
                         </div>
                         <div class="form-group col-6">
                             <label for="p_number" class="form-label" vslang="titles.Payroll Number"></label>
-                            <input type="number" name="p_number" class="form-control data-input form_input" data-field="p_number" />
+                            <select name="p_number" class="modal-select data-input form_input" data-field="p_number">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                            </select>
                         </div>
                         <div class="form-group col-6">
                             <label for="total" class="form-label" vslang="titles.Total"></label>
                             <input name="total" class="form-control data-input" data-field="total" />
                         </div>
-                    </div>`,
-                    ].join("");
-                },
-                contentCreated: (me) => {
-                    // Convert fields to DatePickers: start_date and end_date
-                    DateTimePicker.init(me.controls.start_date);
-                    DateTimePicker.init(me.controls.end_date);
+                    </div>`
+                ].join("");
+            },
 
-                    // Set default currency to USD if not already set
-                    const currencyField = me.controls.currency_code;
-                    if (currencyField && !currencyField.value) {
-                        currencyField.value = "USD";
+            contentCreated: (me) => {
+                DateTimePicker.init(me.controls.start_date);
+                DateTimePicker.init(me.controls.end_date);
+            },
+
+            configSelect: [
+                // Add any specific configuration for select inputs if needed
+            ],
+
+            buttons: [
+                {
+                    label: '<span class="text-warning">Cancel</span>',
+                    cssClass: 'btn btn-default',
+                    click: (me, btn) => {
+                        me.hide(false);
                     }
                 },
-                buttons: [
-                    {
-                        label: '<span class="text-warning">Cancel</span>',
-                        cssClass: "btn btn-default",
-                        click: (me, btn) => {
-                            me.hide(false); // Close form on Cancel
-                        },
-                    },
-                    {
-                        label: "<span>Save</span>",
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            const p = me.getData();
-                            p.id = me.dataOptions.id; // Get "id" from op
+                {
+                    label: '<span>Save</span>',
+                    cssClass: 'btn btn-primary',
+                    click: (me, btn) => {
+                        const p = me.getData();
+                        p.id = me.dataOptions.id;
 
-                            vsapi
-                                .call(
-                                    [
-                                        main_view.base_url,
-                                        "/hr/payroll/save",
-                                    ].join(""),
-                                    p,
-                                    btn,
-                                    null
-                                )
-                                .then((res) => {
-                                    if (res.status_code == 200) {
-                                        me.hide(true, p);
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
-                                });
-                        },
-                    },
-                ],
-                prepareFormOptions: {
-                    createTitle: "Add Payroll",
-                    modifyTitle: "Edit Payroll",
-                    targetProp: "payrolls",
-                    api: {
-                        endpoint: [
-                            main_view.base_url,
-                            "/hr/payroll/form-options",
-                        ].join(""),
-                        params: (op) => {
-                            return { id: op.id };
-                        },
-                    },
+                        vsapi.call([main_view.base_url, '/hr/payroll/save'].join(''), p, btn, null).then(res => {
+                            if (res.status_code == 200) {
+                                me.hide(true, p);
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                    }
+                }
+            ],
+
+            prepareFormOptions: {
+                createTitle: 'Add Payroll',
+                modifyTitle: 'Edit Payroll',
+                targetProp: 'payrolls',
+                api: {
+                    endpoint: [main_view.base_url, '/hr/payroll/form-options'].join(''),
+                    params: (op) => {
+                        return { 'id': op.id };
+                    }
                 },
-                onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
-                },
-            });
+                onResponse: (me, res) => {
+                    console.log('result from api "/form-options": ', res);
+                }
+            },
+
+            onPrepareForm: (me, data) => {
+                console.log(1234567,data);
+
+                const { payrolls } = data;
+                if (payrolls) {
+                    me.controls.name.value = payrolls.name;
+                    me.controls.month.value = payrolls.month;
+                    me.controls.year.value = payrolls.year;
+                    me.controls.start_date.value = payrolls.start_date;
+                    me.controls.end_date.value = payrolls.end_date;
+                    me.controls.currency_code.value = payrolls.currency_code;
+                    me.controls.exchange_rate.value = payrolls.exchange_rate;
+                    me.controls.p_number.value = payrolls.p_number;
+                    me.controls.total.value = payrolls.total;
+                }
+
+                LocaleManager.translateZone(me.divModal);
+            }
+        });
 
         dialogAdd.show(op);
-    };
-
+    }
     return self;
 })();
+
+

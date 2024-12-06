@@ -330,7 +330,7 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->gro
     // Route::post('finance/student-payment-history',[ReportController::class,'getStudentPaymentHistory']);
     // Route::post('finance/cross-year-payment',[ReportController::class,'crossYearReceipt']);
     // Route::post('finance/upgrade-fee',[ReportController::class,'upgradeFee']);
-    
+
 
     // Route::post('enrollment/dropped-out-students',[ReportController::class,'getLeaveStudent']);
     // Route::post('enrollment/comeback-students',[ReportController::class,'getComeBackStudents']);

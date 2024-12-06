@@ -68,11 +68,11 @@ var StaffAttendanceComponent = new function () {
                         const formattedTime = `${hours}:${minutes} ${ampm}`;
                         
                         return `
-                            <div class="d-flex flex-column mb-2">
+                            <div class="d-flex flex-column mb-1">
                                 <div class="d-flex justify-content-between align-items-center">
-                                    <small class="text-primary-custom fw-bold">${info.action}</small>
-                                    <small class="text-secondary px-2">→</small>
-                                    <small class="text-warning fw-bold">${formattedTime}</small>
+                                    <small class="text-primary-custom fw-bold" style="font-size: 50%;">${info.action}</small>
+                                    <small class="text-secondary px-2" style="font-size: 50%;">→</small>
+                                    <small class="text-success  fw-bold" style="font-size: 50%;">${formattedTime}</small>
                                 </div>
                                 ${index < data.scan_info.length - 1 ? '<hr class="my-1 border-primary-custom">' : ''}
                             </div>

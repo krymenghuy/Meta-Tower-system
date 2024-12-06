@@ -4,12 +4,24 @@ var AccountMenagmentComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_accountComponent");
     this.self = this.jm[0];
     this.title_prop = "Payroll Account ";
-
     this.btnAdd = this.self.querySelector("#_btnAddAccount");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_account");
     this.elSortBy = this.self.querySelector("#el_sort_by");
     this.btnBack = this.self.querySelector("#_btn_backTo_account");
+
+    const formattedNumber = (number) => {
+        number = Number(number) || 0;
+        return number
+            .toLocaleString('en-US', {
+                useGrouping: true,
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+            })
+            .replace(/,/g, ' ');
+    };
+
+
 
     this.cols = [
         {
@@ -53,28 +65,27 @@ var AccountMenagmentComponent = new (function () {
                 return `<p class="p-0 m-0">${data.account_number ?? ""}</p>`;
             },
         },
-
         {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + data.balance ?? ""}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol} ${formattedNumber(data.balance ?? 0)}</p>`;
             },
-
         },
+
         {
             title: "Last Balance Date",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.last_balance_date ?? ''}</p>`;
-            }
+                return `<p class="p-0 m-0">${data.last_balance_date ?? ""}</p>`;
+            },
         },
         {
             title: "Currency",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.currency ?? ''}</p>`;
-            }
+                return `<p class="p-0 m-0">${data.currency ?? ""}</p>`;
+            },
         },
         {
             className: "col_action align-middle",
@@ -95,6 +106,7 @@ var AccountMenagmentComponent = new (function () {
         },
     ];
 
+
     this.cols2 = [
         {
             title: "No",
@@ -108,8 +120,8 @@ var AccountMenagmentComponent = new (function () {
             className: 'trx_type text-nowrap align-middle',
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
-                let bg_color = ''; // Default background color
-                let trx_label = ''; // Default transaction label
+                let bg_color = '';
+                let trx_label = '';
 
                 if (data.trx_type === 1) {
                     cls_class = 'text-white text-center border border-success rounded-5 p-1';
@@ -150,7 +162,7 @@ var AccountMenagmentComponent = new (function () {
             title: "Amount",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.amount ?? ""}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.amount ?? 0.00)}</p>`;
             },
         },
         {
@@ -165,8 +177,8 @@ var AccountMenagmentComponent = new (function () {
             className: "status text-nowrap align-middle",
             data: function (data, index, tr) {
                 let cls_class = "text-white text-center border rounded-5";
-                let bg_color = ''; // Default background color
-                let status_label = ''; // Default status label
+                let bg_color = '';
+                let status_label = '';
 
                 if (data.status === 'in') {
                     cls_class = 'text-white text-center border border-success rounded-5 p-1';
@@ -336,11 +348,11 @@ var AccountMenagmentComponent = new (function () {
     };
     this.transfer = (id, menuLink) => {
         let op = {
-            id: id, // Pass the ID to fetch the data
+            id: id,
             btn: menuLink,
             onClose: () => {
                 cv_interact.success('Account Transferred Successfully');
-                mThis.AccountListView.showPage(); // Refresh the list after editing
+                mThis.AccountListView.showPage();
             },
         };
 
@@ -371,11 +383,11 @@ var AccountMenagmentComponent = new (function () {
     }
     this.editAccount = (id, menuLink) => {
         let op = {
-            id: id, // Pass the ID to fetch the data
+            id: id,
             btn: menuLink,
             onClose: () => {
                 cv_interact.success('Account Updated Successfully');
-                mThis.AccountListView.showPage(); // Refresh the list after editing
+                mThis.AccountListView.showPage();
             },
         };
 
@@ -473,8 +485,8 @@ const AccountDialog = (() => {
             dialog ||
             new GeneralDialog({
                 cssClass: "modal-lg",
-                backdrop: "static", //User click outside form, do not close form
-                keyboard: true, //prevent user from using ESC key
+                backdrop: "static",
+                keyboard: true,
                 createContent: () => {
                     return [
                         `<div class="row">
@@ -547,8 +559,9 @@ const AccountDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
 
-                            p.id = me.dataOptions.id; //get "id" from op
-                            
+                            p.id = me.dataOptions.id;
+                            console.log(555,p);
+
                             vsapi
                                 .call(
                                     [
@@ -615,8 +628,8 @@ const TransferDialog = (() => {
             dialog ||
             new GeneralDialog({
                 cssClass: "modal-lg",
-                backdrop: "static", //User click outside form, do not close form
-                keyboard: true, //prevent user from using ESC key
+                backdrop: "static",
+                keyboard: true,
                 createContent: () => {
                     return [
                         `<div class="row">
@@ -668,7 +681,7 @@ const TransferDialog = (() => {
               </div>`,
                     ].join("");
                 },
-                
+
                 configSelect: [
                     {
                         name: "employee",
@@ -694,7 +707,7 @@ const TransferDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
 
-                            p.id = me.dataOptions.id; //get "id" from op
+                            p.id = me.dataOptions.id;
                             console.log(123, p);
 
                             vsapi

@@ -5,7 +5,8 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Pagination\LengthAwsePaginator;
+use App\Models\DBX;
+
 
 class Workshift
 {
@@ -65,10 +66,10 @@ class Workshift
 
         $search_value = $d->search_value ?? null;
         $str_search = '1=1';
-        
+        $updated = DBX::formatTime('ws.update_date','update_date');
         $query = DB::table('work_shifts as ws')
             ->whereRaw($str_search)
-            ->selectRaw('ws.id, ws.name,ws.update_date,ws.update_user')->orderBy('ws.id', 'ASC');
+            ->selectRaw('ws.id, ws.name,'.$updated.',ws.update_user')->orderBy('ws.id', 'ASC');
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->where(function ($q) use ($search_value) {
