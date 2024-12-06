@@ -26,6 +26,7 @@ use App\Http\Controllers\Bhr\EmployeeEventController;
 use App\Http\Controllers\Bhr\EducationController;
 use App\Http\Controllers\Bhr\ExperienceController;
 use App\Http\Controllers\Bhr\AccountController;
+use App\Http\Controllers\Bhr\BenefitCategoryController;
 use App\Http\Controllers\Bhr\HolidayController;
 use App\Http\Controllers\Bhr\TaxAllowanceController;
 use App\Http\Controllers\Bhr\TaxBracketController;
@@ -34,6 +35,7 @@ use App\Http\Controllers\Bhr\WalletAccountController;
 use App\Http\Controllers\Bhr\PromoteEmployeeController;
 use App\Http\Controllers\Bhr\ShiftDetailsController;
 use App\Http\Controllers\Bhr\GeneralSettingsController;
+use App\Http\Controllers\Bhr\BenefitDisbursePolicyController;
 
 
 //begin:: api without Authentication
@@ -112,6 +114,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/bene
     Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
     Route::post('/form-options', [BenefitController::class, 'getFormOptions']);
     Route::post('/all-list', [BenefitController::class, 'getAllBenefitList']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/benefit-category')->group(function () {
+
+    Route::post('/save', [BenefitCategoryController::class, 'saveBenefitCategory']);
+    Route::post('/details', [BenefitCategoryController::class, 'getDetails']);
+    Route::post('/delete', [BenefitCategoryController::class, 'deleteBenefitCategory']);
+    Route::post('/form-options', [BenefitCategoryController::class, 'getFormOptions']);
+    Route::post('/list-paginate', [BenefitCategoryController::class, 'getBenefitCategoryListPaginate']);
+    Route::post('/all-list', [BenefitCategoryController::class, 'getBenefitCategoryList']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->group(function () {
 
@@ -304,4 +315,12 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->gro
     Route::post('employee/list-by-type', [ReportController::class, 'getEmployeeListByType']);
 
 
+});
+
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('bdp')->group(function(){
+    Route::post('/save', [BenefitDisbursePolicyController::class, 'saveBenefitDisbursePolicy']);
+    Route::post('/list-paginate', [BenefitDisbursePolicyController::class, 'getBenefitDisbursePolicyListPaginate']);
+    Route::post('/details', [BenefitDisbursePolicyController::class, 'getDetails']);
+    Route::post('/delete', [BenefitDisbursePolicyController::class, 'deleteBenefitDisbursePolicy']);
+    Route::post('/form-options', [BenefitDisbursePolicyController::class, 'getFormOptions']);
 });

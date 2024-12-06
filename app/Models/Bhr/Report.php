@@ -85,20 +85,52 @@ class Report {
         }
         return $rows;
     }
-    static function getEmployeeList($ss=null) {
-
-        $search_value = $d->search_value ?? null;
+    function getEmployeeList($filter,$ss=null) {
     
-        $str_search = '1=1';
+       
+        $header_list = ['Code','Name','Position','Salary','sex','Joining Date','Email','Nationality','Address'];
+        $key_list = ['code','name','position','salary','sex','joining_date','email','nationality','address'];
+
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $str_between_date = '1=1';
+        $str_branch_id = '2=2';
+        if($start_date && $end_date) $str_between_date = 'DATE(emp.created_at) >= \'' . $start_date . '\' AND DATE(emp.created_at) <= \'' . $end_date . '\'';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
         $query = DB::table('employees as emp')
         ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
-        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality,emp.address,emp.joining_date');
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $query->whereRaw("emp.name LIKE '%" . $search_value . "%' OR emp.code LIKE '%" . $search_value . "%'");
-        }
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality,emp.address,emp.joining_date')
+        // ->whereRaw($str_between_date)
+        ->whereRaw($str_branch_id);
         $rows = $query->get();
-        return $rows;
+
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        foreach($rows as $row){
+            unset($row->id);
+        }
+        $groupedData['data']= $rows;
+
+        $title = 'Employee list by Branch Report';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            // 'company_profile' => self::getCompanyInfo($ss)
+        ];
     } 
     static function getEmployeeListByType($ss=null) {
 
@@ -116,7 +148,6 @@ class Report {
         return $rows;
     } 
 
-
     function getBranchInfo($branch_id=0){
         $branch_ids = getAccessBranches($ss,$branch_id);
         $rows = DB::table('um_branches AS b')->whereIn('b.branch_id',$branch_ids)->selectRaw("b.branch_id,b.logo_file_name,b.name, b.name_kh,b.address,b.address_kh,b.phone_number,b.first_cp_name,b.first_cp_phone,b.website")->limit(1)->get();
@@ -129,6 +160,8 @@ class Report {
          }
          return (object)array("name"=>'(Company Name)','phone_number'=>'(Unvailaible phone)','website'=>'Unvailable');
     }
+
+    
 
     function getScalarData_loan($loan_app_id=0,$loan_id=0){
         return (object)[
@@ -674,8 +707,8 @@ class Report {
 
         // return $rows;
 
-    return array_values($tmp_keeper);
-}
+        return array_values($tmp_keeper);
+    }
   //** end family list report */
 
 
@@ -1358,7 +1391,7 @@ class Report {
         if($fee_type_id) $str_search .=' AND ivt.fee_type_id = '.$fee_type_id;
 
         //** */
-        $str_date = '1=1';
+        $str_date = '1=1';  
         if($start_date && $end_date) $str_date = 'DATE(i.invoice_date) >= \'' .$start_date. '\' AND DATE(i.invoice_date) <= \''.$end_date.'\'';
         $campuses =[];
 
