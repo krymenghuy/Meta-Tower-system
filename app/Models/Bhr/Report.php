@@ -85,7 +85,7 @@ class Report {
         }
         return $rows;
     }
-    static function getEmployeeList($ss=null) {
+    function getEmployeeList($filter,$ss=null) {
 
         $search_value = $d->search_value ?? null;
     
@@ -98,7 +98,61 @@ class Report {
             $query->whereRaw("emp.name LIKE '%" . $search_value . "%' OR emp.code LIKE '%" . $search_value . "%'");
         }
         $rows = $query->get();
-        return $rows;
+        // return $rows;
+        $header_list = ['Date','Receipt No.','Student Name','Sex','Dis.','Period'];
+        $key_list = ['pmt_date','receipt_number','name','sex','discount','period'];
+        // $obj = self::getOtherFeesList(1);
+
+        // $header_list = array_merge($header_list, $obj['header_list']);
+        // $key_list = array_merge($key_list, $obj['key_list']);
+        $header_list = array_merge($header_list,['Total']);
+        $key_list = array_merge($key_list,['Total']);
+        $key_props = $this->createKeyValue('key',self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name',$header_list,$key_props);
+
+
+        //**---- */
+        $selectInvoice='i.academic_year,i.invoice_number,i.id as invoice_id,formatDate(i.pmt_date) as pmt_date,DATE(i.pmt_date) as date,i.receiver,i.receiver_uid,i.currency_code';
+        $d = (object)$filter;
+        $campus_id = isset($d->campus_id)?$d->campus_id:null;
+        $branch_id = isset($d->branch_id)?$d->branch_id:$campus_id;
+        $branch_ids = getAccessBranches($ss,$branch_id);
+        $start_date = isset($d->start_date)?convertDate($d->start_date):date('Y-m-01');
+        $end_date = isset($d->end_date)?convertDate($d->end_date):date('Y-m-t');
+        $receiver_id = isset($d->receiver_id)?$d->receiver_id:null;
+        $str_between_date = '1=1';
+        if($start_date && $end_date) $str_between_date = 'DATE(i.pmt_date) >= \'' . $start_date . '\' AND DATE(i.pmt_date) <= \'' . $end_date . '\'';
+        $str_search = '1=1';
+        // $search_by_student = ' OR g.id IN (SELECT guardian_id FROM student_guardians AS sg1 INNER JOIN students AS st1 ON st1.id = sg1.student_id WHERE st1.code =\''.$search_value.'\' OR st1.phone_number = \''.$search_value.'\' OR st1.`name` LIKE \'%'. $search_value.'%\')';
+        if($campus_id) $str_search .= ' AND e.campus_id = ' . $campus_id;
+        if($receiver_id) $str_search .= ' AND i.receiver_id = '.$receiver_id;
+
+        // $rows = DB::table('invoices as i')
+        //     ->join('receipts as r','r.invoice_id','=','i.id')
+        //     ->join('students as s','s.id','=','i.student_id')
+        //     ->join('enrollments as e','e.student_id','=','s.id')
+        //     ->join(DBX::$branch_table.' as c','c.id','=','e.campus_id')
+        //     ->whereRaw('ifnull(i.inactive,0)=0')
+        //     ->selectRaw($selectInvoice.',c.name as campus,s.id as student_id,s.name,s.sex,r.receipt_number')
+        //     ->whereRaw($str_between_date)
+        //     ->whereIn('i.branch_id',$branch_ids)->whereRaw($str_search)->distinct()->get();
+        // $str_date = 'WHERE v.pmt_date BETWEEN \''.$start_date.'\' AND \''.$end_date.'\'';
+        // $ivts = DB::select("SELECT i.start_date,i.end_date,i.fee_type_id,displayMoney(SUM(i.net_amount),'USD') as formatted_total,SUM(i.net_amount) as total,i.invoice_id FROM invoice_items i INNER JOIN invoices as v ON v.id = i.invoice_id $str_date GROUP BY i.fee_type_id,i.invoice_id,i.start_date,i.end_date");
+        $groupedData = [];
+        $feeTotals = [];
+        // $d = [];
+        $campuses = [];
+
+        $title = 'Daily Cash Collection Report (' . implode(', ', $campuses) . ')';
+        $sub_title = $start_date && $end_date ? $start_date .' to '. $end_date : 'N/A to N/A';
+        return (object)[
+            'title' => $title,
+            'sub_title' => $sub_title,
+            // 'form' => 'simple',
+            'header' => $headers,
+            'list' => $groupedData,//$rows,//
+            // 'company_profile' => self::getCompanyInfo($ss)
+        ];
     } 
     static function getEmployeeListByType($ss=null) {
 
@@ -116,7 +170,6 @@ class Report {
         return $rows;
     } 
 
-
     function getBranchInfo($branch_id=0){
         $branch_ids = getAccessBranches($ss,$branch_id);
         $rows = DB::table('um_branches AS b')->whereIn('b.branch_id',$branch_ids)->selectRaw("b.branch_id,b.logo_file_name,b.name, b.name_kh,b.address,b.address_kh,b.phone_number,b.first_cp_name,b.first_cp_phone,b.website")->limit(1)->get();
@@ -129,6 +182,8 @@ class Report {
          }
          return (object)array("name"=>'(Company Name)','phone_number'=>'(Unvailaible phone)','website'=>'Unvailable');
     }
+
+    
 
     function getScalarData_loan($loan_app_id=0,$loan_id=0){
         return (object)[
@@ -674,8 +729,8 @@ class Report {
 
         // return $rows;
 
-    return array_values($tmp_keeper);
-}
+        return array_values($tmp_keeper);
+    }
   //** end family list report */
 
 
@@ -1358,7 +1413,7 @@ class Report {
         if($fee_type_id) $str_search .=' AND ivt.fee_type_id = '.$fee_type_id;
 
         //** */
-        $str_date = '1=1';
+        $str_date = '1=1';  
         if($start_date && $end_date) $str_date = 'DATE(i.invoice_date) >= \'' .$start_date. '\' AND DATE(i.invoice_date) <= \''.$end_date.'\'';
         $campuses =[];
 
