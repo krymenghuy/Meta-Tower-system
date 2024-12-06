@@ -36,6 +36,7 @@ use App\Http\Controllers\Bhr\WalletAccountController;
 use App\Http\Controllers\Bhr\PromoteEmployeeController;
 use App\Http\Controllers\Bhr\ShiftDetailsController;
 use App\Http\Controllers\Bhr\GeneralSettingsController;
+use App\Http\Controllers\Bhr\BenefitDisbursePolicyController;
 
 
 //begin:: api without Authentication
@@ -352,4 +353,12 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->gro
     // Route::post('enrollment/attendance/list',[ReportController::class,'getAttendanceList']);
     // //** */
 
+});
+
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('bdp')->group(function(){
+    Route::post('/save', [BenefitDisbursePolicyController::class, 'saveBenefitDisbursePolicy']);
+    Route::post('/list-paginate', [BenefitDisbursePolicyController::class, 'getBenefitDisbursePolicyListPaginate']);
+    Route::post('/details', [BenefitDisbursePolicyController::class, 'getDetails']);
+    Route::post('/delete', [BenefitDisbursePolicyController::class, 'deleteBenefitDisbursePolicy']);
+    Route::post('/form-options', [BenefitDisbursePolicyController::class, 'getFormOptions']);
 });

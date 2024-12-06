@@ -440,6 +440,7 @@ var PayrollListComponent = new (function () {
                                 <p class="px-3">:</p>
                                 <p class="text-nowrap text-capitalize">${data.joining_date}</p>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -471,7 +472,11 @@ var PayrollListComponent = new (function () {
                                 <td>${data.count_day}</td>
                             </tr>
                             <tr>
-                                <td>Benefit</td>
+                                <td>Benefit ${data.tax_option_id === 1 ? 'Taxible' :
+                                    data.tax_option_id === 2 ? 'None Tax' :
+                                    data.tax_option_id === 3 ? 'Flat Rate' :
+                                    ''}
+                                </td>
                                 <td class="text-success">${formattedNumber(data.benefit || 0.00)}</td>
                             </tr>
                             <tr>
@@ -711,7 +716,7 @@ const PayRollListDialog = (()=>{
                  </div>
                 <div class="form-group col-6">
                   <label for="benefit" class="form-label" vslang="titles.Benefit"></label>
-                  <input name="benefit" class="form-control data-input form_input" data-field="benefit" />
+                  <input name="benefit" class="form-control data-input form_input" data-field="benefit" disabled/>
                 </div>
                 <div class="form-group col-6">
                   <label for="desuction" class="form-label" vslang="titles.Desuction"></label>

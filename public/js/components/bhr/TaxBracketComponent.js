@@ -245,8 +245,8 @@ const TaxBracketDailog = (()=>{
                   <input name="rate" class="form-control data-input" data-field="rate" />
                 </div>
                 <div class="form-group col-6">
-                  <label for="deduction" class="form-label" vslang="titles.Deduction"></label>
-                  <input name="deduction" class="form-control data-input" data-field="deduction" />
+                  <label for="bias" class="form-label" vslang="titles.Bias"></label>
+                  <input name="bias" class="form-control data-input" data-field="bias" />
                 </div>
 
               </div>`].join('');
