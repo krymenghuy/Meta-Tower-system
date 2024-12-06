@@ -23,7 +23,7 @@
     }
 
     #_position_list {
-        height: 500px;
+        height: 550px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;

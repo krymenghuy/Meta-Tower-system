@@ -180,25 +180,64 @@ var ReportCenterComponent = new (function () {
         </div>
         <div id="_rpt_container" style="position: ; z-index: 99;">
             <div class="row row-cols-lg-2 gy-2 d-flex mt-3" >
-                <div id="_rpt_list" class="col-sm-12 col-md-6 col-lg-6">
-                    <div class="card-report">
-                        <div class="row gy-2 w-100 h-100">
-                            <div id="_rpt_name" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                                <h6 class="text-uppercase" style="color:#eccf67;">List of report</h6>
-                                <ul class="del-marker h-100" style=" max-height: ${
-                                    window.innerHeight - 160 + "px"
-                                }; ">  `,
-            mThis.renderReportType(data),
-            `</ul>
-                            </div>`,
-            // `<div class="col-sm-12 col-md-12 col-lg-6 d-none d-sm-none d-md-none d-lg-none d-xl-block d-xxl-block">
-            //     <div class="h-img-report">
-            //         <img src="${main_view.base_url}/assets/images/logo/report.png" alt=""/>
-            //     </div>
-            //  </div>`,
-            `</div>
+                <div id="_rpt_list" class="col-sm-12 col-md-12 col-lg-12">
+                    <div class="row">
+                        <div class="card-report col-lg-6">
+                            <div class="row gy-2 w-100 h-100">
+                                <div id="_rpt_name" class="col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                    <h6 class="text-uppercase" style="color:#eccf67;">List of report</h6>
+                                    <ul class="del-marker h-100" style=" max-height: ${ window.innerHeight - 160 + "px"}; ">  `,
+                                        mThis.renderReportType(data),
+                                    `</ul>
+                                </div>`,
+                                
+                            // `<div class="col-sm-12 col-md-12 col-lg-6 d-none d-sm-none d-md-none d-lg-none d-xl-block d-xxl-block">
+                            //     <div class="h-img-report">
+                            //         <img src="${main_view.base_url}/assets/images/logo/report.png" alt=""/>
+                            //     </div>
+                            //  </div>`,
+                            `</div>
+                        </div>
+                        <div class="d-flex col-lg-6">
+                            <div class="gy-2 w-100 h-100">
+                                <div id="" class="bg-white border border-info h-100 rounded-3 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                    <h6 class="text-uppercase w-50 mt-4 mx-auto text-center" style="color:#eccf67;">Veiw Report History</h6>
+                                    <div class="container w-50 mx-auto d-flex align-items-center">
+                                        <i class="fa-solid fa-magnifying-glass fs-5" style="cursor: pointer; margin-right: -60px; z-index: 9;"></i>
+                                    <input type="text" class=" rounded-5 py-2 ps-5 box-shadow-dark product-search"
+                                        placeholder="Search report...">
+                                    </div>
+
+                                    <div class="row w-75 mx-auto my-3">
+                                        <div class="col-lg-3">
+                                            <div class="border p-4 rounded-4 text-center">
+                                                <span class="p-2 border rounded-5"> E </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="border p-4 rounded-4 text-center">
+                                                <span class="p-2 border rounded-5"> E </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="border p-4 rounded-4 text-center">
+                                                <span class="p-2 border rounded-5"> E </span>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3">
+                                            <div class="border p-4 rounded-4 text-center">
+                                                <span class="p-2 border rounded-5"> E </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
+
                     </div>
                 </div>
+                
                 <!-- <div class="col-sm-12 col-md-6 col-lg-6 m-0">
                     <div id="_rpt_input_filter" class="card-report d-block"></div>
                 </div> -->
@@ -229,7 +268,7 @@ var ReportCenterComponent = new (function () {
                 filterInputs[0]?.querySelectorAll("div.el_filter");
 
             if (reportList.length) reportList.slideToggle("slow");
-            if (filterContainer.length) filterContainer.toggleClass("d-none");
+            // if (filterContainer.length) filterContainer.toggleClass("d-none");
 
             if (filterElements) {
                 filterElements.forEach((element) => {
@@ -678,7 +717,7 @@ var ReportCenterComponent = new (function () {
             Object.keys(p).forEach((key) => {
                 if (p[key] === "null") p[key] = null;
             });
-
+            console.log(JSON.stringify(p,null,2));
             vsapi
                 .call(`${main_view.base_url}/${end_point}`, p, null, false)
                 .then((res) => {

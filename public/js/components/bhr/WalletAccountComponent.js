@@ -4,7 +4,6 @@ var WalletAccountComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_walletAccountComponent");
     this.self = this.jm[0];
     this.title_prop = "Wallet Account";
-
     this.btnAdd = this.self.querySelector("#_btnWalletAddAccount");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.elSearch = this.self.querySelector("#_sdl_search_wallet_account");
@@ -169,7 +168,7 @@ var WalletAccountComponent = new (function () {
             title: "Amount",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.amount ?? ""}</p>`;
+                return `<p class="p-0 m-0">${main_view.currency.symbol} ${formattedNumber(data.amount ?? 0)}</p>`;
             },
         },
         {

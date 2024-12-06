@@ -20,14 +20,14 @@ var DepartmentComponent = new (function () {
             title: "Department",
             className: "align-middle text-capitalize p-3  text-left",
             data: (data)=>`
-                <span class="text-primary-custom">${data.name}</span>`,
+                <span class="text-primary-custom">${data.name ?? 'Head of Department'}</span>`,
         
         },
         {
             title: "Short Name",
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data)=>
-                `<span class="text-warning ">${data.shortcut}</span>`,
+                `<span class="text-warning ">${data.shortcut ?? 'HD'}</span>`,
             
         },
         {
@@ -53,10 +53,10 @@ var DepartmentComponent = new (function () {
             data: (data) => `
            <div class="d-flex align-items-center gap-2">
                   <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-department-modify">
-                    <i class="fa-regular fa-pen-to-square text-warning fs-5"></i>
+                    <i class="fa-regular fa-pen-to-square text-warning fs-6"></i>
                   </a>
                   <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-department-delete">
-                    <i class="fa-solid fa-trash-can text-danger fs-5"></i>
+                    <i class="fa-solid fa-trash-can text-danger fs-6"></i>
                   </a>
                 </div>`,
         },

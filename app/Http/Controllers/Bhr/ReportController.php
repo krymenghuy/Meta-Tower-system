@@ -22,14 +22,15 @@ class ReportController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result(Report::getEmployeeList($ss));
+        $rpt = new Report();
+        return JDV::result($rpt->getEmployeeList($req->all(),$ss));
    }
    public function getEmployeeListByType(Request $req){
     $ss = AuthService::verifyAuth($req, -1);
     if ($ss->status_code !== 200) {
         return JDV::raw($ss);
     }
-    return JDV::result(Report::getEmployeeListByType($ss));
+    return JDV::result(Report::getEmployeeListByType($$ss));
 }
   
     //api getReportFilterOptions()| not web get

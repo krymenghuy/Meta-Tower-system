@@ -411,17 +411,16 @@ var PayrollComponent = new (function () {
 
 });
 
-const AddPayRollListDailog = (()=>{
-
+const AddPayRollListDailog = (() => {
     const self = {};
     let dialogAdd = null;
-     self.show = (op)=>{
-    console.log(999,op);
+    self.show = (op) => {
+        console.log(999, op);
 
-    dialogAdd = dialogAdd || new GeneralDialog({
-            cssClass:'modal-lg',
+        dialogAdd = dialogAdd || new GeneralDialog({
+            cssClass: 'modal-lg',
             backdrop: 'static',
-            keyboard:true,
+            keyboard: true,
             createContent: () => {
                 const months = [
                     { value: 1, name: "Jan" },
@@ -444,23 +443,19 @@ const AddPayRollListDailog = (()=>{
                 return [
                     `<div class="row">
                         <div class="form-group col-6">
-                            <label for="name" class="form-label" vslang="titles.Name "></label>
+                            <label for="name" class="form-label" vslang="titles.Name"></label>
                             <input name="name" class="form-control data-input form_input" data-field="name" />
                         </div>
                         <div class="form-group col-3">
                             <label for="month" class="form-label" vslang="titles.Month"></label>
                             <select name="month" class="form-control data-input" data-field="month">
-                                ${months
-                                    .map(month => `<option value="${month.value}">${month.name}</option>`)
-                                    .join("")}
+                                ${months.map(month => `<option value="${month.value}">${month.name}</option>`).join("")}
                             </select>
                         </div>
                         <div class="form-group col-3">
                             <label for="year" class="form-label" vslang="titles.Year"></label>
                             <select name="year" class="form-control data-input" data-field="year">
-                                ${years
-                                    .map(year => `<option value="${year}">${year}</option>`)
-                                    .join("")}
+                                ${years.map(year => `<option value="${year}">${year}</option>`).join("")}
                             </select>
                         </div>
                         <div class="form-group col-6">
@@ -480,94 +475,97 @@ const AddPayRollListDailog = (()=>{
                             </select>
                         </div>
                         <div class="form-group col-6">
-                            <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate "></label>
+                            <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
                             <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
                         </div>
                         <div class="form-group col-6">
-                            <label for="p_number" class="form-label" vslang="titles.Payroll Number "></label>
-                             <select name="p_number" class="modal-select data-input form_input" data-field="p_number">
-                                <!-- <option value="">(Select Payroll Number)</option> -->
+                            <label for="p_number" class="form-label" vslang="titles.Payroll Number"></label>
+                            <select name="p_number" class="modal-select data-input form_input" data-field="p_number">
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                             </select>
                         </div>
                         <div class="form-group col-6">
-                            <label for="total" class="form-label" vslang="titles.Total "></label>
+                            <label for="total" class="form-label" vslang="titles.Total"></label>
                             <input name="total" class="form-control data-input" data-field="total" />
                         </div>
                     </div>`
                 ].join("");
             },
 
-            contentCreated:(me)=>{
+            contentCreated: (me) => {
                 DateTimePicker.init(me.controls.start_date);
                 DateTimePicker.init(me.controls.end_date);
-             },
-             configSelect:[
-            //    {
-            //      name:"payroll_name",
-            //      data:'payrolls',
-            //      textField:"name",
-            //      valueField:'id'
-            //    },
-            ],
-            buttons:[
-               {
-                label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
-                click:(me,btn)=>{
-                    //Close with Cancel button
-                    me.hide(false);
-                }
-               },
-               {
-                label:'<span>Save</span>',
-                cssClass:'btn btn-primary',
-                click:(me,btn)=>{
-                    const p = me.getData();
-
-                    p.id = me.dataOptions.id; //get "id" from op
-
-                    vsapi.call( [main_view.base_url,'/hr/payroll/save'].join(''), p,btn,null).then(res=>{
-                       if(res.status_code ==200){
-                         me.hide(true,p);
-                       }else cv_interact.error(res.error_message);
-                    });
-                }
-               }
-            ],
-            prepareFormOptions:{
-               createTitle:'Add Payroll',
-               modifyTitle:'Edit Payroll',
-               targetProp: 'payrolls',
-               api:{
-                 endpoint: [main_view.base_url,'/hr/payroll/form-options'].join(''),
-                 params:(op)=>{
-                    return {'id':op.id};
-                 }
-               },
-               onResponse: (me, res)=>{
-                 console.log('result from api "/form-options": ', res);
-               }
             },
 
-            // extendMethod:{
-            //     'setData':(me,d)=>{
-            //         me.controls.p_number.value = '2';
-            //     }
-            // },
+            configSelect: [
+                // Add any specific configuration for select inputs if needed
+            ],
 
-            onPrepareForm:(me, data)=>{
-                me.controls.p_number.value = data.p_number;
-                console.log(2345678,me.controls.p_number.value );
+            buttons: [
+                {
+                    label: '<span class="text-warning">Cancel</span>',
+                    cssClass: 'btn btn-default',
+                    click: (me, btn) => {
+                        me.hide(false);
+                    }
+                },
+                {
+                    label: '<span>Save</span>',
+                    cssClass: 'btn btn-primary',
+                    click: (me, btn) => {
+                        const p = me.getData();
+                        p.id = me.dataOptions.id;
 
-                 LocaleManager.translateZone(me.divModal);
+                        vsapi.call([main_view.base_url, '/hr/payroll/save'].join(''), p, btn, null).then(res => {
+                            if (res.status_code == 200) {
+                                me.hide(true, p);
+                            } else {
+                                cv_interact.error(res.error_message);
+                            }
+                        });
+                    }
+                }
+            ],
+
+            prepareFormOptions: {
+                createTitle: 'Add Payroll',
+                modifyTitle: 'Edit Payroll',
+                targetProp: 'payrolls',
+                api: {
+                    endpoint: [main_view.base_url, '/hr/payroll/form-options'].join(''),
+                    params: (op) => {
+                        return { 'id': op.id };
+                    }
+                },
+                onResponse: (me, res) => {
+                    console.log('result from api "/form-options": ', res);
+                }
+            },
+
+            onPrepareForm: (me, data) => {
+                console.log(1234567,data);
+
+                const { payrolls } = data;
+                if (payrolls) {
+                    me.controls.name.value = payrolls.name;
+                    me.controls.month.value = payrolls.month;
+                    me.controls.year.value = payrolls.year;
+                    me.controls.start_date.value = payrolls.start_date;
+                    me.controls.end_date.value = payrolls.end_date;
+                    me.controls.currency_code.value = payrolls.currency_code;
+                    me.controls.exchange_rate.value = payrolls.exchange_rate;
+                    me.controls.p_number.value = payrolls.p_number;
+                    me.controls.total.value = payrolls.total;
+                }
+
+                LocaleManager.translateZone(me.divModal);
             }
-
         });
 
         dialogAdd.show(op);
-     }
-
+    }
     return self;
 })();
+
+

@@ -111,7 +111,6 @@ class Payroll
             ->where('p.id', $id)
             ->first();
         // $row->p_number = 1;
-
         return $row;
     }
 

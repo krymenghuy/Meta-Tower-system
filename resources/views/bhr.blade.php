@@ -137,7 +137,7 @@ echo $user->lang ?? 'en'; ?>">
                                                 echo Session::get('lang_name', 'Khmer');
                                                 ?>
                                             </span>
-                                            <i class="fa-solid fa-caret-down ps-2 fs-5" style="color:#e2c555;"></i>
+                                            <i class="fa-solid fa-caret-down ps-2 fs-5" style="color:#2b3991;"></i>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <span class="lang-menu-header"></span>
@@ -164,7 +164,7 @@ echo $user->lang ?? 'en'; ?>">
                                     <div class="dropdown  shadow-lg rounded-5 bg-white nav--notification">
                                         <button id="_main_btn_notif" class="btn-dropdown main-menu-button"
                                             data-menu="notif">
-                                            <i class="fa-regular fa-bell fs-4" style="color:#e2c555;"></i>
+                                            <i class="fa-solid fa-bell tool-tip fs-4" style="color:#2b3991;"><span class="tool-tiptext fs-6">Notifications</span></i>
                                             <span class="number--notification notif-count"
                                                 id="_main_notif_count">0</span>
                                         </button>
@@ -178,9 +178,8 @@ echo $user->lang ?? 'en'; ?>">
                                     </div>
 
                                     <div class="dropdown shadow-lg rounded-5 bg-white app--list">
-                                        <button class="btn-dropdown main-menu-button ml-1" data-menu="app">
-                                            <img class="ml-2 mt-1" style="width:25px; height:25px"
-                                                src="{{ asset('assets/images/icons/grid.svg') }}" />
+                                        <button class="btn-dropdown main-menu-button " data-menu="app">
+                                        <i class="fa-solid fa-table tool-tip fs-4" style="color:#2b3991;"><span class="tool-tiptext fs-6">Menu System</span></i>
                                             <span></span>
                                         </button>
 
@@ -216,8 +215,9 @@ echo $user->lang ?? 'en'; ?>">
                                     <div class="dropdown shadow-lg rounded-5 bg-white user--info">
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
-                                            <img src="{{ asset('assets/images/icons/user.png') }}"
-                                                class="menu-item-icon ml-2" />
+                                            <i class="fa-solid fa-database tool-tip fs-4" style="color:#2b3991;"><span class="tool-tiptext fs-6">About BHR</span></i>
+
+                                            <span></span>
                                             <!-- <span>
                                                     <?php
                                                     //echo Session::get('login_name', 'Unknown');

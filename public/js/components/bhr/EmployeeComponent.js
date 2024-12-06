@@ -23,6 +23,7 @@ var EmployeeComponent = new (function () {
     this.paginationContainer = mThis.self.querySelector(
         "#container_pagination"
     );
+    mThis.store_filter = {};
     let div = mThis.self.querySelector("#_employee_list");
 
     const formattedNumber = (number) => {
@@ -103,7 +104,7 @@ var EmployeeComponent = new (function () {
 
         mThis.initDropdownMenus(div);
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.height = window.innerHeight - 200 + "px";
+        sh_parent.style.height = window.innerHeight - 235 + "px";
         sh_parent.classList.add("overflow-y-auto");
         window.onresize = () => {
             sh_parent.style.height = window.innerHeight - 190 + "px";
@@ -113,7 +114,7 @@ var EmployeeComponent = new (function () {
     };
 
     this.getFilterData = () => {
-        let p = {};
+        const p = {};
         p.status_id = mThis.elEmployeeStatus.value;
         p.emp_type_id = mThis.elEmployeeType.value;
         p.branch_id = mThis.el_branch.value;
@@ -448,11 +449,9 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Sex</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap">${
-                                        data.sex == "M" ? "Male" : ""
-                                    }${data.sex == "F" ? "Female" : ""}${
-            data.sex == "O" ? "Other" : ""
-        }</p>
+                                    <p class="text-nowrap">
+                                    ${data.sex == "M" ? "Male" : ""}${data.sex == "F" ? "Female" : ""}${data.sex == "O" ? "Other" : ""
+                                    }</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Nationality</p>
@@ -544,13 +543,14 @@ var EmployeeComponent = new (function () {
                                         data.nssf_id
                                     }</p>
                                 </div>
-                               <div class="d-flex align-items-center">
-                                    <p class="text-nowrap width-bp" vslang="titles.Address">Address</p>
+                                <div class="d-flex">
+                                    <p class="text-nowrap    width-p" vslang="titles.Address">Address</p>
                                     <p class="px-2">:</p>
-                                    <p class="address text-nowrap text-capitalize">${
+                                    <p class="text-nowrap text-capitalize">${
                                         data.address
                                     }</p>
                                 </div>
+
 
                             </div>
 
@@ -2341,8 +2341,7 @@ const EmployeeDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        console.log(999, op);
-
+        
         dialog = new GeneralDialog({
             cssClass: "modal-lg",
             backdrop: "static",
@@ -2562,6 +2561,8 @@ const EmployeeDialog = (() => {
                             .then((res) => {
                                 if (res.status_code == 200) {
                                     me.modal.hide(true, p);
+                                    EmployeeComponent.btnBack.click();
+                                    // EmployeeDialog.show(me.dataOptions);
                                 } else cv_interact.error(res.error_message);
                             });
                     },
@@ -2592,7 +2593,6 @@ const EmployeeDialog = (() => {
                     const salary = me.divModal.querySelector(".salary");
 
                     let id = op.id;
-
                     if (id) {
                         salary.classList.remove("d-none");
                         if (el.tagName.toLowerCase() === "select") {
@@ -2610,6 +2610,12 @@ const EmployeeDialog = (() => {
                         }
 
                         id = null;
+                    }
+                    const emp_type_id = EmployeeComponent.getFilterData().emp_type_id;
+                    console.log(12,emp_type_id);
+                    
+                    if(emp_type_id) {
+                        me.controls.type.value = emp_type_id;
                     }
                 });
             },
