@@ -31,29 +31,6 @@ class BenefitController extends Controller
 
         return JDV::result($this->benefitModel->getAllBenefitsList($req->all(),$ss));
     }
-    public function getLifeInsurancesList(Request $req)
-    {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) return JDV::raw($ss);
-
-        return JDV::result($this->benefitModel->getLifeInsurancesList($req->all(),$ss));
-    }
-    public function getBonusList(Request $req)
-    {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) return JDV::raw($ss);
-
-        return JDV::result($this->benefitModel->getBonusList($req->all(),$ss));
-    }
-
-    public function getSeniorityList(Request $req)
-    {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) return JDV::raw($ss);
-
-        return JDV::result($this->benefitModel->getSeniorityList($req->all(), $ss));
-    }
-
     public function getDetails(Request $req)
     {
         $id =$req->id;
