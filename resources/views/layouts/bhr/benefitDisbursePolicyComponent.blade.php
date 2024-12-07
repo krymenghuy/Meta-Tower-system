@@ -6,6 +6,10 @@
                 <span>Create Bdp</span>
             </button>
         </div>
+        <div class="d-flex align-items-center justify-content-end gap-2 w-25 pr-2">
+            <select type="id" id="el_benefit" class="data-input filter-field"
+                data-field="benefit_id"></select>
+        </div>
     </div>
     <div id="_benefit_disbursement_policy_list" class="mt-4"></div>
 </div>

@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Bhr\BenefitController;
+use App\Http\Controllers\Bhr\EmployeeBenefitController;
 use App\Http\controllers\Bhr\DashboardController;
 use App\Http\controllers\Bhr\EmployeeController;
 use App\Http\Controllers\Bhr\JobLevelController;
@@ -26,7 +26,9 @@ use App\Http\Controllers\Bhr\EmployeeEventController;
 use App\Http\Controllers\Bhr\EducationController;
 use App\Http\Controllers\Bhr\ExperienceController;
 use App\Http\Controllers\Bhr\AccountController;
+use App\Http\Controllers\Bhr\BenefitController;
 use App\Http\Controllers\Bhr\BenefitCategoryController;
+use App\Http\Controllers\Bhr\BenefitDisbursementController;
 use App\Http\Controllers\Bhr\HolidayController;
 use App\Http\Controllers\Bhr\TaxAllowanceController;
 use App\Http\Controllers\Bhr\TaxBracketController;
@@ -106,23 +108,32 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('leave')->grou
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/benefit')->group(function () {
 
+    Route::post('/save', [EmployeeBenefitController::class, 'saveBenefit']);
+    Route::post('/bonus-list', [EmployeeBenefitController::class, 'getBonusList']);
+    Route::post('/seniority-list', [EmployeeBenefitController::class, 'getSeniorityList']);
+    Route::post('/life_insurance-list', [EmployeeBenefitController::class, 'getLifeInsurancesList']);
+    Route::post('/details', [EmployeeBenefitController::class, 'getDetails']);
+    Route::post('/delete', [EmployeeBenefitController::class, 'deleteBenefit']);
+    Route::post('/form-options', [EmployeeBenefitController::class, 'getFormOptions']);
+    Route::post('/all-list', [EmployeeBenefitController::class, 'getAllBenefitList']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('benefit')->group(function () {
+
     Route::post('/save', [BenefitController::class, 'saveBenefit']);
-    Route::post('/bonus-list', [BenefitController::class, 'getBonusList']);
-    Route::post('/seniority-list', [BenefitController::class, 'getSeniorityList']);
-    Route::post('/life_insurance-list', [BenefitController::class, 'getLifeInsurancesList']);
+    Route::post('/list-paginate', [BenefitController::class, 'getBenefitPaginate']);
     Route::post('/details', [BenefitController::class, 'getDetails']);
     Route::post('/delete', [BenefitController::class, 'deleteBenefit']);
     Route::post('/form-options', [BenefitController::class, 'getFormOptions']);
-    Route::post('/all-list', [BenefitController::class, 'getAllBenefitList']);
-});
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/benefit-category')->group(function () {
 
-    Route::post('/save', [BenefitCategoryController::class, 'saveBenefitCategory']);
-    Route::post('/details', [BenefitCategoryController::class, 'getDetails']);
-    Route::post('/delete', [BenefitCategoryController::class, 'deleteBenefitCategory']);
-    Route::post('/form-options', [BenefitCategoryController::class, 'getFormOptions']);
-    Route::post('/list-paginate', [BenefitCategoryController::class, 'getBenefitCategoryListPaginate']);
-    Route::post('/all-list', [BenefitCategoryController::class, 'getBenefitCategoryList']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/benefit-disbursement')->group(function () {
+
+    Route::post('/save', [BenefitDisbursementController::class, 'saveBenefitDisbursement']);
+    Route::post('/details', [BenefitDisbursementController::class, 'getDetails']);
+    Route::post('/delete', [BenefitDisbursementController::class, 'deleteBenefitDisbursement']);
+    Route::post('/form-options', [BenefitDisbursementController::class, 'getFormOptions']);
+    Route::post('/list-paginate', [BenefitDisbursementController::class, 'getBenefitDisbursementListPaginate']);
+    Route::post('/all-list', [BenefitDisbursementController::class, 'getBenefitDisbursementList']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->group(function () {
 

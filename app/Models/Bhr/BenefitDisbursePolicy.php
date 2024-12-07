@@ -59,6 +59,7 @@ class BenefitDisbursePolicy
         $search_value = $d->search_value ?? null;
         $search_id = $d->id ?? null;
         $search_status_id = $d->status_id ?? null;
+        $search_benefit_id = $d->benefit_id ?? null;
 
         $str_search = '1=1';
 
@@ -73,6 +74,9 @@ class BenefitDisbursePolicy
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->where('b.name', 'like', '%' . $search_value . '%');
+        }
+        if($search_benefit_id){
+            $query->where('bdp.benefit_id', $search_benefit_id);
         }
         $count = $query->count();
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -110,6 +114,7 @@ class BenefitDisbursePolicy
         }
 
         return (object) [
+            'benefits' => DB::table('benefits')->selectRaw('id,name')->get(),
             "bdp" => $bdp,
         ];
     }

@@ -16,7 +16,7 @@ class BenefitDisbursementController extends Controller
         $this->benefitDisubrsementModel = $benefit_disbursement;
     }
 
-    public function saveBenefit(Request $req)
+    public function saveBenefitDisbursement(Request $req)
     {
         $id = $req->emp_id ?? $req->id;
         $ss = AuthService::verifyAuth($req, -1);
@@ -25,12 +25,21 @@ class BenefitDisbursementController extends Controller
         return JDV::raw($res);
     }
 
-    public function getAllBenefitList(Request $req)
+    public function getBenefitDisbursementListPaginate(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
 
-        return JDV::result($this->benefitDisubrsementModel->getAllBenefitsList($req->all(), $ss));
+        return JDV::result($this->benefitDisubrsementModel->getBenefitDisbursementListPaginate($req->all(), $ss));
+    }
+    public function getBenefitDisbursementList(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        $war = new BenefitDisbursement();
+        return JDV::result($war->getBenefitDisbursementList($req->all(), $ss));
     }
     public function getDetails(Request $req)
     {
@@ -42,7 +51,7 @@ class BenefitDisbursementController extends Controller
         return JDV::result($this->benefitDisubrsementModel->getDetails($id, $ss));
     }
 
-    public function deleteBenefit(Request $req)
+    public function deleteBenefitDisbursement(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
@@ -50,7 +59,7 @@ class BenefitDisbursementController extends Controller
         $id = $req->id ?: null;
         // $as = $req->as;
 
-        return JDV::result($this->benefitDisubrsementModel->deleteBenefit($id, $ss));
+        return JDV::result($this->benefitDisubrsementModel->deleteBenefitDisbursement($id, $ss));
     }
 
     public function getFormOptions(Request $req)
