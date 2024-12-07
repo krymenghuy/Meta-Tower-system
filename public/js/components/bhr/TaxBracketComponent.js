@@ -228,8 +228,8 @@ const TaxBracketDailog = (()=>{
 
         dialog = dialog || new GeneralDialog({
             cssClass:'modal-md',
-            backdrop: 'static', //User click outside form, do not close form
-            keyboard:true, //prevent user from using ESC key
+            backdrop: 'static',
+            keyboard:true,
             createContent:()=>{
                  return [`<div class="row">
                 <div class="form-group col-6">
