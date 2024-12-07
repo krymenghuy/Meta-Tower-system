@@ -27,36 +27,27 @@ class Benefit //extends Model
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-        $id = $id ?? $this->id;
-
         $v_rule = [
             'id' => '0|identity=1',
-            'name' => '0|string|1-255'
+            'name' => '1|string',
         ];
+        $checkUnque = ["$branch_id|benefits|name|id=id|text=Benefit already exists."];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang , false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
 
+        $id = $res->id;
         $inputs = $res->values;
-        $name = $inputs['name'];
 
-        $existingBenefit = DB::table('benefits')
-        ->where('name', $name)
-            ->where('branch_id', $branch_id)
-            ->first();
 
-        if ($existingBenefit && (!$id || $id != $existingBenefit->id)) {
-            return DV::error('This Category already exists.');
-        }
 
         $id = saveData($ss, 'benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            return DV::depends(1, ['benefits' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['sender' => $inputs, 'id' => $id]);
         }
-
-        return DV::error('Error saving benefits');
+        return DV::depends(0, ['sender' => $inputs]);
     }
 
     public function getBenefitPaginate($arr, $ss)
@@ -71,10 +62,7 @@ class Benefit //extends Model
         $search_id = $d->id ?? null;
 
         $query = DB::table('benefits as b')
-            ->selectRaw('
-            b.id,
-            b.name
-        ')
+            ->selectRaw('b.id, b.name,b.updated_at,b.update_user')
             ->where('b.branch_id', $branch_id);
 
         if ($search_id) {

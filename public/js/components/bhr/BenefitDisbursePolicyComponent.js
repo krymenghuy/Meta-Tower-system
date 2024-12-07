@@ -8,6 +8,7 @@ var BenefitDisbursePolicyComponent = new (function () {
     this.title_prop = "Benefit Disbursement Policy";
     this.btnAdd = this.self.querySelector("#_btnAddbdp");
     this.divFilter = this.self.querySelector("#_divFilter");
+    this.elBenefit = this.self.querySelector("#el_benefit");
 
     const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     this.cols = [
@@ -101,6 +102,9 @@ var BenefitDisbursePolicyComponent = new (function () {
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            el.onchange = () => mThis.BdpListView.showPage(mThis.getDataFormFilter());
+        });
         mThis.setActionListeners();
 
         mThis.initAlready = true;
@@ -164,16 +168,36 @@ var BenefitDisbursePolicyComponent = new (function () {
             }
         );
     };
+
+    this.getDataFormFilter = () => {
+        let filters = {
+
+            benefit_id: mThis.elBenefit.value,
+        };
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+            filters[el.dataset.field] = el.value;
+        });
+        return filters;
+    };
+    this.prepareFormOptions = () => {
+
+        vsapi.call(`${main_view.base_url}/hr/bdp/form-options`,null,null,null).then(res => {
+            const d = res.status_code == 200 ? res.data : {};
+
+            VSUtil.setComboItems(mThis.elBenefit,d.benefits,'id','name',true,'All Benefits',null);
+            console.log(1111,mThis.elBenefit);
+        })
+    }
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        // mThis.prepareFormOptions();
-        mThis.BdpListView.showPage();
-        $(mThis.self).siblings().hide();
-        $(mThis.self).fadeIn(200);
-    };
+        mThis.prepareFormOptions();
+            mThis.BdpListView.showPage();
+                $(mThis.self).siblings().hide();
+                $(mThis.self).fadeIn(200);
+            };
 
-})
+});
 
 const BdpDialog = (() => {
     const self = {};
