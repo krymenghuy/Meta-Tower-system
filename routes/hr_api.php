@@ -304,32 +304,17 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->gro
     Route::post('/list',[ReportController::class,'getReportList']);
     Route::post('employee/list-by-branch', [ReportController::class, 'getEmployeeList']);
     Route::post('employee/list-by-type', [ReportController::class, 'getEmployeeListByType']);
-
-    // Route::post('/filter-options', [ReportController::class, 'getReportFilterOptions']);
-    // Route::post('/options-receiver',[ReportController::class,'getReceivers']);
-
-    // Route::post('finance/activities',[ReportController::class,'getActivities']);
-    // Route::post('finance/payments',[ReportController::class,'getInvoicePayments']);
-    // Route::post('finance/invoice-list',[ReportController::class,'getInvoiceList']);
-    // Route::post('finance/invoice-paid',[ReportController::class,'getPaidInvoices']);
-    // Route::post('finance/expired-students',[ReportController::class,'getExpiredStudents']);
-    // Route::post('finance/students-with-sepcial-discount',[ReportController::class,'getStudentsWithSpecialDiscount']);
-    // Route::post('finance/student-counts-by-pmt-option',[ReportController::class,'countStudentsByPmtOptions']);
-    // Route::post('finance/daily-cash-list',[ReportController::class,'getDailyCashList']);
-    // Route::post('finance/monthly-cash-list',[ReportController::class,'getMonthlyCashList']);
-    // Route::post('finance/referral-fee-list',[ReportController::class,'getReferalFeeList']);
-    // Route::post('finance/school-fee-list',[ReportController::class,'getSchoolFee']);
-    // Route::post('finance/non-tuition-fee-list',[ReportController::class,'getNonTuitionFeeList']);
-    // Route::post('finance/income-by-categories',[ReportController::class,'getIncomeByCategories']);
-    // Route::post('finance/income-by-class',[ReportController::class,'getIncomeByClass']);
-    // Route::post('finance/deposite-list',[ReportController::class,'getStudentDepositeList']);
-    // Route::post('finance/total-by-month',[ReportController::class,'getTotalPaymentByMonth']);
-    // Route::post('finance/total-by-year',[ReportController::class,'getTotalPaymentByYear']);
-    // Route::post('finance/total-payment-history-year',[ReportController::class,'getTotalPaymentHistoryByYear']);
-    // Route::post('finance/total-student-payment-history',[ReportController::class,'getTotalStudentPaymentHistory']);
-    // Route::post('finance/student-payment-history',[ReportController::class,'getStudentPaymentHistory']);
-    // Route::post('finance/cross-year-payment',[ReportController::class,'crossYearReceipt']);
-    // Route::post('finance/upgrade-fee',[ReportController::class,'upgradeFee']);
+    Route::post('employee/attendance-report', [ReportController::class, 'getEmployeeAttendance']);
+    Route::post('employee/attendance-summary', [ReportController::class, 'getEmployeeAttendanceSummary']);
+    Route::post('employee/payroll-expenses-by-month', [ReportController::class, 'getPayrollExpensesByMonth']);
+    Route::post('employee/payroll-list', [ReportController::class, 'getPayrollList']);
+    Route::post('employee/employee-benefits-report', [ReportController::class, 'getEmployeeBenefitsReport']);
+    Route::post('employee/employee-account-report', [ReportController::class, 'getEmployeeAccountReport']);
+    Route::post('employee/for-each-account', [ReportController::class, 'getForEachAccount']);
+    Route::post('employee/wallet-account-list', [ReportController::class, 'getWalletAccountList']);
+    Route::post('employee/payslip-print', [ReportController::class, 'getPayslipPrint']);
+    Route::post('employee/employee-movement-report', [ReportController::class, 'getEmployeeMovementReport']);
+    Route::post('employee/print-employee-cv', [ReportController::class, 'getPrintEmployeeCV']);
 
 
     // Route::post('enrollment/dropped-out-students',[ReportController::class,'getLeaveStudent']);
