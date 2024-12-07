@@ -27,6 +27,7 @@ use App\Http\Controllers\Bhr\EducationController;
 use App\Http\Controllers\Bhr\ExperienceController;
 use App\Http\Controllers\Bhr\AccountController;
 use App\Http\Controllers\Bhr\BenefitCategoryController;
+use App\Http\Controllers\Bhr\BenefitDisbursementController;
 use App\Http\Controllers\Bhr\HolidayController;
 use App\Http\Controllers\Bhr\TaxAllowanceController;
 use App\Http\Controllers\Bhr\TaxBracketController;
@@ -123,6 +124,15 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/bene
     Route::post('/form-options', [BenefitCategoryController::class, 'getFormOptions']);
     Route::post('/list-paginate', [BenefitCategoryController::class, 'getBenefitCategoryListPaginate']);
     Route::post('/all-list', [BenefitCategoryController::class, 'getBenefitCategoryList']);
+});
+Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee/benefit-disbursement')->group(function () {
+
+    Route::post('/save', [BenefitDisbursementController::class, 'saveBenefitDisbursement']);
+    Route::post('/details', [BenefitDisbursementController::class, 'getDetails']);
+    Route::post('/delete', [BenefitDisbursementController::class, 'deleteBenefitDisbursement']);
+    Route::post('/form-options', [BenefitDisbursementController::class, 'getFormOptions']);
+    Route::post('/list-paginate', [BenefitDisbursementController::class, 'getBenefitDisbursementListPaginate']);
+    Route::post('/all-list', [BenefitDisbursementController::class, 'getBenefitDisbursementList']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('payroll')->group(function () {
 

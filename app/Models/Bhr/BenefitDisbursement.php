@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
-class BenefitDisbursement //extends Model
+class BenefitDisbursement
 {
     protected $id = null;
     protected $userInfo = null;
@@ -18,11 +18,11 @@ class BenefitDisbursement //extends Model
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    function getProps($id, $props = [])
+
+    public function getProps($id, $props = [])
     {
         $cols = is_array($props) ? implode(',', $props) : $props;
-        $row = DB::table('benefit_disbursements')->where('id', $id)->selectRaw($cols)->first();
-        return $row;
+        return DB::table('benefit_disbursements')->where('id', $id)->selectRaw($cols)->first();
     }
 
     public function save($benefit_id, $id = null, $ss = null, $arr)
@@ -31,15 +31,17 @@ class BenefitDisbursement //extends Model
         $branch_id = $ss->branch_id;
         $id = $id ?? $this->id;
 
+        // Validation rules
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number|exists=employees.id',
             'benefit_id' => '1|number',
-            'target_month' => '0|date',
-            'target_year' => '0|date',
+            'target_month' => '0|number|between=1,12', // Ensure valid month
+            'target_year' => '0|number|min=1900|max=' . date('Y'), // Ensure valid year
             'withdraw_rate' => '0|number'
         ];
 
+        // Validate input
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) {
             return DV::error($res->error);
@@ -47,16 +49,25 @@ class BenefitDisbursement //extends Model
 
         $id = $res->id;
         $inputs = $res->values;
-        $benefit_id = $arr['benefit_id'] ?? null;
-        $emp_id = $arr['emp_id'] ?? null;
 
+        // Ensure target_month and target_year are properly set
+        $inputs['target_month'] = isset($arr['target_month']) && is_numeric($arr['target_month'])
+        ? intval($arr['target_month'])
+        : intval(date('m')); // Default to current month if not provided
+
+        $inputs['target_year'] = isset($arr['target_year']) && is_numeric($arr['target_year'])
+        ? intval($arr['target_year'])
+        : intval(date('Y')); // Default to current year if not provided
+
+        // Ensure employee ID is provided
+        $emp_id = $arr['emp_id'] ?? null;
         if (!$emp_id) {
             return DV::error('Employee is required for saving benefit disbursement!');
         }
 
-        // Check for existing benefit
+        // Check for existing benefit disbursement for the employee and benefit
         $existingBenefitDisbursement = DB::table('benefit_disbursements')
-            ->where('emp_id', $emp_id)
+        ->where('emp_id', $emp_id)
             ->where('benefit_id', $inputs['benefit_id'])
             ->first();
 
@@ -64,21 +75,15 @@ class BenefitDisbursement //extends Model
             return DV::error('This employee already has a benefit of this type.');
         }
 
-        // Save benefit data
+        // Save or update the record
         $id = saveData($ss, 'benefit_disbursements', ['id' => $id], $inputs, [], 1, false);
 
-        if ($id > 0) {
-            
-            $benefit = $this->getProps($id, ['benefit_type_id']);
-            if (!$benefit) {
-                return DV::error('Benefit type ID not found!');
-            }
-        }
-
+        // Return the result
         return DV::depends($id, ['id' => $id], 'Save failed');
     }
 
-    function getAllBenefitsList($arr, $ss = null)
+
+    public function getBenefitDisbursementListPaginate($arr, $ss = null)
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
@@ -87,37 +92,37 @@ class BenefitDisbursement //extends Model
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
-        $str_srch = '1=1';
-        $str_where = "2=2";
-        if ($search_value) {
-            $skip_rows = 0;
-            $str_srch = "(emp.name LIKE '%" . $search_value . "%' OR b.benefit_id LIKE '%" . $search_value . "%' OR b.amount LIKE '%" . $search_value . "%')";
-        }
-        $benefitsQuery = DB::table('benefit_disbursements as b')
-            ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
-            ->join('benefits as bc', 'bc.id', '=', 'b.benefit_id')
-            ->whereRaw($str_srch)
-            ->whereRaw($str_where)
-
+        $query = DB::table('benefit_disbursements as bd')
+            ->join('employees as emp', 'emp.id', '=', 'bd.emp_id')
+            ->join('benefits as bc', 'bc.id', '=', 'bd.benefit_id')
             ->selectRaw(
-                'b.id, emp.id as emp_id, emp.name as name, emp.email as email, bc.name as benefit_name,
-                b.benefit_type_id,b.benefit_id,b.tax_option_id,b.flat_tax_rate,b.balance, b.amount, b.benefit_id, b.update_user,b.updated_at, b.create_date, emp.photo_file_name as emp_photo'
+                'bd.id,
+                emp.id as emp_id, 
+                emp.name as name, 
+                emp.email as email, 
+                bc.name as benefit_name,
+                bd.benefit_id,
+                bd.target_month,
+                bd.target_year,
+                bd.withdraw_rate, 
+                emp.photo_file_name as emp_photo'
             )
+            ->orderBy('bd.id', 'desc');
 
-            ->orderBy('b.id', 'desc');
+        if ($search_value) {
+            $query->where(function ($q) use ($search_value) {
+                $q->where('emp.name', 'LIKE', "%{$search_value}%")
+                    ->orWhere('bd.benefit_id', 'LIKE', "%{$search_value}%")
+                    ->orWhere('bd.withdraw_rate', 'LIKE', "%{$search_value}%");
+            });
+        }
 
-
-        $clone_query = clone $benefitsQuery;
-
-        $count = $clone_query->count('b.id');
-
-        $rows = $benefitsQuery->skip($skip_rows)
-            ->take($per_page)
-            ->get();
+        $count = $query->count();
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
             $row->image_url = '';
-            if (isset($row->emp_id) && $row->emp_photo) {
+            if (!empty($row->emp_id) && $row->emp_photo) {
                 $row->image_url = Employee::profilePicture($row->emp_id);
             }
             unset($row->emp_photo);
@@ -126,54 +131,60 @@ class BenefitDisbursement //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    static function getDetails($id, $ss)
+    public static function getDetails($id, $ss)
     {
         $branch_id = $ss->branch_id;
-        $query = DB::table('benefit_disbursements as b')
-            ->join('employees as emp', 'emp.id', '=', 'b.emp_id')
-            ->join('benefits as bc', 'bc.id', '=', 'b.benefit_id')
+        return DB::table('benefit_disbursements as bd')
+            ->join('employees as emp', 'emp.id', '=', 'bd.emp_id')
+            ->join('benefits as bc', 'bc.id', '=', 'bd.benefit_id')
             ->selectRaw(
-                'b.id,
+                'bd.id,
                 emp.id as emp_id, 
                 emp.name as name, 
                 emp.email as email, 
                 bc.name as benefit_name,
-                b.benefit_type_id,
-                b.benefit_id,
-                b.tax_option_id,
-                b.flat_tax_rate,
-                b.balance, 
-                b.amount, 
-                b.benefit_id, 
-                b.update_user,
-                b.updated_at, 
-                b.create_date, 
+                bd.benefit_id,
+                bd.target_month,
+                bd.target_year,
+                bd.withdraw_rate, 
                 emp.photo_file_name as emp_photo'
             )
-            ->where('b.branch_id', $branch_id)->where('b.id', $id)->take(1)->first();
-        return $query;
+            ->where('bd.id', $id)
+            ->first();
     }
 
-
-    function deleteBenefit($id, $ss)
+    public function deleteBenefitDisbursement($id, $ss)
     {
         $id = $id ?? $this->id;
-        $branch_id = $ss->branch_id;
+        $deleted = DB::table('benefit_disbursements')->where('id', $id)->delete();
 
-        $delete = DB::table('benefit_disbursements')->where('id', $id)->delete();
-        return DV::depends($delete, ['action', 'deleted']);
+        return DV::depends($deleted, ['action' => 'deleted']);
     }
 
-    static function getFormOptions($id, $ss)
+    public static function getFormOptions($id, $ss)
     {
-        $benefit_disbursements = null;
-        if ($id) {
-            $benefit_disbursements = self::getDetails($id, $ss);
-        }
-        return $data = (object) [
+        $benefit_disbursements = $id ? self::getDetails($id, $ss) : null;
+
+        return (object) [
             'employees' => GeneralSettings::options_employee(10, $ss),
-            'benefits' => DB::table('benefits')->selectRaw('id,name')->get(),
+            'benefits' => DB::table('benefits')->select('id', 'name')->get(),
             'benefit_disbursements' => $benefit_disbursements,
         ];
+    }
+
+    public function getBenefitDisbursementList($arr, $ss = null)
+    {
+        $d = (object) $arr;
+        $branch_id = $ss->branch_id;
+
+        $query = DB::table('benefit_disbursements as bd')
+            ->select('bd.id', 'bd.benefit_id', 'bd.target_month', 'bd.target_year', 'bd.withdraw_rate')
+            ->where('bd.branch_id', $branch_id);
+
+        if (!empty($d->search_value)) {
+            $query->where('bd.name', 'LIKE', "%{$d->search_value}%");
+        }
+
+        return $query->get();
     }
 }
