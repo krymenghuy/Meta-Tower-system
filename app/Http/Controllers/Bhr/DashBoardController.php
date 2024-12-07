@@ -15,6 +15,17 @@ class DashboardController extends Controller
     {
         $this->dashboard = $dashboard;
     }
+    function getDashboardData(Request $req){
+        $ss = AuthService::verifyAuth($req, -1);
+            if($ss->status_code !== 200){
+                return JDV::raw($ss);
+            } 
+
+        
+        $db = new Dashboard(null,$ss);
+        $data = $db->getData($req->all(),$ss);
+        return JDV::result($data);
+    }
 
     public function countEmployees(Request $req)
     {

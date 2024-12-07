@@ -32,24 +32,25 @@ var DashboardComponent = new (function () {
     this.renderDashboardTop = (data) => {
         if (!data) return;
 
-        let empTypesStaff = data.emp_types.find((type) => type.name === "Staff") || { count: 0 };
-        let empTypesInProbation = data.emp_types.find((type) => type.name === "Probation") || { count: 0 };
-        let empTypesInternship = data.emp_types.find((type) => type.name === "Intern") || { count: 0 };
+        let Staff = data.emp_types.find((type) => type.name === "Staff") || { count: 0 };
+        let Probation = data.emp_types.find((type) => type.name === "Probation") || { count: 0 };
+        let Intern = data.emp_types.find((type) => type.name === "Intern") || { count: 0 };
 
         let html = `
         <div class="">
-        <div class="row py-3">
+            <div class="row py-3">
+                <div class="col-md-3">
+                    <div class="card  dashboard_chart" >
+                        <canvas id="empChart" ></canvas>
+                    </div>
+                </div>
                 <div class="col-md-6">
                     <div class=" card bg-white dashboard_chart">
                         <canvas id="compareChart"></canvas>
                     </div>
 
                 </div>
-                <div class="col-md-3">
-                    <div class="card bg-white dashboard_chart" style="">
-                        <canvas id="empChart" ></canvas>
-                    </div>
-                </div>
+                
                 
                 <div class="col-md-3">
                     <div class="card bg-grey dashboard_chart" >
@@ -57,71 +58,23 @@ var DashboardComponent = new (function () {
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="overview-card card p-2" style="background:#00BFFF">
-                        <div class="w-100 d-flex justify-content-between ">
-                            <p class="section-title mb-2 fs-6">Department</p>
-                        </div>
-                        <div class="w-100 d-flex justify-content-between ">
-                            <p class="text-center fs-4">${data.d_activeCount}</p>
-                            <img class="w-15" src="${main_view.asset_url}/images/icons/department.png" alt=""/>
-                        </div>
-                    </div>
-                </div>
-               <div class="col-md-3 ">
-                    <div class="overview-card card p-2" style="background:#00BFFF">
-                        <div class="w-100 d-flex justify-content-between ">
-                            <p class="section-title mb-2 fs-6">Position</p>
-                        </div>
-                        <div class="w-100 d-flex justify-content-between">
-                            <p class="text-center fs-4">${data.p_activeCount}</p>
-                            <img class="w-15" src="${main_view.asset_url}/images/icons/position.png" alt=""/>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 ">
-                    <div class="overview-card card p-2" style="background:#00FF9C">
-                        <div class="w-100 d-flex justify-content-between " >
-                            <p class="section-title mb-2 fs-6">Active Employee</p>
-                        </div>
-                        <div class="w-100 d-flex justify-content-between ">
-                            <p class="text-center fs-4">${data.active}</p>
-                            <img class="w-15" src="${main_view.asset_url}/images/icons/employee.png" alt=""/>
-                        </div>
-                    </div>
-                </div>
-               <div class="col-md-3 ">
-                    <div class="overview-card card p-2" style="background:#FA7070">
-                        <div class="w-100 d-flex justify-content-between ">
-                            <p class="section-title mb-2 fs-6">Resign</p>
-                        </div>
-                        <div class="w-100 d-flex justify-content-between ">
-                            <p class="text-center fs-4">${data.resigned}</p>
-                            <img class="w-15" src="${main_view.asset_url}/images/icons/resign.png" alt=""/>
-                        </div>
-                    </div>
-                </div>
+            
 
             </div>
             
         </div>
         `;
         mThis.dashboard_top.innerHTML = html;
-        mThis.renderemp(data);
+        mThis.renderChartEmployee(data);
         mThis.renderCompareChart(data);
         mThis.renderaccount(data);
     };
 
-    this.renderemp = (data) => {
-        console.log(23,data);
-        
+    this.renderChartEmployee = (data) => {
         if (!data) return;
         const ctx = document.getElementById('empChart').getContext('2d');
-        if (this.chartInstance) {
-            this.chartInstance.destroy();
-        }
-        this.chartInstance = new Chart(ctx, {
+       
+         new Chart(ctx, {
             type: 'doughnut',
             data: {
                 labels: ['Staff', 'Intern', 'Probation'],
@@ -133,8 +86,8 @@ var DashboardComponent = new (function () {
                     ],
                     backgroundColor: [
                         'hwb(231.76deg 16.86% 43.14%)',
-                        '#e0c555',
-                        '#00aba9'
+                        '#07d1ed',
+                        '#f20483'
                     ],
                     borderColor: [
                         '#fff',
@@ -183,10 +136,6 @@ var DashboardComponent = new (function () {
         }
         const ctx = canvas.getContext('2d');
 
-        if (this.compareChartInstance) {
-            this.compareChartInstance.destroy();
-        }
-
         const { monthly_totals, dates } = responseData;
         const labels = [
             dates.l3m || 'Last 3 Months',
@@ -201,7 +150,7 @@ var DashboardComponent = new (function () {
             monthly_totals.total_cm || 0,
         ];
 
-        this.compareChartInstance = new Chart(ctx, {
+        new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: labels,
@@ -330,7 +279,7 @@ var DashboardComponent = new (function () {
     };
 
 
-      this.renderDashboardBottomLeft = (data) => {
+    this.renderDashboardBottomLeft = (data) => {
         if (!data || !data.data) return;
 
 
@@ -428,7 +377,6 @@ var DashboardComponent = new (function () {
 
         vsapi.call(`${main_view.base_url}/hr/dashboard/count-employees`,p, null,false,false).then(res => {
             let data = (res.status_code === 200) ?res.data : {};
-            // console.log(123,data);
             mThis.renderDashboardTop(data);
             onFinish();
           });
@@ -449,7 +397,6 @@ var DashboardComponent = new (function () {
         vsapi.call(`${main_view.base_url}/hr/dashboard/get-levels`,p, null,false,false).then(res => {
             let data = (res.status_code === 200) ?res.data : {};
             mThis.renderDashboardBottomLeft(data);
-            // mThis.renderTop(data);
             onFinish();
           });
     }

@@ -2,9 +2,10 @@
 
 namespace App\Models\Bhr;
 
-use App\Models\Bhr\Dashboard;
 use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
+use Carbon\Carbon;
+
 
 class Dashboard
 {
@@ -14,6 +15,142 @@ class Dashboard
         $this->id=$id;
         $this->userInfo =$userInfo;
     }
+    public function getData($arr,$ss=null){
+        $ss = $ss ?? $this->userInfo;
+        $cards = self::getCards($arr,$ss);
+        return (object)[
+            'pieCharts'=>self::countEmployeeByType(0,$ss),
+            'cards'=>$cards,
+        ];
+    }
+    static function countEmployeeByType($arr,$ss){
+        $branch_id = $ss->branch_id;
+        $back_days = -90;
+        $start_date = convertDate(Carbon::now()->addDays($back_days));
+    
+        $rows = DB::table('employees AS e')
+            ->join('emp_types AS t', 'e.emp_type_id', '=', 't.id')
+            // ->where('e.branch_id', $branch_id)
+            ->whereRaw("DATE(e.joining_date) >= ?", [$start_date])
+            ->selectRaw("
+                t.name AS category,
+                COUNT(e.id) AS count
+            ")
+            ->groupBy('t.name')
+            ->get();
+    
+        // Prepare data for pie chart
+        $labels = [];
+        $values = [];
+        $colors = [];
+    
+        // Define a set of colors for the pie chart
+        $base_colors = ['#4CBB21', '#4CB68D', '#32BCD3', '#3795E0', '#ECF140'];
+    
+        foreach ($rows as $index => $row) {
+            $labels[] = $row->category;  // Employee type (e.g., Intern, Probation, Staff)
+            $values[] = $row->count;    // Count of employees in that category
+            $colors[] = $base_colors[$index % count($base_colors)];
+        }
+    
+        return (object)[
+            'title'=>'Total Employee By Type',
+            'labels' => $labels,
+            'values' => $values,
+            'colors' => $colors
+        ];
+
+    }
+  
+    
+    static function getCards($arr, $ss) {
+        $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
+        $bin_subs_id = hex2bin($subs_id);
+        $branch_ids = getAccessBranches($ss, null);
+        $d = (object) $arr;
+        $back_days = isset($d->back_days) ? $d->back_days : -90;
+    
+        $from_date = convertDate(Carbon::now()->addDays($back_days));
+        $dateField = DBX::convertToDate('e.joining_date');
+        $moreWhere = $dateField . " >= '" . $from_date . "'";
+    
+        $rows = DB::table('employees AS e')
+            ->where('e.subs_id', $bin_subs_id)
+            ->whereIn('e.branch_id', $branch_ids)
+            ->whereRaw($moreWhere)
+            ->select('e.status_id', 'e.emp_type_id', 'e.branch_id', 'e.joining_date')
+            ->orderByRaw("e.joining_date ASC")
+            ->get();
+    
+        $total_employees = 0;
+        $active_employees = 0;
+        $resigned_employees = 0;
+        $terminated_employees = 0;
+    
+        $branches = [];
+        $emp_types = [];
+        $days_count = 0;
+    
+        $first_date = isset($rows[0]) ? $rows[0]->joining_date : $from_date;
+    
+        foreach ($rows as $row) {
+            if ($row->status_id == 10) {
+                $active_employees++;
+            } elseif ($row->status_id == 20) {
+                $resigned_employees++;
+            } elseif ($row->status_id == 30) {
+                $terminated_employees++;
+            }
+    
+            if (!in_array($row->branch_id, $branches)) {
+                $branches[] = $row->branch_id;
+            }
+    
+            if (!isset($emp_types[$row->emp_type_id])) {
+                $emp_types[$row->emp_type_id] = 1;
+            } else {
+                $emp_types[$row->emp_type_id]++;
+            }
+    
+            $total_employees++;
+        }
+    
+        $days_count = dateDiff_days(convertDate($first_date), date('Y-m-d'));
+    
+        return (object) [
+            'total_employees' => (object) [
+                'count' => $total_employees,
+                'title' => 'Total Employees',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ],
+            'active_employees' => (object) [
+                'count' => $active_employees,
+                'title' => 'Active Employees',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ],
+            'resigned_employees' => (object) [
+                'count' => $resigned_employees,
+                'title' => 'Resigned Employees',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ],
+            'terminated_employees' => (object) [
+                'count' => $terminated_employees,
+                'title' => 'Terminated Employees',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ],
+            'branch_count' => (object) [
+                'count' => count($branches),
+                'title' => 'Branches with Employees',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ],
+            'emp_type_distribution' => (object) [
+                'types' => $emp_types,
+                'title' => 'Employee Type Distribution',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ]
+        ];
+    }
+    
 
     function countEmployees($arr, $ss)
     {

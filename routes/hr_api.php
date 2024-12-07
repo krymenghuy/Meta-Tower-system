@@ -58,8 +58,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->gr
     Route::post('/info', [CompanyProfileController::class, 'getCompanyInfo']);
 });
 //end::CompanyProfileController
-Route::prefix('dashboard')->group(function () {
-    Route::post('/cards', [DashboardController::class, 'getCards']);
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
+    Route::post('/data', [DashboardController::class, 'getDashboardData']);
     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
 
 });
