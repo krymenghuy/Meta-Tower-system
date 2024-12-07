@@ -17,7 +17,7 @@ var EmployeeBenefitComponent = new (function () {
     this.cols = [
         {
             title: "Name",
-            className: "align-middle text-start",
+            className: "align-middle text-start w-15",
             data: (data) => {
                 return `
                 <div style="display: flex; align-items: center;">
@@ -267,7 +267,7 @@ const EmployeeBenefitDialog = (() => {
 
     self.show = (op) => {
         dialog =
-            
+
             new GeneralDialog({
                 cssClass: "modal-lg",
                 backdrop: "static",
@@ -345,7 +345,7 @@ const EmployeeBenefitDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
                             p.id = me.dataOptions.id;
-                            
+
                             vsapi
                                 .call(
                                     `${main_view.base_url}/hr/employee/benefit/save`,
@@ -387,7 +387,7 @@ const EmployeeBenefitDialog = (() => {
                     LocaleManager.translateZone(me.divModal);
                 },
             });
-        
+
 
         dialog.show(op);
     };

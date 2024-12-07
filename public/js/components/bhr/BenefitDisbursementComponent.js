@@ -14,7 +14,7 @@ var BenefitDisbursementComponent = new (function () {
     this.cols = [
         {
             title: "Name",
-            className: "align-middle text-start",
+            className: "align-middle text-start w-25",
             data: (data) => {
                 return `
                 <div style="display: flex; align-items: center;">
@@ -46,8 +46,9 @@ var BenefitDisbursementComponent = new (function () {
             title: "Target Month",
             className: "align-middle",
             data: (data) => {
-                const target_month = monthNames[data.target_month - 1] ?? "";
-                return `<p class="p-0 m-0">${target_month}</p>`;
+                const month = monthNames[data.target_month - 1] ?? "";
+
+                return `<p class="p-0 m-0">${month} </p>`;
             },
         },
         {
@@ -79,7 +80,7 @@ var BenefitDisbursementComponent = new (function () {
                 </div>`;
             },
         },
-    ];
+    ];    
     this.init = function () {
         if (mThis.initAlready) return;
 
@@ -90,6 +91,7 @@ var BenefitDisbursementComponent = new (function () {
             columns: mThis.cols,
             tableClass: "table table--white rounded-3 overflow-hidden header-uppercase",
             listContainerClass: null,
+            
         });
 
         mThis.btnAdd.onclick = function (e) {
@@ -102,6 +104,7 @@ var BenefitDisbursementComponent = new (function () {
                 },
             };
             BenefitDisburseDialog.show(op);
+            
         };
         const pr_tbl = mThis.BenefitDisburseListView.getListContainer();
         const sh_parent = pr_tbl;
