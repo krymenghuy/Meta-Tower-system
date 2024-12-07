@@ -49,7 +49,9 @@ var TaxBracketComponent = new (function () {
         {
             title: "Rate",
             className: "align-middle text-capitalize text-nowrap text-left",
-            data: "rate",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.rate ?? '0.00'} %</p>`;
+            }
         },
         {
             title: "Bias",
