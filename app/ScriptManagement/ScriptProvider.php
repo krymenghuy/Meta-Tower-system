@@ -54,6 +54,7 @@ class ScriptProvider
             'files' => [
                 '/assets/js/string_san.js',
                 '/assets/js/vsutil.v2.js',
+                '/assets/js/FilterPanel.js',
                 '/assets/js/sweetalert2.all.min.js',
                 '/assets/js/sweetalert2.toast.js',
                 '/assets/js/ExchangeManager.js',

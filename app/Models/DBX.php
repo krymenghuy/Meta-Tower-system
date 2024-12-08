@@ -37,10 +37,10 @@ class DBX
         switch ($driver) {
             case 'mysql':
             case 'pgsql':
-                $exp = "COALESCE($col_name, $alt)";
+                $exp = "COALESCE($col_name, '$alt')";
                 break;
             case 'sqlsrv':
-                $exp = "ISNULL($col_name, $alt)";
+                $exp = "ISNULL($col_name, '$alt')";
                 break;
             default:
                 throw new \Exception("Unsupported database driver: $driver");

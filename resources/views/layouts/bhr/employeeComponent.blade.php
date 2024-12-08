@@ -32,14 +32,11 @@
         padding: 20px;
         border: none;
         align-items: center;
-        background-color: #2b3991;
+        background-color: #89b5d6;
     }
     .card-body {
         /* background-image:url('https://img.freepik.com/free-vector/ombre-blue-curve-light-blue-background-vector_53876-140344.jpg'); */
-        background-image:url('https://i.pinimg.com/474x/19/88/b9/1988b9e1a5932267b8440d95dce365ac.jpg');
-        background-position: center;
-        background-size: cover;
-        background-repeat: no-repeat; "
+        background-color: #dce5e5;
     }
 
     .status_employee {
@@ -58,7 +55,7 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        background-color: #2b39912e;
+        background-color: #21577f;
         padding: 10px;
         border-radius: 10px;
         font-size: 10px;

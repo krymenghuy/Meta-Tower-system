@@ -53,6 +53,10 @@
   text-align: center;
 }
  
+.vs-filter-container{
+   background-color: #eff1f1;
+}
+
 /** begin::  .vsimgbox for default ImageBox style */
 .vsimbox-img-container{
    border-radius: 3px;

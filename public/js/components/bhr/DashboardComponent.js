@@ -23,10 +23,78 @@ var DashboardComponent = new (function () {
             })
             .replace(/,/g, ' ');
     };
+ 
+    // *** When DashboardComponent is showing, create Dashboard Filter button near page title 
+    this.onShow =  (options)=> {
+        mThis.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
+        const divTitle = main_view.divTitle;
+       let btn = divTitle.querySelector('.btn-db-fitler');
+       if(btn) return;   
+         divTitle.insertAdjacentHTML('beforeend','<div class="div-db-filter"><button class="btn-db-fitler btn btn-sm btn-primary"><i class="fa fa-list"></i></button></div>');
+         btn = divTitle.querySelector('.btn-db-fitler');
+         if(btn){
+            mThis.createFilterButton(btn);
+         } 
+    };
+ 
+   // *** When DashboardComponent is closing, remove Dashboard Filter button near page title
+    this.onHide = (options)=>{
+        mThis.removeFilterButton();
+    }
 
     this.init = () => {
         if (mThis.initAlready) return;
         mThis.initAlready = true;
+    }
+
+    this.removeFilterButton = ()=>{
+        const divTitle = main_view.divTitle; 
+        const div = divTitle.querySelector('div.div-db-filter');
+        if(div) div.remove();
+    };
+
+    // Render dashboard filter button
+    this.createFilterButton = (btn) => {
+        mThis.dbFilterConfig = null;
+        mThis.dbFilterConfig = new FilterPanel(
+        {
+                "triggerButton":btn,
+                fields:[
+                   {
+                    "name":"year",
+                   // "label":"Year",
+                    "valueField":"year",
+                    "textField":"year",
+                    "defaultValue":2024,
+                    "data":[{"year":2024}, {"year":2025}]
+                   },
+                   {
+                    "name":"month",
+                   // "label":"Month",
+                    "valueField":"value",
+                    "textField":"label",
+                    "data":[{"value":"this_month","label":"This month"}, {"value":"last_month","label":"Last month"}],
+
+                   }
+                ],
+                // "createContent":()=>{
+                //     return [
+                //         '<div class="d-flex flex-column p-3">',
+                //            '<div>',
+                //                 '<label class="form-label" vs-lang="titles.Date">Date</label>',
+                //                 '<div><input class="form-control" /></div>',
+                //            '</div>',
+                //            '<div>',
+                //               '<label class="form-label" vs-lang="titles.Branch">Branch</label>',
+                //               '<div><select class="form-control"> </select></div>',
+                //            '</div>',
+                //         '</div>',
+                //     ].join('');
+                // },
+               "contentCreated":(me)=>{
+                  console.log('Filter Content created! ', me.controls);
+               } 
+        });
     }
 
     this.renderDashboardTop = (data) => {
