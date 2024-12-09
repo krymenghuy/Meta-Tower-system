@@ -2,16 +2,15 @@
     <div class="d-flex justify-content-between w-100 py-3" id="_divFilter_employee_benefit">
         <div class="d-flex align-items-center w-50 gap-2">
             <button type="button" class="btn btn-primary-custom rounded-5" id="_btn_add_benefit">
-            <i class="fa-solid fa-layer-group"></i>
+                <i class="fa-solid fa-layer-group"></i>
                 <span>Add Benefit</span>
             </button>
-            
-            
+
+
         </div>
         <div class="d-flex align-items-center justify-content-end gap-2 w-50">
-            <div class="d-flex align-items-center justify-content-end gap-2 w-25">
-                <label for="" class="form-label " vslang="titles"></label>
-                <select type="id" id="el_category" class="data-input filter-field" data-field="category"></select>
+            <div class="d-flex align-items-center justify-content-end gap-2 w-25 pr-2">
+                <select type="id" id="el_benefit" class="data-input filter-field" data-field="benefit_id"></select>
             </div>
             <div class="d-flex align-items-center w-50 gap-2">
                 <input type="text" class="form-control filter-field btn_search" id="_sdl_search_bonus" placeholder="Search Benefits">
@@ -40,7 +39,8 @@
         white-space: nowrap;
         max-width: 100px;
     }
-    #_employee_bonus_list{
+
+    #_employee_bonus_list {
         height: 520px;
         overflow-y: auto;
         overflow-x: hidden;

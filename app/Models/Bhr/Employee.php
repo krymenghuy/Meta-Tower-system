@@ -10,6 +10,7 @@ use App\Models\DV;
 use App\Models\PublicStorage;
 use Illuminate\Support\Facades\DB;
 use App\Models\DBX;
+use App\Models\Location\Country;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class Employee //extends Model
@@ -59,7 +60,7 @@ class Employee //extends Model
             'email' => '1|email',
             'phone_number' => '1|phone|0-20',
             'sex' => '1|string|0-6',
-            'nationality' => '0|string|0-150',
+            'nationality_id' => '0|number|exists=loc_countries.id|text=Please ensure that nationality or country name is correct!',
             'date_of_birth' => '1|date',
             'address' => '0|string|0-250',
             'position_id' => '0|number',
@@ -324,23 +325,26 @@ class Employee //extends Model
 
         if ($search_value) {
             $skip_rows = 0;
+            $search_value = escape_like_str($search_value);
             $str_srch = "(emp.name LIKE '%" . $search_value . "%' OR emp.code = '" . $search_value . "' OR emp.nid = '" . $search_value . "' OR emp.phone_number = '" . $search_value . "')";
-        }
+        }else{
 
-        if ($status) {
-            $str_where = 'emp.status_id =\'' . $status . '\'';
+            if ($status) {
+                $str_where = 'emp.status_id =\'' . $status . '\'';
+            }
+    
+            if ($type) {
+                $str_where .= ' AND emp.emp_type_id =\'' . $type . '\'';
+            }
+            if ($branch) {
+                $str_where .= ' AND emp.branch_id=\'' . $branch . '\'';
+            }
+            if ($work_shift) {
+                $str_where .= ' AND emp.work_shift_id=\'' . $work_shift . '\'';
+            }
         }
-
-        if ($type) {
-            $str_where .= ' AND emp.emp_type_id =\'' . $type . '\'';
-        }
-        if ($branch) {
-            $str_where .= ' AND emp.branch_id=\'' . $branch . '\'';
-        }
-        if ($work_shift) {
-            $str_where .= ' AND emp.work_shift_id=\'' . $work_shift . '\'';
-        }
-
+ 
+        $countries = Country::listAll($ss);
         $query = DB::table('employees as emp')
         ->join('positions as p', 'p.id', '=', 'emp.position_id')
         ->join('departments as d', 'd.id', '=', 'p.department_id')
@@ -358,6 +362,11 @@ class Employee //extends Model
             emp.name_kh,
             emp.email,
             emp.phone_number,
+            emp.nationality_id,
+            emp.spouse_name,
+            emp.spouse_occ_code,
+            emp.passport_number,
+            emp.spouse_emp_id,
             emp.sex,
             emp.nationality,
             DATE_FORMAT(emp.date_of_birth, "%d %b %Y") as date_of_birth,
@@ -392,12 +401,12 @@ class Employee //extends Model
             }
             unset($row->photo_file_name);
         }
-
+        foreach($rows as &$row){
+             $row->nationality = Country::nationality($row->nationality_id,$countries);
+        }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-
-
-
+  
     static function props($id, $cols)
     {
         if (!$id) return null;
@@ -504,7 +513,8 @@ class Employee //extends Model
                 emp.email,
                 emp.phone_number,
                 emp.sex,
-                emp.nationality,
+                emp.nationality_id,
+                emp.passport_number,
                 emp.date_of_birth,
                 emp.address,
                 emp.photo_file_name,
@@ -520,6 +530,9 @@ class Employee //extends Model
                 ws.name as work_shift,
                 emp.apply_payroll_tax,
                 emp.status_id,
+                emp.spouse_name,
+                emp.spouse_occ_code,
+                emp.spouse_emp_id,
                 b.name as branch_name,
                 es.name as status
             ')
@@ -528,6 +541,7 @@ class Employee //extends Model
 
         if ($row) {
             $row->image_url = self::profilePicture($id);
+            $row->nationality = Country::nationality($row->nationality_id,null);
         } else {
             $row = null; // Or handle the case where employee is not found
         }
@@ -584,6 +598,7 @@ class Employee //extends Model
             $employee = self::getDetails($id, $ss);
         }
         return (object) [
+            'nationalities' => GeneralSettings::options_nationality($ss),
             'branches' => GeneralSettings::options_branch($ss),
             'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
             'departments'=>DB::table('departments')->selectRaw('id,name')->get(),

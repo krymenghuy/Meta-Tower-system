@@ -33,9 +33,7 @@ var DashboardComponent = new (function () {
        if(btn) return;   
          divTitle.insertAdjacentHTML('beforeend','<div class="div-db-filter"><button class="btn-db-fitler btn btn-sm btn-primary"><i class="fa fa-list"></i></button></div>');
          btn = divTitle.querySelector('.btn-db-fitler');
-         if(btn){
-            mThis.createFilterButton(btn);
-         } 
+         mThis.createFilterButton(btn);
     };
  
    // *** When DashboardComponent is closing, remove Dashboard Filter button near page title
@@ -55,14 +53,14 @@ var DashboardComponent = new (function () {
     };
 
     this.createFilterButton = (btn) => {
-        mThis.dbFilterConfig = null;
-        mThis.dbFilterConfig = new FilterPanel(
+        mThis.filterConfig = null;
+        mThis.filterConfig = new FilterPanel(
         {
                 "triggerButton":btn,
                 fields:[
                    {
                     "name":"year",
-                   // "label":"Year",
+                    "label":"Year",
                     "valueField":"year",
                     "textField":"year",
                     "defaultValue":2024,
@@ -70,11 +68,10 @@ var DashboardComponent = new (function () {
                    },
                    {
                     "name":"month",
-                   // "label":"Month",
-                    "valueField":"value",
-                    "textField":"label",
+                    "label":"Month",
+                    // "valueField":"value",
+                    // "textField":"label",
                     "data":[{"value":"this_month","label":"This month"}, {"value":"last_month","label":"Last month"}],
-
                    }
                 ],
                 // "createContent":()=>{
@@ -91,8 +88,11 @@ var DashboardComponent = new (function () {
                 //         '</div>',
                 //     ].join('');
                 // },
-               "contentCreated":(me)=>{
+               contentCreated:(me)=>{
                   console.log('Filter Content created! ', me.controls);
+               },
+               onSelect: (me, data)=>{
+                 console.log('selected data is  : ',data);
                } 
         });
     }

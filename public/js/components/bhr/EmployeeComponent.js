@@ -1,7 +1,7 @@
 "use strict";
 
 var EmployeeComponent = new (function () {
-    let mThis = this;
+    const mThis = this;
     this.title_prop = "Employee management";
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_employeeComponent");
@@ -297,7 +297,7 @@ var EmployeeComponent = new (function () {
                         statusColor = "background-color: #cab54a;";
                         break;
                     default:
-                        statusColor = "background-color: #ffffff;";
+                        statusColor = "background-color:#24315b;color:#fff;border:1px solid blue;";
                         break;
                 }
 
@@ -307,7 +307,7 @@ var EmployeeComponent = new (function () {
                     }">
                         <div class="card d-flex">
                             <div class="card-header">
-                                <div class="status_employee" style="${statusColor} color:#2b3991 ; padding: 3px; border-radius: 20px;">
+                                <div class="status_employee" style="${statusColor}; padding: 3px; border-radius: 20px;">
                                     <span>${status}</span>
                                 </div>
                                 <div class="dropdown">
@@ -329,49 +329,49 @@ var EmployeeComponent = new (function () {
                                 }" class="rounded-circle mb-3"
                                     alt="Profile Picture" style="width: 100px; height: 100px;">
                                 <div class="card-title">
-                                    <h6 class="text-primary-custom text-nowrap">${
+                                    <h5 class="text-black text-nowrap truncated-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px">${
                                         d.name
-                                    }</h6>
+                                    }</h5>
                                 </div>
-                                <div class="card_container gap-2 p-4 bg">
-                                    <div style="color:#cab54a;" class=" employee_id">#: <span class="ms-2" style="color:#fff;">${
-                                        d.code || "null"
+                                <div class="card_container gap-2 p-4 text-white">
+                                    <div class="employee_id">#: <span class="ms-2">${
+                                        d.code || "?"
                                     }</span></div>
                                     <div class="container_top">
                                         <div class="position">
-                                            <i class="fa-solid fa-dashboard" style="color:#cab54a;"></i> <span class="ms-2" style="color:#65fd39;"> ${
-                                                d.position || "null"
+                                            <i class="fa-solid fa-dashboard"></i> <span class="ms-2"> ${
+                                                d.position || "?"
                                             }</span>
                                         </div>
                                         <div class="me-3">
-                                            <i class="fa-solid fa-clock" style="color:#cab54a;"></i> <span class="text-white ms-2">${
-                                                d.type || "null"
+                                            <i class="fa-solid fa-clock"></i> <span class="ms-2">${
+                                                d.type || "?"
                                             }</span>
                                         </div>
                                     </div>
-                                    <div class="container_bottom">
+                                    <div class="container_bottom mt-1">
                                         <div class="phone text-muted">
-                                            <div class=" d-flex rounded-5 gap-2"><i class=" m-1 fas fa-phone" style="color:#74788d;"></i><span> ${
-                                                d.phone_number || "null"
+                                            <div class=" d-flex rounded-5 gap-2"><i class="text-success m-1 fas fa-phone"></i><span> ${
+                                                d.phone_number || "?"
                                             }</span></div>
                                         </div>
                                         <div class="email text-primary-custom">
-                                            <div class="d-flex rounded-5 gap-2"><i style="color:#2285ff;" class="m-1 fas fa-envelope"></i><span>${
-                                                d.email || "null"
+                                            <div class="d-flex rounded-5 gap-2"><i class="text-warning m-1 fas fa-envelope"></i><span>${
+                                                d.email || "?"
                                             }</span></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card_bottom pt-3">
-                                    <div class="text-muted" style="font-size:11px;">Joining Date : <span class="text-primary-custom">${
-                                        d.joining_date || "null"
+                                    <div class="text-muted" style="font-size:1.1em;">Joining Date : <span class="text-dark">${
+                                        d.joining_date || "?"
                                     }</span></div>
                                     <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${
                                         d.id
                                     }" aria-haspopup="true" aria-expanded="false">
                                         <i data-id="${
                                             d.id
-                                        }" class="fa-regular  fa-eye text-primary-custom fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
+                                        }" class="fa-regular fa-eye fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
                                     </a>
                                 </div>
                             </div>
@@ -450,8 +450,9 @@ var EmployeeComponent = new (function () {
                                     <p class="text-nowrap  width-p">Sex</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">
-                                    ${data.sex == "M" ? "Male" : ""}${data.sex == "F" ? "Female" : ""}${data.sex == "O" ? "Other" : ""
-                                    }</p>
+                                    ${data.sex == "M" ? "Male" : ""}${
+            data.sex == "F" ? "Female" : ""
+        }${data.sex == "O" ? "Other" : ""}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Nationality</p>
@@ -546,7 +547,7 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap    width-p" vslang="titles.Address">Address</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${
+                                    <p class="text-nowrap text-capitalize truncated-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">${
                                         data.address
                                     }</p>
                                 </div>
@@ -2102,15 +2103,15 @@ const AddEducation = (() => {
                         params: (op) => {
                             return { id: op.id }; // Pass ID to fetch data for edit
                         },
-                        onResponse: (me, res) => {
-                            if (op.id) {
-                                // Populate form with existing data for edit mode
-                                // me.setValue('emp_id', res.data.emp_id);
-                                // me.setValue('period', res.data.period);
-                                // me.setValue('description', res.data.description);
-                                // me.setValue('amount', res.data.amount);
-                            }
-                        },
+                        // onResponse: (me, res) => {
+                        //     if (op.id) {
+                        //         // Populate form with existing data for edit mode
+                        //         // me.setValue('emp_id', res.data.emp_id);
+                        //         // me.setValue('period', res.data.period);
+                        //         // me.setValue('description', res.data.description);
+                        //         // me.setValue('amount', res.data.amount);
+                        //     }
+                        // },
                     },
                 },
                 onShow: (me) => {},
@@ -2120,6 +2121,7 @@ const AddEducation = (() => {
     };
     return self;
 })();
+
 const AddExperience = (() => {
     const self = {};
     let dialog = null;
@@ -2250,8 +2252,7 @@ const AddTaxAllowance = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        console.log(9999, op);
-
+         
         dialog =
             dialog ||
             new GeneralDialog({
@@ -2366,6 +2367,11 @@ const EmployeeDialog = (() => {
                                         <span class="text-danger" >*</span>
                                         <input name="name" class="form-control  data-input" data-field="name" />
                                     </div>
+                                     <div class="form-group col-4">
+                                        <label for="name_kh" class="form-label text-primary-custom" vslang="titles.Khmer Name"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="name_kh" class="form-control  data-input" data-field="name_kh" />
+                                    </div>
                                     <div class="form-group col-4">
                                         <label for="nid" class="form-label text-primary-custom" vslang="titles.Identity Card"></label>
                                         <span class="text-danger" >*</span>
@@ -2374,7 +2380,7 @@ const EmployeeDialog = (() => {
                                     <div class="form-group col-4">
                                         <label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>
                                         <span class="text-danger" >*</span>
-                                        <input name="nationality" class="form-control  data-input" data-field="nationality" />
+                                        <select name="nationality_id" class="data-input" data-field="nationality_id"></select>
                                     </div>
                                     <div class="form-group col-4">
                                        <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
@@ -2390,13 +2396,7 @@ const EmployeeDialog = (() => {
                                         <span class="text-danger" >*</span>
                                         <input name="date_of_birth" class="form-control  data-input" data-field="date_of_birth" />
                                     </div>
-                                    <div class="form-group col-4">
-                                        <label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>
-                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
-                                    </div>
-
-
-
+                                    
                                 </div>
                             </div>
                                 <div class="row">
@@ -2409,6 +2409,42 @@ const EmployeeDialog = (() => {
                                         <label for="email" class="form-label text-primary-custom" vslang="titles.Email"></label>
                                         <span class="text-danger" >*</span>
                                         <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
+                                    </div>
+
+                                     <div class="form-group col-4">
+                                        <label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>
+                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                                    </div>
+                                    
+                                     <div class="form-group col-4">
+                                        <label for="passport_number" class="form-label text-primary-custom" vslang="titles.Passport Number"></label>
+                                        <input name="passport_number" class="form-control data-input" placeholder="" data-field="passport_number" />
+                                    </div>
+                                    
+                                    <div class="form-group col-4">
+                                        <label for="birth_city_id" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>
+                                        <select name="birth_city_id" class="modal-select2 data-input" placeholder="" data-field="birth_city_id"></select>
+                                    </div>
+
+                                    <div class="form-group col-4">
+                                        <label for="marital_status" class="form-label text-primary-custom" vslang="titles.Marital Status"></label>
+                                        <span class="text-danger" >*</span>
+                                        <select name="marital_status" class="modal-select2 data-input" placeholder="" data-field="marital_status">
+                                          <option value="Single">Single</option>
+                                          <option value="Married">Married</option>
+                                          <option value="Divorced">Divorced</option>
+                                          <option value="Not Disclosed">Not Disclosed</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-4">
+                                        <label for="spouse_name" class="form-label text-primary-custom" vslang="titles.Spouse Name"></label>
+                                        <input name="spouse_name" class="form-control data-input" placeholder="" data-field="spouse_name" />
+                                    </div>
+
+                                    <div class="form-group col-4">
+                                        <label for="spouse_occ_code" class="form-label text-primary-custom" vslang="titles.Spouse Occupation"></label>
+                                        <select name="spouse_occ_code" class="modal-select2 data-input" placeholder="" data-field="spouse_occ_code"></select>
                                     </div>
 
                                     <div class="form-group salary col-4">
@@ -2519,6 +2555,12 @@ const EmployeeDialog = (() => {
                 me.showProfile(me.dataOptions.id);
             },
             configSelect: [
+                {
+                    name: "nationality_id",
+                    data: "nationalities",
+                    textField: "nationality",
+                    valueField: "id", // "id" is the country_id
+                },
                 {
                     name: "position",
                     data: "positions",

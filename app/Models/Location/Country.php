@@ -7,9 +7,9 @@ namespace App\Models\Location;
 use App\Models\DV;
 use App\Models\Location\City;
 use DB;
+use App\Models\DBX;
 use Illuminate\Support\Facades\Cache;
-use Carbon\Carbon;
-
+ 
 class Country //extends Model
 {
     //use HasFactory;
@@ -60,26 +60,56 @@ class Country //extends Model
        return (object)['id'=>null,'name'=>''];
     }
 
+    static function listAll($ss){
+       return DB::table('loc_countries as c')->selectRaw('c.id,c.name,c.name_kh,c.nationality,c.region')->get();
+    }
+    static function nationality($id, $countries = null) {
+        static $cache = [
+            'countries' => null,
+            'timestamp' => null
+        ];
+    
+        // Check if cache exists and is within the 30-second freshness window
+        if (!$countries) {
+            $currentTime = time();
+            if ($cache['countries'] && ($currentTime - $cache['timestamp'] <= 30)) {
+                $countries = $cache['countries'];
+            } else {
+                // Fetch fresh data and update the cache
+                $countries = DB::table('loc_countries as c')
+                    ->selectRaw('id, name, nationality')
+                    ->get();
+                $cache['countries'] = $countries;
+                $cache['timestamp'] = $currentTime;
+            }
+        }
+    
+        // Find the matching country
+        $founds = $countries->filter(function($c) use ($id) {
+            return $c->id === $id;
+        });
+    
+        return $founds->isEmpty() ? null : $founds->first()->nationality;
+    }
+ 
     static function list($arr,$ss){
-         //$str_where ="1=1";
          $branch_id = $ss->branch_id;
-         $d = (object)$arr;
-         $search_value =isset($d->search_value)?$d->search_value:null;
+         $d = (object) $arr;
+         $search_value = $d->search_value ?? null;
      
          $str_search = '2=2';
          if($search_value){
              $search_value = escape_like_str($search_value);
              $str_search = '(c.name LIKE \'%'.$search_value.'%\')';
          }
+         $create_date = DBX::$created_at;
+         $col_create_date = DBX::formatDate("c.$create_date",'create_date');
          //return Cache::remember('countries',60,function(){
-           
-           
             return DB::table('loc_countries AS c')
             ->where('c.branch_id',$branch_id)
             ->whereRaw($str_search)
-            ->selectRaw('c.id,c.name,c.name_kh,c.code,c.standard_zone,c.nationality,c.nationality_kh,c.create_user,formatDate(c.create_date) as create_date')
-            
-            ->orderBy('c.standard_zone','ASC')->get();
+            ->selectRaw('c.id,c.name,c.name_kh,c.code,c.region,c.nationality,c.nationality_kh,c.create_user,'.$col_create_date)
+            ->orderBy('c.name','ASC')->get();
 
          //});
         
@@ -183,4 +213,20 @@ class Country //extends Model
         if($id >0) return (object)['status'=>'OK','id'=>$id, 'country'=>$inputs];
         return DV::error("something wrong during updating country");
      }
+
+     static function getFlag($country_id){
+         return null;
+     } 
+
+    static function saveFlag($country_id, $photo){
+      return;
+    }
+
+    static function options_city($ss = null){
+      $rows = DB::table('loc_countries as c')->selectRaw('c.id,c.name,c.name_kh,c.nationality,c.region,c.flag_file_name')->get();
+      foreach($rows as $row){
+         $row->flag = Country::getFlag($row->id);
+      }
+      return $rows;
+    } 
 }
