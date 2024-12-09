@@ -1,7 +1,7 @@
 "use strict";
 
 var EmployeeComponent = new (function () {
-    let mThis = this;
+    const mThis = this;
     this.title_prop = "Employee management";
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_employeeComponent");
@@ -2102,15 +2102,15 @@ const AddEducation = (() => {
                         params: (op) => {
                             return { id: op.id }; // Pass ID to fetch data for edit
                         },
-                        onResponse: (me, res) => {
-                            if (op.id) {
-                                // Populate form with existing data for edit mode
-                                // me.setValue('emp_id', res.data.emp_id);
-                                // me.setValue('period', res.data.period);
-                                // me.setValue('description', res.data.description);
-                                // me.setValue('amount', res.data.amount);
-                            }
-                        },
+                        // onResponse: (me, res) => {
+                        //     if (op.id) {
+                        //         // Populate form with existing data for edit mode
+                        //         // me.setValue('emp_id', res.data.emp_id);
+                        //         // me.setValue('period', res.data.period);
+                        //         // me.setValue('description', res.data.description);
+                        //         // me.setValue('amount', res.data.amount);
+                        //     }
+                        // },
                     },
                 },
                 onShow: (me) => {},
@@ -2120,6 +2120,7 @@ const AddEducation = (() => {
     };
     return self;
 })();
+
 const AddExperience = (() => {
     const self = {};
     let dialog = null;
@@ -2250,8 +2251,7 @@ const AddTaxAllowance = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        console.log(9999, op);
-
+         
         dialog =
             dialog ||
             new GeneralDialog({
@@ -2374,7 +2374,7 @@ const EmployeeDialog = (() => {
                                     <div class="form-group col-4">
                                         <label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>
                                         <span class="text-danger" >*</span>
-                                        <input name="nationality" class="form-control  data-input" data-field="nationality" />
+                                        <select name="nationality_id" class="data-input" data-field="nationality_id"></select>
                                     </div>
                                     <div class="form-group col-4">
                                        <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
@@ -2519,6 +2519,12 @@ const EmployeeDialog = (() => {
                 me.showProfile(me.dataOptions.id);
             },
             configSelect: [
+                {
+                    name: "nationality_id",
+                    data: "nationalities",
+                    textField: "nationality",
+                    valueField: "id", // "id" is the country_id
+                },
                 {
                     name: "position",
                     data: "positions",
