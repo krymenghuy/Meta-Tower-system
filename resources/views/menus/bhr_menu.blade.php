@@ -463,7 +463,7 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-icon">
                                      <img class="icons opacity-icons" src="{{asset('assets/images/icons/work_shift.svg')}}">
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Work Shift List"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Work Schedules"></span>
                             </a>
                         </li>
 

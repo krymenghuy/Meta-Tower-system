@@ -54,4 +54,9 @@ class District //extends Model
         return DV::error("something wrong during saving district");
      }
 
+     static function options_district($city_id = null,$ss = null){
+        $str_city = $city_id > 0 ? 'd.id ='.$city_id: '1=1';
+        return DB::table('loc_countries as c')->join('loc_cities as city','city.country_id', '=','c.id')->join('loc_districts as d','d.city_id','=','city.id')->whereRaw($str_city)->selectRaw('d.id, d.name, d.name_kh, city.name AS city_name, city.id AS city_id, c.id AS country_id,c.name as country_name')->orderByRaw('d.name ASC')->get();
+     }  
+
 }
