@@ -119,7 +119,7 @@
     <div class="d-flex py-3 mt-3 justify-content-between bg-white rounded-3 shadow w-100" id="_divFilter">
         <div class="d-flex align-items-center justify-content-start w-100 px-3">
             <button type="button" class="btn_add" id="_btnAddWorkShift">
-                <span>Add Work Shift</span>
+                <span>Add Schedule</span>
             </button>
         </div>
     </div>

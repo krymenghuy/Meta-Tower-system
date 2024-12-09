@@ -1,7 +1,7 @@
 'use strict';
 
 var LocationComponent = new function(){
-    let mThis = this;
+    const mThis = this;
     this.title_prop = 'Location Management';
     this.base_url = main_view.base_url;  
     this.self = main_view.appContent.children('#_sttn_locationsComponent');
@@ -23,7 +23,7 @@ var LocationComponent = new function(){
 
 //begin::CountryListPanel
  var CountryListPanel  = new function(){
-    let mThis = this;
+    const mThis = this;
     this.base_url = main_view.base_url;
     this.self = main_view.appContent.children('#_sttn_loc_countryListpanel');
     this.tblCountries = LocationComponent.self.find('#_sttn_loc_tblCountries');
@@ -32,7 +32,7 @@ var LocationComponent = new function(){
 
     mThis.lnkNewCountry.on('click',function(e){
       e.preventDefault();
-      let options = {
+      const options = {
         title:'New Country','def':null, 'id':null,'onClose':()=>{
                   mThis.displayCountries();
 
@@ -45,7 +45,7 @@ var LocationComponent = new function(){
     mThis.tblCountries_body.on('click','a._sttn_loc_delete_country',function(e){
       e.preventDefault();
       
-      let p = {'id':this.dataset.id};
+      const p = {'id':this.dataset.id};
       console.log(p);
       
       if(!p.id) p.id=0;
@@ -94,9 +94,8 @@ var LocationComponent = new function(){
       mThis.tblCountries_body.html(null);
       vsapi.call([mThis.base_url,'/api/location/countries'].join(''),null,null).then((res)=>{
          if(res.status_code===200){
-            let rows = StringSanitizer.sanitizeObject(res.data);
-            console.log(res.data);
-            let i=0,c;
+            const rows = StringSanitizer.sanitizeObject(res.data);
+            let i = 0,c = null;
             let html = ['<tr class=" color-text bg-info">',
                         `<th>Zone</th>`,
                         `<th>Country </th>`,
@@ -123,132 +122,10 @@ var LocationComponent = new function(){
     }
  }
 //end::CountryListpanel
-
-// const ZoneDialog1 = new function () {
-//   let mThis = this;
-//   this.self = main_view.appContent.children('#_sttn_dlgZon');
-//   this.base_url = main_view.base_url;
-//   this.elTitle = this.self.find('#_sttn_dlgZoneTitle');
-//   this.elZoneType = this.self.find('#_sttn_zoneType');
-//   this.elCountry = this.self.find('#_sttn_zon_country');
-//   this.elCity = this.self.find('#_sttn_zon_city');
-//   this.elDistrict = this.self.find('#_sttn_zon_district');
-//   this.elCommune = this.self.find('#_sttn_zon_commune');
-
-//   this.options = {};
-//   this.fields = [];
-//   this.btnOK = this.self.find('#_sttn_dlgZone_btnOK');
-//   this.elError = this.self.find('#_sttn_dlgZone_error');
-//   this.self.find('.data-input').each(function () {
-//     let el = { dataMember: $(this).data('field'), 'element': $(this) };
-//     mThis.fields.push(el);
-//   });
-
-//   this.getData = () => {
-//     let p = {};
-//     let i = 0, c;
-//     do {
-//       c = mThis.fields[i];
-//       if (!c) break;
-//       p[c.dataMember] = c.element.val();
-//       i++;
-//     } while (c);
-
-//     //zone_id 
-//     p.id = mThis.options.id;
-//     return p;
-//   }
-
-//   this.setData = (d) => {
-//     let i = 0, c;
-//     if (!d) {
-
-//       do {
-//         c = mThis.fields[i];
-//         if (!c) break;
-//         c.element.val(null);
-//         i++;
-//       } while (c);
-//       return;
-//     }
-
-//     i = 0;
-//     do {
-//       c = mThis.fields[i];
-//       if (!c) break;
-//       c.element.val(d[c.dataMember]);
-//       i++;
-//     } while (c);
-
-//     mThis.city_id = d.city_id;
-//     mThis.district_id = d.district_id;
-//     mThis.commune_id = d.commune_id;
-//     mThis.elCountry.trigger('change');
-//   }
-
-
-
-//   this.btnOK.on('click', function (e) {
-//     let p = mThis.getData();
-//     //console.log(p);
-    
-//     vsapi.call(`${mThis.base_url}/api/location/country/save`, p, null).then(res => {
-//       if (res.status_code === 200) {
-//         mThis.self.modal('hide');
-//         if (typeof mThis.options.onClose === 'function') mThis.options.onClose(true);
-//       } else cv_interact.warning(res.error_message);
-//     });
-//   });
-
-//   this.show = (options = {}) => {
-//     mThis.elError.html(null);
-//     options = options || {};
-//     options.id = options.id || options.zone_id;
-//     mThis.options = options;
-
-//     mThis.prepareFormData(options.id, options.def, (d) => {
-//       if (d.zone) {
-//         mThis.elTitle.text('Modify Zone Details');
-//       } else {
-//         mThis.elTitle.text('New Delivery Zone');
-//       }
-
-//       mThis.setData(d.zone);
-//       mThis.self.modal({
-//         backdrop: 'static'
-//       });
-//     });
-//   }
-//   //close::this.show()
-
-//   this.prepareFormData = (id, def, onFinish) => {
-
-//     vsapi.call(`${main_view.base_url}/api/location/options-country`, { 'id': id }, null).then(res => {
-//       let d = res.status_code === 200 ? res.data : {};
-//       // VSUtil.setComboItems(mThis.elCountry, d.countries, 'id', 'country', true, '(Select country)', null);
-//       // VSUtil.setComboItems(mThis.elZoneType, d.zone_types, 'zone_type', 'zone_type', true, '(Select zone type)', null);
-//       onFinish(d);
-//     });
-//   };
-
-//   // this.loadCountries = (def)=>{
-//   //    if(!def) def = {};
-//   //    vsapi.call(`${mThis.base_url}/api/location/options-country`,null).then(res => {
-//   //      if(res.status_code === 200){
-//   //        let rows = StringSanitizer.sanitizeObject(res.data);
-//   //        VSUtil.setComboItems(mThis.elCountry,rows,'id','name',true,'(Select Country)',def.country_id);
-//   //        if(mThis.elCountry.val() >0) mThis.elCountry.trigger('change');
-//   //      }
-//   //    });  
-//   // } 
-
-// }
-//end::ZoneDialog
-
-
+ 
 //begin::ZoneTabView 
 var ZoneTabView = new function(){
-  let mThis = this;
+  const mThis = this;
   this.self = LocationComponent.self.find('#_sttn_loc_subLocationTabView');
   this.base_url =main_view.base_url;
 
@@ -289,21 +166,21 @@ var ZoneTabView = new function(){
      
      vsapi.call([mThis.base_url,'/api/',method_name].join(''),p,null,LocationComponent.apiCluster).then((res)=>{
         if (res.status_code===200){
-              let rows = StringSanitizer.sanitizeObject(res.data);
-          
+              const rows = StringSanitizer.sanitizeObject(res.data);
+               console.log(rows);
               if (zone_name ==='city') 
                 {
-                  VSUtil.setComboItems(mThis.elFilter_city,rows,'id','city',true,'(Select a city)',def.city_id);
-                  VSUtil.setComboItems(mThis.elFilter_city_district,rows,'id','city',true,'(Select a city)',def.city_id);
+                  VSUtil.setComboItems(mThis.elFilter_city,rows,'id','name',true,'(Select a city)',def.city_id);
+                  VSUtil.setComboItems(mThis.elFilter_city_district,rows,'id','name',true,'(Select a city)',def.city_id);
                   //mThis.elFilter_city.val(rows[0]?rows[0].city_id:0).trigger('change'); //error 429 Too many requests
                 }
               else if (zone_name ==='district') 
               {
-                VSUtil.setComboItems(mThis.elFilter_district,rows,'id','district',true,'(Select a district)',def.district_id);
+                VSUtil.setComboItems(mThis.elFilter_district,rows,'id','name',true,'(Select a district)',def.district_id);
                 //mThis.elFilter_district.val(rows[0]?rows[0].district_id:0); //Cause some error "Maximum calls limit in laravel"
               } else if (zone_name ==='commune') 
               {
-                VSUtil.setComboItems(mThis.elFilter_commune,rows,'id','commume',true,'(Select a commune)',def.commune_id);
+                VSUtil.setComboItems(mThis.elFilter_commune,rows,'id','name',true,'(Select a commune)',def.commune_id);
                 //mThis.elFilter_commune.val(rows[0]?rows[0].district_id:0);
               }
   
@@ -570,8 +447,8 @@ var ZoneTabView = new function(){
                   // this.sh_container = mThis.tblCities.getListContainer();
               // mThis.setEvents($(mThis.container));
               // console.log(mThis.container.parentElement); 
-              const sh_parent = mThis.tblCities;
-              console.log(sh_parent.parentElement);
+                  const sh_parent = mThis.tblCities;
+                  //console.log(sh_parent.parentElement);
                   sh_parent[0].style.height = (window.innerHeight - 190)+'px';
                   sh_parent[0].classList.add('overflow-y-auto');
                   window.onresize = () => {
