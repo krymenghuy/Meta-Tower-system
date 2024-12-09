@@ -86,7 +86,7 @@ var BenefitDisbursePolicyComponent = new (function () {
         if (mThis.initAlready) return;
 
         mThis.BdpListView = new ListView("_benefit_disbursement_policy_list", {
-            fetchApi: `${main_view.base_url}/hr/bdp/list-paginate`,
+            fetchApi: `${main_view.base_url}/hr/disburse-policy/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -166,7 +166,7 @@ var BenefitDisbursePolicyComponent = new (function () {
                 if (e) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/hr/bdp/delete`,
+                            `${main_view.base_url}/hr/disburse-policy/delete`,
                             op,
                             false,
                             false,
@@ -194,7 +194,7 @@ var BenefitDisbursePolicyComponent = new (function () {
     };
     this.prepareFormOptions = () => {
         vsapi
-            .call(`${main_view.base_url}/hr/bdp/form-options`, null, null, null)
+            .call(`${main_view.base_url}/hr/disburse-policy/form-options`, null, null, null)
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
 
@@ -318,7 +318,7 @@ const BdpDialog = (() => {
 
                             vsapi
                                 .call(
-                                    [main_view.base_url, "/hr/bdp/save"].join(
+                                    [main_view.base_url, "/hr/disburse-policy/save"].join(
                                         ""
                                     ),
                                     p,
@@ -339,11 +339,11 @@ const BdpDialog = (() => {
                 prepareFormOptions: {
                     createTitle: "Add Benefit Disburse Policy",
                     modifyTitle: "Edit Benefit Disburse Policy",
-                    targetProp: "bdp",
+                    targetProp: "disburse_policy",
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/hr/bdp/form-options",
+                            "/hr/disburse-policy/form-options",
                         ].join(""),
                         params: (op) => {
                             return { id: op.id };

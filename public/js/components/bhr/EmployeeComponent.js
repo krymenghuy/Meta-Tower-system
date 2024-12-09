@@ -424,7 +424,7 @@ var EmployeeComponent = new (function () {
                     <div class="d-block ms-3 w-100">
                         <div class="row text-white mb-0">
                             <div class="col-md-3">
-                                <div class="div-img ms-2">
+                                <div class="div-img ms-2 mt-5">
                                     <img src="${
                                         data.image_url ||
                                         "../uploads/public/1_data/default/images/mr.avif"
@@ -443,6 +443,13 @@ var EmployeeComponent = new (function () {
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap text-capitalize">${
                                         data.name
+                                    }</p>
+                                </div>
+                                 <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Name KH</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.name_kh
                                     }</p>
                                 </div>
 
@@ -474,8 +481,13 @@ var EmployeeComponent = new (function () {
                                         data.date_of_birth || ""
                                     }</p>
                                 </div>
-
-
+                                <div class="d-flex">
+                                    <p class="text-nowrap    width-p" vslang="titles.Joining Date">Joining Date</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.joining_date
+                                    }</p>
+                                </div>
 
                             </div>
                             <div class="col-md-3 mt-3">
@@ -495,14 +507,28 @@ var EmployeeComponent = new (function () {
                                     }</p>
                                 </div>
                                 <div class="d-flex">
-                                    <p class="text-nowrap  width-p">Employee Type</p>
+                                    <p class="text-nowrap width-p">Employee Type</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${
                                         data.type || ""
                                     }</p>
                                 </div>
+                                 <div class="d-flex">
+                                    <p class="text-nowrap width-p">salary</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">​${
+                                        data.salary || "0.00"
+                                    }(KHR)</p>
+                                </div>
                                 <div class="d-flex">
-                                    <p class="text-nowrap  width-p">Tel</p>
+                                    <p class="text-nowrap  width-p">Payroll Tax</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">
+                                    ${data.apply_payroll_tax == "0"? "Have Tax": ""}${ data.apply_payroll_tax == "1" ? "Non Tax" : ""}
+                                    </p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p">Tel</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${
                                         data.phone_number || ""
@@ -518,34 +544,45 @@ var EmployeeComponent = new (function () {
                             </div>
 
                             <div class="col-md-3 mt-3">
-                                <div class="d-flex">
-                                    <p class="text-nowrap  width-p">salary</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">​${
-                                        data.salary || "0.00"
-                                    }(KHR)</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap  width-p">Payroll Tax</p>
-                                    <p class="px-2">:</p>
-                                    <p class="text-nowrap">${
-                                        data.apply_payroll_tax == "0"
-                                            ? "Have Tax"
-                                            : ""
-                                    }${
-            data.apply_payroll_tax == "1" ? "Non Tax" : ""
-        }</p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-nowrap    width-p" vslang="titles.NSSF">NSSF</p>
-                                    <p class="px-2">:</p>
+                                 <div class="d-flex">
+                                    <p class="text-nowrap width-p" vslang="titles.NSSF">NSSF</p>
+                                    <p class="pl-5 pr-2">:</p>
                                     <p class="text-nowrap text-capitalize">${
                                         data.nssf_id
                                     }</p>
                                 </div>
                                 <div class="d-flex">
-                                    <p class="text-nowrap    width-p" vslang="titles.Address">Address</p>
-                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap width-p" vslang="titles.Passport">Passport</p>
+                                    <p class="pl-5 pr-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.passport_number
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p" vslang="titles.Marital Status">Marital Status</p>
+                                    <p class="pl-5 pr-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.marital_status
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p" vslang="titles.Spouse Name">Spouse Name</p>
+                                    <p class="pl-5 pr-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.spouse_name
+                                    }</p>
+                                </div>
+
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p " vslang="titles.Spouse Occupation">Spouse Occupation</p>
+                                    <p class="pl-5 pr-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.spouse_occ_code
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p" vslang="titles.Address">Address</p>
+                                    <p class="pl-5 pr-2">:</p>
                                     <p class="text-nowrap text-capitalize">${
                                         data.address
                                     }</p>
@@ -692,7 +729,7 @@ var EmployeeComponent = new (function () {
             `
              <div class="card pb-3" style="height:390px;">
                             <div class="card-header bg-primary-custom text-white">
-                                <h4>Skills</h4>
+                                <h5 class="mt-1">Skills</h5>
 
                             </div>
                             <div class="card-body">
@@ -768,7 +805,7 @@ var EmployeeComponent = new (function () {
                 let data = res.status_code === 200 ? res.data.data : [];
                 let html = `<div class="card pb-3" style="height:390px;">
                 <div class="card-header text-white bg-primary-custom">
-                    <h4>Education</h4>
+                    <h5 class="mt-1">Education</h5>
                     <div class="d-flex gap-2">
                         <a href="javascript:void(0)" id="lnk_add_education">
                             <i class="fa fa-plus-circle fs-5 text-white"></i>
@@ -960,7 +997,7 @@ var EmployeeComponent = new (function () {
                 let data = res.status_code === 200 ? res.data.data : [];
                 let html = `<div class="card pb-3" style="height:390px;">
                 <div class="card-header text-white bg-primary-custom">
-                    <h4>Experience</h4>
+                    <h5 class="mt-1">Experience</h5>
                     <div class="d-flex gap-2">
                         <a href="javascript:void(0)" id="lnk_add_experience">
                             <i class="fa fa-plus-circle fs-5 text-white"></i>
@@ -1153,7 +1190,7 @@ var EmployeeComponent = new (function () {
                 let html = `
                     <div class="card pb-3" style="height:390px;">
                         <div class="card-header bg-primary-custom text-white">
-                            <h4>Tax Allowance</h4>
+                            <h5 class="mt-1">Tax Allowance</h5>
                             <div class="d-flex gap-2">
                                 <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-tax-allowance">
                                     <i class="fa fa-plus-circle fs-5 text-white"></i>
@@ -2251,7 +2288,7 @@ const AddTaxAllowance = (() => {
     let dialog = null;
 
     self.show = (op) => {
-         
+
         dialog =
             dialog ||
             new GeneralDialog({
@@ -2348,7 +2385,7 @@ const EmployeeDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        
+
         dialog = new GeneralDialog({
             cssClass: "modal-lg",
             backdrop: "static",
@@ -2395,7 +2432,7 @@ const EmployeeDialog = (() => {
                                         <span class="text-danger" >*</span>
                                         <input name="date_of_birth" class="form-control  data-input" data-field="date_of_birth" />
                                     </div>
-                                    
+
                                 </div>
                             </div>
                                 <div class="row">
@@ -2414,12 +2451,12 @@ const EmployeeDialog = (() => {
                                         <label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>
                                         <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
                                     </div>
-                                    
+
                                      <div class="form-group col-4">
                                         <label for="passport_number" class="form-label text-primary-custom" vslang="titles.Passport Number"></label>
                                         <input name="passport_number" class="form-control data-input" placeholder="" data-field="passport_number" />
                                     </div>
-                                    
+
                                     <div class="form-group col-4">
                                         <label for="birth_city_id" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>
                                         <select name="birth_city_id" class="modal-select2 data-input" placeholder="" data-field="birth_city_id"></select>
@@ -2436,25 +2473,30 @@ const EmployeeDialog = (() => {
                                         </select>
                                     </div>
 
-                                    <div class="form-group col-4">
+                                    <div class="form-group col-3">
                                         <label for="spouse_name" class="form-label text-primary-custom" vslang="titles.Spouse Name"></label>
                                         <input name="spouse_name" class="form-control data-input" placeholder="" data-field="spouse_name" />
                                     </div>
 
-                                    <div class="form-group col-4">
+                                    <div class="form-group col-3">
                                         <label for="spouse_occ_code" class="form-label text-primary-custom" vslang="titles.Spouse Occupation"></label>
-                                        <select name="spouse_occ_code" class="modal-select2 data-input" placeholder="" data-field="spouse_occ_code"></select>
+                                        <input name="spouse_occ_code" id="spouse_occ_code" class="form-control data-input"  data-field="spouse_occ_code" />
                                     </div>
 
-                                    <div class="form-group salary col-4">
-                                        <label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>
-                                        <input name="salary" id="salary" class="form-control data-input"  data-field="salary" />
+                                    <div class="form-group col-3">
+                                        <label for="spouse_emp_id" class="form-label text-primary-custom" vslang="titles.Spouse Employee"></label>
+                                         <select name="spouse_emp_id" class=" data-input"  data-field="spouse_emp_id"></select>
                                     </div>
-                                    <div class="form-group col-4">
+                                    <div class="form-group col-3">
                                         <label for="type" class="form-label text-primary-custom " vslang="titles.Employee Type"></label>
                                         <span class="text-danger" >*</span>
                                         <select name="type" class="data-input"  data-field="emp_type_id"></select>
                                     </div>
+                                    <div class="form-group salary col-4">
+                                        <label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>
+                                        <input name="salary" id="salary" class="form-control data-input"  data-field="salary" />
+                                    </div>
+
                                     <div class="form-group col-4">
                                         <label for="position" class="form-label text-primary-custom " vslang="titles.Position"></label>
                                         <span class="text-danger" >*</span>
@@ -2578,6 +2620,26 @@ const EmployeeDialog = (() => {
                     textField: "name",
                     valueField: "id",
                 },
+                {
+                    name: "branch_id",
+                    data: "branches",
+                    textField: "name",
+                    valueField: "id",
+                },
+                {
+                    name: "birth_city_id",
+                    data: "cities",
+                    textField: "name",
+                    valueField: "country_id",
+                },
+                {
+                    name: "spouse_emp_id",
+                    data: "spouse_employee",
+                    textField: (me, d) => {
+                        return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> </div></div>`;
+                    },
+                    valueField: "id",
+                },
             ],
             buttons: [
                 {
@@ -2643,7 +2705,7 @@ const EmployeeDialog = (() => {
 
                     let id = op.id;
                     if (id) {
-                        salary.classList.remove("d-none");
+                        // salary.classList.remove("d-none");
                         if (el.tagName.toLowerCase() === "select") {
                             if (
                                 data_member == "position_id" ||
@@ -2662,7 +2724,7 @@ const EmployeeDialog = (() => {
                     }
                     const emp_type_id = EmployeeComponent.getFilterData().emp_type_id;
                     console.log(12,emp_type_id);
-                    
+
                     if(emp_type_id) {
                         me.controls.type.value = emp_type_id;
                     }

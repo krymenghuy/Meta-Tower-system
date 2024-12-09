@@ -38,6 +38,7 @@ use App\Http\Controllers\Bhr\PromoteEmployeeController;
 use App\Http\Controllers\Bhr\ShiftDetailsController;
 use App\Http\Controllers\Bhr\GeneralSettingsController;
 use App\Http\Controllers\Bhr\BenefitDisbursePolicyController;
+use App\Http\Controllers\Bhr\EmployeeSkillController;
 
 
 //begin:: api without Authentication
@@ -328,10 +329,18 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->gro
 
 });
 
-Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('bdp')->group(function(){
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('disburse-policy')->group(function(){
     Route::post('/save', [BenefitDisbursePolicyController::class, 'saveBenefitDisbursePolicy']);
     Route::post('/list-paginate', [BenefitDisbursePolicyController::class, 'getBenefitDisbursePolicyListPaginate']);
     Route::post('/details', [BenefitDisbursePolicyController::class, 'getDetails']);
     Route::post('/delete', [BenefitDisbursePolicyController::class, 'deleteBenefitDisbursePolicy']);
     Route::post('/form-options', [BenefitDisbursePolicyController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('emp-skill')->group(function(){
+    Route::post('/save', [EmployeeSkillController::class, 'saveEmployeeSkill']);
+    Route::post('/list-paginate', [EmployeeSkillController::class, 'getEmployeeSkillListPaginate']);
+    Route::post('/details', [EmployeeSkillController::class, 'getDetails']);
+    Route::post('/delete', [EmployeeSkillController::class, 'deleteEmployeeSkill']);
+    Route::post('/form-options', [EmployeeSkillController::class, 'getFormOptions']);
 });

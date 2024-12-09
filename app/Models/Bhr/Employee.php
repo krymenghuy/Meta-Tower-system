@@ -74,6 +74,12 @@ class Employee //extends Model
             'apply_payroll_tax' => '1|number|default = 0',
             'status_id' => '1|number|default = 10',
             'photo' => '0|image',
+            'marital_status' => '1|string|0-100',
+            'spouse_name' => '0|string|0-100',
+            'spouse_emp_id' => '0|number',
+            'spouse_occ_code' => '0|string|0-100',
+            'passport_number' => '0|string|0-100',
+
         ];
 
         $checkUnique = null;
@@ -366,6 +372,7 @@ class Employee //extends Model
         ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
         ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
         ->join('um_branches as b', 'b.id', '=', 'emp.branch_id')
+        ->join('loc_countries as c', 'c.id', '=', 'emp.nationality_id')
         ->whereRaw($str_srch)
             ->whereRaw($str_where)
             ->selectRaw('
@@ -377,12 +384,12 @@ class Employee //extends Model
             emp.email,
             emp.phone_number,
             emp.nationality_id,
+            c.name as nationality,
             emp.spouse_name,
             emp.spouse_occ_code,
             emp.passport_number,
             emp.spouse_emp_id,
             emp.sex,
-            emp.nationality,
             DATE_FORMAT(emp.date_of_birth, "%d %b %Y") as date_of_birth,
             emp.address,
             emp.photo_file_name,
@@ -397,6 +404,7 @@ class Employee //extends Model
             emp.work_shift_id,
             ws.name as work_shift,
             emp.apply_payroll_tax,
+            emp.marital_status,
             emp.status_id,
             b.name as branch_name,
             es.name as status
@@ -470,7 +478,6 @@ class Employee //extends Model
             emp.email,
             emp.phone_number,
             emp.sex,
-            emp.nationality,
             emp.date_of_birth,
             emp.address,
             emp.photo_file_name,
@@ -481,6 +488,7 @@ class Employee //extends Model
             p.title as position,
             emp.salary,
             ws.name as work_shift,
+            emp.marital_status,
             emp.status_id,
             emp.apply_payroll_tax,
             es.name as status
@@ -613,6 +621,7 @@ class Employee //extends Model
         }
         return (object) [
             'nationalities' => GeneralSettings::options_nationality($ss),
+            'cities' => GeneralSettings::loc_options_city($ss),
             'branches' => GeneralSettings::options_branch($ss),
             'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
             'departments'=>DB::table('departments')->selectRaw('id,name')->get(),
@@ -620,6 +629,7 @@ class Employee //extends Model
             'types' => DB::table('emp_types')->selectRaw('id,name')->get(),
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
             'employee' => $employee,
+            'spouse_employee' => GeneralSettings::options_employee(10, $ss),
         ];
     }
     function setTerminateStatus($status_id, $id = null, $ss = null)
@@ -1062,7 +1072,7 @@ class Employee //extends Model
         $str_search = '1=1';
         $query = DB::table('employees as emp')
         ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
-        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality,emp.address,emp.joining_date')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email,emp.address,emp.joining_date')
         ->where('emp.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
         if ($search_value) {
             $search_value = escape_like_str($search_value);

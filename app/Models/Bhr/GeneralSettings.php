@@ -53,7 +53,7 @@ class GeneralSettings //extends Model
         ->first();
        return $row;
     }
-  
+
 
     static function getExchangeRate($end_date = null,$ss=null){
         $str_branch_id = $ss? $ss->branch_id:'1=1';
@@ -367,11 +367,15 @@ class GeneralSettings //extends Model
     static function options_nationality($ss){
         return DB::table('loc_countries')->selectRaw('id,nationality')->orderByRaw('nationality ASC')->get();
     }
+    static function loc_options_city($ss){
+        return DB::table('loc_cities')->selectRaw('country_id,name')->orderByRaw('name ASC')->get();
+
+    }
 
     static function options_branch($ss){
         return DB::table('um_branches')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS branch_name')->get();
     }
-   
+
     static function options_payroll($ss){
         return DB::table('payrolls')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS payroll_name')->get();
     }
@@ -454,7 +458,7 @@ class GeneralSettings //extends Model
   static function select_options($arr,$ss){
     $d = (object)$arr;
     $str_where = '1=1';
-    
+
     $res = [
         'branches' => self::options_branch($ss),
         'leave_types' => self::options_leave_type($ss),
@@ -463,5 +467,5 @@ class GeneralSettings //extends Model
     ];
     return $res;
 }
-  
+
 }
