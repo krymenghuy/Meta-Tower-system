@@ -134,7 +134,7 @@ input {
 
 li.kt-menu__section {
     margin-top: 8px !important;
-    background: #ebf5fb;
+    /* background: #93c2de; */
     border: 1px solid #d0d3d4;
     padding: 10px;
     /* box-shadow: 1.5px 2px #d0d3d4; */
@@ -145,7 +145,7 @@ li.kt-menu__section {
 }
 
 .menu-selected {
-    background-color: #ffff !important;
+    background-color: #f5f5f5 !important;
     color: #8dc63f !important;
 }
 .menu-selected .kt-menu__link-text:hover{
