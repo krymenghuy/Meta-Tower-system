@@ -363,6 +363,11 @@ class GeneralSettings //extends Model
        }
        return $rows;
     }
+
+    static function options_nationality($ss){
+        return DB::table('loc_countries')->selectRaw('id,nationality')->orderByRaw('nationality ASC')->get();
+    }
+
     static function options_branch($ss){
         return DB::table('um_branches')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS branch_name')->get();
     }
