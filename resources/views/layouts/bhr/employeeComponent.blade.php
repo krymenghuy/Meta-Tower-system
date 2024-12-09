@@ -32,7 +32,7 @@
         padding: 20px;
         border: none;
         align-items: center;
-        background-color: #89b5d6;
+        background-color: #323f6a;
     }
     .card-body {
         /* background-image:url('https://img.freepik.com/free-vector/ombre-blue-curve-light-blue-background-vector_53876-140344.jpg'); */
@@ -55,12 +55,14 @@
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        background-color: #21577f;
+        background-color: #467ba2;
         padding: 10px;
         border-radius: 10px;
         font-size: 10px;
     }
-
+    .card_container span{
+        font-size: 1.2em;
+    }
     .container_top {
         display: flex;
         justify-content: space-between;
@@ -199,7 +201,6 @@
         <div class="d-flex justify-content-between bg-white shadow p-3 rounded-3 w-100" id="div_filter_filed">
             <div class="d-flex align-items-start justify-content-start w-25">
                 <button type="button" class="btn_add" style="background-color:#2b3991;" id="_btn_add_employee">
-                <i class="fa-solid fa-share"></i>
                     <span>Add Employee </span>
                 </button>
             </div>
