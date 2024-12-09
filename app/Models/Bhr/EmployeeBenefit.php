@@ -123,6 +123,7 @@ class EmployeeBenefit
         $skip_rows = ($current_page - 1) * $per_page;
 
         $search_value = $d->search_value ?? null;
+        $search_benefit_id = $d->benefit_id ?? null;
         $str_srch = '1=1';
         $str_where = "2=2";
         if ($search_value) {
@@ -142,7 +143,9 @@ class EmployeeBenefit
 
             ->orderBy('b.id', 'desc');
 
-
+        if ($search_benefit_id) {
+            $benefitsQuery->where('b.benefit_id', $search_benefit_id);
+        }
         $clone_query = clone $benefitsQuery;
 
         $count = $clone_query->count('b.id');
@@ -206,7 +209,7 @@ class EmployeeBenefit
         if ($id) {
             $emp_benefits = self::getDetails($id, $ss);
         }
-        return $data = (object) [
+        return (object) [
             'employees' => GeneralSettings::options_employee(10, $ss),
             'benefits' => DB::table('benefits')->selectRaw('id,name')->get(),
             'emp_benefits' => $emp_benefits,

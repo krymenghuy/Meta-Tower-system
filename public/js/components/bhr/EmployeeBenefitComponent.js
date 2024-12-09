@@ -12,7 +12,7 @@ var EmployeeBenefitComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btn_add_benefit");
     this.divFilter = this.self.querySelector("#_divFilter_employee_benefit");
     this.elSearch = this.self.querySelector("#_sdl_search_bonus");
-    this.elCategory = this.self.querySelector("#el_category");
+    this.elBenefit = this.self.querySelector("#el_benefit");
 
     this.cols = [
         {
@@ -109,12 +109,12 @@ var EmployeeBenefitComponent = new (function () {
             data: (data) => {
                 return `
                 <div class="d-flex justify-content-start align-items-center">
-                    <div class="text-center gap-2 d-flex flex-wrap">
-                        <button class="btn btn-sm btn-primary btn_edit_benefit" data-id="${data.id}">
-                            <i class="fa-regular fa-pen-to-square"></i>
+                    <div class="text-center align-center gap-2 d-flex flex-wrap">
+                        <button class="btn rounded-3 p-1 btn-primary-custom btn_edit_emp_benefit" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger btn_delete_benefit" data-id="${data.id}">
-                            <i class="fa-regular fa-trash-can"></i>
+                        <button class="btn rounded-3 p-1 btn-warning btn_delete_benefit" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
                         </button>
                     </div>
                 </div>`;
@@ -133,7 +133,10 @@ var EmployeeBenefitComponent = new (function () {
             tableClass:
                 "table table--white overflow-hidden rounded-3 header-uppercase",
         });
-
+        mThis.divFilter.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
+        });
         mThis.btnAdd.onclick = (e) => {
             e.preventDefault();
             EmployeeBenefitDialog.show({
@@ -146,18 +149,21 @@ var EmployeeBenefitComponent = new (function () {
             });
         };
 
-        mThis.elCategory.addEventListener("change", () => {
-            mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
-        });
-
-        mThis.setActionListeners();
+        const pr_tbl = mThis.EmployeeBenefitListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
         mThis.elSearch.addEventListener(
             "keyup",
             this.debounce(() => {
                 mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
             }, 300)
         );
-
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () =>
+                mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
+        });
+        mThis.setActionListeners();
         mThis.initAlready = true;
     };
 
@@ -168,7 +174,7 @@ var EmployeeBenefitComponent = new (function () {
                 mThis.deleteBenefit(btn.dataset.id, btn);
             }
 
-            btn = VSUtil.closestLimited(e.target, ".btn_edit_benefit");
+            btn = VSUtil.closestLimited(e.target, ".btn_edit_emp_benefit");
             if (btn) {
                 mThis.editBenefit(btn.dataset.id, btn);
             }
@@ -177,7 +183,7 @@ var EmployeeBenefitComponent = new (function () {
 
     this.getFilterData = () => {
         const filters = {
-            benefit_type_id: mThis.elCategory.value,
+            benefit_id: mThis.elBenefit.value,
             search_value: mThis.elSearch.value,
         };
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
@@ -233,16 +239,28 @@ var EmployeeBenefitComponent = new (function () {
         );
     };
 
-    this.prepareFormOptions = async () => {
-        try {
-            const res = await vsapi.call(
-                `${main_view.base_url}/hr/employee/benefit/form-options`
-            );
-            const data = res.status_code === 200 ? res.data : {};
-            VSUtil.setComboItems( mThis.elCategory, data.benefits, "id", "name", true, "All benefits", null);
-        } catch (err) {
-            console.error("Error fetching form options:", err);
-        }
+    this.prepareFormOptions = () => {
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/employee/benefit/form-options`,
+                null,
+                null,
+                null
+            )
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+
+                VSUtil.setComboItems(
+                    mThis.elBenefit,
+                    d.benefits,
+                    "id",
+                    "name",
+                    true,
+                    "All Benefits",
+                    null
+                );
+                console.log(1111, mThis.elBenefit);
+            });
     };
 
     this.debounce = (func, delay) => {
@@ -255,8 +273,8 @@ var EmployeeBenefitComponent = new (function () {
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.prepareFormOptions();
         mThis.EmployeeBenefitListView.showPage(mThis.getFilterData());
+        mThis.prepareFormOptions();
         $(mThis.self).siblings().hide();
         $(mThis.self).fadeIn(200);
     };
@@ -266,14 +284,12 @@ const EmployeeBenefitDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-        dialog =
-
-            new GeneralDialog({
-                cssClass: "modal-lg",
-                backdrop: "static",
-                keyboard: true,
-                createContent: () => {
-                    return `
+        dialog = new GeneralDialog({
+            cssClass: "modal-lg",
+            backdrop: "static",
+            keyboard: true,
+            createContent: () => {
+                return `
                         <div class="row">
                             <div class="form-group col-md-12">
                                 <label for="employee" class="form-label" vslang="titles.Employee"></label>
@@ -317,81 +333,79 @@ const EmployeeBenefitDialog = (() => {
                                 <textarea name="remarks" class="form-control data-input" data-field="remarks"></textarea>
                             </div>
                         </div>`;
+            },
+            configSelect: [
+                {
+                    name: "employee",
+                    data: "employees",
+                    textField: (me, d) =>
+                        `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span>${d.name}</span><span>${d.position}</span></div></div>`,
+                    valueField: "id",
                 },
-                configSelect: [
-                    {
-                        name: "employee",
-                        data: "employees",
-                        textField: (me, d) =>
-                            `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span>${d.name}</span><span>${d.position}</span></div></div>`,
-                        valueField: "id",
-                    },
-                    {
-                        name: "benefits",
-                        data: "benefits",
-                        textField: "name",
-                        valueField: "id",
-                    },
-                ],
-                buttons: [
-                    {
-                        label: '<span class="text-warning">Cancel</span>',
-                        cssClass: "btn btn-default",
-                        click: (me, btn) => me.hide(false),
-                    },
-                    {
-                        label: "<span>Save</span>",
-                        cssClass: "btn btn-primary",
-                        click: (me, btn) => {
-                            const p = me.getData();
-                            p.id = me.dataOptions.id;
+                {
+                    name: "benefits",
+                    data: "benefits",
+                    textField: "name",
+                    valueField: "id",
+                },
+            ],
+            buttons: [
+                {
+                    label: '<span class="text-warning">Cancel</span>',
+                    cssClass: "btn btn-default",
+                    click: (me, btn) => me.hide(false),
+                },
+                {
+                    label: "<span>Save</span>",
+                    cssClass: "btn btn-primary",
+                    click: (me, btn) => {
+                        const p = me.getData();
+                        p.id = me.dataOptions.id;
 
-                            vsapi
-                                .call(
-                                    `${main_view.base_url}/hr/employee/benefit/save`,
-                                    p,
-                                    btn
-                                )
-                                .then((res) => {
-                                    if (res.status_code === 200) {
-                                        me.hide(true, p);
-                                    } else {
-                                        cv_interact.error(res.error_message);
-                                    }
-                                });
-                        },
-                    },
-                ],
-                prepareFormOptions: {
-                    createTitle: "New Employee Benefit",
-                    modifyTitle: "Edit Employee Benefit",
-                    targetProp: "emp_benefits",
-                    api: {
-                        endpoint: `${main_view.base_url}/hr/employee/benefit/form-options`,
-                        params: (op) => ({ id: op.id }),
+                        vsapi
+                            .call(
+                                `${main_view.base_url}/hr/employee/benefit/save`,
+                                p,
+                                btn
+                            )
+                            .then((res) => {
+                                if (res.status_code === 200) {
+                                    me.hide(true, p);
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
                     },
                 },
-                onPrepareForm: (me, data) => {
-                    Object.keys(data).forEach((key) => {
-                        const input = me.divModal.querySelector(
-                            `[data-field="${key}"]`
-                        );
-                        if (input) {
-                            if (input.tagName === "SELECT") {
-                                input.value = data[key];
-                            } else {
-                                input.value = data[key];
-                            }
+            ],
+            prepareFormOptions: {
+                createTitle: "New Employee Benefit",
+                modifyTitle: "Edit Employee Benefit",
+                targetProp: "emp_benefits",
+                api: {
+                    endpoint: `${main_view.base_url}/hr/employee/benefit/form-options`,
+                    params: (op) => ({ id: op.id }),
+                },
+            },
+            onPrepareForm: (me, data) => {
+                Object.keys(data).forEach((key) => {
+                    const input = me.divModal.querySelector(
+                        `[data-field="${key}"]`
+                    );
+                    if (input) {
+                        if (input.tagName === "SELECT") {
+                            input.value = data[key];
+                        } else {
+                            input.value = data[key];
                         }
-                    });
-                    LocaleManager.translateZone(me.divModal);
-                },
-            });
-
+                    }
+                });
+                LocaleManager.translateZone(me.divModal);
+            },
+        });
 
         dialog.show(op);
     };
 
     return self;
 })();
-
