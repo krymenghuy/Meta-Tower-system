@@ -54,4 +54,8 @@ class Commune //extends Model
         if($id >0) return DV::success(["commune"=>$inputs]);
         return DV::error("something wrong during saving commune");
      }
+     static function options_commune($district_id = null,$ss = null){
+        $str_district = $district_id > 0 ? 'city.id ='.$district_id: '1=1';
+        return DB::table('loc_countries as c')->join('loc_cities as city','city.country_id', '=','c.id')->join('loc_districts as d','d.city_id','=','city.district_id')->join('loc_communes as cn','cn.district_id','=','d.id')->whereRaw($str_district)->selectRaw('cn.id, cn.name, cn.name_kh, d.name As district_name, d.id AS district_id, city.name AS city_name,  city.id AS city_id, c.id AS country_id,c.name as country_name')->orderByRaw('cn.name ASC')->get();
+     }  
 }

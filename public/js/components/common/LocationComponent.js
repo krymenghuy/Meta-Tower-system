@@ -1,7 +1,7 @@
 'use strict';
 
 var LocationComponent = new function(){
-    let mThis = this;
+    const mThis = this;
     this.title_prop = 'Location Management';
     this.base_url = main_view.base_url;  
     this.self = main_view.appContent.children('#_sttn_locationsComponent');
@@ -23,7 +23,7 @@ var LocationComponent = new function(){
 
 //begin::CountryListPanel
  var CountryListPanel  = new function(){
-    let mThis = this;
+    const mThis = this;
     this.base_url = main_view.base_url;
     this.self = main_view.appContent.children('#_sttn_loc_countryListpanel');
     this.tblCountries = LocationComponent.self.find('#_sttn_loc_tblCountries');
@@ -95,7 +95,6 @@ var LocationComponent = new function(){
       vsapi.call([mThis.base_url,'/api/location/countries'].join(''),null,null).then((res)=>{
          if(res.status_code===200){
             let rows = StringSanitizer.sanitizeObject(res.data);
-            console.log(res.data);
             let i=0,c;
             let html = ['<tr class=" color-text bg-info">',
                         `<th>Zone</th>`,
@@ -248,7 +247,7 @@ var LocationComponent = new function(){
 
 //begin::ZoneTabView 
 var ZoneTabView = new function(){
-  let mThis = this;
+  const mThis = this;
   this.self = LocationComponent.self.find('#_sttn_loc_subLocationTabView');
   this.base_url =main_view.base_url;
 
@@ -293,17 +292,17 @@ var ZoneTabView = new function(){
           
               if (zone_name ==='city') 
                 {
-                  VSUtil.setComboItems(mThis.elFilter_city,rows,'id','city',true,'(Select a city)',def.city_id);
-                  VSUtil.setComboItems(mThis.elFilter_city_district,rows,'id','city',true,'(Select a city)',def.city_id);
+                  VSUtil.setComboItems(mThis.elFilter_city,rows,'id','name',true,'(Select a city)',def.city_id);
+                  VSUtil.setComboItems(mThis.elFilter_city_district,rows,'id','name',true,'(Select a city)',def.city_id);
                   //mThis.elFilter_city.val(rows[0]?rows[0].city_id:0).trigger('change'); //error 429 Too many requests
                 }
               else if (zone_name ==='district') 
               {
-                VSUtil.setComboItems(mThis.elFilter_district,rows,'id','district',true,'(Select a district)',def.district_id);
+                VSUtil.setComboItems(mThis.elFilter_district,rows,'id','name',true,'(Select a district)',def.district_id);
                 //mThis.elFilter_district.val(rows[0]?rows[0].district_id:0); //Cause some error "Maximum calls limit in laravel"
               } else if (zone_name ==='commune') 
               {
-                VSUtil.setComboItems(mThis.elFilter_commune,rows,'id','commume',true,'(Select a commune)',def.commune_id);
+                VSUtil.setComboItems(mThis.elFilter_commune,rows,'id','name',true,'(Select a commune)',def.commune_id);
                 //mThis.elFilter_commune.val(rows[0]?rows[0].district_id:0);
               }
   

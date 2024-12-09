@@ -74,5 +74,10 @@ class City //extends Model
         if($id >0) return DV::success(["city"=>$inputs]);
         return DV::error("something wrong during saving city name");
      }
+   
+     static function options_city($country_id = null,$ss = null){
+        $str_country = $country_id > 0 ? 'c.id ='.$country_id: '1=1';
+        return DB::table('loc_countries as c')->join('loc_cities as city','city.country_id', '=','c.id')->whereRaw($str_country)->selectRaw('city.id, city.name, city.name_kh')->orderByRaw('city.name ASC')->get();
+     }
 
 }

@@ -9,19 +9,19 @@ use App\Models\Location\City;
 use App\Models\Location\District;
 use App\Models\Location\Commune;
 use App\Models\JDV;
-use App\Models\UM;
+use App\Services\UMt\AuthService;
 
 class LocationController extends Controller
 {
  
    function getComboItems_country(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
+        $ss =AuthService::verifyAuth($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
         return JDV::result(Country::list($req->all(),$ss));
     } 
    
    function saveCountry(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
+        $ss =AuthService::verifyAuth($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
         $res = Country::save($req->all(),$ss);
         if($res->status ==='OK') return JDV::success(['id'=>$res->id]);
@@ -30,7 +30,7 @@ class LocationController extends Controller
  
   //create or Update City
    function saveCity(Request $req){
-        $ss = UM::getUserInfoByToken($req,-1);
+        $ss =AuthService::verifyAuth($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
         $res = City::save($req->all(),$ss);
         if($res->status ==='OK') return JDV::success(['city'=>$res->city]);
@@ -38,7 +38,7 @@ class LocationController extends Controller
    } 
  
    function saveDistrict(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
+    $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
     $res = District::save($req->all(),$ss);
     if($res->status ==='OK') return JDV::success(['district'=>$res->district]);
@@ -46,7 +46,7 @@ class LocationController extends Controller
   } 
 
   function saveCommune(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
+    $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
     $res = Commune::save($req->all(),$ss);
     if($res->status ==='OK') return JDV::success(['commune'=>$res->commune]);
@@ -54,30 +54,30 @@ class LocationController extends Controller
   }
 
   function getCountryList(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
+    $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
     return JDV::result(Country::list($req->all(),$ss));
   }
   function getCityList(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
+    $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
     return JDV::result(City::list($req->country_id,$ss)); 
   }
 
   function getDistrictList(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
+    $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
     return JDV::result(District::list($req->city_id,$ss)); 
   }
 
   function getCommuneList(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
+    $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
     return JDV::result(Commune::list($req->district_id,$ss)); 
   }
 
   function deleteCountry(Request $req){
-      $ss = UM::getUserInfoByToken($req,-1);
+      $ss =AuthService::verifyAuth($req,-1);
       if($ss->status_code !=200) return $ss; //user not authenticated
       $id =$req->id?$req->id:$req->country_id;
       $res = Country::delete($id,$ss);
@@ -86,7 +86,7 @@ class LocationController extends Controller
   }
 
   function deleteCity(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
+    $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
     $id = isset($req->city_id)?$req->city_id:$req->id; 
     $res = City::delete($id,$ss);
@@ -95,7 +95,7 @@ class LocationController extends Controller
   }
 
   function deleteDistrict(Request $req){
-      $ss = UM::getUserInfoByToken($req,-1);
+      $ss =AuthService::verifyAuth($req,-1);
       if($ss->status_code !=200) return $ss; //user not authenticated
       $id = $req->id?$req->id:$req->district_id;
       $res = District::delete($id,$ss);
@@ -104,7 +104,7 @@ class LocationController extends Controller
   }
 
   function deleteCommune(Request $req){
-      $ss = UM::getUserInfoByToken($req,-1);
+      $ss =AuthService::verifyAuth($req,-1);
       if($ss->status_code !=200) return $ss; //user not authenticated
       $id = $req->id?$req->id:$req->commune_id; 
       $res = Commune::delete($id,$ss);
@@ -113,35 +113,23 @@ class LocationController extends Controller
   }
    
   function getComboItems_city(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
+    $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
     $country_id = $req->country_id?$req->country_id:-1;
-    return JDV::result(\App\Models\Dms\GeneralSettings::options_city($country_id,$ss));
+    return JDV::result(Country::options_city($country_id,$ss));
   }
 
   function getComboItems_district(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
+    $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
     $city_id =$req->city_id?$req->city_id:-1;
-    return JDV::result(\App\Models\Dms\GeneralSettings::options_district($city_id,$ss));
+    return JDV::result(District::options_district($city_id,$ss));
   }
    
   function getComboItems_commune(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
+    $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
     $district_id = $req->district_id?$req->district_id:-1;
-    return JDV::result(\App\Models\Dms\GeneralSettings::options_commune($district_id,$ss));
+    return JDV::result(Commune::options_commune($district_id,$ss));
   }
-
-  function getZoneItems(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
-    if($ss->status_code !=200) return $ss; //user not authenticated
-    return JDV::result(\App\Models\Dms\DeliveryZone::list($ss));
-  }
-  function getComboItems_zone(Request $req){
-    $ss = UM::getUserInfoByToken($req,-1);
-    if($ss->status_code !=200) return $ss; //user not authenticated
-    return JDV::result(\App\Models\Dms\GeneralSettings::options_zone($ss));
-  }
-
 }

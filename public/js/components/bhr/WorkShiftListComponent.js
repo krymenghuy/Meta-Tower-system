@@ -5,17 +5,17 @@ var WorkShiftListComponent = new (function () {
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_workShiftListComponent");
     this.self = this.jm[0];
-    this.title_prop = "WorkShiftList";
+    this.title_prop = "Work Schedules";
     this.btnAdd = this.self.querySelector("#_btnAddWorkShift");
     this.divFilter = this.self.querySelector("#_divFilter");
     this.cols = [
-        {
-            title: "",
-            className: "align-middle",
+        // {
+        //     title: "",
+        //     className: "align-middle",
            
-        },
+        // },
         {
-            title: "Work Shift",
+            title: "Name",
             className: "align-middle fw-bold",
             data: (data) => {
                 return `<span class="text-primary-custom">${data.name}</span>`;
@@ -23,17 +23,10 @@ var WorkShiftListComponent = new (function () {
         },
         
         {
-            title: "Update By",
+            title: "last Updated",
             className: "align-middle fw-bold",
             data: (data) => {
-                return `<span class="text-Capitalize">${data.update_user}</span>`;
-            },
-        },
-        {
-            title: "Last Updated",
-            className: "align-middle",
-            data: (data) => {
-                return `<span class="text-muted" style="font-size:80%;">${data.update_date}</span>`;
+                return [`<span class="text-Capitalize d-block">${data.update_user}</span>`, `<span class="text-muted" style="font-size:80%;">${data.update_date}</span>`].join('');
             },
         },
         {
@@ -250,8 +243,8 @@ const WorkShiftListDialog = (() => {
                 },
             ],
             prepareFormOptions: {
-                createTitle: "Create Work Shift",
-                modifyTitle: "Edit Work Shift",
+                createTitle: "Create Schedule",
+                modifyTitle: "Edit Schedule",
                 targetProp: "work_shifts",
                 api: {
                     endpoint: [
