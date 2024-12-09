@@ -334,36 +334,36 @@ var EmployeeComponent = new (function () {
                                     }</h6>
                                 </div>
                                 <div class="card_container gap-2 p-4 bg">
-                                    <div style="color:#2258ff;" class="employee_id">#: <span class="ms-2">${
+                                    <div style="color:#cab54a;" class=" employee_id">#: <span class="ms-2" style="color:#fff;">${
                                         d.code || "null"
                                     }</span></div>
                                     <div class="container_top">
                                         <div class="position">
-                                            <i class="text-danger  fa-solid fa-dashboard"></i> <span class="ms-2"> ${
+                                            <i class="fa-solid fa-dashboard" style="color:#cab54a;"></i> <span class="ms-2" style="color:#65fd39;"> ${
                                                 d.position || "null"
                                             }</span>
                                         </div>
                                         <div class="me-3">
-                                            <i class=" text-primary-custom fa-solid fa-clock"></i> <span class="ms-2" style="color:#00f9ec;">${
+                                            <i class="fa-solid fa-clock" style="color:#cab54a;"></i> <span class="text-white ms-2">${
                                                 d.type || "null"
                                             }</span>
                                         </div>
                                     </div>
                                     <div class="container_bottom">
                                         <div class="phone text-muted">
-                                            <div class=" d-flex rounded-5 gap-2"><i class="text-success m-1 fas fa-phone"></i><span> ${
+                                            <div class=" d-flex rounded-5 gap-2"><i class=" m-1 fas fa-phone" style="color:#74788d;"></i><span> ${
                                                 d.phone_number || "null"
                                             }</span></div>
                                         </div>
                                         <div class="email text-primary-custom">
-                                            <div class="d-flex rounded-5 gap-2"><i class="text-warning m-1 fas fa-envelope"></i><span>${
+                                            <div class="d-flex rounded-5 gap-2"><i style="color:#2285ff;" class="m-1 fas fa-envelope"></i><span>${
                                                 d.email || "null"
                                             }</span></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card_bottom pt-3">
-                                    <div class="text-warning" style="font-size:11px;">Joining Date : <span class="text-light">${
+                                    <div class="text-muted" style="font-size:11px;">Joining Date : <span class="text-primary-custom">${
                                         d.joining_date || "null"
                                     }</span></div>
                                     <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${
@@ -371,7 +371,7 @@ var EmployeeComponent = new (function () {
                                     }" aria-haspopup="true" aria-expanded="false">
                                         <i data-id="${
                                             d.id
-                                        }" class="fa-regular  fa-eye text-white fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
+                                        }" class="fa-regular  fa-eye text-primary-custom fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
                                     </a>
                                 </div>
                             </div>
