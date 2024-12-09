@@ -2,7 +2,7 @@
 
 var WorkshiftComponent = new (function () {
     const mThis = this;
-    this.title_prop = "Work Shifts";
+    this.title_prop = "Work Schedules";
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_workshiftComponent");
     this.self = this.jm[0];

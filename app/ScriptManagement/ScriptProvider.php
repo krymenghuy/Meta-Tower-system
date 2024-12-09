@@ -129,8 +129,8 @@ class ScriptProvider
                 '/js/components/bhr/BenefitDisbursementComponent.js',
                 'js/components/bhr/BenefitDisbursePolicyComponent.js', 
                 'js/components/bhr/BenefitComponent.js',
-
-
+                'js/components/common/LocationComponent.js',
+                'js/components/common/CompanyComponent.js',
             ]
         ],
 
