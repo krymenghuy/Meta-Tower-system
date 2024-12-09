@@ -297,7 +297,7 @@ var EmployeeComponent = new (function () {
                         statusColor = "background-color: #cab54a;";
                         break;
                     default:
-                        statusColor = "background-color: #ffffff;";
+                        statusColor = "background-color:#24315b;color:#fff;border:1px solid blue;";
                         break;
                 }
 
@@ -307,7 +307,7 @@ var EmployeeComponent = new (function () {
                     }">
                         <div class="card d-flex">
                             <div class="card-header">
-                                <div class="status_employee" style="${statusColor} color:#2b3991 ; padding: 3px; border-radius: 20px;">
+                                <div class="status_employee" style="${statusColor}; padding: 3px; border-radius: 20px;">
                                     <span>${status}</span>
                                 </div>
                                 <div class="dropdown">
@@ -329,49 +329,49 @@ var EmployeeComponent = new (function () {
                                 }" class="rounded-circle mb-3"
                                     alt="Profile Picture" style="width: 100px; height: 100px;">
                                 <div class="card-title">
-                                    <h6 class="text-primary-custom text-nowrap">${
+                                    <h5 class="text-black text-nowrap">${
                                         d.name
-                                    }</h6>
+                                    }</h5>
                                 </div>
-                                <div class="card_container gap-2 p-4 bg">
-                                    <div style="color:#2258ff;" class="employee_id">#: <span class="ms-2">${
-                                        d.code || "null"
+                                <div class="card_container gap-2 p-4 text-white">
+                                    <div class="employee_id">#: <span class="ms-2">${
+                                        d.code || "?"
                                     }</span></div>
                                     <div class="container_top">
                                         <div class="position">
-                                            <i class="text-danger  fa-solid fa-dashboard"></i> <span class="ms-2"> ${
-                                                d.position || "null"
+                                            <i class="fa-solid fa-dashboard"></i> <span class="ms-2"> ${
+                                                d.position || "?"
                                             }</span>
                                         </div>
                                         <div class="me-3">
-                                            <i class=" text-primary-custom fa-solid fa-clock"></i> <span class="ms-2" style="color:#00f9ec;">${
-                                                d.type || "null"
+                                            <i class="fa-solid fa-clock"></i> <span class="ms-2">${
+                                                d.type || "?"
                                             }</span>
                                         </div>
                                     </div>
-                                    <div class="container_bottom">
+                                    <div class="container_bottom mt-1">
                                         <div class="phone text-muted">
                                             <div class=" d-flex rounded-5 gap-2"><i class="text-success m-1 fas fa-phone"></i><span> ${
-                                                d.phone_number || "null"
+                                                d.phone_number || "?"
                                             }</span></div>
                                         </div>
                                         <div class="email text-primary-custom">
                                             <div class="d-flex rounded-5 gap-2"><i class="text-warning m-1 fas fa-envelope"></i><span>${
-                                                d.email || "null"
+                                                d.email || "?"
                                             }</span></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card_bottom pt-3">
-                                    <div class="text-warning" style="font-size:11px;">Joining Date : <span class="text-light">${
-                                        d.joining_date || "null"
+                                    <div class="text-muted" style="font-size:1.1em;">Joining Date : <span class="text-dark">${
+                                        d.joining_date || "?"
                                     }</span></div>
                                     <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${
                                         d.id
                                     }" aria-haspopup="true" aria-expanded="false">
                                         <i data-id="${
                                             d.id
-                                        }" class="fa-regular  fa-eye text-white fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
+                                        }" class="fa-regular fa-eye fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
                                     </a>
                                 </div>
                             </div>
@@ -2366,6 +2366,11 @@ const EmployeeDialog = (() => {
                                         <span class="text-danger" >*</span>
                                         <input name="name" class="form-control  data-input" data-field="name" />
                                     </div>
+                                     <div class="form-group col-4">
+                                        <label for="name_kh" class="form-label text-primary-custom" vslang="titles.Khmer Name"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="name_kh" class="form-control  data-input" data-field="name_kh" />
+                                    </div>
                                     <div class="form-group col-4">
                                         <label for="nid" class="form-label text-primary-custom" vslang="titles.Identity Card"></label>
                                         <span class="text-danger" >*</span>
@@ -2390,13 +2395,7 @@ const EmployeeDialog = (() => {
                                         <span class="text-danger" >*</span>
                                         <input name="date_of_birth" class="form-control  data-input" data-field="date_of_birth" />
                                     </div>
-                                    <div class="form-group col-4">
-                                        <label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>
-                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
-                                    </div>
-
-
-
+                                    
                                 </div>
                             </div>
                                 <div class="row">
@@ -2409,6 +2408,42 @@ const EmployeeDialog = (() => {
                                         <label for="email" class="form-label text-primary-custom" vslang="titles.Email"></label>
                                         <span class="text-danger" >*</span>
                                         <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
+                                    </div>
+
+                                     <div class="form-group col-4">
+                                        <label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>
+                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                                    </div>
+                                    
+                                     <div class="form-group col-4">
+                                        <label for="passport_number" class="form-label text-primary-custom" vslang="titles.Passport Number"></label>
+                                        <input name="passport_number" class="form-control data-input" placeholder="" data-field="passport_number" />
+                                    </div>
+                                    
+                                    <div class="form-group col-4">
+                                        <label for="birth_city_id" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>
+                                        <select name="birth_city_id" class="modal-select2 data-input" placeholder="" data-field="birth_city_id"></select>
+                                    </div>
+
+                                    <div class="form-group col-4">
+                                        <label for="marital_status" class="form-label text-primary-custom" vslang="titles.Marital Status"></label>
+                                        <span class="text-danger" >*</span>
+                                        <select name="marital_status" class="modal-select2 data-input" placeholder="" data-field="marital_status">
+                                          <option value="Single">Single</option>
+                                          <option value="Married">Married</option>
+                                          <option value="Divorced">Divorced</option>
+                                          <option value="Not Disclosed">Not Disclosed</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-4">
+                                        <label for="spouse_name" class="form-label text-primary-custom" vslang="titles.Spouse Name"></label>
+                                        <input name="spouse_name" class="form-control data-input" placeholder="" data-field="spouse_name" />
+                                    </div>
+
+                                    <div class="form-group col-4">
+                                        <label for="spouse_occ_code" class="form-label text-primary-custom" vslang="titles.Spouse Occupation"></label>
+                                        <select name="spouse_occ_code" class="modal-select2 data-input" placeholder="" data-field="spouse_occ_code"></select>
                                     </div>
 
                                     <div class="form-group salary col-4">
