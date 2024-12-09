@@ -329,7 +329,7 @@ var EmployeeComponent = new (function () {
                                 }" class="rounded-circle mb-3"
                                     alt="Profile Picture" style="width: 100px; height: 100px;">
                                 <div class="card-title">
-                                    <h5 class="text-black text-nowrap">${
+                                    <h5 class="text-black text-nowrap truncated-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px">${
                                         d.name
                                     }</h5>
                                 </div>
@@ -450,8 +450,9 @@ var EmployeeComponent = new (function () {
                                     <p class="text-nowrap  width-p">Sex</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">
-                                    ${data.sex == "M" ? "Male" : ""}${data.sex == "F" ? "Female" : ""}${data.sex == "O" ? "Other" : ""
-                                    }</p>
+                                    ${data.sex == "M" ? "Male" : ""}${
+            data.sex == "F" ? "Female" : ""
+        }${data.sex == "O" ? "Other" : ""}</p>
                                 </div>
                                 <div class="d-flex">
                                     <p class="text-nowrap  width-p">Nationality</p>
@@ -546,7 +547,7 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap    width-p" vslang="titles.Address">Address</p>
                                     <p class="px-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${
+                                    <p class="text-nowrap text-capitalize truncated-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis">${
                                         data.address
                                     }</p>
                                 </div>

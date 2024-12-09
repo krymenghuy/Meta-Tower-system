@@ -307,8 +307,8 @@ const BenefitDisburseDialog = (() => {
                             <input name="withdraw_rate" class="form-control data-input" data-field="withdraw_rate" />
                         </div>
                         <div class="form-group col-6">
-                            <label for="month" class="form-label" vslang="titles.Month"></label>
-                            <select name="month" class="form-control data-input" data-field="target_month">
+                            <label for="target_month" class="form-label" vslang="titles.Month"></label>
+                            <select name="target_month" class="form-control data-input" data-field="target_month">
                                 ${months
                                     .map(
                                         (month) =>
