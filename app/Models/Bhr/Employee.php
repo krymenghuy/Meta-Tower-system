@@ -250,31 +250,45 @@ class Employee //extends Model
     }
     static function savePayrollListBenefit($arr, $ss)
     {
-            $v_rule = [
-                'id' => '0|identity=1',
-                'payroll_id' => '1|number',
-                'emp_id' => '1|number',
-                'benefit_id' => '1|number',
-                'full_amount' => '1|number',
-                'withdraw_rate' => '0|number',
-                'tax_option_id' =>'1|number',
-                'used_amount' => '0|number',
-            ];
+        $v_rule = [
+            'id' => '0|identity=1',
+            'payroll_id' => '1|number',
+            'emp_id' => '1|number',
+            'benefit_id' => '1|number',
+            'full_amount' => '1|number',
+            'withdraw_rate' => '0|number',
+            'tax_option_id' => '1|number',
+            'used_amount' => '0|number',
+        ];
 
-            $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-            if ($res->error) {
-                return DV::error($res->error);
-            }
-
-            $id = $res->id;
-            $inputs = $res->values;
-            $id = saveData($ss,'payroll_list_benefits', ['id' => $id], $inputs, [], 1);
-            if ($id > 0) {
-                return DV::depends(1, ['payroll_list_benefits' => $inputs, 'id' => $id]);
-            }
-
-            return DV::error('Error saving payroll list benefit!');
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
         }
+
+        $inputs = $res->values;
+
+        $inputs['id'] = $inputs['id'] ?? null;
+
+        $existing = DB::table('payroll_list_benefits')
+            ->where('payroll_id', $inputs['payroll_id'])
+            ->where('emp_id', $inputs['emp_id'])
+            ->where('benefit_id', $inputs['benefit_id'])
+            ->first();
+
+        if ($existing) {
+            return DV::depends(1, ['message' => 'Record already exists', 'id' => $existing->id]);
+        }
+
+        $id = saveData($ss, 'payroll_list_benefits', ['id' => $inputs['id']], $inputs, [], 1);
+        if ($id > 0) {
+            return DV::depends(1, ['payroll_list_benefits' => $inputs, 'id' => $id]);
+        }
+
+        return DV::error('Error saving payroll list benefit!');
+    }
+
+
 
     function deleteProfilePicture($id = null, $ss = null)
     {
@@ -332,7 +346,7 @@ class Employee //extends Model
             if ($status) {
                 $str_where = 'emp.status_id =\'' . $status . '\'';
             }
-    
+
             if ($type) {
                 $str_where .= ' AND emp.emp_type_id =\'' . $type . '\'';
             }
@@ -343,7 +357,7 @@ class Employee //extends Model
                 $str_where .= ' AND emp.work_shift_id=\'' . $work_shift . '\'';
             }
         }
- 
+
         $countries = Country::listAll($ss);
         $query = DB::table('employees as emp')
         ->join('positions as p', 'p.id', '=', 'emp.position_id')
@@ -406,7 +420,7 @@ class Employee //extends Model
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-  
+
     static function props($id, $cols)
     {
         if (!$id) return null;
