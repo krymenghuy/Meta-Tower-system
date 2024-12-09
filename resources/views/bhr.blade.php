@@ -284,7 +284,8 @@ echo $user->lang ?? 'en'; ?>">
                             @include('layouts.bhr.benefitDisbursementComponent')
                             @include('layouts.bhr.benefitDisbursePolicyComponent')
                             @include('layouts.bhr.benefitComponent')
-
+                            @include('layouts.common.locationComponent')
+                            @include('layouts.common.companyComponent')
                         </div>
                     </div>
                 </div>
