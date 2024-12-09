@@ -268,6 +268,7 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Leave Management"></span>
                 </a>
             </li>
+              
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(204); ?>>
                 <a href="WorkshiftComponent" modid="204" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -276,7 +277,6 @@ function v_display($mod_id, $module_ids = null)
                 </a>
             </li>
             
-           
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
                 <?php v_display(null, [209]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
@@ -373,7 +373,7 @@ function v_display($mod_id, $module_ids = null)
                                     <img class="icons opacity-icons"
                                         src="{{ asset('assets/images/bhr/position.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Disbursement"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Special Disburse Plans"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
@@ -467,219 +467,40 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
 
-                    </ul>
-                </div>
-            </li>
- 
-            
-            {{-- <li class="kt-menu__item" aria-haspopup="true" <?php v_display(201); ?>>
-                <a href="CompanySetupComponent" modid="201" class="menu-item kt-menu__link">
-                    <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons"
-                            src="{{ asset('assets/images/icons/company_profile.svg') }}" />
-                    </span>
-                    <span class="kt-menu__link-text font-color " vslang="menus.Company Setup"></span>
-                </a>
-            </li>
-            <li class="d-none kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
-                data-ktmenu-submenu-toggle="hover" <?php v_display(null, [220, 210, 102, 221, 216, 212]); ?>>
-                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
-                    <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons"
-                            src="{{ asset('assets/images/icons/general_settings.svg') }}" />
-                    </span>
-                    <span class="kt-menu__link-text " vslang="menus.General Settings"></span>
-                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
-                </a>
-                <div class="kt-menu__submenu">
-                    <span class="kt-menu__arrow"></span>
-                    <ul class="kt-menu__subnav">
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
-                            <a href="CountryZonesComponent" modid="105" class="menu-item kt-menu__link">
+                            <a href="LocationComponent" modid="105" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/delivery_zones.svg') }}" />
+                                        src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.Country Zone"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Countries and Cities"></span>
                             </a>
                         </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(220); ?>>
-                            <a href="PriceSettingsComponent" modid="220" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/zone_price.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.Customer Zone Prices"></span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(230); ?>>
-                            <a href="SupplierPriceSettingsComponent" modid="220" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/zone_price.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.Supplier Zone Prices"></span>
-                            </a>
-                        </li>
+                        
                     </ul>
                 </div>
             </li>
-
-            <li class=" kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
-                <?php v_display(null, [220, 210, 102, 221, 216, 212]); ?>>
-                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
+             
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+                <a href="CompanyComponent" modid="-1" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
-                            src="{{ asset('assets/images/icons/general_settings.svg') }}" />
+                            src="{{ asset('assets/images/bhr/report.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text " vslang="menus.Histhory setup"></span>
-                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Company Profile"></span>
                 </a>
-                <div class="kt-menu__submenu">
-                    <span class="kt-menu__arrow"></span>
-                    <ul class="kt-menu__subnav">
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
-                            <a href="CountryZonesComponent" modid="105" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/delivery_zones.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.Holiday Setup"></span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(220); ?>>
-                            <a href="AutomaticEmployeeComponent" modid="220" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/zone_price.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.Automatic Employee"></span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(230); ?>>
-                            <a href="DepartmentListComponent" modid="220" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/zone_price.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.Department List"></span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(230); ?>>
-                            <a href="PositionListComponent" modid="220" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/zone_price.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.Position List"></span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
             </li>
 
-            <li class=" kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
-                <?php v_display(null, [220, 210, 102, 221, 216, 212]); ?>>
-                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+                <a href="RoleManagementComponent" modid="-1" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
                         <img class="icons opacity-icons"
-                            src="{{ asset('assets/images/icons/general_settings.svg') }}" />
+                            src="{{ asset('assets/images/bhr/report.svg') }}" />
                     </span>
-                    <span class="kt-menu__link-text " vslang="menus.Whole Database backup"></span>
-                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
+                    <span class="kt-menu__link-text font-color " vslang="menus.Roles & Users"></span>
                 </a>
-                <div class="kt-menu__submenu">
-                    <span class="kt-menu__arrow"></span>
-                    <ul class="kt-menu__subnav">
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
-                            <a href="WholeDatadaseBackupComponent" modid="105" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/delivery_zones.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.Whole Database Backup"></span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(220); ?>>
-                            <a href="RestorDatabaseComponent" modid="220" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/zone_price.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.Restore Database"></span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(230); ?>>
-                            <a href="DataInportComponent" modid="220" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/zone_price.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.Data Import"></span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(230); ?>>
-                            <a href="DataExportComponent" modid="220" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/zone_price.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.Data Export"></span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
             </li>
-            <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
-                data-ktmenu-submenu-toggle="hover"<?php v_display(null, [100, 101]); ?>>
-                <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
-                    <span class="kt-menu__link-icon">
-                        <img class="icons opacity-icons"
-                            src="{{ asset('assets/images/icons/users_management.svg') }}" />
-                    </span>
-                    <span class="kt-menu__link-text text-nowrap "
-                        vslang="menus.staff movement">User & Role Management</span>
-                    <i class="kt-menu__ver-arrow la la-angle-right"></i>
-                </a>
-                <div class="kt-menu__submenu"><span class="kt-menu__arrow"></span>
-                    <ul class="kt-menu__subnav">
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(101); ?>>
-                            <a href="RoleManagementComponent" modid="101" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/manage_roles.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.Role Management"></span>
-                            </a>
-                        </li>
-                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(100); ?>>
-                            <a href="UserManagementComponent" modid="100" class="menu-item kt-menu__link ">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/manage_users.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color "
-                                    vslang="menus.User Management"></span>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </li> --}}
-
-
-
+             
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a id="_main_lnkLogout" href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
