@@ -5,7 +5,12 @@
     border-radius: 25px;
     background-color: #fff;
   }
-  .
+  .choices__inner2 {
+    min-width:150px;
+    width:100%;
+    border-radius: 5px;
+    background-color: #fff;
+  }
   .choices__inner select{
     max-height:41px;
     /* border-radius: 50px; */

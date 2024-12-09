@@ -19,54 +19,94 @@ class Dashboard
         $ss = $ss ?? $this->userInfo;
         $cards = self::getCards($arr,$ss);
         return (object)[
-            'pieCharts'=>self::countEmployeeByType(0,$ss),
+            'doughnutChart'=>self::countEmployeeByType(0,$ss),
             'cards'=>$cards,
+            'barCharts'=>self::getMovementCountForPieChart($ss),
+            'pieCharts'=>self::getTotalStaffComparison($ss),
+            'onLeave'=>self::getLevels($arr,$ss)
         ];
     }
-    static function countEmployeeByType($arr,$ss){
+    static function countEmployeeByType($arr, $ss){
         $branch_id = $ss->branch_id;
         $back_days = -90;
         $start_date = convertDate(Carbon::now()->addDays($back_days));
-    
         $rows = DB::table('employees AS e')
             ->join('emp_types AS t', 'e.emp_type_id', '=', 't.id')
             // ->where('e.branch_id', $branch_id)
             ->whereRaw("DATE(e.joining_date) >= ?", [$start_date])
-            ->selectRaw("
-                t.name AS category,
-                COUNT(e.id) AS count
-            ")
+            ->selectRaw("t.name AS category,COUNT(e.id) AS count")
             ->groupBy('t.name')
             ->get();
     
-        // Prepare data for pie chart
         $labels = [];
         $values = [];
         $colors = [];
+        $base_colors = ['#cab54a', '#2b3991','#32BCD3', '#3795E0', '#ECF140'];
     
-        // Define a set of colors for the pie chart
-        $base_colors = ['#4CBB21', '#4CB68D', '#32BCD3', '#3795E0', '#ECF140'];
+        $total = 0;
     
         foreach ($rows as $index => $row) {
-            $labels[] = $row->category;  // Employee type (e.g., Intern, Probation, Staff)
-            $values[] = $row->count;    // Count of employees in that category
+            $labels[] = $row->category;  
+            $values[] = $row->count;    
             $colors[] = $base_colors[$index % count($base_colors)];
+    
+            $total += $row->count; 
         }
     
         return (object)[
-            'title'=>'Total Employee By Type',
+            'title' => 'Total '.$total.' Employees',
+            'total' => $total,
             'labels' => $labels,
             'values' => $values,
             'colors' => $colors
         ];
-
     }
+    
+    public static function getTotalStaffComparison($ss = null) {
+        $ss = $ss ?? auth()->user(); // Replace this with your session or authentication logic if needed
+    
+        // Get the current date
+        $currentDate = Carbon::now();
+        
+        // Calculate the start dates for the last 3 months
+        $startDates = [
+            $currentDate->copy()->startOfMonth()->subMonths(2), // 3 months ago
+            $currentDate->copy()->startOfMonth()->subMonths(1), // 2 months ago
+            $currentDate->copy()->startOfMonth(),              // Current month
+        ];
+    
+        // Prepare an array for storing monthly staff counts
+        $staffCounts = [];
+    
+        // Loop through each month to fetch data
+        foreach ($startDates as $startDate) {
+            $endDate = $startDate->copy()->endOfMonth();
+    
+            $count = DB::table('employees')
+                ->whereRaw("DATE(joining_date) BETWEEN ? AND ?", [$startDate, $endDate])
+                ->count();
+    
+            $staffCounts[] = (object)[
+                'month' => $startDate->format('F Y'), // Format month and year
+                'count' => $count
+            ];
+        }
+    
+        // Return data formatted for the bar chart
+        return (object)[
+            'title' => 'Total Staff (Last 3 Months)',
+            'labels' => array_column($staffCounts, 'month'),
+            'values' => array_column($staffCounts, 'count'),
+            'colors' => ['#1E90FF', '#32CD32', '#FF4500'] // Example colors for the chart
+        ];
+    }
+    
   
     
     static function getCards($arr, $ss) {
-        $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
-        $bin_subs_id = hex2bin($subs_id);
-        $branch_ids = getAccessBranches($ss, null);
+        // $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
+        // $bin_subs_id = hex2bin($subs_id);
+        // $branch_ids = getAccessBranches($ss, null);
         $d = (object) $arr;
         $back_days = isset($d->back_days) ? $d->back_days : -90;
     
@@ -75,8 +115,8 @@ class Dashboard
         $moreWhere = $dateField . " >= '" . $from_date . "'";
     
         $rows = DB::table('employees AS e')
-            ->where('e.subs_id', $bin_subs_id)
-            ->whereIn('e.branch_id', $branch_ids)
+            // ->where('e.subs_id', $bin_subs_id)
+            // ->whereIn('e.branch_id', $branch_ids)
             ->whereRaw($moreWhere)
             ->select('e.status_id', 'e.emp_type_id', 'e.branch_id', 'e.joining_date')
             ->orderByRaw("e.joining_date ASC")
@@ -150,6 +190,47 @@ class Dashboard
             ]
         ];
     }
+    public static function getMovementCountForPieChart($ss)
+{
+    $back_days = -90;
+    $start_date = Carbon::now()->addDays($back_days)->format('Y-m-d');
+
+    
+    $movements = DB::table('emp_events  AS em')
+        ->join('events AS mt', 'em.event_id', '=', 'mt.id')
+        ->whereRaw('DATE(em.event_date) >= ?', [$start_date])
+        ->selectRaw('
+            mt.name AS movement_type,
+            COUNT(em.id) AS movement_count
+        ')
+        ->groupBy('mt.name')
+        ->get();
+
+    $labels = [];
+    $values = [];
+    $colors = [];
+
+    // Define some colors for the pie chart segments
+    $base_colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', '#c2c2f0'];
+
+    // Populate labels, values, and colors
+    foreach ($movements as $index => $movement) {
+        $labels[] = $movement->movement_type; // Movement type (e.g., Promotion, Demotion)
+        $values[] = $movement->movement_count; // Count of movements for that type
+        $colors[] = $base_colors[$index % count($base_colors)]; // Cycle through colors
+    }
+
+    // Return the data for the pie chart
+    return (object)[
+        'title' => 'Employee Movements in the Last 3 Months',
+        'labels' => $labels,
+        'values' => $values,
+        'colors' => $colors
+    ];
+}
+
+  
+
     
 
     function countEmployees($arr, $ss)
@@ -284,6 +365,7 @@ class Dashboard
             'department_data' => $departmentData
         ];
     }
+   
 
     function getLevels($arr, $ss)
     {
@@ -346,14 +428,7 @@ class Dashboard
             unset($row->emp_photo);
         }
 
-        return [
-
-            'data' => $rows,
-            'count' => $count,
-            'total_payroll' => $total_payroll->total_payroll,
-            'total_wallet' => $total_wallet->total_wallet,
-            'count_warning' => $count_warning,
-        ];
+        return $rows;
     }
 
     function getBenefits($arr, $ss)

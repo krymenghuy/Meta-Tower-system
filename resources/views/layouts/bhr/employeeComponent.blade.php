@@ -29,7 +29,7 @@
     .card-header {
         display: flex;
         justify-content: space-between;
-        padding: 20px;
+        padding: 5px;
         border: none;
         align-items: center;
         background-color: #323f6a;

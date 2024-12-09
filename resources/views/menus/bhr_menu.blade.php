@@ -124,7 +124,7 @@
     /* .kt-menu__link-text[vslang] {
         color: #ffffff;
     } */
-   
+
 
     .kt-menu__link-text[vslang]:hover {
         border-radius: 0px 0px 0px 20px;
@@ -184,12 +184,16 @@ function v_display($mod_id, $module_ids = null)
                             <a href="EmployeeComponent" modid="205" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/user-list.svg') }}" />                    </span>
+ 
                                 <span class="kt-menu__link-text font-color " vslang="menus.Employee"></span>
+ 
                             </a>
             </li>
+ 
           
              
             <!-- <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
+ 
                 <?php v_display(null, [209]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
@@ -219,7 +223,7 @@ function v_display($mod_id, $module_ids = null)
                             <span class="kt-menu__link-text font-color " vslang="menus.Payroll list"></span>
                         </a>
                     </li>
-                        
+
                     </ul>
                 </div>
             </li> -->
@@ -233,16 +237,18 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Leave Management"></span>
                 </a>
             </li>
+ 
             
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                 <a href="StaffAttendanceComponent" modid="105" class="menu-item kt-menu__link">
+ 
                     <span class="kt-menu__link-icon">
                     <img class="icons opacity-icons" src="{{ asset('assets/images/bhr/classroom.svg') }}" />
                     </span>
                     <span class="kt-menu__link-text font-color " vslang="menus.Daily Attendance"></span>
                 </a>
             </li>
-
+ 
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
                 <?php v_display(null, [209]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
@@ -282,8 +288,7 @@ function v_display($mod_id, $module_ids = null)
                     </ul>
                 </div>
             </li>
-               
-     
+ 
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                 <a href="EmployeeMovementComponent" modid="105" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -309,7 +314,7 @@ function v_display($mod_id, $module_ids = null)
                             <a href="BenefitComponent" modid="202" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" /> 
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Benefit List"></span>
                             </a>
@@ -318,7 +323,7 @@ function v_display($mod_id, $module_ids = null)
                             <a href="EmployeeBenefitComponent" modid="202" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" /> 
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Staff Benefits"></span>
                             </a>
@@ -339,12 +344,13 @@ function v_display($mod_id, $module_ids = null)
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Disburse Policies"></span>
                             </a>
-                        </li>     
+                        </li>
                     </ul>
                 </div>
             </li>
 
 
+ 
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover"
                 <?php v_display(null, [209]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
@@ -427,6 +433,7 @@ function v_display($mod_id, $module_ids = null)
                 <h4 class="kt-menu__section-text " vslang="menus.Data and Insights"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
+ 
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                 <a href="ReportCenterComponent" modid="-1" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -436,7 +443,7 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Report Center"></span>
                 </a>
             </li>
-            
+
             <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
                 <h4 class="kt-menu__section-text " vslang="menus.Settings"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
@@ -458,7 +465,7 @@ function v_display($mod_id, $module_ids = null)
                             <a href="DepartmentComponent" modid="202" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     {{-- <i class="fas fa-truck-plane icons opacity-icons"></i> --}}
-                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" /> 
+                                    <img class="icons opacity-icons" src="{{ asset('assets/images/icons/department.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Departments"></span>
                             </a>
@@ -471,7 +478,7 @@ function v_display($mod_id, $module_ids = null)
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Positions"></span>
                             </a>
-                        </li>  
+                        </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                             <a href="JobsLevelComponent" modid="-1" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -489,14 +496,22 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+                            <a href="SkillsComponent" modid="-1" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons"
+                                        src="{{ asset('assets/images/icons/company_profile.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Skills"></span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                             <a href="HolidayComponent" modid="-1" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <i class="fas fa-truck-plane icons opacity-icons"></i>
                                 </span>
                                 <span class="kt-menu__link-text font-color " vslang="menus.Holidays"></span>
                             </a>
-                        </li>
-                         
+                        </li> 
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                             <a href="LocationComponent" modid="105" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
@@ -506,11 +521,11 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-text font-color " vslang="menus.Countries and Cities"></span>
                             </a>
                         </li>
-                        
+
                     </ul>
                 </div>
             </li>
-             
+
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
                 <a href="CompanyComponent" modid="-1" class="menu-item kt-menu__link">
                     <span class="kt-menu__link-icon">
@@ -539,7 +554,7 @@ function v_display($mod_id, $module_ids = null)
                     <span class="kt-menu__link-text font-color " vslang="menus.Roles and Users"></span>
                 </a>
             </li>
-             
+
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true" data-ktmenu-submenu-toggle="hover">
                 <a id="_main_lnkLogout" href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
                     <span class="kt-menu__link-icon">
