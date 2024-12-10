@@ -108,7 +108,7 @@ class Country //extends Model
             return DB::table('loc_countries AS c')
             ->where('c.branch_id',$branch_id)
             ->whereRaw($str_search)
-            ->selectRaw('c.id,c.name,c.name_kh,c.code,c.region,c.nationality,c.nationality_kh,c.create_user,'.$col_create_date)
+            ->selectRaw('c.id,c.name,c.name_kh,c.currency_code,c.region,c.nationality,c.nationality_kh,c.create_user,'.$col_create_date)
             ->orderBy('c.name','ASC')->get();
 
          //});

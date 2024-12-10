@@ -109,7 +109,7 @@ var LocationComponent = new function(){
                  let html2 = ['<tr  data-name="',c.name,'" data-id="',c.id,'">',
                  '<td class="col_country_standard  ms-5 ">',c.standard_zone,'</td>',
                  '<td class="col_country_name  text-uppercase">',c.name,'</td>',
-                 '<td class="col_country_code text-uppercase ">',c.code,'</td>',
+                 '<td class="col_country_code text-uppercase ">',c.currency_code,'</td>',
                  '<td class="col_action"><a data-id="',c.id,'" data-name="',c.name,'" href="javascript:void(0)" class="_sttn_loc_delete_country btn btn-sm text-danger rounded-5"><i class="fa-solid fa-trash ms-1"></i></a></td>',
                 ,'</tr>'].join('');
                 
