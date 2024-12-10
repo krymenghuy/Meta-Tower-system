@@ -110,16 +110,27 @@ var DashboardComponent = new (function () {
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card bg-white dashboard_chart">
-                    <span class="fw-semibold fs-5 text-primary-custom text-capitalize" style="color:">${data.barCharts.title}</span>
-                        <canvas id="compareChart"></canvas>
+                    <div class="card dashboard_chart">
+                        <span class="fw-semibold fs-5 text-primary-custom text-capitalize" style="color:">Monthly Employee Salary Overview</span>
+                        <canvas id="employeeSalaryChart"></canvas>
                     </div>
                 </div> 
                 <div class="col-md-3">
-                    <div class="card  dashboard_chart" style="height:340px; color:#d9bc4a;">
-                    <span class="fw-semibold fs-5 pb-2 text-capitalize">OnLeave Today</span>
-                    <div class="w-100"></div>
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div class="card-body d-flex flex-column align-items-center">
+                            <div class="card-title text-center mb-2">
+                                <p class="fs-6  mb-0" style="color:#cab54a;">${data.cards.new_staff_count.title}</p>
+                                <h3 class="fs-3 text-primary-custom">${data.cards.new_staff_count.count}</h3>
+                            </div>
+                            <div class="bg--icon bg--icon-new-employee-count">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="">
+                            </div>
+                            <div class="mt-3 text-center">
+                                <p class="fs-7 text-muted">${data.cards.new_staff_count.subTitle}</p>
+                            </div>
+                        </div>
                     </div>
+                    
                 </div>
 
 
@@ -129,8 +140,7 @@ var DashboardComponent = new (function () {
         `;
         mThis.dbChartAll.innerHTML = html;
         mThis.renderChartEmployee(data.doughnutChart);
-        mThis.renderCompareChart(data.barCharts);
-
+        mThis.employeeSalaryChart();
     };
     
 
@@ -173,78 +183,88 @@ var DashboardComponent = new (function () {
             }
         });
     };
-    this.renderCompareChart = (data) => {
-        const ctx = document.getElementById('compareChart').getContext('2d');
+    this.employeeSalaryChart = (data) => {
+        const ctx = document.getElementById('employeeSalaryChart').getContext('2d');
     
        
     
-        const chartOptions = {
+        const employeeSalaryData = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            datasets: [
+                {
+                    label: 'Total Employees',
+                    data: [10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30], 
+                    backgroundColor: '#2b3991',
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                    yAxisID: 'y',
+                },
+                {
+                    label: 'Total Salary Paid ($)',
+                    data: [10000, 12000, 14000, 15000, 16000, 18000, 20000, 22000, 24000, 25000, 28000, 30000],
+                    backgroundColor: '#cab54a',
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                    yAxisID: 'y1',
+                },
+            ],
+        };
+    
+        const config = {
             type: 'bar',
-            data: {
-                labels: data.labels,
-                datasets: [{
-                    label: data.title || 'Data', 
-                    data: data.values || [],
-                    backgroundColor: data.colors || '#3795E0', 
-                    borderColor: data.borderColors || '#fff',
-                    borderWidth: data.borderWidth || 1 
-                }]
-            },
+            data: employeeSalaryData,
             options: {
                 responsive: true,
-                scales: {
-                    x: {
-                        beginAtZero: true, 
-                        title: {
-                            display: true,
-                            text: data.xAxisTitle || 'Months'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true, 
-                        title: {
-                            display: true,
-                            text: data.yAxisTitle || 'Values'
-                        }
-                    }
-                },
                 plugins: {
                     legend: {
                         position: 'top',
                     },
-                    tooltip: {
-                        enabled: true,
-                        callbacks: {
-                            label: function (tooltipItem) {
-                                return tooltipItem.raw;
-                            }
-                        }
+                    title: {
+                        display: true,
+                        text: 'Employee Count and Total Salary Paid',
                     },
-                    datalabels: {
-                        color: '#000',
-                        font: {
-                            size: 12,
-                            weight: 'bold'
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Number of Employees',
                         },
-                        formatter: function (value, context) {
-                            return `${context.chart.data.labels[context.dataIndex]}\n${value}`;
-                        }
-                    }
-                }
-            }
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Salary in USD ($)',
+                            color: '#cab54a', // Set title color to blue
+                        },
+                        ticks: {
+                            color: '#2b3991',
+                        },
+                        grid: {
+                            drawOnChartArea: false, // Prevents grid lines overlapping with the left axis
+                        },
+                    },
+                    
+                },
+            },
         };
-        new Chart(ctx, chartOptions);
+    
+        new Chart(ctx, config);
         
     
        
     };
     
 
-    this.renderPieChart = (data) => {
-        const ctx = document.getElementById('pieChart').getContext('2d');
+    this.renderCompareChart = (data) => {
+        const ctx = document.getElementById('compareChart').getContext('2d');
     
         new Chart(ctx, {
-            type: 'pie',
+            type: 'bar',
             data: {
                 labels: data.labels,
                 datasets: [{
@@ -387,7 +407,6 @@ var DashboardComponent = new (function () {
         `;
     };
     this.renderDashboardCenter = data => {
-        console.log(123);
 
 
 
@@ -405,26 +424,15 @@ var DashboardComponent = new (function () {
         //   .join("");
 
         let html = `
-            <div class="em_departement">
-            <h3 class="d-flex align-items-start text-primary" style="font-size: 1.2rem;desplay: flex; justify-content: center;">𝔼𝕞𝕡𝕝𝕠𝕪𝕖𝕖 𝔹𝕪 𝔻𝕖𝕡𝕒𝕣𝕥𝕞𝕖𝕟𝕥</h3>
-            <table class="table bg-white rounded-4">
-                <thead>
-                <tr>
-                    <th class="w-25">Department</th>
-                    <th>Position</th>
-                    <th>Staff</th>
-                    <th>Internship</th>
-                    <th>In Probation</th>
-                    <th>Total</th>
-                </tr>
-                </thead>
-                <tbody>
-            
-                </tbody>
-            </table>
+            <div class="card bg-white dashboard_chart"  style="height:300px;">
+                    <span class="fw-semibold fs-5 text-primary-custom text-capitalize" style="color:">${data.pieCharts.title}</span>
+                        <canvas id="compareChart"></canvas>
+                    </div>
             </div>
         `;
         mThis.dashboard_center.innerHTML = html;
+        mThis.renderCompareChart(data.pieCharts);
+
     };
     this.renderDBCardOnLeave = (data) => {
         const rowsHtml = (data || [])

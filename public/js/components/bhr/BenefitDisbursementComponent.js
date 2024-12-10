@@ -248,7 +248,15 @@ var BenefitDisbursementComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                VSUtil.setComboItems( mThis.elBenefit, d.benefits, "id", "name", true, "All Benefits", null );
+                VSUtil.setComboItems(
+                    mThis.elBenefit,
+                    d.benefits,
+                    "id",
+                    "name",
+                    true,
+                    "All Benefits",
+                    null
+                );
                 console.log(1111, mThis.elBenefit);
             });
     };
@@ -405,6 +413,23 @@ const BenefitDisburseDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
+
+                    // Delay setting the values to ensure the elements are rendered
+                    setTimeout(() => {
+                        if (data.target_month) {
+                            const monthSelect = me.divModal.querySelector(
+                                '[name="target_month"]'
+                            );
+                            if (monthSelect)
+                                monthSelect.value = data.target_month;
+                        }
+                        if (data.target_year) {
+                            const yearSelect = me.divModal.querySelector(
+                                '[name="target_year"]'
+                            );
+                            if (yearSelect) yearSelect.value = data.target_year;
+                        }
+                    }, 100); // Adjust the delay if needed
                 },
             });
 

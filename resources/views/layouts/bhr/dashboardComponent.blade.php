@@ -8,7 +8,7 @@
     <!-- <div class="dashboard_center" id="_dashboard_center">
     </div> -->
     <div class="dashboard_bottom" id="_dashboard_bottom">
-        <div class="bottom_left" id="_dashboard_center">
+        <div class="bottom_right" id="_dashboard_center">
         </div>
         <div class="bottom_right" id="_db_card_onLeave">
         </div>
@@ -44,20 +44,11 @@
         display: flex;
         justify-content: center;
         width: 100%;
-        padding: 20px;
+        padding: 20px 0px;
         gap: 1rem;
     }
 
-    .bottom_left {
-        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
-        flex-direction: column;
-        align-items: center;
-        justify-content: space-between;
-        background-color: #E1ECF7;
-        width: 50%;
-        padding: 10px;
-        border-radius: 20px;
-    }
+
 
     .bottom_right {
         display: flex;
@@ -66,7 +57,7 @@
         justify-content: space-between;
         background-color: #dce5e5;
         width: 50%;
-        height: 270px;
+        height: 300px;
         padding: 10px;
         border-radius: 8px;
     }
