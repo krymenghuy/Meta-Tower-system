@@ -3,39 +3,35 @@
 namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bhr\EmployeeSkill;
+use App\Models\Bhr\EmployeeDocument;
 use App\Models\JDV;
 use App\Services\Umt\AuthService;
 use Illuminate\Http\Request;
 
-
-class EmployeeSkillController extends Controller
+class EmployeeDocumentController extends Controller
 {
-   protected $employee_skill;
-
-    public function __construct(EmployeeSkill $employee_skill)
+    protected $emp_doc;
+    public function __construct(EmployeeDocument $emp_doc)
     {
-        $this->employee_skill = $employee_skill;
+        $this->emp_doc = $emp_doc;
     }
 
-    public function saveEmployeeSkill(Request $req)
+    public function saveEmployeeDocument(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        return $this->employee_skill->save($req, $ss);
+        return $this->emp_doc->save($req, $ss);
     }
 
-    public function getEmployeeSkillListPaginate(Request $req)
+    public function getEmployeeDocumentListPaginate(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        return JDV::result($this->employee_skill->listpaginate($req, $ss));
+        return JDV::result($this->emp_doc->listpaginate($req, $ss));
     }
 
     public function getDetails(Request $req)
@@ -44,26 +40,16 @@ class EmployeeSkillController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        if (!isset($req->id) || !is_numeric($req->id)) {
-            return JDV::error('Invalid ID');
-        }
-
-        return JDV::result($this->employee_skill->getDetails($req->id, $ss));
+        return JDV::result($this->emp_doc->getDetails($req->id, $ss));
     }
 
-    public function deleteEmployeeSkill(Request $req)
+    public function deleteEmployeeDocument(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        if (!isset($req->id) || !is_numeric($req->id)) {
-            return JDV::error('Invalid ID');
-        }
-
-        return JDV::result($this->employee_skill->delete($req->id, $ss));
+        return JDV::result($this->emp_doc->delete($req->id, $ss));
     }
 
     public function getFormOptions(Request $req)
@@ -72,7 +58,6 @@ class EmployeeSkillController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        return JDV::result($this->employee_skill->getFormOptions($req->id, $ss));
+        return JDV::result($this->emp_doc->getFormOptions($req->id, $ss));
     }
 }

@@ -39,6 +39,7 @@ use App\Http\Controllers\Bhr\ShiftDetailsController;
 use App\Http\Controllers\Bhr\GeneralSettingsController;
 use App\Http\Controllers\Bhr\BenefitDisbursePolicyController;
 use App\Http\Controllers\Bhr\EmployeeSkillController;
+use App\Http\Controllers\Bhr\EmployeeDocumentController;
 
 
 //begin:: api without Authentication
@@ -343,4 +344,12 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('emp-skill')->g
     Route::post('/details', [EmployeeSkillController::class, 'getDetails']);
     Route::post('/delete', [EmployeeSkillController::class, 'deleteEmployeeSkill']);
     Route::post('/form-options', [EmployeeSkillController::class, 'getFormOptions']);
+});
+
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('emp-document')->group(function(){
+    Route::post('/save', [EmployeeDocumentController::class, 'saveEmployeeDocument']);
+    Route::post('/list-paginate', [EmployeeDocumentController::class, 'getEmployeeDocumentListPaginate']);
+    Route::post('/details', [EmployeeDocumentController::class, 'getDetails']);
+    Route::post('/delete', [EmployeeDocumentController::class, 'deleteEmployeeDocument']);
+    Route::post('/form-options', [EmployeeDocumentController::class, 'getFormOptions']);
 });
