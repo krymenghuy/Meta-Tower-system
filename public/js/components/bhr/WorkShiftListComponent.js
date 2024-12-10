@@ -8,12 +8,15 @@ var WorkShiftListComponent = new (function () {
     this.title_prop = "Shift List";
     this.btnAdd = this.self.querySelector("#_btnAddWorkShift");
     this.divFilter = this.self.querySelector("#_divFilter");
+    this.elSearch = this.self.querySelector("#_work_shift_list_search");
     this.cols = [
-        // {
-        //     title: "",
-        //     className: "align-middle",
-           
-        // },
+        {
+            title: "No",
+            className: "align-middle text-capitalize text-nowrap text-left",
+            data: (data, index, i) => {
+                return index + 1;
+            },
+        },
         {
             title: "Name",
             className: "align-middle fw-bold",
@@ -21,17 +24,20 @@ var WorkShiftListComponent = new (function () {
                 return `<span class="text-primary-custom">${data.name}</span>`;
             },
         },
-        
+
         {
             title: "last Updated",
             className: "align-middle fw-bold",
             data: (data) => {
-                return [`<span class="text-Capitalize d-block">${data.update_user}</span>`, `<span class="text-muted" style="font-size:80%;">${data.update_date}</span>`].join('');
+                return [
+                    `<span class="text-Capitalize d-block">${data.update_user}</span>`,
+                    `<span class="text-muted" style="font-size:80%;">${data.update_date}</span>`,
+                ].join("");
             },
         },
         {
             title: "Action",
-            className: "col_action align-end",
+            className: "col_action align-items-end",
             data: function (data, row, display) {
                 return `
                     <div class="d-flex align-items-center gap-3">
@@ -84,9 +90,19 @@ var WorkShiftListComponent = new (function () {
         mThis.initDropdownMenus(listContainer);
         mThis.initAlready = true;
     };
+    mThis.elSearch.addEventListener("keyup", (e) => {
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.WorkShiftListsView) {
+                mThis.WorkShiftListsView.showPage(mThis.getFilterData());
+            } else {
+                console.error("Work is not defined");
+            }
+        }, 200);
+    });
     this.getFilterData = () => {
         let p = {
-            // search_value: mThis.elSearch.value,
+            search_value: mThis.elSearch.value,
         };
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {

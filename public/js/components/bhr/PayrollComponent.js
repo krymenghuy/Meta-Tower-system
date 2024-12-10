@@ -28,11 +28,6 @@ var PayrollComponent = new (function () {
 
     this.cols = [
         {
-            title: "No",
-            className: 'align-middle text-capitalize text-nowrap',
-            data: (data, index) => index + 1,
-        },
-        {
             title: "Name",
             className: "align-middle",
             data: (data) => `<p class="p-0 m-0">${data.name ?? ''}</p>`

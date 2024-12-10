@@ -31,6 +31,7 @@ var BenefitDisbursementComponent = new (function () {
         "December",
     ];
     this.cols = [
+        
         {
             title: "Name",
             className: "align-middle text-start w-25",
