@@ -726,67 +726,154 @@ var EmployeeComponent = new (function () {
     this.renderCardLeft = (employeeId) => {
         let html = "";
 
-        html = [
-            `
-             <div class="card pb-3" style="height:390px;">
-                            <div class="card-header bg-primary-custom text-white">
-                                <h5 class="mt-1">Skills</h5>
+        let p = { emp_id: employeeId };
 
-                            </div>
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <p>PHP</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 85%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>JavaScript</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 70%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>Node.Js</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 50%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>Vue.Js</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 65%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>Laravel</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 60%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>OOP</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 80%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>Next.Js</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 40%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>React.Js</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 60%;"></div>
-                                    </div>
-                                </div>
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/emp-skill/list-paginate`,
+                p,
+                null,
+                false,
+                false
+            )
+            .then((res) => {
+                let data = res.status_code === 200 ? res.data.data : [];
+
+                let html = `
+                    <div class="card pb-3" style="height:390px;">
+                        <div class="card-header bg-primary-custom text-white">
+                            <h5 class="mt-1">Skill</h5>
+                            <div class="d-flex gap-2">
+                                <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-tax-skill">
+                                    <i class="fa fa-plus-circle fs-5 text-white"></i>
+                                </a>
                             </div>
                         </div>
-            `,
-        ].join("");
-        this.profile_card_left.innerHTML = html;
+                        <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+                `;
+
+                data.map((d) => {
+                    html += `
+                        <div class="row mt-2 py-4 border-bottom">
+                            <div class="col-md-8">
+                                <p class="text-success" style="width:180px; height:20px">Skill: ${d.skill}</p>
+                                <p class="text-success" style="width:180px; height:20px">Rate: ${d.rate}</p>
+
+
+                            </div>
+                            <div class="col-md-4 text-end">
+                                <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-skill">
+                                    <i class="fa fa-edit fs-5 text-primary"></i>
+                                </a>
+                                <a href="javascript:void(0)" data-id="${d.id}" data-emp-id="${employeeId}" class="lnk-delete-skill">
+                                    <i class="fa fa-trash fs-5 text-danger"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += `</div></div>`;
+                this.profile_card_left.innerHTML = html;
+
+                // Add event listener for "Add" button
+                document
+                    .querySelector(".lnk-add-tax-skill")
+                    .addEventListener("click", function (e) {
+                        e.preventDefault();
+
+                        let btn = document.querySelector(
+                            ".lnk-add-tax-skill"
+                        );
+                        console.log(333, btn.dataset);
+
+                        let op = {
+                            id: null,
+                            emp_id: btn.dataset.empid,
+
+                            btn: e.target,
+                            title: "New Skill",
+                            onClose: () => {
+                                mThis.EmployeeListView.showPage();
+                            },
+                        };
+                        AddSkillDialog.show(op);
+                    });
+
+                // Add event listeners for all "Edit" buttons
+                document
+                    .querySelectorAll(".lnk-edit-tax-allowance")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const id = e.target
+                                .closest("a")
+                                .getAttribute("data-id");
+
+                            let op = {
+                                id: id,
+                                emp_id: employeeId,
+                                btn: e.target,
+                                title: "Edit Tax Allowance",
+                                onClose: () => {
+                                    mThis.renderCardTaxAllowance.showPage();
+                                },
+                            };
+                            console.log("Edit operation:", op);
+                            AddTaxAllowance.show(op);
+                        });
+                    });
+
+                document
+                    .querySelectorAll(".lnk-delete-tax-allowance")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const id = e.target
+                                .closest("a")
+                                .getAttribute("data-id");
+                            const emp_id = e.target
+                                .closest("a")
+                                .getAttribute("data-emp-id");
+                            let op = {
+                                id: id,
+                                btn: e.target,
+                                onClose: () => {},
+                            };
+                            cv_interact.confirm(
+                                "Delete this Employee?",
+                                {
+                                    title: "Delete Employee",
+                                    context: "delete",
+                                    confirmButtonText: "Delete",
+                                },
+                                function (e) {
+                                    if (e) {
+                                        vsapi
+                                            .call(
+                                                `${main_view.base_url}/hr/tax-allowance/delete`,
+                                                op,
+                                                false,
+                                                false,
+                                                false
+                                            )
+                                            .then((res) => {
+                                                if (res.status_code == 200) {
+                                                    cv_interact.success(
+                                                        "Deleted Successfully"
+                                                    );
+                                                    // EmployeeComponent.EmployeeListView.showPage();
+                                                    EmployeeComponent.renderCardTaxAllowance(
+                                                        emp_id
+                                                    );
+                                                }
+                                            });
+                                    }
+                                }
+                            );
+                        });
+                    });
+            });
     };
 
     this.renderCardCenter = (employeeId) => {
@@ -2737,5 +2824,101 @@ const EmployeeDialog = (() => {
         dialog.show(op);
     };
 
+    return self;
+})();
+
+const AddSkillDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                title: op.id ? "Add Skill" : " Edit Skill ",
+                cssClass: "modal-md d-flex justify-content-center",
+                createContent: () => {
+                    return [
+                        `<div class="row">
+
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Skill">Skill</label>
+                             <select name="skill" class=" data-input"  data-field="skill_id"></select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Rate">Rate</label>
+                            <div><input name="rate" class="form-control data-input" data-field="rate"/></div>
+                        </div>
+
+                    </div>`,
+                    ].join("");
+                },
+                configSelect: [
+                    {
+                        name: "skill",
+                        data: "skills",
+                        textField: "skill",
+                        valueField: "id",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: "<span>Cancel</span>",
+                        cssClass: "btn btn-warning text-white",
+                        click: (me) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me) => {
+                            let p = me.getData();
+                            p.emp_id = me.dataOptions.emp_id;
+
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/emp-skill/save",
+                                    ].join(""),
+                                    p,
+                                    false,
+                                    false
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.modal.hide(true, p);
+                                        EmployeeComponent.renderCardTaxAllowance(
+                                            me.dataOptions.emp_id
+                                        );
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+
+                prepareFormOptions: {
+                    createTitle: "New Skill",
+                    modifyTitle: "Edit Skill",
+                    targetProp: "emp_skill",
+                    api: {
+                        endpoint: `${main_view.base_url}/hr/emp-skill/form-options`,
+                        params: (op) => {
+                            return { id: op.id }; // Pass ID to fetch data for edit
+                        },
+                        onResponse: (me, res) => {
+                            if (op.id) {
+
+                            }
+                        },
+                    },
+                },
+                onShow: (me) => {},
+            });
+
+        dialog.show(op);
+    };
     return self;
 })();
