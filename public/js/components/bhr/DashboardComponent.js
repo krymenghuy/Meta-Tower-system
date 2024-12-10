@@ -117,7 +117,7 @@ var DashboardComponent = new (function () {
                 </div> 
                 <div class="col-md-3">
                     <div class="card  dashboard_chart" style="height:340px; color:#d9bc4a;">
-                    <span class="fw-semibold fs-5 pb-2 text-capitalize" style="color:">OnLeave Today</span>
+                    <span class="fw-semibold fs-5 pb-2 text-capitalize">OnLeave Today</span>
                     ${onLeaveHtml}
                     </div>
                 </div>
@@ -276,7 +276,8 @@ var DashboardComponent = new (function () {
     };
     this.renderDBOnLeave = (data) => {
         let rowsHtml = (data.onLeave || [])
-            .map(data => `
+            .map(
+                (data) => `
                 <tr>
                     <td>
                         <div class="d-flex flex-column text-center">
@@ -287,13 +288,14 @@ var DashboardComponent = new (function () {
                         
                     </td>
                     <td style="font-size: 0.65rem; text-align: center;">
-                        <div class="align-middle text-center rounded-5 border text-white bg-warning ">${data.emp_position}</div>
+                        <div class="align-middle text-center rounded-5 border text-white bg-warning" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; padding:4px">${data.emp_position}</div>
                     </td>
                     <td style="font-size: 0.65rem; text-align: center;">
-                        <div class="align-middle text-center rounded-5 border text-white bg-primary-custom ">${data.remarks}</div>
+                        <div class="align-middle text-center rounded-5 border text-white bg-primary-custom" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; padding:4px">${data.remarks}</div>
                     </td>
                 </tr>
-            `)
+            `
+            )
             .join("");
     
         return `
