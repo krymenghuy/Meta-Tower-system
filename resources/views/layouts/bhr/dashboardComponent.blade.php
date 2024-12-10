@@ -48,7 +48,7 @@
         display: flex;
         justify-content: center;
         width: 100%;
-        padding: 20px;
+        padding: 20px 0px;
         gap: 1rem;
     }
 
@@ -81,7 +81,7 @@
         display: flex;
         justify-content: space-between;
         gap: 20px;
-        padding: 20px;
+        padding: 20px 0px;
 
     }
 
