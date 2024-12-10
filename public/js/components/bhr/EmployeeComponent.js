@@ -744,7 +744,7 @@ var EmployeeComponent = new (function () {
                         <div class="card-header bg-primary-custom text-white">
                             <h5 class="mt-1">Skill</h5>
                             <div class="d-flex gap-2">
-                                <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-tax-skill">
+                                <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-skill">
                                     <i class="fa fa-plus-circle fs-5 text-white"></i>
                                 </a>
                             </div>
@@ -756,10 +756,18 @@ var EmployeeComponent = new (function () {
                     html += `
                         <div class="row mt-2 py-4 border-bottom">
                             <div class="col-md-8">
-                                <p class="text-success" style="width:180px; height:20px">Skill: ${d.skill}</p>
-                                <p class="text-success" style="width:180px; height:20px">Rate: ${d.rate}</p>
-
-
+                                <p class="text-primary-custom" style="width:250px; height:20px">
+                                    <img class="bhr-icons" src="${main_view.asset_url}/images/icons/skill.png" />
+                                    <span class="text-black-50"> Skill </span>
+                                    <span class="px-2"> : </span>
+                                    ${d.skill}
+                                </p>
+                                <p class="text-primary-custom" style="width:250px; height:20px">
+                                    <img class="bhr-icons" src="${main_view.asset_url}/images/icons/rate.png" />
+                                    <span class="text-black-50"> Rate</span>
+                                    <span class="px-2"> : </span>
+                                    ${d.rate} %
+                                </p>
                             </div>
                             <div class="col-md-4 text-end">
                                 <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-skill">
@@ -778,12 +786,12 @@ var EmployeeComponent = new (function () {
 
                 // Add event listener for "Add" button
                 document
-                    .querySelector(".lnk-add-tax-skill")
+                    .querySelector(".lnk-add-skill")
                     .addEventListener("click", function (e) {
                         e.preventDefault();
 
                         let btn = document.querySelector(
-                            ".lnk-add-tax-skill"
+                            ".lnk-add-skill"
                         );
                         console.log(333, btn.dataset);
 
@@ -802,7 +810,7 @@ var EmployeeComponent = new (function () {
 
                 // Add event listeners for all "Edit" buttons
                 document
-                    .querySelectorAll(".lnk-edit-tax-allowance")
+                    .querySelectorAll(".lnk-edit-skill")
                     .forEach((btn) => {
                         btn.addEventListener("click", function (e) {
                             e.preventDefault();
@@ -814,18 +822,18 @@ var EmployeeComponent = new (function () {
                                 id: id,
                                 emp_id: employeeId,
                                 btn: e.target,
-                                title: "Edit Tax Allowance",
+                                title: "Edit Skill",
                                 onClose: () => {
-                                    mThis.renderCardTaxAllowance.showPage();
+                                    mThis.renderCardLeft.showPage();
                                 },
                             };
                             console.log("Edit operation:", op);
-                            AddTaxAllowance.show(op);
+                            AddSkillDialog.show(op);
                         });
                     });
 
                 document
-                    .querySelectorAll(".lnk-delete-tax-allowance")
+                    .querySelectorAll(".lnk-delete-skill")
                     .forEach((btn) => {
                         btn.addEventListener("click", function (e) {
                             e.preventDefault();
@@ -841,9 +849,9 @@ var EmployeeComponent = new (function () {
                                 onClose: () => {},
                             };
                             cv_interact.confirm(
-                                "Delete this Employee?",
+                                "Delete this Skill?",
                                 {
-                                    title: "Delete Employee",
+                                    title: "Delete Skill",
                                     context: "delete",
                                     confirmButtonText: "Delete",
                                 },
@@ -851,7 +859,7 @@ var EmployeeComponent = new (function () {
                                     if (e) {
                                         vsapi
                                             .call(
-                                                `${main_view.base_url}/hr/tax-allowance/delete`,
+                                                `${main_view.base_url}/hr/emp-skill/delete`,
                                                 op,
                                                 false,
                                                 false,
@@ -863,7 +871,7 @@ var EmployeeComponent = new (function () {
                                                         "Deleted Successfully"
                                                     );
                                                     // EmployeeComponent.EmployeeListView.showPage();
-                                                    EmployeeComponent.renderCardTaxAllowance(
+                                                    EmployeeComponent.renderCardLeft(
                                                         emp_id
                                                     );
                                                 }
@@ -1292,12 +1300,40 @@ var EmployeeComponent = new (function () {
                     html += `
                         <div class="row mt-2 py-4 border-bottom">
                             <div class="col-md-8">
-                                <p class="text-success" style="width:180px; height:20px">Amount: ${formattedNumber(d.amount)}</p>
-                                <p class="text-success" style="width:180px; height:20px">Quantity: ${d.qty}</p>
-                                <p class="text-success" style="width:180px; height:20px">Allowance: ${formattedNumber(d.allowance)}</p>
-
-                                <p class="text-nowrap" style="width:180px; height:20px">Remarks: ${d.remarks}</p>
+                                <div class="d-flex">
+                                    <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
+                                        <img class="bhr-icons" src="${main_view.asset_url}/images/icons/amount.png" />
+                                        <span class="text-black-50">Amount</span>
+                                        <span class="px-2">:</span>
+                                        ${main_view.currency.symbol} ${formattedNumber(d.amount ?? 0)}
+                                    </p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
+                                        <img class="bhr-icons" src="${main_view.asset_url}/images/icons/qty.png" />
+                                        <span class="text-black-50">Quantity</span>
+                                        <span class="px-2">:</span>
+                                        ${d.qty}
+                                    </p>
+                                </div>
+                               <div class="d-flex">
+                                    <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
+                                        <img class="bhr-icons" src="${main_view.asset_url}/images/icons/amount.png" />
+                                        <span class="text-black-50">Allowance</span>
+                                        <span class="px-2">:</span>
+                                        ${main_view.currency.symbol} ${formattedNumber(d.allowance ?? 0)}
+                                    </p>
+                               </div>
+                               <div class="d-flex">
+                                    <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
+                                        <img class="bhr-icons" src="${main_view.asset_url}/images/icons/remarks.png" />
+                                        <span class="text-black-50">Remarks</span>
+                                        <span class="px-2">:</span>
+                                        ${d.remarks}
+                                    </p>
+                               </div>
                             </div>
+
                             <div class="col-md-4 text-end">
                                 <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-tax-allowance">
                                     <i class="fa fa-edit fs-5 text-primary"></i>
@@ -1378,9 +1414,9 @@ var EmployeeComponent = new (function () {
                                 onClose: () => {},
                             };
                             cv_interact.confirm(
-                                "Delete this Employee?",
+                                "Delete this Tax Allowance?",
                                 {
-                                    title: "Delete Employee",
+                                    title: "Delete Tax Allowance",
                                     context: "delete",
                                     confirmButtonText: "Delete",
                                 },
@@ -2876,7 +2912,7 @@ const AddSkillDialog = (() => {
                         click: (me) => {
                             let p = me.getData();
                             p.emp_id = me.dataOptions.emp_id;
-
+                            console.log(111,p);
                             vsapi
                                 .call(
                                     [
@@ -2890,7 +2926,7 @@ const AddSkillDialog = (() => {
                                 .then((res) => {
                                     if (res.status_code == 200) {
                                         me.modal.hide(true, p);
-                                        EmployeeComponent.renderCardTaxAllowance(
+                                        EmployeeComponent.renderCardLeft(
                                             me.dataOptions.emp_id
                                         );
                                     } else cv_interact.error(res.error_message);
