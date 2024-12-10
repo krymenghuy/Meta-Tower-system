@@ -104,92 +104,60 @@ class Dashboard
   
     
     static function getCards($arr, $ss) {
-        // $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
-        // $bin_subs_id = hex2bin($subs_id);
-        // $branch_ids = getAccessBranches($ss, null);
         $d = (object) $arr;
         $back_days = isset($d->back_days) ? $d->back_days : -90;
-    
         $from_date = convertDate(Carbon::now()->addDays($back_days));
         $dateField = DBX::convertToDate('e.joining_date');
         $moreWhere = $dateField . " >= '" . $from_date . "'";
-    
+        
         $rows = DB::table('employees AS e')
-            // ->where('e.subs_id', $bin_subs_id)
-            // ->whereIn('e.branch_id', $branch_ids)
             ->whereRaw($moreWhere)
             ->select('e.status_id', 'e.emp_type_id', 'e.branch_id', 'e.joining_date')
             ->orderByRaw("e.joining_date ASC")
             ->get();
-    
-        $total_employees = 0;
-        $active_employees = 0;
-        $resigned_employees = 0;
-        $terminated_employees = 0;
-    
-        $branches = [];
-        $emp_types = [];
-        $days_count = 0;
-    
-        $first_date = isset($rows[0]) ? $rows[0]->joining_date : $from_date;
-    
+        
+        $new_staff_count = 0;
+        $resigned_staff_count = 0;
+        $probation_staff_count = 0;
+        $warning_staff_count = DB::table('emp_warnings')->count();
+        
         foreach ($rows as $row) {
             if ($row->status_id == 10) {
-                $active_employees++;
+                $new_staff_count++;
             } elseif ($row->status_id == 20) {
-                $resigned_employees++;
-            } elseif ($row->status_id == 30) {
-                $terminated_employees++;
+                $resigned_staff_count++;
             }
     
-            if (!in_array($row->branch_id, $branches)) {
-                $branches[] = $row->branch_id;
+            if ($row->emp_type_id == 2) {
+                $probation_staff_count++;
             }
-    
-            if (!isset($emp_types[$row->emp_type_id])) {
-                $emp_types[$row->emp_type_id] = 1;
-            } else {
-                $emp_types[$row->emp_type_id]++;
-            }
-    
-            $total_employees++;
         }
-    
-        $days_count = dateDiff_days(convertDate($first_date), date('Y-m-d'));
-    
+        
         return (object) [
-            'total_employees' => (object) [
-                'count' => $total_employees,
-                'title' => 'Total Employees',
+            'new_staff_count' => (object) [
+                'count' => $new_staff_count,
+                'title' => 'New Staff',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
-            'active_employees' => (object) [
-                'count' => $active_employees,
-                'title' => 'Active Employees',
+            'resigned_staff_count' => (object) [
+                'count' => $resigned_staff_count,
+                'title' => 'Resigned Staff',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
-            'resigned_employees' => (object) [
-                'count' => $resigned_employees,
-                'title' => 'Resigned Employees',
+            'probation_staff_count' => (object) [
+                'count' => $probation_staff_count,
+                'title' => 'Staff in Probation',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
-            'terminated_employees' => (object) [
-                'count' => $terminated_employees,
-                'title' => 'Terminated Employees',
-                'subTitle' => 'Last ' . abs($back_days) . ' days'
-            ],
-            'branch_count' => (object) [
-                'count' => count($branches),
-                'title' => 'Branches with Employees',
-                'subTitle' => 'Last ' . abs($back_days) . ' days'
-            ],
-            'emp_type_distribution' => (object) [
-                'types' => $emp_types,
-                'title' => 'Employee Type Distribution',
-                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            'warning_staff_count' => (object) [
+                'count' => $warning_staff_count,
+                'title' => 'Staff in Warning',
+                'subTitle' => 'Current warnings'
             ]
         ];
     }
+    
+    
     public static function getMovementCountForPieChart($ss)
 {
     $back_days = -90;
@@ -227,6 +195,42 @@ class Dashboard
         'values' => $values,
         'colors' => $colors
     ];
+}
+function getLevels($arr, $ss)
+{
+    $subs_id = $ss->subs_id ?? null;
+    $d = (object) $arr;
+
+    $today = date('Y-m-d'); 
+
+ 
+
+    $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
+
+    $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
+    $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
+
+    $query = DB::table('leaves as l')
+        ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
+        ->join('positions as p', 'p.id', '=', 'emp.position_id')
+        ->whereRaw($str_dates)
+        ->selectRaw(
+            'l.id, emp.id as emp_id, emp.code as code, emp.name as emp_name, p.title as emp_position, ' .
+            $col_dates . ', l.remarks, emp.photo_file_name as emp_photo, ' . $leave_days_calc
+        )
+        ->orderBy('l.id', 'DESC');
+
+    $rows = $query->get();
+
+    foreach ($rows as $row) {
+        $row->image_url = '';
+        if (!empty($row->emp_id) && !empty($row->emp_photo)) {
+            $row->image_url = Employee::profilePicture($row->emp_id);
+        }
+        unset($row->emp_photo);
+    }
+
+    return $rows;
 }
 
   
@@ -367,69 +371,7 @@ class Dashboard
     }
    
 
-    function getLevels($arr, $ss)
-    {
-        $subs_id = $ss->subs_id ?? null;
-        $d = (object) $arr;
-
-        $total_payroll = DB::table('accounts as a')
-            ->where('a.id', '<>', 1) // Exclude rows where id = 1
-            ->selectRaw('SUM(a.balance) as total_payroll')
-            ->first();
-
-
-        $total_wallet =  DB::table('wallet_accounts as w')
-            ->selectRaw(' SUM(w.balance) as total_wallet')
-            ->first();
-
-        $count_warning = DB::table('emp_warnings')->count();
-        $start_date = $d->start_date ?? null;
-        $end_date = $d->end_date ?? null;
-
-        $str_dates = '1=1';
-
-        $today = date('Y-m-d');
-        if ($start_date && $end_date) {
-            $end_date = convertDate($end_date);
-            $start_date = convertDate($start_date);
-
-            if (strtotime($start_date) && strtotime($end_date)) {
-                $str_dates = "(
-                    (l.start_date BETWEEN '$start_date' AND '$end_date') OR
-                    (l.end_date BETWEEN '$start_date' AND '$end_date') OR
-                    (l.start_date <= '$start_date' AND l.end_date >= '$end_date')
-                )";
-            }
-        } else {
-            $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
-        }
-
-        $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
-        $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
-
-        $query = DB::table('leaves as l')
-            ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
-            ->join('positions as p', 'p.id', '=', 'emp.position_id')
-            ->whereRaw($str_dates)
-            ->selectRaw(
-                'l.id, emp.id as emp_id, emp.name as emp_name, p.title as emp_position, ' .
-                $col_dates . ', l.remarks, emp.photo_file_name as emp_photo, ' . $leave_days_calc
-            )
-            ->orderBy('l.id', 'DESC');
-
-        $rows = $query->get();
-        $count = $query->count();
-
-        foreach ($rows as $row) {
-            $row->image_url = '';
-            if (!empty($row->emp_id) && !empty($row->emp_photo)) {
-                $row->image_url = Employee::profilePicture($row->emp_id);
-            }
-            unset($row->emp_photo);
-        }
-
-        return $rows;
-    }
+   
 
     function getBenefits($arr, $ss)
     {

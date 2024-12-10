@@ -1,20 +1,16 @@
 <div id="_main_dashboardComponent" style="display:none;padding:20px;">
-    <div class="chart_dashboard_top" id="_dashboard_top">
+    <div class="dbChart_all_top" id="dbChart_all_top">
     </div>
-    <div class="dashboard_card" >
-        <div class="row " style="" id="dashboard_card_load">
-        
+    <div class="db_cards">
+        <div class="row" style="" id="db_cards">
         </div>
-
-
     </div>
-    <div class="dashboard_center" id="_dashboard_center">
-    </div>
-
+    <!-- <div class="dashboard_center" id="_dashboard_center">
+    </div> -->
     <div class="dashboard_bottom" id="_dashboard_bottom">
-      
-
-        <div class="bottom_right" id="_dashboard_bottom_right">
+        <div class="bottom_left" id="_dashboard_center">
+        </div>
+        <div class="bottom_right" id="_db_card_onLeave">
         </div>
     </div>
 </div>
@@ -65,15 +61,14 @@
 
     .bottom_right {
         display: flex;
-        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
         flex-direction: column;
         align-items: center;
         justify-content: space-between;
-        background-color: #E1ECF7;
+        background-color: #dce5e5;
         width: 50%;
         height: 270px;
         padding: 10px;
-        border-radius: 20px;
+        border-radius: 8px;
     }
 
     .dashboard_bottom {
@@ -81,7 +76,6 @@
         display: flex;
         justify-content: space-between;
         gap: 20px;
-        padding: 20px;
 
     }
 
@@ -109,5 +103,6 @@
         padding: 10px;
         border-radius: 20px;
     }
+   
 
 </style>
