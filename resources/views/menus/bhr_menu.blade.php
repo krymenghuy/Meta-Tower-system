@@ -391,7 +391,18 @@ function v_display($mod_id, $module_ids = null)
                 </div>
             </li>
 
-            
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(209); ?>>
+                            <a href="ExitFormComponent" modid="209" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons"
+                                        src="{{ asset('assets/images/icons/pickup_center.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color" vslang="menus.Exit Forms">
+                                     Exit Forms
+                                </span>
+                            </a>
+            </li>
+
             <li class="kt-menu__section" <?php v_display(-1); ?>>
                 <h4 class="kt-menu__section-text " vslang="menus.Staff Discipline"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
@@ -444,10 +455,21 @@ function v_display($mod_id, $module_ids = null)
                 </a>
             </li>
 
-            <li class="kt-menu__section" <?php v_display(null, [105, 106, 218, 220, 210, 102, 221, 216, 212, 100, 101]); ?>>
+            <li class="kt-menu__section" <?php v_display(-1); ?>>
                 <h4 class="kt-menu__section-text " vslang="menus.Settings"></h4>
                 <i class="kt-menu__section-icon flaticon-more-v2"></i>
             </li>
+  
+            <li class="kt-menu__item" aria-haspopup="true" <?php v_display(-1); ?>>
+                            <a href="ContractGeneratorComponent" modid="-1" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons"
+                                        src="{{ asset('assets/images/bhr/position.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Contract Generator"></span>
+                            </a>
+            </li>
+
             <li class="kt-menu__item kt-menu__item--submenu" aria-haspopup="true"
                 data-ktmenu-submenu-toggle="hover"<?php v_display(null, [100, 101]); ?>>
                 <a href="javascript:void(0)" class="kt-menu__link kt-menu__toggle">
