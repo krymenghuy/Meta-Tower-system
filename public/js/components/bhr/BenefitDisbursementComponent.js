@@ -3,14 +3,33 @@
 var BenefitDisbursementComponent = new (function () {
     let mThis = this;
     this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children( "#_main_benefit_disbursement_component");
+    this.jm = main_view.appContent.children(
+        "#_main_benefit_disbursement_component"
+    );
     this.self = this.jm[0];
     this.title_prop = "Benefits Disbursement";
     this.btnAdd = this.self.querySelector("#_btnAddBenefitDisburse");
     this.elSearch = this.self.querySelector("#_benefit_disburse_search");
     this.elCard = this.self.querySelector(".top_level_card");
-    this._searchBenefitDisburse = this.self.querySelector("#container_benefit_disburse");
-    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    this._searchBenefitDisburse = this.self.querySelector(
+        "#container_benefit_disburse"
+    );
+    this.divFilter = this.self.querySelector("#container_benefit_disburse");
+    this.elBenefit = this.self.querySelector("#el_benefit");
+    const monthNames = [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December",
+    ];
     this.cols = [
         {
             title: "Name",
@@ -69,18 +88,18 @@ var BenefitDisbursementComponent = new (function () {
             data: (data) => {
                 return `
                 <div class="d-flex justify-content-start align-items-center">
-                    <div class="text-center gap-2 d-flex flex-wrap">
-                        <button class="btn btn-sm btn-primary btn-benefit-disbursement-modify" data-id="${data.id}">
-                            <i class="fa-regular fa-pen-to-square"></i>
+                    <div class="text-center align-center gap-2 d-flex flex-wrap">
+                        <button class="btn rounded-3 p-1 btn-primary-custom btn-benefit-disbursement-modify" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger btn-benefit-disbursement-delete" data-id="${data.id}">
-                            <i class="fa-regular fa-trash-can"></i>
+                        <button class="btn rounded-3 p-1 btn-warning btn-benefit-disbursement-delete" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
                         </button>
                     </div>
                 </div>`;
             },
         },
-    ];    
+    ];
     this.init = function () {
         if (mThis.initAlready) return;
 
@@ -89,11 +108,18 @@ var BenefitDisbursementComponent = new (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white rounded-3 overflow-hidden header-uppercase",
+            tableClass:
+                "table table--white rounded-3 overflow-hidden header-uppercase",
             listContainerClass: null,
-            
         });
-
+        mThis.divFilter.addEventListener("change", (e) => {
+            e.preventDefault();
+            mThis.BenefitDisburseListView.showPage(mThis.getFilterData());
+        });
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () =>
+                mThis.BenefitDisburseListView.showPage(mThis.getFilterData());
+        });
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
             let op = {
@@ -104,7 +130,6 @@ var BenefitDisbursementComponent = new (function () {
                 },
             };
             BenefitDisburseDialog.show(op);
-            
         };
         const pr_tbl = mThis.BenefitDisburseListView.getListContainer();
         const sh_parent = pr_tbl;
@@ -136,25 +161,29 @@ var BenefitDisbursementComponent = new (function () {
     };
 
     this.getFilterData = () => {
-        let p = {};
-        p.search_value = mThis.elSearch.value;
-        let main_filters =
-            mThis._searchBenefitDisburse.querySelectorAll(".filter-field");
-        main_filters.forEach((el) => {
-            const f = el.dataset.field;
-            p[f] = el.value;
+        const filters = {
+            benefit_id: mThis.elBenefit.value,
+            search_value: mThis.elSearch.value,
+        };
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            const field = el.dataset.field;
+            filters[field] = el.value;
         });
-        console.log(222, p.search_value, main_filters);
-
-        return p;
+        return filters;
     };
     this.initDropdownMenus = () => {
         addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn-benefit-disbursement-modify");
+            let btn = VSUtil.closestLimited(
+                e.target,
+                ".btn-benefit-disbursement-modify"
+            );
             if (btn) {
                 mThis.editBenefitDisburse(btn.dataset.id, btn);
             }
-            btn = VSUtil.closestLimited(e.target, ".btn-benefit-disbursement-delete");
+            btn = VSUtil.closestLimited(
+                e.target,
+                ".btn-benefit-disbursement-delete"
+            );
             if (btn) {
                 mThis.deleteBenefitDisburse(btn.dataset.id, btn);
             }
@@ -219,7 +248,16 @@ var BenefitDisbursementComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, this.elSortBy);
+                VSUtil.setComboItems(
+                    mThis.elBenefit,
+                    d.benefits,
+                    "id",
+                    "name",
+                    true,
+                    "All Benefits",
+                    null
+                );
+                console.log(1111, mThis.elBenefit);
             });
     };
     this.show = function () {
@@ -242,28 +280,80 @@ const BenefitDisburseDialog = (() => {
                 backdrop: "static", //User click outside form, do not close form
                 keyboard: true, //prevent user from using ESC key
                 createContent: () => {
+                    const months = [
+                        { value: 1, name: "January" },
+                        { value: 2, name: "February" },
+                        { value: 3, name: "March" },
+                        { value: 4, name: "April" },
+                        { value: 5, name: "May" },
+                        { value: 6, name: "June" },
+                        { value: 7, name: "July" },
+                        { value: 8, name: "August" },
+                        { value: 9, name: "September" },
+                        { value: 10, name: "October" },
+                        { value: 11, name: "November" },
+                        { value: 12, name: "December" },
+                    ];
+
+                    const currentYear = new Date().getFullYear();
+                    const years = Array.from(
+                        { length: 10 },
+                        (_, i) => currentYear + i
+                    );
                     return [
                         `<div class="row">
+                            <div class="form-group col-12">
+                                <label for="employee" class="form-label" vslang="titles.Employee"></label>
+                                <select name="employee" class="form-control data-input"  data-field="emp_id"></select>
+                            </div>
                             <div class="form-group col-md-6">
-                                <label for="name" class="form-label">Name</label>
-                                <span class="text-danger">*</span>
-                                <input type="text" class="form-control data-input" data-field="name" id="name" required>
-                            </div>
-                             <div class="form-group col-md-6">
-                                <label for="rank" class="form-label">Rank</label>
-                                <span class="text-danger">*<small>(1-100)</small></span>
-                                <input type="number" class="form-control data-input" data-field="rank" id="job_ranking" rows="2" placeholder="" required>                        
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea type="text" class="form-control data-input" data-field="description" id="description" placeholder="job description"></textarea>
-                            </div>
-                            
-                           
-                           
-                         </div>`,
+                            <label for="benefits" class="form-label" vslang="titles.Benefit"></label>
+                            <select name="benefits" class="data-input" data-field="benefit_id" id="benefit_id"></select>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="withdraw_rate" class="form-label" vslang="titles.Withdraw Rate"></label>
+                            <input name="withdraw_rate" class="form-control data-input" data-field="withdraw_rate" />
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="target_month" class="form-label" vslang="titles.Month"></label>
+                            <select name="target_month" class="form-control data-input" data-field="target_month">
+                                ${months
+                                    .map(
+                                        (month) =>
+                                            `<option value="${month.value}">${month.name}</option>`
+                                    )
+                                    .join("")}
+                            </select>
+                        </div>
+                        <div class="form-group col-6">
+                            <label for="year" class="form-label" vslang="titles.Year"></label>
+                            <select name="year" class="form-control data-input" data-field="target_year">
+                                ${years
+                                    .map(
+                                        (year) =>
+                                            `<option value="${year}">${year}</option>`
+                                    )
+                                    .join("")}
+                            </select>
+                        </div>
+                        </div>`,
                     ].join("");
                 },
+                configSelect: [
+                    {
+                        name: "employee",
+                        data: "employees",
+                        textField: (me, d) =>
+                            `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`,
+                        valueField: "id",
+                    },
+                    {
+                        name: "benefits",
+                        data: "benefits",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                ],
                 buttons: [
                     {
                         label: '<span class="text-warning">Cancel</span>',
@@ -323,6 +413,23 @@ const BenefitDisburseDialog = (() => {
 
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
+
+                    // Delay setting the values to ensure the elements are rendered
+                    setTimeout(() => {
+                        if (data.target_month) {
+                            const monthSelect = me.divModal.querySelector(
+                                '[name="target_month"]'
+                            );
+                            if (monthSelect)
+                                monthSelect.value = data.target_month;
+                        }
+                        if (data.target_year) {
+                            const yearSelect = me.divModal.querySelector(
+                                '[name="target_year"]'
+                            );
+                            if (yearSelect) yearSelect.value = data.target_year;
+                        }
+                    }, 100); // Adjust the delay if needed
                 },
             });
 

@@ -47,7 +47,7 @@ class Application //extends Model
         if ($col ==='id' || $col ==='app_id'){
             $used_value = hex2bin($value);
         }else $used_value = $value;
-        return DB::table('um_applications as app')->where('app.'.$col, $used_value)->selectRaw(DBX::getHEX('app.id','id').', app.name')->first();
+        return DB::table('um_applications as app')->where('app.'.$col, $used_value)->selectRaw(DBX::getHEX('app.id','id').', app.name, user_class')->first();
     }
 
     function save($arr,$id = null, $ss = null){

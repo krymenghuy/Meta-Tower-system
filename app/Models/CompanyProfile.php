@@ -15,7 +15,7 @@ class CompanyProfile //extends Model
   //use HasFactory;
    protected $userInfo = null;
    protected static $logo_dir ="identity";
-   protected static $img_dir ='brand-images', $soc_media_img_dir ='social_media';
+   protected static $img_dir ='mobile_banner', $soc_media_img_dir ='social_media';
   
    function __construct($userInfo=null){
       $this->userInfo = $userInfo;

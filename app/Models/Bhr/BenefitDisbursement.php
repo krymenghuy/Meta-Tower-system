@@ -31,17 +31,15 @@ class BenefitDisbursement
         $branch_id = $ss->branch_id;
         $id = $id ?? $this->id;
 
-        // Validation rules
         $v_rule = [
             'id' => '0|identity=1',
-            'emp_id' => '1|number|exists=employees.id',
+            'emp_id' => '1|number',
             'benefit_id' => '1|number',
-            'target_month' => '0|number|between=1,12', // Ensure valid month
-            'target_year' => '0|number|min=1900|max=' . date('Y'), // Ensure valid year
+            'target_month' => '0|number|min=1|max=12',
+            'target_year' => '0|number|min=1900|max=2100',
             'withdraw_rate' => '0|number'
         ];
 
-        // Validate input
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) {
             return DV::error($res->error);
@@ -50,38 +48,27 @@ class BenefitDisbursement
         $id = $res->id;
         $inputs = $res->values;
 
-        // Ensure target_month and target_year are properly set
-        $inputs['target_month'] = isset($arr['target_month']) && is_numeric($arr['target_month'])
-        ? intval($arr['target_month'])
-        : intval(date('m')); // Default to current month if not provided
+        $inputs['target_month'] = intval($arr['target_month'] ?? date('m'));
+        $inputs['target_year'] = intval($arr['target_year'] ?? date('Y'));
 
-        $inputs['target_year'] = isset($arr['target_year']) && is_numeric($arr['target_year'])
-        ? intval($arr['target_year'])
-        : intval(date('Y')); // Default to current year if not provided
-
-        // Ensure employee ID is provided
         $emp_id = $arr['emp_id'] ?? null;
-        if (!$emp_id) {
-            return DV::error('Employee is required for saving benefit disbursement!');
-        }
+        // if (!$emp_id) {
+        //     return DV::error('Employee is required for saving benefit disbursement!');
+        // }
 
-        // Check for existing benefit disbursement for the employee and benefit
         $existingBenefitDisbursement = DB::table('benefit_disbursements')
-        ->where('emp_id', $emp_id)
+            ->where('emp_id', $emp_id)
             ->where('benefit_id', $inputs['benefit_id'])
             ->first();
 
-        if ($existingBenefitDisbursement && (!$id || $id !== $existingBenefitDisbursement->id)) {
-            return DV::error('This employee already has a benefit of this type.');
-        }
+        // if ($existingBenefitDisbursement && (!$id || $id !== $existingBenefitDisbursement->id)) {
+        //     return DV::error('This employee already has a benefit of this type.');
+        // }
 
-        // Save or update the record
         $id = saveData($ss, 'benefit_disbursements', ['id' => $id], $inputs, [], 1, false);
 
-        // Return the result
         return DV::depends($id, ['id' => $id], 'Save failed');
     }
-
 
     public function getBenefitDisbursementListPaginate($arr, $ss = null)
     {
@@ -90,35 +77,42 @@ class BenefitDisbursement
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         $skip_rows = ($current_page - 1) * $per_page;
-
-        $search_value = $d->search_value ?? null;
+        $search_benefit_id = $d->benefit_id ?? null;
         $query = DB::table('benefit_disbursements as bd')
             ->join('employees as emp', 'emp.id', '=', 'bd.emp_id')
-            ->join('benefits as bc', 'bc.id', '=', 'bd.benefit_id')
+            ->join('benefits as b', 'b.id', '=', 'bd.benefit_id')
             ->selectRaw(
-                'bd.id,
-                emp.id as emp_id, 
-                emp.name as name, 
-                emp.email as email, 
-                bc.name as benefit_name,
-                bd.benefit_id,
-                bd.target_month,
-                bd.target_year,
-                bd.withdraw_rate, 
-                emp.photo_file_name as emp_photo'
+                'bd.id, 
+            emp.id as emp_id, 
+            emp.name as name, 
+            emp.email as email, 
+            b.name as benefit_name,
+            bd.benefit_id,
+            bd.target_month,
+            bd.target_year,
+            bd.withdraw_rate,
+            bd.update_user,
+            bd.updated_at, 
+            bd.create_date, 
+            emp.photo_file_name as emp_photo'
             )
             ->orderBy('bd.id', 'desc');
-
-        if ($search_value) {
+        if ($search_benefit_id) {
+            $query->where('bd.benefit_id', $search_benefit_id);
+        }
+        if (!empty($d->search_value)) {
+            $search_value = $d->search_value;
             $query->where(function ($q) use ($search_value) {
                 $q->where('emp.name', 'LIKE', "%{$search_value}%")
                     ->orWhere('bd.benefit_id', 'LIKE', "%{$search_value}%")
                     ->orWhere('bd.withdraw_rate', 'LIKE', "%{$search_value}%");
             });
         }
-
         $count = $query->count();
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+        $rows = $query->skip($skip_rows)
+            ->take($per_page)
+            ->get();
 
         foreach ($rows as $row) {
             $row->image_url = '';
@@ -127,9 +121,9 @@ class BenefitDisbursement
             }
             unset($row->emp_photo);
         }
-
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
 
     public static function getDetails($id, $ss)
     {

@@ -334,6 +334,7 @@ class PayrollList
 
             $payroll_id = $inputs['payroll_id'];
             $emp_id = $inputs['emp_id'];
+
             $payroll_list_benefit = Employee::getPayrollListBenefit($payroll_id, $emp_id);
             $save_payroll_list_benefit = Employee::savePayrollListBenefit((array)$payroll_list_benefit, $ss);
             $inputs['benefit'] = $payroll_list_benefit->used_amount;

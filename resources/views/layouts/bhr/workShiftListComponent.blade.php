@@ -1,5 +1,4 @@
 <style>
-
     #_work_shift_header .col-1-5,
     #_work_shift_body .col-1-5 {
         flex: 1 1 14%;
@@ -119,10 +118,13 @@
     <div class="d-flex py-3 mt-3 justify-content-between bg-white rounded-3 shadow w-100" id="_divFilter">
         <div class="d-flex align-items-center justify-content-start w-100 px-3">
             <button type="button" class="btn_add" id="_btnAddWorkShift">
-                <span>Add Work Shift</span>
+                <span>Add Shift</span>
             </button>
+        </div>
+        <div class="d-flex align-items-center justify-content-end w-50 px-3">
+            <input type="text" class="form-control filter-field btn_search" id="_work_shift_list_search"
+                placeholder="Search Work Shift....">
         </div>
     </div>
     <div id="_work_shift_lists" class="mt-4"></div>
 </div>
-

@@ -8,7 +8,7 @@ var BenefitComponent = new (function () {
     this.title_prop = "Benefit";
     this.btnAdd = this.self.querySelector("#_btnAddBenefit");
     this.divFilter = this.self.querySelector("#_divFilter");
-    this.elBenefit = this.self.querySelector("#el_benefit");
+    this.elSearch = this.self.querySelector("#_benefit_search");
 
     this.cols = [
         {
@@ -40,17 +40,16 @@ var BenefitComponent = new (function () {
                 return `
                 <div class="d-flex justify-content-start align-items-center">
                     <div class="text-center gap-2 d-flex flex-wrap">
-                        <button class="btn btn-sm btn-primary btn_edit_benefit" data-id="${data.id}">
-                            <i class="fa-regular fa-pen-to-square"></i>
+                        <button class="btn rounded-3 p-1 btn-primary-custom btn_edit_benefit" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
                         </button>
-                        <button class="btn btn-sm btn-danger btn_delete_benefit" data-id="${data.id}">
-                            <i class="fa-regular fa-trash-can"></i>
+                        <button class="btn rounded-3 p-1 btn-warning btn_delete_benefit" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
                         </button>
                     </div>
                 </div>`;
             },
         },
-
     ];
     this.init = () => {
         if (mThis.initAlready) return;
@@ -86,14 +85,24 @@ var BenefitComponent = new (function () {
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
-            el.onchange = () => mThis.BenefitListView.showPage(mThis.getDataFormFilter());
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
+            el.onchange = () =>
+                mThis.BenefitListView.showPage(mThis.getDataFormFilter());
         });
         mThis.setActionListeners();
 
         mThis.initAlready = true;
     };
-
+    mThis.elSearch.addEventListener("keyup", (e) => {
+        clearTimeout(mThis.search_timeout);
+        mThis.search_timeout = setTimeout(() => {
+            if (mThis.BenefitListView) {
+                mThis.BenefitListView.showPage(mThis.getDataFormFilter());
+            } else {
+                console.error("Benefit is not defined");
+            }
+        }, 200);
+    });
     this.setActionListeners = () => {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(e.target, ".btn_delete_benefit");
@@ -144,8 +153,7 @@ var BenefitComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success("Deleted Successfully");
-                                mThis.BenefitListView.showPage()
-
+                                mThis.BenefitListView.showPage();
                             }
                         });
                 }
@@ -155,100 +163,113 @@ var BenefitComponent = new (function () {
 
     this.getDataFormFilter = () => {
         let filters = {
-
-            benefit_id: mThis.elBenefit.value,
+            search_value: mThis.elSearch.value,
+            
         };
-        mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
+        console.log(39292,mThis.elSearch);
+        mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             filters[el.dataset.field] = el.value;
         });
         return filters;
     };
     this.prepareFormOptions = () => {
-
-        vsapi.call(`${main_view.base_url}/hr/bdp/form-options`,null,null,null).then(res => {
-            const d = res.status_code == 200 ? res.data : {};
-
-            VSUtil.setComboItems(mThis.elBenefit,d.benefits,'id','name',true,'All Benefits',null);
-            console.log(1111,mThis.elBenefit);
-        })
-    }
+        vsapi
+            .call(`${main_view.base_url}/hr/bdp/form-options`, null, null, null)
+            .then((res) => {
+                const d = res.status_code == 200 ? res.data : {};
+            });
+    };
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         // mThis.prepareFormOptions();
-            mThis.BenefitListView.showPage();
-                $(mThis.self).siblings().hide();
-                $(mThis.self).fadeIn(200);
-            };
+        mThis.BenefitListView.showPage();
+        $(mThis.self).siblings().hide();
+        $(mThis.self).fadeIn(200);
+    };
 })();
 
-const BenefitDialog = (()=>{
-
+const BenefitDialog = (() => {
     const self = {};
     let dialog = null;
-     self.show = (op)=>{
-
-        dialog = dialog || new GeneralDialog({
-            cssClass:'modal-md',
-            backdrop: 'static',
-            keyboard:true,
-            createContent:()=>{
-                 return [`<div class="row">
+    self.show = (op) => {
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                cssClass: "modal-md",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return [
+                        `<div class="row">
                 <div class="form-group col-12">
                   <label for="name" class="form-label" vslang="titles.Benefit Name"></label>
                   <input name="name" class="form-control data-input" data-field="name" />
                 </div>
-              </div>`].join('');
-            },
+              </div>`,
+                    ].join("");
+                },
 
-            buttons:[
-               {
-                label:'<span class="text-warning">Cancel</span>',
-                cssClass:'btn btn-default',
-                click:(me,btn)=>{
-                    //Close with Cancel button
-                    me.hide(false);
-                }
-               },
-               {
-                label:'<span>Save</span>',
-                cssClass:'btn btn-primary',
-                click:(me,btn)=>{
-                    const p = me.getData();
+                buttons: [
+                    {
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            //Close with Cancel button
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
 
-                    p.id = me.dataOptions.id; //get "id" from op
+                            p.id = me.dataOptions.id; //get "id" from op
 
-                    vsapi.call( [main_view.base_url,'/hr/benefit/save'].join(''), p,btn,null).then(res=>{
-                       if(res.status_code ==200){
-                         me.hide(true,p);
-                       }else cv_interact.error(res.error_message);
-                    });
-                }
-               }
-            ],
-            prepareFormOptions:{
-               createTitle:'Add Benefit',
-               modifyTitle:'Edit Benefit',
-               targetProp: 'benefits',
-               api:{
-                 endpoint: [main_view.base_url,'/hr/benefit/form-options'].join(''),
-                 params:(op)=>{
-                    return {'id':op.id};
-                 }
-               },
-            //    onResponse: (me, res)=>{
-            //      console.log('result from api "/form-options": ', res);
-            //    }
-            },
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/benefit/save",
+                                    ].join(""),
+                                    p,
+                                    btn,
+                                    null
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.hide(true, p);
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Add Benefit",
+                    modifyTitle: "Edit Benefit",
+                    targetProp: "benefits",
+                    api: {
+                        endpoint: [
+                            main_view.base_url,
+                            "/hr/benefit/form-options",
+                        ].join(""),
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                    //    onResponse: (me, res)=>{
+                    //      console.log('result from api "/form-options": ', res);
+                    //    }
+                },
 
-            onPrepareForm:(me, data)=>{
-                 LocaleManager.translateZone(me.divModal);
-            }
-
-        });
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                },
+            });
 
         dialog.show(op);
-     }
+    };
 
     return self;
 })();

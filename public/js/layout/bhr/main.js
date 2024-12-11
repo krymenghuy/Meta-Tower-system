@@ -1,9 +1,11 @@
 'use strict';
 const main_view = new function(){
-    let mThis = this;
+    const mThis = this;
     this.apiCluster = 'menus';
     this.onLayoutLoad = null;
     this.elScreenTitle = document.querySelector('#screen_title');
+    this.divTitle = this.elScreenTitle.closest('div.screen-info');
+
     this.elScreenTitle_mobile =  document.querySelector('#mobile_screen_title');
     this.currency = {symbol: '<span class="fs-6 fw-bold hl-1">៛</span>', name :'KHR'};
     this.base_url = document.querySelector('meta[name="base_url"]').getAttribute('content'); //$('#__base_url').val();
@@ -42,15 +44,32 @@ const main_view = new function(){
         console.error('branch_id (company_id) and user_id are not found! => so Notifications will not work!');
     }
     /** Toto: load "mThis.backend_channel_name" and other environment's vairables from backend's env directly */
-    this.backend_channel_name = ['dms.backend.',this.branch_id].join('');
+    this.backend_channel_name = ['bhr.backend.',this.branch_id].join('');
+ 
+    // // event onShowComponent() is triggered when any component is shown 
+    // this.onShowComponent =  (component)=>{
+    //     main_view.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
+    //    if(!component) return;
 
-    this.getEncryptData = (qstring,onFinish)=>{
-        let p = {'data':qstring};
-        vsapi.call([mThis.base_url,'/api/vs-encrypt031181'].join(''),p).then((res)=>{
-            onFinish(res.data || res);
-        });
-    }
-
+    //    switch(component.id){
+    //     case 200:{
+    //         let btn = main_view.divTitle.querySelector('.btn-db-fitler');
+    //         if(btn) return;   
+    //           main_view.divTitle.insertAdjacentHTML('beforeend','<div class="div-db-filter"><button class="btn-db-fitler btn btn-sm btn-primary"><i class="fa fa-list"></i></button></div>');
+    //           btn = main_view.divTitle.querySelector('.btn-db-fitler');
+    //           if(btn){
+    //              main_view.initDashboardFilter(btn);
+    //           } 
+    //         break;
+    //     }
+    //     default:{
+    //         const div = main_view.divTitle.querySelector('div.div-db-filter');
+    //         if(div) div.remove();
+    //     }
+    //    }
+    
+    // };
+ 
     this.init = ()=>{
      //BEGIN:: process side menus click using VSRoute
        this.side_menus = document.querySelector('#kt_aside_menu_wrapper');
@@ -378,8 +397,11 @@ window.addEventListener('DOMContentLoaded',function(){
     //       ["role_name", user.role_name]
     //     ]]);
     // }
-
+ 
     main_view.init();
+
+    //VSRoute.onShowComponent = main_view.onShowComponent;
+
     LocaleManager.translateZone(main_view.appContent);
     main_view.setLangMenu(LocaleManager.currentLanguage.code);
 

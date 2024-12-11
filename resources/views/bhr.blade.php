@@ -120,9 +120,11 @@ echo $user->lang ?? 'en'; ?>">
                         <div class="d-flex flex-row flex-wrap shadow justify-content-between" style="background-color:#ececec;">
                             <div class="mainview-top-right">
                                 <div class="show--title mx-4 p-3 flex-grow-1 ">
-                                    <div class="screen-info  w-50">
-                                        <h6 class="screen-title mb-0 " vslang="titles.dashboard"
-                                            style="color:grey;" id="screen_title">Dashboard</h6>
+                                    <div style="height:18px" class="screen-info d-flex flex-row justify-content-between align-items-center  w-50">
+                                        <div>
+                                            <h6 class="screen-title mb-0 " vslang="titles.dashboard"
+                                          style="color:grey;" id="screen_title">Dashboard</h6>
+                                       </div>
                                     </div>
                                 </div>
                                 <div id="_main_top_right_menus"
@@ -255,7 +257,6 @@ echo $user->lang ?? 'en'; ?>">
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
                             @include('layouts.bhr.dashboardComponent')
-                            @include('layouts.common.companyComponent')
                             @include('layouts.bhr.reportCenterComponent')
                             @include('layouts.common.socialMediaComponent')
                             @include('layouts.bhr.employeeComponent')
@@ -282,7 +283,10 @@ echo $user->lang ?? 'en'; ?>">
                             @include('layouts.bhr.benefitDisbursementComponent')
                             @include('layouts.bhr.benefitDisbursePolicyComponent')
                             @include('layouts.bhr.benefitComponent')
-
+                            @include('layouts.common.locationComponent')
+                            @include('layouts.common.companyComponent')
+                            @include('layouts.umt.branchManagementComponent')
+                            @include('layouts.umt.roleManagementComponent')
                         </div>
                     </div>
                 </div>

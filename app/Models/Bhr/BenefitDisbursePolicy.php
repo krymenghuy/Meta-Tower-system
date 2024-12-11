@@ -115,7 +115,7 @@ class BenefitDisbursePolicy
 
         return (object) [
             'benefits' => DB::table('benefits')->selectRaw('id,name')->get(),
-            "bdp" => $bdp,
+            "disburse_policy" => $bdp,
         ];
     }
 }

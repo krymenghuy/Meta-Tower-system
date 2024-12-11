@@ -18,6 +18,10 @@ class ReportController extends Controller
         return JDV::result($rows); 
     }
 
+    function getReportActionNames(Request $req){
+        $cols = Report::getActions(null);
+        return JDV::result($cols);
+    }
     function deleteReport(Request $req){
         $ss = AuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);

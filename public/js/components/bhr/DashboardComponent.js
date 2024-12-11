@@ -6,11 +6,12 @@ var DashboardComponent = new (function () {
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_dashboardComponent");
     this.self = this.jm[0];
-    this.dashboard_top = mThis.self.querySelector('#_dashboard_top');
+    this.dbChartAll = mThis.self.querySelector('#dbChart_all_top');
+    this.dbCards = this.self.querySelector('#db_cards');
     this.dashboard_center = mThis.self.querySelector('#_dashboard_center');
     this.dashboard_Bottom  = mThis.self.querySelector('#_dashboard_bottom');
     this.dashboard_Bottom_left = mThis.self.querySelector('#_dashboard_bottom_left');
-    this.dashboard_Bottom_right = mThis.self.querySelector('#_dashboard_bottom_right');
+    this.dbCardOnLeave = mThis.self.querySelector('#_db_card_onLeave');
     this.barchart = mThis.self.querySelector('#barchart');
 
     const formattedNumber = (number) => {
@@ -23,77 +24,139 @@ var DashboardComponent = new (function () {
             })
             .replace(/,/g, ' ');
     };
+ 
+    // *** When DashboardComponent is showing, create Dashboard Filter button near page title 
+    this.onShow =  (options)=> {
+        mThis.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
+        const divTitle = main_view.divTitle;
+       let btn = divTitle.querySelector('.btn-db-fitler');
+       if(btn) return;   
+         divTitle.insertAdjacentHTML('beforeend','<div class="div-db-filter"><button class="btn-db-fitler btn btn-sm btn-primary"><i class="fa fa-list"></i></button></div>');
+         btn = divTitle.querySelector('.btn-db-fitler');
+         mThis.createFilterButton(btn);
+    };
+ 
+   // *** When DashboardComponent is closing, remove Dashboard Filter button near page title
+    this.onHide = (options)=>{
+        mThis.removeFilterButton();
+    }
 
     this.init = () => {
         if (mThis.initAlready) return;
         mThis.initAlready = true;
     }
 
-    this.renderDashboardTop = (data) => {
-        if (!data) return;
+    this.removeFilterButton = ()=>{
+        const divTitle = main_view.divTitle; 
+        const div = divTitle.querySelector('div.div-db-filter');
+        if(div) div.remove();
+    };
 
-        let Staff = data.emp_types.find((type) => type.name === "Staff") || { count: 0 };
-        let Probation = data.emp_types.find((type) => type.name === "Probation") || { count: 0 };
-        let Intern = data.emp_types.find((type) => type.name === "Intern") || { count: 0 };
+    this.createFilterButton = (btn) => {
+        mThis.filterConfig = null;
+        mThis.filterConfig = new FilterPanel(
+        {
+                "triggerButton":btn,
+                fields:[
+                   {
+                    "name":"year",
+                    "label":"Year",
+                    "valueField":"year",
+                    "textField":"year",
+                    "defaultValue":2024,
+                    "data":[{"year":2024}, {"year":2025}]
+                   },
+                   {
+                    "name":"month",
+                    "label":"Month",
+                    // "valueField":"value",
+                    // "textField":"label",
+                    "data":[{"value":"this_month","label":"This month"}, {"value":"last_month","label":"Last month"}],
+                   }
+                ],
+                // "createContent":()=>{
+                //     return [
+                //         '<div class="d-flex flex-column p-3">',
+                //            '<div>',
+                //                 '<label class="form-label" vs-lang="titles.Date">Date</label>',
+                //                 '<div><input class="form-control" /></div>',
+                //            '</div>',
+                //            '<div>',
+                //               '<label class="form-label" vs-lang="titles.Branch">Branch</label>',
+                //               '<div><select class="form-control"> </select></div>',
+                //            '</div>',
+                //         '</div>',
+                //     ].join('');
+                // },
+               contentCreated:(me)=>{
+                  console.log('Filter Content created! ', me.controls);
+               },
+               onSelect: (me, data)=>{
+                 console.log('selected data is  : ',data);
+               } 
+        });
+    }
 
+    this.renderDBChartAllTop = (data) => {
+        data = data ? data : {};
+        let onLeaveHtml = this.renderDBOnLeave(data);
         let html = `
-        <div class="">
+        <div class="render_chart">
             <div class="row py-3">
                 <div class="col-md-3">
-                    <div class="card  dashboard_chart" >
-                        <canvas id="empChart" ></canvas>
+                    <div class="card dashboard_chart">
+                    <span class="fw-semibold fs-5 text-primary-custom text-capitalize" style="color:">${data.doughnutChart.title}</span>
+                        <canvas id="doughnutChart"></canvas>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class=" card bg-white dashboard_chart">
-                        <canvas id="compareChart"></canvas>
+                    <div class="card dashboard_chart">
+                        <span class="fw-semibold fs-5 text-primary-custom text-capitalize" style="color:">Monthly Employee Salary Overview</span>
+                        <canvas id="employeeSalaryChart"></canvas>
                     </div>
-
-                </div>
-                
-                
+                </div> 
                 <div class="col-md-3">
-                    <div class="card bg-grey dashboard_chart" >
-                        <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div class="card-body d-flex flex-column align-items-center">
+                            <div class="card-title text-center mb-2">
+                                <p class="fs-6  mb-0" style="color:#cab54a;">${data.cards.new_staff_count.title}</p>
+                                <h3 class="fs-3 text-primary-custom">${data.cards.new_staff_count.count}</h3>
+                            </div>
+                            <div class="bg--icon bg--icon-new-employee-count">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="">
+                            </div>
+                            <div class="mt-3 text-center">
+                                <p class="fs-7 text-muted">${data.cards.new_staff_count.subTitle}</p>
+                            </div>
+                        </div>
                     </div>
+                    
                 </div>
-            </div>
-            
+
 
             </div>
             
         </div>
         `;
-        mThis.dashboard_top.innerHTML = html;
-        mThis.renderChartEmployee(data);
-        mThis.renderCompareChart(data);
-        mThis.renderaccount(data);
+        mThis.dbChartAll.innerHTML = html;
+        mThis.renderChartEmployee(data.doughnutChart);
+        mThis.employeeSalaryChart();
     };
+    
 
     this.renderChartEmployee = (data) => {
-        if (!data) return;
-        const ctx = document.getElementById('empChart').getContext('2d');
-       
-         new Chart(ctx, {
+        data = data ? data : {};
+    
+        const ctx = document.getElementById('doughnutChart').getContext('2d');
+    
+        new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Staff', 'Intern', 'Probation'],
+                labels: data.labels,
                 datasets: [{
-                    data: [
-                        data.emp_types.find((type) => type.name === "Staff")?.count || 0,
-                        data.emp_types.find((type) => type.name === "Intern")?.count || 0,
-                        data.emp_types.find((type) => type.name === "Probation")?.count || 0,
-                    ],
-                    backgroundColor: [
-                        'hwb(231.76deg 16.86% 43.14%)',
-                        '#07d1ed',
-                        '#f20483'
-                    ],
-                    borderColor: [
-                        '#fff',
-                        '#fff',
-                       '#fff',
-                    ],
+                    data: data.values,
+                    backgroundColor: data.colors,
+                    borderColor: ['#fff', '#fff', '#fff'],
                     borderWidth: 1
                 }]
             },
@@ -113,308 +176,333 @@ var DashboardComponent = new (function () {
                             weight: 'bold'
                         },
                         formatter: function (value, context) {
-                            return context.chart.data.labels[context.dataIndex] + '\n' + value;
+                            return `${context.chart.data.labels[context.dataIndex]}\n${value}`;
                         }
                     }
                 }
-            },
-            // plugins: [ChartDataLabels]
+            }
         });
     };
+    this.employeeSalaryChart = (data) => {
+        const ctx = document.getElementById('employeeSalaryChart').getContext('2d');
+    
+       
+    
+        const employeeSalaryData = {
+            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            datasets: [
+                {
+                    label: 'Total Employees',
+                    data: [10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30], 
+                    backgroundColor: '#2b3991',
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                    yAxisID: 'y',
+                },
+                {
+                    label: 'Total Salary Paid ($)',
+                    data: [10000, 12000, 14000, 15000, 16000, 18000, 20000, 22000, 24000, 25000, 28000, 30000],
+                    backgroundColor: '#cab54a',
+                    borderColor: '#fff',
+                    borderWidth: 1,
+                    yAxisID: 'y1',
+                },
+            ],
+        };
+    
+        const config = {
+            type: 'bar',
+            data: employeeSalaryData,
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Employee Count and Total Salary Paid',
+                    },
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Number of Employees',
+                        },
+                    },
+                    y1: {
+                        type: 'linear',
+                        position: 'right',
+                        title: {
+                            display: true,
+                            text: 'Salary in USD ($)',
+                            color: '#cab54a', // Set title color to blue
+                        },
+                        ticks: {
+                            color: '#2b3991',
+                        },
+                        grid: {
+                            drawOnChartArea: false, // Prevents grid lines overlapping with the left axis
+                        },
+                    },
+                    
+                },
+            },
+        };
+    
+        new Chart(ctx, config);
+        
+    
+       
+    };
+    
 
-    this.renderCompareChart = (responseData) => {
-
-        // if (!responseData) {
-        //     console.error("Invalid data format or missing data.");
-        //     return;
-        // }
-
-        const canvas = document.getElementById('compareChart');
-        if (!canvas) {
-            console.error("Canvas with id 'compareChart' not found.");
-            return;
-        }
-        const ctx = canvas.getContext('2d');
-
-        const { monthly_totals, dates } = responseData;
-        const labels = [
-            dates.l3m || 'Last 3 Months',
-            dates.l2m || 'Last 2 Months',
-            dates.l1m || 'Last Month',
-            dates.cm || 'Current Month',
-        ];
-        const counts = [
-            monthly_totals.total_l3m || 0,
-            monthly_totals.total_l2m || 0,
-            monthly_totals.total_l1m || 0,
-            monthly_totals.total_cm || 0,
-        ];
-
+    this.renderCompareChart = (data) => {
+        const ctx = document.getElementById('compareChart').getContext('2d');
+    
         new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: labels,
+                labels: data.labels,
                 datasets: [{
-                    label: 'Employees',
-                    data: counts,
-                    backgroundColor: [
-                       'rgba(54, 162, 235)',
-                        'rgba(54, 162, 235)',
-                        'rgba(54, 162, 235)',
-                        'rgba(54, 162, 235)',
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(255, 99, 132, 1)',
-                    ],
-                    borderWidth: 1
+                    label: data.title || 'Data', 
+                    data: data.values || [],
+                    backgroundColor: data.colors || '#3795E0', 
+                    borderColor: data.borderColors || '#fff',
+                    borderWidth: data.borderWidth || 1 
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: true,
+                        position: 'top',
                     },
                     tooltip: {
-                        enabled: true,
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return `${tooltipItem.label}: ${tooltipItem.raw}`;
+                            }
+                        }
                     }
-                },
-                scales: {
-                    x: {
-                        grid: {
-                            color: 'rgba(200, 200, 200, 0.2)',
-                        },
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(200, 200, 200, 0.2)',
-                        },
-                    },
-                },
-            },
-        });
-    };
-
-    this.renderaccount = (data) => {
-        var xValues = ["Italy", "France", "Spain", "USA", "Argentina"];
-        var yValues = [55, 49, 44, 24, 15];
-        var barColors = [
-        "#b91d47",
-        "#00aba9",
-        "#2b5797",
-        "#e8c3b9",
-        "#1e7145"
-        ];
-
-        if (!data) return;
-        const acc = document.getElementById('myChart').getContext('2d');
-        if (this.accountInstance) {
-            this.accountInstance.destroy();
-        }
-        this.accountInstance = new Chart(acc, {
-            type: "pie",
-            data: {
-              labels: xValues,
-              datasets: [{
-                backgroundColor: barColors,
-                data: yValues
-              }]
-            },
-            options: {
-              title: {
-                display: true,
-                text: "World Wide Wine Production 2018"
-              }
+                }
             }
-            // plugins: [ChartDataLabels]
         });
+        
     };
+    this.renderDBCards = (data) => {
+        let html = `
+                <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div class="card-body d-flex flex-column align-items-center">
+                            <div class="card-title text-center mb-2">
+                                <p class="fs-6  mb-0" style="color:#cab54a;">${data.new_staff_count.title}</p>
+                                <h3 class="fs-3 text-primary-custom">${data.new_staff_count.count}</h3>
+                            </div>
+                            <div class="bg--icon bg--icon-new-employee-count">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="">
+                            </div>
+                            <div class="mt-3 text-center">
+                                <p class="fs-7 text-muted">${data.new_staff_count.subTitle}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div class="card-body bg-white d-flex flex-column align-items-center">
+                            <div class="card-title text-center mb-2">
+                                <p class="fs-6 mb-0" style="color:#cab54a;">${data.probation_staff_count.title}</p>
+                                <h3 class="fs-3 text-primary-custom">${data.probation_staff_count.count}</h3>
+                            </div>
+                            <div class="bg--icon bg--icon-new-enrollments">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation_staff.svg" alt="">
+                            </div>
+                            <div class="mt-3 text-center">
+                                <p class="fs-7 text-muted">${data.probation_staff_count.subTitle}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                     <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm  border-0 rounded-3">
+                        <div class="card-body bg-white d-flex flex-column align-items-center">
+                            <div class="card-title text-center mb-2">
+                                <p class="fs-6 mb-0" style="color:#cab54a;">${data.resigned_staff_count.title}</p>
+                                <h3 class="fs-3 text-primary-custom">${data.resigned_staff_count.count}</h3>
+                            </div>
+                            <div class="bg--icon bg--icon-special-discount">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="">
+                            </div>
+                            <div class="mt-3 text-center">
+                                <p class="fs-7 text-muted">${data.resigned_staff_count.subTitle}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                     <div class="col-md-3 mb-4">
+                    <div class="card shadow-sm border-0 rounded-3">
+                        <div class="card-body d-flex flex-column align-items-center">
+                            <div class="card-title text-center mb-2">
+                                <p class="fs-6 mb-0" style="color:#cab54a;">${data.warning_staff_count.title}</p>
+                                <h3 class="fs-3 text-primary-custom">${data.warning_staff_count.count}</h3>
+                            </div>
+                            <div class="bg--icon bg--icon-unpaid-student-count">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="">
+                            </div>
+                            <div class="mt-3 text-center">
+                                <p class="fs-7 text-muted">${data.warning_staff_count.subTitle}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        `;
+    
+        this.dbCards.innerHTML = html;
+    };
+    
+    this.renderDBOnLeave = (data) => {
+        const rowsHtml = (data.onLeave || [])
+            .map(
+                (item) => `
+                    <tr>
+                        <td class="align-middle text-center">
+                            <div class="text-primary-custom" style="font-size: 0.75rem; font-weight: bold;">
+                                ${item.emp_name}
+                            </div>
+                        </td>
+                        <td class="align-middle text-center" style="font-size: 0.75rem;">
+                            <span class="rounded-pill px-2 py-1 bg-warning text-white d-inline-block">
+                                ${item.emp_position}
+                            </span>
+                        </td>
+                        <td class="align-middle text-center" style="font-size: 0.75rem;">
+                            <span class="rounded-pill px-2 py-1 bg-primary-custom text-white d-inline-block">
+                                ${item.remarks}
+                            </span>
+                        </td>
+                    </tr>
+                `
+            )
+            .join("");
 
-
- 
-
+        return `
+            <div class="w-100">
+                <table class="table bg-white rounded-2 shadow-sm">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="text-center text-primary-custom" style="width: 30%; font-size: 0.85rem; font-weight: bold;">Name</th>
+                            <th class="text-center text-primary-custom" style="width: 30%; font-size: 0.85rem; font-weight: bold;">Position</th>
+                            <th class="text-center text-primary-custom" style="width: 40%; font-size: 0.85rem; font-weight: bold;">Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+            </div>
+        `;
+    };
     this.renderDashboardCenter = data => {
-        if (!data || !data.department_data) return;
 
 
-        let rowsHtml = data.department_data
-          .map(department => `
-            <tr>
-              <td>${department.department_name}</td>
-              <td >${department.position_title}</td>
-              <td>${department.staff_count}</td>
-              <td>${department.internship_count}</td>
-              <td>${department.in_probation_count}</td>
-              <td>${department.total_employee_count}</td>
-            </tr>
-          `)
-          .join("");
+
+        // let rowsHtml = data.department_data
+        //   .map(department => `
+        //     <tr>
+        //       <td>${department.department_name}</td>
+        //       <td >${department.position_title}</td>
+        //       <td>${department.staff_count}</td>
+        //       <td>${department.internship_count}</td>
+        //       <td>${department.in_probation_count}</td>
+        //       <td>${department.total_employee_count}</td>
+        //     </tr>
+        //   `)
+        //   .join("");
 
         let html = `
-          <div class="em_departement">
-            <h3 class="d-flex align-items-start text-primary" style="font-size: 1.2rem;desplay: flex; justify-content: center;">𝔼𝕞𝕡𝕝𝕠𝕪𝕖𝕖 𝔹𝕪 𝔻𝕖𝕡𝕒𝕣𝕥𝕞𝕖𝕟𝕥</h3>
-            <table class="table bg-white rounded-4">
-              <thead>
-                <tr>
-                  <th class="w-25">Department</th>
-                  <th>Position</th>
-                  <th>Staff</th>
-                  <th>Internship</th>
-                  <th>In Probation</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${rowsHtml}
-              </tbody>
-            </table>
-          </div>
+            <div class="card bg-white dashboard_chart"  style="height:300px;">
+                    <span class="fw-semibold fs-5 text-primary-custom text-capitalize" style="color:">${data.pieCharts.title}</span>
+                        <canvas id="compareChart"></canvas>
+                    </div>
+            </div>
         `;
         mThis.dashboard_center.innerHTML = html;
+        mThis.renderCompareChart(data.pieCharts);
+
     };
-
-
-    this.renderDashboardBottomLeft = (data) => {
-        if (!data || !data.data) return;
-
-
-        let rowsHtml = data.data
-          .map(data => `
-            <tr>
-            <td><img src="${data.image_url}" alt="Profile" style="width: 50px; height: 50px; border-radius: 50%;"></td>
-              <td class="pt-4">${data.emp_name}</td>
-              <td class="align-items-center m-3 " style="background-color: #3793C7;
-                                        display: flex;
-                                        justify-content: center;
-                                        align-items: center;
-                                        text-align: center;
-                                        outline: none;
-                                        color: white;
-                                        font-size: 12px;
-                                        border-radius: 20px;">${data.emp_position}
-                </td>
-              <td class="pt-4">${data.remarks}</td>
-
-            </tr>
-          `)
-          .join("");
-
-
-        let html = `
-
-            <h3 class="d-flex align-items-start text-danger" style="font-size: 1.2rem;desplay: flex; justify-content: center;"> 𝕆𝕟 𝕃𝕖𝕒𝕧𝕖 𝕋𝕠𝕕𝕒𝕪 </h3>
-            <table class="table bg-white rounded-4">
-              <thead>
-                <tr>
-                  <th>Profile</th>
-                  <th>Employee</th>
-                  <th>Position</th>
-                  <th>Reason</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${rowsHtml}
-              </tbody>
-            </table>
-
+    this.renderDBCardOnLeave = (data) => {
+        const rowsHtml = (data || [])
+            .map(
+                (item) => `
+                    <tr>
+                        <td class="align-middle">
+                            <div class="text-primary-custom" style="font-size: 0.75rem; font-weight: bold;">
+                                ${item.emp_name}
+                            </div>
+                        </td>
+                        <td class="align-middle text-center" style="font-size: 0.75rem;">
+                            <span class="p-1 text-white text-center border d-block rounded-5 p-1" style="width: 100px; background: #2b3991;">
+                                ${item.emp_position}
+                            </span>
+                        </td>
+                        <td class="align-middle text-start" style="font-size: 0.75rem;">
+                            <span class="p-1 text-primary-custom text-center">
+                                ${item.remarks || "No Remarks"}
+                            </span>
+                        </td>
+                    </tr>
+                `
+            )
+            .join("");
+    
+        const html = `
+            <h3 class="d-flex align-items-start text-primary-custom" style="font-size: 1.2rem;">Staffs on Leave Today</h3>
+            <div class="w-100" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius:8px;">
+                <table class="table bg-white rounded-4 mb-0">
+                    <thead style="position: sticky; top: 0; background: #fff; z-index: 1;">
+                        <tr>
+                            <th class="text-start text-primary-custom" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Name</th>
+                            <th class="text-start text-primary-custom" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Position</th>
+                            <th class="text-start text-primary-custom" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Reason</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+            </div>
         `;
-        mThis.dashboard_Bottom_left.innerHTML = html;
+    
+        mThis.dbCardOnLeave.innerHTML = html;
     };
+    
+    
+    
+    
 
-    this.renderDashboardBottomRight = (data) => {
-        if (!data) return;
 
-        let html = `
-            <h3 class="d-flex align-items-start text-primary" style="font-size: 1.2rem;">𝔹𝕖𝕟𝕖𝕗𝕚𝕥𝕤</h3>
-            <table class="table bg-white rounded-4">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Amount</th>
-                        <th>Last Updated</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Bonus</td>
-                        <td>${main_view.currency.symbol + formattedNumber(data.total_bonuses)}​</td>
-                        <td>${data.lud_bonuses || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <td>Seniority</td>
-                        <td>${main_view.currency.symbol + formattedNumber(data.total_seniority)}</td>
-                        <td>${data.lud_seniority || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <td>Life Insurance</td>
-                        <td>${main_view.currency.symbol + formattedNumber(data.total_life_insurance)}</td>
-                        <td>${data.lud_life_insurance || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <td>Other</td>
-                        <td>${main_view.currency.symbol + formattedNumber(data.total_other)}</td>
-                        <td>${data.lud_other || 'N/A'}</td>
-                    </tr>
-                    <tr>
-                        <td>Total</td>
-                        <td class="text-success">${main_view.currency.symbol + formattedNumber(data.total_amount)}</td>
-
-                    </tr>
-                </tbody>
-            </table>
-        `;
-
-        mThis.dashboard_Bottom_right.innerHTML = html;
-    };
 
     this.loadCards = (onFinish)=>{
         let p={};
 
-        vsapi.call(`${main_view.base_url}/hr/dashboard/count-employees`,p, null,false,false).then(res => {
+        vsapi.call(`${main_view.base_url}/hr/dashboard/data`,p, null,false,false).then(res => {
             let data = (res.status_code === 200) ?res.data : {};
-            mThis.renderDashboardTop(data);
-            onFinish();
-          });
-    }
-
-    this.loadCardsCenter = (onFinish)=>{
-        let p={};
-        vsapi.call(`${main_view.base_url}/hr/dashboard/get-departments`,p, null,false,false).then(res => {
-            let data = (res.status_code === 200) ?res.data : {};
+            
+            mThis.renderDBChartAllTop(data);
+            mThis.renderDBCards(data.cards);
             mThis.renderDashboardCenter(data);
-            onFinish();
-          });
-    }
+            mThis.renderDBCardOnLeave(data.onLeave);
 
-    this.loadCardsBottomLeft = (onFinish)=>{
-        let p={};
-
-        vsapi.call(`${main_view.base_url}/hr/dashboard/get-levels`,p, null,false,false).then(res => {
-            let data = (res.status_code === 200) ?res.data : {};
-            mThis.renderDashboardBottomLeft(data);
-            onFinish();
-          });
-    }
-
-    this.loadCardsBottomRight = (onFinish)=>{
-        let p={};
-        vsapi.call(`${main_view.base_url}/hr/dashboard/get-benefits`,p, null,false,false).then(res => {
-            let data = (res.status_code === 200) ?res.data : {};
-            mThis.renderDashboardBottomRight(data);
             onFinish();
           });
     }
     this.prepareFormOptions = (data, onFinish) =>{
 
         mThis.loadCards(onFinish);
-        mThis.loadCardsCenter(onFinish);
-        mThis.loadCardsBottomLeft(onFinish);
-        mThis.loadCardsBottomRight(onFinish);
 
     }
     this.setDashboardScroll = ()=>{

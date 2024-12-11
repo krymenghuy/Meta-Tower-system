@@ -107,7 +107,7 @@ class Report {
         if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
         $query = DB::table('employees as emp')
         ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
-        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality,emp.address,emp.joining_date')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
         // ->whereRaw($str_between_date)
         ->whereRaw($str_branch_id);
         $rows = $query->get();
@@ -153,8 +153,16 @@ class Report {
         if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
         $query = DB::table('employees as emp')
         ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+<<<<<<< HEAD
         ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality,emp.address,emp.joining_date')
         ->whereRaw($str_branch_id);
+=======
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date');
+        if ($search_value) {
+            $search_value = escape_like_str($search_value);
+            $query->whereRaw("emp.name LIKE '%" . $search_value . "%' OR emp.code LIKE '%" . $search_value . "%'");
+        }
+>>>>>>> 46e32072776819e8cbf5d8e340fac4c436471450
         $rows = $query->get();
 
         $groupedData = [];
