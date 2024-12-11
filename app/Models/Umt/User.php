@@ -64,14 +64,15 @@ class User //extends Model
     }
 
     /** return userData for mobileApp's api/profile-info(). This userData is needed when user start Mobile app or starts the mobile App */
-    static function mobileUserData($ss){
+    static function mobileUserData($ss, $createUserToken = false){
         $subs_id =$subs_id ?? getCurrentSubsId(true);
         $user_id = $ss->user_id ?? 0;
         $branch_id = $ss->branch_id ?? '';
         $row = self::specialDetailsBy('id',$user_id);
         if(!$row) return null;
         unset($row->hpwd);
-        //$sess =  UMTSession::setUserSession($user_id,$row);
+        $sess = null;
+        if($createUserToken) $sess =  UMTSession::setUserSession($user_id,$row);
         $default_branch_id = User::getDefaultBranchId($row->id,0);
                         //return object {access_token,user}
                         $row->user_id = $row->id;
@@ -80,7 +81,7 @@ class User //extends Model
                         //$row->apps = [$target_app];
                         //$row->default_app =$target_app ;
                      
-                        //$row->access_token = $sess->access_token;
+                        if($sess && $sess->status =='OK') $row->access_token = $sess->access_token;
                         //** $token_age = UMTSettings::$user_classes[strtolower($row->user_class)]['token_age'];
                         //** $refresh_token =UMTSession::createJWT(['id'=>$row->id,'lang'=>$row->lang,'login_name'=>$row->login_name,'user_class'=>$row->user_class,'official_id'=>$row->official_id,'official_code'=>$row->official_code,'full_name'=>$row->full_name,'email'=>$row->email,'phone_number'=>$row->phone_number],$token_age);
                         //$isSuperAdmin = $target_app->id? (User::isAppAdmin($row->id,$target_app->id)? 1 : 0 ): 0;
@@ -90,8 +91,9 @@ class User //extends Model
                         //     $row->is_super_admin = $isSuperAdmin;
                         // }else  $row->is_super_admin =1;
             $row->image_url = User::getPhoto($row->id,'id',$row->user_class);
-            $row->notif_topic_private= $subs_id.$branch_id.topic_prefix($ss->user_class)."private".$user_id;
-            $row->notif_topic_general=$subs_id.$branch_id.topic_prefix($ss->user_class)."general";
+            $lowerSubsId = strtolower($subs_id);
+            $row->notif_topic_private= $lowerSubsId.'_'.$branch_id.'_'.topic_prefix($ss->user_class)."_private_".$user_id;
+            $row->notif_topic_general=$lowerSubsId.'_'.$branch_id.'_'.topic_prefix($ss->user_class)."_general";
         return $row;
     }
 
@@ -117,12 +119,19 @@ class User //extends Model
        return DV::depends($test_id);  
     }
 
-    static function setBranch ($ss,$branch_id, $user_id, $is_default =0){
+    /** $status =1 means Allowed, $status = 0 means Not allowed or to eb removed */
+    static function setBranch ($ss,$branch_id, $user_id, $status =1, $is_default =0){
         $is_default =$is_default ?? 0;
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
+        if (!$status ||  $status === 0){
+            DB::table('um_user_branches as ub')->where('ub.branch_id',$branch_id)->where('ub.user_id',$user_id)->delete();
+            return DV::depends(1);
+        }
+        
         $query = DB::table('um_user_branches as ub')->join(DBX::$branch_table.' AS b','b.id','=','ub.branch_id')->where('b.subs_id',hex2bin($subs_id))->where('ub.branch_id',$branch_id)->where('ub.user_id',$user_id);
         $count = $query->count('user_id');
         if($is_default == null) $is_default = ($count == 0);
+        /** remove all default branches for this user because we are going to set a new default branch */
         if ($is_default) DB::table('um_user_branches')->where('subs_id',hex2bin($subs_id))->where('user_id',$user_id)->update([
             'is_default'=>0
         ]);  
@@ -133,8 +142,9 @@ class User //extends Model
            'is_default'=>$is_default
         ];
         $testId = saveData($ss,'um_user_branches',['id'=>$testId],$inputs,[],0,false);
-        return DV::depends(1);
+        return DV::depends($testId,null, 'Failed to set user branch');
    }
+   
    
     //return a default branch for a user
     static function getDefaultBranchId($id, $cache_time_seconds = 0)
@@ -193,8 +203,7 @@ class User //extends Model
     //     if(isset($rows[0])) return  $rows->first()->app_id;
     //     else return null; 
     // }
-    
-   /** Setlang()| set user's lanaguage */
+   
     static function saveLang($lang,$user_id){
         DB::table('um_sessions')->where('user_id', $user_id)->update([
             'lang' => $lang
@@ -301,47 +310,49 @@ class User //extends Model
     }
 
     /** $byCol = id,login_name, official_id */
-    static function getPhoto($value, $byCol = 'id', $user_class = null){
-        $user = null;
-        //$branch_id = User::getDefaultBranchId($value,15);
-        $col_subs_id = DBX::getHEX('subs_id','subs_id');
-        if($byCol ==='id'){
-            $user = DB::table('um_users as u')->where('u.id',$value)->selectRaw($col_subs_id.',id,user_class,official_id,photo_file_name')->first(); 
-        } else if ($byCol ==='login_name'){
-            $user = DB::table('um_users as u')->where('u.login_name',$value)->selectRaw($col_subs_id.',id,user_class,official_id,photo_file_name')->first(); 
-        } else if ($byCol ==='official_id'){
-            $user = DB::table('um_users as u')->where('u.official_id',$value)->where('user_class',$user_class)->selectRaw($col_subs_id.',id,user_class,official_id,photo_file_name')->first(); 
-        }
-        if(!$user) return self::geDefaultPhoto();
-        //profile photo is not specific to branch_id
-        $ss = (object)['subs_id'=>$user->subs_id, 'branch_id',null];
-        //$user_class = strtolower($user->user_class);
-        $key = strtolower($user->user_class);
-        $p = isset(UMTSettings::$profile_tables[$key])? UMTSettings::$profile_tables[$key]:null;
-        if(!$p) return self::geDefaultPhoto();
-        $p_table = $p['table'];
-  
-        if($p_table ==='um_users'){
-            $file_name = $user->photo_file_name;
-            $url = PublicStorage::getUrl($ss,strtolower($user_class),'image').$file_name;
-            return validateUrl($url,self::geDefaultPhoto());
-        }else if($p_table){
-          //$official_id = DB::table('um_users')->where('id',$user_id)->take(1)->value('official_id');
-          if(!$user->official_id){
-            Log::error('Failed to retrieve photo file for user id '.$user->id.' (user_class : '.$user->user_class.') because his or her official ID is missing. The default photo is used');
-            return self::geDefaultPhoto();
-          }
-      
-          $pk_field = $p['key_field'];
-          $photo_field = isset($p['photo_field'])?$p['photo_field']:'photo_file_name';
-          $file_name = DB::table($p_table)->where($pk_field,$user->official_id)->value($photo_field);
-          if(!$file_name) return self::geDefaultPhoto();
-          $url = PublicStorage::getUrl($ss,strtolower($user_class),'image').$file_name;
-          return validateUrl($url,self::geDefaultPhoto());
-        }
-        return self::geDefaultPhoto($ss);
+ /** $byCol = id,login_name, official_id */
+ static function getPhoto($value, $byCol = 'id', $user_class = null){
+    $user = null;
+    //$branch_id = User::getDefaultBranchId($value,15);
+    $col_subs_id = DBX::getHEX('subs_id','subs_id');
+    if($byCol ==='id'){
+        $user = DB::table('um_users as u')->where('u.id',$value)->selectRaw($col_subs_id.',id,user_class,official_id,photo_file_name')->first(); 
+    } else if ($byCol ==='login_name'){
+        $user = DB::table('um_users as u')->where('u.login_name',$value)->selectRaw($col_subs_id.',id,user_class,official_id,photo_file_name')->first(); 
+    } else if ($byCol ==='official_id'){
+        $user = DB::table('um_users as u')->where('u.official_id',$value)->where('user_class',$user_class)->selectRaw($col_subs_id.',id,user_class,official_id,photo_file_name')->first(); 
     }
- 
+    if(!$user) return self::geDefaultPhoto();
+    //profile photo is not specific to branch_id
+    $ss = (object)['subs_id'=>$user->subs_id, 'branch_id',null];
+    //$user_class = strtolower($user->user_class);
+    $key = strtolower($user->user_class);
+    $p =  UMTSettings::$profile_tables[$key] ?? null;
+    if(!$p) return self::geDefaultPhoto();
+    $p_table = $p['table'];
+
+    if($p_table ==='um_users'){
+        $file_name = $user->photo_file_name;
+        $url = PublicStorage::getUrl($ss,strtolower($user_class),'image').$file_name;
+        return validateUrl($url,self::geDefaultPhoto());
+    }else if($p_table){
+      //$official_id = DB::table('um_users')->where('id',$user_id)->take(1)->value('official_id');
+      if(!$user->official_id){
+        Log::error('Failed to retrieve photo file for user id '.$user->id.' (user_class : '.$user->user_class.') because his or her official ID is missing. The default photo is used');
+        return self::geDefaultPhoto();
+      }
+  
+      $pk_field = $p['key_field'];
+      $photo_field =  $p['photo_field'] ?? 'photo_file_name';
+      $file_name = DB::table($p_table)->where($pk_field,$user->official_id)->value($photo_field);
+      if(!$file_name) return self::geDefaultPhoto();
+      //NOTE: $key can be "merchant", "driver", "sales_agent"
+      $url = PublicStorage::getUrl( ['subs_id'=>$user->subs_id,'dir'=>$key],'image').$file_name;
+      return validateUrl($url,self::geDefaultPhoto());
+     }
+     return self::geDefaultPhoto($ss);
+  }
+  
      static function props($id,$cols = ''){
        return DB::table('um_users')->where('id',$id)->selectRaw($cols)->first();
      }
@@ -424,20 +435,54 @@ class User //extends Model
         return DV::depends(1);
    }
 
-    function getAuthorizationReport($id = null, $ss= null){
+    function getAuthorizationReport($arr, $ss= null){
         $ss = $ss ?? $this->user_info;
-        $user_id = $id ?? $this->id;
+        $d = (object)$arr;
+        $user_id = $d->id ?? $this->id;
+        $role_id = $d->role_id ?? null;
         //$d = (object)$arr;
         $applicationList =  self::getAccessibleApps($user_id); // self::applicationList($arr,$ss);
-        $permissionList =  self::getUserPermissions($user_id); ;  //self::permissionList($arr,$ss);
+        $permissionList =  self::getUserPermissions($user_id,$role_id,$ss); ;  //self::permissionList($arr,$ss);
+        
         $reportList = self::getUserReports($user_id); // self::reportList($arr,$ss);
         $module_list = self::getAccessibleModules($user_id);
         return (object)[
            'application_list'=>$applicationList,
-           'permission_list'=>$module_list,
+           'module_list'=>$module_list,
            'permission_list'=>$permissionList,
            'report_list'=>$reportList
         ];
+    }
+
+    static function getUserPermissions($user_id,$role_id,$ss = null,$app_id=null,$module_id =null){
+        $apps = collect([]);
+        if(!$app_id)
+        {
+            $apps = self::getAccessibleApps($user_id);
+            foreach($apps as &$app){
+                $app->app_id = hex2bin($app->app_id);
+            }
+        }
+        else $apps->add(hex2bin($app_id));
+        $str_module = $module_id > 0 ? 'prn.module_id ='.$module_id: '1=1';
+        $permissions = DB::table('um_users as u')
+            ->join('um_user_permissions AS upr', 'upr.user_id', 'u.id')
+            // ->join('um_role_permissions AS rp', 'rp.role_id', 'ur.role_id')
+            ->join('um_permissions AS prn', 'prn.id', 'upr.permission_id')
+            ->whereIn('prn.app_id', $apps->pluck('app_id'))
+            ->where('u.deleted', 0)
+            ->where('u.id', $user_id)
+            ->where('prn.category','<>','report')
+            ->whereRaw($str_module)
+            ->selectRaw('prn.id AS permission_id, prn.name AS permission_name, prn.module_id,'.DBX::getHEX('prn.app_id','app_id'))
+            ->get();
+    
+        // Eager load the related application details
+        //$permissions->load('application');
+        foreach($permissions as $permission){
+            $permission->action_string = Report::getActionsWithStatusAsString($permission->permission_id,$role_id,null);
+        }
+        return $permissions;
     }
 
     // static function applicationList($arr, $ss = null){
@@ -450,29 +495,29 @@ class User //extends Model
     //     return $rows;
     // }
 
-    static function permissionList($arr, $ss= null){
-        $d = (object)$arr;
-        $role_id = isset($d->role_id)? $d->role_id : 0;
-        $rows = DB::table('um_permissions as p')->join('um_app_modules as m','m.id','=','p.module_id')->join('um_role_permissions as rp','rp.permission_id','=','p.id')->where('rp.role_id',$role_id)
-        ->selectRaw('p.id, p.name,m.id as module_id, m.name AS module_name')->get();
-        return $rows;
-    }
+    // static function permissionList($arr, $ss= null){
+    //     $d = (object)$arr;
+    //     $role_id = isset($d->role_id)? $d->role_id : 0;
+    //     $rows = DB::table('um_permissions as p')->join('um_app_modules as m','m.id','=','p.module_id')->join('um_role_permissions as rp','rp.permission_id','=','p.id')->where('rp.role_id',$role_id)
+    //     ->selectRaw('p.id, p.name,m.id as module_id, m.name AS module_name')->get();
+    //     return $rows;
+    // }
 
-    static function reportList($arr, $ss= null){
-        $d = (object)$arr;
-        $apps = User::getAccessibleApps($d->user_id);
-        $apps_id =[];
-        foreach($apps as $app){
-            $apps_id[] = hex2bin($app->app_id);
-        }
-        if(!isset($apps_id[0])){
-            return [];
-        }
+    // static function reportList($arr, $ss= null){
+    //     $d = (object)$arr;
+    //     $apps = User::getAccessibleApps($d->user_id);
+    //     $apps_id =[];
+    //     foreach($apps as $app){
+    //         $apps_id[] = hex2bin($app->app_id);
+    //     }
+    //     if(!isset($apps_id[0])){
+    //         return [];
+    //     }
 
-        $rows = DB::table('reports as r')->whereIn('app_id',$apps_id)
-        ->selectRaw( 'r.id, r.name, r.module_id ,r.category')->get();
-        return $rows;
-    }
+    //     $rows = DB::table('reports as r')->whereIn('app_id',$apps_id)
+    //     ->selectRaw( 'r.id, r.name, r.module_id ,r.category')->get();
+    //     return $rows;
+    // }
 
      //In case: user changes their own password
      function changePassword($oldPwd, $newPwd, $id = null, $ss = null){
@@ -493,7 +538,7 @@ class User //extends Model
         if (password_verify($oldPwd,$hpwd)){
             DB::table('um_users')->where('login_name',$login_name)->update(['hpwd'=>$new_password_hash]);
             return DV::depends(1);
-        } else return DV::error($lang,"Old password is not correct!");
+        } else return DV::error('Old password is not correct!');
     }
 
     static function setStatus($status_code, $user_id,$updateProfile = true,$ss = null)
@@ -520,6 +565,78 @@ class User //extends Model
         }
       }
       return DV::depends(1);
+    }
+
+    function updateUser($arr,$id =null, $ss =null){
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->user_info;
+        if(!$id) return DV::error('User Identity is required');
+        $v_rule = [
+            'full_name'=>'1|string|1-250',
+            'email'=>'0|email',
+            'phone_number'=>'0|phone',
+        ];
+        $col_subs_id = DBX::getHex('u.subs_id', 'subs_id');
+        $user = self::getProps($id,'id,user_class,official_id,'.$col_subs_id);
+        if(!$user) return DV::error('User identity is not correct');
+        $res = validateObject($arr,$v_rule,true,[],$ss->lang,false,null);
+        if($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $d = (Object)$inputs;
+        $id = saveData($ss,'um_users',['id'=>$id],$inputs,[],1,0,false);
+        if($id){
+            $key = strtolower($user->user_class);
+            $p_table = UMTSettings::$profile_tables[$key];
+            if($p_table !='um_users'){
+             try{
+                DB::table($p_table)->where('id',$user->official_id)->update([
+                    'name'=>$d->full_name,
+                    'email'=>$d->email,
+                    'phone_number'=>$d->phone_number
+                  ]);   
+             }catch(\Exception $e){
+                 //possible error when the target table do not have fields like "name, email, phone_number"
+             }
+            }
+
+        }
+        return DV::depends($id);
+    }
+
+    function deleteProfilePicture($id, $ss){
+        return $this->saveProfilePicture(null,$id,null,$id,$ss);
+    }
+
+    function saveProfilePicture($photo, $file_type =null, $id =null,$ss=null)
+    {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->user_info;
+
+        $is_image = isImage($photo);
+        $deletePhoto = $id && (!$photo || $is_image);
+        $col_subs_id = DBX::getHex('u.subs_id', 'subs_id');
+        $user = self::getProps($id,'id,user_class,official_id,'.$col_subs_id);
+        if(!$user) return DV::error('User identity is not correct');
+
+        $key = strtolower($user->user_class);
+        $p =  UMTSettings::$profile_tables[$key] ?? null;
+        if(!$p){
+            // error UMTSettings $profile_tables data not correct
+        }
+
+        $p_table = $p['table'];
+        //$pk_field = $p['pk_field'];
+        $photo_field = $p['photo_field'];
+        $file_name = DB::table($p_table.' as t')->where('id',$id)->value($photo_field);
+        if($deletePhoto && $file_name){
+            PublicStorage::delete(['subs_id'=>$user->subs_id, 'dir'=>$key],'image',$file_name);
+        }
+        if($is_image){
+            $pk_value = $p_table =='um_users'? $id : $user->official_id;
+            $res = PublicStorage::saveImage(['subs_id'=>$user->subs_id, 'dir'=>$key],$file_type,$photo,null,['id'=>$pk_value,"$p_table.$photo_field"]);
+            return DV::depends(1,['image_url'=>$res->image_url]);
+        }
+        return DV::depends(1);
     }
 
    /**CreateUser or UpdateUser() depending on $d->user_id;
@@ -556,6 +673,11 @@ class User //extends Model
         $res = validateObject($arr,$validate_rule,true,['email'=>['.','@','-'],'login_name'=>['@','-','.','_'],'photo' => $img_char],$ss->lang,false,null);
         if($res->error) return DV::error($res->error);
         $inputs = $res->values;
+        $role_id = $inputs['role_id'];
+        $user_class = $inputs['user_class'] ?? null;
+        $role = Role::getProps($role_id,'name,user_class');
+        if(!$role) return DV::error('Role ID does not exist');
+        if($role->user_class !== $user_class) return DV::error("In role '$role->name', the User Class is must be '$role->user_class'");
         $default_branch_id = $inputs['branch_id'];
         unset($inputs['branch_id']);
         $inputs['subs_id'] = hex2bin($subs_id);
@@ -565,9 +687,10 @@ class User //extends Model
         $action = 'create';
         if($user_id) $action = 'update';
         if ($user_id > 0){
-           if(!AuthService::allowed(112)) return  DV::error('You need permission number ? to update user information::'.'112');
+           if(!AuthService::allowed(112,$ss->user_id)) return  DV::error('You need permission number ?? to update user information::'.'112');
         }else{
-          if(!AuthService::allowed(100)) return  DV::error('You need permission number ? to update user information::'.'100');
+            // return AuthService::allowed(100);
+          if(!AuthService::allowed(100,$ss->user_id)) return  DV::error('You need permission number ?? to update user information::'.'100');
         }
         $official_id = null;
         $official_code = null;
@@ -630,7 +753,12 @@ class User //extends Model
 
        //// $inputs['branch_id']=$branch_id;
        if ($user_id > 0){
+         //in case of Update Login info
          unset($inputs['hpwd'],$inputs['status'],$inputs['is_locked'],$inputs['user_class'],$inputs['official_id'],$inputs['official_code']);
+       }else{
+         //In case of Create new login
+         $inputs['is_locked'] =0;
+         $inputs['status'] ='Active'; 
        } 
        
        $user_id = saveData($ss,"um_users",["id"=>$user_id],$inputs,[],0);
@@ -664,24 +792,29 @@ class User //extends Model
         }
         return $this_user;
     }
-
+ 
     static function setRole($role_id,$user_id,$ss){
-       $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
-       if (!$subs_id) return DV::error('Cannot assign user role because the subscription ID is invalid or missing');
-       $q = DB::table('um_user_roles as ur')->join('um_roles as r','r.id','=','ur.role_id')->where('ur.user_id',$user_id)->where('r.subs_id',hex2bin($subs_id));
-       $test_id = $q->value('ur.id');
-       if (!$role_id){
-         return DV::error('No role provided!');
-       }
-       if (!Role::existsBy('id',$role_id)) return DV::error('The provided role ID  is does not exist');
-       $inputs = [
-         'user_id'=>$user_id,
-         'role_id'=>$role_id,
-         'start_date'=>getNowTime()
-       ];
-       $test_id = saveData($ss,'um_user_roles',['id'=>$test_id],$inputs,[],0,false);
-       $new_role = Role::details($role_id);
-       return DV::depends(1,['role'=>$new_role]);
+        $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
+        if (!$subs_id) return DV::error('Cannot assign user role because the subscription ID is invalid or missing');
+        $q = DB::table('um_user_roles as ur')->join('um_roles as r','r.id','=','ur.role_id')->where('ur.user_id',$user_id)->where('r.subs_id',hex2bin($subs_id));
+        $test_id = $q->value('ur.id');
+        if (!$role_id){
+          return DV::error('No role provided!');
+        }
+        $role = Role::getProps($role_id,'name,user_class');
+        if (!$role) return DV::error('The provided role ID  is does not exist');
+        if (!UMTSettings::correctUserClass($role->user_class)) return DV::error("Please ensure that role '$role->name' has a correct user class");
+        $inputs = [
+          'user_id'=>$user_id,
+          'role_id'=>$role_id,
+          'start_date'=>getNowTime()
+        ];
+        $test_id = saveData($ss,'um_user_roles',['id'=>$test_id],$inputs,[],0,false);
+        if($test_id){
+           DB::table('um_users')->where('id',$user_id)->update(['user_class'=>$role->user_class]);
+        }
+        $new_role = Role::details($role_id);
+        return DV::depends(1,['role'=>$new_role]);
     }
 
     function getDetails($id =null,$ss = null){
@@ -770,15 +903,17 @@ class User //extends Model
         return $row;
     }
 
-    static function getAccessibleApps($user_id){
+    static function getAccessibleApps($user_id, $user_class = null){
         if(!$user_id || $user_id < 0) return collect([]); // Return an empty collection if user_id is invalid
         $is_master_account = self::isMasterAccount($user_id);
-    
+        $str_user_class = $user_class ? "app.user_class ='$user_class'" : '2=2';
         if($is_master_account != 1) {
             $rows = DB::table('um_user_roles AS ur')
                 ->join('um_role_apps AS ra', 'ur.role_id', '=', 'ra.role_id')
                 ->join('um_users as u', 'u.id', '=', 'ur.user_id')
                 ->join('um_applications as app', 'app.id', '=', 'ra.app_id')
+                ->whereRaw($str_user_class)
+                ->whereRaw('ur.role_id = ra.role_id')
                 ->where('u.id', $user_id)
                 ->selectRaw(DBX::getHEX('ra.app_id', 'app_id') . ', app.name AS app_name, app.is_mobile_app, app.icon_file_name, home_route,app.user_class')
                 ->get();
@@ -796,12 +931,27 @@ class User //extends Model
                 ->get();
         }
     }
-    
+      
     /** return user's permissions. 
      * If @app_id is provided then it is used to query only permissions within that app_id
      * If @app_id is not provided, the accessible apps is automatically retrieved, and the function returns user's permissions across all apps that the user can access to.
      * */
-    static function getUserPermissions($user_id,$app_id=null,$module_id =null){
+    function getAuthorizationReport_v2($arr,$id=null,$ss = null){
+        $user_id = $id ?? $this->id;
+        $ss =$ss ?? $this->user_info;
+        $d = (object) $arr;
+        
+        $role_id = $d->role_id ?? null;
+        $user_id = $d->user_id ?? null;
+        $app_id = $d->app_id ?? null;
+        $module_id = $d->module_id ?? null;
+        $role_id = $role_id ?? self::getPrimaryRole($user_id);
+        \Log::info($role_id);
+        if(!$role_id){
+            \Log::error("Umt\user.php: getAuthorizationReport(\$arr,\$user_id,\$ss) tried to query Auth report data, but the user ID $user_id does not have primary role");
+            return collect([]);
+        }
+
         $apps = collect([]);
         if(!$app_id)
         {
@@ -818,7 +968,7 @@ class User //extends Model
             ->join('um_permissions AS prn', 'prn.id', 'upr.permission_id')
             ->whereIn('prn.app_id', $apps->pluck('app_id'))
             ->where('u.deleted', 0)
-            ->where('u.id', $user_id)
+            // ->where('u.id', $user_id)
             ->where('prn.category','<>','report')
             ->whereRaw($str_module)
             ->selectRaw('prn.id AS permission_id, prn.name AS permission_name, prn.module_id,'.DBX::getHEX('prn.app_id','app_id'))
@@ -826,6 +976,12 @@ class User //extends Model
     
         // Eager load the related application details
         //$permissions->load('application');
+        foreach($permissions as $permission){
+            $action_string = Role::getActionsWithStatusAsString($permission->permission_id,$role_id,null);
+            $view =  $action_string;
+            $permission->action_string = $view;
+
+        }
         return $permissions;
     }
     
@@ -850,84 +1006,137 @@ class User //extends Model
             // ->whereIn('prn.app_id', $apps->pluck('app_id'))
             ->where('u.deleted', 0)
             ->where('u.id', $user_id)
-            ->where('prn.category','<>','report')
+            //// ->where('prn.category','<>','report')
             ->whereRaw($str_module)
-            ->selectRaw('prn.id AS permission_id, prn.name AS permission_name')
+            ->whereRaw('rp.role_id = ur.role_id')
+            ->selectRaw('prn.id AS permission_id, prn.name AS permission_name, rp.action_name')
             ->get();
         // Eager load the related application details
         //$permissions->load('application');
         
         return $permissions;
     }
-
-    //returns reports that are assigned to user directly
+    
+    // //returns reports that are assigned to user directly
+    // static function getUserReports($user_id,$app_id=null,$module_id =null){
+    //     $apps = collect([]);
+    //     if(!$app_id)
+    //     {
+    //         $apps = self::getAccessibleApps($user_id);
+    //         foreach($apps as &$app){
+    //             $app->app_id = hex2bin($app->app_id);
+    //         }
+    //     }
+    //     else $apps->add(hex2bin($app_id));
+    //     $str_module = $module_id > 0 ? 'prn.module_id ='.$module_id: '1=1';
+    //     $permissions = DB::table('um_users as u')
+    //         ->join('um_user_permissions AS upr', 'upr.user_id', 'u.id')
+    //         // ->join('um_role_permissions AS rp', 'rp.role_id', 'ur.role_id')
+    //         ->join('um_permissions AS prn', 'prn.id', 'upr.permission_id')
+    //         ->whereIn('prn.app_id', $apps->pluck('app_id'))
+    //         ->where('u.deleted', 0)
+    //         ->where('u.id', $user_id)
+    //         ->where('prn.category','=','report')
+    //         ->whereRaw($str_module)
+    //         ->selectRaw('prn.id AS permission_id, prn.name AS permission_name, prn.module_id,'.DBX::getHEX('prn.app_id','app_id'))
+    //         ->get();
+     
+    //     return $permissions;
+    // }
     static function getUserReports($user_id,$app_id=null,$module_id =null){
-        $apps = collect([]);
+        //$apps = collect([]);
+        $bin_app_ids = [];
         if(!$app_id)
         {
             $apps = self::getAccessibleApps($user_id);
-            foreach($apps as &$app){
-                $app->app_id = hex2bin($app->app_id);
+            foreach($apps as $app){
+                $bin_app_ids[] = hex2bin($app->app_id);
+                //$app->app_id = hex2bin($app->app_id);
             }
         }
-        else $apps->add(hex2bin($app_id));
+        else $bin_app_ids[] = hex2bin($app_id);  //$apps->add(hex2bin($app_id));
+        //\Log::info('app_ids: '.json_encode($bin_app_ids));
         $str_module = $module_id > 0 ? 'prn.module_id ='.$module_id: '1=1';
-        $permissions = DB::table('um_users as u')
-            ->join('um_user_permissions AS upr', 'upr.user_id', 'u.id')
-            // ->join('um_role_permissions AS rp', 'rp.role_id', 'ur.role_id')
-            ->join('um_permissions AS prn', 'prn.id', 'upr.permission_id')
-            ->whereIn('prn.app_id', $apps->pluck('app_id'))
+        $query = DB::table('um_users as u')
+            ->join('um_user_roles AS ur', 'ur.user_id', 'u.id')
+             ->join('um_role_permissions AS rp', 'rp.role_id', 'ur.role_id')
+            ->join('um_permissions AS prn', 'rp.permission_id', 'prn.id')
+            ->whereIn('prn.app_id', $bin_app_ids)
             ->where('u.deleted', 0)
             ->where('u.id', $user_id)
             ->where('prn.category','=','report')
+            ->whereRaw('rp.role_id = ur.role_id')
             ->whereRaw($str_module)
-            ->selectRaw('prn.id AS permission_id, prn.name AS permission_name, prn.module_id,'.DBX::getHEX('prn.app_id','app_id'))
-            ->get();
-     
-        return $permissions;
+            ->selectRaw('prn.id AS permission_id, prn.name AS permission_name, prn.module_id,'.DBX::getHEX('prn.app_id','app_id'));
+       
+        //       // Get the raw SQL query
+        //             $sql = $query->toSql();
+        //             $bindings = $query->getBindings();
+        //             // Replace placeholders with actual values
+        //             foreach ($bindings as $binding) {
+        //                 $value = is_numeric($binding) ? $binding : "'$binding'";
+        //                 $sql = preg_replace('/\?/', $value, $sql, 1);
+        //             }
+        //    \Log::info('SQL:'.$sql);
+        return $query->get();
     }
+
 
         /** returns list of permissions (that are permissions to view reports) based on his role membership */
         static function getReports($user_id,$app_id=null,$module_id =null){
-            $apps = collect([]);
+            //$apps = collect([]);
+            $bin_app_ids = [];
             if(!$app_id)
             {
                 $apps = self::getAccessibleApps($user_id);
-                foreach($apps as &$app){
-                    $app->app_id = hex2bin($app->app_id);
+                foreach($apps as $app){
+                    $bin_app_ids[] = hex2bin($app->app_id);
+                    //$app->app_id = hex2bin($app->app_id);
                 }
             }
-            else $apps->add(hex2bin($app_id));
+            else $bin_app_ids[] = hex2bin($app_id);
     
             $str_module = $module_id > 0 ? 'prn.module_id ='.$module_id: '1=1';
-            $permissions = DB::table('um_users as u')
+            $query = DB::table('um_users as u')
                 ->join('um_user_roles AS ur','u.id','=','ur.user_id')
                 ->join('um_roles as r','r.id','=','ur.role_id')
                 ->join('um_role_permissions AS rp', 'r.id','=', 'ur.role_id')
                 ->join('um_permissions AS prn', 'prn.id', 'rp.permission_id')
-                ->whereIn('prn.app_id', $apps->pluck('app_id'))
+                ->whereIn('prn.app_id', $bin_app_ids)
                 ->where('u.deleted', 0)
                 ->where('u.id', $user_id)
+                ->where('u.id', '>',0)
                 ->where('prn.category','report')
+                ->whereRaw('rp.role_id = ur.role_id')
+                ->where('rp.action_name','primary')
                 ->whereRaw($str_module)
-                ->selectRaw('prn.id AS permission_id, prn.name AS permission_name')
-                ->get();
+                ->selectRaw('prn.id AS permission_id, prn.name AS permission_name');
             // Eager load the related application details
-            //$permissions->load('application');
-            return $permissions;
-        }
+                //    // Get the raw SQL query
+                //    $sql = $query->toSql();
+                //    $bindings = $query->getBindings();
+                //    // Replace placeholders with actual values
+                //    foreach ($bindings as $binding) {
+                //        $value = is_numeric($binding) ? $binding : "'$binding'";
+                //        $sql = preg_replace('/\?/', $value, $sql, 1);
+                //    }
+                //    \Log::info('SQL:'.$sql);
 
-    static function getAccessibleModules($user_id,$app_id =null,$cols=' m.id,r.id AS role_id,\'Role\' AS access_type'){
-       if(!$user_id) return [];
-       $bin_app_id = $app_id ? hex2bin($app_id): null;
-       $query = DB::table('um_users as u')->join('um_user_roles as ur','ur.user_id','=','u.id')
-       ->join('um_roles as r','r.id','=','ur.role_id')
-       ->join('um_role_modules AS rm','r.id','=','rm.role_id')
-       ->join('um_app_modules as m','m.id','=','rm.module_id')
-       ->where('u.deleted',0)->where('u.id',$user_id)->selectRaw($cols);
-       if($bin_app_id) $query->where('m.app_id',$bin_app_id);
-       return $query->get();
+            return $query->get();
     }
+
+    static function getAccessibleModules($user_id,$app_id =null,$cols=' m.id,r.id AS role_id,hex(m.app_id) as app_id,m.name as module_name,\'Role\' AS access_type'){
+        if(!$user_id) return [];
+        $bin_app_id = $app_id ? hex2bin($app_id): null;
+        $query = DB::table('um_users as u')->join('um_user_roles as ur','ur.user_id','=','u.id')
+        ->join('um_roles as r','r.id','=','ur.role_id')
+        ->join('um_role_modules AS rm','r.id','=','rm.role_id')
+        ->join('um_app_modules as m','m.id','=','rm.module_id')
+        ->whereRaw('rm.role_id = ur.role_id')
+        ->where('u.deleted',0)->where('u.id',$user_id)->selectRaw($cols);
+        if($bin_app_id) $query->where('m.app_id',$bin_app_id);
+        return $query->get();
+     }
  
     static function list_paginate($arr,$ss){
         $subs_id = $ss->subs_id;
@@ -953,10 +1162,10 @@ class User //extends Model
         //$get_primary_role = ',(SELECT r.`name` FROM um_user_roles AS ur INNER JOIN um_roles AS r ON r.id = ur.role_id WHERE user_id = u.id AND ur.is_primary_role =1 LIMIT 1) AS primary_role';
         $last_Login_date_col = DBX::formatTime('u.last_login_date','last_login_date');
         $subs_id_col = DBX::getHEX('u.subs_id','subs_id');
-        $create_date_col = DBX::query_user_info('u',null,true);
+        $create_date_col = DBX::query_user_info('u','update_date',true,'start_date');
         // $query = DB::table('um_users as u')->join('um_user_roles as ur','ur.user_id','=','u.id')->whereRaw($str_role)->whereRaw($more_where)->selectRaw('u.id,u.official_id,u.official_code, u.full_name,u.login_name, LOWER(u.user_class) AS user_class,'.$subs_id_col.', u.previlege_type,'.$last_Login_date_col.', is_locked, `status`,u.phone_number,'.$create_date_col.',u.photo_file_name')
 
-        $query = DB::table('um_users as u')->join('um_user_roles as ur','ur.user_id','=','u.id')->join('um_roles as r','r.id','=','ur.role_id')->selectRaw('u.id,u.official_id,u.official_code, u.full_name,u.login_name, LOWER(u.user_class) AS user_class,'.$subs_id_col.', u.previlege_type,'.$last_Login_date_col.', is_locked, `status`,u.phone_number,'.$create_date_col.',u.photo_file_name,r.id AS role_id,r.name AS role_name')
+        $query = DB::table('um_users as u')->join('um_user_roles as ur','ur.user_id','=','u.id')->join('um_roles as r','r.id','=','ur.role_id')->selectRaw('u.id,u.official_id,u.official_code, u.full_name,u.login_name, LOWER(u.user_class) AS user_class,'.$subs_id_col.', u.previlege_type,'.$last_Login_date_col.', is_locked, `status`,u.phone_number,'.$create_date_col.',u.created_at as start_date,u.photo_file_name,r.id AS role_id,r.name AS role_name')
         ->where('u.subs_id', hex2bin($subs_id))->whereRaw($more_where)->orderBy('u.id','DESC');
         if ($role_id > 0 && !$search_value) $query->where('ur.role_id',$role_id); 
 
@@ -1106,10 +1315,12 @@ class User //extends Model
      static function sendOTPCode_phone($arr,$ss=null){
         //$branch_id = Session::get('branch_id',1);
         $d = (object)$arr;
-        $phone_number = isset($d->login_name)?$d->login_name: (isset($d->phone_number)? $d->phone_number:null);
+        $phone_number =  $d->login_name  ??  ($d->phone_number ?? null);
+        $purpose = $d->purpose ?? "";
+        if(!$purpose) return DV::error('Please specify the purpose such as forget_password or change_phone_number or register');
         if(!$phone_number) return DV::error('Phone number is not provided yet');
         $new_otp_code = self::newOTP();
-        $message = SMS::getMessageTemplate($ss,'forget_password',$new_otp_code);
+        $message = SMS::getMessageTemplate($ss,$purpose,$new_otp_code);
         $res  = SMS::send($phone_number,$message);
         //if($res->status ==='OK'){
           $x = DB::table('um_users')->where('login_name',$phone_number)->update(['otp_code'=>$new_otp_code]);
