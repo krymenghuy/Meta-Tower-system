@@ -21,11 +21,10 @@ var SkillsComponent = new (function () {
             perPage: 8,
             paginationContainer: mThis.containerPagination,
             apiCluster: main_view.apiCluster,
-            processResponse: (res) => {
-                console.log(123,res.data);
+            // processResponse: (res) => {
 
-                return res.data;
-            },
+            //     return res.data;
+            // },
             renderItems: (data,list_container) => {
 
                 mThis.renderskillsList(list_container, data);
@@ -54,7 +53,9 @@ var SkillsComponent = new (function () {
         };
         const pr_tbl = mThis.SkillsListView.getListContainer();
         const sh_parent = pr_tbl;
-
+        // sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
 
         mThis.divFilter.addEventListener('change', (e) => {
             e.preventDefault();
