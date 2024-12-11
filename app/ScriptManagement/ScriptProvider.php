@@ -93,6 +93,7 @@ class ScriptProvider
                 '/assets/js/VSRoute.v2.js',
                 '/js/layout/bhr/main.js',
                 //'/js/components/bhr/PDFReport.js',
+                '/assets/js/SearchWidget.js',
                 '/assets/js/ImageBox.js',
                 '/assets/js/ImageHelper.js',
                 '/assets/js/FileChooser.js',
@@ -131,6 +132,8 @@ class ScriptProvider
                 'js/components/bhr/BenefitComponent.js',
                 'js/components/common/LocationComponent.js',
                 'js/components/common/CompanyComponent.js',
+                'js/components/umt/BranchManagementComponent.js',
+                'js/components/umt/RoleManagementComponent.js',
             ]
         ],
 

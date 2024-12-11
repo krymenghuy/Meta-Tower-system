@@ -1,6 +1,4 @@
 'use strict';
-
-
 var BranchManagementComponent = new function(){
     const mThis = this;
     this.title_prop = "Branch Management";
@@ -234,19 +232,19 @@ var BranchManagementComponent = new function(){
             //menuItemClass:"",
             menus:[
                 {
-                html:'<span class="ps-2  " vslang="titles.Asign User">Asign User</span>',
+                html:'<span class="ps-2  " vslang="titles.Asign Branch">Asign User</span>',
                 icon:`<i class="fa-solid fa-user-pen fs-5 text-info"></i>`,
                 cssClass:"border-bottom pb-2",
                 name:"asign_user"
                 },
                 {
-                html:'<span class="ps-2  " vslang="titles.Modify User">Modify Branch</span>',
+                html:'<span class="ps-2  " vslang="titles.Modify Branch">Modify Branch</span>',
                 icon:`<i class="fa-regular fa-edit fs-5 text-warning"></i>`,
                 cssClass:"border-bottom pb-2",
                 name:"edit_branch"
                 },
                 {
-                html:'<span class="ps-2  " vslang="titles.Delete User">Delete Branch</span>',
+                html:'<span class="ps-2  " vslang="titles.Delete Branch">Delete Branch</span>',
                 icon:`<i class="fa-regular fa-trash-can fs-5 text-danger"></i>`,
                 cssClass:"border-bottom pb-2",
                 name:"delete_branch"
@@ -1017,6 +1015,3 @@ var BranchManagementComponent = new function(){
         });
     }
 }
-
-
- 

@@ -2,6 +2,7 @@
 /** begin:RoleManagementComponent */
 var RoleManagementComponent = new function(){
     const mThis = this;
+    this.selected_role = null;
     this.title_prop = 'Role Management';
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children('#_um_roleManagementComponent');
@@ -63,20 +64,20 @@ var RoleManagementComponent = new function(){
         (data || []).map(item =>{ 
             html = [ html,`<div data-id="`,item.id,`" data-roleid="`,item.id,`" data-usersearchvalue="`,item.user_search_value,`" data-userclass="${item.user_class}" data-rolename="${item.name}" class="col-sm-2 role-card">
             <div class="card-content card bg-white shadow p-2 border rounded-3 d-flex flex-column justify-content-between" data-roleid="${item.id}" style="height:20vh;min-width:120px;">
-               <div class="d-flex flex-column justify-content-center align-items-center p-2 h-100">
-                  <span class="data-input text-success text-center user-class " style="font-size:1em" data-field="user_class">${item.name}</span>
+               <div class="d-flex flex-column justify-content-center align-items-center p-2">
+                  <span class="data-input text-success text-center" style="font-size:1em" data-field="user_class">${item.name}</span>
                   <span class="role-name-title mt-2">
                     ${item.name.charAt(0).toUpperCase()} 
                 </span>
               </div>
                 <span class="pg-alert-card-line" style="width:100%"></span>
-                <span class="data-input text-muted p-1 user-count" style="font-size:0.8em" >Total Member: ${item.user_count}</span>
+                <span class="data-input text-muted p-1" style="font-size:0.8em" >Total Member: ${item.user_count ?? 0}</span>
 
                 <div class="d-flex flex-row justify-content-between align-items-center border-top border-1">
-                  <span class="text-muted p-1">${item.user_class}</span>
+                  <span class="text-muted p-1">${item.user_class ?? 'NA'}</span>
                   <div class="edit_menus d-flex flex-row flex-wrap justify-content-end gap-2" style="visibility:hidden">
-                    <a data-roleid="`,item.id,`" href="javascript:void(0)" class="lnk-edit-role"><span class="pr-2 pl-2 pt-1 pb-1 bg-info rounded-4" ><i style="width: 13px;height: 13px;" class="fa fa-pencil text-center text-white fw-semibold" ></i></span></a>
-                    <a data-roleid="`,item.id,`"  href="javascript:void(0)" class="lnk-delete-role"><span class="pr-2 pl-2 pt-1 pb-1 bg-danger rounded-4"><i style="width: 13px;height: 13px;" class="fa fa-times text-center text-white fw-semibold"></i></span></a>
+                    <a data-roleid="`,item.id,`" href="javascript:void(0)" class="lnk-edit-role"><span class="pr-2 pl-2 pt-1 pb-1 bg-info border rounded-4" ><i class="fa fa-pencil text-white fw-semibold"></i></span></a>
+                    <a data-roleid="`,item.id,`"  href="javascript:void(0)" class="lnk-delete-role"><span class="pr-2 pl-2 pt-1 pb-1 bg-danger rounded-4"><i class="fa fa-times text-white"></i></span></a>
                   </div> 
                 </div>
             </div>
@@ -132,8 +133,10 @@ var RoleManagementComponent = new function(){
                 let role_id = card.dataset.roleid || card.dataset.id;
                 let user_class = card.dataset.userclass; 
                 let role_name = card.dataset.rolename || card.dataset.name; 
-                let selected_role = {"role_id":role_id,"user_class":user_class, "name":role_name};
+                const selected_role = {"role_id":role_id,"user_class":user_class, "name":role_name};
                 mThis.lblSelectedRoleName.innerHTML = selected_role.name;
+                mThis.selected_role = selected_role;
+                //alert(JSON.stringify(mThis.selected_role));
                 RoleTabView.displayContent(selected_role);
                 return;
             }
@@ -402,10 +405,12 @@ var RoleManagementComponent = new function(){
         mThis.init();
         mThis.selected_role = null;
         mThis.options = options;
+        mThis.div_role_list.style.maxHeight='';
 
         main_view.setTitle(mThis.title_prop);
   
         mThis.loadRoles(this.getFilterData(), roles =>{
+  
             mThis.setRoleListState(1,0);
             mThis.renderRoleCards(roles,null);
            // mThis.setEvent();
@@ -850,17 +855,11 @@ const RoleTabView = new function(){
            } 
         });
     }
-
-
-    this.editApp = (app_id) =>{
-       alert('to edit app');
-    }
-
+ 
      /** set checkbox will also toggle Checkbox when state is NULL */
      this.toggleCheck = (btn)=>{
          let state = btn.dataset.state;
          state = state ==1? 0:1;
-         //let x = btn.querySelector('a.link_check_app'); 
          if(state == 0){
             btn.innerHTML ='<i class="fa fa-times text-danger fs-3 fw-bold "></i>';
             btn.dataset.state =0;
@@ -868,18 +867,24 @@ const RoleTabView = new function(){
             btn.innerHTML ='<i class="fa fa-check text-success fs-3 fw-bold "></i>';
             btn.dataset.state = 1;  
          }
-
          let allowed = state;
          let div = btn.closest('div.um_app');
          let app_id = div.dataset.id;  
-         onAppStatusChange(app_id, allowed);
+         onAppStatusChange(btn,app_id, allowed);
      }
        
-        function onAppStatusChange(app_id, allowed ) {
-            let p = {role_id: mThis.selected_role.role_id, app_id: app_id, allowed : allowed};
+        function onAppStatusChange(btn,app_id, allowed ) {
+            const role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
+            const p = {role_id: role_id, app_id: app_id, allowed : allowed};
+           
             vsapi.call(`${main_view.base_url}/api/role/apps/set-status`,p,false,false,false).then(res =>{
                 if(res.status_code ==200){
-                }else cv_interact.warning(res.error_message);
+                    return;
+                }else {
+                    btn.innerHTML ='<i class="fa fa-times text-danger fs-3 fw-bold "></i>';
+                    btn.dataset.state =0;
+                    cv_interact.warning(res.error_message)
+                };
             });
         }
 
@@ -943,7 +948,7 @@ const RoleTabView = new function(){
             return;
         }
 
-        let op = {
+        const op = {
             "multiple_select": true,
             "user_class": null,
             "onClose":(users) =>{
@@ -953,7 +958,7 @@ const RoleTabView = new function(){
                     ids = [ids, (ids? '|':'') ,(u.id || u.user_id)].join('');
                     if(u.id > 0) cnt++;
                 }); 
-               let p = {"role_id":mThis.selected_role.role_id, "user_ids":ids,'is_primary':1};
+               const p = {"role_id":mThis.selected_role.role_id, "user_ids":ids,'is_primary':1};
                vsapi.call([main_view.base_url, '/api/role/add-members'].join(''),p,null,false).then(res =>{
                   if(res.status_code == 200){
                      let d = res.data;
@@ -970,7 +975,7 @@ const RoleTabView = new function(){
         e.preventDefault();
         // that.createLogin(null);
         
-        let op = {
+        const op = {
             id:null,
             btn: e.target,
             role_id: mThis.selected_role.role_id || mThis.selected_role.id,
@@ -981,6 +986,7 @@ const RoleTabView = new function(){
             }
         }
 
+        // UserDialog.show(op); 
         CreateLoginDialog.show(op); 
     }
    
@@ -1054,6 +1060,7 @@ this.ModulePanel = new function(){
             mThis.modulesList = mThis.modulesList || new  UMExpandItemView(mThis.div_modules,{
                 emptyInfoText:"No module control list",
                 headerClass:"mod-category",
+                itemName:"Module",
                 statuses:{
                     1: {
                     name:'Allowed',  
@@ -1072,8 +1079,9 @@ this.ModulePanel = new function(){
                 },
                 onStatusChange:(statusInfo,item_id,parent_id,checkBox)=>{
                     //console.log('todo: save permission via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
-                    let p = {
-                        "role_id": mThis.selected_role.role_id,
+                    const role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
+                    const p = {
+                        "role_id": role_id,
                         "module_id":item_id,
                         "app_id": parent_id,
                         "status_id": (statusInfo.status_id || statusInfo.id)
@@ -1089,7 +1097,7 @@ this.ModulePanel = new function(){
                 }
             });
 
-            let p = {"role_id":role_id,"app_id":app_id};
+            const p = {"role_id":role_id,"app_id":app_id};
             vsapi.call(`${main_view.base_url}/api/role/modules`,p,false,false,false).then(res =>{
                 let data = res.status_code ==200 ? res.data : [];
                 mThis.modulesList.setData(data);
@@ -1308,6 +1316,7 @@ this.PermissionPanel = new function(){
             emptyInfoText:"No permission control",
             headerClass:"prn-category",
             itemDataset: that.prnAttributes,
+            itemName:"Permission",
             statuses:{
                 1: {name:'Allowed',  
                   signClass:'fa fa-check text-success fs-5', 
@@ -1324,7 +1333,8 @@ this.PermissionPanel = new function(){
               }
             },
             onStatusChange:(statusInfo,item_id,parent_id, checkBox)=>{
-                let p = {
+                const role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
+                const p = {
                     role_id: role_id,
                     prn_id: item_id,
                     status_id: statusInfo.status_id
@@ -1407,107 +1417,158 @@ this.PermissionPanel = new function(){
     }
 
     this.createOrUpdatePermission = (op)=>{
-      that.PermissionDialog = that.PermissionDialog || new GeneralDialog({
-         cssClass:"",
-         createContent:()=>{
-           return [
-            `<div class="form-group col-md-12">`,
-              `<label class="form-label" vslang="titles.Application">Application</label>`,
-              `<div><select name ="app" class="data-input" data-field="app_id"></select></div>`,
+        that.PermissionDialog = that.PermissionDialog || new GeneralDialog({
+           cssClass:"",
+           createContent:()=>{
+             return [
+              `
+              <div name="force_id_field" class="form-group col-md-12">`,
+                `<label class="form-label" vslang="titles.Permission Number">Permission Number</label>`,
+                `<div><input name ="force_permission_id" class="data-input form-control" data-field="force_permission_id" /></div>`,
+              `</div>`,
+             `<div class="form-group col-md-12">`,
+                `<label class="form-label" vslang="titles.Application">Application</label>`,
+                `<div><select name ="app" class="data-input" data-field="app_id"></select></div>`,
+              `</div>`,
+              `<div class="form-group col-md-12">`,
+              `<label class="form-label" vslang="titles.Module">Module</label>`,
+              `<div><select name ="module" class="data-input" data-field="module_id"></select></div>`,
             `</div>`,
+              `<div class="form-group col-md-12">`,
+                 `<label class="form-label" vslang="titles.Permission Name">Permission Name</label>`,
+                 `<div><input name="name" class="form-control data-input" data-field="name"/></div>`,
+              `</div>`,
             `<div class="form-group col-md-12">`,
-            `<label class="form-label" vslang="titles.Module">Module</label>`,
-            `<div><select name ="module" class="data-input" data-field="module_id"></select></div>`,
+              `<label class="form-label" vslang="titles.Category">Category</label>`,
+              `<div><select name="category" class="form-control data-input" data-field="category"></select></div>`,
+           `</div>`,
+           `<div class="form-group col-md-12">`,
+             `<label class="form-label" vslang="titles.Actions">Actions</label>`,
+             `<div><input name="actions" class="form-control data-input" data-field="actions" /> </div>`,
           `</div>`,
-            `<div class="form-group col-md-12">`,
-               `<label class="form-label" vslang="titles.Permission Name">Permission Name</label>`,
-               `<div><input name="name" class="form-control data-input" data-field="name"/></div>`,
-            `</div>`,
-            `<div class="form-group col-md-12">`,
-            `<label class="form-label" vslang="titles.Category">Category</label>`,
-            `<div><select name="category" class="form-control data-input" data-field="category"></select></div>`,
-         `</div>`,
-          ].join('');
-         },
-         showCancelButton:true,
-         buttons:[
+            ].join('');
+           },
+           showCancelButton:true,
+           extendMethod:{
+             "getData":(me)=>{
+                 if (me.dataOptions.id > 0) return null;
+                 else return {"force_permission_id": me.controls.force_permission_id.value}; 
+             },
+             "setData":(me,d)=>{
+                me.controls.force_permission_id.value = d.id || d.permission_id;
+                me.org_actions = d.actions; //remember original actions if any , especially useful in case of Editing existing permission
+             } 
+           },
+           buttons:[
+                {
+                  label:"<span>Save</span>",
+                  click:(me,btn, divModal)=>{
+                      const p = me.getData();
+                      vsapi.call(`${main_view.base_url}/api/permission/save`,p,btn, false,false).then(res =>{
+                          if(res.status_code ==200){
+                              me.hide();
+                             const app_id =  me.controls.app.value;
+                             if(app_id){
+                               that.elAppFilter.value = app_id;
+                               that.elAppFilter.dispatchEvent(new Event("change"));
+                             }
+                             if (res.data.change_id_error){
+                                cv_interact.warning(res.data.change_id_error);
+                             }else{
+                                cv_interact.success(['Permission ', (res.data.name? `named ${res.data.name} (${res.data.id})`: '') ,' has been saved'].join(''));
+                             }
+                             
+                          }else cv_interact.error(res.error_message); 
+                      })
+                  }
+              }
+           ],
+           configSelect:[
               {
-                label:"<span>Save</span>",
-                click:(me,dataOptions, divModal)=>{
-                    let p = me.getData();
-                    vsapi.call(`${main_view.base_url}/api/permission/save`,p,false, false,false).then(res =>{
-                        if(res.status_code ==200){
-                            me.hide();
-                           let app_id =  me.controls.app.value;
-                           if(app_id){
-                             that.elAppFilter.value = app_id;
-                             that.elAppFilter.dispatchEvent(new Event("change"));
-                           }
-                           cv_interact.success(['Permission ', (res.data.name? `named ${res.data.name} (${res.data.id})`: '') ,' has been saved'].join(''));
-                        }else cv_interact.error(res.error_message); 
-                    })
-                }
-            }
-         ],
-         configSelect:[
-            {
-                name: "app",
-                data:"apps",
-                // filterData:(data,res)=>{
-                //     return data.options;
-                // }
-            },
-            {
-              name:"category",
-              data:"categories",
-            //   textField:"category",
-            //   valueField:"category"
-            },
-            {
-                name:"module",
-                // data:"modules",
-                // filterOptions:{
-                //     triggerBy:"app",
-                //     filter:(me,data,controls)=>{
-                //       return data.filter(x =>{
-                //          return x.app_id === controls.app.value;
-                //       }); 
-                //     }
-                // },
-
-                valueField:"id",
-                textField:"name",
-                depends:{
-                    triggerBy:"app",
-                    api:{
-                        endpoint:`${main_view.base_url}/api/module/list`,
-                        params: (me,dataOptions,controls)=>{
-                            return {"app_id": controls.app.value};
-                        }
-                    }
-
-                }
-            }
-         ],
-         prepareFormOptions:{
-            createTitle:"New Permission",
-            modifyTitle:"Edit Permission",
-            targetProp:"permission",
-            api:{
-                endpoint:`${main_view.base_url}/api/permission/form-options`,
-                params:(dataOptions)=>{
-                    return {id: dataOptions.id};
-                }
-            }
-         },
-         onShow:(me)=>{
-           me.controls.name.focus();
-           me.controls.name.select();
-         }
-      });
- 
-      that.PermissionDialog.show(op);
-    }
+                  name: "app",
+                  data:"apps",
+                  // filterData:(data,res)=>{
+                  //     return data.options;
+                  // }
+              },
+              {
+                name:"category",
+                data:"categories",
+              //   textField:"category",
+              //   valueField:"category"
+              },
+              {
+                  name:"module",
+                  // data:"modules",
+                  // filterOptions:{
+                  //     triggerBy:"app",
+                  //     filter:(me,data,controls)=>{
+                  //       return data.filter(x =>{
+                  //          return x.app_id === controls.app.value;
+                  //       }); 
+                  //     }
+                  // },
+  
+                  valueField:"id",
+                  textField:"name",
+                  depends:{
+                      triggerBy:"app",
+                      api:{
+                          endpoint:`${main_view.base_url}/api/module/list`,
+                          params: (me,dataOptions,controls)=>{
+                              return {"app_id": controls.app.value};
+                          },
+                          onResponse:(me,res)=>{
+                               console.log(111,res.data);
+                          }
+                      }
+  
+                  }
+              }
+           ],
+           prepareFormOptions:{
+              createTitle:"New Permission",
+              modifyTitle:"Edit Permission",
+              targetProp:"permission",
+              api:{
+                  endpoint:`${main_view.base_url}/api/permission/form-options`,
+                  params:(dataOptions)=>{
+                      return {id: dataOptions.id};
+                  },
+                //   onResponse:(me,res)=>{
+                //        console.log(111,res.data);
+                //   }
+              }
+           },
+           contentCreated:(me)=>{
+              me.getNextPermissionId = async ()=>{
+                 const res = await vsapi.get([main_view.base_url,'/api/settings/next-prn-id'].join(''),null,false,false);
+                 return res.data;
+              }
+              me.controls.category.onchange = e =>{
+                 const cat = (e.target.value || '').toLowerCase();
+                 if(cat ==='report'){
+                    me.actions.value = 'view|print|export_pdf|export_excel|export_csv'; 
+                 }else{
+                    me,actions.value = me.org_actions;
+                 } 
+              };
+           },
+           onPrepareForm: async (me) => {
+             //me.controls.force_id_field.style.display= me.dataOptions.id > 0 ? 'none':'block';
+             if(me.dataOptions.id > 0){
+                me.controls.force_permission_id.value = me.dataOptions.id;
+             }else{
+                const test = await me.getNextPermissionId();
+                me.controls.force_permission_id.value = await me.getNextPermissionId();
+             } 
+             me.controls.name.focus();
+             me.controls.name.select();
+           }
+        });
+   
+        that.PermissionDialog.show(op);
+      }
      
 }
 
@@ -1546,8 +1607,10 @@ this.ReportPanel = new function(){
         VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",false,null,that.def_app_id);
     }
 
-    this.displayReportList = (role_id,app_id,search_value)=>{
-  
+    this.displayReportList = async (role_id,app_id,search_value) => {
+        const that = this;
+        role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
+
         mThis.div_reports = mThis.div_reports || mThis.self.querySelector('#_um_role_report_list');
          let div = mThis.div_reports.parentElement?.querySelector('.rpt_action_buttons');
             if(!div){
@@ -1590,15 +1653,20 @@ this.ReportPanel = new function(){
                         return;
                     }
                  }; 
-
         }
-
+        if (!that.reportActions){
+            const res = that.reportActions || await vsapi.get(`${main_view.base_url}/api/settings/report/actions`,null,false);
+            that.reportActions = res.data;
+        }
+       
         //ReportAttributes is only used for collecting report list when user Export report list to .json file, and used for Editing existing report.
         that.reportAttributes = ['report_id','category','module_id','report_group','code','params','export_pdf','export_excel','export_csv','display_order'];
         mThis.reportList = mThis.reportList || new  UMExpandItemView(mThis.div_reports,{
             emptyInfoText:"No controlled reports",
             headerClass:"rpt-category",
+            permissionActions: that.reportActions,
             itemDataset: that.reportAttributes,
+            itemName:"Report",
             statuses:{
                 1: {name:'Allowed',  
                   signClass:'fa fa-check text-success fs-5', 
@@ -1615,18 +1683,18 @@ this.ReportPanel = new function(){
               }
             },
             onStatusChange:(statusInfo,item_id,parent_id)=>{
-                //console.log('todo: save via api ', status, ' id: ',item_id, ' cat_id ',parent_id);          
-                let p = {role_id: role_id, prn_id:item_id, app_id:null, status_id : statusInfo.status_id};
+                //console.log('todo: save via api ', status, ' id: ',item_id, ' cat_id ',parent_id);
+                const role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id; 
+                const p = {role_id: role_id, prn_id:item_id, app_id:null, status_id : statusInfo.status_id};
                 vsapi.call([main_view.base_url,'/api/role/reports/set-status'].join(''),p, null,false).then(res =>{
                     if (res.status_code==200){
-
-                    }
+                    }else cv_interact.warning(res.error_message);
                 });
             }
 
         });
 
-        let p = {role_id: mThis.selected_role.role_id, app_id:app_id, search_value:search_value};
+        const p = {role_id: mThis.selected_role.role_id, app_id:app_id, search_value:search_value};
         vsapi.call([main_view.base_url, '/api/role/reports'].join(''), p,false,false).then(res =>{
              const d = res.status_code ==200? res.data: {};
              mThis.reportList.setData(d);
@@ -1668,27 +1736,34 @@ this.ReportPanel = new function(){
                 `<div><input name="export_group" class="form-control data-input" data-field="report_group"/></div>`,
              `</div>`,
     
-             `<div class="form-group col-md-6">`,
+             `<div class="form-group col-md-6 d-none">`,
              `<label class="form-label" vslang="titles.Export to PDF">Export to PDF</label>`,
              `<div><input type="number" name="export_pdf" class="form-control data-input" data-field="export_pdf"/></div>`,
           `</div>`,
-          `<div class="form-group col-md-6">`,
+          `<div class="form-group col-md-6 d-none">`,
           `<label class="form-label" vslang="titles.Export to Excel">Export to Excel</label>`,
           `<div><input type="number" name="export_excel" class="form-control data-input" data-field="export_excel"/></div>`,
        `</div>`,
 
-    `<div class="form-group col-md-6">`,
+    `<div class="form-group col-md-6 d-none">`,
        `<label class="form-label" vslang="titles.Export to CSV">Export To CSV</label>`,
        `<div><input type="number" name="export_csv" class="form-control data-input" data-field="export_csv"/></div>`,
      `</div>`,
-
+     `<div class="form-group col-md-12">`,
+        `<label class="form-label" vslang="titles.Actions">Actions</label>`,
+        `<div><input type="text" name="actions" class="form-control data-input" data-field="actions"/></div>`,
+     `</div>`,
         `<div class="form-group col-md-6">`,
             `<label class="form-label" vslang="titles.Display Order">Display Order</label>`,
             `<div><input type="number" name="display_order" class="form-control data-input" data-field="display_order"/></div>`,
         `</div>`,
     '</div>'     
    ].join('');
-           },
+    
+    },
+    // contentCreated:(me)=>{
+
+    // },
            showCancelButton:true,
            buttons:[
                 {
@@ -1707,7 +1782,6 @@ this.ReportPanel = new function(){
                     //     }
                     //   });
                     p.report_id = me.dataOptions.report_id;
-                      console.log('passed p : ',p);
                       vsapi.call(`${main_view.base_url}/api/report/save`,p,false,false,false).then(res =>{
                           if(res.status_code ==200){
                              me.hide();
@@ -1756,6 +1830,11 @@ this.ReportPanel = new function(){
                   }
               }
            ],
+           extendMethod:{
+              "setData":(me,data)=>{
+                  if(!me.dataOptions.id || me.dataOptions.id ==0) me.controls.actions.value = 'view|print|export_excel|export_pdf|export_csv';
+              }
+           },
            prepareFormOptions:{
               createTitle:"New Report",
               modifyTitle:"Edit Report",
@@ -1792,15 +1871,15 @@ this.ReportPanel = new function(){
       }
 
       this.exportReports = (app_id) =>{
-        let d = that.getReportList();
+        const d = that.getReportList();
         RoleManagementComponent.exportData(d,"reports");
       }
    
       this.syncReports = (app_id) =>{
-         let p = {app_id, app_id};
+         const p = {app_id, app_id};
          vsapi.call(`${main_view.base_url}/api/um/reports/sync`,p,false,false).then(res =>{
              if(res.status_code ==200){
-                let d = res.data;
+                const d = res.data;
                 cv_interact.success(['html:',d.create_count,' report-permissions created. <br/>', d.sync_count, ' reports with same IDs were synced <br/>',d.missing_module_count,' reports do not have valid module ID'].join(''));
                 that.elAppFilter.dispatchEvent(new Event("change")); 
             }else cv_interact.error(res.error_message);
@@ -1814,8 +1893,8 @@ this.ReportPanel = new function(){
 
       //get report list for exporting as json file
       this.getReportList = ()=>{
-          let div = mThis.reportList.getContainer();
-          let divItems = div.querySelectorAll('div.item-wrapper');
+          const div = mThis.reportList.getContainer();
+          const divItems = div.querySelectorAll('div.item-wrapper');
           let items = [];  
           divItems.forEach(div =>{
             const d = div.dataset;
@@ -1840,7 +1919,7 @@ this.ReportPanel = new function(){
 /**end: ReportPanel definition */
 
  async function getAccessibleApps(){
-    let p = {id: (mThis.selected_role.role_id || mThis.selected_role.id)}; 
+    const p = {id: (mThis.selected_role.role_id || mThis.selected_role.id)}; 
     let res = await vsapi.call(`${main_view.base_url}/api/role/accessible-apps`,p,false,false,false);
     return res.status_code ==200? res.data : [];
  }
@@ -2009,16 +2088,17 @@ this.ReportPanel = new function(){
              lnk = VSUtil.closestLimited(e.target,'.lnk-lock-user');
              if(lnk){
                 if(!AuthManager.allowed(113)) return;
-                    let user_id = lnk.dataset.id || lnk.dataset.userid;
-                    let tr = VSUtil.closestLimited(e.target,'tr');
-                    let user_name = tr.dataset.fullname;
-                    let login_name = tr.dataset.login;
+                    const user_id = lnk.dataset.id || lnk.dataset.userid;
+                    const tr = VSUtil.closestLimited(e.target,'tr');
+                    const user_name = tr.dataset.fullname;
+                    const login_name = tr.dataset.login;
                     //let islocked = tr.dataset.islocked;
-                    let action = lnk.dataset.action; //islocked ==1? 'unlock': 'lock';
-                    let op = {
+                    const action = lnk.dataset.action; //islocked ==1? 'unlock': 'lock';
+                    const op = {
                         user_id: user_id,
                         user_name: user_name,
-                        action: action
+                        action: action,
+                        status_code: action
                     };
                      action =(action || '').toLowerCase().replace(/\b\w/g, s => s.toUpperCase());
                     cv_interact.confirm(['Do you want to ',action.toLowerCase() ,' user ',user_name.replace(/^\w/, (c) => c.toUpperCase()),'?'].join(''),{
@@ -2029,7 +2109,7 @@ this.ReportPanel = new function(){
                         if(e)
                         {
                             delete(op.user_name);
-                            vsapi.call(`${main_view.base_url}/api/user/set-lock-status`,op,lnk,false).then(res => {
+                            vsapi.call(`${main_view.base_url}/api/user/status/update`,op,lnk,false).then(res => {
                                 if(res.status_code === 200)
                                 {
                                     mThis.UserPanel.elSearchUser.value = login_name;
@@ -2304,69 +2384,92 @@ const FindUserDialog = new function () {
 }
 //end:: FindUserDialog
   
-window.RoleDialog = window.RoleDialog || new GeneralDialog({
-    cssClass:"vs-modal-dialog",
-    fields:[
-      {
-         name:"group_id",
-         label:"Role Group",
-         inputType:"select",
-         required:true
-      },
-      {
-         name:"name",
-         label:"Role Name",
-         inputType:"text",
-         required:true
-      }
-    ],
-    configSelect:[
-        {
-            name:"group_id",
-            data:"role_groups",
-            valueField:"id",
-            textField:"role_group_name",
-        }
-    ],
-    buttons:[
-      {
-         label:"Cancel",
-         cssClass:"btn btn-secondary",
-         dismissModal:true
-      },
-      {
-         label:"Save",
-         cssClass:"btn btn-primary",
-         click:(modal,btn,divModal)=>{
-             let p = modal.getData();
-             //let p = {id:mThis.options.id, group_id:mThis.elRoleGroup.value, name: mThis.elRoleName.value};
-             vsapi.call(`${main_view.base_url}/api/role/save`, p,null,false).then(res => {
-                 if(res.status_code == 200){
-                     const d = res.data;
-                     modal.hide();
-                     modal.dataOptions.onClose({role:d? d.new_role: null});
-                    //  if(typeof mThis.options.onClose ==='function') mThis.options.onClose({role:d? d.new_role: null});
-                 }else cv_interact.error(res.error_message);
-             });
-         }
-      }
-    ],
-    prepareFormOptions:{
-      createTitle:"Add Role",
-      modifyTitle:"Rename Role",
-      targetProp:"role",
-      api:{
-        endpoint:`${main_view.base_url}/api/role/form-options`,
-        params:(op)=>{
-            return {id: op.id};
+const RoleDialog = (()=>{
+  const self = {};
+  let dialog = null;
+  self.show = (op)=>{
+    dialog = dialog || new GeneralDialog({
+        cssClass:"vs-modal-dialog",
+        fields:[
+          {
+             name:"group_id",
+             label:"Role Group",
+             inputType:"select",
+             required:true
+          },
+          {
+            name:"user_class",
+            label:"User Class",
+            inputType:"select",
+            required:true
+          },
+          {
+             name:"name",
+             label:"Role Name",
+             inputType:"text",
+             required:true
+          }
+        ],
+        configSelect:[
+            {
+                name:"group_id",
+                data:"role_groups",
+                valueField:"id",
+                textField:"role_group_name",
+                defaultValue:"Official"
+            },{
+                name:"user_class",
+                data:"user_classes",
+                valueField:"user_class",
+                textField:"user_class_name",
+            }
+        ],
+        buttons:[
+          {
+             label:"Cancel",
+             cssClass:"btn btn-secondary",
+             dismissModal:true
+          },
+          {
+             label:"Save",
+             cssClass:"btn btn-primary",
+             click:(modal,btn,divModal)=>{
+                 let p = modal.getData();
+                 //let p = {id:mThis.options.id, group_id:mThis.elRoleGroup.value, name: mThis.elRoleName.value};
+                 vsapi.call(`${main_view.base_url}/api/role/save`, p,null,false).then(res => {
+                     if(res.status_code == 200){
+                         const d = res.data;
+                         modal.hide();
+                         modal.dataOptions.onClose({role:d? d.new_role: null});
+                        //  if(typeof mThis.options.onClose ==='function') mThis.options.onClose({role:d? d.new_role: null});
+                     }else cv_interact.error(res.error_message);
+                 });
+             }
+          }
+        ],
+        prepareFormOptions:{
+          createTitle:"Add Role",
+          modifyTitle:"Modify Role",
+          targetProp:"role",
+          api:{
+            endpoint:`${main_view.base_url}/api/role/form-options`,
+            params:(op)=>{
+                return {id: op.id};
+            },
+            // onResponse:(res)=>{
+            //     console.log(res);
+            // }
+          }
         },
-        // onResponse:(res)=>{
-        //     console.log(res);
-        // }
-      }
-    },
-    // onClose:(canceled)=>{} 
- });
+        // onClose:(canceled)=>{} 
+     });
+
+     dialog.show(op);  
+  };
+
+  return self;
+})();
+
  
 /** begin:: UserDialog */
  window.UserDialog1 = window.UserDialog1 || new function(){
@@ -2477,4 +2580,3 @@ window.RoleDialog = window.RoleDialog || new GeneralDialog({
 
  } 
 /**end::UserDialog */
- 

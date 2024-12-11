@@ -38,7 +38,7 @@ class Report //extends Model
             ->first();
     
         if (!$row) {
-            return $row;
+            return null;
         }
     
         $rpt_info = DB::table('reports as r')
@@ -51,7 +51,7 @@ class Report //extends Model
                 $row->$key = $value;
             }
         }
-    
+        $row->actions = self::getActionsAsString($id);
         return $row;
     }
     
@@ -78,6 +78,7 @@ class Report //extends Model
            'code'=>'1|string|text=Report Code cannot be empty',
            'name'=>'1|string|1-250',
            'params'=>'0|string',
+           'actions'=>'0|string|0-1000',
            'export_excel'=>'0|number|default=0',
            'export_pdf'=>'0|number|default=0',
            'export_csv'=>'0|number|default=0',
@@ -89,6 +90,12 @@ class Report //extends Model
         if($res->error) return DV::error($res->error);
         //$rpt_inputs for saving into table "reports" that provides listing to "Report Center" 
         $rpt_inputs = $res->values;
+        $str_actions = $rpt_inputs['actions'];
+        unset($rpt_inputs['actions']);
+        $actions = array_filter(explode('|', $str_actions), function($value) {
+            return !is_null($value) && $value !== '';
+        });
+        
         $rpt_inputs['category'] = $rpt_inputs['report_group'];
         $rpt_name = $rpt_inputs['name'];
         $rpt_code = $rpt_inputs['code'];
@@ -112,6 +119,7 @@ class Report //extends Model
         $inputs = $res->values;
         $inputs['app_id'] = $bin_app_id;
         $prn_name = $inputs['name'];
+        unset($inputs['actions']); 
         $prn_id = saveData($ss,'um_permissions',['id'=>$prn_id],$inputs,[],0,false);
         if($prn_id){
             //Set permission_id in table "reports" that links to table "um_permissions"
@@ -119,8 +127,109 @@ class Report //extends Model
             $rpt_inputs['app_id'] = $bin_app_id;
             $rpt_inputs['category_id'] = 1;
             $report_id = saveData($ss,'reports',['id'=>$report_id],$rpt_inputs,[],0,false);
+
+            //save Report's actions such as "VIEW, PRINT, EXPORT_PDF, EXPORT_EXCEL, EXPORT_CSV"
+                DB::table('um_permission_actions')->where('permission_id',$prn_id)->delete();
+                $cnt =0;
+                foreach($actions as $action){
+                    DB::table('um_permission_actions')->insert([
+                        'permission_id'=>$prn_id,
+                        'action_name'=>$action
+                    ]);
+                    $cnt++;
+                }
+               if(isset($actions[0])) 
+                 DB::table('um_role_permissions')->where('permission_id',$prn_id)->whereNotIn('action_name',$actions)->delete();
+               else DB::table('um_role_permissions')->where('permission_id',$prn_id)->whereNotIn('action_name',['primary'])->delete();
+               DB::table('um_permissions')->where('id',$prn_id)->update(['action_count'=>$cnt]);
+     
         }
         return DV::depends($prn_id, ['id'=>$prn_id, 'report_id'=>$report_id, 'name'=>$prn_name]); 
+    }
+
+    static function getReportActionNames() {
+        return DB::table('um_report_actions')->orderBy('display_order')->pluck('name')->toArray(); 
+        // return DB::table('um_permission_actions as pa')
+        //     ->whereRaw("COALESCE(pa.permission_id, 0) = 0") // Replace NULL with 0 and check if it's 0
+        //     ->distinct('pa.action_name') // Ensure uniqueness for action_name
+        //     ->orderBy('pa.display_order') // Sort results
+        //     ->pluck('pa.action_name'); // Retrieve the action names
+    }
+
+    static function getActionsWithStatus($id, $role_id, $allowed = null) {
+            $table_name = 'um_report_actions';
+            $actions = DB::table($table_name.' as pa')
+            //->where('pa.permission_id', $id)
+            ->orderBy('pa.display_order')
+            ->pluck('pa.name')
+            ->toArray();
+
+            if (!isset($actions[0])) {
+                if ($allowed === null) {
+                    $allowed = DB::table('um_role_permissions as rp')
+                        ->where('rp.permission_id', $id)
+                        ->where('role_id', $role_id)
+                        ->where('action_name', 'primary')
+                        ->select('permission_id')
+                        ->first() ? 1 : 0;
+                }
+                return [(object)['action_name' => 'primary', 'status_id' => $allowed]];
+            } else {
+                // Replace "view" with "primary" (In context of report, there is View permission, but database table "um_role_permision.action_name" store value as "primary" )
+                $actions = array_map(function ($action_name) {
+                    return $action_name === 'view' ? 'primary' : $action_name;
+                }, $actions);
+            }
+  
+        // Fetch all role permissions for the given role and permission in a single query
+        $rolePermissions = DB::table('um_role_permissions as rp')
+            ->where('rp.role_id', $role_id)
+            ->where('rp.permission_id', $id)
+            ->pluck('rp.action_name')
+            ->toArray(); // Convert to an array for faster lookup
+    
+        // Map the actions with their status
+        return array_map(function ($action_name) use ($rolePermissions) {
+            return (object)[
+                'action_name' => strtolower($action_name),
+                'status_id' => in_array(strtolower($action_name), $rolePermissions) ? 1 : 0,
+            ];
+        }, $actions);
+    }
+
+    /** if @allowed is not NULL, it means the Report is single action such as "Allowed or Denied". There are no sub actions such as "view, print, export_pdf, export_excel" */
+    static function getActionsWithStatusAsString($id, $role_id, $allowed = null) {
+        if ($allowed !== null){
+            return 'primary:'.$allowed;
+        }
+        $actions = self::getActionsWithStatus($id, $role_id,$allowed);
+        $prns = [];
+        foreach ($actions as $action) {
+            $status = $action->status_id ?? 0;
+            $prns[] = $action->action_name . ':' . $status;
+        }
+        return implode('|', $prns);
+    }
+     
+    static function getActions($id=null) {
+        if(!$id){
+            return DB::table('um_report_actions as pa')
+            ->orderBy('display_order')
+            ->pluck('pa.name')
+            ->toArray();
+        }else{
+            return DB::table('um_permission_actions as pa')
+            ->where('pa.permission_id', $id)
+            ->orderBy('display_order')
+            ->pluck('pa.action_name')
+            ->toArray();
+        }
+       
+    }
+
+    static function getActionsAsString($id){
+        $actions = self::getActions($id);
+        return implode('|',$actions);
     }
 
     function delete($id,$ss=null){
