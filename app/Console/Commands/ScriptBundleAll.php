@@ -3,59 +3,62 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use App\ScriptManagement\ScriptManager;
+use ScriptManager;
 
 class ScriptBundleAll extends Command
 {
-    protected $signature = 'bundle:script-all 
-    {--ob : Enables minification and obfuscation. Results in around 25% larger size compared to simple minification.}
-    {--min : Enables only minification and not deep obfuscation.}
-    {--default=min : Sets the default option to minification.}';
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'bundle:script-all';
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
     protected $description = 'Minifies and bundles all javascript script files into one new javascript file';
-
+    protected $arguments =[];
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
     public function __construct()
     {
         parent::__construct();
     }
 
+    /**
+     * Execute the console command.
+     *
+     * @return int
+     */
     public function handle()
     {
-        // Retrieve command line arguments and options
-        //$bundleName = $this->argument('bundle_name');
-        $obfuscate = $this->option('ob');
-
-        // Determine the optimization option
-        $option = $obfuscate ? 'ob' : 'min';
-
-
-        $bs = ScriptManager::createAllBundleFiles($option);
-        if ($bs->status === 'OK') {
-            $this->info("Bundling in progress...\n");
-
-            $totalBundles = count($bs->files);
-            $bar = $this->output->createProgressBar($totalBundles);
-            $bar->setFormat("%current%/%max% [%bar%] %percent:3s%%\n");
-            $bar->start();
-
-            $i = 0;
-            foreach ($bs->files as $f) {
-                if ($f) {
-                    $i++;
-                    $this->info("$i. Bundling $f...");
-
-                    // Process your bundling logic here
-                    // For example:
-                    // YourExistingBundleLogic($f);
-
-                    // Advance the progress bar
-                    $bar->advance();
-                }
+        // Retrieve a specific option...
+        //$queueName = $this->option('queue');
+        
+        // Retrieve all options...
+        //$options = $this->options();
+        
+        //$this->arguments = $this->arguments();
+        //$bundle_name = $this->argument('bundle_name');
+        //$this->info($bundle_name);
+        $res= ScriptManager::createAllBundleFiles();
+        if($res->status==='OK')
+        {
+            $this->info("Bundled files created as follows:\n");
+            $i =0;
+            foreach($res->files as $f){
+               
+               if ($f) {
+                  $i++;
+                  $this->info("$i. $f\n");
+               }
             }
-
-            $bar->finish();
-            $this->info("\nScript bundles have been created successfully.");
-        } else {
-            $this->error($bs->error_message);
         }
+        else $this->error($res->error_message);
     }
 }

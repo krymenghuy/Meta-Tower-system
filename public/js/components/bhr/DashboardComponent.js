@@ -510,10 +510,10 @@ var DashboardComponent = new (function () {
         mThis.dbCardOnLeave.innerHTML = html;
     };
     this.loadCards = (onFinish) => {
-        let p = {};
+        const p = {};
 
         vsapi.call(`${main_view.base_url}/hr/dashboard/data`, p, null, false, false).then(res => {
-            let data = (res.status_code === 200) ? res.data : {};
+            const data = (res.status_code === 200) ? res.data : {};
 
             mThis.renderDBChartAllTop(data);
             mThis.renderDBCards(data.cards);
@@ -539,7 +539,7 @@ var DashboardComponent = new (function () {
     this.show = (options) => {
         mThis.setDashboardScroll();
         mThis.init();
-        if (!options) options = {};
+        options = options || {};
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions(null, (d) => {
             mThis.jm.siblings().hide();
