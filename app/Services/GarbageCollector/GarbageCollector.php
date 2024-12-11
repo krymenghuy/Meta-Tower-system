@@ -36,22 +36,22 @@ class GarbageCollector {
             $before_date = date('Y-m-d', strtotime('-5 days'));
             $notif_count = self::deleteNotifications($before_date);
              
-             //Clean package_tracks, leave the last 10 days
-             $before_date = date('Y-m-d', strtotime('-10 days'));
-             $pt_count = self::deletePackageTracks($before_date);
+            //  //Clean package_tracks, leave the last 10 days
+            //  $before_date = date('Y-m-d', strtotime('-10 days'));
+            //  $pt_count = self::deletePackageTracks($before_date);
             
              //Clean general_tracks, leave the last 10 days
              $before_date = date('Y-m-d', strtotime('-5 days'));
              $gt_count = self::deleteGeneralTracks($before_date); 
            
-             $before_date = date('Y-m-d', strtotime('-2 days'));
-             $photo_count = self::deletePackagePhotos($before_date); 
+            //  $before_date = date('Y-m-d', strtotime('-2 days'));
+            //  $photo_count = self::deletePackagePhotos($before_date); 
          
-             $before_date = date('Y-m-d', strtotime('-7 months'));
-             $archiveInfo = self::archivePackages($before_date);
-             //DB::statement(DB::raw('UPDATE last_gc_time SET last_gc_time =\''.getNowTime().'\' WHERE id =1'));
+            //  $before_date = date('Y-m-d', strtotime('-7 months'));
+            //  $archiveInfo = self::archivePackages($before_date);
+            //  //DB::statement(DB::raw('UPDATE last_gc_time SET last_gc_time =\''.getNowTime().'\' WHERE id =1'));
             Log::info('Garbage Collector successfully cleaned up data at '.date('d M Y h:i'));
-            Log::info($notif_count.' notifications deleted. '.$pt_count.' package tracks deleted. '.$gt_count.' general tracks deleted. '.$photo_count. ' package photos deleted. '.$archiveInfo ->count.' packages before '.$archiveInfo->date.' were archived');
+            Log::info($notif_count.' notifications deleted. '.$gt_count.' general tracks deleted ');
      
         }catch(\Throwable $e){
            Log::error('Error in GarbageCollector::cleanAll() method');

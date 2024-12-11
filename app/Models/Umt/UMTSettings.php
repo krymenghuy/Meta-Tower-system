@@ -14,32 +14,25 @@ class UMTSettings //extends Model
  protected static $free_apps = null;
  public static $user_classes = [
     'admin'=>[
-        'used'=>1,'name'=>'Admin',
+        'used'=>1,'name'=>'Staff',
         'token_age'=>null,
         'login_type'=>'name',
         'new_user_password_required'=>1
       ],
-    'driver'=>[
-        'used'=>1,
-        'name'=>'Driver',
-        'token_age'=>0,
-        'login_type'=>'phone',
-        'new_user_password_required'=>1
-    ],
-    'merchant'=>[
-        'used'=>1,
-        'name'=>'Merchant',
-        'token_age'=>0,
-        'login_type'=>'phone',
-        'new_user_password_required'=>1
-    ],
-    'sales_agent'=>[
-        'used'=>1,
-        'name'=>'Sales Agent',
-        'token_age'=>0,
-        'login_type'=>'phone',
-        'new_user_password_required'=>1
-        ]
+    // 'customer'=>[
+    //     'used'=>1,
+    //     'name'=>'Customer',
+    //     'token_age'=>0,
+    //     'login_type'=>'phone',
+    //     'new_user_password_required'=>1
+    // ],
+    // 'sales_agent'=>[
+    //     'used'=>1,
+    //     'name'=>'Sales Agent',
+    //     'token_age'=>0,
+    //     'login_type'=>'phone',
+    //     'new_user_password_required'=>1
+    //     ]
 ];
 
  /** By setting $profile_tables here, UMT will know which user_class needs to store profile-info in another table besides table "um_users". 
