@@ -87,7 +87,7 @@ class ScriptProvider
         'bhr-components' => [
             'attr' => 'defer',
             'single_file' => 1,
-            'output_file' => '/dist/js/abm.components.js',
+            'output_file' => '/dist/js/bhr.components.js',
             'files' => [
                 'https://cdn.jsdelivr.net/gh/tomik23/circular-progress-bar@latest/docs/circularProgressBar.min.js',
                 '/assets/js/VSRoute.v2.js',
@@ -102,10 +102,8 @@ class ScriptProvider
                 '/assets/js/xlsx/xlsx.full.min.js',
                 'assets/js/pusher/pusher.min.js',
                 '/js/components/common/FindPersonDialog.js',
-                // '/js/components/abm/pusher_client_houxpress.js',
-                '/js/components/common/pusher_client_dms.js',
+                '/js/components/common/pusher_client.js',
                 '/js/components/bhr/DashboardComponent.js',
-                '/js/components/bhr/FindPresonDialog.js',
                 '/js/components/bhr/SkillsComponent.js',
                 '/js/components/bhr/JobsLevelComponent.js',
                 '/js/components/bhr/EmployeeComponent.js',
@@ -137,7 +135,7 @@ class ScriptProvider
                 'js/components/umt/CreateBranchDialog.js',
                 'js/components/umt/CreateLoginDialog.js',
                 'js/components/umt/BranchManagementComponent.js',
-                'js/components/umt/RoleManagementComponent.js',
+                'js/components/umt/RoleManagementTool.js',
             ]
         ],
 
