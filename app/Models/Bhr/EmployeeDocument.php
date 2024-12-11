@@ -108,8 +108,10 @@ class EmployeeDocument
             ->where('ed.branch_id', $ss->branch_id)
             ->where('ed.emp_id', $emp_id);
 
-        $query->orderBy('ed.id', 'asc');
-        $rows = $query->get();
+            $query->skip($skip_rows)->take($per_page);
+            $count_query = clone $query;
+            $count = $count_query->count('ed.id');
+            $rows = $query->get();
 
         // foreach ($rows as $row) {
         //     $row->image_url = '';
@@ -118,14 +120,66 @@ class EmployeeDocument
         //     }
         //     unset($row->image_file_name);
         // }
-        return $rows;
-    }
+
+            return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+        }
+
+
 
     function getDetails($id, $ss)
     {
-        
+        $row = DB::table('emp_documents as ed')
+            ->selectRaw('ed.id,ed.emp_id,ed.name,ed.file_name')
+            ->where('ed.branch_id', $ss->branch_id)
+            ->first();
+        return $row;
     }
 
+    function delete($id, $ss)
+    {
+        if (!is_numeric($id)) {
+            return DV::error('Invalid ID');
+        }
 
+        if (!isset($ss->branch_id) || !isset($ss->subs_id)) {
+            return DV::error('Invalid session data');
+        }
+
+        $data = DB::table('emp_documents as ed')
+            ->where('ed.id', $id)
+            ->take(1)
+            ->value('ed.file_name');
+
+        $catagory = isImage($data) ? 'image' : 'document';
+        if ($data) {
+            PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $catagory, $data);
+        }
+        DB::table('emp_documents as ed')->where('ed.id', $id)->update(['file_name' => null]);
+
+        $query = DB::table('emp_documents')
+            ->where('id', $id)
+            ->where('branch_id', $ss->branch_id)
+            ->delete();
+
+        if (!$query) {
+            return DV::error('Data not found or not deleted');
+        }
+
+        return DV::depends(1, ['id' => $id, 'deleted' => $data ?? 'No file found']);
+    }
+
+    function getFormOptions($id, $ss)
+    {
+        $emp_document = null;
+        if ($id) {
+            $emp_document = self::getDetails($id, $ss);
+        }
+        return (object) [
+
+
+            'emp_document' => $emp_document,
+        ];
+
+    }
 
 }

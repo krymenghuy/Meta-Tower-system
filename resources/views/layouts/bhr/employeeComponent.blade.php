@@ -170,12 +170,8 @@
     }
 
     #_employee_list {
-        display: flex;
-        flex-direction: column;
-        height: 400px;
-        padding: 0;
-        width: 100%;
-        overflow-y: auto;
+        height: 470px;
+        overflow-y: scroll;
         overflow-x: hidden;
         scrollbar-width: none;
     }
@@ -236,7 +232,7 @@
             </div>
         </div>
         <div id="_employee_list" class="mt-3 px-3"></div>
-        <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-5 d-flex justify-content-end"></div>
+        <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-5 d-flex justify-content-start"></div>
     </div>
 
     <div class="d-none" id="view_see_info__">
@@ -263,7 +259,7 @@
                 <div class="row mt-3 p-3">
 
                     <div class="col-md-4" id="tax_allownce_card"></div>
-                    <div class="col-md-4" id="ducument_card"></div>
+                    <div class="col-md-4" id="emp_documents_card"></div>
 
                 </div>
 
