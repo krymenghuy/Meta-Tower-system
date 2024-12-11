@@ -1,83 +1,97 @@
 "use strict";
 
-var JobsLevelComponent = new (function () {
+var BenefitDisbursementComponent = new (function () {
     let mThis = this;
     this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_jobsLevelComponent");
+    this.jm = main_view.appContent.children( "#_main_benefit_disbursement_component");
     this.self = this.jm[0];
-    this.initAlready = false;
-    this.title_prop = "Job Level";
-    this.btnAdd = this.self.querySelector("#_btnAddJobLevel");
-    this.elSearch = this.self.querySelector("#_job_level_search");
+    this.title_prop = "Benefits Disbursement";
+    this.btnAdd = this.self.querySelector("#_btnAddBenefitDisburse");
+    this.elSearch = this.self.querySelector("#_benefit_disburse_search");
     this.elCard = this.self.querySelector(".top_level_card");
-    this._searchJobLevel = this.self.querySelector("#container_jobLevel");
+    this._searchBenefitDisburse = this.self.querySelector("#container_benefit_disburse");
+    const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     this.cols = [
         {
-            title: "",
-            className: "align-middle text-capitalize text-nowrap",
-            // data: (data, index, i) => {
-            //     return index + 1;
-            // },
+            title: "Name",
+            className: "align-middle text-start w-25",
+            data: (data) => {
+                return `
+                <div style="display: flex; align-items: center;">
+                    <img class="image-student-tbl" src="${
+                        data.image_url
+                    }" alt=""
+                        style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
+                    <div>
+                        <span style="font-size: 14px; font-weight: bold;">${
+                            data.name ?? ""
+                        }</span><br/>
+                        <span style="font-size: 12px; color: gray;">${
+                            data.email ?? ""
+                        }</span>
+                    </div>
+                </div>`;
+            },
         },
-      
+
         {
-            title: "Job Level",
+            title: "benefit",
             className: "align-middle ",
-            data: (data)=>
-                `<span class="text-primary-custom">${data.name ?? 'HD'}</span>`,
+            data: (data) =>
+                `<span class="text-primary-custom">${
+                    data.benefit_name ?? "HD"
+                }</span>`,
         },
-       
         {
-            title: "Ranking",
+            title: "Target Month",
             className: "align-middle",
-            data: (data)=>
-                `<span class="text-primary-custom">${data.rank}</span>`,
-         
+            data: (data) => {
+                const month = monthNames[data.target_month - 1] ?? "";
+
+                return `<p class="p-0 m-0">${month} </p>`;
+            },
         },
         {
-            title: "Last Updated",
-            className: "align-middle text-capitalize text-nowrap text-left",
-            data: (data) => `
-            <div style="display: block; align-items: center;">
-                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
-                <span style="font-size: 12px; color: #2b3991;">${data.updated_at ?? ""}</span>
-            </div>`,
+            title: "Target Year",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="text-primary-custom">${data.target_year}</span>`,
         },
         {
-            title: "Description",
-            className: "align-middle ",
-            data: (data)=>
-                `<span class="text-nowrap">${data.description}</span>`,
+            title: "Withdraw Rate",
+            className: "align-middle",
+            data: (data) =>
+                `<span class="text-primary-custom">${data.withdraw_rate}%</span>`,
         },
-    
         {
             title: "Action",
             className: "col_action align-middle",
-            data: function (data, row, display) {
+            data: (data) => {
                 return `
-                    <div class="d-flex align-items-center justify-content-center gap-3">
-                        <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-job-level-modify">
-                            <i class="fa-solid fa-pencil text-warning fs-6"></i>
-                        </a>
-                        <a href="javascript:void(0)" data-id="${data.id}" data-name="${data.name}" class="btn-job-level-delete">
-                            <i class="fa-solid fa-xmark text-danger fs-6"></i>
-                        </a>
+                <div class="d-flex justify-content-start align-items-center">
+                    <div class="text-center gap-2 d-flex flex-wrap">
+                        <button class="btn btn-sm btn-primary btn-benefit-disbursement-modify" data-id="${data.id}">
+                            <i class="fa-regular fa-pen-to-square"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger btn-benefit-disbursement-delete" data-id="${data.id}">
+                            <i class="fa-regular fa-trash-can"></i>
+                        </button>
                     </div>
-                `;
+                </div>`;
             },
         },
-    ];
-
+    ];    
     this.init = function () {
         if (mThis.initAlready) return;
 
-        mThis.JobLevelListView = new ListView("_job_level_list", {
-            fetchApi: `${mThis.base_url}/hr/job_level/list-paginate`,
+        mThis.BenefitDisburseListView = new ListView("_benefit_disburse_list", {
+            fetchApi: `${mThis.base_url}/hr/employee/benefit-disbursement/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
             tableClass: "table table--white rounded-3 overflow-hidden header-uppercase",
             listContainerClass: null,
+            
         });
 
         mThis.btnAdd.onclick = function (e) {
@@ -86,40 +100,38 @@ var JobsLevelComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.JobLevelListView.showPage();
+                    mThis.BenefitDisburseListView.showPage();
                 },
             };
-            JobLevelDialog.show(op);
+            BenefitDisburseDialog.show(op);
+            
         };
-        const pr_tbl = mThis.JobLevelListView.getListContainer();
+        const pr_tbl = mThis.BenefitDisburseListView.getListContainer();
         const sh_parent = pr_tbl;
         sh_parent.style.height = window.innerHeight - 225 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
-       
-
         mThis.initDropdownMenus(pr_tbl);
 
-        mThis._searchJobLevel.addEventListener("change", (e) => {
+        mThis._searchBenefitDisburse.addEventListener("change", (e) => {
             e.preventDefault();
-            mThis.JobLevelListView.showPage(mThis.getFilterData());
+            mThis.BenefitDisburseListView.showPage(mThis.getFilterData());
         });
         mThis.initAlready = true;
     };
     mThis.elSearch.addEventListener("keyup", (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
-            if (mThis.JobLevelListView) {
-                mThis.JobLevelListView.showPage(mThis.getFilterData());
+            if (mThis.BenefitDisburseListView) {
+                mThis.BenefitDisburseListView.showPage(mThis.getFilterData());
             } else {
-                console.error("jobLevel is not defined");
+                console.error("Benefit Disburse is not defined");
             }
         }, 200);
     });
 
-   
-    this.setFilterPeriod = (p, name, start_date, end_date) => {
+    this.setFilterPeriod = (p) => {
         return p;
     };
 
@@ -127,7 +139,7 @@ var JobsLevelComponent = new (function () {
         let p = {};
         p.search_value = mThis.elSearch.value;
         let main_filters =
-            mThis._searchJobLevel.querySelectorAll(".filter-field");
+            mThis._searchBenefitDisburse.querySelectorAll(".filter-field");
         main_filters.forEach((el) => {
             const f = el.dataset.field;
             p[f] = el.value;
@@ -138,39 +150,39 @@ var JobsLevelComponent = new (function () {
     };
     this.initDropdownMenus = () => {
         addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn-job-level-modify");
+            let btn = VSUtil.closestLimited(e.target, ".btn-benefit-disbursement-modify");
             if (btn) {
-                mThis.editJobLevel(btn.dataset.id, btn);
+                mThis.editBenefitDisburse(btn.dataset.id, btn);
             }
-            btn = VSUtil.closestLimited(e.target, ".btn-job-level-delete");
+            btn = VSUtil.closestLimited(e.target, ".btn-benefit-disbursement-delete");
             if (btn) {
-                mThis.deleteJobLevel(btn.dataset.id, btn);
+                mThis.deleteBenefitDisburse(btn.dataset.id, btn);
             }
             console.log(123, btn);
         });
     };
-    this.editJobLevel = (id, menulink) => {
+    this.editBenefitDisburse = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.JobLevelListView.showPage();
+                mThis.BenefitDisburseListView.showPage();
             },
         };
-        JobLevelDialog.show(op);
+        BenefitDisburseDialog.show(op);
     };
-    this.deleteJobLevel = (id, menulink) => {
+    this.deleteBenefitDisburse = (id, menulink) => {
         let op = {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.JobLevelListView.showPage();
+                mThis.BenefitDisburseListView.showPage();
             },
         };
         cv_interact.confirm(
-            "Delete this Job level?",
+            "Delete this Benefit Disburse?",
             {
-                title: "Delete this Job level?",
+                title: "Delete this Benefit Disburse?",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -178,7 +190,7 @@ var JobsLevelComponent = new (function () {
                 if (e) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/hr/job_level/delete`,
+                            `${main_view.base_url}/hr/employee/benefit-disbursement/delete`,
                             op,
                             false,
                             false,
@@ -187,9 +199,9 @@ var JobsLevelComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Job level Delete Successfully"
+                                    "Benefit Disburse Delete Successfully"
                                 );
-                                mThis.JobLevelListView.showPage();
+                                mThis.BenefitDisburseListView.showPage();
                             }
                         });
                 }
@@ -200,7 +212,7 @@ var JobsLevelComponent = new (function () {
     this.prepareFormOptions = () => {
         vsapi
             .call(
-                `${main_view.base_url}/hr/job_level/form-options`,
+                `${main_view.base_url}/hr/employee/benefit-disbursement/form-options`,
                 null,
                 null,
                 null
@@ -210,26 +222,16 @@ var JobsLevelComponent = new (function () {
                 console.log(1111, this.elSortBy);
             });
     };
-    // Show component
-    this.show = function () {
-        this.init();
-        main_view.setTitle(mThis.title_prop);
-        mThis.JobLevelListView.showPage(null, null, () => {
-            $(mThis.self).siblings().hide();
-            $(mThis.self).fadeIn(200);
-        });
-    };
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-        mThis.JobLevelListView.showPage();
+        mThis.BenefitDisburseListView.showPage();
         $(mThis.self).siblings().hide();
         $(mThis.self).fadeIn(200);
     };
 })();
-
-const JobLevelDialog = (() => {
+const BenefitDisburseDialog = (() => {
     const self = {};
     let dialog = null;
     self.show = (op) => {
@@ -267,7 +269,6 @@ const JobLevelDialog = (() => {
                         label: '<span class="text-warning">Cancel</span>',
                         cssClass: "btn btn-default",
                         click: (me, btn) => {
-                          
                             me.hide(false);
                         },
                     },
@@ -283,7 +284,7 @@ const JobLevelDialog = (() => {
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/hr/job_level/save",
+                                        "/hr/employee/benefit-disbursement/save",
                                     ].join(""),
                                     jl,
                                     btn,
@@ -298,18 +299,18 @@ const JobLevelDialog = (() => {
                     },
                 ],
                 contentCreated: (me, divModal) => {
-                    me.saveJobLevel = (jl) => {
+                    me.saveBenefitDisburse = (bd) => {
                         alert("Data saved.");
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add Job Level",
-                    modifyTitle: "Edit Job Level",
-                    targetProp: "job_levels",
+                    createTitle: "Add Benefit Disbursement",
+                    modifyTitle: "Edit Benefit Disbursement",
+                    targetProp: "benefit_disbursements",
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/hr/job_level/form-options",
+                            "/hr/employee/benefit-disbursement/form-options",
                         ].join(""),
                         params: (op) => {
                             return { id: op.id };

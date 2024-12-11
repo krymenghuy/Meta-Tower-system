@@ -49,7 +49,9 @@ var TaxBracketComponent = new (function () {
         {
             title: "Rate",
             className: "align-middle text-capitalize text-nowrap text-left",
-            data: "rate",
+            data: (data, index, tr) => {
+                return `<p class="p-0 m-0">${data.rate ?? '0.00'} %</p>`;
+            }
         },
         {
             title: "Bias",
@@ -228,8 +230,8 @@ const TaxBracketDailog = (()=>{
 
         dialog = dialog || new GeneralDialog({
             cssClass:'modal-md',
-            backdrop: 'static', //User click outside form, do not close form
-            keyboard:true, //prevent user from using ESC key
+            backdrop: 'static',
+            keyboard:true,
             createContent:()=>{
                  return [`<div class="row">
                 <div class="form-group col-6">
@@ -245,8 +247,8 @@ const TaxBracketDailog = (()=>{
                   <input name="rate" class="form-control data-input" data-field="rate" />
                 </div>
                 <div class="form-group col-6">
-                  <label for="deduction" class="form-label" vslang="titles.Deduction"></label>
-                  <input name="deduction" class="form-control data-input" data-field="deduction" />
+                  <label for="bias" class="form-label" vslang="titles.Bias"></label>
+                  <input name="bias" class="form-control data-input" data-field="bias" />
                 </div>
 
               </div>`].join('');

@@ -281,7 +281,7 @@ var EmployeeComponent = new (function () {
 
     this.renderEmployee = (data) => {
         let html = "";
-        html += `<div  class="row mb-3">`;
+        html += `<div class="row mb-3" style="background-color:;">`;
         let cmt = 0;
 
         if (Array.isArray(data) && data.length > 0) {
@@ -297,7 +297,7 @@ var EmployeeComponent = new (function () {
                         statusColor = "background-color: #cab54a;";
                         break;
                     default:
-                        statusColor = "background-color: #2B3991;";
+                        statusColor = "background-color: #ffffff;";
                         break;
                 }
 
@@ -307,7 +307,7 @@ var EmployeeComponent = new (function () {
                     }">
                         <div class="card d-flex">
                             <div class="card-header">
-                                <div class="status_employee" style="${statusColor} color: white; padding: 3px; border-radius: 20px;">
+                                <div class="status_employee" style="${statusColor} color:#2b3991 ; padding: 3px; border-radius: 20px;">
                                     <span>${status}</span>
                                 </div>
                                 <div class="dropdown">
@@ -318,11 +318,11 @@ var EmployeeComponent = new (function () {
                 }" data-typeid="${
                     d.emp_type_id
                 }" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa-solid fa-ellipsis-vertical text-primary-custom fs-4 tool-tip"> <span class="tool-tiptext fs-6">Actions</span></i>
+                                        <i class="fa-solid fa-ellipsis-vertical text-white fs-4 tool-tip"> <span class="tool-tiptext fs-6">Actions</span></i>
                                     </a>
                                 </div>
                             </div>
-                            <div class="card-body text-center j">
+                            <div class="card-body text-center" style="">
                                 <img src="${
                                     d.image_url ||
                                     "../assets/images/logo/default_image_user.avif"
@@ -334,36 +334,36 @@ var EmployeeComponent = new (function () {
                                     }</h6>
                                 </div>
                                 <div class="card_container gap-2 p-4 bg">
-                                    <div class="employee_id text-primary-custom">#: <span class="ms-2">${
+                                    <div style="color:#2258ff;" class="employee_id">#: <span class="ms-2">${
                                         d.code || "null"
                                     }</span></div>
                                     <div class="container_top">
                                         <div class="position">
-                                            <i class="text-danger  fa-solid fa-dashboard"></i> <span class="ms-1"> ${
-                                                d.type || "null"
+                                            <i class="text-danger  fa-solid fa-dashboard"></i> <span class="ms-2"> ${
+                                                d.position || "null"
                                             }</span>
                                         </div>
                                         <div class="me-3">
-                                            <i class=" text-primary-custom fa-solid fa-clock"></i> <span>${
-                                                d.position || "null"
+                                            <i class=" text-primary-custom fa-solid fa-clock"></i> <span class="ms-2" style="color:#00f9ec;">${
+                                                d.type || "null"
                                             }</span>
                                         </div>
                                     </div>
                                     <div class="container_bottom">
-                                        <div class="phone text-success">
+                                        <div class="phone text-muted">
                                             <div class=" d-flex rounded-5 gap-2"><i class="text-success m-1 fas fa-phone"></i><span> ${
                                                 d.phone_number || "null"
                                             }</span></div>
                                         </div>
-                                        <div class="email text-primary">
-                                            <div class="d-flex rounded-5 gap-2"><i class="text-primary m-1 fas fa-envelope"></i><span>${
+                                        <div class="email text-primary-custom">
+                                            <div class="d-flex rounded-5 gap-2"><i class="text-warning m-1 fas fa-envelope"></i><span>${
                                                 d.email || "null"
                                             }</span></div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="card_bottom pt-3">
-                                    <div class="text-muted" style="font-size:11px;">Joining Date : <span class="text-primary-custom">${
+                                    <div class="text-warning" style="font-size:11px;">Joining Date : <span class="text-light">${
                                         d.joining_date || "null"
                                     }</span></div>
                                     <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${
@@ -371,7 +371,7 @@ var EmployeeComponent = new (function () {
                                     }" aria-haspopup="true" aria-expanded="false">
                                         <i data-id="${
                                             d.id
-                                        }" class="fa-regular  fa-eye text-primary-custom fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
+                                        }" class="fa-regular  fa-eye text-white fs-6 tool-tip"><span class="tool-tiptext fs-6">see info</span></i>
                                     </a>
                                 </div>
                             </div>
@@ -1317,12 +1317,14 @@ var EmployeeComponent = new (function () {
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Change Branch"></label>
+                                <span class="text-danger" >*</span>
                                 <select name="branch" id="branch" class="form-control data-input" data-field="branch_id">
 
                                 </select>
                             </div>
                             <div class=" form-group col-md-4">
                                 <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
+                                <span class="text-danger" >*</span>
                                 <input  name="effective_date" class="form-control data-input" data-field="effective_date"></input>
                             </div>
                             <div id="remarks" class="form-group col-md-5">
@@ -1336,12 +1338,14 @@ var EmployeeComponent = new (function () {
                         <div class="row">
                             <div class="form-group col-md-3">
                                 <label class="form-label" vslang="titles.Change Position"></label>
+                                <span class="text-danger" >*</span>
                                 <select name="position" id="position" class="form-control data-input" data-field="position_id">
 
                                 </select>
                             </div>
                               <div class=" form-group col-md-4">
                                 <label class="form-label" vslang="titles.Start Date">Start Date</label>
+                                <span class="text-danger" >*</span>
                                 <input  name="start_date" class="form-control data-input" data-field="start_date"></input>
                             </div>
                             <div id="remarks" class="form-group col-md-5">
@@ -1360,6 +1364,7 @@ var EmployeeComponent = new (function () {
                             </div>
                             <div id="salary" class="form-group col-md-4">
                                 <label class="form-label" vslang="titles.New Salary"></label>
+                                <span class="text-danger" >*</span>
                                 <input name="new_salary" class="form-control  data-input" placeholder="" data-field="new_salary" />
                             </div>
 
@@ -1519,10 +1524,12 @@ var EmployeeComponent = new (function () {
                 return [
                     ` <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Resign Date">Resign Date</label>
+                            <span class="text-danger" >*</span>
                             <div><input  name="resign_date" class="form-control data-input" placeholder="" data-field="resign_date"/></div>
                         </div>
                         <div class="form-group col-md-12">
                             <label class="form-label" vslang="titles.Effective Date">Effective Date</label>
+                            <span class="text-danger" >*</span>
                             <div><input  name="effective_date" class="form-control data-input" placeholder="" data-field="effective_date"/></div>
                         </div>
                       <div class="form-group col-md-12">
@@ -2426,6 +2433,7 @@ const EmployeeDialog = (() => {
                                     </div>
                                       <div class="form-group col-4">
                                         <label for="joining_date" class="form-label text-primary-custom " vslang="titles.Joining Date"></label>
+                                        <span class="text-danger" >*</span>
                                         <input name="joining_date" class="form-control data-input " data-field="joining_date" />
                                     </div>
                                     <div class="form-group col-12">

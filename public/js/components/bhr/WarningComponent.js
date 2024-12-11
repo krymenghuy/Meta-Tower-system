@@ -89,7 +89,7 @@ var WarningComponent = new (function () {
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
-            tableClass: "table table--white header-uppercase",
+            tableClass: "table table--white rounded-3 overflow-hidden header-uppercase",
             listContainerClass: null,
         });
 

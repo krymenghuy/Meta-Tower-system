@@ -5,7 +5,7 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use DB;
 use Illuminate\Pagination\LengthAwarePaginator;
-
+use App\Models\CompanyProfile;
 class Report {
     protected $id=null,$ss=null;
     protected static $arr_escape_key_name = [
@@ -173,7 +173,7 @@ class Report {
             'form' => 'simple',
             'header' => $headers,
             'list' => $groupedData,//$rows,//
-            // 'company_profile' => self::getCompanyInfo($ss)
+            'company_profile' => CompanyProfile::details($ss)
         ];
     } 
 

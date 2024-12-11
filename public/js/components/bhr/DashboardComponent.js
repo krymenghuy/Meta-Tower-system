@@ -7,7 +7,6 @@ var DashboardComponent = new (function () {
     this.jm = main_view.appContent.children("#_main_dashboardComponent");
     this.self = this.jm[0];
     this.dashboard_top = mThis.self.querySelector('#_dashboard_top');
-    this.dashboard_middle = mThis.self.querySelector('#_dashboard_middle');
     this.dashboard_center = mThis.self.querySelector('#_dashboard_center');
     this.dashboard_Bottom  = mThis.self.querySelector('#_dashboard_bottom');
     this.dashboard_Bottom_left = mThis.self.querySelector('#_dashboard_bottom_left');
@@ -33,110 +32,67 @@ var DashboardComponent = new (function () {
     this.renderDashboardTop = (data) => {
         if (!data) return;
 
-        let empTypesStaff = data.emp_types.find((type) => type.name === "Staff") || { count: 0 };
-        let empTypesInProbation = data.emp_types.find((type) => type.name === "In Probation") || { count: 0 };
-        let empTypesInternship = data.emp_types.find((type) => type.name === "Internship") || { count: 0 };
+        let Staff = data.emp_types.find((type) => type.name === "Staff") || { count: 0 };
+        let Probation = data.emp_types.find((type) => type.name === "Probation") || { count: 0 };
+        let Intern = data.emp_types.find((type) => type.name === "Intern") || { count: 0 };
 
         let html = `
-        <div>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="overview-card card p-2" style="background:#00BFFF">
-                        <div class="w-100 d-flex justify-content-between ">
-                            <p class="section-title mb-2 fs-6">Department</p>
-                        </div>
-                        <div class="w-100 d-flex justify-content-between ">
-                            <p class="text-center fs-4">${data.d_activeCount}</p>
-                            <img class="w-15" src="${main_view.asset_url}/images/icons/department.png" alt=""/>
-                        </div>
-                    </div>
-                </div>
-               <div class="col-md-3 ">
-                    <div class="overview-card card p-2" style="background:#00BFFF">
-                        <div class="w-100 d-flex justify-content-between ">
-                            <p class="section-title mb-2 fs-6">Position</p>
-                        </div>
-                        <div class="w-100 d-flex justify-content-between">
-                            <p class="text-center fs-4">${data.p_activeCount}</p>
-                            <img class="w-15" src="${main_view.asset_url}/images/icons/position.png" alt=""/>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-3 ">
-                    <div class="overview-card card p-2" style="background:#00FF9C">
-                        <div class="w-100 d-flex justify-content-between " >
-                            <p class="section-title mb-2 fs-6">Active Employee</p>
-                        </div>
-                        <div class="w-100 d-flex justify-content-between ">
-                            <p class="text-center fs-4">${data.active}</p>
-                            <img class="w-15" src="${main_view.asset_url}/images/icons/employee.png" alt=""/>
-                        </div>
-                    </div>
-                </div>
-               <div class="col-md-3 ">
-                    <div class="overview-card card p-2" style="background:#FA7070">
-                        <div class="w-100 d-flex justify-content-between ">
-                            <p class="section-title mb-2 fs-6">Resign</p>
-                        </div>
-                        <div class="w-100 d-flex justify-content-between ">
-                            <p class="text-center fs-4">${data.resigned}</p>
-                            <img class="w-15" src="${main_view.asset_url}/images/icons/resign.png" alt=""/>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
+        <div class="">
             <div class="row py-3">
-                <div class="col-md-3 p-2">
-                    <div class="card bg-grey dashboard_chart" >
-                        <canvas id="myChart"></canvas>
+                <div class="col-md-3">
+                    <div class="card  dashboard_chart" >
+                        <canvas id="empChart" ></canvas>
                     </div>
                 </div>
-                 <div class="col-md-6 p-2">
-                    <div class=" card bg-grey dashboard_chart">
+                <div class="col-md-6">
+                    <div class=" card bg-white dashboard_chart">
                         <canvas id="compareChart"></canvas>
                     </div>
 
                 </div>
-                <div class="col-md-3 p-2">
+                
+                
+                <div class="col-md-3">
                     <div class="card bg-grey dashboard_chart" >
-                        <canvas id="accountChart"></canvas>
+                        <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
                     </div>
                 </div>
             </div>
+            
+
+            </div>
+            
         </div>
         `;
         mThis.dashboard_top.innerHTML = html;
-        mThis.renderemp(data);
+        mThis.renderChartEmployee(data);
         mThis.renderCompareChart(data);
         mThis.renderaccount(data);
     };
 
-    this.renderemp = (data) => {
+    this.renderChartEmployee = (data) => {
         if (!data) return;
-        const ctx = document.getElementById('myChart').getContext('2d');
-        if (this.chartInstance) {
-            this.chartInstance.destroy();
-        }
-        this.chartInstance = new Chart(ctx, {
+        const ctx = document.getElementById('empChart').getContext('2d');
+       
+         new Chart(ctx, {
             type: 'doughnut',
             data: {
-                labels: ['Staff', 'Internship', 'In Probation'],
+                labels: ['Staff', 'Intern', 'Probation'],
                 datasets: [{
                     data: [
                         data.emp_types.find((type) => type.name === "Staff")?.count || 0,
-                        data.emp_types.find((type) => type.name === "Internship")?.count || 0,
-                        data.emp_types.find((type) => type.name === "In Probation")?.count || 0,
+                        data.emp_types.find((type) => type.name === "Intern")?.count || 0,
+                        data.emp_types.find((type) => type.name === "Probation")?.count || 0,
                     ],
                     backgroundColor: [
-                        'rgba(88, 214, 141 )',
-                        'rgba(52, 152, 219 )',
-                        'rgba(165, 105, 189)'
+                        'hwb(231.76deg 16.86% 43.14%)',
+                        '#07d1ed',
+                        '#f20483'
                     ],
                     borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(255, 99, 132, 1)',
-                       'rgba(255, 99, 132, 1)',
+                        '#fff',
+                        '#fff',
+                       '#fff',
                     ],
                     borderWidth: 1
                 }]
@@ -168,10 +124,10 @@ var DashboardComponent = new (function () {
 
     this.renderCompareChart = (responseData) => {
 
-        if (!responseData) {
-            console.error("Invalid data format or missing data.");
-            return;
-        }
+        // if (!responseData) {
+        //     console.error("Invalid data format or missing data.");
+        //     return;
+        // }
 
         const canvas = document.getElementById('compareChart');
         if (!canvas) {
@@ -179,10 +135,6 @@ var DashboardComponent = new (function () {
             return;
         }
         const ctx = canvas.getContext('2d');
-
-        if (this.compareChartInstance) {
-            this.compareChartInstance.destroy();
-        }
 
         const { monthly_totals, dates } = responseData;
         const labels = [
@@ -198,7 +150,7 @@ var DashboardComponent = new (function () {
             monthly_totals.total_cm || 0,
         ];
 
-        this.compareChartInstance = new Chart(ctx, {
+        new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: labels,
@@ -249,109 +201,42 @@ var DashboardComponent = new (function () {
     };
 
     this.renderaccount = (data) => {
+        var xValues = ["Italy", "France", "Spain", "USA", "Argentina"];
+        var yValues = [55, 49, 44, 24, 15];
+        var barColors = [
+        "#b91d47",
+        "#00aba9",
+        "#2b5797",
+        "#e8c3b9",
+        "#1e7145"
+        ];
+
         if (!data) return;
-        const acc = document.getElementById('accountChart').getContext('2d');
+        const acc = document.getElementById('myChart').getContext('2d');
         if (this.accountInstance) {
             this.accountInstance.destroy();
         }
         this.accountInstance = new Chart(acc, {
-            type: 'pie',
+            type: "pie",
             data: {
-                labels: ['Payroll', 'Wallet'],
-                datasets: [{
-                    data: [
-                        parseFloat(data.total_payroll.replace(/\s/g, '')),
-                        parseFloat(data.total_wallet.replace(/\s/g, ''))
-                    ],
-                    backgroundColor: [
-                        'rgba(88, 214, 141 )',
-                        'rgba(93, 173, 226)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)'
-                    ],
-                    borderWidth: 1
-                }]
+              labels: xValues,
+              datasets: [{
+                backgroundColor: barColors,
+                data: yValues
+              }]
             },
             options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        enabled: true
-                    },
-                    datalabels: {
-                        color: '#000',
-                        font: {
-                            size: 12,
-                            weight: 'bold'
-                        },
-                        formatter: function (value, context) {
-                            return context.chart.data.labels[context.dataIndex] + '\n' + value;
-                        }
-                    }
-                }
-            },
+              title: {
+                display: true,
+                text: "World Wide Wine Production 2018"
+              }
+            }
             // plugins: [ChartDataLabels]
         });
     };
 
 
-    // this.renderTop = (data) => {
-    //     if (!data) return;
-
-    //     let html = `
-    //     <div class="employees text-black-50" style="background-color: skyblue;">
-    //         <div class="total_employee">
-    //             <div class="total_top">
-    //                 <span class="total_title">Total Payrolls</span>
-    //             </div>
-    //             <div class="total_bottom">
-    //                 <span class="total_number">${main_view.currency.symbol + data.total_payroll}</span>
-    //                <img class="w-15" src="${main_view.asset_url}/images/icons/calculator.png" alt=""/>
-    //             </div>
-    //         </div>
-    //     </div>
-    //     <div class="employees text-black-50" style="background-color: #00FF9C;">
-    //         <div class="total_employee">
-    //             <div class="total_top">
-    //                 <span class="total_title">Total Wallets</span>
-    //             </div>
-    //             <div class="total_bottom">
-    //                 <span class="total_number">${main_view.currency.symbol + data.total_wallet}</span>
-    //                  <img class="w-15" src="${main_view.asset_url}/images/icons/calculator.png" alt=""/>
-    //             </div>
-    //         </div>
-    //     </div>
-
-    //     <div class="employees text-black-50" style="background-color: #FA7070;">
-    //         <div class="total_employee">
-    //             <div class="total_top">
-    //                 <span class="total_title">Total Warnings</span>
-    //             </div>
-    //             <div class="total_bottom">
-    //                 <span class="total_number">${data.count_warning}</span>
-    //                 <img class="w-15" src="${main_view.asset_url}/images/icons/warning.png" alt=""/>
-    //             </div>
-    //         </div>
-    //     </div>
-    //     <div class="employees text-black-50" style="background-color: #FFC5C5;">
-    //         <div class="total_employee">
-    //             <div class="total_top">
-    //                 <span class="total_title">On Leaves Today</span>
-    //             </div>
-    //             <div class="total_bottom">
-    //                 <span class="total_number">${data.count}</span>
-    //                 <img class="w-15" src="${main_view.asset_url}/images/icons/leave.png" alt=""/>
-    //             </div>
-    //         </div>
-    //     </div>
-    //     `;
-    //     mThis.dashboard_middle.innerHTML = html;
-    // };
+ 
 
     this.renderDashboardCenter = data => {
         if (!data || !data.department_data) return;
@@ -391,10 +276,10 @@ var DashboardComponent = new (function () {
           </div>
         `;
         mThis.dashboard_center.innerHTML = html;
-      };
+    };
 
 
-      this.renderDashboardBottomLeft = (data) => {
+    this.renderDashboardBottomLeft = (data) => {
         if (!data || !data.data) return;
 
 
@@ -492,7 +377,6 @@ var DashboardComponent = new (function () {
 
         vsapi.call(`${main_view.base_url}/hr/dashboard/count-employees`,p, null,false,false).then(res => {
             let data = (res.status_code === 200) ?res.data : {};
-            // console.log(123,data);
             mThis.renderDashboardTop(data);
             onFinish();
           });
@@ -513,7 +397,6 @@ var DashboardComponent = new (function () {
         vsapi.call(`${main_view.base_url}/hr/dashboard/get-levels`,p, null,false,false).then(res => {
             let data = (res.status_code === 200) ?res.data : {};
             mThis.renderDashboardBottomLeft(data);
-            // mThis.renderTop(data);
             onFinish();
           });
     }

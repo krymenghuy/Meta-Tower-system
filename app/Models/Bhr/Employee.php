@@ -200,7 +200,7 @@ class Employee //extends Model
         $benefit_id = 0;
         $full_amount = 0;
         $tax_option_id = 0;
-        $use_amount = 0;
+        $used_amount = 0;
 
         $payroll = DB::table('payrolls as p')
             ->where('id', $payroll_id)
@@ -226,15 +226,14 @@ class Employee //extends Model
         if($bd)$withdraw_rate = $bd->withdraw_rate;
 
         $emp_benefit = DB::table('emp_benefits')
-            ->where("emp_id", $emp_id)
-            ->where("id", $benefit_id)
+            ->where('emp_id', $emp_id)
+            ->where('benefit_id', $benefit_id)
             ->selectRaw('id,amount, tax_option_id,flat_tax_rate')
             ->first();
 
         $full_amount = $emp_benefit->amount ?? 0;
         $tax_option_id = $emp_benefit->tax_option_id ?? 0;
-
-        $use_amount = $full_amount * ($withdraw_rate / 100);
+        $used_amount = $full_amount * ($withdraw_rate / 100);
 
         $result = (object) [
             "emp_id" => $emp_id,
@@ -243,11 +242,38 @@ class Employee //extends Model
             "benefit_id" => $benefit_id,
             "full_amount"=> $full_amount,
             "tax_option_id" => $tax_option_id,
-            "use_amount"=> $use_amount,
+            "used_amount"=> $used_amount,
+
         ];
-        
         return $result;
     }
+    static function savePayrollListBenefit($arr, $ss)
+    {
+            $v_rule = [
+                'id' => '0|identity=1',
+                'payroll_id' => '1|number',
+                'emp_id' => '1|number',
+                'benefit_id' => '1|number',
+                'full_amount' => '1|number',
+                'withdraw_rate' => '0|number',
+                'tax_option_id' =>'1|number',
+                'used_amount' => '0|number',
+            ];
+
+            $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+            if ($res->error) {
+                return DV::error($res->error);
+            }
+
+            $id = $res->id;
+            $inputs = $res->values;
+            $id = saveData($ss,'payroll_list_benefits', ['id' => $id], $inputs, [], 1);
+            if ($id > 0) {
+                return DV::depends(1, ['payroll_list_benefits' => $inputs, 'id' => $id]);
+            }
+
+            return DV::error('Error saving payroll list benefit!');
+        }
 
     function deleteProfilePicture($id = null, $ss = null)
     {
@@ -908,6 +934,9 @@ class Employee //extends Model
         $res = validateObject($arr,$v_rule,true,[],$ss->lang);
         if($res->error) {
             return DV::error($res->error);
+        }
+        if (empty($inputs['effective_date'])) {
+            return DV::error('The effective date is required.');
         }
         $inputs = $res->values;
         $inputs['promo_id'] =$promo_id;
