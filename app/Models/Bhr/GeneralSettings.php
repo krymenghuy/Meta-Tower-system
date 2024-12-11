@@ -380,7 +380,6 @@ class GeneralSettings //extends Model
         return DB::table('payrolls')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS payroll_name')->get();
     }
 
-<<<<<<< HEAD
     static function options_employees($ss,$emp_status_id = null){
         $q = DB::table('employees as e')->where('e.subs_id',hex2bin($ss->subs_id))->selectRaw('id,name as employee_name');
        if($emp_status_id) $q->where('e.status_id',$emp_status_id);
@@ -388,11 +387,6 @@ class GeneralSettings //extends Model
         return $rows;
     }
     
-=======
-    static function options_skill($ss){
-        return DB::table('skills')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,title AS skill')->get();
-    }
->>>>>>> 46e32072776819e8cbf5d8e340fac4c436471450
 
     function deleteProductType($d){
         $ss = UM::getUserInfoByToken($d);

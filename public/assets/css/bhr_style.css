@@ -84,6 +84,18 @@
 .border-primary-custom {
     border-color: 2px solid #2b3991;
 }
+
+.box-shadow{
+    box-shadow: 0 2px 8px -4px #0006;
+}
+
+.btn-outline-primary-custom{
+    color: #2b3991;
+    border-color: #2b3991;
+}
+.border-info-custom{
+    border-color: #2b3991 !important;
+}
 .btn-primary-custom {
     color: #fff;
     background-color: #2b3991;

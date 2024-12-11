@@ -124,6 +124,7 @@ class CompanyProfile //extends Model
 
   static function details($ss) {
     $customer_id = $ss->subscriber_id;
+    \Log::info((array)$ss);
     if(!$customer_id) return null;
     $bin_customer_id = hex2bin($customer_id);
     $col_customer_id = DBX::getHEX('c.id','id');

@@ -7,7 +7,7 @@ const CreateLoginDialog = (()=>{
             cssClass:"modal-lg",
             createContent:()=>{
                return `<div class="w-100 d-flex flex-wrap flex-row align-items-center justify-content-center gap-2">
-                     <div name="div_user_photo"></div>
+                     <div name="div_user_photo" class=""></div>
                      <div style="visibility:hidden" class="d-none align-items-center justify-content-center border border-secondary rounded-5 p-3 flex-grow">
                      <h5 class="p-2">User may have an official profile details</h5>
                      </div>
@@ -63,6 +63,41 @@ const CreateLoginDialog = (()=>{
                   </div>
                </div>`;
             },
+            // contentCreated:(me)=>{
+            //    console.log(222,me.controls);
+            //    //initialize div_user_photo, making it become an ImageBox that contains functionality (upload image, display image of user)
+            //    me.controls.userImageBox = new ImageBox(me.controls.div_user_photo,{cssClass:"data-input",dataset:{"field":"photo"}});
+            //    me.showProfile =  (code) =>{
+            //       let fields = ['full_name','email','phone_number','login_name']; 
+            //       let p = {"official_code":code,'user_class': me.controls.user_class.value}; 
+            //       vsapi.call([main_view.base_url,'/api/user/profile-by-code'].join(''),p,false,false).then(res =>{
+            //       let d = res.status_code ==200? res.data: {};
+            //       d = d || {}; 
+            //       me.fieldList.forEach(el =>{
+            //          const f =el.dataset.field;
+            //          if(fields.indexOf(f)>=0){
+            //                el.value = d[f] || "";
+            //          }
+                     
+            //       });
+         
+            //       });
+            //    };
+
+            //    me.controls.official_code.addEventListener('blur',e =>{
+            //       e.preventDefault();
+            //       let official_code = me.controls.official_code.value;
+            //       me.showProfile(official_code);
+            //    });
+            //    me.controls.user_class.onchange = e=>{
+            //       e.preventDefault();
+            //       let official_code = me.controls.official_code.value;
+            //       console.log(222,me.controls.user_class);
+            //       if(me.controls.user_class.value=='admin')
+            //          me.controls.official_code.disable = true;
+            //       me.showProfile(official_code);
+            //    }
+            // },
             configSelect:[
                {
                name:"role_id",
@@ -79,48 +114,79 @@ const CreateLoginDialog = (()=>{
                {
                name:"user_class",
                data:"user_classes",
-               textField:"user_class",
+               textField:"user_class_name",
                valueField:"user_class"
                }
             ],
-            contentCreated:(me)=>{
+            onPrepareForm:(me)=>{
+               LocaleManager.translateZone(me.divModal);
                //initialize div_user_photo, making it become an ImageBox that contains functionality (upload image, display image of user)
-               me.controls.userImageBox = new ImageBox(me.controls.div_user_photo,{cssClass:"data-input",dataset:{"field":"photo"}});
+               me.controls.userImageBox = new ImageBox(me.controls.div_user_photo,{ containerClass:'user-profile-container', imgClass:"data-input",dataset:{"field":"photo"}});
                me.showProfile =  (code) =>{
-                     let fields = ['full_name','email','phone_number','login_name']; 
-                     let p = {"official_code":code,'user_class': me.controls.user_class.value}; 
-                     vsapi.call([main_view.base_url,'/api/user/profile-by-code'].join(''),p,false,false).then(res =>{
-                     let d = res.status_code ==200? res.data: {};
-                     d = d || {}; 
-                     me.fieldList.forEach(el =>{
-                        const f =el.dataset.field;
-                        if(fields.indexOf(f)>=0){
-                              el.value = d[f] || "";
-                        }
-                        
-                     });
-            
-                     });
-                  };
+                  let fields = ['full_name','email','phone_number','login_name']; 
+                  let p = {"official_code":code,'user_class': me.controls.user_class.value}; 
+                  vsapi.call([main_view.base_url,'/api/user/profile-by-code'].join(''),p,false,false).then(res =>{
+                  let d = res.status_code ==200? res.data: {};
+                  d = d || {}; 
+                  // me.fieldList.forEach(el =>{
+                  //    const f =el.dataset.field;
+                  //    if(fields.indexOf(f)>=0){
+                  //          el.value = d[f] || "";
+                  //    }
+                  // });
+                  });
+               };
+               if(!me.dataOptions.id){
+                  me.divModal.children[0].classList.replace('modal-md','modal-lg');
+                  me.controls.role_id.value = parseInt(me.dataOptions.role_id);
+                  me.controls.role_id.dispatchEvent(new Event('change'));
+                  me.controls.branch_id.value = parseInt(me.dataOptions.branch_id);
+                  me.controls.branch_id.dispatchEvent(new Event('change'));
 
-               me.controls.official_code.addEventListener('blur',e =>{
+                  me.controls.official_code.addEventListener('blur',e =>{
                      e.preventDefault();
                      let official_code = me.controls.official_code.value;
                      me.showProfile(official_code);
                   });
-            
+                  me.divModal.querySelectorAll('.data-input').forEach(el => {
+
+                     let field = el.dataset.field;
+                     if (el.tagName.toLowerCase() === 'select') 
+                        VSUtil.closestLimited(el,'.form-group').classList.remove('d-none');
+                     if(field == 'full_name'||field == 'phone_number')
+                        el.parentElement.classList.replace('col-12','col-6');
+                     else
+                        el.parentElement.classList.remove('d-none');
+                 });
                   me.controls.user_class.onchange = e=>{
                      e.preventDefault();
                      let official_code = me.controls.official_code.value;
+                     // console.log(222,me.controls.official_code);
+                     if(me.controls.user_class.value == 'admin')
+                        me.controls.official_code.disabled = true;
+                     else
+                        me.controls.official_code.disabled = false;
                      me.showProfile(official_code);
                   }
-            },
-            onPrepareForm:(me)=>{
-               LocaleManager.translateZone(me.divModal);
-               me.controls.role_id.value = parseInt(me.dataOptions.role_id);
-               me.controls.role_id.dispatchEvent(new Event('change'));
-               me.controls.branch_id.value = parseInt(me.dataOptions.branch_id);
-               me.controls.branch_id.dispatchEvent(new Event('change'));
+               }
+               if(me.dataOptions.id != null){
+                  console.log(222,me.divModal.children);   
+                  me.divModal.children[0].classList.replace('modal-lg','modal-md');
+                  // me.divModal.children[0].classList.remove('modal-lg');
+                  // me.divModal.children[0].classList.add('modal-md');
+                  me.divModal.querySelectorAll('.data-input').forEach(el => {
+
+                     let field = el.dataset.field;
+                     if (el.tagName.toLowerCase() === 'select') 
+                        VSUtil.closestLimited(el,'.form-group').classList.add('d-none');
+                     if(field == 'full_name'||field == 'phone_number'){
+                        el.parentElement.classList.replace('col-6','col-12');
+                        el.parentElement.classList.remove('d-none');
+                     }
+                     else
+                        el.parentElement.classList.add('d-none');
+                 });
+               }
             },
             // extendMethods:{
             //     "getData":(me,dataOptions)=>{
@@ -129,7 +195,9 @@ const CreateLoginDialog = (()=>{
             // },
             prepareFormOptions:{
                createTitle:LocaleManager.trans("Create Login","titles"),
+               modifyTitle:LocaleManager.trans("Modify User","titles"),
                api:{
+                  targetProp:"user",
                   endpoint:[main_view.base_url,'/api/user/form-options'].join(''),
                   params:(me,dataOptions)=>{
                      return {};
@@ -150,13 +218,13 @@ const CreateLoginDialog = (()=>{
                cssClass:"btn btn-primary",
                click:(me)=>{
                   let p = me.getData();
-                  // p.photo = me.controls.userImageBox.getImage();
-                  console.log(p);
-                     // vsapi.call([main_view.base_url,'/api/user/save'].join(''),p,false,false).then(res =>{
-                     //     if(res.status_code ==200){
-                     //         mThis.modal.hide(true,p);
-                     //     }else cv_interact.error(res.error_message);
-                     // });
+                     p.photo = me.controls.userImageBox ? me.controls.userImageBox.getImage(): '';
+                     // console.log(111,p);
+                     vsapi.call([main_view.base_url,'/api/user/save'].join(''),p,false,false).then(res =>{
+                         if(res.status_code == 200){
+                             me.modal.hide(true,p);
+                         }else cv_interact.error(res.error_message);
+                     });
 
                }
                }  
