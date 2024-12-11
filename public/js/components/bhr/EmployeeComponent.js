@@ -749,34 +749,39 @@ var EmployeeComponent = new (function () {
                                 </a>
                             </div>
                         </div>
-                        <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+                        <div class="card-body " style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
                 `;
 
                 data.map((d) => {
                     html += `
-                        <div class="row mt-2 py-4 border-bottom">
+                        <div class="row mt-2 py-3 border-bottom border-white">
                             <div class="col-md-8">
-                                <p class="text-primary-custom" style="width:250px; height:20px">
-                                    <img class="bhr-icons" src="${main_view.asset_url}/images/icons/skill.png" />
-                                    <span class="text-black-50"> Skill </span>
-                                    <span class="px-2"> : </span>
-                                    ${d.skill}
-                                </p>
-                                <p class="text-primary-custom" style="width:250px; height:20px">
-                                    <img class="bhr-icons" src="${main_view.asset_url}/images/icons/rate.png" />
-                                    <span class="text-black-50"> Rate</span>
-                                    <span class="px-2"> : </span>
-                                    ${d.rate} %
-                                </p>
+                                <div>
+                                    <p class="text-primary-custom" style="width:250px; height:20px">
+                                        <img class="bhr-icons" src="${main_view.asset_url}/images/icons/skill.png" />
+                                        <span class="text-black-50"> Skill </span>
+                                        <span class="px-2"> : </span>
+                                        ${d.skill}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-primary-custom" style="width:250px; height:20px">
+                                        <img class="bhr-icons" src="${main_view.asset_url}/images/icons/rate.png" />
+                                        <span class="text-black-50"> Rate</span>
+                                        <span class="px-2"> : </span>
+                                        ${d.rate} %
+                                    </p>
+                                </div>
                             </div>
-                            <div class="col-md-4 text-end">
+                           <div class="col-md-4 text-end">
                                 <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-skill">
-                                    <i class="fa fa-edit fs-5 text-primary"></i>
+                                    <i class="fa fa-edit fs-7 text-primary"></i>
                                 </a>
-                                <a href="javascript:void(0)" data-id="${d.id}" data-emp-id="${employeeId}" class="lnk-delete-skill">
-                                    <i class="fa fa-trash fs-5 text-danger"></i>
+                                <a href="javascript:void(0)" data-id="${d.id}" data-emp-id="${employeeId}" class="lnk-delete-skill ms-2">
+                                    <i class="fa fa-trash fs-7 text-danger"></i>
                                 </a>
                             </div>
+
                         </div>
                     `;
                 });
@@ -913,7 +918,7 @@ var EmployeeComponent = new (function () {
 
                 data.forEach((d) => {
                     html += `
-                <div class="experience_item py-2 border-bottom border-primary" style="display:flex">
+                <div class="experience_item py-2 border-bottom border-white" style="display:flex">
                     <div class="col-md-6">
                         <h6 class="text-" style="width:180px; height:22px; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap">${d.period}</h6>
                         <p class="text-primary-custom" style="width:170px; height:20px"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/graduate.svg" /> ${d.edu_level}</p>
@@ -1105,7 +1110,7 @@ var EmployeeComponent = new (function () {
 
                 data.forEach((d) => {
                     html += `
-                <div class="row py-3 border-bottom border-info">
+                <div class="row py-3 border-bottom border-white">
                     <div class="col-md-6" style="display: flex; flex-direction: column; gap:10px">
                         <div class="experience-toggle" data-experience-id="${d.id}"
                             style="display:flex; justify-content:space-between; width:350px; cursor: pointer;">
@@ -1297,34 +1302,34 @@ var EmployeeComponent = new (function () {
                 `;
 
                 data.map((d) => {
-                    html += `
-                        <div class="row mt-2 py-4 border-bottom">
-                            <div class="col-md-8">
-                                <div class="d-flex">
+                    html = [html,`
+                        <div class="row mt-2 py-3 border-bottom border-white">
+                            <div class="col-md-8">`,
+                                // `<div class="d-flex">
+                                //     <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
+                                //         <img class="bhr-icons" src="${main_view.asset_url}/images/icons/amount.png" />
+                                //         <span class="text-black-50">Amount</span>
+                                //         <span class="px-2">:</span>
+                                //         ${main_view.currency.symbol} ${formattedNumber(d.amount ?? 0)}
+                                //     </p>
+                                // </div>`,
+                            //    `<div class="d-flex">
+                            //         <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
+                            //             <img class="bhr-icons" src="${main_view.asset_url}/images/icons/qty.png" />
+                            //             <span class="text-black-50">Quantity</span>
+                            //             <span class="px-2">:</span>
+                            //             ${d.qty}
+                            //         </p>
+                            //     </div>`,
+                               `<div class="d-flex">
                                     <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
                                         <img class="bhr-icons" src="${main_view.asset_url}/images/icons/amount.png" />
-                                        <span class="text-black-50">Amount</span>
-                                        <span class="px-2">:</span>
-                                        ${main_view.currency.symbol} ${formattedNumber(d.amount ?? 0)}
-                                    </p>
-                                </div>
-                                <div class="d-flex">
-                                    <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
-                                        <img class="bhr-icons" src="${main_view.asset_url}/images/icons/qty.png" />
-                                        <span class="text-black-50">Quantity</span>
-                                        <span class="px-2">:</span>
-                                        ${d.qty}
-                                    </p>
-                                </div>
-                               <div class="d-flex">
-                                    <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
-                                        <img class="bhr-icons" src="${main_view.asset_url}/images/icons/amount.png" />
-                                        <span class="text-black-50">Allowance</span>
+                                        <span class="text-black-50">Allowance (${d.qty})</span>
                                         <span class="px-2">:</span>
                                         ${main_view.currency.symbol} ${formattedNumber(d.allowance ?? 0)}
                                     </p>
-                               </div>
-                               <div class="d-flex">
+                               </div>`,
+                               `<div class="d-flex">
                                     <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
                                         <img class="bhr-icons" src="${main_view.asset_url}/images/icons/remarks.png" />
                                         <span class="text-black-50">Remarks</span>
@@ -1336,14 +1341,14 @@ var EmployeeComponent = new (function () {
 
                             <div class="col-md-4 text-end">
                                 <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-tax-allowance">
-                                    <i class="fa fa-edit fs-5 text-primary"></i>
+                                    <i class="fa fa-edit fs-7 text-primary"></i>
                                 </a>
-                                <a href="javascript:void(0)" data-id="${d.id}" data-emp-id="${employeeId}" class="lnk-delete-tax-allowance">
-                                    <i class="fa fa-trash fs-5 text-danger"></i>
+                                <a href="javascript:void(0)" data-id="${d.id}" data-emp-id="${employeeId}" class="lnk-delete-tax-allowance ms-2">
+                                    <i class="fa fa-trash fs-7 text-danger"></i>
                                 </a>
                             </div>
                         </div>
-                    `;
+                    `].join('');
                 });
 
                 html += `</div></div>`;
@@ -2518,7 +2523,7 @@ const EmployeeDialog = (() => {
                 return [
                     `<div class="row">
                             <div class="col-3">
-                                <div name="div_emp_photo" style="height:165px;" class="data-input border border-primary" data-field="image_url" role="button"></div>
+                                <div name="div_emp_photo" style="height:165px;" class="data-input border border-white" data-field="image_url" role="button"></div>
                             </div>
                             <div class="col-9">
                                 <div class="row">

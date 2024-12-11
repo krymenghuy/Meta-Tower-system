@@ -3,10 +3,10 @@
 namespace App\Models\Bhr;
 
 use App\Models\Bhr\GeneralSettings;
+use App\Models\DBX;
 use App\Models\DV;
 use App\Models\PublicStorage;
 use Illuminate\Support\Facades\DB;
-use App\Models\DBX;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class EmployeeDocument
@@ -20,104 +20,111 @@ class EmployeeDocument
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    public static function getExtensionFromMIMEType($file_content) {
-        // Use finfo to detect the MIME type from the file content
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $mime_type = finfo_buffer($finfo, $file_content);
-        finfo_close($finfo);
 
-        // Map MIME types to file extensions
-        $mime_types = [
-            'application/pdf' => 'pdf',
-            'application/msword' => 'doc',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document' => 'docx',
-            'text/plain' => 'txt',
-            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' => 'xlsx',
-            'application/vnd.ms-excel' => 'xls',
-            'text/csv' => 'csv',
-            'image/jpeg' => 'jpg',
-            'image/png' => 'png',
-            'image/gif' => 'gif',
-            'image/svg+xml' => 'svg',
-            // Add other MIME types as needed
-        ];
-
-        return $mime_types[$mime_type] ?? false;
-    }
-    function save($arr, $ss = null) {
-        // Get branch_id from user info
+    public function save($arr = [], $ss = null)
+    {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
-        // Validation rules
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
-            'name' => '1|string|0-100',
-            'file' => '1|string', // Expecting a Base64-encoded string
+            'name' => '0|string',
+            'ext' => '0|string',
+            'file_name' => '1|string',
         ];
 
-        // Validate input data
-        $res = validateObject($arr, $v_rule, true, ['file' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']));
+        $res = validateObject($arr, $v_rule, true, ['file_name' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']));
         if ($res->error) {
             error_log('Validation error: ' . json_encode($res->error));
             return DV::error($res->error);
         }
 
-        // Extract validated values
         $id = $res->id;
         $inputs = $res->values;
+        $d = (object) $inputs;
+        $data = $d->file_name;
+        $catagory = isImage($data) ? 'image' : 'document';
+        $ext = $d->ext;
 
-        // Process Base64 file
-        $base64 = str_replace('data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,', '', $inputs['file']);
-        $decodedFile = base64_decode($base64);
-        if ($decodedFile === false) {
-            error_log('Error decoding Base64 file');
-            return DV::error('Invalid file format');
+
+        unset($inputs['file_name']);
+        unset($inputs['ext']);
+        $emp_document_create = !$id;
+        $res = null;
+
+        if($catagory == 'image')
+        {
+            $res =PublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $data, null);
         }
-
-        // Generate a unique file name
-        $fileName = uniqid('document_', true) . '.xlsx';
-
-        // Set the file path
-        $filePath = [
-            'branch_id' => $branch_id,
-            'dir' => 'emp_documents'
-        ];
-
-        // Define allowed file types for documents (mimic original savefile function structure)
-        $allowed_exts = ['pdf', 'docs', 'doc', 'txt', 'xlsx', 'xls', 'csv'];
-        $ext = 'xlsx';  // As we are working with .xlsx file
-        $mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet';
-
-        // Check if file type is allowed
-        if (!in_array($ext, $allowed_exts)) {
-            $file_exts = implode(',', $allowed_exts);
-            return DV::error("File type is not allowed. Allowed file types are $file_exts. The provided file type is $ext");
+        else
+        {
+            $res = PublicStorage::savefile(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data,$catagory);
         }
+            if ($res->status === "Error") {
+                return DV::error($res->error_message);
+            }
+            $inputs['file_name'] = $res->file_name;
 
-        // Save the file using PublicStorage
-        $saveResult = PublicStorage::savefile($filePath, $ext, $decodedFile, 'documents');
-        if ($saveResult) {
-            // File saved successfully, update file name in inputs
-            $inputs['file'] = $fileName;
-
-            // Save or update the database record
-            $id = saveData($ss, 'emp_documents', ['id' => $id], $inputs, [], 1);
-            if ($id > 0) {
-                return DV::depends(1, ['emp_documents' => $inputs, 'id' => $id]);
+            if (empty($inputs['name'])) {
+                $inputs['name'] = $res->file_name;
             }
 
-            return DV::error('Error saving data to database');
-        }
+            $id = saveData($ss, 'emp_documents', ['id' => $id], $inputs, [], 1);
+            return DV::depends(1, ['emp_documents' => $inputs, 'id' => $id]);
 
-        // Error saving file
-        error_log('Error saving file to storage');
-        return DV::error('Error saving file');
+
+        return DV::error('Error saving data');
     }
 
+    // public static function getfile($id)
+    // {
+    //     $col_subs_id = DBX::getHex('ed.subs_id', 'subs_id');
+    //     $row = DB::table('emp_documents as ed')->where('id', $id)->selectRaw($col_subs_id . ',ed.branch_id,ed.file_name')->first();
+    //     if ($row) {
+    //         $category = isImage($row->file_name) ? 'image' : 'document';
+    //         $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
+    //         return validateUrl($url);
+    //     } else {
+    //         return self::defaultImage($row ? $row->subs_id : null);
+    //     }
+    // }
 
 
+    function listpaginate($arr, $ss)
+    {
+        $d = (object) $arr;
+
+        $current_page = $d->current_page ?? 1;
+        $per_page = $d->per_page ?? 5;
+        if (!is_numeric($current_page)) {
+            $current_page = 1;
+        }
+        $emp_id = $d->emp_id ?? null;
+        $skip_rows = ($current_page - 1) * $per_page;
+
+        $query = DB::table('emp_documents as ed')
+            ->selectRaw('ed.id,ed.emp_id,ed.name,ed.file_name')
+            ->where('ed.branch_id', $ss->branch_id)
+            ->where('ed.emp_id', $emp_id);
+
+        $query->orderBy('ed.id', 'asc');
+        $rows = $query->get();
+
+        // foreach ($rows as $row) {
+        //     $row->image_url = '';
+        //     if ($row->file_name) {
+        //         $row->image_url = self::getfile($row->id);
+        //     }
+        //     unset($row->image_file_name);
+        // }
+        return $rows;
+    }
+
+    function getDetails($id, $ss)
+    {
+        
+    }
 
 
 
