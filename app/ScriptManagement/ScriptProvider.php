@@ -105,6 +105,7 @@ class ScriptProvider
                 // '/js/components/abm/pusher_client_houxpress.js',
                 '/js/components/common/pusher_client_dms.js',
                 '/js/components/bhr/DashboardComponent.js',
+                '/js/components/bhr/FindPresonDialog.js',
                 '/js/components/bhr/SkillsComponent.js',
                 '/js/components/bhr/JobsLevelComponent.js',
                 '/js/components/bhr/EmployeeComponent.js',
@@ -132,6 +133,9 @@ class ScriptProvider
                 'js/components/bhr/BenefitComponent.js',
                 'js/components/common/LocationComponent.js',
                 'js/components/common/CompanyComponent.js',
+                'js/components/umt/ChangeRoleDialog.js',
+                'js/components/umt/CreateBranchDialog.js',
+                'js/components/umt/CreateLoginDialog.js',
                 'js/components/umt/BranchManagementComponent.js',
                 'js/components/umt/RoleManagementComponent.js',
             ]

@@ -7,7 +7,7 @@
 </style>
 
 <div id="_main_companyComponent" class="m-3" style="display:none;">
-    <div class="d-flex flex-column p-3 bg-white border rounded-3 shadow">
+    <div class="d-flex flex-column p-3 mt-4 bg-white border rounded-3 shadow">
         <div class="row">
             <div class="col-lg-3">
                 <div class="d-flex flex-column">
@@ -15,7 +15,7 @@
                         <img id="com_imgLogo" class="data-input w-100 thumnail" style="max-height:160px" class="data-input" data-field="logo" alt="Logo" />
                     </div>
                     <div class="d-flex flex-row gap-2 mt-1">
-                        <button id="com_btnChooseLogo" class="btn btn-sm btn-outline-success">
+                        <button id="com_btnChooseLogo" class="btn btn-sm btn-outline-primary-custom">
                             <i class="fa fa-image fs-5"></i>
                             <span>Choose</span>
                         </button>
@@ -68,7 +68,7 @@
             </div>
         </div>
         <div class="d-flex align-items-center mt-2">
-            <button id="_main_comp_btnSaveProfile" type="button" class="btn btn-sm btn-success">
+            <button id="_main_comp_btnSaveProfile" type="button" class="btn btn-sm btn-primary-custom">
                 <i class="la la-save fs-5"></i>
                 <span>Save Changes</span>
             </button>

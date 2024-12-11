@@ -21,6 +21,7 @@ var BranchManagementComponent = new function(){
             paginationContainer: mThis.containerPagination,
             apiCluster: main_view.apiCluster,
             renderItems: (items,list_container) => {
+                list_container.classList.add('pe-3');
                 console.log('items',items);
                 mThis.renderUserList(list_container,items);
             },
@@ -228,7 +229,7 @@ var BranchManagementComponent = new function(){
         const menuOptopns = {
             containerElement: Container,
             actionButtonClass:"btn_um_action",
-            cssClass:"bg-white shadow",
+            cssClass:"bg-white box-shadow ",
             //menuItemClass:"",
             menus:[
                 {
@@ -403,7 +404,7 @@ var BranchManagementComponent = new function(){
     }
 
     this.renderHeaderList = () =>{
-        return [`<div data-roleid="" class="w-100 rounded-3 bg-success p-3 pb-0 shadow text-white mb-3 position-relative">
+        return [`<div data-roleid="" class="w-100 rounded-3 bg-primary-custom p-3 pb-0 box-shadow text-white mb-3 position-relative">
                 <div class="scope-user d-flex align-items-center row gy-2">
                     <div class="col">
                         <div class="d-block">
@@ -482,7 +483,7 @@ var BranchManagementComponent = new function(){
         let cnt = 0;
         items.forEach(branch => {
 
-            html = [html,`<div data-id="${branch.id}" class="w-100 rounded-3 border-start border-5 border-success p-3 shadow bg-white mb-3 position-relative">
+            html = [html,`<div data-id="${branch.id}" class="w-100 rounded-3 border-start border-5 border-info-custom p-3 box-shadow bg-white mb-3 position-relative">
                 <div class="scope-user d-flex align-items-center row gy-2">
                     
                     <div class="col">
@@ -546,7 +547,7 @@ var BranchManagementComponent = new function(){
                         <div class="d-flex flex-row width-locked-icon">
                           ${branch.is_locked ? '<i class="fa-solid fa-ban fs-4 text-danger"></i>' : ''}
                         </div>
-                            <button class="btn_um_action btn btn-sm btn-outline-success rounded-5 text-nowrap" type="button" data-roleid = "${(branch.role_id || branch.primary_role_id) ||''}" data-id="${branch.id}" data-loginname="${branch.login_name}" data-lock="${branch.is_locked ? 'unlock' : 'lock'}">
+                            <button class="btn_um_action btn btn-sm btn-outline-primary-custom rounded-5 text-nowrap" type="button" data-roleid = "${(branch.role_id || branch.primary_role_id) ||''}" data-id="${branch.id}" data-loginname="${branch.login_name}" data-lock="${branch.is_locked ? 'unlock' : 'lock'}">
                                 <span class=" " vslang="buttons.Action">Action</span>
                                 <i class="fa-solid fa-caret-down"></i>
                             </button>

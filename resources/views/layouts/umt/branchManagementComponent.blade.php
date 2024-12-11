@@ -5,9 +5,9 @@
 </style>
 
 <div id="_um_branchManagementComponent" class="mobile-padding p-3" style="display:none">
-    <div class="d-flex">
+    <div class="d-flex mt-4">
         <div class="d-flex gap-2">
-            <button id="_bm_btn_new" class="btn bg-success text-white shadow text-nowrap" type="button">
+            <button id="_bm_btn_new" class="btn btn-primary-custom text-nowrap" type="button">
                 <i class="fa-solid fa-plus"></i>
                 <span class=" text-nowrap" vslang="buttons.New Branch"></span>
             </button>
@@ -26,7 +26,7 @@
         </div>
     </div>
     <div class="table-responsive mt-3 table-responsive-hover">
-        <div id="_branch_container" class="me-3"></div>
+        <div id="_branch_container" class=""></div>
     </div>
     <div class="py-2" id="container_pagination_um"></div>
 </div>

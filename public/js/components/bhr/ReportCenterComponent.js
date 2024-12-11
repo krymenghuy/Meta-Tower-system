@@ -15,7 +15,7 @@ var ReportCenterComponent = new (function () {
        
         {
             type: "select",
-            api_fetch: `${main_view.base_url}/api/reports/options-receiver`,
+            api_fetch: `${main_view.base_url}/hr/reports/options-receiver`,
             api_params: {},
             name: "receiver_uid",
             value_field: "id",
@@ -46,6 +46,16 @@ var ReportCenterComponent = new (function () {
             type: "select",
             api_fetch: `${main_view.base_url}/hr/form-option`,
             api_params: {},
+            name: "employee_id",
+            value_field: "id",
+            text_field: "employee_name",
+            required: false,
+            dot_object: "employees",
+        },
+        {
+            type: "select",
+            api_fetch: `${main_view.base_url}/hr/form-option`,
+            api_params: {},
             name: "payroll_id",
             value_field: "id",
             text_field: "payroll_name",
@@ -62,66 +72,7 @@ var ReportCenterComponent = new (function () {
             required: false,
             dot_object: "emp_types",
         },
-        {
-            type: "select",
-            api_fetch: `${main_view.base_url}/api/form-option`,
-            api_params: {},
-            name: "to_campus_id",
-            value_field: "id",
-            text_field: "campus",
-            required: false,
-            dot_object: "campuses",
-        },
-        {
-            type: "select",
-            api_fetch: `${main_view.base_url}/api/form-option`,
-            api_params: {},
-            name: "fee_type_id",
-            value_field: "id",
-            text_field: "name",
-            required: false,
-            dot_object: "non_fee_types",
-        },
-        {
-            type: "select",
-            api_fetch: `${main_view.base_url}/api/form-option`,
-            api_params: {},
-            name: "level_id",
-            value_field: "id",
-            text_field: "level",
-            required: false,
-            dot_object: "levels",
-        },
-        {
-            type: "select",
-            api_fetch: `${main_view.base_url}/api/form-option`,
-            api_params: {},
-            name: "leave_type_id",
-            value_field: "id",
-            text_field: "name",
-            required: false,
-            dot_object: "leave_types",
-        },
-        {
-            type: "select",
-            api_fetch: `${main_view.base_url}/api/form-option`,
-            api_params: {},
-            name: "student_id",
-            value_field: "id",
-            text_field: "name",
-            required: false,
-            dot_object: "students",
-        },
-        {
-            type: "select",
-            api_fetch: `${main_view.base_url}/api/form-option`,
-            api_params: {},
-            name: "request_type_id",
-            value_field: "id",
-            text_field: "name",
-            required: false,
-            dot_object: "request_type",
-        },
+        
         {
             type: "date",
             name: "start_date",
@@ -200,38 +151,39 @@ var ReportCenterComponent = new (function () {
                         </div>
                         <div class="d-flex col-lg-6">
                             <div class="gy-2 w-100 h-100">
-                                <div id="" class="bg-white border border-info h-100 rounded-3 col-sm-12 col-md-12 col-lg-12 col-xl-12">
-                                    <h6 class="text-uppercase w-50 mt-4 mx-auto text-center" style="color:#eccf67;">Veiw Report History</h6>
-                                    <div class="container w-50 mx-auto d-flex align-items-center">
-                                        <i class="fa-solid fa-magnifying-glass fs-5" style="cursor: pointer; margin-right: -60px; z-index: 9;"></i>
-                                    <input type="text" class=" rounded-5 py-2 ps-5 box-shadow-dark product-search"
-                                        placeholder="Search report...">
-                                    </div>
+                                <div class="bg-white border d-flex justify-content-center border-info h-100">
+                                    <div id="" class=" my-auto rounded-3 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                                        <h6 class="text-uppercase w-50 mt-4 mx-auto fs-4 text-center" style="color:#eccf67;">Veiw Report History</h6>
+                                        <div class="container w-50 mx-auto d-flex align-items-center">
+                                            <i class="fa-solid fa-magnifying-glass fs-5" style="cursor: pointer; margin-right: -70px; z-index: 9;"></i>
+                                        <input type="text" class=" rounded-5 py-2 ms-4 ps-5 box-shadow-dark product-search"
+                                            placeholder="Search report...">
+                                        </div>
 
-                                    <div class="row w-75 mx-auto my-3">
-                                        <div class="col-lg-3">
-                                            <div class="border p-4 rounded-4 text-center">
-                                                <span class="p-2 border rounded-5"> E </span>
+                                        <div class="row w-75 mx-auto my-3">
+                                            <div class="col-lg-3">
+                                                <div class="border p-4 rounded-4 text-center">
+                                                    <span class="p-2 border rounded-5"> E </span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <div class="border p-4 rounded-4 text-center">
-                                                <span class="p-2 border rounded-5"> E </span>
+                                            <div class="col-lg-3">
+                                                <div class="border p-4 rounded-4 text-center">
+                                                    <span class="p-2 border rounded-5"> E </span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <div class="border p-4 rounded-4 text-center">
-                                                <span class="p-2 border rounded-5"> E </span>
+                                            <div class="col-lg-3">
+                                                <div class="border p-4 rounded-4 text-center">
+                                                    <span class="p-2 border rounded-5"> E </span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="col-lg-3">
-                                            <div class="border p-4 rounded-4 text-center">
-                                                <span class="p-2 border rounded-5"> E </span>
+                                            <div class="col-lg-3">
+                                                <div class="border p-4 rounded-4 text-center">
+                                                    <span class="p-2 border rounded-5"> E </span>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
                             </div>
                         </div>
 
@@ -305,7 +257,6 @@ var ReportCenterComponent = new (function () {
         d = d || [];
         let html = null;
         d.map((item) => {
-            console.log(3434,item)
             const filter = JSON.stringify(item.params).replace(/\"/g, "'");
             html = [
                 html,
@@ -344,6 +295,7 @@ var ReportCenterComponent = new (function () {
             inner_html = null;
         if (p.param) {
             const values = p.param.split("|");
+            console.log(2222,JSON.stringify(values));
             // Trim whitespace from each value (optional, but recommended)
             const param = values.map((value) => value.trim());
             param.map((item) => {
@@ -436,7 +388,6 @@ var ReportCenterComponent = new (function () {
 
         div.html(html);
         mThis.renderSelect(div, p.code);
-        
         mThis.runReport(div, p.code);
 
         div.find("[data-select='datepicker']").each(function () {
@@ -470,8 +421,6 @@ var ReportCenterComponent = new (function () {
     this.renderSelect = (div, code = null) => {
         mThis.options.params.map((item, index, array) => {
             let data = [];
-            
-            
             vsapi.call(item.api, item.param, null, false).then((res) => {
                 console.log(2222,res);
 
@@ -536,6 +485,13 @@ var ReportCenterComponent = new (function () {
                 }
             });
         });
+        if (mThis.options.params.length == 0) {
+            setTimeout(() => {
+                const btn = div[0].querySelector("#_rpt_btn_report");
+                if (btn) btn.click();
+                console.log(111);
+            }, 300);
+        }
     };
 
     this.getDataFilter = (div = null) => {
@@ -655,54 +611,39 @@ var ReportCenterComponent = new (function () {
             case "payroll_list_by_name":
                 end_point = "hr/reports/employee/list-by-branch";
                 break;
-            // case "referral":
-            //     end_point = "api/reports/finance/referral-fee-list";
-            //     break;
-            // case "non_tuition_fee":
-            //     end_point = "api/reports/finance/non-tuition-fee-list";
-            //     break;
-            // case "income_by_category":
-            //     end_point = "api/reports/finance/income-by-categories";
-            //     break;
-            // case "deposit":
-            //     end_point = "api/reports/finance/deposite-list";
-            //     break;
-            // case "payment_by_month":
-            //     end_point = "api/reports/finance/total-by-month";
-            //     break;
-            // case "payment_by_year":
-            //     end_point = "api/reports/finance/total-by-year";
-            //     break;
-            // case "total_student_payment_history":
-            //     end_point = "api/reports/finance/total-student-payment-history";
-            //     break;
-            // case "total_payment_history_by_year":
-            //     end_point = "api/reports/finance/total-payment-history-year";
-            //     break;
-            // case "leave_students":
-            //     end_point = "api/reports/enrollment/dropped-out-students";
-            //     break;
-            // case "comeback_student":
-            //     end_point = "api/reports/enrollment/comeback-students";
-            //     break;
-            // case "school_fee":
-            //     end_point = "api/reports/finance/school-fee-list";
-            //     break;
-            // case "student_payment_history":
-            //     end_point = "api/reports/finance/student-payment-history";
-            //     break;
-            // case "income_by_class":
-            //     end_point = "api/reports/finance/income-by-class";
-            //     break;
-            // case "transferred_in_student_by_campus":
-            //     end_point = "api/reports/enrollment/request-change";
-            //     break;
-            // case "cross_year_payment":
-            //     end_point = "api/reports/finance/cross-year-payment";
-            //     break;
-            // case "upgrade_fees":
-            //     end_point = "api/reports/finance/upgrade-fee";
-            //     break;
+            case "attendance_report":
+                end_point = "hr/reports/employee/attendance-report";
+                break;
+            case "attendance_summary":
+                end_point = "hr/reports/employee/attendance-summary";
+                break;
+            case "payroll_expenses_by_month":
+                end_point = "hr/reports/employee/payroll-expenses-by-month";
+                break;
+            case "payroll_list":
+                end_point = "hr/reports/employee/payroll-list";
+                break;
+            case "employee_benefits_report":
+                end_point = "hr/reports/employee/employee-benefits-report";
+                break;
+            case "employee_account_report":
+                end_point = "hr/reports/employee/employee-account-report";
+                break;
+            case "for_each_account":
+                end_point = "hr/reports/employee/for-each-account";
+                break;
+            case "wallet_account_list":
+                end_point = "hr/reports/employee/wallet-account-list";
+                break;
+            case "payslip_print":
+                end_point = "hr/reports/employee/payslip-print";
+                break;
+            case "employee_movement_report":
+                end_point = "hr/reports/employee/employee-movement-report";
+                break;
+            case "print_employee_CV":
+                end_point = "hr/reports/employee/print-employee-cv";
+                break;
             default:
                 end_point = null;
                 break;
@@ -717,6 +658,8 @@ var ReportCenterComponent = new (function () {
             Object.keys(p).forEach((key) => {
                 if (p[key] === "null") p[key] = null;
             });
+
+            console.log(JSON.stringify(end_point));
             console.log(JSON.stringify(p,null,2));
             vsapi
                 .call(`${main_view.base_url}/${end_point}`, p, null, false)
@@ -739,8 +682,8 @@ var ReportCenterComponent = new (function () {
                             case "simple":
                                 jsonToTable(containerTable, d);
                                 break;
-                            case "referral":
-                                referralFeeTable(containerTable, d);
+                            case "attendance_report":
+                                emploteeAttendance(containerTable, d);
                                 break;
                                 
                             case "school_fee":
