@@ -21,11 +21,73 @@ class Dashboard
         return (object)[
             'doughnutChart'=>self::countEmployeeByType(0,$ss),
             'cards'=>$cards,
-            'barCharts'=>self::getMovementCountForPieChart($ss),
+            'barCharts'=>self::getEmployeeDataForBarChart($ss),
             'pieCharts'=>self::getTotalStaffComparison($ss),
             'onLeave'=>self::getLevels($arr,$ss)
         ];
     }
+    static function getCards($arr, $ss) {
+        $d = (object) $arr;
+        $back_days = isset($d->back_days) ? $d->back_days : -90;
+        $from_date = convertDate(Carbon::now()->addDays($back_days));
+        $dateField = DBX::convertToDate('e.joining_date');
+        $moreWhere = $dateField . " >= '" . $from_date . "'";
+    
+        $rows = DB::table('employees AS e')
+            ->leftJoin('resignations AS r', 'e.id', '=', 'r.emp_id')  
+            ->whereRaw($moreWhere)
+            ->select('e.status_id', 'e.emp_type_id', 'e.branch_id', 'e.joining_date', 'r.resign_date', 'r.effective_date')
+            ->orderByRaw("e.joining_date ASC")
+            ->get();
+    
+        $new_staff_count = 0;
+        $resigned_staff_count = 0;
+        $resigning_staff_count = 0;  
+        $probation_staff_count = 0;
+    
+        foreach ($rows as $row) {
+            // New staff
+            if ($row->status_id == 10) {
+                $new_staff_count++;
+            }
+            // Resigned staff (check if the resign_date is less than or equal to today)
+            elseif ($row->status_id == 20 && $row->resign_date <= Carbon::now()) {
+                $resigned_staff_count++;
+            }
+            // Resigning staff (check if the resign_date is in the future)
+            elseif ($row->status_id == 20 && $row->resign_date > Carbon::now()) {
+                $resigning_staff_count++;
+            }
+            // Probation staff
+            if ($row->emp_type_id == 2) {
+                $probation_staff_count++;
+            }
+        }
+    
+        return (object) [
+            'new_staff_count' => (object) [
+                'count' => $new_staff_count,
+                'title' => 'New Staff',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ],
+            'resigned_staff_count' => (object) [
+                'count' => $resigned_staff_count,
+                'title' => 'Resigned',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ],
+            'resigning_staff_count' => (object) [
+                'count' => $resigning_staff_count,
+                'title' => 'Resigning',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ],
+            'probation_staff_count' => (object) [
+                'count' => $probation_staff_count,
+                'title' => 'Probation',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ],
+        ];
+    }
+    
     static function countEmployeeByType($arr, $ss){
         $branch_id = $ss->branch_id;
         $back_days = -90;
@@ -103,99 +165,49 @@ class Dashboard
     
   
     
-    static function getCards($arr, $ss) {
-        $d = (object) $arr;
-        $back_days = isset($d->back_days) ? $d->back_days : -90;
-        $from_date = convertDate(Carbon::now()->addDays($back_days));
-        $dateField = DBX::convertToDate('e.joining_date');
-        $moreWhere = $dateField . " >= '" . $from_date . "'";
-        
-        $rows = DB::table('employees AS e')
-            ->whereRaw($moreWhere)
-            ->select('e.status_id', 'e.emp_type_id', 'e.branch_id', 'e.joining_date')
-            ->orderByRaw("e.joining_date ASC")
-            ->get();
-        
-        $new_staff_count = 0;
-        $resigned_staff_count = 0;
-        $probation_staff_count = 0;
-        $warning_staff_count = DB::table('emp_warnings')->count();
-        
-        foreach ($rows as $row) {
-            if ($row->status_id == 10) {
-                $new_staff_count++;
-            } elseif ($row->status_id == 20) {
-                $resigned_staff_count++;
-            }
+  
     
-            if ($row->emp_type_id == 2) {
-                $probation_staff_count++;
-            }
+    
+    public static function getEmployeeDataForBarChart($ss)
+    {
+        $start_date = Carbon::now()->subMonths(6)->startOfMonth()->format('Y-m-d');
+        $end_date = Carbon::now()->endOfMonth()->format('Y-m-d');
+    
+        $data = DB::table('employees AS e')
+            ->selectRaw('
+                DATE_FORMAT(e.joining_date, "%Y-%m") AS month,
+                COUNT(e.id) AS employee_count,
+                SUM(e.salary) AS total_salary
+            ')
+            ->whereBetween('e.joining_date', [$start_date, $end_date])
+            ->groupBy('month')
+            ->orderBy('month')
+            ->get();
+    
+        $labels = [];
+        $employee_counts = [];
+        $total_salaries = [];
+    
+        foreach ($data as $item) {
+            // Convert "2024-01" to "Jan 2024"
+            $month_name = Carbon::createFromFormat('Y-m', $item->month)->format('M Y');
+            $labels[] = $month_name;
+            $employee_counts[] = $item->employee_count;
+            $total_salaries[] = $item->total_salary;
         }
         
-        return (object) [
-            'new_staff_count' => (object) [
-                'count' => $new_staff_count,
-                'title' => 'New Staff',
-                'subTitle' => 'Last ' . abs($back_days) . ' days'
-            ],
-            'resigned_staff_count' => (object) [
-                'count' => $resigned_staff_count,
-                'title' => 'Resigned Staff',
-                'subTitle' => 'Last ' . abs($back_days) . ' days'
-            ],
-            'probation_staff_count' => (object) [
-                'count' => $probation_staff_count,
-                'title' => 'Staff in Probation',
-                'subTitle' => 'Last ' . abs($back_days) . ' days'
-            ],
-            'warning_staff_count' => (object) [
-                'count' => $warning_staff_count,
-                'title' => 'Staff in Warning',
-                'subTitle' => 'Current warnings'
-            ]
+    
+        // Return the data for the bar chart
+        return (object)[
+            'title' => 'Employee Count and Total Salary Paid in the Last 6 Months',
+            'labels' => $labels,
+            'employee_counts' => $employee_counts,
+            'total_salaries' => $total_salaries
         ];
     }
     
     
-    public static function getMovementCountForPieChart($ss)
-{
-    $back_days = -90;
-    $start_date = Carbon::now()->addDays($back_days)->format('Y-m-d');
-
     
-    $movements = DB::table('emp_events  AS em')
-        ->join('events AS mt', 'em.event_id', '=', 'mt.id')
-        ->whereRaw('DATE(em.event_date) >= ?', [$start_date])
-        ->selectRaw('
-            mt.name AS movement_type,
-            COUNT(em.id) AS movement_count
-        ')
-        ->groupBy('mt.name')
-        ->get();
-
-    $labels = [];
-    $values = [];
-    $colors = [];
-
-    // Define some colors for the pie chart segments
-    $base_colors = ['#ff9999', '#66b3ff', '#99ff99', '#ffcc99', '#c2c2f0'];
-
-    // Populate labels, values, and colors
-    foreach ($movements as $index => $movement) {
-        $labels[] = $movement->movement_type; // Movement type (e.g., Promotion, Demotion)
-        $values[] = $movement->movement_count; // Count of movements for that type
-        $colors[] = $base_colors[$index % count($base_colors)]; // Cycle through colors
-    }
-
-    // Return the data for the pie chart
-    return (object)[
-        'title' => 'Employee Movements in the Last 3 Months',
-        'labels' => $labels,
-        'values' => $values,
-        'colors' => $colors
-    ];
-}
 function getLevels($arr, $ss)
 {
     $subs_id = $ss->subs_id ?? null;

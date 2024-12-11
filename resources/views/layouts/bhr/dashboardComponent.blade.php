@@ -1,21 +1,55 @@
-<div id="_main_dashboardComponent" style="display:none;padding:20px;">
-    <div class="dbChart_all_top" id="dbChart_all_top">
+<div id="_main_dashboardComponent" style="display:none;">
+    <div class="dbChart_all_top mt-3 px-2" id="dbChart_all_top">
     </div>
     <div class="db_cards">
-        <div class="row" style="" id="db_cards">
+        <div class="row px-3 pb-3" style="" id="db_cards">
         </div>
     </div>
     <!-- <div class="dashboard_center" id="_dashboard_center">
     </div> -->
     <div class="dashboard_bottom" id="_dashboard_bottom">
-        <div class="bottom_right" id="_dashboard_center">
-        </div>
-        <div class="bottom_right" id="_db_card_onLeave">
+        <div class="bottom_left" id="_db_card_onLeave">
         </div>
     </div>
 </div>
 
 <style>
+    .l-bg-cherry {
+    background: linear-gradient(to right, #493240, #f09) !important;
+    color: #fff;
+}
+
+    .chart-row {
+    display: flex;
+    flex-direction: roe;
+    gap: 5px;
+    min-height: 340px;
+    align-items: stretch; /* Ensures all children are the same height */
+}
+
+.chart-container {
+    flex: 1; /* All DIVs get equal width */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid #ddd; /* Optional styling */
+    background: #f9f9f9; /* Optional styling */
+    height: 100%; /* Prevents overflow */
+}
+.dashboard_chart {
+        
+        box-shadow: 0px 0px 5px rgba(66, 66, 66, 0.255);
+        align-items: center;
+        background-color: #c6c6c62e;
+    }
+
+canvas {
+    max-width: 100%;
+    height: auto; /* Maintains aspect ratio */
+}
+    
     #_main_dashboardComponent {
         display: flex;
         flex-direction: column;
@@ -50,11 +84,10 @@
 
 
 
-    .bottom_right {
+    .bottom_left {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: space-between;
         background-color: #dce5e5;
         width: 50%;
         height: 300px;
@@ -70,30 +103,22 @@
 
     }
 
-    .em_departement {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        flex-direction: column;
-        background-color: #E1ECF7;
 
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
-    }
-
-    .dashboard_chart {
-        display: flex;
-        box-shadow: 0px 0px 10px rgba(66, 66, 66, 0.255);
-        flex-direction: column;
-        align-items: center;
-        /* justify-content: space-between; */
-        background-color: #dce5e5;
-        width: 100%;
-        height: 340px;
-        padding: 10px;
-        border-radius: 20px;
-    }
    
+/* Icon size control */
+.img--size {
+    width: 40px;
+    height: 40px;
+}
+
+/* Card body adjustments */
+.card-body {
+    padding: 1rem;
+}
+
+
+
+
+
 
 </style>
