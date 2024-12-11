@@ -185,17 +185,14 @@ class Skill
         }
     function delete($id, $ss)
     {
-        // Ensure $id is numeric and valid
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }
 
-        // Ensure $ss contains necessary data
         if (!isset($ss->branch_id) || !isset($ss->subs_id)) {
             return DV::error('Invalid session data');
         }
 
-        // Retrieve the file name associated with the meper
         $file_name = DB::table('skills as s')
             ->where('s.id', $id)
             ->take(1)
@@ -205,7 +202,6 @@ class Skill
         }
         DB::table('skills as s')->where('s.id', $id)->update(['image_file_name' => null]);
 
-        // Proceed to delete the meper from the database
         $query = DB::table('skills')
             ->where('id', $id)
             ->where('branch_id', $ss->branch_id)
@@ -214,12 +210,10 @@ class Skill
         if ($count_member > 0) {
             DB::table('skills')->update(['count_member' => $count_member]);
         }
-        // Check if the query was successful
         if (!$query) {
             return DV::error('Skill not found or not deleted');
         }
 
-        // Return success response
         return DV::depends(1, ['id' => $id, 'deleted' => $file_name ?? 'No file found']);
     }
 

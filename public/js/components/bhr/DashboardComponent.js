@@ -9,7 +9,7 @@ var DashboardComponent = new (function () {
     this.dbChartAll = mThis.self.querySelector('#dbChart_all_top');
     this.dbCards = this.self.querySelector('#db_cards');
     this.dashboard_center = mThis.self.querySelector('#_dashboard_center');
-    this.dashboard_Bottom  = mThis.self.querySelector('#_dashboard_bottom');
+    this.dashboard_Bottom = mThis.self.querySelector('#_dashboard_bottom');
     this.dashboard_Bottom_left = mThis.self.querySelector('#_dashboard_bottom_left');
     this.dbCardOnLeave = mThis.self.querySelector('#_db_card_onLeave');
     this.barchart = mThis.self.querySelector('#barchart');
@@ -24,20 +24,20 @@ var DashboardComponent = new (function () {
             })
             .replace(/,/g, ' ');
     };
- 
+
     // *** When DashboardComponent is showing, create Dashboard Filter button near page title 
-    this.onShow =  (options)=> {
+    this.onShow = (options) => {
         mThis.dbFilterConfig = null; //reset Dashboard filter config to null to ensure Clean memory
         const divTitle = main_view.divTitle;
-       let btn = divTitle.querySelector('.btn-db-fitler');
-       if(btn) return;   
-         divTitle.insertAdjacentHTML('beforeend','<div class="div-db-filter"><button class="btn-db-fitler btn btn-sm btn-primary"><i class="fa fa-list"></i></button></div>');
-         btn = divTitle.querySelector('.btn-db-fitler');
-         mThis.createFilterButton(btn);
+        let btn = divTitle.querySelector('.btn-db-fitler');
+        if (btn) return;
+        divTitle.insertAdjacentHTML('beforeend', '<div class="div-db-filter"><button class="btn-db-fitler btn btn-sm btn-primary"><i class="fa fa-list"></i></button></div>');
+        btn = divTitle.querySelector('.btn-db-fitler');
+        mThis.createFilterButton(btn);
     };
- 
-   // *** When DashboardComponent is closing, remove Dashboard Filter button near page title
-    this.onHide = (options)=>{
+
+    // *** When DashboardComponent is closing, remove Dashboard Filter button near page title
+    this.onHide = (options) => {
         mThis.removeFilterButton();
     }
 
@@ -46,33 +46,33 @@ var DashboardComponent = new (function () {
         mThis.initAlready = true;
     }
 
-    this.removeFilterButton = ()=>{
-        const divTitle = main_view.divTitle; 
+    this.removeFilterButton = () => {
+        const divTitle = main_view.divTitle;
         const div = divTitle.querySelector('div.div-db-filter');
-        if(div) div.remove();
+        if (div) div.remove();
     };
 
     this.createFilterButton = (btn) => {
         mThis.filterConfig = null;
         mThis.filterConfig = new FilterPanel(
-        {
-                "triggerButton":btn,
-                fields:[
-                   {
-                    "name":"year",
-                    "label":"Year",
-                    "valueField":"year",
-                    "textField":"year",
-                    "defaultValue":2024,
-                    "data":[{"year":2024}, {"year":2025}]
-                   },
-                   {
-                    "name":"month",
-                    "label":"Month",
-                    // "valueField":"value",
-                    // "textField":"label",
-                    "data":[{"value":"this_month","label":"This month"}, {"value":"last_month","label":"Last month"}],
-                   }
+            {
+                "triggerButton": btn,
+                fields: [
+                    {
+                        "name": "year",
+                        "label": "Year",
+                        "valueField": "year",
+                        "textField": "year",
+                        "defaultValue": 2024,
+                        "data": [{ "year": 2024 }, { "year": 2025 }]
+                    },
+                    {
+                        "name": "month",
+                        "label": "Month",
+                        // "valueField":"value",
+                        // "textField":"label",
+                        "data": [{ "value": "this_month", "label": "This month" }, { "value": "last_month", "label": "Last month" }],
+                    }
                 ],
                 // "createContent":()=>{
                 //     return [
@@ -88,67 +88,114 @@ var DashboardComponent = new (function () {
                 //         '</div>',
                 //     ].join('');
                 // },
-               contentCreated:(me)=>{
-                  console.log('Filter Content created! ', me.controls);
-               },
-               onSelect: (me, data)=>{
-                 console.log('selected data is  : ',data);
-               } 
-        });
+                contentCreated: (me) => {
+                    console.log('Filter Content created! ', me.controls);
+                },
+                onSelect: (me, data) => {
+                    console.log('selected data is  : ', data);
+                }
+            });
     }
 
     this.renderDBChartAllTop = (data) => {
         data = data ? data : {};
         let onLeaveHtml = this.renderDBOnLeave(data);
         let html = `
-        <div class="render_chart">
-            <div class="row py-3">
+            <div class="chart-row py-3">
                 <div class="col-md-3">
-                    <div class="card dashboard_chart">
-                    <span class="fw-semibold fs-5 text-primary-custom text-capitalize" style="color:">${data.doughnutChart.title}</span>
+                    <div class="chart-container dashboard_chart ">
+                        <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
+                            ${data.doughnutChart.title}
+                        </span>
                         <canvas id="doughnutChart"></canvas>
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div class="card dashboard_chart">
-                        <span class="fw-semibold fs-5 text-primary-custom text-capitalize" style="color:">Monthly Employee Salary Overview</span>
+                    <div class="chart-container dashboard_chart">
+                        <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
+                            Monthly Employee Salary Overview
+                        </span>
                         <canvas id="employeeSalaryChart"></canvas>
                     </div>
                 </div> 
                 <div class="col-md-3">
-                    <div class="card shadow-sm border-0 rounded-3">
-                        <div class="card-body d-flex flex-column align-items-center">
-                            <div class="card-title text-center mb-2">
-                                <p class="fs-6  mb-0" style="color:#cab54a;">${data.cards.new_staff_count.title}</p>
-                                <h3 class="fs-3 text-primary-custom">${data.cards.new_staff_count.count}</h3>
+                    <div class="chart-container dashboard_chart  shadow-sm" style="max-width: 21rem;">
+                        <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #23232f29;">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-icon pt-3 px-3">
+                                    <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
+                                </div>
+                                <div class="ms-3 text-center flex-fill">
+                                    <span class="fw-semibold fs-4 text-danger">0</span>
+                                    <div class="text-muted">Total New Staff</div>
+                                </div>
                             </div>
-                            <div class="bg--icon bg--icon-new-employee-count">
-                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="">
-                            </div>
-                            <div class="mt-3 text-center">
-                                <p class="fs-7 text-muted">${data.cards.new_staff_count.subTitle}</p>
+                            <div class="text-center mt-auto">
+                                <small class="text-muted">Last 90 days</small>
                             </div>
                         </div>
+                        <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #23232f29;">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-icon pt-3 px-3">
+                                    <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
+                                </div>
+                                <div class="ms-3 text-center flex-fill">
+                                    <span class="fw-semibold fs-4 text-danger">0</span>
+                                    <div class="text-muted">Total New Staff</div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-auto">
+                                <small class="text-muted">Last 90 days</small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #23232f29;">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-icon pt-3 px-3">
+                                    <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
+                                </div>
+                                <div class="ms-3 text-center flex-fill">
+                                    <span class="fw-semibold fs-4 text-danger">0</span>
+                                    <div class="text-muted">Probation Staff</div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-auto">
+                                <small class="text-muted">Last 90 days</small>
+                            </div>
+                        </div>
+
+                        <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 " style="background-color: #23232f29;">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-icon pt-3 px-3">
+                                    <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
+                                </div>
+                                <div class="ms-3 text-center flex-fill">
+                                    <span class="fw-semibold fs-4 text-danger">0</span>
+                                    <div class="text-warning">Resigned Staff</div>
+                                </div>
+                            </div>
+                            <div class="text-center mt-auto">
+                                <small class="text-muted">Last 90 days</small>
+                            </div>
+                        </div>
+
                     </div>
-                    
                 </div>
-
-
             </div>
-            
-        </div>
         `;
         mThis.dbChartAll.innerHTML = html;
         mThis.renderChartEmployee(data.doughnutChart);
-        mThis.employeeSalaryChart();
+        mThis.employeeSalaryChart(data.barCharts);
+        // mThis.renderCompareChart(data.pieCharts);
     };
     
 
+
     this.renderChartEmployee = (data) => {
         data = data ? data : {};
-    
+
         const ctx = document.getElementById('doughnutChart').getContext('2d');
-    
+
         new Chart(ctx, {
             type: 'doughnut',
             data: {
@@ -162,6 +209,7 @@ var DashboardComponent = new (function () {
             },
             options: {
                 responsive: true,
+                maintainAspectRatio: true,
                 plugins: {
                     legend: {
                         position: 'top',
@@ -185,15 +233,13 @@ var DashboardComponent = new (function () {
     };
     this.employeeSalaryChart = (data) => {
         const ctx = document.getElementById('employeeSalaryChart').getContext('2d');
-    
-       
-    
+
         const employeeSalaryData = {
-            labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'],
+            labels: data.labels,
             datasets: [
                 {
                     label: 'Total Employees',
-                    data: [10, 12, 14, 15, 16, 18, 20, 22, 24, 25, 28, 30], 
+                    data: data.employee_counts,
                     backgroundColor: '#2b3991',
                     borderColor: '#fff',
                     borderWidth: 1,
@@ -201,7 +247,7 @@ var DashboardComponent = new (function () {
                 },
                 {
                     label: 'Total Salary Paid ($)',
-                    data: [10000, 12000, 14000, 15000, 16000, 18000, 20000, 22000, 24000, 25000, 28000, 30000],
+                    data: data.total_salaries,
                     backgroundColor: '#cab54a',
                     borderColor: '#fff',
                     borderWidth: 1,
@@ -209,7 +255,7 @@ var DashboardComponent = new (function () {
                 },
             ],
         };
-    
+
         const config = {
             type: 'bar',
             data: employeeSalaryData,
@@ -221,7 +267,7 @@ var DashboardComponent = new (function () {
                     },
                     title: {
                         display: true,
-                        text: 'Employee Count and Total Salary Paid',
+                        text: 'Employee Count and Total Salary Paid in the Last 6 Months',
                     },
                 },
                 scales: {
@@ -239,131 +285,142 @@ var DashboardComponent = new (function () {
                         title: {
                             display: true,
                             text: 'Salary in USD ($)',
-                            color: '#cab54a', // Set title color to blue
+                            color: '#cab54a',
                         },
                         ticks: {
                             color: '#2b3991',
                         },
                         grid: {
-                            drawOnChartArea: false, // Prevents grid lines overlapping with the left axis
+                            drawOnChartArea: false,
                         },
                     },
-                    
                 },
             },
         };
-    
-        new Chart(ctx, config);
-        
-    
-       
-    };
-    
 
-    this.renderCompareChart = (data) => {
-        const ctx = document.getElementById('compareChart').getContext('2d');
-    
-        new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: data.labels,
-                datasets: [{
-                    label: data.title || 'Data', 
-                    data: data.values || [],
-                    backgroundColor: data.colors || '#3795E0', 
-                    borderColor: data.borderColors || '#fff',
-                    borderWidth: data.borderWidth || 1 
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: {
-                        position: 'top',
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(tooltipItem) {
-                                return `${tooltipItem.label}: ${tooltipItem.raw}`;
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        
+        new Chart(ctx, config);
     };
+
+
+
+    // this.renderCompareChart = (data) => {
+    //     const ctx = document.getElementById('compareChart').getContext('2d');
+
+    //     new Chart(ctx, {
+    //       type: 'bar',
+    //       data: {
+    //         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+    //         datasets: [
+    //           {
+    //             label: 'Completed',
+    //             data: [20, 40, 60, 80, 100, 120],
+    //             backgroundColor: 'rgba(54, 162, 235, 0.8)',
+    //           },
+    //           {
+    //             label: 'Remaining Target',
+    //             data: [20, 40, 60, 80, 60, 40],
+    //             backgroundColor: 'rgba(75, 192, 192, 0.8)',
+    //           },
+    //         ],
+    //       },
+    //       options: {
+    //         plugins: {
+    //           title: {
+    //             display: true,
+    //             text: 'Performance Comparison (Completed vs Remaining Targets)',
+    //             color: '#fff',
+    //             font: {
+    //               size: 16,
+    //             },
+    //           },
+    //           legend: {
+    //             labels: {
+    //               color: '#fff',
+    //             },
+    //           },
+    //         },
+    //         scales: {
+    //           x: {
+    //             stacked: true,
+    //             ticks: {
+    //               color: '#fff',
+    //             },
+    //           },
+    //           y: {
+    //             stacked: true,
+    //             beginAtZero: true,
+    //             ticks: {
+    //               color: '#fff',
+    //             },
+    //           },
+    //         },
+    //         responsive: true,
+    //         maintainAspectRatio: false,
+    //       },
+    //     });
+    // };
+
     this.renderDBCards = (data) => {
         let html = `
-                <div class="col-md-3 mb-4">
-                    <div class="card shadow-sm border-0 rounded-3">
-                        <div class="card-body d-flex flex-column align-items-center">
-                            <div class="card-title text-center mb-2">
-                                <p class="fs-6  mb-0" style="color:#cab54a;">${data.new_staff_count.title}</p>
-                                <h3 class="fs-3 text-primary-custom">${data.new_staff_count.count}</h3>
+            <div class="row">
+                <div class="col-xl-6 col-lg-6">
+                    <div class="card shadow-sm border-0 rounded-3 l-bg-cherry">
+                        <div class="card-statistic-3 p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="card-icon card-icon-large me-3 text-white bg-danger d-flex justify-content-center align-items-center rounded-circle" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-shopping-cart fs-4"></i>
+                                </div>
+                                <div class="flex-fill">
+                                    <h5 class="card-title mb-0 text-muted">For Warning wallet and payroll </h5>
+                                </div>
                             </div>
-                            <div class="bg--icon bg--icon-new-employee-count">
-                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="">
+                            <div class="row align-items-center mb-2 d-flex">
+                                <div class="col-8">
+                                    <h2 class="mb-0 text-primary">3,243</h2>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <span class="text-success fw-bold">12.5% <i class="fa fa-arrow-up"></i></span>
+                                </div>
                             </div>
-                            <div class="mt-3 text-center">
-                                <p class="fs-7 text-muted">${data.new_staff_count.subTitle}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                    <div class="col-md-3 mb-4">
-                    <div class="card shadow-sm border-0 rounded-3">
-                        <div class="card-body bg-white d-flex flex-column align-items-center">
-                            <div class="card-title text-center mb-2">
-                                <p class="fs-6 mb-0" style="color:#cab54a;">${data.probation_staff_count.title}</p>
-                                <h3 class="fs-3 text-primary-custom">${data.probation_staff_count.count}</h3>
-                            </div>
-                            <div class="bg--icon bg--icon-new-enrollments">
-                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation_staff.svg" alt="">
-                            </div>
-                            <div class="mt-3 text-center">
-                                <p class="fs-7 text-muted">${data.probation_staff_count.subTitle}</p>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-cyan" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                     <div class="col-md-3 mb-4">
-                    <div class="card shadow-sm  border-0 rounded-3">
-                        <div class="card-body bg-white d-flex flex-column align-items-center">
-                            <div class="card-title text-center mb-2">
-                                <p class="fs-6 mb-0" style="color:#cab54a;">${data.resigned_staff_count.title}</p>
-                                <h3 class="fs-3 text-primary-custom">${data.resigned_staff_count.count}</h3>
+                <div class="col-xl-6 col-lg-6">
+                    <div class="card shadow-sm border-0 rounded-3 l-bg-cherry">
+                        <div class="card-statistic-3 p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="card-icon card-icon-large me-3 text-white bg-danger d-flex justify-content-center align-items-center rounded-circle" style="width: 60px; height: 60px;">
+                                    <i class="fas fa-shopping-cart fs-4"></i>
+                                </div>
+                                <div class="flex-fill">
+                                    <h5 class="card-title mb-0 text-muted">For Warning wallet and payroll</h5>
+                                </div>
                             </div>
-                            <div class="bg--icon bg--icon-special-discount">
-                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="">
+                            <div class="row align-items-center mb-2 d-flex">
+                                <div class="col-8">
+                                    <h2 class="mb-0 text-primary">3,243</h2>
+                                </div>
+                                <div class="col-4 text-end">
+                                    <span class="text-success fw-bold">12.5% <i class="fa fa-arrow-up"></i></span>
+                                </div>
                             </div>
-                            <div class="mt-3 text-center">
-                                <p class="fs-7 text-muted">${data.resigned_staff_count.subTitle}</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                     <div class="col-md-3 mb-4">
-                    <div class="card shadow-sm border-0 rounded-3">
-                        <div class="card-body d-flex flex-column align-items-center">
-                            <div class="card-title text-center mb-2">
-                                <p class="fs-6 mb-0" style="color:#cab54a;">${data.warning_staff_count.title}</p>
-                                <h3 class="fs-3 text-primary-custom">${data.warning_staff_count.count}</h3>
-                            </div>
-                            <div class="bg--icon bg--icon-unpaid-student-count">
-                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="">
-                            </div>
-                            <div class="mt-3 text-center">
-                                <p class="fs-7 text-muted">${data.warning_staff_count.subTitle}</p>
+                            <div class="progress mt-2" style="height: 8px;">
+                                <div class="progress-bar bg-cyan" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
                             </div>
                         </div>
                     </div>
                 </div>
+                
+            </div>
         `;
     
         this.dbCards.innerHTML = html;
     };
     
+
     this.renderDBOnLeave = (data) => {
         const rowsHtml = (data.onLeave || [])
             .map(
@@ -406,34 +463,7 @@ var DashboardComponent = new (function () {
             </div>
         `;
     };
-    this.renderDashboardCenter = data => {
 
-
-
-        // let rowsHtml = data.department_data
-        //   .map(department => `
-        //     <tr>
-        //       <td>${department.department_name}</td>
-        //       <td >${department.position_title}</td>
-        //       <td>${department.staff_count}</td>
-        //       <td>${department.internship_count}</td>
-        //       <td>${department.in_probation_count}</td>
-        //       <td>${department.total_employee_count}</td>
-        //     </tr>
-        //   `)
-        //   .join("");
-
-        let html = `
-            <div class="card bg-white dashboard_chart"  style="height:300px;">
-                    <span class="fw-semibold fs-5 text-primary-custom text-capitalize" style="color:">${data.pieCharts.title}</span>
-                        <canvas id="compareChart"></canvas>
-                    </div>
-            </div>
-        `;
-        mThis.dashboard_center.innerHTML = html;
-        mThis.renderCompareChart(data.pieCharts);
-
-    };
     this.renderDBCardOnLeave = (data) => {
         const rowsHtml = (data || [])
             .map(
@@ -458,7 +488,7 @@ var DashboardComponent = new (function () {
                 `
             )
             .join("");
-    
+
         const html = `
             <h3 class="d-flex align-items-start text-primary-custom" style="font-size: 1.2rem;">Staffs on Leave Today</h3>
             <div class="w-100" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius:8px;">
@@ -476,42 +506,34 @@ var DashboardComponent = new (function () {
                 </table>
             </div>
         `;
-    
+
         mThis.dbCardOnLeave.innerHTML = html;
     };
-    
-    
-    
-    
+    this.loadCards = (onFinish) => {
+        let p = {};
 
+        vsapi.call(`${main_view.base_url}/hr/dashboard/data`, p, null, false, false).then(res => {
+            let data = (res.status_code === 200) ? res.data : {};
 
-
-    this.loadCards = (onFinish)=>{
-        let p={};
-
-        vsapi.call(`${main_view.base_url}/hr/dashboard/data`,p, null,false,false).then(res => {
-            let data = (res.status_code === 200) ?res.data : {};
-            
             mThis.renderDBChartAllTop(data);
             mThis.renderDBCards(data.cards);
-            mThis.renderDashboardCenter(data);
             mThis.renderDBCardOnLeave(data.onLeave);
 
             onFinish();
-          });
+        });
     }
-    this.prepareFormOptions = (data, onFinish) =>{
+    this.prepareFormOptions = (data, onFinish) => {
 
         mThis.loadCards(onFinish);
 
     }
-    this.setDashboardScroll = ()=>{
+    this.setDashboardScroll = () => {
         const parent = mThis.self;
-        parent.style.height = (window.innerHeight - 100)+'px';
+        parent.style.height = (window.innerHeight - 100) + 'px';
         parent.classList.add('overflow-y-auto');
         parent.classList.add('overflow-x-hidden');
         window.onresize = () => {
-            parent.style.height = (window.innerHeight - 100)+'px';
+            parent.style.height = (window.innerHeight - 100) + 'px';
         }
     }
     this.show = (options) => {
