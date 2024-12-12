@@ -46,13 +46,16 @@ class ScriptBundle extends Command
         $option = $obfuscate ? 'ob' : 'min';
 
         // Call the ScriptManager to create the bundle file
-        $res = ScriptManager::createBundleFile($bundleName, $option);
-
+        $res = ScriptManager::createBundleFile($bundleName, $option); 
         // Handle the result
         if ($res->status === 'OK') {
-            foreach ($res->files as $file) {
-                $this->info("Optimized file $file was created");
-            }
+            $files = $res->files ?? null;
+            if(!$files) $this->info("$bundleName has been optimized successfully");
+            else {
+                foreach ($res->files as $file) {
+                   $this->info("Optimized file $file was created");
+                }
+           }
         } else {
             $this->error($res->error_message);
         }

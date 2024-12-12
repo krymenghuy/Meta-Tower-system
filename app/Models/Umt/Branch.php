@@ -31,7 +31,7 @@ class Branch //extends Model
         $skip_rows = ($current_page - 1) * $per_page;
 
         $str_search = $search_value ? ' b.name LIKE \'%'.escape_like_str($search_value).'%\'': '3=3';
-        $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.name,b.website ,b.address,b.shortcut,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone');
+        $query =  DB::table(DBX::$branch_table.' as b')->where('b.subs_id',$bin_subs_id)->whereRaw($str_search)->selectRaw('b.id,b.name,b.website ,b.address,b.shortcut,b.phone_number,b.first_cp_name,b.second_cp_name,b.first_cp_phone,b.second_cp_phone,b.update_user,b.updated_at');
         
         $count_query = clone $query;
         $count = $count_query->count('b.id');
@@ -52,13 +52,13 @@ class Branch //extends Model
         $id = $id ?? $this->id;
         $v_rule = [
             'name'=>'1|string|1-250',
-            'name_kh'=>'1|string|1-250',
+            'name_kh'=>'0|string|1-250',
             'website'=>'0|string|0-250',
             'address'=>'0|string|0-250',
-            'shortcut'=>'0|string|1-30',
-            'phone_number'=>'1|string|1-20',
-            'first_cp_name'=>'1|string|1-25',
-            'first_cp_phone'=>'1|string|1-20',
+            'shortcut'=>'1|string|1-30',
+            'phone_number'=>'0|string|1-20',
+            'first_cp_name'=>'0|string|1-25',
+            'first_cp_phone'=>'0|string|1-20',
             'second_cp_name'=>'0|string|0-25',
             'second_cp_phone'=>'0|string|0-20'
         ];
@@ -98,6 +98,8 @@ class Branch //extends Model
         return DV::success(['branch_id'=>$branch_id]);
         // return DV::depends($id); 
     }
+
+  
 
     function delete($id,$ss=null){
         $ss = $ss ?? AuthService::user();

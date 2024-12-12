@@ -19,6 +19,7 @@ var EmployeeComponent = new (function () {
     this.profile_card_left = mThis.self.querySelector("#profile_card_left");
     this.profile_card_right = mThis.self.querySelector("#profile_card_right");
     this.tax_allownce_card = mThis.self.querySelector("#tax_allownce_card");
+    this.emp_documents_card = mThis.self.querySelector("#emp_documents_card");
     this.profile_info_emp = mThis.self.querySelector("#profile_info_emp");
     this.paginationContainer = mThis.self.querySelector(
         "#container_pagination"
@@ -104,11 +105,13 @@ var EmployeeComponent = new (function () {
 
         mThis.initDropdownMenus(div);
         const sh_parent = mThis.listContainer.parentElement;
-        sh_parent.style.height = window.innerHeight - 235 + "px";
+        // sh_parent.style.height = window.innerHeight - 235 + "px";
         sh_parent.classList.add("overflow-y-auto");
-        window.onresize = () => {
-            sh_parent.style.height = window.innerHeight - 190 + "px";
-        };
+        sh_parent.classList.add("overflow-x-hidden");
+
+        // window.onresize = () => {
+        //     sh_parent.style.height = window.innerHeight - 190 + "px";
+        // };
 
         mThis.initAlready = true;
     };
@@ -409,6 +412,7 @@ var EmployeeComponent = new (function () {
                     mThis.renderCardLeft(employeeId);
                     mThis.renderCardRight(employeeId);
                     mThis.renderCardTaxAllowance(employeeId);
+                    mThis.renderEmpDocuments(employeeId);
                 } else {
                     console.error(
                         "Employee data not found for ID:",
@@ -726,67 +730,167 @@ var EmployeeComponent = new (function () {
     this.renderCardLeft = (employeeId) => {
         let html = "";
 
-        html = [
-            `
-             <div class="card pb-3" style="height:390px;">
-                            <div class="card-header bg-primary-custom text-white">
-                                <h5 class="mt-1">Skills</h5>
+        let p = { emp_id: employeeId };
 
-                            </div>
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between">
-                                    <p>PHP</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 85%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>JavaScript</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 70%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>Node.Js</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 50%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>Vue.Js</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 65%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>Laravel</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 60%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>OOP</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 80%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>Next.Js</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 40%;"></div>
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-between">
-                                    <p>React.Js</p>
-                                    <div class="progress" style="width: 60%;">
-                                        <div class="progress-bar" style="width: 60%;"></div>
-                                    </div>
-                                </div>
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/emp-skill/list-paginate`,
+                p,
+                null,
+                false,
+                false
+            )
+            .then((res) => {
+                let data = res.status_code === 200 ? res.data.data : [];
+
+                let html = `
+                    <div class="card pb-3" style="height:390px;">
+                        <div class="card-header bg-primary-custom text-white">
+                            <h5 class="mt-1">Skill</h5>
+                            <div class="d-flex gap-2">
+                                <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-skill">
+                                    <i class="fa fa-plus-circle fs-5 text-white"></i>
+                                </a>
                             </div>
                         </div>
-            `,
-        ].join("");
-        this.profile_card_left.innerHTML = html;
+                        <div class="card-body " style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+                `;
+
+                data.map((d) => {
+                    html += `
+                        <div class="row mt-2 py-3 border-bottom border-white">
+                            <div class="col-md-8">
+                                <div>
+                                    <p class="text-primary-custom" style="width:250px; height:20px">
+                                        <img class="bhr-icons" src="${main_view.asset_url}/images/icons/skill.png" />
+                                        <span class="text-black-50"> Skill </span>
+                                        <span class="px-2"> : </span>
+                                        ${d.skill}
+                                    </p>
+                                </div>
+                                <div>
+                                    <p class="text-primary-custom" style="width:250px; height:20px">
+                                        <img class="bhr-icons" src="${main_view.asset_url}/images/icons/rate.png" />
+                                        <span class="text-black-50"> Rate</span>
+                                        <span class="px-2"> : </span>
+                                        ${d.rate} %
+                                    </p>
+                                </div>
+                            </div>
+                           <div class="col-md-4 text-end">
+                                <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-skill">
+                                    <i class="fa fa-edit fs-7 text-primary"></i>
+                                </a>
+                                <a href="javascript:void(0)" data-id="${d.id}" data-emp-id="${employeeId}" class="lnk-delete-skill ms-2">
+                                    <i class="fa fa-trash fs-7 text-danger"></i>
+                                </a>
+                            </div>
+
+                        </div>
+                    `;
+                });
+
+                html += `</div></div>`;
+                this.profile_card_left.innerHTML = html;
+
+                // Add event listener for "Add" button
+                document
+                    .querySelector(".lnk-add-skill")
+                    .addEventListener("click", function (e) {
+                        e.preventDefault();
+
+                        let btn = document.querySelector(
+                            ".lnk-add-skill"
+                        );
+                        console.log(333, btn.dataset);
+
+                        let op = {
+                            id: null,
+                            emp_id: btn.dataset.empid,
+
+                            btn: e.target,
+                            title: "New Skill",
+                            onClose: () => {
+                                mThis.EmployeeListView.showPage();
+                            },
+                        };
+                        AddSkillDialog.show(op);
+                    });
+
+                // Add event listeners for all "Edit" buttons
+                document
+                    .querySelectorAll(".lnk-edit-skill")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const id = e.target
+                                .closest("a")
+                                .getAttribute("data-id");
+
+                            let op = {
+                                id: id,
+                                emp_id: employeeId,
+                                btn: e.target,
+                                title: "Edit Skill",
+                                onClose: () => {
+                                    mThis.renderCardLeft.showPage();
+                                },
+                            };
+                            console.log("Edit operation:", op);
+                            AddSkillDialog.show(op);
+                        });
+                    });
+
+                document
+                    .querySelectorAll(".lnk-delete-skill")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const id = e.target
+                                .closest("a")
+                                .getAttribute("data-id");
+                            const emp_id = e.target
+                                .closest("a")
+                                .getAttribute("data-emp-id");
+                            let op = {
+                                id: id,
+                                btn: e.target,
+                                onClose: () => {},
+                            };
+                            cv_interact.confirm(
+                                "Delete this Skill?",
+                                {
+                                    title: "Delete Skill",
+                                    context: "delete",
+                                    confirmButtonText: "Delete",
+                                },
+                                function (e) {
+                                    if (e) {
+                                        vsapi
+                                            .call(
+                                                `${main_view.base_url}/hr/emp-skill/delete`,
+                                                op,
+                                                false,
+                                                false,
+                                                false
+                                            )
+                                            .then((res) => {
+                                                if (res.status_code == 200) {
+                                                    cv_interact.success(
+                                                        "Deleted Successfully"
+                                                    );
+                                                    // EmployeeComponent.EmployeeListView.showPage();
+                                                    EmployeeComponent.renderCardLeft(
+                                                        emp_id
+                                                    );
+                                                }
+                                            });
+                                    }
+                                }
+                            );
+                        });
+                    });
+            });
     };
 
     this.renderCardCenter = (employeeId) => {
@@ -818,7 +922,7 @@ var EmployeeComponent = new (function () {
 
                 data.forEach((d) => {
                     html += `
-                <div class="experience_item py-2 border-bottom border-primary" style="display:flex">
+                <div class="experience_item py-2 border-bottom border-white" style="display:flex">
                     <div class="col-md-6">
                         <h6 class="text-" style="width:180px; height:22px; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap">${d.period}</h6>
                         <p class="text-primary-custom" style="width:170px; height:20px"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/graduate.svg" /> ${d.edu_level}</p>
@@ -1010,7 +1114,7 @@ var EmployeeComponent = new (function () {
 
                 data.forEach((d) => {
                     html += `
-                <div class="row py-3 border-bottom border-info">
+                <div class="row py-3 border-bottom border-white">
                     <div class="col-md-6" style="display: flex; flex-direction: column; gap:10px">
                         <div class="experience-toggle" data-experience-id="${d.id}"
                             style="display:flex; justify-content:space-between; width:350px; cursor: pointer;">
@@ -1202,25 +1306,53 @@ var EmployeeComponent = new (function () {
                 `;
 
                 data.map((d) => {
-                    html += `
-                        <div class="row mt-2 py-4 border-bottom">
-                            <div class="col-md-8">
-                                <p class="text-success" style="width:180px; height:20px">Amount: ${formattedNumber(d.amount)}</p>
-                                <p class="text-success" style="width:180px; height:20px">Quantity: ${d.qty}</p>
-                                <p class="text-success" style="width:180px; height:20px">Allowance: ${formattedNumber(d.allowance)}</p>
-
-                                <p class="text-nowrap" style="width:180px; height:20px">Remarks: ${d.remarks}</p>
+                    html = [html,`
+                        <div class="row mt-2 py-3 border-bottom border-white">
+                            <div class="col-md-8">`,
+                                // `<div class="d-flex">
+                                //     <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
+                                //         <img class="bhr-icons" src="${main_view.asset_url}/images/icons/amount.png" />
+                                //         <span class="text-black-50">Amount</span>
+                                //         <span class="px-2">:</span>
+                                //         ${main_view.currency.symbol} ${formattedNumber(d.amount ?? 0)}
+                                //     </p>
+                                // </div>`,
+                            //    `<div class="d-flex">
+                            //         <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
+                            //             <img class="bhr-icons" src="${main_view.asset_url}/images/icons/qty.png" />
+                            //             <span class="text-black-50">Quantity</span>
+                            //             <span class="px-2">:</span>
+                            //             ${d.qty}
+                            //         </p>
+                            //     </div>`,
+                               `<div class="d-flex">
+                                    <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
+                                        <img class="bhr-icons" src="${main_view.asset_url}/images/icons/amount.png" />
+                                        <span class="text-black-50">Allowance (${d.qty})</span>
+                                        <span class="px-2">:</span>
+                                        ${main_view.currency.symbol} ${formattedNumber(d.allowance ?? 0)}
+                                    </p>
+                               </div>`,
+                               `<div class="d-flex">
+                                    <p class="text-primary-custom" style="width:250px; height:20px; margin-bottom:10px;">
+                                        <img class="bhr-icons" src="${main_view.asset_url}/images/icons/remarks.png" />
+                                        <span class="text-black-50">Remarks</span>
+                                        <span class="px-2">:</span>
+                                        ${d.remarks}
+                                    </p>
+                               </div>
                             </div>
+
                             <div class="col-md-4 text-end">
                                 <a href="javascript:void(0)" data-id="${d.id}" class="lnk-edit-tax-allowance">
-                                    <i class="fa fa-edit fs-5 text-primary"></i>
+                                    <i class="fa fa-edit fs-7 text-primary"></i>
                                 </a>
-                                <a href="javascript:void(0)" data-id="${d.id}" data-emp-id="${employeeId}" class="lnk-delete-tax-allowance">
-                                    <i class="fa fa-trash fs-5 text-danger"></i>
+                                <a href="javascript:void(0)" data-id="${d.id}" data-emp-id="${employeeId}" class="lnk-delete-tax-allowance ms-2">
+                                    <i class="fa fa-trash fs-7 text-danger"></i>
                                 </a>
                             </div>
                         </div>
-                    `;
+                    `].join('');
                 });
 
                 html += `</div></div>`;
@@ -1291,9 +1423,9 @@ var EmployeeComponent = new (function () {
                                 onClose: () => {},
                             };
                             cv_interact.confirm(
-                                "Delete this Employee?",
+                                "Delete this Tax Allowance?",
                                 {
-                                    title: "Delete Employee",
+                                    title: "Delete Tax Allowance",
                                     context: "delete",
                                     confirmButtonText: "Delete",
                                 },
@@ -1314,6 +1446,170 @@ var EmployeeComponent = new (function () {
                                                     );
                                                     // EmployeeComponent.EmployeeListView.showPage();
                                                     EmployeeComponent.renderCardTaxAllowance(
+                                                        emp_id
+                                                    );
+                                                }
+                                            });
+                                    }
+                                }
+                            );
+                        });
+                    });
+            });
+    };
+    this.renderEmpDocuments = (employeeId) => {
+        let p = { emp_id: employeeId };
+
+        vsapi
+            .call(
+                `${main_view.base_url}/hr/emp-document/list-paginate`,
+                p,
+                null,
+                false,
+                false
+            )
+            .then((res) => {
+                let data = res.status_code === 200 ? res.data.data : [];
+
+                let html = `
+                    <div class="card pb-3" style="height:390px;">
+                        <div class="card-header bg-primary-custom text-white">
+                            <h5 class="mt-1">Employee Documents</h5>
+                            <div class="d-flex gap-2">
+                                <a href="javascript:void(0)" data-empid="${employeeId}" class="lnk-add-emp-document">
+                                    <i class="fa fa-plus-circle fs-5 text-white"></i>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
+                `;
+
+                data.map((d) => {
+                    html = [html,`
+                        <div class="row mt-2 py-3 border-bottom border-white">
+                            <div class="col-md-10">`,
+
+                               `<div class="d-block">
+                                    <p class="text-primary-custom" style="width:400px; height:20px; margin-bottom:10px;">
+                                        <img class="bhr-icons" src="${main_view.base_url}/assets/images/bhr/name.png" alt="" />
+                                        <span class="text-black-50">Name File</span>
+                                        <span class="px-2">:</span>
+                                        ${d.name}
+                                    </p>
+                               </div>`,
+                               `<div class="d-block">
+                                    <p class="text-primary-custom" style="width:600px; height:20px; margin-bottom:10px;">
+                                        <img class="bhr-icons" src="${main_view.base_url}/assets/images/bhr/folder.png" alt=""" />
+                                        <span class="text-black-50">File</span>
+                                        <span class="px-2">:</span>
+                                        ${d.file_name}
+                                    </p>
+                               </div>
+                            </div>
+
+                            <div class="col-md-2 text-end">
+                                <a href="javascript:void(0)" data-id="${d.id}" class="lnk-download-emp-document">
+                                    <i class="fa fa-download fs-7 text-primary"></i>
+                                </a>
+                                <a href="javascript:void(0)" data-id="${d.id}" data-emp-id="${employeeId}" class="lnk-delete-emp-document ms-2">
+                                    <i class="fa fa-trash fs-7 text-danger"></i>
+                                </a>
+                            </div>
+                        </div>
+                    `].join('');
+                });
+
+                html += `</div></div>`;
+                this.emp_documents_card.innerHTML = html;
+
+                // Add event listener for "Add" button
+                document
+                    .querySelector(".lnk-add-emp-document")
+                    .addEventListener("click", function (e) {
+                        e.preventDefault();
+
+                        let btn = document.querySelector(
+                            ".lnk-add-emp-document"
+                        );
+                        console.log(333, btn.dataset);
+
+                        let op = {
+                            id: null,
+                            emp_id: btn.dataset.empid,
+
+                            btn: e.target,
+                            title: "New Employee Document",
+                            onClose: () => {
+                                mThis.EmployeeListView.showPage();
+                            },
+                        };
+                        AddEmployeeDocumentDialog.show(op);
+                    });
+
+                // Add event listeners for all "Edit" buttons
+                document
+                    .querySelectorAll(".lnk-download-emp-document")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const id = e.target
+                                .closest("a")
+                                .getAttribute("data-id");
+
+                            let op = {
+                                id: id,
+                                emp_id: employeeId,
+                                btn: e.target,
+                                title: "Edit Employee Document",
+                                onClose: () => {
+                                    mThis.renderEmpDocuments.showPage();
+                                },
+                            };
+                            console.log("Edit operation:", op);
+                            AddEmployeeDocumentDialog.show(op);
+                        });
+                    });
+
+                document
+                    .querySelectorAll(".lnk-delete-emp-document")
+                    .forEach((btn) => {
+                        btn.addEventListener("click", function (e) {
+                            e.preventDefault();
+                            const id = e.target
+                                .closest("a")
+                                .getAttribute("data-id");
+                            const emp_id = e.target
+                                .closest("a")
+                                .getAttribute("data-emp-id");
+                            let op = {
+                                id: id,
+                                btn: e.target,
+                                onClose: () => {},
+                            };
+                            cv_interact.confirm(
+                                "Delete this document?",
+                                {
+                                    title: "Delete Employee Document",
+                                    context: "delete",
+                                    confirmButtonText: "Delete",
+                                },
+                                function (e) {
+                                    if (e) {
+                                        vsapi
+                                            .call(
+                                                `${main_view.base_url}/hr/emp-document/delete`,
+                                                op,
+                                                false,
+                                                false,
+                                                false
+                                            )
+                                            .then((res) => {
+                                                if (res.status_code == 200) {
+                                                    cv_interact.success(
+                                                        "Deleted Successfully"
+                                                    );
+                                                    // EmployeeComponent.EmployeeListView.showPage();
+                                                    EmployeeComponent.renderEmpDocuments(
                                                         emp_id
                                                     );
                                                 }
@@ -2395,7 +2691,7 @@ const EmployeeDialog = (() => {
                 return [
                     `<div class="row">
                             <div class="col-3">
-                                <div name="div_emp_photo" style="height:165px;" class="data-input border border-primary" data-field="image_url" role="button"></div>
+                                <div name="div_emp_photo" style="height:165px;" class="data-input border border-white" data-field="image_url" role="button"></div>
                             </div>
                             <div class="col-9">
                                 <div class="row">
@@ -2737,5 +3033,200 @@ const EmployeeDialog = (() => {
         dialog.show(op);
     };
 
+    return self;
+})();
+
+const AddSkillDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                title: op.id ? "Add Skill" : " Edit Skill ",
+                cssClass: "modal-md d-flex justify-content-center",
+                createContent: () => {
+                    return [
+                        `<div class="row">
+
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Skill">Skill</label>
+                             <select name="skill" class=" data-input"  data-field="skill_id"></select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Rate">Rate</label>
+                            <div><input name="rate" class="form-control data-input" data-field="rate"/></div>
+                        </div>
+
+                    </div>`,
+                    ].join("");
+                },
+                configSelect: [
+                    {
+                        name: "skill",
+                        data: "skills",
+                        textField: "skill",
+                        valueField: "id",
+                    },
+                ],
+                buttons: [
+                    {
+                        label: "<span>Cancel</span>",
+                        cssClass: "btn btn-warning text-white",
+                        click: (me) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me) => {
+                            let p = me.getData();
+                            p.emp_id = me.dataOptions.emp_id;
+                            console.log(111,p);
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/emp-skill/save",
+                                    ].join(""),
+                                    p,
+                                    false,
+                                    false
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.modal.hide(true, p);
+                                        EmployeeComponent.renderCardLeft(
+                                            me.dataOptions.emp_id
+                                        );
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+
+                prepareFormOptions: {
+                    createTitle: "New Skill",
+                    modifyTitle: "Edit Skill",
+                    targetProp: "emp_skill",
+                    api: {
+                        endpoint: `${main_view.base_url}/hr/emp-skill/form-options`,
+                        params: (op) => {
+                            return { id: op.id }; // Pass ID to fetch data for edit
+                        },
+                        onResponse: (me, res) => {
+                            if (op.id) {
+
+                            }
+                        },
+                    },
+                },
+                onShow: (me) => {},
+            });
+
+        dialog.show(op);
+    };
+    return self;
+})();
+
+const AddEmployeeDocumentDialog = (() => {
+    const self = {};
+    let dialog = null;
+
+    self.show = (op) => {
+
+        dialog =
+            dialog ||
+            new GeneralDialog({
+                title: op.id ? "Add Employee Document" : " Edit Employee Document ",
+                cssClass: "modal-md d-flex justify-content-center",
+                createContent: () => {
+                    return [
+                        `<div class="row">
+
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.Name File">Name File</label>
+                             <div><input name="name" class="form-control data-input" data-field="name"/></div>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="form-label" vslang="titles.File">File</label>
+                            <div>
+                                <input type="file" name="file_name" class="form-control data-input" data-field="file_name" />
+                            </div>
+                        </div>
+
+
+                    </div>`,
+                    ].join("");
+                },
+                // configSelect: [
+                //     {
+                //         name: "skill",
+                //         data: "skills",
+                //         textField: "skill",
+                //         valueField: "id",
+                //     },
+                // ],
+                buttons: [
+                    {
+                        label: "<span>Cancel</span>",
+                        cssClass: "btn btn-warning text-white",
+                        click: (me) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Save</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me) => {
+                            let p = me.getData();
+                            p.emp_id = me.dataOptions.emp_id;
+                            console.log(111,p);
+                            vsapi
+                                .call(
+                                    [
+                                        main_view.base_url,
+                                        "/hr/emp-document/save",
+                                    ].join(""),
+                                    p,
+                                    false,
+                                    false
+                                )
+                                .then((res) => {
+                                    if (res.status_code == 200) {
+                                        me.modal.hide(true, p);
+                                        EmployeeComponent.renderEmpDocuments(
+                                            me.dataOptions.emp_id
+                                        );
+                                    } else cv_interact.error(res.error_message);
+                                });
+                        },
+                    },
+                ],
+
+                prepareFormOptions: {
+                    createTitle: "New Employee Document",
+                    modifyTitle: "Edit Employee Document",
+                    targetProp: "emp_document",
+                    api: {
+                        endpoint: `${main_view.base_url}/hr/emp-document/form-options`,
+                        params: (op) => {
+                            return { id: op.id }; // Pass ID to fetch data for edit
+                        },
+                        onResponse: (me, res) => {
+                            if (op.id) {
+
+                            }
+                        },
+                    },
+                },
+                onShow: (me) => {},
+            });
+
+        dialog.show(op);
+    };
     return self;
 })();

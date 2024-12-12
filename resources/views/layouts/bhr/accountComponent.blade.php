@@ -38,14 +38,11 @@
 </div>
 <style>
     #_account_list{
-        height: 500px;
+        height: 525px;
         overflow-y: scroll;
         overflow-x: hidden;
         scrollbar-width: none;
     }
 
-    #_account_list_paginator {
-        bottom: 0;
-        margin-top: 20px;
-    }
+
 </style>

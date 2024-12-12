@@ -15,7 +15,7 @@ class CompanyProfile //extends Model
   //use HasFactory;
    protected $userInfo = null;
    protected static $logo_dir ="identity";
-   protected static $img_dir ='brand-images', $soc_media_img_dir ='social_media';
+   protected static $img_dir ='mobile_banner', $soc_media_img_dir ='social_media';
   
    function __construct($userInfo=null){
       $this->userInfo = $userInfo;
@@ -124,6 +124,7 @@ class CompanyProfile //extends Model
 
   static function details($ss) {
     $customer_id = $ss->subscriber_id;
+    \Log::info((array)$ss);
     if(!$customer_id) return null;
     $bin_customer_id = hex2bin($customer_id);
     $col_customer_id = DBX::getHEX('c.id','id');

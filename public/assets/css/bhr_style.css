@@ -84,6 +84,18 @@
 .border-primary-custom {
     border-color: 2px solid #2b3991;
 }
+
+.box-shadow{
+    box-shadow: 0 2px 8px -4px #0006;
+}
+
+.btn-outline-primary-custom{
+    color: #2b3991;
+    border-color: #2b3991;
+}
+.border-info-custom{
+    border-color: #2b3991 !important;
+}
 .btn-primary-custom {
     color: #fff;
     background-color: #2b3991;
@@ -404,8 +416,8 @@ a.menu-selected .kt-menu__link-text {
     border-radius: 8px;
 }
 
-.bg--icon-unpaid-student-count {
-    background-color: #e9443538;
+.bg--icon-new-employee-count {
+    background-color: #56ace0;
 }
 
 .bg--icon-new-student-invoices {
@@ -433,7 +445,7 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .bg--icon-special-discount {
-    background-color: #ffde2f22;
+    background-color: #9ba4a9f0;
 }
 
 .h-md-card {

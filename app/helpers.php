@@ -62,7 +62,7 @@ use App\Services\Umt\AuthService;
 //             }
 //      }
 // }
-
+ 
 function getAccessBranches($ss=null,$filter_branch_id = null){
     if(!$ss) $ss = AuthService::user();
     if(!$ss) return [0];
@@ -344,6 +344,64 @@ function makeJsonResponse($data) {
     return date($return_format,strtotime($date.$st));
  }
 
+ function getKhmerDate($date = null) {
+    $date = convertDate($date) ?? date('Y-m-d');
+    // Define Khmer month numbers
+    $khmerMonths = [
+        1 => 'មករា',
+        2 => 'កុម្ភៈ',
+        3 => 'មិនា',
+        4 => 'មេសា',
+        5 => 'ឧសភា',
+        6 => 'មិថុនា',
+        7 => 'កក្កដា',
+        8 => 'សីហា',
+        9 => 'កញ្ញា',
+        10 => 'តុលា',
+        11 => 'វិច្ឆិកា',
+        12 => 'ធ្នូ',
+    ];
+ 
+    // Extract day, month, and year components
+    list($year, $month, $day) = explode('-', $date);
+
+    // Convert the month to Khmer
+    $monthInKhmer = $khmerMonths[(int)$month]; // Convert to integer to map correctly
+
+    // Convert day and year to Khmer numerals
+    $dayInKhmer = convertToKhmerNumerals($day);
+    $yearInKhmer = convertToKhmerNumerals($year);
+
+    // Return the formatted date
+    return "ថ្ងៃទី​​ {$dayInKhmer} ខែ​​ {$monthInKhmer} ឆ្នាំ {$yearInKhmer}";
+}
+
+// Helper function to convert numbers to Khmer numerals
+function convertToKhmerNumerals($number) {
+    $result = '';
+
+       // Khmer numerals map (0-9)
+       $khmerNumerals = [
+        '0' => '០',
+        '1' => '១',
+        '2' => '២',
+        '3' => '៣',
+        '4' => '៤',
+        '5' => '៥',
+        '6' => '៦',
+        '7' => '៧',
+        '8' => '៨',
+        '9' => '៩',
+     ];
+     
+    // Split the number into individual digits and convert each to Khmer numeral
+    foreach (str_split($number) as $digit) {
+        $result .= $khmerNumerals[$digit];
+    }
+    return $result;
+}
+ 
+ //daysInMonth()
  function days_in_month($month, $year){
     // calculate number of days in a month
     return $month == 2 ? ($year % 4 ? 28 : ($year % 100 ? 29 : ($year % 400 ? 28 : 29))) : (($month - 1) % 7 % 2 ? 30 : 31);
@@ -1347,7 +1405,7 @@ function createUUIDV1()
                         if ($obj)
                            return (object)['error'=>null,'default_value'=>$obj];
                         else
-                           return (object)['error'=>Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not a invalid JSON format")];
+                           return (object)['error'=> Localization::translate($lang,$my_text_prop?$my_text_prop:"$field_name is not a invalid JSON format")];
                 } else if ($part2 ==='image' || $part2==='file' || $part2==='base64'){
 
                         $interval = getInterval($part3);

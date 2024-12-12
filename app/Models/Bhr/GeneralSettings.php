@@ -380,6 +380,14 @@ class GeneralSettings //extends Model
         return DB::table('payrolls')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS payroll_name')->get();
     }
 
+    static function options_employees($ss,$emp_status_id = null){
+        $q = DB::table('employees as e')->where('e.subs_id',hex2bin($ss->subs_id))->selectRaw('id,name as employee_name');
+       if($emp_status_id) $q->where('e.status_id',$emp_status_id);
+       $rows = $q->get();
+        return $rows;
+    }
+    
+
     function deleteProductType($d){
         $ss = UM::getUserInfoByToken($d);
         if($ss->status_code !==200) return $ss; //user not authenticated
@@ -464,6 +472,7 @@ class GeneralSettings //extends Model
         'leave_types' => self::options_leave_type($ss),
         'emp_types' => self::options_emp_type($ss),
         'payrolls' => self::options_payroll($ss),
+        'employees' => self::options_employees($ss),
     ];
     return $res;
 }

@@ -73,10 +73,6 @@ class EmployeeSkillController extends Controller
             return JDV::raw($ss);
         }
 
-        if (!isset($req->id) || !is_numeric($req->id)) {
-            return JDV::error('Invalid ID');
-        }
-
         return JDV::result($this->employee_skill->getFormOptions($req->id, $ss));
     }
 }

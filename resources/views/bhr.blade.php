@@ -257,7 +257,6 @@ echo $user->lang ?? 'en'; ?>">
                     <div id="" class="h-100">
                         <div class="pb-2" id="_app_content">
                             @include('layouts.bhr.dashboardComponent')
-                            @include('layouts.common.companyComponent')
                             @include('layouts.bhr.reportCenterComponent')
                             @include('layouts.common.socialMediaComponent')
                             @include('layouts.bhr.employeeComponent')
@@ -289,6 +288,8 @@ echo $user->lang ?? 'en'; ?>">
                             @include('layouts.bhr.exitFormItemComponent')
                             @include('layouts.common.locationComponent')
                             @include('layouts.common.companyComponent')
+                            @include('layouts.umt.branchManagementComponent')
+                            @include('layouts.umt.roleManagementComponent')
                         </div>
                     </div>
                 </div>
