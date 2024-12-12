@@ -41,12 +41,17 @@ class ScriptManager{
         }, $input);
     }
 
+    static function isURL($file_path) {
+        // Use filter_var to check if the input is a valid URL
+        return filter_var($file_path, FILTER_VALIDATE_URL) !== false;
+    }
+
     /** This is more advanced minification and obfuscation, but resulting in file size larger than simple method using urglifyJS that result in minimal file size */
     static function obfuscateJS($filePath)
     {
         try {
             // Check if the file path is a URL or CDN link
-            if (filter_var($filePath, FILTER_VALIDATE_URL)) {
+            if (self::isURL($filePath)) {
                 // It's a URL, download the content
                 $scriptContent = file_get_contents($filePath);
     
@@ -384,7 +389,7 @@ class ScriptManager{
     if (!$b) {
         return (object)["status" => "Error",'error_message'=>'The bundle name is not valid', "files" => []];
     }
-    $single_file = isset($b['single_file'])?$b['single_file']:0;
+    $single_file = $b['single_file'] ?? 0;
     if(!$option) $option ='min';
 
     if($single_file==1){
@@ -410,6 +415,7 @@ class ScriptManager{
               $c = self::obfuscateJS($file_path);
             else $c = self::urglifyJS($file_path);
             if($c->error_message) return (object)['status' => 'Error', 'file_name' => $file_path,'error_message'=>$c->error_message];
+            if(!isset($c->content)) return (object)['status' => 'Error', 'file_name' => $file_path,'error_message'=>'Content is missing!'];
             // Add the local JavaScript content to the array
             $obfuscatedContents[] = $c->content;
         }
@@ -552,4 +558,3 @@ class ScriptManager{
     }
 
 }
- 

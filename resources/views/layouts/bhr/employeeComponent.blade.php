@@ -170,12 +170,8 @@
     }
 
     #_employee_list {
-        display: flex;
-        flex-direction: column;
-        height: 400px;
-        padding: 0;
-        width: 100%;
-        overflow-y: auto;
+        height: 470px;
+        overflow-y: scroll;
         overflow-x: hidden;
         scrollbar-width: none;
     }
@@ -204,7 +200,7 @@
 
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0">
     <div id="sub_content" class="pt-3">
-        <div class="d-flex justify-content-between bg-white shadow p-3 rounded-3 w-100" id="div_filter_filed">
+        <div class="d-flex justify-content-between bg-white p-3 rounded-3 w-100" id="div_filter_filed">
             <div class="d-flex align-items-start justify-content-start w-25">
                 <button type="button" class="btn_add" style="background-color:#2b3991;" id="_btn_add_employee">
                     <span>Add Employee </span>
@@ -235,8 +231,8 @@
                 </div>
             </div>
         </div>
-        <div id="_employee_list" class="mt-3 px-3"></div>
-        <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-5 d-flex justify-content-end"></div>
+        <div id="_employee_list" class="mt-3 px-3" style="height:70vh"></div>
+        <div id="container_pagination" style="background:#f5f5f5" class="px-3 pb-5 d-flex justify-content-start"></div>
     </div>
 
     <div class="d-none" id="view_see_info__">
@@ -263,7 +259,7 @@
                 <div class="row mt-3 p-3">
 
                     <div class="col-md-4" id="tax_allownce_card"></div>
-                    <div class="col-md-4" id="ducument_card"></div>
+                    <div class="col-md-4" id="emp_documents_card"></div>
 
                 </div>
 
@@ -272,39 +268,3 @@
 
     </div>
 </div>
-
-<!-- <div class="modal fade" id="addEducation_dlg" tabindex="-1" role="dialog" aria-labelledby="addEducation_dlgTitle" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="addEducation_dlgTitle">Create Education</h5>
-        <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div class="row">
-          <div class="form-group col-lg-12">
-            <span class="simple-label">Price list name</span>
-            <input type="text" class="form-control" id="ps-newpl_name">
-          </div>
-          <div class="form-group col-lg-12">
-            <span class="simple-label">Marker Weight (kg)</span>
-            <input type="number" class="form-control" id="ps-newpl_kg_marker">
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <span id="addEducation_dlg_error" class="error_text"></span>
-        <button type="button" class="btn btn-warning height" data-bs-dismiss="modal">
-          <i class="fa fa-times fs-5 text-danger"></i>
-          <span>Cancel</span>
-        </button>
-        <button type="button" class="btn btn-success height" id="addEducation_dlg_btnOK">
-          <i class="fa fa-check fs-5 text-success"></i>
-          <span>Add</span>
-        </button>
-      </div>
-    </div>
-  </div>
-</div> -->

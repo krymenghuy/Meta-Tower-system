@@ -39,6 +39,10 @@ use App\Http\Controllers\Bhr\ShiftDetailsController;
 use App\Http\Controllers\Bhr\GeneralSettingsController;
 use App\Http\Controllers\Bhr\BenefitDisbursePolicyController;
 use App\Http\Controllers\Bhr\EmployeeSkillController;
+use App\Http\Controllers\Bhr\ExitCheckpointsController;
+use App\Http\Controllers\Bhr\ExitFormController;
+use App\Http\Controllers\Bhr\ExitFormItemController;
+use App\Http\Controllers\Bhr\ExitStatusController;
 use App\Http\Controllers\Bhr\EmployeeDocumentController;
 
 
@@ -326,7 +330,38 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('reports')->gro
     Route::post('/list',[ReportController::class,'getReportList']);
     Route::post('employee/list-by-branch', [ReportController::class, 'getEmployeeList']);
     Route::post('employee/list-by-type', [ReportController::class, 'getEmployeeListByType']);
+    Route::post('employee/attendance-report', [ReportController::class, 'getEmployeeAttendance']);
+    Route::post('employee/attendance-summary', [ReportController::class, 'getEmployeeAttendanceSummary']);
+    Route::post('employee/payroll-expenses-by-month', [ReportController::class, 'getPayrollExpensesByMonth']);
+    Route::post('employee/payroll-list', [ReportController::class, 'getPayrollList']);
+    Route::post('employee/employee-benefits-report', [ReportController::class, 'getEmployeeBenefitsReport']);
+    Route::post('employee/employee-account-report', [ReportController::class, 'getEmployeeAccountReport']);
+    Route::post('employee/for-each-account', [ReportController::class, 'getForEachAccount']);
+    Route::post('employee/wallet-account-list', [ReportController::class, 'getWalletAccountList']);
+    Route::post('employee/payslip-print', [ReportController::class, 'getPayslipPrint']);
+    Route::post('employee/employee-movement-report', [ReportController::class, 'getEmployeeMovementReport']);
+    Route::post('employee/print-employee-cv', [ReportController::class, 'getPrintEmployeeCV']);
 
+
+    // Route::post('enrollment/dropped-out-students',[ReportController::class,'getLeaveStudent']);
+    // Route::post('enrollment/comeback-students',[ReportController::class,'getComeBackStudents']);
+    // Route::post('enrollment/leave-student',[ReportController::class,'getLeaveStudent']);
+    // Route::post('enrollment/student-referrers',[ReportController::class,'getStudentReferers']);
+    // // Route::post('enrollment/family-list',[ReportController::class,'getFamilyList']);
+    // Route::post('enrollment/family-list',[ReportController::class,'getFamilyInfoList']);
+    // Route::post('enrollment/activities',[ReportController::class,'getActivities']);
+    // // Route::post('/attendance-summary',[ReportController::class,'getAttendanceSummary']);
+    // Route::post('enrollment/attendance-summary',[ReportController::class,'getAttendanceList']);
+    // Route::post('enrollment/student-list',[ReportController::class,'getStudentList']);
+    // Route::post('enrollment/new-students',[ReportController::class,'getNewStudents']);
+
+    // Route::post('enrollment/request-change',[ReportController::class,'studentRequestChange']);
+
+    // //** */
+    // Route::post('enrollment/student-info',[ReportController::class,'getStudentInfoList']);
+    // Route::post('enrollment/family-info',[ReportController::class,'getFamilyInfoList']);
+    // Route::post('enrollment/attendance/list',[ReportController::class,'getAttendanceList']);
+    // //** */
 
 });
 
@@ -352,4 +387,25 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('emp-document')
     Route::post('/details', [EmployeeDocumentController::class, 'getDetails']);
     Route::post('/delete', [EmployeeDocumentController::class, 'deleteEmployeeDocument']);
     Route::post('/form-options', [EmployeeDocumentController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check_points')->group(function(){
+    Route::post('/save', [ExitCheckpointsController::class, 'saveExitCheckPointPoints']);
+    Route::post('/list-paginate', [ExitCheckpointsController::class, 'getExitCheckpointsPaginate']);
+    Route::post('/details', [ExitCheckpointsController::class, 'getDetails']);
+    Route::post('/delete', [ExitCheckpointsController::class, 'deleteCheckpoints']);
+    Route::post('/form-options', [ExitCheckpointsController::class, 'getFormOptions']);
+});
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form-item')->group(function(){
+    Route::post('/save', [ExitFormItemController::class, 'saveExitFormItem']);
+    Route::post('/list-paginate', [ExitFormItemController::class, 'getExitFormItemPaginate']);
+    Route::post('/details', [ExitFormItemController::class, 'getDetails']);
+    Route::post('/delete', [ExitFormItemController::class, 'deleteExitFormItem']);
+    Route::post('/form-options', [ExitFormItemController::class, 'getExitFormItemOptions']);
+});
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form')->group(function(){
+    Route::post('/save', [ExitFormController::class, 'saveExitForm']);
+    Route::post('/list-paginate', [ExitFormController::class, 'getExitFormPaginate']);
+    Route::post('/details', [ExitFormController::class, 'getDetails']);
+    Route::post('/delete', [ExitFormController::class, 'deleteExitForm']);
+    Route::post('/form-options', [ExitFormController::class, 'getExitFormOptions']);
 });

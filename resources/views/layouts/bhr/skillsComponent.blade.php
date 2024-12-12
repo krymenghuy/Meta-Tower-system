@@ -174,6 +174,12 @@
         color: red;
         scale: 1.2;
     }
+    #__skill_list{
+        height: 1000px;
+        overflow-y: scroll;
+        overflow-x: hidden;
+        scrollbar-width: none;
+    }
 </style>
 <div id="_main_skillsComponent" style="display:none;padding:20px 0 0">
     <div class="d-flex  p-3 justify-content-between w-100 " id="_divFilter_skill">
@@ -194,7 +200,9 @@
     </div>
 
     <div class="p-3">
-        <div id="_skill_list" class="bg-white _skills"></div>
+        <div id="_skill_list" class="bg-white _skills">
+
+        </div>
         <div id="container_pagination" class="px-3 bg-white"></div>
     </div>
 </div>
