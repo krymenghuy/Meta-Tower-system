@@ -133,7 +133,6 @@ var BenefitDisbursementComponent = new (function () {
         };
         const pr_tbl = mThis.BenefitDisburseListView.getListContainer();
         const sh_parent = pr_tbl;
-        sh_parent.style.height = window.innerHeight - 225 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
@@ -407,14 +406,26 @@ const BenefitDisburseDialog = (() => {
                         },
                     },
                     onResponse: (me, res) => {
-                        console.log('result from api "/form-options": ', res);
+                        console.log("API Response:", res);
+                        if (res.target_month && res.target_year) {
+                            setTimeout(() => {
+                                const monthSelect = me.divModal.querySelector(
+                                    '[name="target_month"]'
+                                );
+                                const yearSelect = me.divModal.querySelector(
+                                    '[name="target_year"]'
+                                );
+                                if (monthSelect)
+                                    monthSelect.value = res.target_month;
+                                if (yearSelect)
+                                    yearSelect.value = res.target_year;
+                            }, 100);
+                        }
                     },
                 },
 
                 onPrepareForm: (me, data) => {
                     LocaleManager.translateZone(me.divModal);
-
-                    // Delay setting the values to ensure the elements are rendered
                     setTimeout(() => {
                         if (data.target_month) {
                             const monthSelect = me.divModal.querySelector(
@@ -429,7 +440,7 @@ const BenefitDisburseDialog = (() => {
                             );
                             if (yearSelect) yearSelect.value = data.target_year;
                         }
-                    }, 100); // Adjust the delay if needed
+                    }, 100);
                 },
             });
 
