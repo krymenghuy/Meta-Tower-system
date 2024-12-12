@@ -208,42 +208,37 @@ class Dashboard
     
     
     
-function getLevels($arr, $ss)
-{
-    $subs_id = $ss->subs_id ?? null;
-    $d = (object) $arr;
-
-    $today = date('Y-m-d'); 
-
- 
-
-    $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
-
-    $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
-    $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
-
-    $query = DB::table('leaves as l')
-        ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
-        ->join('positions as p', 'p.id', '=', 'emp.position_id')
-        ->whereRaw($str_dates)
-        ->selectRaw(
-            'l.id, emp.id as emp_id, emp.code as code, emp.name as emp_name, p.title as emp_position, ' .
-            $col_dates . ', l.remarks, emp.photo_file_name as emp_photo, ' . $leave_days_calc
-        )
-        ->orderBy('l.id', 'DESC');
-
-    $rows = $query->get();
-
-    foreach ($rows as $row) {
-        $row->image_url = '';
-        if (!empty($row->emp_id) && !empty($row->emp_photo)) {
-            $row->image_url = Employee::profilePicture($row->emp_id);
+    function getLevels($arr, $ss)
+    {
+        $subs_id = $ss->subs_id ?? null;
+        $d = (object) $arr;
+    
+        $today = date('Y-m-d');
+        $start_date = date('Y-m-d', strtotime('-9 days')); // Get the date 9 days ago from today
+    
+        $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
+        $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
+        $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
+    
+        $query = DB::table('leaves as l')
+            ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->whereRaw("l.start_date >= ? AND l.start_date <= ?", [$start_date, $today])
+            ->selectRaw(
+                "DATE(l.start_date) AS leave_date, COUNT(DISTINCT emp.id) AS staff_count"
+            )
+            ->groupByRaw('DATE(l.start_date)')
+            ->orderBy('leave_date', 'DESC');
+    
+        $rows = $query->get();
+    
+        foreach ($rows as $row) {
+            $row->formatted_date = date('d-M-Y', strtotime($row->leave_date));
         }
-        unset($row->emp_photo);
+    
+        return $rows;
     }
-
-    return $rows;
-}
+    
 
   
 
