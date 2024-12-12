@@ -170,7 +170,7 @@
     }
 
     #_employee_list {
-        height: 470px;
+        height: 450px;
         overflow-y: scroll;
         overflow-x: hidden;
         scrollbar-width: none;

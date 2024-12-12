@@ -44,8 +44,15 @@ class EmployeeDocument
         $inputs = $res->values;
         $d = (object) $inputs;
         $data = $d->file_name;
-        $catagory = isImage($data) ? 'image' : 'document';
         $ext = $d->ext;
+        // $category = isImage($data) ? 'image' : 'document';
+        $extImage =  ['jpg','png','jpeg','gif','heif','bmp','webp','svg'];
+        if (in_array($ext, $extImage)) {
+            $category = 'image';
+        }
+         else{
+            $category = 'document';
+         }
 
 
         unset($inputs['file_name']);
@@ -53,43 +60,23 @@ class EmployeeDocument
         $emp_document_create = !$id;
         $res = null;
 
-        if($catagory == 'image')
-        {
-            $res =PublicStorage::saveImage(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $data, null);
+        $res = PublicStorage::savefile(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data, $category);
+
+        if ($res->status === "Error") {
+            return DV::error($res->error_message);
         }
-        else
-        {
-            $res = PublicStorage::savefile(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $ext, $data,$catagory);
+
+        $inputs['file_name'] = $res->file_name;
+
+        if (empty($inputs['name'])) {
+            $inputs['name'] = $res->file_name;
         }
-            if ($res->status === "Error") {
-                return DV::error($res->error_message);
-            }
-            $inputs['file_name'] = $res->file_name;
 
-            if (empty($inputs['name'])) {
-                $inputs['name'] = $res->file_name;
-            }
-
-            $id = saveData($ss, 'emp_documents', ['id' => $id], $inputs, [], 1);
-            return DV::depends(1, ['emp_documents' => $inputs, 'id' => $id]);
-
+        $id = saveData($ss, 'emp_documents', ['id' => $id], $inputs, [], 1);
+        return DV::depends(1, ['emp_documents' => $inputs, 'id' => $id]);
 
         return DV::error('Error saving data');
     }
-
-    // public static function getfile($id)
-    // {
-    //     $col_subs_id = DBX::getHex('ed.subs_id', 'subs_id');
-    //     $row = DB::table('emp_documents as ed')->where('id', $id)->selectRaw($col_subs_id . ',ed.branch_id,ed.file_name')->first();
-    //     if ($row) {
-    //         $category = isImage($row->file_name) ? 'image' : 'document';
-    //         $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
-    //         return validateUrl($url);
-    //     } else {
-    //         return self::defaultImage($row ? $row->subs_id : null);
-    //     }
-    // }
-
 
     function listpaginate($arr, $ss)
     {
@@ -149,10 +136,16 @@ class EmployeeDocument
             ->where('ed.id', $id)
             ->take(1)
             ->value('ed.file_name');
-
-        $catagory = isImage($data) ? 'image' : 'document';
+        $extension = pathinfo($data, PATHINFO_EXTENSION);
+        $extImage =  ['jpg','png','jpeg','gif','heif','bmp','webp','svg'];
+        if (in_array($extension, $extImage)) {
+            $category = 'images';
+        }
+         else{
+            $category = 'documents';
+         }
         if ($data) {
-            PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $catagory, $data);
+            PublicStorage::delete(['branch_id' => null, 'subs_id' => $ss->subs_id, 'dir' => self::$img_dir], $category, $data);
         }
         DB::table('emp_documents as ed')->where('ed.id', $id)->update(['file_name' => null]);
 
@@ -181,5 +174,49 @@ class EmployeeDocument
         ];
 
     }
+
+    public static function getfile($id)
+    {
+        $extImage =  ['jpg','png','jpeg','gif','heif','bmp','webp','svg'];
+
+        $col_subs_id = DBX::getHex('ed.subs_id', 'subs_id');
+        $row = DB::table('emp_documents as ed')->where('id', $id)->selectRaw($col_subs_id . ',ed.branch_id,ed.file_name')->first();
+
+        $extension = pathinfo($row->file_name, PATHINFO_EXTENSION);
+            if (in_array($extension, $extImage)) {
+            $category = 'image';
+            }
+            else{
+                $category = 'document';
+            }
+            // return $category;
+        if ($row) {
+            $url = PublicStorage::getUrl(['subs_id' => $row->subs_id, 'dir' => 'emp_documents'], $category) . $row->file_name;
+            return validateUrl($url);
+        } else {
+            return self::defaultImage($row ? $row->subs_id : null);
+        }
+    }
+
+    function downloadDocument($id, $ss)
+    {
+
+        $rows = DB::table('emp_documents as ed')
+            ->selectRaw('ed.id, ed.emp_id, ed.name, ed.file_name')
+            ->where('ed.branch_id', $ss->branch_id)
+            ->get();
+
+
+        foreach ($rows as $row) {
+            $row->image_url = '';
+            if ($row->file_name) {
+                $row->image_url = self::getfile($row->id);
+            }
+            unset($row->file_name);
+        }
+
+        return $rows;
+    }
+
 
 }

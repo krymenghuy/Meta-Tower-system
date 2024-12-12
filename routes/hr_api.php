@@ -387,6 +387,7 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('emp-document')
     Route::post('/details', [EmployeeDocumentController::class, 'getDetails']);
     Route::post('/delete', [EmployeeDocumentController::class, 'deleteEmployeeDocument']);
     Route::post('/form-options', [EmployeeDocumentController::class, 'getFormOptions']);
+    Route::post('/download', [EmployeeDocumentController::class, 'downloadDocument']);
 });
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check_points')->group(function(){
     Route::post('/save', [ExitCheckpointsController::class, 'saveExitCheckPointPoints']);
