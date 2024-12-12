@@ -10,12 +10,12 @@ use App\Services\Umt\AuthService;
 use Exception;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Log;
-  
+
 class PublicStorage //extends Model
 {
     //use HasFactory;
     protected static $allowed_image_extensions = ['jpg','png','jpeg','gif','heif','bmp','webp','svg'];
-    protected $allowed_doc_extensions = ['docx','pdf','txt','xls','doc','xlsx','csv','dat'];
+    protected static $allowed_doc_extensions = ['docx','pdf','txt','xls','doc','xlsx','csv','dat'];
     protected static $allowed_audio_extensions = [
         'mp3',
         'wav',
@@ -78,11 +78,11 @@ class PublicStorage //extends Model
             return $branch_id;
         }
     }
- 
+
     static function getFileExtension($file_name=null) {
         return pathinfo($file_name, PATHINFO_EXTENSION);
     }
-        
+
    static function getMIMEType($file_name =null)
    {
        if (!$file_name) return null;
@@ -112,9 +112,9 @@ class PublicStorage //extends Model
                     }catch(\Exception $e){
                         return $e->getMessage();
                     }
-                  
+
                     return null;
-                } else return "File not found for deleting";  
+                } else return "File not found for deleting";
        }
 
         static function getBase64ImageSize($base64Image){ //return memory size in B, KB, MB
@@ -122,7 +122,7 @@ class PublicStorage //extends Model
                 $size_in_bytes = (int) (strlen(rtrim($base64Image, '=')) * 3 / 4);
                 $size_in_kb    = $size_in_bytes / 1024;
                 $size_in_mb    = $size_in_kb / 1024;
-        
+
                 return $size_in_mb;
             }
             catch(Exception $e){
@@ -131,8 +131,8 @@ class PublicStorage //extends Model
         }
 
     static function readFileContent($fileName=null)
-    {    
-            if (empty($fileName)) return null;   
+    {
+            if (empty($fileName)) return null;
             if (!file_exists($fileName)) return null;
             $fileSize = filesize($fileName);
             if ($fileSize<=0) return null;
@@ -141,10 +141,10 @@ class PublicStorage //extends Model
             fclose($handle);
             return $contents;
     }
- 
+
     static function makeFile($file_type,$fileName, $fileContent){
                 $file_type = trim(strtolower($file_type));
-                $result = (object)array('error'=>null,'filename'=>null); 
+                $result = (object)array('error'=>null,'filename'=>null);
 
                 $ext = pathinfo($fileName,PATHINFO_EXTENSION);
                 $ext = strtolower($ext?$ext:'');
@@ -157,20 +157,20 @@ class PublicStorage //extends Model
                 if (!file_exists($dir)) {
                     mkdir($dir, 0755, true); //permission
                 }
-                 
+
                 # Decode the Base64 string, making sure that it contains only valid characters
                 $bin = base64_decode($fileContent, true);
                 $test = base64_encode($bin);
                 if ($test != $fileContent) {
                    return DV::error("Invalid file content. Base64 data is expected");
-                }			
-                
+                }
+
                 # Perform a basic validation to make sure that the result is a valid PDF file
                 # Be aware! The magic number (file signature) is not 100% reliable solution to validate PDF files
                 # Moreover, if you get Base64 from an untrusted source, you must sanitize the PDF contents
 
                 if ($ext==='pdf'){
-                    if (strpos($bin, '%PDF')  != 0 ) 
+                    if (strpos($bin, '%PDF')  != 0 )
                     {
                         return DV::error("This pdf file does not have PDF file signature");
                     }
@@ -183,7 +183,7 @@ class PublicStorage //extends Model
                 $result->mime_type = $mime_type;
                 return (object)$result;
     }
-   
+
     static function extension_contains_invalid_char($ext){
         $chars = array(",", "-", "/","?");
         foreach ($chars as $char) {
@@ -205,7 +205,7 @@ class PublicStorage //extends Model
         $dir_branch = $branch_id? "/$branch_id".'_data':'';
         return url('').'/uploads/public/'.$subs_id.$dir_branch.$dir_name.$category;
     }
-     
+
     static function getSpecificFolder($category ="image"){
         if ($category ==='image'){
             return '/images/';
@@ -222,10 +222,10 @@ class PublicStorage //extends Model
     //     $subs_id = $subs->id;
     //     $dir_branch_id ='';
     //     $branch_id = 1;
-    //     if($branch_id) $dir_branch_id ='/'.$branch_id.'_data/'; 
+    //     if($branch_id) $dir_branch_id ='/'.$branch_id.'_data/';
     //    return getcwd(). '/uploads/public/'.$subs_id.$dir_branch_id.'/'.self::getSpecificFolder($user_class,$upload_type);
     // }
-  
+
     /** $path = {$subs_id,$branch_id,$dir_name} */
     static function getDiskPath($pathInfo,$category="document"){
         $path = (Object)$pathInfo;
@@ -238,7 +238,7 @@ class PublicStorage //extends Model
         if($category ==='image') $category ='/images/';
         else if($category ==='document') $category ='/documents/';
         else if($category ==='audio') $category ='/audio/';
-        else if($category) $category ='/'.$category.'/'; 
+        else if($category) $category ='/'.$category.'/';
         return getcwd(). '/uploads/public/'.$subs_id.$dir_branch_id.$dir_name.$category;
        // self::getSpecificFolder($dir_name,$category);
     }
@@ -259,28 +259,28 @@ class PublicStorage //extends Model
          'extension'=>$ext
         ];
      }
-      
-   /** $path = {subs_id,branch_id,dir_name }*/  
+
+   /** $path = {subs_id,branch_id,dir_name }*/
    static function delete($path,$category,$file_name){
         $file = self::getDiskPath($path,$category).$file_name;
         return self::deleteFile($file);
    }
 
-    /** $path = {subs_id,branch_id,dir_name }*/  
+    /** $path = {subs_id,branch_id,dir_name }*/
     protected static function createFile($path,$file_type,$fileContent,$file_name = null,$category="document"){
         $branch_id = $path->branch_id ?? 0;
         if(empty($file_name)) $file_name = $branch_id."_file_".uniqid($branch_id).date('Ymd_hms');
         $filePath = self::getDiskPath($path,$category).$file_name;
         return self::makeFile($file_type,$filePath,$fileContent);
     }
-   
+
     static function isBinary($string)
     {
         return preg_match('~[^\x20-\x7E\t\r\n]~', $string) > 0;
     }
 
     static function getValueType($value){
-        if (is_numeric($value)) return "number"; 
+        if (is_numeric($value)) return "number";
         else if (self::isBinary($value)) return "binary";
         else if (is_string($value)) return "string";
         else return null;
@@ -308,7 +308,7 @@ class PublicStorage //extends Model
     $id_value = null;
     $id =  $storeInfo['id'] ?? null;
     $value_type =null;
-    if($id) 
+    if($id)
       {
         $id_field = 'id';
         $id_value = $id;
@@ -332,7 +332,7 @@ class PublicStorage //extends Model
         $key_found = true;
         // $is_binary_key = self::isBinary($id);
     }
-   
+
     if (!$value_type || !$key_found)
     {
         Log::error('Error in PublicStorage::saveFileName_db(). The $store = ["id_field_name"=>"key_value", "store"=>"table_name.col_name"]');
@@ -341,12 +341,12 @@ class PublicStorage //extends Model
      if($target_table && $target_col){
         $row = DB::table($target_table)->where($id_field,$id_value)->select([$target_col])->first();
             if($row){
-                $prev_file_name = $row->$target_col; 
+                $prev_file_name = $row->$target_col;
                 $file= self::getDiskPath($path,$category).$prev_file_name;
                 //delete previous picture file
                 self::deleteFile($file);
-            } 
-         DB::table($target_table)->where($id_field,$id_value)->update([$target_col=>$file_name]);    
+            }
+         DB::table($target_table)->where($id_field,$id_value)->update([$target_col=>$file_name]);
        }
   return;
 }
@@ -402,7 +402,7 @@ static function saveAudio($path, $ext, $base64, $maxSize = 500000, $store = [])
             {
                 if($store) self::saveFileName_db($path, $p->file_name, 'audio',$store);
                 // Get the audio file URL using getUrl() function
-                $audio_url = self::getUrl(  $path, 'audio') . $p->file_name;          
+                $audio_url = self::getUrl(  $path, 'audio') . $p->file_name;
                 // Return the response object
                 return (object)[
                     'status' => 'OK',
@@ -423,13 +423,13 @@ static function saveAudio($path, $ext, $base64, $maxSize = 500000, $store = [])
 
     return (object)['error_message' => "The given file type is not a valid audio format", 'status' => 'Error'];
  }
- 
+
 //NOTE: saveImage() will create image file based on the given base64 string
 //savePhoto() | saveFile()
 static function saveImage($path,$ext,$image_or_base64,$maxSize=500000,$store=[]){
     $ext = $ext ?? "png";
     if(self::isImage($ext)){
-        $p = self::createFullPath( $path,'image',$ext); 
+        $p = self::createFullPath( $path,'image',$ext);
         if ($image_or_base64 instanceof Image){
             try{
                 //Through this senario, it means the $file_content is instance of Intervention/Image class and has been compressed to, by default, 500 KB
@@ -458,7 +458,7 @@ static function saveImage($path,$ext,$image_or_base64,$maxSize=500000,$store=[])
                return (object)['error_message'=>$e->getMessage(),'status'=>'Error'];
             else if($e instanceof \Intervention\Image\Exception\NotWritableException)
                return (object)['error_message'=>$e->getMessage(),'status'=>'Error'];
-            else return (object)['error_message'=>$e->getMessage(),'status'=>'Error'];   
+            else return (object)['error_message'=>$e->getMessage(),'status'=>'Error'];
         }
         }
         return (object)['status'=>'error','status_code'=>405,'error_message'=>"The given file type is not valid image format",'status'=>'Error'];
@@ -473,18 +473,19 @@ static function saveImage($path,$ext,$image_or_base64,$maxSize=500000,$store=[])
         $allowed_exts = [];
         if ($category ==='document') $allowed_exts = self::$allowed_doc_extensions;
         else if ($category ==='image')  $allowed_exts = self::$allowed_image_extensions;
-          
+
         $ext = self::getExtensionFromMIMEType($ext);
         $mime_type = self::getMIMETypeFromExtension($ext);
         if(!$mime_type) return DV::error("There is no matching MIME type for file .$ext");
-
+        
         if (!in_array($ext,$allowed_exts)){
-            $file_exts = implode(',',$allowed_exts); 
+            $file_exts = implode(',',$allowed_exts);
             return DV::error("File type is not allowed. Allowed file types are $file_exts. The provided file type is ".($ext? $ext:"empty"));
         }
-        
-        if (!$ext) return DV::error("Invalid file type or mime type "); 
-  
+
+
+        if (!$ext) return DV::error("Invalid file type or mime type ");
+
         $file_name = $branch_id."_".uniqid()."_".date('Ymd_hms').".$ext";
         $full_path = self::getDiskPath($path,$category).$file_name;
         $mErr = self::makeFile($ext,$full_path,$file_content);
@@ -494,7 +495,7 @@ static function saveImage($path,$ext,$image_or_base64,$maxSize=500000,$store=[])
             return DV::success(["file_name"=>$file_name,"file_type"=>$ext,"mime_type"=>$mime_type]);
         }
     }
-  
+
     static function mime_to_ext($mime) {
     $mime_map = [
             'video/3gpp2'                                                               => '3g2',
@@ -683,5 +684,5 @@ static function saveImage($path,$ext,$image_or_base64,$maxSize=500000,$store=[])
             'text/x-scriptzsh'                                                          => 'zsh',
         ];
         return isset($mime_map[$mime]) ? $mime_map[$mime] : false;
-    } 
+    }
 }

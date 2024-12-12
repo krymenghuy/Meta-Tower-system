@@ -60,4 +60,13 @@ class EmployeeDocumentController extends Controller
         }
         return JDV::result($this->emp_doc->getFormOptions($req->id, $ss));
     }
+
+    public function downloadDocument(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return $this->emp_doc->downloadDocument($req->id, $ss);
+    }
 }

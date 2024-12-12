@@ -105,7 +105,7 @@ var EmployeeComponent = new (function () {
 
         mThis.initDropdownMenus(div);
         const sh_parent = mThis.listContainer.parentElement;
-        // sh_parent.style.height = window.innerHeight - 235 + "px";
+        sh_parent.style.height = window.innerHeight - 220 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
@@ -1546,29 +1546,68 @@ var EmployeeComponent = new (function () {
                         AddEmployeeDocumentDialog.show(op);
                     });
 
-                // Add event listeners for all "Edit" buttons
+                    document
+                    .querySelector(".lnk-add-emp-document")
+                    .addEventListener("click", function (e) {
+                        e.preventDefault();
+
+                        let btn = document.querySelector(".lnk-add-emp-document");
+                        console.log(333, btn.dataset);
+
+                        let op = {
+                            id: null,
+                            emp_id: btn.dataset.empid,
+                            btn: e.target,
+                            title: "New Employee Document",
+                            onClose: () => {
+                                mThis.EmployeeListView.showPage();
+                            },
+                        };
+                        AddEmployeeDocumentDialog.show(op);
+                    });
+
+                // Add event listeners for all "download" buttons
                 document
                     .querySelectorAll(".lnk-download-emp-document")
                     .forEach((btn) => {
                         btn.addEventListener("click", function (e) {
                             e.preventDefault();
-                            const id = e.target
-                                .closest("a")
-                                .getAttribute("data-id");
 
-                            let op = {
-                                id: id,
-                                emp_id: employeeId,
-                                btn: e.target,
-                                title: "Edit Employee Document",
-                                onClose: () => {
-                                    mThis.renderEmpDocuments.showPage();
-                                },
-                            };
-                            console.log("Edit operation:", op);
-                            AddEmployeeDocumentDialog.show(op);
+                            const id = e.target.closest("a").getAttribute("data-id");
+                            const fileType = e.target.closest("a").getAttribute("data-type"); // You should have a `data-type` attribute (e.g., pdf, image)
+
+                            if (!id || !fileType) {
+                                console.error("No document ID or file type found for download.");
+                                return;
+                            }
+
+                            const downloadUrl = `${main_view.base_url}/hr/emp-document/download?id=${id}&type=${fileType}`;
+
+                            const link = document.createElement("a");
+                            link.target = "_blank"; // Open in a new tab or trigger download
+
+                            if (fileType === 'pdf') {
+                                // For PDF files
+                                link.href = downloadUrl;
+                                link.download = `employee-document-${id}.pdf`; // Set the PDF file name
+                            } else if (fileType === 'image') {
+                                // For image files (jpg, png, etc.)
+                                link.href = downloadUrl;
+                                link.download = `employee-document-${id}.jpg`; // Adjust this to match the image format (jpg, png, etc.)
+                            } else {
+                                console.error("Unsupported file type");
+                                return;
+                            }
+
+                            // Triggering download
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
                         });
                     });
+
+
+
 
                 document
                     .querySelectorAll(".lnk-delete-emp-document")
@@ -3137,88 +3176,101 @@ const AddEmployeeDocumentDialog = (() => {
     let dialog = null;
 
     self.show = (op) => {
-
         dialog =
             dialog ||
             new GeneralDialog({
-                title: op.id ? "Add Employee Document" : " Edit Employee Document ",
+                title: op.id ? "Edit Employee Document" : "Add Employee Document",
                 cssClass: "modal-md d-flex justify-content-center",
                 createContent: () => {
-                    return [
-                        `<div class="row">
-
-                        <div class="form-group col-md-6">
-                            <label class="form-label" vslang="titles.Name File">Name File</label>
-                             <div><input name="name" class="form-control data-input" data-field="name"/></div>
-                        </div>
-                        <div class="form-group col-md-6">
-                            <label class="form-label" vslang="titles.File">File</label>
-                            <div>
-                                <input type="file" name="file_name" class="form-control data-input" data-field="file_name" />
+                    return `
+                        <div class="row">
+                            <div class="form-group col-md-6">
+                                <label class="form-label" vslang="titles.Name File">Name File</label>
+                                <div>
+                                    <input name="name" class="form-control data-input" data-field="name" />
+                                </div>
                             </div>
-                        </div>
+                            <div class="form-group col-md-6">
+                                <label class="form-label" vslang="titles.File">File</label>
+                                <div>
+                                    <input type="file" name="btn_file" class="form-control data-input" data-field="file_name" />
 
-
-                    </div>`,
-                    ].join("");
+                                </div>
+                            </div>
+                        </div>`;
                 },
-                // configSelect: [
-                //     {
-                //         name: "skill",
-                //         data: "skills",
-                //         textField: "skill",
-                //         valueField: "id",
-                //     },
-                // ],
+                contentCreated: (me) => {
+                    me.fileData = null;
+
+                    const fileInput = me.controls.btn_file;
+                    fileInput.onchange = (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = (event) => {
+                                me.fileData = {
+                                    file: event.target.result.split(",")[1], // Base64 content
+                                    ext: file.name.split(".").pop(),
+                                    name: file.name,
+                                };
+                                // document.getElementById("fileNameDisplay").textContent = `Selected file: ${file.name}`;
+                            };
+                            reader.readAsDataURL(file);
+                        } else {
+                            me.fileData = null;
+                            document.getElementById("fileNameDisplay").textContent = "No file chosen";
+                        }
+                    };
+                },
                 buttons: [
                     {
                         label: "<span>Cancel</span>",
                         cssClass: "btn btn-warning text-white",
-                        click: (me) => {
-                            me.hide(false);
-                        },
+                        click: (me) => me.hide(false),
                     },
                     {
                         label: "<span>Save</span>",
                         cssClass: "btn btn-primary",
                         click: (me) => {
-                            let p = me.getData();
-                            p.emp_id = me.dataOptions.emp_id;
-                            console.log(111,p);
+                            const data = me.getData();
+                            if (!data.name || !me.fileData) {
+                                return cv_interact.error("Please fill all required fields and select a file.");
+                            }
+
+                            data.emp_id = me.dataOptions.emp_id;
+                            data.ext = me.fileData.ext;
+                            data.file_name = me.fileData.file;
+
                             vsapi
                                 .call(
-                                    [
-                                        main_view.base_url,
-                                        "/hr/emp-document/save",
-                                    ].join(""),
-                                    p,
+                                    `${main_view.base_url}/hr/emp-document/save`,
+                                    data,
                                     false,
                                     false
                                 )
                                 .then((res) => {
-                                    if (res.status_code == 200) {
-                                        me.modal.hide(true, p);
-                                        EmployeeComponent.renderEmpDocuments(
-                                            me.dataOptions.emp_id
-                                        );
-                                    } else cv_interact.error(res.error_message);
+                                    if (res.status_code === 200) {
+                                        me.modal.hide(true, data);
+                                        EmployeeComponent.renderEmpDocuments(me.dataOptions.emp_id);
+                                    } else {
+                                        cv_interact.error(res.error_message);
+                                    }
                                 });
                         },
                     },
                 ],
-
                 prepareFormOptions: {
                     createTitle: "New Employee Document",
                     modifyTitle: "Edit Employee Document",
                     targetProp: "emp_document",
                     api: {
                         endpoint: `${main_view.base_url}/hr/emp-document/form-options`,
-                        params: (op) => {
-                            return { id: op.id }; // Pass ID to fetch data for edit
-                        },
+                        params: (op) => ({ id: op.id }), // Pass ID to fetch data for edit
                         onResponse: (me, res) => {
                             if (op.id) {
-
+                                const doc = res.data;
+                                me.controls.name.value = doc.name || "";
+                                document.getElementById("fileNameDisplay").textContent = doc.file_name || "No file chosen";
                             }
                         },
                     },
@@ -3228,5 +3280,7 @@ const AddEmployeeDocumentDialog = (() => {
 
         dialog.show(op);
     };
+
     return self;
 })();
+
