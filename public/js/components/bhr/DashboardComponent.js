@@ -8,8 +8,7 @@ var DashboardComponent = new (function () {
     this.self = this.jm[0];
     this.dbChartAll = mThis.self.querySelector('#dbChart_all_top');
     this.dbCards = this.self.querySelector('#db_cards');
-    this.dashboard_center = mThis.self.querySelector('#_dashboard_center');
-    this.dashboard_Bottom = mThis.self.querySelector('#_dashboard_bottom');
+    this.db_card_bottom = mThis.self.querySelector('#_db_card_bottom');
     this.dashboard_Bottom_left = mThis.self.querySelector('#_dashboard_bottom_left');
     this.dbCardOnLeave = mThis.self.querySelector('#_db_card_onLeave');
     this.barchart = mThis.self.querySelector('#barchart');
@@ -99,7 +98,6 @@ var DashboardComponent = new (function () {
 
     this.renderDBChartAllTop = (data) => {
         data = data ? data : {};
-        let onLeaveHtml = this.renderDBOnLeave(data);
         let html = `
             <div class="chart-row py-3">
                 <div class="col-md-3">
@@ -119,7 +117,7 @@ var DashboardComponent = new (function () {
                     </div>
                 </div> 
                 <div class="col-md-3">
-                    <div class="chart-container dashboard_chart  shadow-sm" style="max-width: 21rem;">
+                    <div class="chart-container dashboard_chart  shadow-sm" style="max-width: 20rem;">
                         <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #23232f29;">
                             <div class="d-flex align-items-center mb-3">
                                 <div class="bg-icon pt-3 px-3">
@@ -359,156 +357,223 @@ var DashboardComponent = new (function () {
     //       },
     //     });
     // };
-
+    this.initCircleCards = (div) => {
+        const pies = div.querySelectorAll(".pie");
+    
+        const elements = Array.from(pies);
+        const circle = new CircularProgressBar("pie");
+    
+        if ("IntersectionObserver" in window) {
+            const config = {
+                root: null,
+                rootMargin: "0px",
+                threshold: 0.75,
+            };
+    
+            const observer = new IntersectionObserver((entries, observer) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting && entry.intersectionRatio > 0.75) {
+                        circle.initial(entry.target); // Initialize the CircularProgressBar on the intersecting target
+                        observer.unobserve(entry.target); // Stop observing the target after initialization
+                    }
+                });
+            }, config);
+    
+            elements.forEach((item) => {
+                observer.observe(item); // Observe each pie chart element
+            });
+        } else {
+            // Fallback for browsers without IntersectionObserver support
+            elements.forEach((element) => {
+                circle.initial(element);
+            });
+        }
+    
+        // Optional dynamic animation for demonstration
+        setInterval(() => {
+            const randomColorHex = `#${Math.floor(Math.random() * 0xffffff)
+                .toString(16)
+                .padStart(6, "0")}`;
+            const randomPercentage = Math.floor(Math.random() * 100 + 1);
+            const options = {
+                percent: randomPercentage, // Generate a random percentage
+                colorSlice: randomColorHex, // Use a random color for the slice
+                fontColor: randomColorHex, // Use the same random color for the font
+                title: `Progress ${randomPercentage}%`, // Set a dynamic title
+            };
+    
+            // Uncomment this line to enable dynamic animations
+            // circle.animationTo(options);
+        }, 3000); // Adjust the interval as needed
+    };
+    
+    
     this.renderDBCards = (data) => {
         let html = `
-            <div class="row">
-                <div class="col-xl-6 col-lg-6">
-                    <div class="card shadow-sm border-0 rounded-3 l-bg-cherry">
-                        <div class="card-statistic-3 p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="card-icon card-icon-large me-3 text-white bg-danger d-flex justify-content-center align-items-center rounded-circle" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-shopping-cart fs-4"></i>
-                                </div>
-                                <div class="flex-fill">
-                                    <h5 class="card-title mb-0 text-muted">For Warning wallet and payroll </h5>
-                                </div>
-                            </div>
-                            <div class="row align-items-center mb-2 d-flex">
-                                <div class="col-8">
-                                    <h2 class="mb-0 text-primary">3,243</h2>
-                                </div>
-                                <div class="col-4 text-end">
-                                    <span class="text-success fw-bold">12.5% <i class="fa fa-arrow-up"></i></span>
-                                </div>
-                            </div>
-                            <div class="progress mt-2" style="height: 8px;">
-                                <div class="progress-bar bg-cyan" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
-                            </div>
+            <div class="col-md-4">
+                <div class="card text-light d-flex justify-content-center align-items-center p-3 shadow rounded-3" style="background-color: #ededed;">
+                    <div class="card-content d-flex justify-content-center gap-3 w-100">
+                  
+                        <div class="pie"
+                            data-pie='{ 
+                                "animationSmooth": "1s ease-out", 
+                                "percent": 50,
+                                "title":"Wallets",  
+                                "colorSlice": "#07D1ED", 
+                                "colorCircle": "#FFF" 
+                            }'>
+                         
                         </div>
-                    </div>
-                </div>
-                <div class="col-xl-6 col-lg-6">
-                    <div class="card shadow-sm border-0 rounded-3 l-bg-cherry">
-                        <div class="card-statistic-3 p-4">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="card-icon card-icon-large me-3 text-white bg-danger d-flex justify-content-center align-items-center rounded-circle" style="width: 60px; height: 60px;">
-                                    <i class="fas fa-shopping-cart fs-4"></i>
-                                </div>
-                                <div class="flex-fill">
-                                    <h5 class="card-title mb-0 text-muted">For Warning wallet and payroll</h5>
-                                </div>
-                            </div>
-                            <div class="row align-items-center mb-2 d-flex">
-                                <div class="col-8">
-                                    <h2 class="mb-0 text-primary">3,243</h2>
-                                </div>
-                                <div class="col-4 text-end">
-                                    <span class="text-success fw-bold">12.5% <i class="fa fa-arrow-up"></i></span>
-                                </div>
-                            </div>
-                            <div class="progress mt-2" style="height: 8px;">
-                                <div class="progress-bar bg-cyan" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
                 
+                        
+                        
+                        <div class="section-title mt-3 mb-0 fs-6 text-start w-100">
+                            <div class="w-100">
+                                <p class="fs-6 text-muted m-0" style="color: #cab54a;">Payroll Account</p>
+                                <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
+                                <p class="fs-5" style="color: #2b3991;">$ 168,000,000</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="col-md-4">
+                <div class="card text-light d-flex justify-content-center align-items-center p-3 shadow rounded-3" style="background-color: #ededed;">
+                    <div class="card-content d-flex justify-content-center gap-3 w-100">
+                  
+                        <div class="pie"
+                            data-pie='{ 
+                                "animationSmooth": "1s ease-out", 
+                                "percent": 50, 
+                                "colorSlice": "#07D1ED", 
+                                "colorCircle": "#FFF" 
+                            }'>
+                         
+                        </div>
+                
+                        
+                        
+                        <div class="section-title mt-3 mb-0 fs-6 text-start w-100">
+                            <div class="w-100">
+                                <p class="fs-6 m-0 text-success " style="color: #cab54a;">Wallets Account</p>
+                                <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
+                                <p class="fs-5" style="color: #2b3991;">$ 100,000,168</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+             <div class="col-md-4">
+                <div class="card card-pie-3 text-light d-flex justify-content-center align-items-center p-3 shadow rounded-3" style="background-color: #ededed;">
+                    <div class="card-content d-flex justify-content-center gap-3 w-100">
+                  
+                        <div class="pie"
+                            data-pie='{ 
+                                "animationSmooth": "1s ease-out", 
+                                "percent": 50, 
+                                "colorSlice": "#07D1ED", 
+                                "colorCircle": "#FFF" 
+                            }'>
+                         
+                        </div>
+                
+                        
+                        
+                        <div class="section-title mt-3 mb-0 fs-6 text-start w-100">
+                            <div class="w-100">
+                                <p class="fs-6 m-0" style="color: #cab54a;">Saving Account</p>
+                                <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
+                                <p class="fs-5" style="color: #2b3991;">$ 99,999,999</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
-    
         this.dbCards.innerHTML = html;
+        this.initCircleCards(this.dbCards);
+     
     };
     
+    
 
-    this.renderDBOnLeave = (data) => {
-        const rowsHtml = (data.onLeave || [])
-            .map(
-                (item) => `
-                    <tr>
-                        <td class="align-middle text-center">
-                            <div class="text-primary-custom" style="font-size: 0.75rem; font-weight: bold;">
-                                ${item.emp_name}
+ 
+
+    this.renderDBCardBottom = (data) => {
+        data = data ? data : {};
+        let tableLeave = this.renderDBCardOnLeave(data);
+    
+        let html = `
+            <div class="chart-row py-3">
+                <div class="col-md-3">
+                    <div class="card-container dashboard_chart">
+                        <span class="fw-semibold fs-6 text-primary-custom text-capitalize">
+                            Count Staff on Leave
+                        </span>
+                        ${tableLeave}
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-container dashboard_chart">
+                        <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
+                            Monthly Employee Salary Overview
+                        </span>
+                        <canvas id="employeeSalaryChart"></canvas>
+                    </div>
+                </div> 
+                <div class="col-md-3">
+                    <div class="chart-container dashboard_chart shadow-sm" style="max-width: 20rem;">
+                        <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #23232f29;">
+                            <div class="text-center mt-auto">
+                                <small class="text-muted">Last 90 days</small>
                             </div>
-                        </td>
-                        <td class="align-middle text-center" style="font-size: 0.75rem;">
-                            <span class="rounded-pill px-2 py-1 bg-warning text-white d-inline-block">
-                                ${item.emp_position}
-                            </span>
-                        </td>
-                        <td class="align-middle text-center" style="font-size: 0.75rem;">
-                            <span class="rounded-pill px-2 py-1 bg-primary-custom text-white d-inline-block">
-                                ${item.remarks}
-                            </span>
-                        </td>
-                    </tr>
-                `
-            )
-            .join("");
-
-        return `
-            <div class="w-100">
-                <table class="table bg-white rounded-2 shadow-sm">
-                    <thead class="bg-light">
-                        <tr>
-                            <th class="text-center text-primary-custom" style="width: 30%; font-size: 0.85rem; font-weight: bold;">Name</th>
-                            <th class="text-center text-primary-custom" style="width: 30%; font-size: 0.85rem; font-weight: bold;">Position</th>
-                            <th class="text-center text-primary-custom" style="width: 40%; font-size: 0.85rem; font-weight: bold;">Reason</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${rowsHtml}
-                    </tbody>
-                </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
+    
+      
+        mThis.db_card_bottom.innerHTML = html;
     };
+    
+   this.renderDBCardOnLeave = (data) => {
+    const rowsHtml = (data || [])
+        .map(
+            (item) => `
+                <tr>
+                    <td class="align-middle">
+                        <div class="text-primary-custom text-center border rounded-5 d-block p-1" style="width: 100px; background: #d1b54a;font-size: 0.75rem; font-weight: bold;">
+                            ${item.formatted_date}
+                        </div>
+                    </td>
+                    <td class="align-middle" style="font-size: 0.75rem;">
+                        <span class="p-1 text-white text-center border d-block rounded-5 p-1" style="width: 100px; background: #2b3991cc; font-size: 0.75rem; font-weight: bold;">
+                            ${item.staff_count} staff
+                        </span>
+                    </td>
+                </tr>
+            `
+        ).join(""); 
 
-    this.renderDBCardOnLeave = (data) => {
-        const rowsHtml = (data || [])
-            .map(
-                (item) => `
+    return `
+        <div class="w-100 mt-3" style=" overflow-y: auto; border: 1px solid #ddd; border-radius:8px;">
+            <table class="table bg-white rounded-4 mb-0">
+                <thead style="position: sticky; top: 0; background: #fff; z-index: 1;">
                     <tr>
-                        <td class="align-middle">
-                            <div class="text-primary-custom" style="font-size: 0.75rem; font-weight: bold;">
-                                ${item.emp_name}
-                            </div>
-                        </td>
-                        <td class="align-middle text-center" style="font-size: 0.75rem;">
-                            <span class="p-1 text-white text-center border d-block rounded-5 p-1" style="width: 100px; background: #2b3991;">
-                                ${item.emp_position}
-                            </span>
-                        </td>
-                        <td class="align-middle text-start" style="font-size: 0.75rem;">
-                            <span class="p-1 text-primary-custom text-center">
-                                ${item.remarks || "No Remarks"}
-                            </span>
-                        </td>
+                        <th class="text-start text-primary-custom" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Leave Date</th>
+                        <th class="text-start text-primary-custom" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Staff Count</th>
                     </tr>
-                `
-            )
-            .join("");
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+            </table>
+        </div>
+    `;
+};
 
-        const html = `
-            <h3 class="d-flex align-items-start text-primary-custom" style="font-size: 1.2rem;">Staffs on Leave Today</h3>
-            <div class="w-100" style="max-height: 300px; overflow-y: auto; border: 1px solid #ddd; border-radius:8px;">
-                <table class="table bg-white rounded-4 mb-0">
-                    <thead style="position: sticky; top: 0; background: #fff; z-index: 1;">
-                        <tr>
-                            <th class="text-start text-primary-custom" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Name</th>
-                            <th class="text-start text-primary-custom" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Position</th>
-                            <th class="text-start text-primary-custom" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Reason</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${rowsHtml}
-                    </tbody>
-                </table>
-            </div>
-        `;
-
-        mThis.dbCardOnLeave.innerHTML = html;
-    };
+    
     this.loadCards = (onFinish) => {
         let p = {};
 
@@ -517,7 +582,7 @@ var DashboardComponent = new (function () {
 
             mThis.renderDBChartAllTop(data);
             mThis.renderDBCards(data.cards);
-            mThis.renderDBCardOnLeave(data.onLeave);
+            mThis.renderDBCardBottom(data.onLeave);
 
             onFinish();
         });
