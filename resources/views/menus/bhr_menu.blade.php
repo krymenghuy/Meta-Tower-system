@@ -392,15 +392,13 @@ function v_display($mod_id, $module_ids = null)
             </li>
 
             <li class="kt-menu__item" aria-haspopup="true" <?php v_display(209); ?>>
-                            <a href="ExitFormComponent" modid="209" class="menu-item kt-menu__link">
-                                <span class="kt-menu__link-icon">
-                                    <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/icons/pickup_center.svg') }}" />
-                                </span>
-                                <span class="kt-menu__link-text font-color" vslang="menus.Exit Forms">
-                                     Exit Forms
-                                </span>
-                            </a>
+            <a href="ExitFormComponent" modid="209" class="menu-item kt-menu__link">
+                <span class="kt-menu__link-icon">
+                    <img class="icons opacity-icons"
+                        src="{{ asset('assets/images/icons/pickup_center.svg') }}" />
+                </span>
+                <span class="kt-menu__link-text font-color" vslang="menus.Exit Form"></span>
+            </a>
             </li>
 
             <li class="kt-menu__section" <?php v_display(-1); ?>>
@@ -543,7 +541,25 @@ function v_display($mod_id, $module_ids = null)
                                 <span class="kt-menu__link-text font-color " vslang="menus.Countries and Cities"></span>
                             </a>
                         </li>
-
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
+                            <a href="ExitCheckpiontsComponent" modid="105" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons"
+                                        src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Exit Checkpoints"></span>
+                            </a>
+                        </li>
+                        <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
+                            <a href="ExitFormItemComponent" modid="105" class="menu-item kt-menu__link">
+                                <span class="kt-menu__link-icon">
+                                    <img class="icons opacity-icons"
+                                        src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
+                                </span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Exit Form Items"></span>
+                            </a>
+                        </li>
+                        
                     </ul>
                 </div>
             </li>
