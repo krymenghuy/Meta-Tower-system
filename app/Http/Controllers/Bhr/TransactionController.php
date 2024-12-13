@@ -12,9 +12,9 @@ class TransactionController extends Controller
 {
    protected $transaction;
 
-    public function __construct(Transaction $transaction)
+    public function __construct()
     {
-        $this->transaction = $transaction;
+        $this->transaction = new Transaction();
     }
 
     public function saveTransaction(Request $req)

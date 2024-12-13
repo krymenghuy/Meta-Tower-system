@@ -17,12 +17,11 @@ class EmployeeSkill
         $this->userInfo = $userInfo;
     }
 
-    function save($arr, $ss = null) {
+    function save($arr = [], $ss = null , $id = null) {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number',
             'skill_id' => '1|number',
             'rate' => '1|number',
@@ -33,7 +32,6 @@ class EmployeeSkill
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss, 'emp_skills', ['id' => $id], $inputs, [], 1);

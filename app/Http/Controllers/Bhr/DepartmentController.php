@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 class DepartmentController extends Controller
 {
     protected $departmentModel;
-    public function __construct(Department $department)
+    public function __construct()
     {
-        $this->departmentModel = $department;
+        $this->departmentModel = new Department();
     }
 
     public function saveDepartment(Request $req)
@@ -23,7 +23,7 @@ class DepartmentController extends Controller
             return JDV::raw($ss);
         }
         $id = $req->id ?? null;
-       
+
         $res = $this->departmentModel->save($req->all(),$id,$ss);
         return JDV::raw($res);
     }

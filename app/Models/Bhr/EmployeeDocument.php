@@ -21,26 +21,25 @@ class EmployeeDocument
         $this->userInfo = $userInfo;
     }
 
-    public function save($arr = [], $ss = null)
+    public function save($arr = [], $ss = null,$id = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number',
             'name' => '0|string',
             'ext' => '0|string',
             'file_name' => '1|string',
         ];
 
-        $res = validateObject($arr, $v_rule, true, ['file_name' => GeneralSettings::$image_chars], $ss->lang, false, isset($arr['id']));
+        $res = validateObject($arr, $v_rule, true, ['file_name' => GeneralSettings::$image_chars], $ss->lang, false, null);
         if ($res->error) {
             error_log('Validation error: ' . json_encode($res->error));
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
         $d = (object) $inputs;
         $data = $d->file_name;
@@ -122,8 +121,10 @@ class EmployeeDocument
         return $row;
     }
 
-    function delete($id, $ss)
+    function delete($id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }

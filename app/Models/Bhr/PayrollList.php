@@ -22,12 +22,12 @@ class PayrollList
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr = [], $id = null, $ss = null) {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'id' => '0|identity=1',
             'payroll_id' => '1|number',
             'emp_id' => '1|number',
             // 'salary' => '0|number',
@@ -45,7 +45,6 @@ class PayrollList
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss,'payroll_lists', ['id' => $id], $inputs, [], 1);
@@ -189,10 +188,9 @@ class PayrollList
         }
         return $row;
     }
-    function deletePayrollList($id, $ss)
+    function deletePayrollList($id = null)
     {
-        $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
+        $id = $id ?? $this->id;
         $query = DB::table('payroll_lists')
             ->where('id', $id)
             ->delete();

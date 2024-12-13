@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 class BenefitController extends Controller
 {
     protected $benefity_category;
-    public function __construct(Benefit $benefity_category)
+    public function __construct()
     {
-        $this->benefity_category = $benefity_category;
+        $this->benefity_category = new Benefit();
     }
     function saveBenefit(Request $req)
     {

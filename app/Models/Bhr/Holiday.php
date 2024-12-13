@@ -19,12 +19,12 @@ class Holiday
         $this->userInfo = $userInfo;
     }
 
-    public function save($arr, $ss = null)
+    public function save($arr = [], $id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'name' => '1|string|0-100',
             'holiday_type_id' => '1|number',
             'start_date' => '1|date',
@@ -40,7 +40,6 @@ class Holiday
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss, 'holidays', ['id' => $id], $inputs, [], 1);
@@ -92,10 +91,10 @@ class Holiday
         return $row;
     }
 
-    function deleteHoliday($i=null, $ss=null)
+    function deleteHoliday($id=null, $ss=null)
     {
         $id = $id ?? $this->id;
-
+        $ss = $ss ?? $this->userInfo;
         $delete = DB::table('holidays')->where('id', $id)->delete();
         return DV::depends($delete, ['action', 'deleted']);
     }
@@ -129,5 +128,5 @@ class Holiday
         }
         $rows = $query->get();
         return $rows;
-    } 
+    }
 }

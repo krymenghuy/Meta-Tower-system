@@ -23,12 +23,12 @@ class Benefit //extends Model
         $row = DB::table('benefits')->where('id', $id)->selectRaw($cols)->first();
         return $row;
     }
-    public function save($id = null, $ss = null, $arr)
+    public function save($benefit_type_id, $ss = null, $arr = []  , $id = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'name' => '1|string',
         ];
         $checkUnque = ["$branch_id|benefits|name|id=id|text=Benefit already exists."];
@@ -38,10 +38,7 @@ class Benefit //extends Model
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
-
-
 
         $id = saveData($ss, 'benefits', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
@@ -92,7 +89,7 @@ class Benefit //extends Model
         return $row;
     }
 
-    function deleteBenefit($id, $ss)
+    function deleteBenefit($id = null)
     {
         $id = $id ?? $this->id;
 

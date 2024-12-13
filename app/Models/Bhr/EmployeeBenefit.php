@@ -26,14 +26,14 @@ class EmployeeBenefit
         return $row;
     }
 
-    public function save($benefit_type_id, $id = null, $ss = null, $arr)
+    public function save($benefit_type_id, $id = null, $ss = null, $arr = [])
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $id = $id ?? $this->id;
 
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number|exists=employees.id',
             'benefit_type_id' => '1|choice|1,2,3|default=1',
             'benefit_id' => '1|number',
@@ -49,7 +49,6 @@ class EmployeeBenefit
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
         $remarks = $arr['remarks'] ?? null;
         $emp_id = $arr['emp_id'] ?? null;
@@ -194,9 +193,10 @@ class EmployeeBenefit
     }
 
 
-    function deleteBenefit($id, $ss)
+    function deleteBenefit($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
         $delete = DB::table('emp_benefits')->where('id', $id)->delete();

@@ -12,9 +12,9 @@ class EmployeeEventController extends Controller
 {
     protected $EmployeeEvent;
 
-    public function __construct(EmployeeEvent $EmployeeEvent)
+    public function __construct()
     {
-        $this->EmployeeEvent = $EmployeeEvent;
+        $this->EmployeeEvent = new EmployeeEvent();
     }
 
     public function saveEmpEvent(Request $req)

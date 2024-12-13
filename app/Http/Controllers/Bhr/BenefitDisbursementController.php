@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 class BenefitDisbursementController extends Controller
 {
     protected $benefitDisubrsementModel;
-    public function __construct(BenefitDisbursement $benefit_disbursement)
+    public function __construct()
     {
-        $this->benefitDisubrsementModel = $benefit_disbursement;
+        $this->benefitDisubrsementModel = new BenefitDisbursement();
     }
 
     public function saveBenefitDisbursement(Request $req)

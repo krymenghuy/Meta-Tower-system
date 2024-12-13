@@ -13,9 +13,9 @@ use Illuminate\Http\Request;
 class PositionController extends Controller
 {
     protected $positionModel;
-    public function __construct(Position $position)
+    public function __construct()
     {
-        $this->positionModel = $position;
+        $this->positionModel = new Position();
     }
 
 

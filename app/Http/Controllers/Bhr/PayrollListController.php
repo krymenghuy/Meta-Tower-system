@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 class PayrollListController extends Controller
 {
     protected $payrollListModel;
-    public function __construct(PayrollList $payrollList)
+    public function __construct()
     {
-        $this->payrollListModel = $payrollList;
+        $this->payrollListModel = new PayrollList();
     }
 
     public function savePayrollList(Request $req)

@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 class AccountController extends Controller
 {
     protected $account;
-    public function __construct(Account $account)
+    public function __construct()
     {
-        $this->account = $account;
+        $this->account = new Account();
     }
 
     public function saveAccount(Request $req)

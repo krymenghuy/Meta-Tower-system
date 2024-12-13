@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 class ShiftDetailsController extends Controller
 {
     protected $shiftDetailsModel;
-    public function __construct(ShiftDetails $shiftDetailsModel)
+    public function __construct()
     {
-        $this->shiftDetailsModel = $shiftDetailsModel;
+        $this->shiftDetailsModel = new ShiftDetails();
     }
 
     public function saveShiftDetails(Request $req)

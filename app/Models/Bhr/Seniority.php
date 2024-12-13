@@ -17,11 +17,11 @@ class Seniority
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr = [], $id = null, $ss = null) {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number',
             'period' => '1|string|0-100',
             'description' => '0|string|0-100',
@@ -34,7 +34,6 @@ class Seniority
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss,'seniorities', ['id' => $id], $inputs, [], 1);
@@ -112,23 +111,20 @@ class Seniority
         return $row;
     }
 
-    function deleteSeniority($id, $ss) {
-        // Ensure $id is numeric and valid
+    function deleteSeniority($id = null) {
+        $id = $id ?? $this->id;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }
 
-        // Assuming $ss contains branch_id or other necessary info
         $branch_id = $ss->branch_id;
 
-        // Build and execute the query
         $query = DB::table('seniorities')
             ->where('id', $id)
             ->delete();
         if (!$query) {
             return DV::error('Seniority not found');
         }
-        // Return the query result
         return $query;
 
     }

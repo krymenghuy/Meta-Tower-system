@@ -20,14 +20,13 @@ class Job_Level //extends Model
         $this->userInfo = $userInfo;
     }
 
-    public function save($arr, $id = null, $ss = null)
+    public function save($arr = [], $id = null, $ss = null)
     {
          $id = $id ?? $this->id;
         $ss = $userInfo ?? $this->userInfo;
         //$subs_id = $userInfo->subs_id ?? getCurrentSubsId(true);
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identify=1',
             'name' => '1|string|0-100',
             'description' => '0|string|0-250',
             'rank' => '1|number|0-100',
@@ -35,12 +34,12 @@ class Job_Level //extends Model
         $job_char = ['$','#','@','!','/','.','-','_','=','?'];
 
 
-        $checkUnque = ["$branch_id|job_levels|name|id=id|text= job name already exists."];
+        $checkUnque = ["$branch_id|job_levels|name|id=id|text=Job Level already exists."];
         $res = validateObject($arr, $v_rule, true, ['name'=>$job_char,'description'=>$job_char], $ss->lang, false, $checkUnque);
         if ($res->error) {
             return DV::error($res->error);
         }
-        
+
         $inputs = $res->values;
         $id = saveData($ss, 'job_levels', ['id' => $id], $inputs, [], 1, false);
         if($id > 0){
@@ -50,7 +49,7 @@ class Job_Level //extends Model
     }
 
     public function getList($arr,$ss)
-    {   
+    {
         $ss = $ss ?? $this->userInfo;
         $d = (object)$arr;
         $branch_id = $d->branch_id ?? null;
@@ -58,7 +57,7 @@ class Job_Level //extends Model
 
         $rows = $query->get();
         return $rows;
-       
+
     }
 
     public static function getDetails($id, $ss = null)
@@ -67,7 +66,7 @@ class Job_Level //extends Model
         $row = DB::table('job_levels as j')->selectRaw('j.id,j.name,j.description,j.rank')->where('j.branch_id',$branch_id)->where('j.id',$id)->take(1)->first();
         return $row;
 
-     
+
     }
 
     public static function getFormOptions($id, $ss)
@@ -85,7 +84,7 @@ class Job_Level //extends Model
         $id = $id ?? $this->id;
 
         $delete = DB::table('job_levels')->where('id', $id)->delete();
-    
+
 
         return DV::depends($delete,['action','deleted']);
     }
