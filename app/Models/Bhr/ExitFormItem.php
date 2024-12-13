@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
-class ExitFormItem //extends Model
+class ExitFormItem
 {
 
     protected $id = null;
@@ -56,8 +56,9 @@ class ExitFormItem //extends Model
             ->where('emp_id', $emp_id)
             ->first();
 
-        if (!$resignation) {
-            return DV::error("Employee ID {$emp_id} cannot create an exit item because they are not in the resignations table.");
+        $isValidEmployee = DB::table('employees')->where('id', $emp_id)->where('status_id', 20)->exists();
+        if (!$isValidEmployee) {
+            return DV::error("Employee ID {$emp_id} is not stay in resign.");
         }
 
         // Check if effective_date has expired
@@ -65,19 +66,6 @@ class ExitFormItem //extends Model
         if ($resignation->effective_date < $currentDate) {
             return DV::error("Employee ID {$emp_id} cannot create an exit item because their resignation effective date has expired.");
         }
-
-        // Check for existing benefit disbursement
-        // $existingBenefitDisbursement = DB::table('exit_form_items')
-        // ->where('emp_id', $emp_id)
-        //     ->where('check_point_id', $inputs['check_point_id'])
-        //     ->where('form_id', $form_id)
-        //     ->first();
-
-        // if ($existingBenefitDisbursement) {
-        //     return DV::error("An exit form item already exists for Employee ID {$emp_id} with the same check point and form ID.");
-        // }
-
-        // Save data
         $id = saveData($ss, 'exit_form_items', ['id' => $id], $inputs, [], 1, false);
         if ($id > 0) {
             $check_point_id = $this->getProps($id, ['check_point_id']);
@@ -105,7 +93,7 @@ class ExitFormItem //extends Model
             ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
             ->join('check_points as cp', 'cp.id', '=', 'efi.check_point_id')
             ->join('exit_forms as ef', 'ef.id', '=', 'efi.form_id')
-
+            ->where('emp.status_id', 20)
             ->select(
                 'efi.id',
                 'efi.emp_id',
@@ -158,7 +146,7 @@ class ExitFormItem //extends Model
             ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
             ->join('check_points as cp', 'cp.id', '=', 'efi.check_point_id')
             ->join('exit_forms as ef', 'ef.id', '=', 'efi.form_id')
-
+            ->where('emp.status_id', 20)
             ->select(
                 'efi.id',
                 'efi.emp_id',
@@ -195,7 +183,7 @@ class ExitFormItem //extends Model
         $exit_form_items = $id ? self::getDetails($id, $ss) : null;
 
         return (object) [
-            'employees' => GeneralSettings::options_employee(10, $ss),
+            'employees' => GeneralSettings::options_employee(20, $ss),
             'check_points' => DB::table('check_points')->select('id', 'item_name')->get(),
             'exit_forms' => DB::table('exit_forms')->select('id', 'name')->get(),
             'check_point_categories' => DB::table('check_point_categories')->select('id', 'name')->get(),

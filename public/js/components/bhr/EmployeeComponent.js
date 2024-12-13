@@ -576,7 +576,7 @@ var EmployeeComponent = new (function () {
                                 <div class="d-flex">
                                     <p class="text-nowrap width-p" vslang="titles.Address">Address</p>
                                     <p class="pl-5 pr-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${
+                                    <p class="text-nowrap text-capitalize" style="overflow: hidden; text-overflow: ellipsis;">${
                                         data.address
                                     }</p>
                                 </div>
@@ -1666,7 +1666,7 @@ var EmployeeComponent = new (function () {
                             <input data-target="div_branch" name="change_branch" class="mb-2 change-option" type="checkbox" id="branch" name="items" value="branch" />
                             <label for="branch" class="text-primary-custom">Change Branch</label>
 
-                            <input data-target="div_position" name="change_position" class="mb-2 change-option" type="checkbox" id="position" name="items" value="position" />
+                            <input data-target="div_position" name="change_position" class="mb-2 change-option data-input" data-field="position_id" type="checkbox" id="position" name="items" value="position" />
                             <label for="position" class="text-primary-custom">Change Position</label>
 
                             <input data-target="div_salary" name="change_salary" class="mb-2 change-option" type="checkbox" id="salary" name="items" value="salary" />
@@ -1826,7 +1826,7 @@ var EmployeeComponent = new (function () {
                         d.change_branch = change_branch;
                         d.change_position = change_position;
                         d.change_salary = change_salary;
-                        console.log(123, d);
+                        console.log(12301, d);
 
                         vsapi
                             .call(
@@ -2824,7 +2824,7 @@ const EmployeeDialog = (() => {
                                     <div class="form-group col-4">
                                         <label for="position" class="form-label text-primary-custom " vslang="titles.Position"></label>
                                         <span class="text-danger" >*</span>
-                                        <select name="position" class="data-input"  data-field="position_id"></select>
+                                        <select name="position" class="data-input" data-field="position_id"></select>
                                     </div>
 
                                     <div class="form-group col-4">

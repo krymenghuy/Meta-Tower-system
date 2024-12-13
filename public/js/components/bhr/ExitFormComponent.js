@@ -7,8 +7,10 @@ var ExitFormComponent = new (function () {
     this.self = this.jm[0];
     this.title_prop = "Exit Form";
     this.btnAdd = this.self.querySelector("#_btnAddExitForm");
+    this.btnPrint = this.self.querySelector("#_btnPrintExitForm");
     this.elSearch = this.self.querySelector("#_exit_form_search");
     this.divFilter = this.self.querySelector("#container_exit_form");
+    this.viewExitForm = this.self.querySelector("#view_exit_form_");
     this.cols = [
         {
             title: "Name",
@@ -58,6 +60,9 @@ var ExitFormComponent = new (function () {
                         <button class="btn rounded-3 p-1 btn-warning btn-exit_form-delete" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
                         </button>
+                        <button class="btn rounded-3 p-1 btn-success btn-exit_form-view" data-id="${data.id}">
+                            <i class="fa-regular fs-6 ml-2 text-white fa-eye"></i>
+                        </button>
                     </div>
                 </div>`;
             },
@@ -93,6 +98,10 @@ var ExitFormComponent = new (function () {
             };
             ExitFormDialog.show(op);
         };
+        mThis.btnPrint.onclick = function (e) {
+            e.preventDefault();
+            window.print();
+        };
         const pr_tbl = mThis.ExitFormListView.getListContainer();
         const sh_parent = pr_tbl;
         sh_parent.classList.add("overflow-y-auto");
@@ -116,7 +125,7 @@ var ExitFormComponent = new (function () {
             }
         }, 200);
     });
-
+    
     this.setFilterPeriod = (p) => {
         return p;
     };
@@ -140,6 +149,10 @@ var ExitFormComponent = new (function () {
             btn = VSUtil.closestLimited(e.target, ".btn-exit_form-delete");
             if (btn) {
                 mThis.delete_exit_form(btn.dataset.id, btn);
+            }
+            btn = VSUtil.closestLimited(e.target, ".btn-exit_form-view");
+            if (btn) {
+                mThis.view_exit_form(btn.dataset.id, btn);
             }
             console.log(123, btn);
         });
@@ -190,6 +203,15 @@ var ExitFormComponent = new (function () {
                 }
             }
         );
+    };
+    this.view_exit_form = (id, menulink) => {
+        let op = {
+            id: id,
+            btn: menulink,
+            onClose: () => {
+                mThis.ExitFormListView.showPage();
+            },
+        };
     };
 
     this.prepareFormOptions = () => {

@@ -252,7 +252,11 @@ const ExitFormItemDialog = (() => {
                                 <select name="form_id" class="form-control data-input" data-field="form_id" id="form_id"></select>
                             </div>
                             <div class="form-group col-md-12">
-                                <label for="remarks" class="form-label" vslang="titles.Form Name"></label>
+                                <label for="amount" class="form-label" vslang="titles.Amount"></label>
+                                <input name="amount" class="form-control data-input" data-field="amount" id="amount">
+                            </div>
+                            <div class="form-group col-md-12">
+                                <label for="remarks" class="form-label" vslang="titles.Remarks"></label>
                                 <input name="remarks" class="form-control data-input" data-field="remarks" id="remarks">
                             </div>                           
                         </div>`,

@@ -4,6 +4,7 @@ namespace App\Models\Bhr;
 
 use App\Models\DV;
 use App\Models\Bhr\Employee;
+use App\Models\DBX;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 
@@ -101,7 +102,8 @@ class Attendance
             if ($emp_type_id) $str_moreWhere .= ' AND emp.emp_type_id = ' . $emp_type_id;
             if ($work_shift_id) $str_moreWhere .= ' AND emp.work_shift_id = ' . $work_shift_id;
         }
-        $selectCols = 'emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code, emp.date_of_birth as dob, ws.name as work_shift, DATE_FORMAT(a.attendance_date, "%d %b %Y") as attendance_date, a.scan_time, a.scan_action, p.title as position';
+        $col_attendance_date = DBX::formatDate('a.attendance_date', 'attendance_date');
+        $selectCols = 'emp.id as emp_id, emp.name, emp.name_kh, emp.sex, emp.code, emp.date_of_birth as dob, ws.name as work_shift, '. $col_attendance_date.', a.scan_time, a.scan_action, p.title as position';
 
     $query = DB::table('employees as emp')
         ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
@@ -154,7 +156,7 @@ class Attendance
         $search_value = $d->search_value ?? null;
 
         $str_search = '1=1';
-
+        $query = $d->query;
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->whereRaw("emp.name LIKE '%" . $search_value . "%' OR emp.code LIKE '%" . $search_value . "%'");
