@@ -98,25 +98,25 @@ var DashboardComponent = new (function () {
 
     this.renderDBChartAllTop = (data) => {
         data = data ? data : {};
-        let html = `
-            <div class="chart-row py-3">
-                <div class="col-md-3">
+        let html = [`
+            <div class="chart-row py-3">`,
+               `<div class="col-md-3">
                     <div class="chart-container dashboard_chart ">
                         <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
                             ${data.doughnutChart.title}
                         </span>
                         <canvas id="doughnutChart"></canvas>
                     </div>
-                </div>
-                <div class="col-md-6">
+                </div>`,
+                `<div class="col-md-6">
                     <div class="chart-container dashboard_chart">
                         <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
                             Monthly Employee Salary Overview
                         </span>
                         <canvas id="employeeSalaryChart"></canvas>
                     </div>
-                </div> 
-                <div class="col-md-3">
+                </div> `,
+                `<div class="col-md-3">
                     <div class="chart-container dashboard_chart  shadow-sm" style="max-width: 20rem;">
                         <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #23232f29;">
                             <div class="d-flex align-items-center mb-3">
@@ -124,8 +124,8 @@ var DashboardComponent = new (function () {
                                     <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
                                 </div>
                                 <div class="ms-3 text-center flex-fill">
-                                    <span class="fw-semibold fs-4 text-danger">0</span>
-                                    <div class="text-muted">Total New Staff</div>
+                                    <span class="fw-semibold fs-4 text-primary-custom">${data.cards.new_staff_count.count}</span>
+                                    <div class="" style="color:#faff00;">${data.cards.new_staff_count.title}</div>
                                 </div>
                             </div>
                             <div class="text-center mt-auto">
@@ -138,8 +138,8 @@ var DashboardComponent = new (function () {
                                     <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
                                 </div>
                                 <div class="ms-3 text-center flex-fill">
-                                    <span class="fw-semibold fs-4 text-danger">0</span>
-                                    <div class="text-muted">Total New Staff</div>
+                                    <span class="fw-semibold fs-4 text-primary-custom">${data.cards.probation_staff_count.count}</span>
+                                    <div class="text-success">${data.cards.probation_staff_count.title}</div>
                                 </div>
                             </div>
                             <div class="text-center mt-auto">
@@ -153,8 +153,8 @@ var DashboardComponent = new (function () {
                                     <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
                                 </div>
                                 <div class="ms-3 text-center flex-fill">
-                                    <span class="fw-semibold fs-4 text-danger">0</span>
-                                    <div class="text-muted">Probation Staff</div>
+                                    <span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigning_staff_count.count}</span>
+                                    <div class="text-info">${data.cards.resigning_staff_count.title}</div>
                                 </div>
                             </div>
                             <div class="text-center mt-auto">
@@ -168,8 +168,8 @@ var DashboardComponent = new (function () {
                                     <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
                                 </div>
                                 <div class="ms-3 text-center flex-fill">
-                                    <span class="fw-semibold fs-4 text-danger">0</span>
-                                    <div class="text-warning">Resigned Staff</div>
+                                    <span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigned_staff_count.count}</span>
+                                    <div class="text-danger">${data.cards.resigned_staff_count.title}</div>
                                 </div>
                             </div>
                             <div class="text-center mt-auto">
@@ -178,9 +178,9 @@ var DashboardComponent = new (function () {
                         </div>
 
                     </div>
-                </div>
-            </div>
-        `;
+                </div>`,
+            `</div>
+        `].join('');
         mThis.dbChartAll.innerHTML = html;
         mThis.renderChartEmployee(data.doughnutChart);
         mThis.employeeSalaryChart(data.barCharts);
