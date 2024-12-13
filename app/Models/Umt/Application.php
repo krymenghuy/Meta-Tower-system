@@ -17,6 +17,14 @@ class Application //extends Model
        $this->id = $id;
        $this->userInfo = $userInfo;   
     }
+    protected static $fk_tables =[
+       'reports'=>'app_id',
+       'um_permissions'=>'app_id',
+       'notifications'=>'app_id',
+       'um_app_modules'=>'app_id',
+       'um_subs_apps'=>'app_id',
+       'um_role_apps'=>'app_id'     
+    ];
 
     function getEligibleUsers($app_id,$ss){
         $subs_id = $ss->subs_id ?? getCurrentSubsId(true);
@@ -59,7 +67,8 @@ class Application //extends Model
             'icon_file_name'=>'0|string|0-250',
             'home_route'=>'0|string|1-50',
             'user_class'=>'1|string',
-            'subs_id'=>'1|string'
+            'subs_id'=>'1|string',
+            'force_app_id'=>'0|string',
         ];
 
         $res = validateObject($arr, $v_rule,true,[],$ss->lang,false,null);
@@ -73,10 +82,17 @@ class Application //extends Model
         }
         $inputs['name_native'] = $inputs['name'];
         $subs_id = $inputs['subs_id'];
-        unset($inputs['subs_id']);
+        $force_app_id = $inputs['force_app_id'] ?? null;
+        unset($inputs['subs_id'], $inputs['force_app_id']);
         $bin_app_id = $id? hex2bin($id) : null;
         $bin_subs_id = $subs_id? hex2bin($subs_id) : null;
         $id = saveData($ss,'um_applications',['id'=>$bin_app_id],$inputs,[],0,false,'binary');
+        // if ($id){
+        //      if($force_app_id){
+        //         $x = DBX::updatePrimaryKey('um_applications','id',$id,$force_app_id);
+        //         if($x) DBX::updateForeignKeyTables(self::$fk_tables,$id, $force_app_id);
+        //      } 
+        // }
         $nowTime = getNowTime();
 
         if($id && $bin_subs_id){

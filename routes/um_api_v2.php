@@ -22,8 +22,10 @@ Route::middleware([CustomRateLimiter::class])->prefix('settings')->group(functio
     Route::get('/lang', [UserController::class, 'getLang']);
     Route::get('/next-prn-id', [PermissionController::class, 'getNextPermissionId']);
     Route::get('/report/actions', [ReportController::class, 'getReportActionNames']);
+    Route::get('/utils/uuid', function () {
+        return response()->json(['uuid' => createUUID(true)]);
+    });
 });
-
 //begin::CompanyProfileController
     Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->group(function(){
         Route::post('/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);

@@ -242,4 +242,57 @@ public static function formatTimeOnly($column, $alias_name = null)
     }
 
 
+    static function updateForeignKeyTables($fk_tables, $old_value, $new_value){
+        foreach($fk_tables as $table_name => $fk_name){
+           DB::table($table_name)->where($fk_name,$old_value)->update([$fk_name=>$new_value]);
+        }
+    }
+    
+    static function updatePrimaryKey($table_name, $pk_name, $old_value, $new_value) {
+            $driverName = DB::getDriverName();
+            // Get the database connection
+           // $connection = DB::connection();
+             // Begin transaction for safety
+            DB::beginTransaction();
+            try {
+                // Step 1: Check if the new value already exists as a primary key
+                $check_query = "SELECT COUNT(*) FROM {$table_name} WHERE {$pk_name} = :new_value";
+                $stmt = DB::prepare($check_query);
+                $stmt->execute(['new_value' => $new_value]);
+                $exists = $stmt->fetchColumn();
+
+                if ($exists > 0) {
+                    // If the new value already exists, return false or handle the error
+                    throw new \Exception("The new primary key value '{$new_value}' already exists.");
+                }
+
+                // Step 2: Disable foreign key checks for MySQL/MariaDB
+                if ($driverName === 'mysql' || $driverName === 'mariadb') {
+                    //$db->exec('SET FOREIGN_KEY_CHECKS = 0');
+                    DB::statement(DB::raw('SET FOREIGN_KEY_CHECKS = 0'));
+                }
+
+                // Step 3: Update the primary key in the base table
+                $update_query = "UPDATE {$table_name} SET {$pk_name} = :new_value WHERE {$pk_name} = :old_value";
+                $stmt = DB::prepare($update_query);
+                $stmt->execute(['new_value' => $new_value, 'old_value' => $old_value]);
+
+                // Step 4: Commit the transaction
+                DB::commit();
+
+                // Re-enable foreign key checks for MySQL/MariaDB
+                if ($driverName === 'mysql' || $driverName === 'mariadb') {
+                    //$db->exec('SET FOREIGN_KEY_CHECKS = 1');
+                    DB::statement(DB::raw('SET FOREIGN_KEY_CHECKS = 1'));
+                }
+
+                return true;
+            } catch (\Exception $e) {
+                // Rollback in case of error
+                DB::rollBack(); 
+                return false;
+            }
+        }
+
+ 
 }
