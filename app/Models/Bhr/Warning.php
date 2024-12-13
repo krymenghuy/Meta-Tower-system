@@ -31,13 +31,13 @@ class Warning
 
     protected static $img_dir = 'warnings/profile';
 
-    public function saveWarnings($arr = [], $ss = null)
+    public function saveWarnings($arr = [], $ss = null, $id = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number|exists.employees.id',
             'warning_type' => '1|string|50',
             'warning_date' => '1|date',
@@ -51,7 +51,6 @@ class Warning
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         // Check for duplicate warning_type for the employee
@@ -149,9 +148,10 @@ class Warning
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function deleteWarning($id, $ss)
+    function deleteWarning($id = null, $ss = null)
     {
-        // Ensure $id is numeric and valid
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }

@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 class HolidayController extends Controller
 {
     protected $holiday;
-    public function __construct(Holiday $holiday)
+    public function __construct()
     {
-        $this->holiday = $holiday;
+        $this->holiday = new Holiday();
     }
     function saveHoliday(Request $req)
     {

@@ -29,15 +29,15 @@ class Commune //extends Model
     }
     static function delete($commune_id,$ss){
         if(!$commune_id) $commune_id =-1;
-        //Commune::deleteByParent($district_id); 
+        //Commune::deleteByParent($district_id);
         $x = DB::table('loc_communes')->where('id',$commune_id)->delete();
         return DV::depends(['action'=>'deleted']);
     }
-     
+
      static function list($district_id=null,$ss){
          $str_where ="1=1";
          if($district_id) $str_where ="c.district_id =$district_id";
-         return DB::table('loc_communes AS c')->whereRaw($str_where)->join('loc_districts as d','d.id','=','c.district_id')->join('loc_cities as ct','ct.id','=','d.city_id')->join('loc_countries as co','co.id','=','ct.country_id')->select('c.id','c.name','c.name_kh','c.district_id','d.name as district','ct.name as city','co.name as country')->orderBy('c.name','ASC')->get();  
+         return DB::table('loc_communes AS c')->whereRaw($str_where)->join('loc_districts as d','d.id','=','c.district_id')->join('loc_cities as ct','ct.id','=','d.city_id')->join('loc_countries as co','co.id','=','ct.country_id')->select('c.id','c.name','c.name_kh','c.district_id','d.name as district','ct.name as city','co.name as country')->orderBy('c.name','ASC')->get();
      }
 
      static function save($d,$ss){
@@ -56,6 +56,6 @@ class Commune //extends Model
      }
      static function options_commune($district_id = null,$ss = null){
         $str_district = $district_id > 0 ? 'city.id ='.$district_id: '1=1';
-        return DB::table('loc_countries as c')->join('loc_cities as city','city.country_id', '=','c.id')->join('loc_districts as d','d.city_id','=','city.district_id')->join('loc_communes as cn','cn.district_id','=','d.id')->whereRaw($str_district)->selectRaw('cn.id, cn.name, cn.name_kh, d.name As district_name, d.id AS district_id, city.name AS city_name,  city.id AS city_id, c.id AS country_id,c.name as country_name')->orderByRaw('cn.name ASC')->get();
-     }  
+        return DB::table('loc_countries as c')->join('loc_cities as city','city.country_id', '=','c.id')->join('loc_districts as d','d.city_id','=','city.id')->join('loc_communes as cn','cn.district_id','=','d.id')->whereRaw($str_district)->selectRaw('cn.id, cn.name, cn.name_kh, d.name As district_name, d.id AS district_id, city.name AS city_name,  city.id AS city_id, c.id AS country_id,c.name as country_name')->orderByRaw('cn.name ASC')->get();
+     }
 }

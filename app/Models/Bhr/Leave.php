@@ -20,13 +20,12 @@ class Leave
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    function save($arr, $id = null, $ss = null) {
+    function save($arr = [], $id = null, $ss = null) {
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
-        
+
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number|exists=employees.id',
             'start_date' => '1|date',
             'end_date' => '1|date',
@@ -34,7 +33,7 @@ class Leave
             'remarks' => '0|string|250',
             'status_id' => '0|choice|1,2,3|default=1',
         ];
-    
+
         $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
@@ -54,7 +53,7 @@ class Leave
 
         if ($start_date < $today || $end_date < $today) {
             return DV::error('It seems your date request leave in the past. Please check start date and end date!');
-        }  
+        }
         if (strtotime($start_date) > strtotime($end_date)) {
             return DV::error('It seems your request start date later end date. Please check start date and end date!');
         }
@@ -71,8 +70,8 @@ class Leave
         if (Employee::isOnLeave($d->emp_id)) {
             return DV::error('Staff named ' . $employee_info->name . ' is already on leave.');
         }
-      
-    
+
+
         $id = saveData($ss, 'leaves', ['id' => $id], $inputs, [], 1, false);
         return DV::depends($id, ['action', 'leave saved'], 'Failed to save Leave Information');
     }
@@ -202,7 +201,7 @@ class Leave
 
 
 
-    
+
 
     function getDetails($id ,$ss =null)
     {
@@ -224,7 +223,7 @@ class Leave
         return $leave;
     }
 
-    function delete($id, $ss)
+    function delete($id = null)
     {
         $id = $id ?? $this->id;
 

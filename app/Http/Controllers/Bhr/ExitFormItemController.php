@@ -12,9 +12,9 @@ class ExitFormItemController extends Controller
 {
 
     protected $emp_exit_items;
-    public function __construct(ExitFormItem $emp_exit_items)
+    public function __construct()
     {
-        $this->emp_exit_items = $emp_exit_items;
+        $this->emp_exit_items = new ExitFormItem();
     }
     function saveExitFormItem(Request $req)
     {

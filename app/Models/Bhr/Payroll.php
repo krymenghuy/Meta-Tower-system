@@ -18,12 +18,12 @@ class Payroll
         $this->userInfo = $userInfo;
     }
 
-    function save($arr, $ss = null)
+    function save($arr = [], $ss = null, $id = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'name' => '1|string',
             'month' => '1|number',
             'year' => '1|number',
@@ -43,7 +43,6 @@ class Payroll
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss, 'payrolls', ['id' => $id], $inputs, [], 1);
@@ -115,8 +114,10 @@ class Payroll
     }
 
 
-    function deletePayroll($id, $ss)
+    function deletePayroll($id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         if(!is_numeric($id)){
             return DV::error('Invalid ID');
         }

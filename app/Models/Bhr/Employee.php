@@ -49,20 +49,20 @@ class Employee //extends Model
         return null;
     }
 
-    function save($arr = [], $ss = null)
+    function save($arr = [], $id = null, $ss = null)
     {
+        $emp_id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'name' => '1|string|0-100',
             'name_kh' => '0|string|0-100',
             'email' => '1|email',
             'phone_number' => '1|phone|0-20',
             'sex' => '1|choice|f,F,m,M,o',
-            'nationality_id' => '1|number|exists=loc_countries.id|text=Please ensure that nationality or country name is correct!',
+            'nationality_id' => '1|number',
             'date_of_birth' => '1|date',
-            'birth_city_id' => '0|number|exists=loc_cities.id',
+            'birth_city_id'=>'0|number',
             'address' => '0|string|0-250',
             'position_id' => '1|number',
             'emp_type_id' => '1|number',
@@ -90,7 +90,7 @@ class Employee //extends Model
             return DV::error($res->error);
         }
 
-        $emp_id = $res->id;
+
         $inputs = $res->values;
         $d = (object) $inputs;
         $photo = $d->photo;
@@ -577,19 +577,17 @@ class Employee //extends Model
     }
 
 
-    function delete($id, $ss)
+    function delete($id = null, $ss = null)
     {
-        // Ensure $id is numeric and valid
+        $id = $id ?? $this->id;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }
 
-        // Ensure $ss contains necessary data
         if (!isset($ss->branch_id) || !isset($ss->subs_id)) {
             return DV::error('Invalid session data');
         }
 
-        // Retrieve the file name associated with the profile
         $file_name = DB::table('employees')->where('id', $id)->value('photo_file_name');
         if ($file_name) {
             // Delete the file from the storage

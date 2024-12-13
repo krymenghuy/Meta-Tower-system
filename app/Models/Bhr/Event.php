@@ -17,12 +17,12 @@ class Event
         $this->userInfo = $userInfo;
     }
 
-    static function createEvent($arr,$ss = null){
+    static function createEvent($arr = [], $id = null, $ss = null){
+        $id = $id ?? self::id;
         $ss = $ss ?? self::userInfo;
         $branch_id = $ss->branch_id;
-       
+
         $v_rule = [
-            'id' => '0|identity=1',
             'name' => '1|string',
             'event_type' => '0|string|default = General',
         ];
@@ -32,7 +32,6 @@ class Event
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss, 'events', ['id' => $id], $inputs, [], 1);

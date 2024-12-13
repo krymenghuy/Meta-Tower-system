@@ -17,14 +17,14 @@ class ShiftDetails
         $this->userInfo = $userInfo;
     }
 
-    function save($arr, $ss = null)
+    function save($arr = [], $id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $arr['day'] = $arr['days'];
-        // Validation rules
+
         $v_rule = [
-            'id' => '0|identity=1',
             'work_shift_id' => '1|number',
             'day' => '0|string|0-250', // Allows comma-separated days
             'time' => '1|string|0-100',
@@ -32,13 +32,11 @@ class ShiftDetails
         ];
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ',', '|'];
         $checkUnique = ["$branch_id|shiftDetails|name|id=id|text=Shift Detail already exists."];
-        // Validate input
         $res = validateObject($arr, $v_rule, true, ['day' => $pos_char], $ss->lang, false, $checkUnique);
         if ($res->error) {
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
         Log::info($inputs['day']);
 
@@ -134,8 +132,9 @@ class ShiftDetails
         return $query;
     }
 
-    function deleteShiftDetails($id, $ss)
+    function deleteShiftDetails($id = null)
     {
+        $id = $id ?? $this->id;
         $query = DB::table('shift_details')
             ->where('id', $id)
             ->delete();

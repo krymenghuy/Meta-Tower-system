@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 class ExitCheckpointsController extends Controller
 {
     protected $emp_exit_check_points;
-    public function __construct(ExitCheckpoints $emp_exit_check_points)
+    public function __construct()
     {
-        $this->emp_exit_check_points = $emp_exit_check_points;
+        $this->emp_exit_check_points = new ExitCheckpoints();
     }
     function saveExitCheckPointPoints(Request $req)
     {

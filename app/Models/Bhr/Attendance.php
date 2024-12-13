@@ -20,7 +20,7 @@ class Attendance
         $this->userInfo = $userInfo;
     }
 
-    function save($arr = [], $id = null, $ss = null)
+    function save($arr = [] , $id = null, $ss = null )
     {
 
         $id = $id ?? $this->id;
@@ -51,7 +51,7 @@ class Attendance
         if (in_array($day_name, $except_days)) {
             return DV::error('The day is a weekend');
         }
-        
+
 
         $d = (object) $arr;
         $remarks = $d->remarks;
@@ -76,8 +76,6 @@ class Attendance
 
         return DV::depends($newID, ['emp_attendances' => $inputs, 'id' => $newID], $ss);
     }
-
-
 
     function getStaffAttendanceListPaginate($filter = [], $ss = null)
     {
@@ -142,7 +140,7 @@ class Attendance
             ];
         })->values();
 
-        
+
         // Pagination
         $count_query = clone $query;
         $count = $count_query->count('emp.id');
@@ -191,8 +189,10 @@ class Attendance
         return $row;
     }
 
-    function deleteAttendance($id, $ss)
+    function deleteAttendance($id = null)
     {
+        $id = $id ?? $this->id;
+
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }

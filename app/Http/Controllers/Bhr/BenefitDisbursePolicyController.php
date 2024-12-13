@@ -12,9 +12,9 @@ class BenefitDisbursePolicyController extends Controller
 {
     protected $bdp;
 
-    public function __construct(BenefitDisbursePolicy $bdp)
+    public function __construct()
     {
-        $this->bdp = $bdp;
+        $this->bdp = new BenefitDisbursePolicy();
     }
 
     public function saveBenefitDisbursePolicy(Request $req)

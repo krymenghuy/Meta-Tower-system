@@ -363,6 +363,9 @@ class GeneralSettings //extends Model
        }
        return $rows;
     }
+    static function options_skill($ss){
+        return DB::table('skills')->selectRaw('id,title AS skill')->get();
+    }
 
     static function options_nationality($ss){
         return DB::table('loc_countries')->selectRaw('id,nationality')->orderByRaw('nationality ASC')->get();
@@ -386,7 +389,7 @@ class GeneralSettings //extends Model
        $rows = $q->get();
         return $rows;
     }
-    
+
 
     function deleteProductType($d){
         $ss = UM::getUserInfoByToken($d);

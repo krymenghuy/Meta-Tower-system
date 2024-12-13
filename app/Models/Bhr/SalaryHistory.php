@@ -17,11 +17,11 @@ class SalaryHistory
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr = [], $id = null, $ss = null) {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number',
             'org_position_id' => '1|number',
             'org_salary' => '1|numeric|0-1000000',
@@ -33,7 +33,6 @@ class SalaryHistory
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss, 'salary_histories', ['id' => $id], $inputs, [], 1);
@@ -105,23 +104,20 @@ class SalaryHistory
         return DV::error('Invalid ID');
     }
 
-    function deleteSalaryHistory($id, $ss) {
-        // Ensure $id is numeric and valid
+    function deleteSalaryHistory($id = null) {
+        $id = $id ?? $this->id;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }
 
-        // Assuming $ss contains branch_id or other necessary info
         $branch_id = $ss->branch_id;
 
-        // Build and execute the query
         $query = DB::table('salary_histories')
             ->where('id', $id)
             ->delete();
         if (!$query) {
             return DV::error('Invalid ID');
         }
-        // Return the query result
         return $query;
     }
     function getFormOptions($id, $ss)
@@ -131,7 +127,7 @@ class SalaryHistory
             $salary_history = self::getDetails($id, $ss);
         }
         return (object) [
-            
+
             'employees' => DB::table('employees')->selectRaw('id,name')->get(),
             'org_positions' => DB::table('positions')->selectRaw('id,title')->get(),
             'new_positions' => DB::table('positions')->selectRaw('id,title')->get(),

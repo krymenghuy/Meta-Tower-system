@@ -12,9 +12,9 @@ class AttendanceController extends Controller
 {
     protected $attendance;
 
-    public function __construct(Attendance $attendance)
+    public function __construct()
     {
-        $this->attendance = $attendance;
+        $this->attendance = new Attendance();
     }
 
     public function saveAttendance(Request $req)
@@ -34,7 +34,7 @@ class AttendanceController extends Controller
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200)  return JDV::raw($ss);
         $list = $this->attendance->attendanceList($req->all(),$ss);
-        
+
         return JDV::result($list);
     }
 

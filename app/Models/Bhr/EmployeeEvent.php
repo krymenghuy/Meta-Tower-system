@@ -18,11 +18,11 @@ class EmployeeEvent
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr = [], $id = null,$ss = null){
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number|exist=employees.id',
             'event_id' => '1|number|exist=events.id',
             'event_date' => '1|date',
@@ -35,7 +35,6 @@ class EmployeeEvent
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss, 'emp_events', ['id' => $id], $inputs, [], 1);
@@ -136,7 +135,8 @@ class EmployeeEvent
         return $query;
     }
 
-    function deleteEmpEvent($id, $ss) {
+    function deleteEmpEvent($id = null) {
+        $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
         $query = DB::table('emp_events')
             ->where('id', $id)

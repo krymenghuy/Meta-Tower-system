@@ -25,14 +25,13 @@ class ExitForm
         return DB::table('exit_forms')->where('id', $id)->selectRaw($cols)->first();
     }
 
-    public function save($id = null, $ss = null, $arr)
+    public function save( $arr = [], $id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-        $id = $id ?? $this->id;
 
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number',
             'name' => '1|string'
         ];
@@ -43,7 +42,6 @@ class ExitForm
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
         $emp_id = $arr['emp_id'] ?? null;
 
@@ -140,7 +138,7 @@ class ExitForm
             ->first();
     }
 
-    public function deleteExitForm($id, $ss)
+    public function deleteExitForm($id = null)
     {
         $id = $id ?? $this->id;
         $deleted = DB::table('exit_forms')->where('id', $id)->delete();

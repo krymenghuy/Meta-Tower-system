@@ -25,14 +25,13 @@ class ExitCheckpoints //extends Model
         return DB::table('check_points')->where('id', $id)->selectRaw($cols)->first();
     }
 
-    public function save( $id = null, $ss = null, $arr)
+    public function save( $arr = [], $id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-        $id = $id ?? $this->id;
 
         $v_rule = [
-            'id' => '0|identity=1',
             'item_name' => '0|string',
             'check_point_cat_id' => '1|number'
         ];
@@ -42,7 +41,6 @@ class ExitCheckpoints //extends Model
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
         $emp_id = $arr['emp_id'] ?? null;
 
@@ -85,7 +83,7 @@ class ExitCheckpoints //extends Model
             });
         }
         $count = $query->count();
-        
+
         $rows = $query->skip($skip_rows)
             ->take($per_page)
             ->get();
@@ -106,7 +104,7 @@ class ExitCheckpoints //extends Model
             ->first();
     }
 
-    public function deleteExitCheckpoints($id, $ss)
+    public function deleteExitCheckpoints($id = null)
     {
         $id = $id ?? $this->id;
         $deleted = DB::table('check_points')->where('id', $id)->delete();

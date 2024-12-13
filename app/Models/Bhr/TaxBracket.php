@@ -18,11 +18,11 @@ class TaxBracket
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr = [], $ss = null, $id = null){
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'lower_amount' => '1|number',
             'upper_amount' => '1|number',
             'rate' => '1|number',
@@ -34,7 +34,6 @@ class TaxBracket
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss, 'tax_brackets', ['id' => $id], $inputs, [], 1);
@@ -93,8 +92,10 @@ class TaxBracket
     }
 
 
-    function deleteTaxBracket($id, $ss)
+    function deleteTaxBracket($id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $query = DB::table('tax_brackets')
             ->where('id', $id)
