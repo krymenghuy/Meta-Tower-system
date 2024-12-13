@@ -137,10 +137,7 @@ class Transaction
             $str_search = "e.name like '%" . $search_value . "%' or t.remarks like '%" . $search_value . "%'";
             $query->whereRaw($str_search);
         }
-
-
-
-
+ 
         $count = $query->count('t.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
@@ -149,7 +146,8 @@ class Transaction
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getDetails($id) {
+    function getDetails($id = null) {
+        $id = $id ?? $this->id;
         $query = DB::table('transactions as t')
         ->join('employees as e', 'e.id', 't.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'e.position_id')
