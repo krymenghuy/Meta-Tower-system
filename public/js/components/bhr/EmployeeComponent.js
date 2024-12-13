@@ -284,7 +284,7 @@ var EmployeeComponent = new (function () {
 
     this.renderEmployee = (data) => {
         let html = "";
-        html += `<div class="row mb-3" style="background-color:;">`;
+        html = [html,`<div class="row mb-3" style="background-color:;">`].join('');
         let cmt = 0;
 
         if (Array.isArray(data) && data.length > 0) {
@@ -304,39 +304,27 @@ var EmployeeComponent = new (function () {
                         break;
                 }
 
-                html += `
-                    <div class="col-md-3 mt-2 mb-3 employee-card" data-employee-id="${
+                html =[html, 
+                    `<div class="col-md-3 mt-2 mb-3 employee-card" data-employee-id="${
                         d.id
-                    }">
-                        <div class="card d-flex">
-                            <div class="card-header">
-                                <div class="status_employee" style="${statusColor}; padding: 3px; border-radius: 20px;">
-                                    <span>${status}</span>
-                                </div>
-                                <div class="dropdown">
-                                    <a href="javascript:void(0)" class="btn_employee_action" data-id="${
-                                        d.id
-                                    }" data-statusid="${
-                    d.status_id
-                }" data-typeid="${
-                    d.emp_type_id
-                }" aria-haspopup="true" aria-expanded="false">
-                                        <i class="fa-solid fa-ellipsis-vertical text-white fs-4 tool-tip"> <span class="tool-tiptext fs-6">Actions</span></i>
-                                    </a>
-                                </div>
-                            </div>
-                            <div class="card-body text-center" style="">
-                                <img src="${
-                                    d.image_url ||
-                                    "../assets/images/logo/default_image_user.avif"
-                                }" class="rounded-circle mb-3"
-                                    alt="Profile Picture" style="width: 100px; height: 100px;">
-                                <div class="card-title">
-                                    <h5 class="text-black text-nowrap truncated-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px">${
-                                        d.name
-                                    }</h5>
-                                </div>
-                                <div class="card_container gap-2 p-4 text-white">
+                    }">`,
+                        `<div class="card d-flex">`,
+                            `<div class="card-header">`,
+                                `<div class="status_employee" style="${statusColor}; padding: 3px; border-radius: 20px;">`,
+                                    `<span>${status}</span>`,
+                                `</div>`,
+                                `<div class="dropdown">`,
+                                    `<a href="javascript:void(0)" class="btn_employee_action" data-id="${ d.id}" data-statusid="${d.status_id}" data-typeid="${d.emp_type_id}" aria-haspopup="true" aria-expanded="false">`,
+                                      `<i class="fa-solid fa-ellipsis-vertical text-white fs-4 tool-tip"> <span class="tool-tiptext fs-6">Actions</span></i>`,
+                                    `</a>`,
+                                `</div>`,
+                            `</div>`,
+                            `<div class="card-body text-center" style="">`,
+                                `<img src="${ d.image_url || (main_view.asset_url + "/images/logo/default_image_user.avif")}" class="rounded-circle mb-3" alt="Profile Picture" style="width: 100px; height: 100px;">`,
+                                `<div class="card-title">`,
+                                    `<h5 class="text-black text-nowrap truncated-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px">${d.name}</h5>`,
+                                `</div>`,
+                                `<div class="card_container gap-2 p-4 text-white">
                                     <div class="employee_id">#: <span class="ms-2">${
                                         d.code || "?"
                                     }</span></div>
@@ -380,7 +368,7 @@ var EmployeeComponent = new (function () {
                             </div>
                         </div>
                     </div>
-                `;
+                `].join('');
                 cmt++;
             });
         }

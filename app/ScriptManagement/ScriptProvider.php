@@ -65,7 +65,7 @@ class ScriptProvider
                 '/assets/vendors/general/popper.js/dist/umd/popper.js',
                 //'/assets/material-js/bootstrap.min.js',
                 'https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js',
-                '/assets/js/choices.js',
+                 'assets/js/vs_choices.js',
                 '/assets/js/validator.js',
                 '/assets/js/cv_interact.js',
                 '/assets/js/datehelper.js',
