@@ -12,9 +12,9 @@ class SeniorityController extends Controller
 {
     protected $seniority;
 
-    public function __construct(Seniority $seniority)
+    public function __construct()
     {
-        $this->seniority = $seniority;
+        $this->seniority = new Seniority();
     }
 
     public function saveSeniority(Request $req)

@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 class SkillController extends Controller
 {
     protected $skillModel;
-    public function __construct(Skill $skillModel)
+    public function __construct()
     {
-        $this->skillModel = $skillModel;
+        $this->skillModel = new Skill();
     }
 
     public function saveSkill(Request $req)

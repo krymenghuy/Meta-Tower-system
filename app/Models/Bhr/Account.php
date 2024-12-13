@@ -19,13 +19,14 @@ class Account
         $this->userInfo = $userInfo;
     }
 
-    function save($arr, $ss = null)
+    function save($arr = [] , $ss = null , $id = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'id' => '0|identity=1',
+
             'emp_id' => '1|number',
             'account_number' => '1|number',
             'balance' => '0|number',
@@ -39,7 +40,7 @@ class Account
             return DV::error($res->error);
         }
 
-        $id = $res->id;
+
         $inputs = $res->values;
         $inputs['balance'] = (float) str_replace(',', '', $inputs['balance']) ;
 
@@ -158,8 +159,10 @@ class Account
     }
 
 
-    function deleteAccount($id, $ss)
+    function deleteAccount($id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }

@@ -12,9 +12,9 @@ class EventController extends Controller
 {
     protected $event;
 
-    public function __construct(Event $event)
+    public function __construct()
     {
-        $this->event = $event;
+        $this->event = new Event();
     }
 
     public function createEvent(Request $req)

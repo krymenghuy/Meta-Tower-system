@@ -18,12 +18,12 @@ class Workshift
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-    function save($arr, $ss = null)
+    function save($arr = [], $id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'name' => '1|string|0-100'
         ];
         $pos_char = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?'];
@@ -34,7 +34,6 @@ class Workshift
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData(

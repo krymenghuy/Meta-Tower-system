@@ -17,11 +17,11 @@ class ScanPlan
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr = [], $id = null, $ss = null) {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'shift_details_id' => '1|number',
             'scan_time' => '1|string|0-100',
             'action' => '1|string|0-100',
@@ -32,7 +32,6 @@ class ScanPlan
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss,'scan_plan', ['id' => $id], $inputs, [], 1);

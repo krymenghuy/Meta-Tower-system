@@ -13,9 +13,9 @@ class TaxBracketController extends Controller
 {
     protected $taxBracket;
 
-    public function __construct(TaxBracket $taxBracket)
+    public function __construct()
     {
-        $this->taxBracket = $taxBracket;
+        $this->taxBracket = new TaxBracket();
     }
 
     public function saveTaxBracket(Request $req)

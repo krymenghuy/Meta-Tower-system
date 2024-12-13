@@ -12,9 +12,9 @@ class ScanPlanController extends Controller
 {
     protected $scanplanModel;
 
-    public function __construct(ScanPlan $scanplanModel)
+    public function __construct()
     {
-        $this->scanplanModel = $scanplanModel;
+        $this->scanplanModel = new ScanPlan();
     }
 
     public function saveScanPlan(Request $req)

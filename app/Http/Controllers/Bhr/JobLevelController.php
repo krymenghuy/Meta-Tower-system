@@ -10,9 +10,9 @@ use App\Models\JDV;
 class JobLevelController extends Controller
 {
     protected $job_level;
-    public function __construct(Job_Level $job_level)
+    public function __construct()
     {
-        $this->job_level = $job_level;
+        $this->job_level = new Job_Level();
     }
     function saveJobLevel(Request $req)
     {

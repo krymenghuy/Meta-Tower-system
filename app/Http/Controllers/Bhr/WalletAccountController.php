@@ -12,9 +12,9 @@ class WalletAccountController extends Controller
 {
     protected $walletAccount;
 
-    public function __construct(WalletAccount $walletAccount)
+    public function __construct()
     {
-        $this->walletAccount = $walletAccount;
+        $this->walletAccount = new WalletAccount();
     }
 
     public function saveWalletAccount(Request $req)

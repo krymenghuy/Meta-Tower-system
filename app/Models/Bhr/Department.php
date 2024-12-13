@@ -18,12 +18,12 @@ class Department
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$id,$ss = null){
+    function save($arr, $id = null ,$ss = null){
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'name' => '1|string|0-100',
             'shortcut' => '1|string|0-10',
             'description' => '0|string|255',
@@ -37,7 +37,6 @@ class Department
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss,'departments', ['id' => $id], $inputs, [], 1,false);
@@ -85,12 +84,12 @@ class Department
 
         $row  = DB::table('departments as d')
             ->selectRaw('d.id, d.name, d.shortcut, d.description,d.inactive,d.created_at,d.updated_at,d.create_user,d.update_user')->where('d.inactive',0)->where('d.branch_id',$branch_id)->where('d.id',$id)->take(1)->first();
-        
+
         return $row;
     }
 
 
-    function deleteDepartment($id) {
+    function deleteDepartment($id = null) {
         $id = $id ?? $this->id;
 
         $delete = DB::table('departments')->where('id', $id)->update(['inactive'=>1]);

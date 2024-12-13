@@ -17,11 +17,11 @@ class BenefitDisbursePolicy
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr = [], $ss = null, $id = null){
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'benefit_id' => '1|number',
             'target_month' => '1|number',
             'target_year' => '1|number',
@@ -33,7 +33,6 @@ class BenefitDisbursePolicy
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss, 'benefit_disburse_policies', ['id' => $id], $inputs, [], 1);
@@ -96,8 +95,10 @@ class BenefitDisbursePolicy
         return $query;
     }
 
-    function deleteBenefitDisbursePolicy($id, $ss)
+    function deleteBenefitDisbursePolicy($id = null , $ss = null)
     {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $query = DB::table('benefit_disburse_policies')
             ->where('id', $id)

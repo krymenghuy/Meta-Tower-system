@@ -11,17 +11,17 @@ class DashboardController extends Controller
 {
     protected $dashboard;
 
-    public function __construct(Dashboard $dashboard)
+    public function __construct()
     {
-        $this->dashboard = $dashboard;
+        $this->dashboard = new Dashboard();
     }
     function getDashboardData(Request $req){
         $ss = AuthService::verifyAuth($req, -1);
             if($ss->status_code !== 200){
                 return JDV::raw($ss);
-            } 
+            }
 
-        
+
         $db = new Dashboard(null,$ss);
         $data = $db->getData($req->all(),$ss);
         return JDV::result($data);
@@ -62,5 +62,5 @@ class DashboardController extends Controller
         }
         return JDV::result($this->dashboard->getBenefits($req->all(), $ss));
     }
-    
+
 }

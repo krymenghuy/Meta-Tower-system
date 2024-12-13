@@ -17,7 +17,7 @@ class Education //extends Model
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss){
+    function save($arr ,$ss = null, $id = null){
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
@@ -41,14 +41,14 @@ class Education //extends Model
         $id = $res->id;
 
         $inputs = $res->values;
-        
+
         $id = saveData($ss,'emp_educations',['id'=>$id],$inputs,[],1);
         if($id > 0 ){
             return DV::depends(1,['emp_educations'=>$inputs,'id'=>$id]);
 
         }
         return DV::error('Error saving data');
-        
+
     }
     function getListAll($arr,$ss){
         $branch_id = $ss->branch_id;
@@ -58,7 +58,7 @@ class Education //extends Model
         if(!is_numeric($current_page)){
             $current_page = 1;
         }
-        $emp_id = $d->emp_id ?? null; 
+        $emp_id = $d->emp_id ?? null;
         $skip_rows = ($current_page -1) * $per_page;
         $query  = DB::table('emp_educations as e')
             ->join('employees as emp', 'emp.id', '=','e.emp_id')
@@ -90,7 +90,7 @@ class Education //extends Model
 
 
     }
-    
+
 
     function formOptions($id,$ss){
         $educations = null;
@@ -103,9 +103,9 @@ class Education //extends Model
 
     }
 
-    function delete($id,$ss){
+    function delete($id = null){
+        
         $id = $id ?? $this->id;
-        $ss = $ss ?? $this->userInfo;
 
         $delete = DB::table('emp_educations')->where('id',$id)->delete();
         return DV::depends($delete,['action'=>'deleted']);
@@ -114,7 +114,7 @@ class Education //extends Model
 
 
 
-    
+
 
 
 }

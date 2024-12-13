@@ -12,9 +12,9 @@ use Illuminate\Http\Request;
 class SalaryHistoryController extends Controller
 {
     protected $salaryHistory;
-    public function __construct(SalaryHistory $salaryHistory)
+    public function __construct()
     {
-        $this->salaryHistory = $salaryHistory;
+        $this->salaryHistory = new SalaryHistory();
     }
 
     public function saveSalaryHistory(Request $req)

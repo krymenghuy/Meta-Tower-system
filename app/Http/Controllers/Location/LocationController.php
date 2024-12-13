@@ -13,21 +13,21 @@ use App\Services\UMt\AuthService;
 
 class LocationController extends Controller
 {
- 
+
    function getComboItems_country(Request $req){
         $ss =AuthService::verifyAuth($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
         return JDV::result(Country::list($req->all(),$ss));
-    } 
-   
+    }
+
    function saveCountry(Request $req){
         $ss =AuthService::verifyAuth($req,-1);
         if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
         $res = Country::save($req->all(),$ss);
         if($res->status ==='OK') return JDV::success(['id'=>$res->id]);
         return JDV::error($res->error_message);
-   } 	 
- 
+   }
+
   //create or Update City
    function saveCity(Request $req){
         $ss =AuthService::verifyAuth($req,-1);
@@ -35,15 +35,15 @@ class LocationController extends Controller
         $res = City::save($req->all(),$ss);
         if($res->status ==='OK') return JDV::success(['city'=>$res->city]);
         return JDV::error($res->error_message);
-   } 
- 
+   }
+
    function saveDistrict(Request $req){
     $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
     $res = District::save($req->all(),$ss);
     if($res->status ==='OK') return JDV::success(['district'=>$res->district]);
     return JDV::error($res->error_message);
-  } 
+  }
 
   function saveCommune(Request $req){
     $ss =AuthService::verifyAuth($req,-1);
@@ -61,19 +61,19 @@ class LocationController extends Controller
   function getCityList(Request $req){
     $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-    return JDV::result(City::list($req->country_id,$ss)); 
+    return JDV::result(City::list($req->country_id,$ss));
   }
 
   function getDistrictList(Request $req){
     $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-    return JDV::result(District::list($req->city_id,$ss)); 
+    return JDV::result(District::list($req->city_id,$ss));
   }
 
   function getCommuneList(Request $req){
     $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return JDV::raw($ss); //user not authenticated
-    return JDV::result(Commune::list($req->district_id,$ss)); 
+    return JDV::result(Commune::list($req->district_id,$ss));
   }
 
   function deleteCountry(Request $req){
@@ -88,7 +88,7 @@ class LocationController extends Controller
   function deleteCity(Request $req){
     $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
-    $id = isset($req->city_id)?$req->city_id:$req->id; 
+    $id = isset($req->city_id)?$req->city_id:$req->id;
     $res = City::delete($id,$ss);
     if($res->status ==='OK') return JDV::success();
     return JDV::error($res->error_message);
@@ -106,17 +106,17 @@ class LocationController extends Controller
   function deleteCommune(Request $req){
       $ss =AuthService::verifyAuth($req,-1);
       if($ss->status_code !=200) return $ss; //user not authenticated
-      $id = $req->id?$req->id:$req->commune_id; 
+      $id = $req->id?$req->id:$req->commune_id;
       $res = Commune::delete($id,$ss);
       if($res->status ==='OK') return JDV::success();
       return JDV::error($res->error_message);
   }
-   
+
   function getComboItems_city(Request $req){
     $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated
     $country_id = $req->country_id?$req->country_id:-1;
-    return JDV::result(Country::options_city($country_id,$ss));
+    return JDV::result(City::options_city($country_id,$ss));
   }
 
   function getComboItems_district(Request $req){
@@ -125,7 +125,7 @@ class LocationController extends Controller
     $city_id =$req->city_id?$req->city_id:-1;
     return JDV::result(District::options_district($city_id,$ss));
   }
-   
+
   function getComboItems_commune(Request $req){
     $ss =AuthService::verifyAuth($req,-1);
     if($ss->status_code !=200) return $ss; //user not authenticated

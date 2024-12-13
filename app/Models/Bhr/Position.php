@@ -17,11 +17,11 @@ class Position
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr = [], $id = null, $ss = null) {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'title' => '1|string|0-100',
             'job_level_id'=>'1|number',
             'department_id' => '1|number',
@@ -36,7 +36,6 @@ class Position
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss,'positions', ['id' => $id], $inputs, [], 1);
@@ -94,7 +93,7 @@ class Position
         return $rows;
     }
 
-    function deletePosition($id)
+    function deletePosition($id = null)
     {
         $id = $id ?? $this->id;
 
@@ -111,7 +110,7 @@ class Position
         return (object) [
 
             // 'status' => DB::table('dep_status')->selectRaw('id,name')->get(),
-            
+
             'departments' => DB::table('departments as d')->where('d.inactive',0)->selectRaw('id,name')->get(),
             'job_levels' => DB::table('job_levels as job')->selectRaw('id,name as level')->get(),
             'positions' => $position,

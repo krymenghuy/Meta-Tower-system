@@ -17,13 +17,13 @@ class Experience //extends Model
         $this->userInfo = $userInfo;
     }
 
-    function saveExperience($arr, $id = null, $ss)
+    function saveExperience($arr = [], $id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'id' => '0|identify=1',
             'emp_id' => '1|number|exists=employees.id',
             'position_id' => '1|number|exists=positions.id',
             'organization_id' => '1|number|exists=organizations.id',
@@ -69,7 +69,7 @@ class Experience //extends Model
         }
 
         $search_value = $d->search_value ?? null;
-        $emp_id = $d->emp_id ?? null; 
+        $emp_id = $d->emp_id ?? null;
 
         $skip_rows = ($current_page - 1) * $per_page;
 
@@ -118,7 +118,7 @@ class Experience //extends Model
             $experience = self::details($id, $ss);
         }
         return (object) [
-            'positions' => DB::table('positions')->selectRaw('id, title')->get(),   
+            'positions' => DB::table('positions')->selectRaw('id, title')->get(),
             'organizations' => DB::table('organizations')->selectRaw('id,name')->get(),
             'emp_experience' => $experience,
         ];
