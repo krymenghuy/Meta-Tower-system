@@ -49,20 +49,20 @@ class Employee //extends Model
         return null;
     }
 
-    function save($arr = [], $ss = null)
+    function save($arr = [], $id = null, $ss = null)
     {
+        $emp_id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'name' => '1|string|0-100',
             'name_kh' => '0|string|0-100',
             'email' => '1|email',
             'phone_number' => '1|phone|0-20',
             'sex' => '1|choice|f,F,m,M,o',
-            'nationality_id' => '1|number|exists=loc_countries.id|text=Please ensure that nationality or country name is correct!',
+            'nationality_id' => '1|number',
             'date_of_birth' => '1|date',
-            'birth_city_id'=>'0|number|exists=loc_cities.id',
+            'birth_city_id'=>'0|number',
             'address' => '0|string|0-250',
             'position_id' => '1|number',
             'emp_type_id' => '1|number',
@@ -90,7 +90,7 @@ class Employee //extends Model
             return DV::error($res->error);
         }
 
-        $emp_id = $res->id;
+
         $inputs = $res->values;
         $d = (object) $inputs;
         $photo = $d->photo;
@@ -231,7 +231,7 @@ class Employee //extends Model
             ->selectRaw('id,withdraw_rate,target_month,target_year')
             ->first();
 
-        if($bd)$withdraw_rate = $bd->withdraw_rate;
+        if ($bd) $withdraw_rate = $bd->withdraw_rate;
 
         $emp_benefit = DB::table('emp_benefits')
             ->where('emp_id', $emp_id)
@@ -246,11 +246,11 @@ class Employee //extends Model
         $result = (object) [
             "emp_id" => $emp_id,
             "payroll_id" => $payroll_id,
-            "withdraw_rate"=> $withdraw_rate,
+            "withdraw_rate" => $withdraw_rate,
             "benefit_id" => $benefit_id,
-            "full_amount"=> $full_amount,
+            "full_amount" => $full_amount,
             "tax_option_id" => $tax_option_id,
-            "used_amount"=> $used_amount,
+            "used_amount" => $used_amount,
 
         ];
         return $result;
@@ -348,7 +348,7 @@ class Employee //extends Model
             $skip_rows = 0;
             $search_value = escape_like_str($search_value);
             $str_srch = "(emp.name LIKE '%" . $search_value . "%' OR emp.code = '" . $search_value . "' OR emp.nid = '" . $search_value . "' OR emp.phone_number = '" . $search_value . "')";
-        }else{
+        } else {
 
             if ($status) {
                 $str_where = 'emp.status_id =\'' . $status . '\'';
@@ -366,15 +366,17 @@ class Employee //extends Model
         }
 
         $countries = Country::listAll($ss);
+        $col_date_of_birth = DBX::formatDate('emp.date_of_birth', 'date_of_birth');
+        $col_joining_date = DBX::formatDate('emp.joining_date', 'joining_date');
         $query = DB::table('employees as emp')
-        ->join('positions as p', 'p.id', '=', 'emp.position_id')
-        ->join('departments as d', 'd.id', '=', 'p.department_id')
-        ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
-        ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
-        ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
-        ->join('um_branches as b', 'b.id', '=', 'emp.branch_id')
-        ->join('loc_countries as c', 'c.id', '=', 'emp.nationality_id')
-        ->whereRaw($str_srch)
+            ->join('positions as p', 'p.id', '=', 'emp.position_id')
+            ->join('departments as d', 'd.id', '=', 'p.department_id')
+            ->join('employee_statuses as es', 'es.id', '=', 'emp.status_id')
+            ->join('emp_types as el', 'el.id', '=', 'emp.emp_type_id')
+            ->join('work_shifts as ws', 'ws.id', '=', 'emp.work_shift_id')
+            ->join('um_branches as b', 'b.id', '=', 'emp.branch_id')
+            ->join('loc_countries as c', 'c.id', '=', 'emp.nationality_id')
+            ->whereRaw($str_srch)
             ->whereRaw($str_where)
             ->selectRaw('
             emp.code,
@@ -391,10 +393,10 @@ class Employee //extends Model
             emp.passport_number,
             emp.spouse_emp_id,
             emp.sex,
-            DATE_FORMAT(emp.date_of_birth, "%d %b %Y") as date_of_birth,
+            '.$col_date_of_birth.',
             emp.address,
             emp.photo_file_name,
-            DATE_FORMAT(emp.joining_date, "%d %b %Y") as joining_date,
+            '.$col_joining_date.',
             emp.nssf_id,
             emp.nid,
             emp.position_id,
@@ -424,8 +426,8 @@ class Employee //extends Model
             }
             unset($row->photo_file_name);
         }
-        foreach($rows as &$row){
-             $row->nationality = Country::nationality($row->nationality_id,$countries);
+        foreach ($rows as &$row) {
+            $row->nationality = Country::nationality($row->nationality_id, $countries);
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
@@ -566,7 +568,7 @@ class Employee //extends Model
 
         if ($row) {
             $row->image_url = self::profilePicture($id);
-            $row->nationality = Country::nationality($row->nationality_id,null);
+            $row->nationality = Country::nationality($row->nationality_id, null);
         } else {
             $row = null; // Or handle the case where employee is not found
         }
@@ -575,19 +577,17 @@ class Employee //extends Model
     }
 
 
-    function delete($id, $ss)
+    function delete($id = null, $ss = null)
     {
-        // Ensure $id is numeric and valid
+        $id = $id ?? $this->id;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }
 
-        // Ensure $ss contains necessary data
         if (!isset($ss->branch_id) || !isset($ss->subs_id)) {
             return DV::error('Invalid session data');
         }
 
-        // Retrieve the file name associated with the profile
         $file_name = DB::table('employees')->where('id', $id)->value('photo_file_name');
         if ($file_name) {
             // Delete the file from the storage
@@ -627,7 +627,7 @@ class Employee //extends Model
             'cities' => GeneralSettings::loc_options_city($ss),
             'branches' => GeneralSettings::options_branch($ss),
             'status' => DB::table('employee_statuses')->selectRaw('id,name')->get(),
-            'departments'=>DB::table('departments')->selectRaw('id,name')->get(),
+            'departments' => DB::table('departments')->selectRaw('id,name')->get(),
             'positions' => DB::table('positions')->selectRaw('id,title')->get(),
             'types' => DB::table('emp_types')->selectRaw('id,name')->get(),
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
@@ -887,7 +887,7 @@ class Employee //extends Model
         }
 
         // Create promotion record
-         $promo_id = self::createPromotion($arr, $ss);
+        $promo_id = self::createPromotion($arr, $ss);
         if (!$promo_id) return DV::error('Failed to create promotion');
 
         $event_names = [];
@@ -940,68 +940,68 @@ class Employee //extends Model
         return DV::success(['message' => 'Employee promotion updated successfully.']);
     }
 
-    static function changeBranch($ss, $emp_id,$promo_id,$arr)
+    static function changeBranch($ss, $emp_id, $promo_id, $arr)
     {
 
-    if (!$arr) return;
+        if (!$arr) return;
 
-    $v_rule = [
-        'branch_id' => '1|number',
-        'effective_date' => '1|date',
-        'remarks' => '0|string|1-300',
-    ];
+        $v_rule = [
+            'branch_id' => '1|number',
+            'effective_date' => '1|date',
+            'remarks' => '0|string|1-300',
+        ];
 
-    $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-    if ($res->error) {
-        return DV::error($res->error);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
+            return DV::error($res->error);
+        }
+
+        $inputs = $res->values;
+        $inputs['promo_id'] = $promo_id;
+        $inputs['emp_id'] = $emp_id;
+
+        $id = saveData($ss, 'emp_branches', ['id' => null], $inputs, [], 1, false);
+        $branch_id = $arr['branch_id'];
+        $updated = DB::table('employees')->where('id', $emp_id)->update(['branch_id' => $branch_id]);
+        return DV::depends(1, null);
     }
 
-    $inputs = $res->values;
-    $inputs['promo_id'] = $promo_id;
-    $inputs['emp_id'] = $emp_id;
-
-    $id = saveData($ss, 'emp_branches', ['id' => null], $inputs, [], 1, false);
-    $branch_id = $arr['branch_id'];
-    $updated = DB::table('employees')->where('id', $emp_id)->update(['branch_id' => $branch_id]);
-    return DV::depends(1,null);
-    }
-
-    static function changePosition($ss,$emp_id,$promo_id,$arr){
-        if(!$arr) return;
+    static function changePosition($ss, $emp_id, $promo_id, $arr)
+    {
+        if (!$arr) return;
         $v_rule = [
             'position_id' => '1|number',
             'start_date' => '1|date',
-            'remarks' =>'0|string|0-300'
+            'remarks' => '0|string|0-300'
         ];
-        $res = validateObject($arr,$v_rule,true,[],$ss->lang);
-        if($res->error) {
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) {
             return DV::error($res->error);
         }
-      
+
         $inputs = $res->values;
-        $inputs['promo_id'] =$promo_id;
+        $inputs['promo_id'] = $promo_id;
         $inputs['emp_id'] = $emp_id;
 
-        $id = saveData($ss,'emp_positions',['id'=>null],$inputs,[],1,false);
+        $id = saveData($ss, 'emp_positions', ['id' => null], $inputs, [], 1, false);
         $position_id = $arr['position_id'];
-        $updated = DB::table('employees')->where('id',$emp_id)->update(['position_id'=>$position_id]);
+        $updated = DB::table('employees')->where('id', $emp_id)->update(['position_id' => $position_id]);
 
 
-        return DV::depends(1,null);
-
-
+        return DV::depends(1, null);
     }
-    static function changeSalary($ss,$emp_id,$promo_id,$arr){
-        if(!$arr) return;
+    static function changeSalary($ss, $emp_id, $promo_id, $arr)
+    {
+        if (!$arr) return;
         $v_rule = [
-            'org_position_id' =>'0|number',
-            'new_position_id' =>'0|number',
+            'org_position_id' => '0|number',
+            'new_position_id' => '0|number',
             'org_salary' => '0|decimal',
             'new_salary' => '0|decimal',
 
 
         ];
-        $res = validateObject($arr,$v_rule,true,[],$ss->lang);
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
         $inputs = $res->values;
         $org_salary = DB::table('employees')->where('id', $emp_id)->value('salary');
         $org_position_id = DB::table('employees')->where('id', $emp_id)->value('position_id');
@@ -1012,22 +1012,21 @@ class Employee //extends Model
         $inputs['org_position_id'] = $org_position_id;
 
 
-            $id = saveData($ss,'emp_salary_histories',['id'=>null],$inputs,[],1,false);
-            $salary = $arr['new_salary'];
-            $updated = DB::table('employees')->where('id',$emp_id)->update(['salary'=>$salary]);
+        $id = saveData($ss, 'emp_salary_histories', ['id' => null], $inputs, [], 1, false);
+        $salary = $arr['new_salary'];
+        $updated = DB::table('employees')->where('id', $emp_id)->update(['salary' => $salary]);
 
 
-        return DV::depends(1,null);
-
-
+        return DV::depends(1, null);
     }
-    static function createPromotion($arr,$ss = null){
+    static function createPromotion($arr, $ss = null)
+    {
         $ss = $ss ?? self::userInfo;
         $branch_id = $ss->branch_id;
 
-          $v_rule = [
+        $v_rule = [
             'id' => '0|identity=1',
-            'emp_id'=>'1|number',
+            'emp_id' => '1|number',
             'promotion_date' => '0|date',
             'change_branch' => '0|number|default=0',
             'change_position' => '0|number|default=0',
@@ -1057,7 +1056,7 @@ class Employee //extends Model
         ];
 
 
-        $id = saveData($ss, 'emp_promotions', ['id' => $id], $promo_inputs, [], 1,false);
+        $id = saveData($ss, 'emp_promotions', ['id' => $id], $promo_inputs, [], 1, false);
         if ($id > 0) {
             return $id;
         }
@@ -1065,21 +1064,31 @@ class Employee //extends Model
         return null;
     }
 
-    function getEmployeeList($arr, $ss=null) {
+    function getEmployeeList($arr, $ss = null)
+    {
         $d = (object) $arr;
 
         $search_value = $d->search_value ?? null;
 
         $str_search = '1=1';
         $query = DB::table('employees as emp')
-        ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
-        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email,emp.address,emp.joining_date')
-        ->where('emp.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
+            ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
+            ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email,emp.address,emp.joining_date')
+            ->where('emp.branch_id', $ss->branch_id);  // Ensure only records for the current branch are fetched
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $query->whereRaw("emp.name LIKE '%" . $search_value . "%' OR emp.code LIKE '%" . $search_value . "%'");
         }
         $rows = $query->get();
         return $rows;
-   }
+    }
+    static function isResigning($id)
+    {
+        $row = DB::table('resignations')->where('emp_id', $id)->select('effective_date')->first();
+        if (!$row) return false;
+        $effective_date = convertDate($row->effective_date);
+        $today = date('Y-m-d');
+        if ($today >= $effective_date) return true;
+        return false;
+    }
 }

@@ -21,12 +21,12 @@ class Skill
         $this->userInfo = $userInfo;
     }
 
-    public function save($arr = [], $ss = null)
+    public function save($arr = [], $id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'title' => 'required|string|max:100',
             'description' => 'nullable|string|max:250',
             'image' => 'nullable|image',
@@ -39,7 +39,6 @@ class Skill
             error_log('Validation error: ' . json_encode($res->error));
             return DV::error($res->error);
         }
-        $id = $res->id;
         $inputs = $res->values;
         $d = (object) $inputs;
         $image = $d->image;
@@ -183,8 +182,10 @@ class Skill
 
             return $row;
         }
-    function delete($id, $ss)
+    function delete($id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }

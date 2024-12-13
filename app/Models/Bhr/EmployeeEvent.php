@@ -2,6 +2,7 @@
 
 namespace App\Models\Bhr;
 
+use App\Models\DBX;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -17,11 +18,11 @@ class EmployeeEvent
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr = [], $id = null,$ss = null){
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number|exist=employees.id',
             'event_id' => '1|number|exist=events.id',
             'event_date' => '1|date',
@@ -34,7 +35,6 @@ class EmployeeEvent
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $id = saveData($ss, 'emp_events', ['id' => $id], $inputs, [], 1);
@@ -75,6 +75,7 @@ class EmployeeEvent
             $str_where .= ' AND ee.emp_id =\'' . $employee . '\'';
 
         }
+        $col_event_date = DBX::formatDate('ee.event_date', 'event_date');
         $query = DB::table('emp_events as ee')
         ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
         ->join('positions as p', 'p.id', '=', 'emp.position_id')
@@ -88,7 +89,7 @@ class EmployeeEvent
         ee.event_id,
         ee.impact,
         e.name as event,
-        DATE_FORMAT(ee.event_date, "%d %b %Y") as event_date,
+        '.$col_event_date.',
         ee.remarks,
         ee.update_user,
         ee.updated_at,
@@ -134,7 +135,8 @@ class EmployeeEvent
         return $query;
     }
 
-    function deleteEmpEvent($id, $ss) {
+    function deleteEmpEvent($id = null) {
+        $id = $id ?? $this->id;
         $branch_id = $ss->branch_id;
         $query = DB::table('emp_events')
             ->where('id', $id)

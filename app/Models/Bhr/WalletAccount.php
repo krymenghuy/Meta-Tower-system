@@ -17,11 +17,11 @@ class WalletAccount
         $this->userInfo = $userInfo;
     }
 
-    function save($arr,$ss = null){
+    function save($arr = [], $ss = null, $id = null){
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number',
             'account_number' => '1|number',
             'balance' => '0|number',
@@ -35,7 +35,6 @@ class WalletAccount
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $res = validateObject($arr, $v_rule, true, ['balance'=>['.']], $ss->lang);
@@ -43,7 +42,6 @@ class WalletAccount
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
         $inputs['balance'] = (float) str_replace(',', '', $inputs['balance']) ;
 
@@ -159,9 +157,10 @@ class WalletAccount
         return $query;
     }
 
-    function deleteWalletAccount($id, $ss)
+    function deleteWalletAccount($id = null, $ss = null)
     {
-
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         return$query = DB::table('wallet_accounts')
             ->where('id', $id)

@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 class PayrollController extends Controller
 {
     protected $payrollModel;
-    public function __construct(Payroll $payroll)
+    public function __construct()
     {
-        $this->payrollModel = $payroll;
+        $this->payrollModel = new Payroll();
     }
 
     public function savePayroll(Request $req)
@@ -108,6 +108,6 @@ class PayrollController extends Controller
         return JDV::raw($res);
     }
 
-   
+
 
 }

@@ -25,14 +25,14 @@ class BenefitDisbursement
         return DB::table('benefit_disbursements')->where('id', $id)->selectRaw($cols)->first();
     }
 
-    public function save($benefit_id, $id = null, $ss = null, $arr)
+    public function save($benefit_id,$id = null, $ss = null, $arr = [], )
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $id = $id ?? $this->id;
 
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number',
             'benefit_id' => '1|number',
             'target_month' => '0|number|min=1|max=12',
@@ -45,7 +45,6 @@ class BenefitDisbursement
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         $inputs['target_month'] = intval($arr['target_month'] ?? date('m'));
@@ -82,18 +81,18 @@ class BenefitDisbursement
             ->join('employees as emp', 'emp.id', '=', 'bd.emp_id')
             ->join('benefits as b', 'b.id', '=', 'bd.benefit_id')
             ->selectRaw(
-                'bd.id, 
-            emp.id as emp_id, 
-            emp.name as name, 
-            emp.email as email, 
+                'bd.id,
+            emp.id as emp_id,
+            emp.name as name,
+            emp.email as email,
             b.name as benefit_name,
             bd.benefit_id,
             bd.target_month,
             bd.target_year,
             bd.withdraw_rate,
             bd.update_user,
-            bd.updated_at, 
-            bd.create_date, 
+            bd.updated_at,
+            bd.create_date,
             emp.photo_file_name as emp_photo'
             )
             ->orderBy('bd.id', 'desc');
@@ -133,21 +132,21 @@ class BenefitDisbursement
             ->join('benefits as bc', 'bc.id', '=', 'bd.benefit_id')
             ->selectRaw(
                 'bd.id,
-                emp.id as emp_id, 
-                emp.name as name, 
-                emp.email as email, 
+                emp.id as emp_id,
+                emp.name as name,
+                emp.email as email,
                 bc.name as benefit_name,
                 bd.benefit_id,
                 bd.target_month,
                 bd.target_year,
-                bd.withdraw_rate, 
+                bd.withdraw_rate,
                 emp.photo_file_name as emp_photo'
             )
             ->where('bd.id', $id)
             ->first();
     }
 
-    public function deleteBenefitDisbursement($id, $ss)
+    public function deleteBenefitDisbursement($id = null)
     {
         $id = $id ?? $this->id;
         $deleted = DB::table('benefit_disbursements')->where('id', $id)->delete();

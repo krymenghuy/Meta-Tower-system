@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
-class ExitForm //extends Model
+class ExitForm
 {
     protected $id = null;
     protected $userInfo = null;
@@ -25,33 +25,29 @@ class ExitForm //extends Model
         return DB::table('exit_forms')->where('id', $id)->selectRaw($cols)->first();
     }
 
-    public function save($id = null, $ss = null, $arr)
+    public function save( $arr = [], $id = null, $ss = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
-        $id = $id ?? $this->id;
 
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number',
             'name' => '1|string'
         ];
         $item = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        // $checkUnque = ["$branch_id|exit_forms|check_point_id|id=id|text= Item already exists."];
         $res = validateObject($arr, $v_rule, true, ['item' => $item], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
         $emp_id = $arr['emp_id'] ?? null;
 
-        // Check if emp_id exists in the resignations table
-        $isInResignations = DB::table('resignations')->where('emp_id', $emp_id)->exists();
-        if ($isInResignations) {
-            return DV::error("Employee ID {$emp_id} cannot create an exit item because they are already in the resignations table.");
+        $isValidEmployee = DB::table('employees')->where('id', $emp_id)->where('status_id', 20)->exists();
+        if (!$isValidEmployee) {
+            return DV::error("Employee ID {$emp_id} is not stay in resign.");
         }
 
         $existingBenefitDisbursement = DB::table('exit_forms')
@@ -61,10 +57,11 @@ class ExitForm //extends Model
 
         $id = saveData($ss, 'exit_forms', ['id' => $id], $inputs, [], 1, false);
         if ($id > 0) {
+            // return DV::depends(1, ['exit_forms' => $inputs, 'id' => $id]);
         }
+
         return DV::depends($id, ['id' => $id], 'Save failed');
     }
-
 
     public function getExitFormPaginate($arr, $ss = null)
     {
@@ -78,6 +75,7 @@ class ExitForm //extends Model
         $query = DB::table('exit_forms as ef')
             ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
+            ->where('emp.status_id', 20) // Filter employees with status_id 20
             ->select(
                 'ef.id',
                 'ef.emp_id',
@@ -114,6 +112,7 @@ class ExitForm //extends Model
             }
             unset($row->emp_photo);
         }
+
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
@@ -122,6 +121,7 @@ class ExitForm //extends Model
         return DB::table('exit_forms as ef')
             ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
+            ->where('emp.status_id', 20)
             ->select(
                 'ef.id',
                 'ef.emp_id',
@@ -138,7 +138,7 @@ class ExitForm //extends Model
             ->first();
     }
 
-    public function deleteExitForm($id, $ss)
+    public function deleteExitForm($id = null)
     {
         $id = $id ?? $this->id;
         $deleted = DB::table('exit_forms')->where('id', $id)->delete();
@@ -151,7 +151,7 @@ class ExitForm //extends Model
         $exit_forms = $id ? self::getDetails($id, $ss) : null;
 
         return (object) [
-            'employees' => GeneralSettings::options_employee(10, $ss),
+            'employees' => GeneralSettings::options_employee(20, $ss),
             'exit_forms' => $exit_forms,
         ];
     }
@@ -162,12 +162,15 @@ class ExitForm //extends Model
         $branch_id = $ss->branch_id;
 
         $query = DB::table('exit_forms as ef')
-            ->select('ef.id', '')
+            ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
+            ->where('emp.status_id', 20)
+            ->select('ef.id', 'ef.name', 'emp.name as emp_name')
             ->where('ef.branch_id', $branch_id);
 
         if (!empty($d->search_value)) {
             $query->where('ef.name', 'LIKE', "%{$d->search_value}%");
         }
+
         return $query->get();
     }
 }

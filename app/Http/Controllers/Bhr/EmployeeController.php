@@ -14,7 +14,7 @@ class EmployeeController extends Controller
     function saveEmployee(Request $req){
        $ss = AuthService::verifyAuth($req,-1);
        if($ss->status_code !==200) return JDV::raw($ss);
-       
+
        $id = $req->employee_id?$req->employee_id:$req->id;
        $employee = new Employee($id,$ss);
        $res = $employee->save($req->all());
@@ -122,7 +122,7 @@ class EmployeeController extends Controller
        $res = $employee->setTerminateStatus($req->status_id, $id);
        return JDV::raw($res);
    }
- 
+
    public function setResignStatus(Request $req)
    {
        $ss = AuthService::verifyAuth($req, -1);

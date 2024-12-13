@@ -11,9 +11,9 @@ use Illuminate\Http\Request;
 class EmployeeDocumentController extends Controller
 {
     protected $emp_doc;
-    public function __construct(EmployeeDocument $emp_doc)
+    public function __construct()
     {
-        $this->emp_doc = $emp_doc;
+        $this->emp_doc = new EmployeeDocument();
     }
 
     public function saveEmployeeDocument(Request $req)

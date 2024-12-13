@@ -13,9 +13,9 @@ class TaxAllowanceController extends Controller
 {
     protected $tax_allowance;
 
-    public function __construct(TaxAllowance $tax_allowance)
+    public function __construct()
     {
-        $this->tax_allowance = $tax_allowance;
+        $this->tax_allowance = new TaxAllowance();
     }
 
     public function saveTaxAllowance(Request $req)

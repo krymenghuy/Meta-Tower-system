@@ -18,11 +18,11 @@ class Transaction
         $this->userInfo = $userInfo;
     }
 
-    static function deposit($arr,$ss = null){
+    static function deposit($arr = [], $id = null, $ss = null){
+        $id = null;
         $ss = $ss ?? Transaction::$userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '0|number',
             'payroll_id' => '0|number',
             'amount' => '1|number',
@@ -40,7 +40,6 @@ class Transaction
             return ['error' => $res->error];
         }
 
-        $id = $res->id;
         $inputs = $res->values;
         $inputs['status'] = 'in';
 
@@ -51,11 +50,11 @@ class Transaction
 
         return ['error' => 'Error saving transaction'];
     }
-    static function withdrawal($arr,$ss = null){
+    static function withdrawal($arr = [], $id = null,$ss = null){
+        $id = null;
         $ss = $ss ?? Transaction::$userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '0|number',
             'payroll_id' => '0|number',
             'amount' => '1|number',
@@ -83,7 +82,8 @@ class Transaction
 
         return ['error' => 'Error saving transaction'];
     }
-    static function transfer($arr,$ss = null,$status='in'){
+    static function transfer($arr = [], $id = null,$ss = null,$status='in'){
+        $id = null;
         $ss = $ss ?? Transaction::$userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [
@@ -182,24 +182,21 @@ class Transaction
         return $query;
     }
 
-    function deleteTransaction($id, $ss)
+    function deleteTransaction($id = null)
     {
-        // Ensure $id is numeric and valid
+        $id = $id ?? $this->id;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }
 
-        // Assuming $ss contains branch_id or other necessary info
         $branch_id = $ss->branch_id;
 
-        // Build and execute the query
         $query = DB::table('transactions')
             ->where('id', $id)
             ->delete();
         if (!$query) {
             return DV::error('Transaction not found');
         }
-        // Return the query result
         return $query;
     }
 

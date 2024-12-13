@@ -12,9 +12,9 @@ class WorkShiftController extends Controller
 {
     protected $workShiftModel;
 
-    public function __construct(WorkShift $workShiftModel)
+    public function __construct()
     {
-        $this->workShiftModel = $workShiftModel;
+        $this->workShiftModel = new WorkShift();
     }
 
     public function saveWorkShift(Request $req)

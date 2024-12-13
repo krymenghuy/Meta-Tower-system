@@ -10,9 +10,9 @@ use Illuminate\Http\Request;
 class EmployeeBenefitController extends Controller
 {
     protected $benefitModel;
-    public function __construct(EmployeeBenefit $benefit)
+    public function __construct()
     {
-        $this->benefitModel = $benefit;
+        $this->benefitModel = new EmployeeBenefit();
     }
 
     public function saveBenefit(Request $req)

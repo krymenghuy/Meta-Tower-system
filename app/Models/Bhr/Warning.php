@@ -2,7 +2,7 @@
 
 namespace App\Models\Bhr;
 
-
+use App\Models\DBX;
 use Illuminate\Support\Facades\DB;
 use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -31,13 +31,13 @@ class Warning
 
     protected static $img_dir = 'warnings/profile';
 
-    public function saveWarnings($arr = [], $ss = null)
+    public function saveWarnings($arr = [], $ss = null, $id = null)
     {
+        $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [
-            'id' => '0|identity=1',
             'emp_id' => '1|number|exists.employees.id',
             'warning_type' => '1|string|50',
             'warning_date' => '1|date',
@@ -51,7 +51,6 @@ class Warning
             return DV::error($res->error);
         }
 
-        $id = $res->id;
         $inputs = $res->values;
 
         // Check for duplicate warning_type for the employee
@@ -126,10 +125,12 @@ class Warning
             $skip_rows = 0;
             $str_search = "(emp.name LIKE '%" . $search_value . "%' OR emp.code = '" . $search_value . "')";
         }
+        $col_update_date = DBX::formatTime('w.updated_at', 'updated_at');
+        $col_warning_date = DBX::formatTime('w.warning_date', 'warning_date');
         $query = DB::table('emp_warnings as w')
             ->join('employees as emp', 'emp.id', '=', 'w.emp_id')
             ->whereRaw($str_search)
-            ->selectRaw('w.id, emp.id as emp_id, emp.name, emp.name_kh,DATE_FORMAT(w.warning_date, "%d %b %Y") as warning_date,w.warning_type,w.remarks,w.reason,emp.position_id, emp.photo_file_name as emp_photo,w.updated_at,w.update_user')
+            ->selectRaw('w.id, emp.id as emp_id, emp.name, emp.name_kh,'.$col_warning_date.',w.warning_type,w.remarks,w.reason,emp.position_id, emp.photo_file_name as emp_photo,'.$col_update_date.',w.update_user')
             ->orderBy('w.id', 'ASC');
 
         $clone_query = clone $query;
@@ -147,9 +148,10 @@ class Warning
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function deleteWarning($id, $ss)
+    function deleteWarning($id = null, $ss = null)
     {
-        // Ensure $id is numeric and valid
+        $id = $id ?? $this->id;
+        $ss = $ss ?? $this->userInfo;
         if (!is_numeric($id)) {
             return DV::error('Invalid ID');
         }

@@ -13,9 +13,9 @@ class EmployeeSkillController extends Controller
 {
    protected $employee_skill;
 
-    public function __construct(EmployeeSkill $employee_skill)
+    public function __construct()
     {
-        $this->employee_skill = $employee_skill;
+        $this->employee_skill = new EmployeeSkill();
     }
 
     public function saveEmployeeSkill(Request $req)

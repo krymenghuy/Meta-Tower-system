@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
+use App\Models\DBX;
 use Illuminate\Http\Request;
 use App\Services\Umt\AuthService;
 use App\Models\JDV;
 //use Config;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator; 
 
 class CurrencyController extends Controller
@@ -130,7 +131,8 @@ class CurrencyController extends Controller
         $bin_subs_id = hex2bin($subs_id);
         $id = $req->id;
         $row = null;
-        $cols = "r.id,r.x_date,r.x_month,r.currency_pair,ROUND(r.buy_rate,2) AS buy_rate,ROUND(r.sell_rate,2) AS sell_rate,r.create_user,DATE_FORMAT(r.create_date,'%d %b %Y') as create_date";
+        $col_create_date = DBX::formatDate('r.create_date', 'create_date');
+        $cols = "r.id,r.x_date,r.x_month,r.currency_pair,ROUND(r.buy_rate,2) AS buy_rate,ROUND(r.sell_rate,2) AS sell_rate,r.create_user,'.$col_create_date.'";
         if($id > 0) $row= DB::table('exchange_rates as r')->where('id',$id)->where('subs_id',$bin_subs_id)->selectRaw($cols)->first();
         $data = (object)[
             'xrate' => $row
