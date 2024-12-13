@@ -6,6 +6,7 @@ namespace App\Models\Umt;
 // use Illuminate\Database\Eloquent\Model;
 use App\Models\DV;
 use App\Models\DBX;
+use App\Models\CompanyProfile;
 use DB;
 class Report //extends Model
 {
@@ -43,7 +44,7 @@ class Report //extends Model
     
         $rpt_info = DB::table('reports as r')
             ->where('permission_id', $id)
-            ->selectRaw('r.id AS rpt_id, r.code,r.category AS report_group, r.export_excel, r.export_pdf, r.export_csv, r.params, r.display_order')
+            ->selectRaw('r.id AS rpt_id, r.code,r.category AS report_group, r.params, r.display_order')
             ->first();
     
         if ($rpt_info) {
@@ -55,6 +56,9 @@ class Report //extends Model
         return $row;
     }
     
+    static function getCompanyInfo($ss){
+      return CompanyProfile::details($ss);
+    }
 
     static function appExists($bin_app_id){
         return DB::table('um_applications')->where('id',$bin_app_id)->value('name');
@@ -79,9 +83,6 @@ class Report //extends Model
            'name'=>'1|string|1-250',
            'params'=>'0|string',
            'actions'=>'0|string|0-1000',
-           'export_excel'=>'0|number|default=0',
-           'export_pdf'=>'0|number|default=0',
-           'export_csv'=>'0|number|default=0',
            'display_order'=>'0|number|default=0'
         ];
 

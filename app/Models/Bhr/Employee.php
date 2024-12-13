@@ -62,6 +62,7 @@ class Employee //extends Model
             'sex' => '1|choice|f,F,m,M,o',
             'nationality_id' => '1|number|exists=loc_countries.id|text=Please ensure that nationality or country name is correct!',
             'date_of_birth' => '1|date',
+            'birth_city_id'=>'0|number|exists=loc_cities.id',
             'address' => '0|string|0-250',
             'position_id' => '1|number',
             'emp_type_id' => '1|number',
@@ -121,7 +122,7 @@ class Employee //extends Model
             $inputs['salary'] = null;
         }
 
-        error_log('Saving data: ' . json_encode($inputs));
+        //error_log('Saving data: ' . json_encode($inputs)); //Please remove uused log
         $save = !$emp_id;
         $id = saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1);
         if ($save) {
@@ -510,9 +511,9 @@ class Employee //extends Model
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
-    static function defaultImage($branch_id)
+    static function defaultImage()
     {
-        return PublicStorage::getUrl(['subs_id' => $subs_id, 'dir' => 'default'], 'image') . 'mr3.jpg';
+        return PublicStorage::getUrl(['subs_id' => null, 'dir' => 'default'], 'image') . 'mr3.jpg';
         // return PublicStorage::getUrl($branch_id, 'default', 'image') . 'default_agent.png';
     }
     function getDetails($id, $ss)
@@ -556,7 +557,9 @@ class Employee //extends Model
                 emp.spouse_occ_code,
                 emp.spouse_emp_id,
                 b.name as branch_name,
-                es.name as status
+                es.name as status,
+                emp.marital_status,
+                emp.birth_city_id
             ')
             ->where('emp.id', $id)
             ->first();

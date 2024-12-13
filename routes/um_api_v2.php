@@ -146,7 +146,7 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('user')->group(
      Route::post('/status/update', [UserController::class, 'setUserStatus']);
      Route::post('/branch/set', [UserController::class, 'setUserBranch']);
      Route::post('/change-login-name', [UserController::class, 'changeLoginName']);
-     Route::post('/authorization-report', [UserController::class, "getAuthorizationReport"]);
+     Route::post('/authorization-report', [UserController::class, "getUserAuthorizationReport"]);
      Route::post('/set-role', [UserController::class, 'setRole']);
      Route::post('/linked-user/create', [UserController::class, 'createLinkedUser']);
      Route::post('/linked-user/delete', [UserController::class, 'deleteLinkedUser']);
