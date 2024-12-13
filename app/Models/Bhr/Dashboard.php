@@ -23,9 +23,11 @@ class Dashboard
             'cards'=>$cards,
             'barCharts'=>self::getEmployeeDataForBarChart($ss),
             'pieCharts'=>self::getTotalStaffComparison($ss),
-            'onLeave'=>self::getLevels($arr,$ss)
+            'onLeave'=>self::getLevels($arr,$ss),
+            'benefits'=>self::getBenefits($arr,$ss)
         ];
     }
+   
     static function getCards($arr, $ss) {
         $d = (object) $arr;
         $back_days = isset($d->back_days) ? $d->back_days : -90;
@@ -87,7 +89,6 @@ class Dashboard
             ],
         ];
     }
-    
     static function countEmployeeByType($arr, $ss){
         $branch_id = $ss->branch_id;
         $back_days = -90;
@@ -164,7 +165,41 @@ class Dashboard
     }
     
   
-    
+    function getBenefits($arr, $ss)
+{
+    $d = (object) $arr;
+    $current_year = $d->year ?? date('Y');
+
+    $query = DB::table('emp_benefits as b')
+        ->selectRaw('
+            SUM(b.amount) as total_amount,
+            SUM(CASE WHEN b.benefit_type_id = 1 THEN b.amount ELSE 0 END) as total_bonuses,
+            SUM(CASE WHEN b.benefit_type_id = 2 THEN b.amount ELSE 0 END) as total_seniority,
+            SUM(CASE WHEN b.benefit_type_id = 3 THEN b.amount ELSE 0 END) as total_life_insurance,
+            SUM(CASE WHEN b.benefit_type_id = 4 THEN b.amount ELSE 0 END) as total_other,
+            MAX(CASE WHEN b.benefit_type_id = 1 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_bonuses,
+            MAX(CASE WHEN b.benefit_type_id = 2 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_seniority,
+            MAX(CASE WHEN b.benefit_type_id = 3 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_life_insurance,
+            MAX(CASE WHEN b.benefit_type_id = 4 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_other
+        ')
+        ->whereYear('b.update_date', '=', $current_year)
+        ->first();
+
+    $result = (object) [
+        'total_amount' => $query->total_amount ?? 0,
+        'total_bonuses' => $query->total_bonuses ?? 0,
+        'total_seniority' => $query->total_seniority ?? 0,
+        'total_life_insurance' => $query->total_life_insurance ?? 0,
+        'total_other' => $query->total_other ?? 0,
+        'lud_bonuses' => $query->lud_bonuses ?? null,
+        'lud_seniority' => $query->lud_seniority ?? null,
+        'lud_life_insurance' => $query->lud_life_insurance ?? null,
+        'lud_other' => $query->lud_other ?? null,
+    ];
+
+    return $result;
+}
+
   
     
     
@@ -237,180 +272,6 @@ class Dashboard
         }
     
         return $rows;
-    }
-    
-
-  
-
-    
-
-    function countEmployees($arr, $ss)
-    {
-        $d = (object) $arr;
-
-        $d_activeCount = DB::table('departments')->where('inactive', 0)->count();
-        $d_inactiveCount = DB::table('departments')->where('inactive', 1)->count();
-
-        $p_activeCount = DB::table('positions')->where('inactive', 0)->count();
-        $p_inactiveCount = DB::table('positions')->where('inactive', 1)->count();
-
-        $total_payroll = DB::table('accounts as a')
-            ->where('a.id', '<>', 1) // Exclude rows where id = 1
-            ->selectRaw('SUM(a.balance) as total_payroll')
-            ->first();
-
-
-        $total_wallet =  DB::table('wallet_accounts as w')
-            ->selectRaw(' SUM(w.balance) as total_wallet')
-            ->first();
-
-        $start_date = $d->start_date ?? null;
-        $end_date = $d->end_date ?? null;
-
-        $counts = DB::table('employees as e')
-            ->select('e.status_id', DB::raw('COUNT(*) as count'))
-            ->groupBy('e.status_id')
-            ->get()
-            ->keyBy('status_id');
-
-        $empTypeCounts = DB::table('employees as e')
-            ->join('emp_types as t', 'e.emp_type_id', '=', 't.id')
-            ->whereNotIn('e.status_id', [20, 21])
-            ->select('t.name', 'e.emp_type_id', DB::raw('COUNT(*) as count'))
-            ->groupBy('e.emp_type_id', 't.name')
-            ->get();
-
-        $dates = [
-            'cm' => date('Y-m'),
-            'l1m' => date('Y-m', strtotime('-1 month')),
-            'l2m' => date('Y-m', strtotime('-2 months')),
-            'l3m' => date('Y-m', strtotime('-3 months')),
-        ];
-
-        $formattedDates = array_map(function ($date) {
-            return date('M Y', strtotime($date));
-        }, $dates);
-
-        $monthlyCounts = [];
-
-        foreach ($dates as $key => $month) {
-            $joiningCount = DB::table('employees as e')
-            ->whereRaw("DATE_FORMAT(e.joining_date, '%Y-%m') = ?", [$month])
-            ->whereIn('e.status_id', [10, 20])
-            ->count();
-
-            $afterRisign = DB::table('resignations as r')
-                ->join('employees as e', 'r.emp_id', '=', 'e.id')
-                ->whereRaw("DATE_FORMAT(r.effective_date, '%Y-%m') < ?", [$month])
-                ->where('e.status_id', 20)
-                ->count();
-
-            $monthlyCount =  $joiningCount - $afterRisign ;
-            $monthlyCounts["count_$key"] = $monthlyCount;
-        }
-
-        $total_l3m = $monthlyCounts['count_l3m'] ?? 0;
-        $total_l2m = $total_l3m + ($monthlyCounts['count_l2m'] ?? 0);
-        $total_l1m = $total_l2m + ($monthlyCounts['count_l1m'] ?? 0);
-        $total_cm = $total_l1m + ($monthlyCounts['count_cm'] ?? 0);
-
-        return [
-            'd_activeCount' => $d_activeCount,
-            'd_inactiveCount' => $d_inactiveCount,
-            'p_activeCount' => $p_activeCount,
-            'p_inactiveCount' => $p_inactiveCount,
-            'total_payroll' => $total_payroll->total_payroll,
-            'total_wallet' => $total_wallet->total_wallet,
-            'total' => $counts->sum('count'),
-            'active' => $counts->has(10) ? $counts->get(10)->count : 0,
-            'resigned' => $counts->has(20) ? $counts->get(20)->count : 0,
-            'terminated' => $counts->has(21) ? $counts->get(21)->count : 0,
-            'emp_types' => $empTypeCounts->map(function ($item) {
-                return [
-                    'name' => $item->name,
-                    'count' => $item->count,
-                ];
-            }),
-            'monthly_totals' => [
-                'count_l3m' => $monthlyCounts['count_l3m'] ?? 0,
-                'total_l3m' => $total_l3m,
-                'count_l2m' => $monthlyCounts['count_l2m'] ?? 0,
-                'total_l2m' => $total_l2m,
-                'count_l1m' => $monthlyCounts['count_l1m'] ?? 0,
-                'total_l1m' => $total_l1m,
-                'count_cm' => $monthlyCounts['count_cm'] ?? 0,
-                'total_cm' => $total_cm,
-            ],
-            'dates' => [
-                'l3m' => $formattedDates['l3m'],
-                'l2m' => $formattedDates['l2m'],
-                'l1m' => $formattedDates['l1m'],
-                'cm' => $formattedDates['cm'],
-            ]
-        ];
-    }
-
-    function getDepartments() {
-
-        $query = DB::table('departments as d')
-            ->join('positions as p', 'p.department_id', '=', 'd.id')
-            ->join('employees as e', 'e.position_id', '=', 'p.id')
-            ->select(
-                'd.id as department_id',
-                'd.name as department_name',
-                'p.title as position_title',
-                DB::raw('COUNT(e.id) as total_employee_count'),
-                DB::raw('SUM(CASE WHEN e.emp_type_id = 3 AND e.status_id NOT IN (20, 21) THEN 1 ELSE 0 END) as staff_count'),
-                DB::raw('SUM(CASE WHEN e.emp_type_id = 1 AND e.status_id NOT IN (20, 21) THEN 1 ELSE 0 END) as internship_count'),
-                DB::raw('SUM(CASE WHEN e.emp_type_id = 2 AND e.status_id NOT IN (20, 21) THEN 1 ELSE 0 END) as in_probation_count')
-            )
-            ->whereNotIn('e.status_id', [20, 21])
-            ->groupBy('d.id', 'd.name', 'p.title')
-            ->orderBy('d.name')
-            ->orderBy('p.title');
-
-        $departmentData = $query->get();
-
-
-        return [
-            'department_data' => $departmentData
-        ];
-    }
-   
-
-   
-
-    function getBenefits($arr, $ss)
-    {
-        $d = (object) $arr;
-
-        $query = DB::table('emp_benefits as b')
-            ->selectRaw('
-                SUM(b.amount) as total_amount,
-                SUM(CASE WHEN b.benefit_type_id = 1 THEN b.amount ELSE 0 END) as total_bonuses,
-                SUM(CASE WHEN b.benefit_type_id = 2 THEN b.amount ELSE 0 END) as total_seniority,
-                SUM(CASE WHEN b.benefit_type_id = 3 THEN b.amount ELSE 0 END) as total_life_insurance,
-                SUM(CASE WHEN b.benefit_type_id = 4 THEN b.amount ELSE 0 END) as total_other,
-                MAX(CASE WHEN b.benefit_type_id = 1 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_bonuses,
-                MAX(CASE WHEN b.benefit_type_id = 2 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_seniority,
-                MAX(CASE WHEN b.benefit_type_id = 3 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_life_insurance,
-                MAX(CASE WHEN b.benefit_type_id = 4 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_other
-            ')
-            ->first();
-
-        $result = [
-            'total_amount' => $query->total_amount,
-            'total_bonuses' => $query->total_bonuses,
-            'total_seniority' => $query->total_seniority,
-            'total_life_insurance' => $query->total_life_insurance,
-            'total_other' => $query->total_other,
-            'lud_bonuses' => $query->lud_bonuses,
-            'lud_seniority' => $query->lud_seniority,
-            'lud_life_insurance' => $query->lud_life_insurance,
-            'lud_other' => $query->lud_other,
-        ];
-
-        return $result;
     }
 
 }
