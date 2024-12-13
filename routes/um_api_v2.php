@@ -23,6 +23,7 @@ Route::middleware([CustomRateLimiter::class])->prefix('settings')->group(functio
     Route::get('/next-prn-id', [PermissionController::class, 'getNextPermissionId']);
     Route::get('/report/actions', [ReportController::class, 'getReportActionNames']);
 });
+
 //begin::CompanyProfileController
     Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->group(function(){
         Route::post('/save-logo', [CompanyProfileController::class, 'saveCompanyLogo']);
