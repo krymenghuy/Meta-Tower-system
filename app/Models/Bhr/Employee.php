@@ -887,7 +887,7 @@ class Employee //extends Model
         }
 
         // Create promotion record
-        $promo_id = self::createPromotion($arr, $ss);
+         $promo_id = self::createPromotion($arr, $ss);
         if (!$promo_id) return DV::error('Failed to create promotion');
 
         $event_names = [];
@@ -977,9 +977,7 @@ class Employee //extends Model
         if($res->error) {
             return DV::error($res->error);
         }
-        if (empty($inputs['effective_date'])) {
-            return DV::error('The effective date is required.');
-        }
+      
         $inputs = $res->values;
         $inputs['promo_id'] =$promo_id;
         $inputs['emp_id'] = $emp_id;
