@@ -90,7 +90,13 @@
     min-height: 340px;
     align-items: stretch; /* Ensures all children are the same height */
 }
-
+.card-row {
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
+    min-height: 200px;
+    align-items: stretch; /* Ensures all children are the same height */
+}
 .chart-container {
     flex: 1; /* All DIVs get equal width */
     display: flex;
@@ -158,7 +164,7 @@ canvas {
     }
 
 
-
+    
 
 
 
