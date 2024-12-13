@@ -2,6 +2,7 @@
 
 namespace App\Models\Bhr;
 
+use App\Models\DBX;
 use App\Models\DV;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -75,6 +76,7 @@ class EmployeeEvent
             $str_where .= ' AND ee.emp_id =\'' . $employee . '\'';
 
         }
+        $col_event_date = DBX::formatDate('ee.event_date', 'event_date');
         $query = DB::table('emp_events as ee')
         ->join('employees as emp', 'emp.id', '=', 'ee.emp_id')
         ->join('positions as p', 'p.id', '=', 'emp.position_id')
@@ -88,7 +90,7 @@ class EmployeeEvent
         ee.event_id,
         ee.impact,
         e.name as event,
-        DATE_FORMAT(ee.event_date, "%d %b %Y") as event_date,
+        '.$col_event_date.',
         ee.remarks,
         ee.update_user,
         ee.updated_at,

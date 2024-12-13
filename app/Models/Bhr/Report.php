@@ -3,9 +3,12 @@
 namespace App\Models\Bhr;
 
 use App\Models\DV;
-use DB;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\CompanyProfile;
+use App\Models\DBX;
+use App\Models\PublicStorage;
+
 class Report {
     protected $id=null,$ss=null;
     protected static $arr_escape_key_name = [
