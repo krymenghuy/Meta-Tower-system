@@ -787,7 +787,7 @@ const RoleTabView = new function(){
          },
          contentCreated:(me)=>{
             me.controls.lnk_create_appid.onclick = e =>{
-               vsapi.get([main_view.base_url, '/api/settings/utils/uuid'].join(''),{},false).then(data =>{
+               vsapi.get([main_view.base_url, '/api/settings/utils/uuid'].join(''),{},null,false).then(data =>{
                   console.log('ggg: ',data);
                   me.controls.use_app_id.value = data.uuid;
                });
