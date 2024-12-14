@@ -247,7 +247,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-bracket')
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('transaction')->group(function () {
 
     Route::post('/save', [TransactionController::class, 'saveTransaction']);
-    Route::post('/list-paginate', [TransactionController::class, 'getTransactionListPaginate']);
+    Route::post('/get-list', [TransactionController::class, 'getList']);
     Route::post('/details', [TransactionController::class, 'getDetails']);
     Route::post('/delete', [TransactionController::class, 'deleteTransaction']);
     Route::post('/form-options', [TransactionController::class, 'getFormOptions']);

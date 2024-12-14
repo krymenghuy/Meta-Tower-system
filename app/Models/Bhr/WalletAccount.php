@@ -64,7 +64,7 @@ class WalletAccount
         return DV::error('Error saving account');
     }
 
-    function getWalletAccountListPaginate($arr, $ss)
+    function getList($arr, $ss)
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;

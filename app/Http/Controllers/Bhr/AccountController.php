@@ -34,7 +34,7 @@ class AccountController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->account->getAccountListPaginate($req->all(), $ss));
+        return JDV::result($this->account->getList($req->all(), $ss));
     }
 
     public function getDetails(Request $req)

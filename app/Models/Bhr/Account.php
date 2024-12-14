@@ -23,7 +23,7 @@ class Account
         $this->userInfo = $userInfo;
     }
 
-    function save($arr = [] , $ss = null , $id = null)
+    function save($arr = []  , $id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -47,7 +47,7 @@ class Account
         $account_number = $inputs['account_number'];
         if(!$account_number) $account_number = $emp->code;
         $inputs['account_number'] = $account_number;
-        if(!self::accountNumberExists($account_number)) return DV::error('Account number ?? already exists::'.$account_number);  
+        if(self::accountNumberExists($account_number,$id)) return DV::error('Account number ?? already exists::'.$account_number);
         if (empty($id)) {
             $existingAccount = DB::table('accounts')
                 ->where('branch_id', $branch_id)
@@ -58,12 +58,16 @@ class Account
                 return DV::error('The employee already has an account.');
             }
         }
+
+        $id = saveData($ss,'accounts', ['id' => $id], $inputs, [], 1);
+     
         return DV::depends($id, ['id' => $id], 'Failed to save account information');
     }
 
-   static function accountNumberExists($account_number){
-      $id = DB::table('accounts')->where('account_number',$account_number)->value('id');
-      return $id? true:false;  
+   static function accountNumberExists($account_number,$id = null){
+      $str_id = $id > 0 ? 'id <> '.$id : '1=1';
+      $id = DB::table('accounts')->where('account_number',$account_number)->whereRaw($str_id)->value('id');
+      return $id? true:false;
    }
 
     function getList($arr, $ss)
@@ -104,7 +108,7 @@ class Account
                        OR e.name LIKE '%" . $search_value . "%'
                        OR pos.title LIKE '%" . $search_value . "%'";
             $query->whereRaw($str_search);
-        } 
+        }
 
         $count = $query->count('a.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
@@ -145,17 +149,17 @@ class Account
         }
 
     }
- 
+
     function delete($id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        if (!$id) return DV::error('Account ID is not valid'); 
+        if (!$id) return DV::error('Account ID is not valid');
 
         $x = DB::table('accounts')
             ->where('id', $id)
             ->delete();
-        DBX::deleteForeignKeyRows(self::$fk_tables,$id,false);         
+        DBX::deleteForeignKeyRows(self::$fk_tables,$id,false);
     }
 
     function getFormOptions($id, $ss)
