@@ -155,7 +155,7 @@ class Account
         $x = DB::table('accounts')
             ->where('id', $id)
             ->delete();
-        DBX::deleteForeignKeyTables(self::$fk_tables,$id,false);         
+        DBX::deleteForeignKeyRows(self::$fk_tables,$id,false);         
     }
 
     function getFormOptions($id, $ss)
