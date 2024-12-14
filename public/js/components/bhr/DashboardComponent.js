@@ -30,7 +30,7 @@ var DashboardComponent = new (function () {
         const divTitle = main_view.divTitle;
         let btn = divTitle.querySelector('.btn-db-fitler');
         if (btn) return;
-        divTitle.insertAdjacentHTML('beforeend', '<div class="div-db-filter"><button class="btn-db-fitler btn btn-sm btn-primary"><i class="fa fa-list"></i></button></div>');
+        divTitle.insertAdjacentHTML('beforeend', '<div class="div-db-filter w-100 text-end"><button class="btn-db-fitler btn btn-sm btn-primary-custom rounded-circle p-2"><i class="fa-solid text-white fa-paper-plane"></i></button></div>');
         btn = divTitle.querySelector('.btn-db-fitler');
         mThis.createFilterButton(btn);
     };
