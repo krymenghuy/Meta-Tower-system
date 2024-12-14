@@ -35,7 +35,7 @@ class WalletAccountController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->walletAccount->getWalletAccountListPaginate($req->all(), $ss));
+        return JDV::result($this->walletAccount->getList($req->all(), $ss));
     }
 
     public function getDetails(Request $req)

@@ -53,7 +53,7 @@ class Payroll
         return DV::error('Error saving payroll');
     }
 
-    function getPayrollListPaginate($arr, $ss)
+    function getList($arr, $ss)
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
@@ -179,14 +179,14 @@ class Payroll
             $default_account = DB::table('accounts as a')
                 ->where('a.id', 1)
                 ->selectRaw('balance as amount, a.id as account_id')->first();
-            $total->account_id = $default_account->account_id;
+            if($total){
 
+                $total->trx_type = "1";
+                $total->from_account_id = 1;
+            }
 
-            $total->trx_type = "1";
-            $total->to_acc_num = 1;
-            $total = Transaction::deposit((array)$total, $ss);
-
-            $new_balance = $total['transactions']['amount'] + $default_account->amount;
+            $total = Transaction::deposit((array)$total, $ss)->data;
+            $new_balance = $total['transaction']['amount'] + $default_account->amount;
             $query = DB::table('accounts')
             ->where('id', 1)->update(['balance'=> $new_balance, 'trx_id' => hex2bin($total['trx_id'])]);
             return DV::depends($x, ['Payroll  authorize', 'updated']);

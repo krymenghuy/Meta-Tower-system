@@ -26,9 +26,7 @@ class Transaction
             'remarks' => '0|string|250',
             'trx_type' => '1|number',
             'status'=>'0|string|10',
-            'account_id' => '1|number',
-            'from_acc_num' => '0|number',
-            'to_acc_num' => '0|number',
+            'from_account_id' => '1|number',
 
         ];
 
@@ -51,22 +49,22 @@ class Transaction
             'remarks' => '0|string|250',
             'trx_type' => '1|number',
             'status'=>'0|string|10',
-            'account_id' => '1|number',
-            'from_acc_num' => '0|number',
-            'to_acc_num' => '0|number',
+            'to_account_id' => '1|number',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-        if ($res->error) return DV::error($res->error);  
+        if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $inputs['status'] = 'out';
 
         $id = saveData($ss,'transactions', ['id' =>null], $inputs, [], 1,false, 'binary');
         $hex_trx_id = bin2hex($id);
-        return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id]);
+        return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id],'Failed to save transaction');
     }
 
-    static function transfer($arr,$ss ){    
+    static function transfer($arr,$ss = null,$status='in'){
+        $ss = $ss ?? Transaction::$userInfo;
+        $branch_id = $ss->branch_id;
         $v_rule = [
             // 'id' => '0|identity=1',
             'emp_id' => '1|number',
@@ -74,24 +72,26 @@ class Transaction
             'amount' => '1|number',
             'remarks' => '0|string|250',
             'trx_type' => '1|number',
-            'status'=>'0|choice|in,out',
-            'account_id' => '1|number',
-            'transfer_acc_id' => '1|number',
-            'from_acc_num' => '0|number',
-            'to_acc_num' => '0|number',
+            'status'=>'0|string|10',
+            'from_account_id' => '1|number',
+            'to_account_id' => '1|number',
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-        if ($res->error) return DV::error($res->error);  
+        if ($res->error) {
+            return ['error' => $res->error];
+        }
 
         $id = null;
         $inputs = $res->values;
-        //$status = $inputs['status'];
-        //$inputs['status'] = $status;
+        $inputs['status'] = $status;
 
-        $id = saveData($ss,'transactions', ['id' =>null], $inputs, [], 1,false, 'binary');
-        $hex_trx_id = bin2hex($id);
-        return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id]);
+        $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
+        if ($id) {
+            return ( ['transaction' => $inputs,'trx_id'=>bin2hex($id)] );
+        }
+
+        return ['error' => 'Error saving transaction'];
     }
 
     //getTransactionListPaginate. please name it to getList()
@@ -137,7 +137,7 @@ class Transaction
             $str_search = "e.name like '%" . $search_value . "%' or t.remarks like '%" . $search_value . "%'";
             $query->whereRaw($str_search);
         }
- 
+
         $count = $query->count('t.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
@@ -164,7 +164,7 @@ class Transaction
         if (!$id) {
             return DV::error('Invalid transaction ID');
         }
- 
+
         $x = DB::table('transactions')
             ->where('id', $id)
             ->delete();
