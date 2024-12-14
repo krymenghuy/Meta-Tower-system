@@ -6,6 +6,8 @@ use App\Models\DBX;
 use Illuminate\Support\Facades\DB;
 use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator;
+use App\Models\Bhr\Event;
+
 
 class Warning
 {

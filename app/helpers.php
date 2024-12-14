@@ -876,13 +876,27 @@ function readFileContent($fileName=null,$file_format = 'UTF-8')
 //     return  $timestamp . strtoupper($randomString);
 // }
 
-/** createUUID version 4 */
-function createUUID($remove_hiphens = false) {
-    $uuid = Uuid::uuid4()->toString();
-    if($remove_hiphens) return str_replace('-','',$uuid);
+/** createUUID version 4. NOTE that 3A, for example, is converted to be ":", causing error in php code */
+function createUUID($remove_hyphens = false) {
+    $undesirableHex = [
+        '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', 
+        '2A', '2B', '2C', '2D', '2E', '2F', '3A', '3B', '3C', '3D', 
+        '3E', '3F', '40', '5B', '5C', '5D', '5E', '5F', '60', '7B', 
+        '7C', '7D', '7E'
+    ];
+    do {
+        $uuid = strtoupper($remove_hyphens ? str_replace('-', '', \Ramsey\Uuid\Uuid::uuid4()->toString()) : \Ramsey\Uuid\Uuid::uuid4()->toString());
+    } while (containsUndesirableHex($uuid, $undesirableHex));
     return $uuid;
 }
 
+function containsUndesirableHex($hex, $undesirableHex) {
+    foreach ($undesirableHex as $byte) {
+        if (stripos($hex, $byte) !== false) return true;
+    }
+    return false;
+}
+ 
 function createUUIDV1()
 {
     // Generate a Version 1 UUID (time-based)
@@ -898,7 +912,7 @@ function createUUIDV1()
 
     return $uuid;
 }
-
+ 
  //Unlike createForcibly(), the method saveData() checks the given $key_value. If it is given valid then UPDATE, else CREATE new record.
  //Unlike method createForcibly(), saveData() will commit UPDATE when the given key_value is positive even this key_value does not exists in target table
  //$pk_field_array is $key_fields. example ['id'=>120] or ["id"=>":student_id"]. In ":student_id", the "student_id" is the prop or array key, for example, $input['student_id']

@@ -222,7 +222,7 @@ class Account
         if($trx){
             $transfer_amount = $trx['transactions']['amount'];
             $account_id = DB::table('wallet_accounts')->where('emp_id', $trx['transactions']['emp_id'])->value('id');
-            $updateBalance_acc = PayrollList::updateBalance($account_id,'wallet_accounts','in',  $trx['transactions']['amount'], $trx['trx_id'], $ss);
+            $updateBalance_acc = PayrollAccount::updateBalance($account_id,'wallet_accounts','in',  $trx['transactions']['amount'], $trx['trx_id'], $ss);
         }
 
         $payroll_account = DB::table('accounts as a')

@@ -10,31 +10,16 @@ use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
-   protected $transaction;
-
-    public function __construct()
-    {
-        $this->transaction = new Transaction();
-    }
-
-    public function saveTransaction(Request $req)
+     
+    public function getList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-
-        return $this->transaction->save($req, $ss);
-    }
-
-    public function getTransactionListPaginate(Request $req)
-    {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-
-        return JDV::result($this->transaction->getTransactionListPaginate($req, $ss));
+        $trx = new Transaction(); 
+        $data = $trx->getList($req->all(), $ss);
+        return JDV::result($data);
     }
 
     public function getDetails(Request $req)
@@ -43,7 +28,10 @@ class TransactionController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->transaction->getDetails($req->id, $ss));
+        $id = $req->id ?? $req->trx_id;
+        $trx = new Transaction($id, $ss); 
+        $data = $trx->getDetails();
+        return JDV::result($data);
     }
 
     public function deleteTransaction(Request $req)
@@ -52,7 +40,11 @@ class TransactionController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->transaction->deleteTransaction($req->id, $ss));
+        $id = $req->id ?? $req->trx_id;
+        $trx = new Transaction($id, $ss); 
+        $res = $trx->delete();
+        return JDV::raw($res);
+        ////return JDV::result($this->transaction->deleteTransaction($req->id, $ss)); DO NOT use JDV::result() for DELETE, UPDATE
     }
 
     public function getFormOptions(Request $req)
@@ -61,6 +53,7 @@ class TransactionController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->transaction->getFormOptions($req->id, $ss));
+        $trx = new Transaction(null, $ss); 
+        return JDV::result($trx->getFormOptions($req->id, $ss));
     }
 }

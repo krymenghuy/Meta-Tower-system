@@ -667,7 +667,7 @@ const RoleTabView = new function(){
      let div = this.divAppList.parentElement?.querySelector('.app_action_buttons');
      if(!div){
         div = this.divAppList.parentElement;
-        div.insertAdjacentHTML('afterbegin',`<div class="app_action_buttons"> <a href="javascript:void(0)" class="lnk_add_app p-2">New Application</a></div>`);
+        div.insertAdjacentHTML('afterbegin',`<div class="app_action_buttons mb-2"> <a href="javascript:void(0)" class="lnk_add_app btn-sm btn-outline-primary rounded-3 p-2">New Application</a></div>`);
         let btn = div.querySelector( 'a.lnk_add_app'); 
         if(btn){
             btn.onclick = e =>{
@@ -779,7 +779,19 @@ const RoleTabView = new function(){
               <label class="form-label" vslang="titles.User Class">User Class</label>
               <div><select class="data-input" name="user_class" data-field="user_class"></select></div>
              </div>`,
+             `<div class="form-group col-md-12">
+               <label class="form-label" vslang="titles.Use App ID">Use App ID</label> <a href="javascript:void(0)" name="lnk_create_appid" class="ml-2"><i class="fa fa-pencil"></i></a>
+               <div><input name="use_app_id" class="data-input form-control" name="use_app_id" data-field="use_app_id"/></div>
+             </div>`,
             ].join('');
+         },
+         contentCreated:(me)=>{
+            me.controls.lnk_create_appid.onclick = e =>{
+               vsapi.get([main_view.base_url, '/api/settings/utils/uuid'].join(''),{},null,false).then(data =>{
+                  console.log('ggg: ',data);
+                  me.controls.use_app_id.value = data.uuid;
+               });
+            };
          },
          showCancelButton:true,
          configSelect:[

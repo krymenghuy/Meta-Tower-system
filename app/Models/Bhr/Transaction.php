@@ -18,10 +18,7 @@ class Transaction
         $this->userInfo = $userInfo;
     }
 
-    static function deposit($arr = [], $id = null, $ss = null){
-        $id = null;
-        $ss = $ss ?? Transaction::$userInfo;
-        $branch_id = $ss->branch_id;
+    static function deposit($arr, $ss ){
         $v_rule = [
             'emp_id' => '0|number',
             'payroll_id' => '0|number',
@@ -36,24 +33,17 @@ class Transaction
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-        if ($res->error) {
-            return ['error' => $res->error];
-        }
+        if ($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
         $inputs['status'] = 'in';
 
-        $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
-        if ($id) {
-            return ( ['transactions' => $inputs,'trx_id'=>bin2hex($id)] );
-        }
-
-        return ['error' => 'Error saving transaction'];
+        $id = saveData($ss,'transactions', ['id' => null], $inputs, [], 1,false, 'binary');
+        $hex_trx_id = bin2hex($id);
+        return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id]);
     }
-    static function withdrawal($arr = [], $id = null,$ss = null){
-        $id = null;
-        $ss = $ss ?? Transaction::$userInfo;
-        $branch_id = $ss->branch_id;
+
+    static function withdrawal($arr,$ss){
         $v_rule = [
             'emp_id' => '0|number',
             'payroll_id' => '0|number',
@@ -67,25 +57,16 @@ class Transaction
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-        if ($res->error) {
-            return ['error' => $res->error];
-        }
-
-        $id = $res->id;
+        if ($res->error) return DV::error($res->error);  
         $inputs = $res->values;
         $inputs['status'] = 'out';
 
-        $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
-        if ($id) {
-            return ( ['transactions' => $inputs,'trx_id'=>bin2hex($id)] );
-        }
-
-        return ['error' => 'Error saving transaction'];
+        $id = saveData($ss,'transactions', ['id' =>null], $inputs, [], 1,false, 'binary');
+        $hex_trx_id = bin2hex($id);
+        return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id]);
     }
-    static function transfer($arr = [], $id = null,$ss = null,$status='in'){
-        $id = null;
-        $ss = $ss ?? Transaction::$userInfo;
-        $branch_id = $ss->branch_id;
+
+    static function transfer($arr,$ss ){    
         $v_rule = [
             // 'id' => '0|identity=1',
             'emp_id' => '1|number',
@@ -93,7 +74,7 @@ class Transaction
             'amount' => '1|number',
             'remarks' => '0|string|250',
             'trx_type' => '1|number',
-            'status'=>'0|string|10',
+            'status'=>'0|choice|in,out',
             'account_id' => '1|number',
             'transfer_acc_id' => '1|number',
             'from_acc_num' => '0|number',
@@ -101,23 +82,20 @@ class Transaction
         ];
 
         $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-        if ($res->error) {
-            return ['error' => $res->error];
-        }
+        if ($res->error) return DV::error($res->error);  
 
         $id = null;
         $inputs = $res->values;
-        $inputs['status'] = $status;
+        //$status = $inputs['status'];
+        //$inputs['status'] = $status;
 
-        $id = saveData($ss,'transactions', ['id' => $id], $inputs, [], 1,false, 'binary');
-        if ($id) {
-            return ( ['transactions' => $inputs,'trx_id'=>bin2hex($id)] );
-        }
-
-        return ['error' => 'Error saving transaction'];
+        $id = saveData($ss,'transactions', ['id' =>null], $inputs, [], 1,false, 'binary');
+        $hex_trx_id = bin2hex($id);
+        return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id]);
     }
 
-    function getTransactionListPaginate($arr, $ss)
+    //getTransactionListPaginate. please name it to getList()
+    function getList($arr, $ss)
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
@@ -144,7 +122,7 @@ class Transaction
         if ($account_id) {
             $str_account_id = 't.account_id=' . $account_id;
         }
-        $str_search = '3=3';
+        $str_search = '3 = 3';
 
         $query = DB::table('transactions as t')
             ->join('employees as e', 'e.id', 't.emp_id')
@@ -159,10 +137,7 @@ class Transaction
             $str_search = "e.name like '%" . $search_value . "%' or t.remarks like '%" . $search_value . "%'";
             $query->whereRaw($str_search);
         }
-
-
-
-
+ 
         $count = $query->count('t.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
         foreach($rows as $row){
@@ -171,7 +146,8 @@ class Transaction
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-    function getDetails($id) {
+    function getDetails($id = null) {
+        $id = $id ?? $this->id;
         $query = DB::table('transactions as t')
         ->join('employees as e', 'e.id', 't.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'e.position_id')
@@ -182,33 +158,25 @@ class Transaction
         return $query;
     }
 
-    function deleteTransaction($id = null)
+    function delete($id = null)
     {
         $id = $id ?? $this->id;
-        if (!is_numeric($id)) {
-            return DV::error('Invalid ID');
+        if (!$id) {
+            return DV::error('Invalid transaction ID');
         }
-
-        $branch_id = $ss->branch_id;
-
-        $query = DB::table('transactions')
+ 
+        $x = DB::table('transactions')
             ->where('id', $id)
             ->delete();
-        if (!$query) {
-            return DV::error('Transaction not found');
-        }
-        return $query;
+        return DV::depends($x,null,'Failed to delete transaction!');
     }
 
     function getFormOptions($id, $ss)
     {
         $transaction = null;
-        if ($id) {
-            $transaction = self::getDetails($id, $ss);
-        }
+        if ($id)  $transaction = self::getDetails($id, $ss);
+
         return (object) [
-
-
           'employees' => GeneralSettings::options_employee(10,$ss),
             'transaction' => $transaction,
         ];
