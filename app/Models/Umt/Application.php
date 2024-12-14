@@ -90,7 +90,7 @@ class Application //extends Model
         // if ($id){
         //      if($force_app_id){
         //         $x = DBX::updatePrimaryKey('um_applications','id',$id,$force_app_id);
-        //         if($x) DBX::updateForeignKeyTables(self::$fk_tables,$id, $force_app_id);
+        //         if($x) DBX::updateForeignKeyRows(self::$fk_tables,$id, $force_app_id);
         //      } 
         // }
         $nowTime = getNowTime();
