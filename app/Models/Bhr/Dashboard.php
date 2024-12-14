@@ -23,11 +23,48 @@ class Dashboard
             'cards'=>$cards,
             'barCharts'=>self::getEmployeeDataForBarChart($ss),
             'pieCharts'=>self::getTotalStaffComparison($ss),
-            'onLeave'=>self::getLevels($arr,$ss),
-            'benefits'=>self::getBenefits($arr,$ss)
+            'onLeave'=>self::getOnLevels($arr,$ss),
+            'benefits'=>self::getBenefits($arr,$ss),
+            'warning'=>self::getStaffInWarningCounts($arr,$ss),
+            'accounts'=>self::getTotalWalletAndPayrollData($arr,$ss)
+
         ];
     }
-   
+
+    
+    
+    static function getStaffInWarningCounts($arr, $ss) {
+        $d = (object) $arr;
+        $back_days = isset($d->back_days) ? $d->back_days : -90;
+        $from_date = convertDate(Carbon::now()->addDays($back_days));
+        $dateField = DBX::convertToDate('ew.warning_date');
+        $moreWhere = $dateField . " >= '" . $from_date . "'";
+    
+        $rows = DB::table('emp_warnings AS ew')
+            ->leftJoin('employees AS e', 'ew.emp_id', '=', 'e.id')
+            ->whereRaw($moreWhere)
+            ->select('ew.warning_type', DB::raw('COUNT(ew.emp_id) as total_warnings'))
+            ->groupBy('ew.warning_type')
+            ->orderByRaw("MIN(ew.warning_date) ASC")
+            ->get();
+    
+        $warning_staff_count = DB::table('emp_warnings AS ew')
+            ->whereRaw($moreWhere)
+            ->distinct('ew.emp_id')
+            ->count('ew.emp_id');
+       
+        return (object) [
+            'warning_counts' => $rows,
+            'warning_staff_count' => (object) [
+                'count' => $warning_staff_count,
+                'title' => 'Warning Staff',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ]
+        ];
+    }
+ 
+    
+  
     static function getCards($arr, $ss) {
         $d = (object) $arr;
         $back_days = isset($d->back_days) ? $d->back_days : -90;
@@ -36,7 +73,7 @@ class Dashboard
         $moreWhere = $dateField . " >= '" . $from_date . "'";
     
         $rows = DB::table('employees AS e')
-            ->leftJoin('resignations AS r', 'e.id', '=', 'r.emp_id')  
+            ->join('resignations AS r', 'e.id', '=', 'r.emp_id')  
             ->whereRaw($moreWhere)
             ->select('e.status_id', 'e.emp_type_id', 'e.branch_id', 'e.joining_date', 'r.resign_date', 'r.effective_date')
             ->orderByRaw("e.joining_date ASC")
@@ -95,7 +132,6 @@ class Dashboard
         $start_date = convertDate(Carbon::now()->addDays($back_days));
         $rows = DB::table('employees AS e')
             ->join('emp_types AS t', 'e.emp_type_id', '=', 't.id')
-            // ->where('e.branch_id', $branch_id)
             ->whereRaw("DATE(e.joining_date) >= ?", [$start_date])
             ->selectRaw("t.name AS category,COUNT(e.id) AS count")
             ->groupBy('t.name')
@@ -124,24 +160,17 @@ class Dashboard
             'colors' => $colors
         ];
     }
-    
     public static function getTotalStaffComparison($ss = null) {
-        $ss = $ss ?? auth()->user(); // Replace this with your session or authentication logic if needed
-    
-        // Get the current date
+        $ss = $ss ?? auth()->user();
         $currentDate = Carbon::now();
-        
-        // Calculate the start dates for the last 3 months
         $startDates = [
-            $currentDate->copy()->startOfMonth()->subMonths(2), // 3 months ago
-            $currentDate->copy()->startOfMonth()->subMonths(1), // 2 months ago
-            $currentDate->copy()->startOfMonth(),              // Current month
+            $currentDate->copy()->startOfMonth()->subMonths(2),
+            $currentDate->copy()->startOfMonth()->subMonths(1),
+            $currentDate->copy()->startOfMonth(),
         ];
     
-        // Prepare an array for storing monthly staff counts
         $staffCounts = [];
     
-        // Loop through each month to fetch data
         foreach ($startDates as $startDate) {
             $endDate = $startDate->copy()->endOfMonth();
     
@@ -150,23 +179,20 @@ class Dashboard
                 ->count();
     
             $staffCounts[] = (object)[
-                'month' => $startDate->format('F Y'), // Format month and year
+                'month' => $startDate->format('F Y'),
                 'count' => $count
             ];
         }
     
-        // Return data formatted for the bar chart
         return (object)[
             'title' => 'Total Staff (Last 3 Months)',
             'labels' => array_column($staffCounts, 'month'),
             'values' => array_column($staffCounts, 'count'),
-            'colors' => ['#1E90FF', '#32CD32', '#FF4500'] // Example colors for the chart
+            'colors' => ['#1E90FF', '#32CD32', '#FF4500'] 
         ];
     }
-    
-  
     function getBenefits($arr, $ss)
-{
+    {
     $d = (object) $arr;
     $current_year = $d->year ?? date('Y');
 
@@ -198,11 +224,7 @@ class Dashboard
     ];
 
     return $result;
-}
-
-  
-    
-    
+    }
     public static function getEmployeeDataForBarChart($ss)
     {
         $start_date = Carbon::now()->subMonths(6)->startOfMonth()->format('Y-m-d');
@@ -240,24 +262,19 @@ class Dashboard
             'total_salaries' => $total_salaries
         ];
     }
-    
-    
-    
-    function getLevels($arr, $ss)
+    function getOnLevels($arr, $ss)
     {
         $subs_id = $ss->subs_id ?? null;
         $d = (object) $arr;
     
         $today = date('Y-m-d');
-        $start_date = date('Y-m-d', strtotime('-9 days')); // Get the date 9 days ago from today
-    
+        $start_date = date('Y-m-d', strtotime('-9 days'));
         $str_dates = "'$today' BETWEEN l.start_date AND l.end_date";
         $col_dates = DBX::formatDate('l.start_date', 'start_date') . ',' . DBX::formatDate('l.end_date', 'end_date');
         $leave_days_calc = "DATEDIFF(l.end_date, l.start_date) + 1 AS leave_days";
     
         $query = DB::table('leaves as l')
             ->join('employees as emp', 'emp.id', '=', 'l.emp_id')
-            ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->whereRaw("l.start_date >= ? AND l.start_date <= ?", [$start_date, $today])
             ->selectRaw(
                 "DATE(l.start_date) AS leave_date, COUNT(DISTINCT emp.id) AS staff_count"
@@ -272,6 +289,35 @@ class Dashboard
         }
     
         return $rows;
+    }
+    public static function getTotalWalletAndPayrollData($arr, $ss) {
+        $d = (object) $arr;
+        $totalWalletsQuery = DB::table('accounts')
+            ->Join('employees AS e', 'accounts.emp_id', '=', 'e.id'); 
+        $totalWallets = $totalWalletsQuery->count();
+    
+        $totalWalletBalance = $totalWalletsQuery->sum('accounts.balance');
+    
+        $totalPayrollsQuery = DB::table('accounts')
+            ->Join('employees AS e', 'accounts.emp_id', '=', 'e.id');
+    
+        $totalPayrolls = $totalPayrollsQuery->count();
+    
+        $totalPayrollBalance = $totalPayrollsQuery->sum('accounts.balance');
+    
+        return (object) [
+            'wallets' => (object) [
+                'total_count' => $totalWallets,
+                'total_balance' => $totalWalletBalance,
+                'currency' => 'KHR'
+            ],
+            'payrolls' => (object) [
+                'total_count' => $totalPayrolls,
+                'total_balance' => $totalPayrollBalance,
+                'currency' => 'KHR'
+
+            ]
+        ];
     }
 
 }
