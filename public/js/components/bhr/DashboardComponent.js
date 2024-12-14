@@ -424,14 +424,14 @@ var DashboardComponent = new (function () {
                                 <div class="w-100">
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                    <p class="fs-6" style="color: #2b3991;">${data.payrolls.total_balance} <span>${data.payrolls.currency}</span></p>
+                                    <p class="fs-6" style="color: #2b3991;">$ ${data.payrolls.total_count}</p>
                                 </div>
                             </div>
                         </div>
 
                 </div>
             </div>`,
-            `<div class="col-md-3">
+              `<div class="col-md-3">
                 <div class="card text-light d-flex justify-content-center align-items-center p-2 shadow rounded-3" style="background-color: #ededed;">
                       <div class="w-100 d-flex flex-row align-items-center">
                             <div class="position-relative ms-3" style="width: 120px; height: 100px;">
@@ -456,7 +456,7 @@ var DashboardComponent = new (function () {
                                 <div class="w-100">
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                    <p class="fs-6" style="color: #2b3991;">${data.wallets.total_balance} <span>${data.wallets.currency}</span></p>
+                                    <p class="fs-6" style="color: #2b3991;">$ ${data.wallets.total_balance}</p>
                                 </div>
                             </div>
                         </div>
@@ -475,60 +475,54 @@ var DashboardComponent = new (function () {
                                 <path class="circle" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
                                     a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="red" stroke-width="4" 
-                                    stroke-dasharray="35, 100" stroke-linecap="round" />
+                                    fill="none" stroke="#b6e152" stroke-width="4" 
+                                    stroke-dasharray="85, 100" stroke-linecap="round" />
                             </svg>
                             <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
                                 style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
-                                <p class="fs-6 m-0">${data.wallets.total_count}</p>
+                                <p class="fs-6 m-0">9</p>
                             </div>
                         </div>
                         <div class="section-title mt-3 mx-3 mb-0 fs-6 text-start w-100">
                             <div class="w-100">
-                                <p class="fs-6" style="color: #2b3991;">Public Holiday</p>
+                                <p class="fs-6" style="color: #2b3991;">Staff Probation</p>
                             </div>
                         </div>
                     </div>
 
                 </div>
             </div>`,
-            `<div class="col-md-3">
-                <div class="card text-light d-flex justify-content-center align-items-center p-2 shadow rounded-3" style="background-color: #ededed;">
-                  <div class="w-100 d-flex flex-row align-items-center">
-                        <div class="position-relative ms-3" style="width: 120px; height: 100px;">
-                            <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
-                                <path class="circle-bg" d="M18 2.0845
-                                    a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="#fff" stroke-width="4" />
-                                <path class="circle" d="M18 2.0845
-                                    a 15.9155 15.9155 0 0 1 0 31.831
-                                    a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="green" stroke-width="4" 
-                                    stroke-dasharray="50, 100" stroke-linecap="round" />
-                            </svg>
-                            <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
-                                style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
-                                <p class="fs-6 m-0">10</p>
-                            </div>
+             `<div class="col-md-3">
+                <div class="card card-pie-3 text-light d-flex justify-content-center align-items-center p-2 shadow rounded-3" style="background-color: #ededed;">
+                    <div class="card-content d-flex justify-content-center gap-3 w-100">
+                  
+                        <div class="pie"
+                            data-pie='{ 
+                                "animationSmooth": "1s ease-out", 
+                                "percent": 70, 
+                                "colorSlice": "#2b3991", 
+                                "colorCircle": "#FFF" 
+                            }'>
+                         
                         </div>
-                        <div class="section-title mt-3 mx-3 mb-0 fs-6 text-start w-100">
+                
+                        
+                        
+                        <div class="section-title mt-3 mb-0 fs-6 text-start w-100">
                             <div class="w-100">
-                                <p class="fs-6" style="color: #2b3991;"> Staff Movement</p>
+                                <p class="fs-6 m-0" style="color: #cab54a;">Staff Attendance</p>
+                                <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
+                                <small class="" style="color:rgb(147, 149, 156);">15 Dec 2024</small>
                             </div>
                         </div>
                     </div>
-
+                </div>
             </div>
-        </div>`,].join('');
+        `].join('');
         this.dbCards.innerHTML = html;
         this.initCircleCards(this.dbCards);
      
     };
-    
-    
-
- 
 
     this.renderDBCardBottom = (data) => {
         data = data ? data : {};
@@ -667,7 +661,17 @@ var DashboardComponent = new (function () {
                     </td>
                     <td class="align-middle">
                         <span class="text-primary-custom text-center" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            $ 123 
+                            Bonus
+                        </span>
+                    </td>
+                    <td class="align-middle">
+                        <span class="text-primary-custom text-center" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
+                            1 000,000.00 KHR
+                        </span>
+                    </td>
+                    <td class="align-middle">
+                        <span class="text-primary-custom text-center" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
+                            Admin
                         </span>
                     </td>
                 </tr>
@@ -680,7 +684,12 @@ var DashboardComponent = new (function () {
                 <thead style="position: sticky; top: 0; background: #fff; z-index: 1;">
                     <tr>
                         <th class="text-center" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Benefit</th>
-                        <th class="text-center" style="font-size: 0.85rem; color: #2b3991cc; font-weight: bold;">Total</th>
+                        <th class="text-center" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Category</th>
+                        <th class="text-center" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Total</th>
+                        <th class="text-center" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Last Updated</th>
+
+
+
                     </tr>
                 </thead>
                 <tbody>
