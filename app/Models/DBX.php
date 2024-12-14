@@ -248,6 +248,15 @@ public static function formatTimeOnly($column, $alias_name = null)
         }
     }
     
+    static function deleteForeignKeyTables($fk_tables, $value,$soft_delete = false){
+        foreach($fk_tables as $table_name => $fk_name){
+            if($soft_delete)
+              DB::table($table_name)->where($fk_name,$value)->uopdate(['deleted'=>1]);
+            else DB::table($table_name)->where($fk_name,$value)->delete();
+        }
+        return DV::depends(1);
+    }
+
     static function updatePrimaryKey($table_name, $pk_name, $old_value, $new_value) {
             $driverName = DB::getDriverName();
             // Get the database connection
