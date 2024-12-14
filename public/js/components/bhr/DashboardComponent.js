@@ -98,8 +98,7 @@ var DashboardComponent = new (function () {
 
     this.renderDBChartAllTop = (data) => {
         data = data ? data : {};
-        let html = [`
-            <div class="chart-row py-3">`,
+        let html = [`<div class="chart-row py-3">`,
                `<div class="col-md-3">
                     <div class="chart-container dashboard_chart ">
                         <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
@@ -117,7 +116,7 @@ var DashboardComponent = new (function () {
                     </div>
                 </div> `,
                 `<div class="col-md-3">
-                    <div class="chart-container dashboard_chart  shadow-sm" style="max-width: 20rem;">
+                    <div class="chart-container dashboard_chart  shadow-sm">
                         <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #23232f29;">
                             <div class="d-flex align-items-center mb-3">
                                 <div class="bg-icon pt-3 px-3">
@@ -412,22 +411,22 @@ var DashboardComponent = new (function () {
             <div class="col-md-4">
                 <div class="card text-light d-flex justify-content-center align-items-center p-3 shadow rounded-3" style="background-color: #ededed;">
                       <div class="w-100 d-flex flex-row align-items-center">
-                            <div class="position-relative ms-3" style="width: 100px; height: 100px;">
-                                <svg viewBox="0 0 46 46" class="circular-chart" style="width: 100%; height: 100%;">
+                            <div class="position-relative ms-3" style="width: 120px; height: 100px;">
+                                <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
                                     <path class="circle-bg" d="M18 2.0845
                                         a 15.9155 15.9155 0 0 1 0 31.831
                                         a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                        fill="none" stroke="#fff" stroke-width="2" />
+                                        fill="none" stroke="#fff" stroke-width="4" />
                                     <path class="circle" d="M18 2.0845
                                         a 15.9155 15.9155 0 0 1 0 31.831
                                         a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                        fill="none" stroke="#07D1ED" stroke-width="2" 
+                                        fill="none" stroke="#07D1ED" stroke-width="4" 
                                         stroke-dasharray="50, 100" stroke-linecap="round" />
                                 </svg>
                                 <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
-                                    style="color: #2b3991; font-size: 0.5rem; font-weight: bold; text-align: center;">
+                                    style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
                                     <p class="m-0">10</p>
-                                    <span>Accounts</span>
+                                    <small>Accounts</small>
                                 </div>
                             </div>
                             <div class="section-title mt-3 mx-3 mb-0 fs-6 text-start w-100">
@@ -441,30 +440,36 @@ var DashboardComponent = new (function () {
 
                 </div>
             </div>
-             <div class="col-md-4">
+              <div class="col-md-4">
                 <div class="card text-light d-flex justify-content-center align-items-center p-3 shadow rounded-3" style="background-color: #ededed;">
-                    <div class="card-content d-flex justify-content-center gap-3 w-100">
-                  
-                        <div class="pie"
-                            data-pie='{ 
-                                "animationSmooth": "1s ease-out", 
-                                "percent": 50, 
-                                "colorSlice": "#07D1ED", 
-                                "colorCircle": "#FFF" 
-                            }'>
-                         
-                        </div>
-                
-                        
-                        
-                        <div class="section-title mt-3 mb-0 fs-6 text-start w-100">
-                            <div class="w-100">
-                                <p class="fs-6 m-0 text-success " style="color: #cab54a;">Wallets Account</p>
-                                <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                <p class="fs-5" style="color: #2b3991;">$ 100,000,168</p>
+                      <div class="w-100 d-flex flex-row align-items-center">
+                            <div class="position-relative ms-3" style="width: 120px; height: 100px;">
+                                <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
+                                    <path class="circle-bg" d="M18 2.0845
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                        fill="none" stroke="#fff" stroke-width="4" />
+                                    <path class="circle" d="M18 2.0845
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                        fill="none" stroke="#07D1ED" stroke-width="4" 
+                                        stroke-dasharray="50, 100" stroke-linecap="round" />
+                                </svg>
+                                <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
+                                    style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
+                                    <p class="m-0">10</p>
+                                    <small>Accounts</small>
+                                </div>
+                            </div>
+                            <div class="section-title mt-3 mx-3 mb-0 fs-6 text-start w-100">
+                                <div class="w-100">
+                                    <p class="fs-6 text-muted m-0" style="color: #cab54a;">Payroll Account</p>
+                                    <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
+                                    <p class="fs-5" style="color: #2b3991;">$ 168,000,000</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
+
                 </div>
             </div>
              <div class="col-md-4">
@@ -505,26 +510,19 @@ var DashboardComponent = new (function () {
 
     this.renderDBCardBottom = (data) => {
         data = data ? data : {};
-        let tableLeave = this.renderDBCardOnLeave(data);
+        const tableLeave = this.renderDBCardOnLeave(data);
+        const tableBenefit = this.renderDBCardBenefit(data);
         let html = `
             <div class="card-row py-3">
-                <div class="col-md-3">
-                    <div class="card-container dashboard_chart">
+                <div class="col-md-6">
+                    <div class="chart-container dashboard_chart">
                         <span class="fw-semibold fs-6 text-primary-custom text-capitalize">
                             Overview last 10 days 
                         </span>
-                        ${tableLeave}
-                    </div>
-                </div>
-                <div class="col-md-6">
-                    <div class="chart-container dashboard_chart">
-                        <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
-                            Monthly Employee Salary Overview
-                        </span>
-                        <canvas id="employeeSalaryChart"></canvas>
+                        ${tableBenefit}
                     </div>
                 </div> 
-           <div class="col-md-3">
+                <div class="col-md-3">
                 <div class="card-container dashboard_chart">
                     <div class="card w-100 d-flex flex-row align-items-center mt-2 mb-3">
                         <div class="position-relative m-3" style="width: 60px; height: 60px;">
@@ -532,11 +530,11 @@ var DashboardComponent = new (function () {
                                 <path class="circle-bg" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
                                     a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="#eee" stroke-width="2" />
+                                    fill="none" stroke="#eee" stroke-width="3" />
                                 <path class="circle" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
                                     a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="#07d1ed" stroke-width="2" 
+                                    fill="none" stroke="#07d1ed" stroke-width="3" 
                                     stroke-dasharray="50, 100" stroke-linecap="round" />
                             </svg>
                             <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
@@ -553,11 +551,11 @@ var DashboardComponent = new (function () {
                                 <path class="circle-bg" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
                                     a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="#eee" stroke-width="2" />
+                                    fill="none" stroke="#eee" stroke-width="4" />
                                 <path class="circle" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
                                     a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="#ecdb5e" stroke-width="2" 
+                                    fill="none" stroke="#ecdb5e" stroke-width="4" 
                                     stroke-dasharray="50, 100" stroke-linecap="round" />
                             </svg>
                             <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
@@ -574,6 +572,15 @@ var DashboardComponent = new (function () {
                     </div>
                 </div>
             </div>
+                <div class="col-md-3">
+                    <div class="card-container dashboard_chart">
+                        <span class="fw-semibold fs-6 text-primary-custom text-capitalize">
+                            Overview last 10 days 
+                        </span>
+                        ${tableLeave}
+                    </div>
+                </div>
+           
             </div>
         `;
     
@@ -616,7 +623,43 @@ var DashboardComponent = new (function () {
         </div>
     `;
     
-};
+   };
+   this.renderDBCardBenefit = (data) => {
+    const rowsHtml = (data || [])
+        .map(
+            (item) => `
+                <tr>
+                    <td class="align-middle">
+                        <div class="text-primary-custom text-center" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
+                            Bonus
+                        </div>
+                    </td>
+                    <td class="align-middle">
+                        <span class="text-primary-custom text-center" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
+                            $ 123 
+                        </span>
+                    </td>
+                </tr>
+            `
+        ).join(""); 
+
+        return `
+        <div class="w-100 mt-2" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; scroll-behavior: smooth; scrollbar-width: thin;">
+            <table class="table bg-white rounded-4 mb-0" style="font-size: 0.8rem;">
+                <thead style="position: sticky; top: 0; background: #fff; z-index: 1;">
+                    <tr>
+                        <th class="text-center" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Benefit</th>
+                        <th class="text-center" style="font-size: 0.85rem; color: #2b3991cc; font-weight: bold;">Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+            </table>
+        </div>
+    `;
+    
+   };
 
     
     this.loadCards = (onFinish) => {
