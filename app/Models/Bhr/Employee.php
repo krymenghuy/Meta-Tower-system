@@ -31,7 +31,7 @@ class Employee //extends Model
 
     static function getProps($id, $cols){
           if(!$cols) $cols = 'id,code,name,sex';
-          return DB::table('employees as e')->where('e.id',$id)->selectRaw($cols)->first();     
+          return DB::table('employees as e')->where('e.id',$id)->selectRaw($cols)->first();
     }
 
     function checkUniqueEmployeeByPhone($phone_number, $id = null)
@@ -300,7 +300,16 @@ class Employee //extends Model
         return DV::error('Error saving payroll list benefit!');
     }
 
+    static function getPayrollAccount($emp_id)
+    {
+        $emp = DB::table('employees as e')
+            ->join('accounts as a', 'a.emp_id', '=', 'e.id')
+            ->where('e.id', $emp_id)
+            ->selectRaw('e.id,e.name,a.id as account_id,a.account_number')
+            ->first();
+        return $emp;
 
+    }
 
     function deleteProfilePicture($id = null, $ss = null)
     {

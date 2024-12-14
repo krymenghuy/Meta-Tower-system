@@ -216,7 +216,7 @@ var WalletAccountComponent = new (function () {
     this.initTransaction = () => {
         if (mThis.initTransactionAlready) return;
         mThis.TransactionListView = new ListView("wallet_transaction_info", {
-            fetchApi: `${main_view.base_url}/hr/transaction/list-paginate`,
+            fetchApi: `${main_view.base_url}/hr/transaction/get-list`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols2,
