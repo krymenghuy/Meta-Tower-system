@@ -221,7 +221,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('salary-histor
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->group(function () {
 
     Route::post('/save', [AccountController::class, 'saveAccount']);
-    Route::post('/list-paginate', [AccountController::class, 'getAccountListPaginate']);
+    Route::post('/list-paginate', [AccountController::class, 'getList']);
     Route::post('/details', [AccountController::class, 'getDetails']);
     Route::post('/delete', [AccountController::class, 'deleteAccount']);
     Route::post('/form-options', [AccountController::class, 'getFormOptions']);

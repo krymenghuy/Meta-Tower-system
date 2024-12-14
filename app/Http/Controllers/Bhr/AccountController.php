@@ -28,13 +28,13 @@ class AccountController extends Controller
         return JDV::raw($res);
     }
 
-    public function getAccountListPaginate(Request $req)
+    public function getList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->account->getAccountListPaginate($req->all(), $ss));
+        return JDV::result($this->account->getList($req->all(), $ss));
     }
 
     public function getDetails(Request $req)

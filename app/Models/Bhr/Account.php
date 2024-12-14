@@ -58,14 +58,14 @@ class Account
 
         $id = saveData($ss, 'accounts', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            return DV::depends(1, ['accounts' => $inputs, 'id' => $id]);
+            return DV::depends($id, ['id' => $id], 'Failed to save account information');
         }
 
         return DV::error('Error saving account');
     }
 
 
-    function getAccountListPaginate($arr, $ss)
+    function getList($arr, $ss)
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
@@ -81,7 +81,7 @@ class Account
         $search_value = $d->search_value ?? null;
         $sort_by = $d->sort_by ?? 'a.id';
         $sort_order = $d->sort_order ?? 'asc';
-        $search_id = $d->id ?? null;
+        // $search_id = $d->id ?? null;
         $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
 
         $str_search = '1=1';
@@ -103,9 +103,9 @@ class Account
             ')
             ->where('a.branch_id', $branch_id);
 
-        if ($search_id) {
-            $query->where('a.id', $search_id);
-        }
+        // if ($search_id) {
+        //     $query->where('a.id', $search_id);
+        // }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
             $str_search = "a.account_number LIKE '%" . $search_value . "%'
