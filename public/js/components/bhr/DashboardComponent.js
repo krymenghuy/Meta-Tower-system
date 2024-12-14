@@ -107,6 +107,69 @@ var DashboardComponent = new (function () {
                         <canvas id="doughnutChart"></canvas>
                     </div>
                 </div>`,
+                `<div class="col-md-3">
+                <div class="chart-container dashboard_chart  shadow-sm">
+                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #23232f29;">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-icon pt-3 px-3">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
+                            </div>
+                            <div class="ms-3 text-center flex-fill">
+                                <span class="fw-semibold fs-4 text-primary-custom">${data.cards.new_staff_count.count}</span>
+                                <div class="" style="color:#faff00;">${data.cards.new_staff_count.title}</div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-auto">
+                            <small class="text-muted">Last 90 days</small>
+                        </div>
+                    </div>
+                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #23232f29;">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-icon pt-3 px-3">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
+                            </div>
+                            <div class="ms-3 text-center flex-fill">
+                                <span class="fw-semibold fs-4 text-primary-custom">${data.cards.probation_staff_count.count}</span>
+                                <div class="text-success">${data.cards.probation_staff_count.title}</div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-auto">
+                            <small class="text-muted">Last 90 days</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #23232f29;">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-icon pt-3 px-3">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
+                            </div>
+                            <div class="ms-3 text-center flex-fill">
+                                <span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigning_staff_count.count}</span>
+                                <div class="text-info">${data.cards.resigning_staff_count.title}</div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-auto">
+                            <small class="text-muted">Last 90 days</small>
+                        </div>
+                    </div>
+
+                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 " style="background-color: #23232f29;">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="bg-icon pt-3 px-3">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
+                            </div>
+                            <div class="ms-3 text-center flex-fill">
+                                <span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigned_staff_count.count}</span>
+                                <div class="text-danger">${data.cards.resigned_staff_count.title}</div>
+                            </div>
+                        </div>
+                        <div class="text-center mt-auto">
+                            <small class="text-muted">Last 90 days</small>
+                        </div>
+                    </div>
+
+                </div>
+            </div>`,
                 `<div class="col-md-6">
                     <div class="chart-container dashboard_chart">
                         <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
@@ -115,69 +178,7 @@ var DashboardComponent = new (function () {
                         <canvas id="employeeSalaryChart"></canvas>
                     </div>
                 </div> `,
-                `<div class="col-md-3">
-                    <div class="chart-container dashboard_chart  shadow-sm">
-                        <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #23232f29;">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="bg-icon pt-3 px-3">
-                                    <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
-                                </div>
-                                <div class="ms-3 text-center flex-fill">
-                                    <span class="fw-semibold fs-4 text-primary-custom">${data.cards.new_staff_count.count}</span>
-                                    <div class="" style="color:#faff00;">${data.cards.new_staff_count.title}</div>
-                                </div>
-                            </div>
-                            <div class="text-center mt-auto">
-                                <small class="text-muted">Last 90 days</small>
-                            </div>
-                        </div>
-                        <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #23232f29;">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="bg-icon pt-3 px-3">
-                                    <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
-                                </div>
-                                <div class="ms-3 text-center flex-fill">
-                                    <span class="fw-semibold fs-4 text-primary-custom">${data.cards.probation_staff_count.count}</span>
-                                    <div class="text-success">${data.cards.probation_staff_count.title}</div>
-                                </div>
-                            </div>
-                            <div class="text-center mt-auto">
-                                <small class="text-muted">Last 90 days</small>
-                            </div>
-                        </div>
-
-                        <div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #23232f29;">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="bg-icon pt-3 px-3">
-                                    <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
-                                </div>
-                                <div class="ms-3 text-center flex-fill">
-                                    <span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigning_staff_count.count}</span>
-                                    <div class="text-info">${data.cards.resigning_staff_count.title}</div>
-                                </div>
-                            </div>
-                            <div class="text-center mt-auto">
-                                <small class="text-muted">Last 90 days</small>
-                            </div>
-                        </div>
-
-                        <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 " style="background-color: #23232f29;">
-                            <div class="d-flex align-items-center mb-3">
-                                <div class="bg-icon pt-3 px-3">
-                                    <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
-                                </div>
-                                <div class="ms-3 text-center flex-fill">
-                                    <span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigned_staff_count.count}</span>
-                                    <div class="text-danger">${data.cards.resigned_staff_count.title}</div>
-                                </div>
-                            </div>
-                            <div class="text-center mt-auto">
-                                <small class="text-muted">Last 90 days</small>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>`,
+              
             `</div>`].join('');
         mThis.dbChartAll.innerHTML = html;
         mThis.renderChartEmployee(data.doughnutChart);
@@ -407,8 +408,8 @@ var DashboardComponent = new (function () {
     
     
     this.renderDBCards = (data) => {
-        let html = `
-            <div class="col-md-4">
+        let html =
+            [`<div class="col-md-3">
                 <div class="card text-light d-flex justify-content-center align-items-center p-3 shadow rounded-3" style="background-color: #ededed;">
                       <div class="w-100 d-flex flex-row align-items-center">
                             <div class="position-relative ms-3" style="width: 120px; height: 100px;">
@@ -439,8 +440,8 @@ var DashboardComponent = new (function () {
                         </div>
 
                 </div>
-            </div>
-              <div class="col-md-4">
+            </div>`,
+              `<div class="col-md-3">
                 <div class="card text-light d-flex justify-content-center align-items-center p-3 shadow rounded-3" style="background-color: #ededed;">
                       <div class="w-100 d-flex flex-row align-items-center">
                             <div class="position-relative ms-3" style="width: 120px; height: 100px;">
@@ -471,8 +472,8 @@ var DashboardComponent = new (function () {
                         </div>
 
                 </div>
-            </div>
-             <div class="col-md-4">
+            </div>`,
+             `<div class="col-md-6">
                 <div class="card card-pie-3 text-light d-flex justify-content-center align-items-center p-3 shadow rounded-3" style="background-color: #ededed;">
                     <div class="card-content d-flex justify-content-center gap-3 w-100">
                   
@@ -498,7 +499,7 @@ var DashboardComponent = new (function () {
                     </div>
                 </div>
             </div>
-        `;
+        `].join('');
         this.dbCards.innerHTML = html;
         this.initCircleCards(this.dbCards);
      
