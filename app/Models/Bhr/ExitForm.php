@@ -63,7 +63,7 @@ class ExitForm
         return DV::depends($id, ['id' => $id], 'Save failed');
     }
 
-    public function getExitFormPaginate($arr, $ss = null)
+    public function getList($arr, $ss = null)
     {
         $d = (object) $arr;
         $branch_id = $ss->branch_id;
@@ -138,7 +138,7 @@ class ExitForm
             ->first();
     }
 
-    public function deleteExitForm($id = null)
+    public function delete($id = null)
     {
         $id = $id ?? $this->id;
         $deleted = DB::table('exit_forms')->where('id', $id)->delete();

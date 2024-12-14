@@ -29,6 +29,11 @@ class Employee //extends Model
         $this->userInfo = $userInfo;
     }
 
+    static function getProps($id, $cols){
+          if(!$cols) $cols = 'id,code,name,sex';
+          return DB::table('employees as e')->where('e.id',$id)->selectRaw($cols)->first();     
+    }
+
     function checkUniqueEmployeeByPhone($phone_number, $id = null)
     {
         $str_id = "1=1";
@@ -640,7 +645,7 @@ class Employee //extends Model
         $ss = $ss ? $ss : $this->userInfo;
         $id = $id ?? $this->id;
 
-        $emp = $this->getProps($id, 'status_id');
+        $emp = self::getProps($id, 'status_id');
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
@@ -684,12 +689,6 @@ class Employee //extends Model
     {
         return DB::table('events')->where('name', $name)->value('id');
     }
-    function getProps($id, $props = [])
-    {
-        $cols = is_array($props) ? implode(',', $props) : $props;
-        $row = DB::table('employees')->where('id', $id)->selectRaw($cols)->first();
-        return $row;
-    }
     function promoteIntern($emp_type_id, $id = null, $ss = null, $arr)
     {
         $ss = $ss ?? $this->userInfo;
@@ -708,7 +707,7 @@ class Employee //extends Model
             '2.3' => 'Promote probation to staff'
         ];
 
-        $emp = $this->getProps($id, 'emp_type_id');
+        $emp = self::getProps($id, 'emp_type_id');
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
@@ -762,7 +761,7 @@ class Employee //extends Model
         $inputs['emp_id'] = $id;
 
 
-        $emp = $this->getProps($id, 'status_id');
+        $emp = self::getProps($id, 'status_id');
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
@@ -824,7 +823,7 @@ class Employee //extends Model
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $inputs['emp_id'] = $id;
-        $emp = $this->getProps($id, 'status_id');
+        $emp = self::getProps($id, 'status_id');
         if (!$emp) {
             return DV::error('Employee ID not found!');
         }
