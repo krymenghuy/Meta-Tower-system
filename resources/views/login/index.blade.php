@@ -190,12 +190,12 @@
     <body onload="checkDevice()">
         <div class="vs-container-login">
             <div>
-                <img class="img-background" src="{{ asset('assets/images/bhr/bhr_b3.png') }}"/>
+                <img class="img-background" src="{{ asset('assets/images/bhr/bg-login.png') }}"/>
                 <div class="overlay-blur"></div>
             </div>
             <div class="login-frame">
                 <div class="vs-container-front-img">
-                    <img class="img-front" src="{{ asset('assets/images/bhr/bhr_b.png') }}"/>
+                    <img class="img-front" src="{{ asset('assets/images/bhr/frame-login.png') }}"/>
                     <div class="vs-login">
                         <div class="vs-form-login">
                             <h3 class="vs-title">Sign in to your account</h3>
@@ -223,10 +223,10 @@
                                 </form>
                             </div>
                         </div>
-                        <!-- <div class="vs-d-flex-copyright">
+                        <div class="vs-d-flex-copyright">
                             <p>Vectorasoft Co.,LTD.</p>
                             <p>Copyright &copy 2023. All rights reserved</p>
-                        </div> -->
+                        </div>
                     </div>
                 </div>
             </div>

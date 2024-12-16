@@ -12,15 +12,15 @@
   width: 100%;
   height: 100vh;
   margin: 0;
-  background-color: #2b3991;
-  background-position: center;
-  background-image: linear-gradient(182deg, rgb(240 233 233 / 0%) 0%, rgb(255 255 255) 100%);
-  /* background-size: cover;
-  background-attachment: fixed;
-  background-image: url('https://img.freepik.com/free-photo/abstract-luxury-gradient-blue-background-smooth-dark-blue-with-black-vignette-studio-banner_1258-70882.jpg'); */
-  /* background-image: url('../../assets/images/logo/background_1.png'); */
+  /* background-color: #2b3991;  */
+  /* background-image: url('../images/bhr/new_staff.jpg'); */
+  background-image: url('https://ideogram.ai/assets/image/lossless/response/uVaaSLs1RNaW821R-kn9Tw');
 
+  background-size: cover; /* Ensure the image covers the entire area */
+  background-position: center; /* Center the image */
+  background-repeat: no-repeat; /* Avoid repeating the image */
 }
+
 
 .box-center {
   display: flex;
@@ -33,12 +33,12 @@
 .container {
   width: 30%;
   height: auto;
-  background-color:#2429461f;
+  background-color:#bcc6cd3d;
   background-position: center;
   background-size: cover;
   background-attachment: fixed;
-  /* background-image: url('https://cdn.pixabay.com/photo/2016/12/27/11/50/banner-1933786_1280.png');
-   */
+  /* background-image: url('https://static.vecteezy.com/system/resources/thumbnails/029/498/567/small/tech-baclground-design-with-networking-and-connections-photo.jpg'); */
+  
 
 }
 
@@ -65,9 +65,12 @@
 a.link{
   color: #2b3991;
 }
+a.link:hover{
+  color: #cab54a;
+}
 
 .ratings i {
-  color: #d6bd6ad6;
+  color: #cab54a;
 }
 
 
@@ -79,6 +82,7 @@ a.link{
 
 .card:hover {
   transform: scale(1.05);
+
 
 
 }
@@ -98,5 +102,5 @@ a.link{
 
  .vs-d-flex-copyright span{
   padding:5px 0;
-  color: #2b3991;
+  color: #fff;
 }

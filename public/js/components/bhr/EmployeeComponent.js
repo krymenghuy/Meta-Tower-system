@@ -315,7 +315,7 @@ var EmployeeComponent = new (function () {
                                 `</div>`,
                                 `<div class="dropdown">`,
                                     `<a href="javascript:void(0)" class="btn_employee_action" data-id="${ d.id}" data-statusid="${d.status_id}" data-typeid="${d.emp_type_id}" aria-haspopup="true" aria-expanded="false">`,
-                                      `<i class="fa-solid fa-ellipsis-vertical text-white fs-4 tool-tip"> <span class="tool-tiptext fs-6">Actions</span></i>`,
+                                      `<i class="fa-solid fa-ellipsis-vertical text-white fs-4"></i>`,
                                     `</a>`,
                                 `</div>`,
                             `</div>`,
@@ -2960,7 +2960,7 @@ const EmployeeDialog = (() => {
                     name: "spouse_emp_id",
                     data: "spouse_employee",
                     textField: (me, d) => {
-                        return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> </div></div>`;
+                        return `<div class="d-flex gap-2"><span> ${d.name} </span></div>`;
                     },
                     valueField: "id",
                 },
