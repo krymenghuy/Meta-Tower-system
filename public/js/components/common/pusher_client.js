@@ -23,7 +23,7 @@ const PusherClient = new function(){
     //** For HOUExpress */
     //let pusher_app_key = '105a036ea697941d67d1'; //process.env.PUSHER_APP_KEY
 
-    let pusher = new Pusher(pusher_app_key,{
+    const pusher = new Pusher(pusher_app_key,{
         cluster: 'mt1',
         useTLS:true,
         disableStats:true,
@@ -32,17 +32,22 @@ const PusherClient = new function(){
         authorizer: function authorizer(channel, options){
             return {
                 authorize: function authorize(socketId, callback) {
-                    let p = {"socket_id":socketId,"channel_name":channel.name};
-                    vsapi.call(`${mThis.base_url}/api/broadcast/auth`,p).then(res=>{
+                    const p = {"socket_id":socketId,"channel_name":channel.name};
+                    vsapi.call(`${main_view.base_url}/api/broadcast/auth`,p,false,false).then(d =>{
                         console.log('Pusher authorization succeeded!');
+                        const auth_data = d.data || d;
                         //NOTE: @auth_data ={"auth":"app_key:sig"} . For example,  @auth_data = {"auth":"b7351506ee87f3eec932:3c27d88c6944726d39052efd50770468b23b0e9987e981acbc5ed58ba4bb1d51"}
-                        callback(null, res.data);
+                        callback(null, auth_data);
                     });
                 }
             };
         }
     });
  
+    pusher.connection.bind('error', function(err) {
+        console.error("Pusher error:", err);
+    });
+    
     pusher.connection.bind('connected',(payload)=>{
         console.info('Web socket connection successful :)');
     });

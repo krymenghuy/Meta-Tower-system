@@ -372,7 +372,7 @@ function v_display($mod_id, $module_ids = null)
                                         src="{{ asset('assets/images/icons/mobile_setting.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color" vslang="menus.Payroll Accounts">
-                                    Payroll Account
+                                    Payroll Accounts
                                 </span>
                             </a>
                         </li>
@@ -383,7 +383,7 @@ function v_display($mod_id, $module_ids = null)
                                         src="{{ asset('assets/images/icons/pickup_center.svg') }}" />
                                 </span>
                                 <span class="kt-menu__link-text font-color" vslang="menus.Staff Wallets">
-                                    Wallet Account
+                                    Wallet Accounts
                                 </span>
                             </a>
                         </li>
