@@ -1,5 +1,4 @@
 "use strict";
-
 var WorkshiftComponent = new (function () {
     const mThis = this;
     this.title_prop = "Attendance Tracks";
