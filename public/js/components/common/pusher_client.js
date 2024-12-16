@@ -18,13 +18,13 @@ const PusherClient = new function(){
     //cookie_name are set in main.js, app.js, vsapi.js, loginController.php, Master.blade.php, "login/index.blade.php" 
     
     //*** For Demo DMS */
-    const pusher_app_key = 'e9f577722070bbc52ec2'; //process.env.PUSHER_APP_KEY 
+    const pusher_app_key = 'e71b395ef6f9326086ca'; //process.env.PUSHER_APP_KEY 
 
     //** For HOUExpress */
     //let pusher_app_key = '105a036ea697941d67d1'; //process.env.PUSHER_APP_KEY
 
     const pusher = new Pusher(pusher_app_key,{
-        cluster: 'mt1',
+        cluster: 'ap1',
         useTLS:true,
         disableStats:true,
         // authEndpoint:"/dms/broadcast/auth",
