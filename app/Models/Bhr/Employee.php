@@ -167,6 +167,7 @@ class Employee //extends Model
     //     }
     //     return PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'dir'=> self::$img_dir] ,null,$photo_data,null,['id'=>$id,'store'=>'employees.photo_file_name']);
     //   }
+
     static function saveProfilePicture($photo_data, $file_type = null, $id = null, $ss = null)
     {
         $id = $id ?? $id; // Remove the reference to $this->id
@@ -181,7 +182,10 @@ class Employee //extends Model
             PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $employee->photo_file_name);
             DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
         }
-        return PublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'employees.photo_file_name']);
+        $res = PublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'employees.photo_file_name']);
+        if($res->status ==='Error') return $res;
+        $img = self::profilePicture($id);
+        return DV::depends(1,['image_url'=>$img]);
     }
 
     static function isOnLeave($id)
@@ -315,10 +319,10 @@ class Employee //extends Model
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $sender = DB::table('employees as s')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
-        if (!$sender) return DV::error('Employee identity is not correct!');
-        PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $sender->photo_file_name);
-        DB::table('sender')->where('id', $id)->update(['photo_file_name' => null]);
+        $emp = DB::table('employees as s')->where('id', $id)->selectRaw('id,photo_file_name')->first();
+        if (!$emp) return DV::error('Employee identity is not correct!');
+        PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $emp->photo_file_name);
+        DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
         return DV::success();
     }
 
