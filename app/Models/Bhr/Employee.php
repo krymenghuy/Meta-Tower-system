@@ -642,6 +642,10 @@ class Employee //extends Model
         if ($id) {
             $employee = self::getDetails($id, $ss);
         }
+
+        $firstElement = ['id' => 0, 'name' => '(None)', 'name_kh'=>'(None)', 'sex'=>'','phone_number'=>'','image_url'=>'', 'position_id'=>'','email'=>''];
+ 
+        $emps = GeneralSettings::options_employee(10, $ss)->prepend($firstElement);
         return (object) [
             'nationalities' => GeneralSettings::options_nationality($ss),
             'cities' => GeneralSettings::loc_options_city($ss),
@@ -652,7 +656,7 @@ class Employee //extends Model
             'types' => DB::table('emp_types')->selectRaw('id,name')->get(),
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
             'employee' => $employee,
-            'spouse_employee' => GeneralSettings::options_employee(10, $ss),
+            'employees' => $emps,
         ];
     }
     function setTerminateStatus($status_id, $id = null, $ss = null)
