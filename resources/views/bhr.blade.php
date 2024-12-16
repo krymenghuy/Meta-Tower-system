@@ -120,7 +120,7 @@ echo $user->lang ?? 'en'; ?>">
                         <div class="d-flex flex-row flex-wrap shadow justify-content-between" style="background-color:#ececec;">
                             <div class="mainview-top-right">
                                 <div class="show--title mx-4 p-3 flex-grow-1 ">
-                                    <div style="height:18px" class="screen-info d-flex flex-row justify-content-between align-items-center  w-50">
+                                    <div style="height:18px" class="screen-info d-flex flex-row justify-content-between align-items-center  w-100">
                                         <div>
                                             <h6 class="screen-title mb-0 " vslang="titles.dashboard"
                                           style="color:grey;" id="screen_title">Dashboard</h6>
