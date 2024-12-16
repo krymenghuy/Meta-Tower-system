@@ -315,11 +315,7 @@ var EmployeeComponent = new (function () {
                                 `</div>`,
                                 `<div class="dropdown">`,
                                     `<a href="javascript:void(0)" class="btn_employee_action" data-id="${ d.id}" data-statusid="${d.status_id}" data-typeid="${d.emp_type_id}" aria-haspopup="true" aria-expanded="false">`,
-<<<<<<< HEAD
                                       `<i class="fa-solid fa-ellipsis-vertical text-white fs-4"></i>`,
-=======
-                                      `<i class="fa-solid fa-ellipsis-vertical text-white fs-4 tool-tip"></i>`,
->>>>>>> 8cf72a1958038a0dbeb947aff3653e7967bd15a7
                                     `</a>`,
                                 `</div>`,
                             `</div>`,
