@@ -3006,8 +3006,8 @@ const EmployeeDialog = (() => {
                 },
                 {
                     name: "spouse_emp_id",
-                    data: "spouse_employee",
-                    firstOption:'0|(None)',
+                    data: "employees",
+                    //firstOption: {"value": 0,"label":"None"},
                     textField: (me, d) => {
                         return `<div class="d-flex gap-2"><span> ${d.name} </span></div>`;
                     },
