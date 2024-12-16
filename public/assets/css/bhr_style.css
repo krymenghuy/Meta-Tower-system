@@ -412,16 +412,19 @@ a.menu-selected .kt-menu__link-text {
 }
 
 .bg--icon {
-    padding: 10px;
+    padding: 5px;
     border-radius: 8px;
 }
 
 .bg--icon-new-employee-count {
-    background-color: #56ace0;
+    background-color: #21233442;
 }
 
-.bg--icon-new-student-invoices {
-    background-color: #eb1e8122;
+.bg--icon-new-employee-resigning {
+    background-color: #57e4ff30;
+}
+.bg--icon-new-employee-resigned {
+    background-color: #cab54a4a;
 }
 
 .bg--icon-total-invoices-in-month {

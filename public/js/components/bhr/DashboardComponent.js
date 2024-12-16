@@ -116,15 +116,15 @@ var DashboardComponent = new (function () {
                     </div>
                 </div>`,
                 `<div class="col-md-3">
-                <div class="chart-container dashboard_chart  shadow-sm">
-                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #23232f29;">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-icon pt-3 px-3">
-                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
+                <div class="chart-container dashboard_chart bg-white shadow-sm">
+                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #ededed;">
+                        <div class="d-flex align-items-center p-2 mb-1">
+                            <div class="bg--icon  bg--icon-new-employee-count">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="Icon">
                             </div>
                             <div class="ms-3 text-center flex-fill">
                                 <span class="fw-semibold fs-4 text-primary-custom">${data.cards.new_staff_count.count}</span>
-                                <div class="" style="color:#faff00;">${data.cards.new_staff_count.title}</div>
+                                <div class="text-success" style="">${data.cards.new_staff_count.title}</div>
                             </div>
                         </div>
                         <div class="text-center mt-auto">
@@ -132,14 +132,14 @@ var DashboardComponent = new (function () {
                         </div>
                     </div>
 
-                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #23232f29;">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-icon pt-3 px-3">
+                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #ededed;">
+                        <div class="d-flex align-items-center p-2 mb-1">
+                            <div class="bg--icon bg--icon-new-employee-resigning">
                                 <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
                             </div>
                             <div class="ms-3 text-center flex-fill">
                                 <span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigning_staff_count.count}</span>
-                                <div class="text-info">${data.cards.resigning_staff_count.title}</div>
+                                <div class="text-warning">${data.cards.resigning_staff_count.title}</div>
                             </div>
                         </div>
                         <div class="text-center mt-auto">
@@ -147,10 +147,10 @@ var DashboardComponent = new (function () {
                         </div>
                     </div>
 
-                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 " style="background-color: #23232f29;">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-icon pt-3 px-3">
-                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
+                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 " style="background-color: #ededed;">
+                        <div class="d-flex align-items-center p-2 mb-1">
+                            <div class="bg--icon bg--icon-new-employee-resigned">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/stop.svg" alt="Icon">
                             </div>
                             <div class="ms-3 text-center flex-fill">
                                 <span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigned_staff_count.count}</span>
@@ -492,33 +492,35 @@ var DashboardComponent = new (function () {
 
                 </div>
             </div>`,
-             `<div class="col-md-3">
-                <div class="card card-pie-3 text-light d-flex justify-content-center align-items-center p-2 shadow rounded-3" style="background-color: #ededed;">
-                    <div class="card-content d-flex justify-content-center gap-3 w-100">
-                  
-                        <div class="pie"
-                            data-pie='{ 
-                                "animationSmooth": "1s ease-out", 
-                                "percent": 70, 
-                                "colorSlice": "#2b3991", 
-                                "colorCircle": "#FFF" 
-                            }'>
-                         
+            `<div class="col-md-3">
+            <div class="card text-light d-flex justify-content-center align-items-center p-2 shadow rounded-3" style="background-color: #ededed;">
+                <div class="w-100 d-flex flex-row align-items-center">
+                        <div class="position-relative ms-3" style="width: 120px; height: 100px;">
+                            <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
+                                <path class="circle-bg" d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                    fill="none" stroke="#fff" stroke-width="4" />
+                                <path class="circle" d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831" 
+                                    fill="none" stroke="#b6e152" stroke-width="4" 
+                                    stroke-dasharray="85, 100" stroke-linecap="round" />
+                            </svg>
+                            <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
+                                style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
+                                <p class="fs-6 m-0">9</p>
+                            </div>
                         </div>
-                
-                        
-                        
-                        <div class="section-title mt-3 mb-0 fs-6 text-start w-100">
+                        <div class="section-title mt-3 mx-3 mb-0 fs-6 text-start w-100">
                             <div class="w-100">
-                                <p class="fs-6 m-0" style="color: #cab54a;">Staff Attendance</p>
-                                <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                <small class="" style="color:rgb(147, 149, 156);">15 Dec 2024</small>
+                                <p class="fs-6" style="color: #2b3991;">Staff Probation</p>
                             </div>
                         </div>
                     </div>
+
                 </div>
-            </div>
-        `].join('');
+            </div>`,].join('');
         this.dbCards.innerHTML = html;
         this.initCircleCards(this.dbCards);
      
