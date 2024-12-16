@@ -18,7 +18,7 @@ var EmployeeComponent = new (function () {
     this.profile_card_center = mThis.self.querySelector("#profile_card_center");
     this.profile_card_left = mThis.self.querySelector("#profile_card_left");
     this.profile_card_right = mThis.self.querySelector("#profile_card_right");
-    this.tax_allownce_card = mThis.self.querySelector("#tax_allownce_card");
+    this.tax_allowance_card = mThis.self.querySelector("#tax_allowance_card");
     this.emp_documents_card = mThis.self.querySelector("#emp_documents_card");
     this.profile_info_emp = mThis.self.querySelector("#profile_info_emp");
     this.paginationContainer = mThis.self.querySelector(
@@ -1344,7 +1344,7 @@ var EmployeeComponent = new (function () {
                 });
 
                 html += `</div></div>`;
-                this.tax_allownce_card.innerHTML = html;
+                this.tax_allowance_card.innerHTML = html;
 
                 // Add event listener for "Add" button
                 document

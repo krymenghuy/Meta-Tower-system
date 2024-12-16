@@ -118,9 +118,9 @@ var DashboardComponent = new (function () {
                 `<div class="col-md-3">
                 <div class="chart-container dashboard_chart bg-white shadow-sm">
                     <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #ededed;">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-icon pt-3 px-3">
-                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
+                        <div class="d-flex align-items-center p-2 mb-1">
+                            <div class="bg--icon  bg--icon-new-employee-count">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="Icon">
                             </div>
                             <div class="ms-3 text-center flex-fill">
                                 <span class="fw-semibold fs-4 text-primary-custom">${data.cards.new_staff_count.count}</span>
@@ -133,8 +133,8 @@ var DashboardComponent = new (function () {
                     </div>
 
                     <div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #ededed;">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-icon pt-3 px-3">
+                        <div class="d-flex align-items-center p-2 mb-1">
+                            <div class="bg--icon bg--icon-new-employee-resigning">
                                 <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
                             </div>
                             <div class="ms-3 text-center flex-fill">
@@ -148,9 +148,9 @@ var DashboardComponent = new (function () {
                     </div>
 
                     <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 " style="background-color: #ededed;">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="bg-icon pt-3 px-3">
-                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
+                        <div class="d-flex align-items-center p-2 mb-1">
+                            <div class="bg--icon bg--icon-new-employee-resigned">
+                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/stop.svg" alt="Icon">
                             </div>
                             <div class="ms-3 text-center flex-fill">
                                 <span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigned_staff_count.count}</span>
