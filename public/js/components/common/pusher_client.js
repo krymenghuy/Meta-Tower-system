@@ -2,8 +2,10 @@
 const PusherClient = new function(){
     const mThis = this;
  
-    this.branch_id = $('meta[name="sess_branch_id"]').attr('content');
-    this.user_id = $('meta[name="sess_user_id"]').attr('content');
+    this.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
+    this.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content');
+    // this.branch_id = $('meta[name="sess_branch_id"]').attr('content');
+    // this.user_id = $('meta[name="sess_user_id"]').attr('content');
     this.base_url = main_view.base_url || document.querySelector('meta[name="base_url"]').getAttribute('content');
     this.current_view_name = '';
 

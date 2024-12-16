@@ -315,7 +315,7 @@ var EmployeeComponent = new (function () {
                                 `</div>`,
                                 `<div class="dropdown">`,
                                     `<a href="javascript:void(0)" class="btn_employee_action" data-id="${ d.id}" data-statusid="${d.status_id}" data-typeid="${d.emp_type_id}" aria-haspopup="true" aria-expanded="false">`,
-                                      `<i class="fa-solid fa-ellipsis-vertical text-white fs-4 tool-tip"> <span class="tool-tiptext fs-6">Actions</span></i>`,
+                                      `<i class="fa-solid fa-ellipsis-vertical text-white fs-4 tool-tip"></i>`,
                                     `</a>`,
                                 `</div>`,
                             `</div>`,
@@ -2716,13 +2716,15 @@ const EmployeeDialog = (() => {
             keyboard: true,
             createContent: () => {
                 return [
-                    `<div class="row">
-                            <div class="col-3">
-                                <div name="div_emp_photo" style="height:165px;" class="data-input border border-white" data-field="image_url" role="button"></div>
-                            </div>
-                            <div class="col-9">
-                                <div class="row">
-                                    <div class="form-group col-4">
+                    `<div class="row">`,
+                            `<div class="col-3">`,
+                                `<div style="height:165px;" class="data-input border border-secondary rouded-3 justify-items-center align-items-center">`,
+                                    `<div name="div_emp_photo" data-field="photo" class="h-100"></div>`,
+                                `</div>`, 
+                            `</div>`,
+                            `<div class="col-9">`,
+                                `<div class="row">`,
+                                    `<div class="form-group col-4">
                                         <label for="name" class="form-label text-primary-custom" vslang="titles.Name"></label>
                                         <span class="text-danger" >*</span>
                                         <input name="name" class="form-control  data-input" data-field="name" />
@@ -2854,70 +2856,94 @@ const EmployeeDialog = (() => {
                 DateTimePicker.init(me.controls.date_of_birth);
                 DateTimePicker.init(me.controls.joining_date);
                 LocaleManager.translateZone(me.divModal);
-                let div_emp_photo = me.divModal.querySelector(
-                    '[name="div_emp_photo"]'
-                );
-                me.userImageBox = new ImageBox(div_emp_photo, {
+                const div_emp_photo = me.controls.div_emp_photo;
+
+                me.empImageBox = new ImageBox(div_emp_photo, {
                     containerClass: "emp-profile-container",
                     imgClass: "data-input",
-                    dataset: { field: "image_url" },
+                    dataset: { field: "photo" }, /** please set field: photo so that we can use for both Edit and Create easily */
+                    //dataset: { field: "image_url" },
+                    beforeDeleteImage: async ()=> {
+                       if(me.dataOptions.id > 0){
+                           const answer = await cv_interact.confirm('Are you sure to delete this profile photo?', {title:'Delete Photo','context':'delete'});
+                           if(answer){
+                                vsapi.call([main_view.base_url,'/bhr/employee/profile-photo/delete'].join(''),null,false,false).then(res =>{
+                                    if(res.status_code == 200){
+                                      cv_interact.info('Profile photo was deleted!');
+                                    }else cv_interact.error(res.error_message);
+                                });
+                                return true;
+                           } else return false;
+
+                       } 
+                    
+                       return true;
+                    },
+                    // onImageLoaded: (img)=>{
+                    //    if(me.dataOptions.id > 0){
+                    //         const p = {"photo":me.empImageBox.getImage(), "id" : me.dataOptions.id};
+                    //         vsapi.call([main_view.base_url,'/bhr/employee/profile-photo/save'].join(''), p,false).then(res =>{
+                    //             if(res.status_code == 200){
+                    //             cv_interact.info('Profile photo was deleted!');
+                    //             }else cv_interact.error(res.error_message);
+                    //         });  
+                    //    } 
+                    // }
                 });
 
-                me.showProfile = (code) => {
-                    let fields = [];
-                    let p = { id: code };
+                // me.showProfile = (code) => {
+                //     let fields = [];
+                //     let p = { id: code };
 
-                    vsapi
-                        .call(
-                            [
-                                main_view.base_url,
-                                "/hr/employee/form-options",
-                            ].join(""),
-                            p,
-                            false,
-                            false
-                        )
-                        .then((res) => {
-                            let d = res.status_code == 200 ? res.data : {};
-                            d = d.employee || {};
+                //     vsapi
+                //         .call(
+                //             [main_view.base_url,"/hr/employee/form-options"].join(""),
+                //             p,
+                //             false,
+                //             false
+                //         )
+                //         .then((res) => {
+                //             let d = res.status_code == 200 ? res.data : {};
+                //             d = d.employee || {};
 
-                            me.divModal
-                                .querySelectorAll(".data-input")
-                                .forEach((el) => {
-                                    const f = el.dataset.field;
+                //             me.divModal
+                //                 .querySelectorAll(".data-input")
+                //                 .forEach((el) => {
+                //                     const f = el.dataset.field;
 
-                                    if (fields.indexOf(f) >= 0) {
-                                        el.value = d[f] || "";
-                                    } else if (f === "image_url") {
-                                        if (me.dataOptions.id)
-                                            el.innerHTML = `<img name="div_emp_photo" class="w-100" src="${
-                                                d[f] || ""
-                                            }"/>`;
-                                    }
-                                });
-                        });
-                };
-                me.deleteImage = (div) => {
-                    const btnDelete = div; //.querySelector('[role=\'button\']');
-                    btnDelete.onclick = function (e) {
-                        e.preventDefault();
-                        const html = `<div id="dlg_image_chooser"
-                                            class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
-                                            <i class="fa-regular fa-image fs-4 text-muted"></i>
-                                        </div>`;
-                        div.innerHTML = html;
-                        // mThis.chooseImage(div);
-                        // let div_emp_photo = div.querySelector('[name="div_emp_photo"]');
-                        me.userImageBox = new ImageBox(div, {
-                            containerClass: "emp-profile-container",
-                            imgClass: "data-input",
-                            dataset: { field: "image_url" },
-                        });
-                    };
-                };
-                me.deleteImage(div_emp_photo);
+                //                     if (fields.indexOf(f) >= 0) {
+                //                         el.value = d[f] || "";
+                //                     } else if (f === "image_url") {
+                //                         if (me.dataOptions.id)
+                //                             el.innerHTML = `<img name="div_emp_photo" class="w-100" src="${
+                //                                 d[f] || ""
+                //                             }"/>`;
+                //                     }
+                //                 });
+                //         });
+                // };
+                
+                // me.deleteImage = (div) => {
+                //     const btnDelete = div; //.querySelector('[role=\'button\']');
+                //     btnDelete.onclick = function (e) {
+                //         e.preventDefault();
+                //         const html = `<div id="dlg_image_chooser"
+                //                             class="d-flex align-items-center justify-content-center w-100 h-100" role="button">
+                //                             <i class="fa-regular fa-image fs-4 text-muted"></i>
+                //                         </div>`;
+                //         div.innerHTML = html;
+                //         // mThis.chooseImage(div);
+                //         // let div_emp_photo = div.querySelector('[name="div_emp_photo"]');
+                //         me.userImageBox = new ImageBox(div, {
+                //             containerClass: "emp-profile-container",
+                //             imgClass: "data-input",
+                //             dataset: { field: "image_url" },
+                //         });
+                //     };
+                // };
+                //me.deleteImage(div_emp_photo);
 
-                me.showProfile(me.dataOptions.id);
+                //me.showProfile(me.dataOptions.id);
             },
             configSelect: [
                 {
@@ -2959,12 +2985,34 @@ const EmployeeDialog = (() => {
                 {
                     name: "spouse_emp_id",
                     data: "spouse_employee",
+                    firstOption:'0|(None)',
                     textField: (me, d) => {
-                        return `<div class="d-flex gap-2"><img style="width:35px;height:35px; object-fit:cover" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span> </div></div>`;
+                        return `<div class="d-flex gap-2"><span> ${d.name} </span></div>`;
                     },
                     valueField: "id",
                 },
             ],
+            overrideMethod:{
+                "setData":(me, data)=> {
+                    const id = me.dataOptions.id;
+                    const fields = me.fields;
+                    //fields to be reasOnly or disabled when Editing employee
+                    const disabled_fields = ['salary','position_id','work_shift_id','department_id','joining_date'];
+                    for(const name in fields){
+                        const el = fields[name];
+                        if (id > 0){
+                            if (disabled_fields.indexOf(name) >=0) {
+                                if (el.tagName.toLowerCase() === "select") {
+                                    el.setAttribute("disabled", true);
+                                }else el.setAttribute('readOnly',true);
+                            }
+                        }
+                        el.value = data[name] ?? '';
+                    }
+                    me.empImageBox.setImage(data.image_url);
+                    me.controls.type.value = data.emp_type_id;
+                },
+            },
             buttons: [
                 {
                     label: '<span class="text-warning">Cancel</span>',
@@ -2978,16 +3026,13 @@ const EmployeeDialog = (() => {
                     label: "<span>Save</span>",
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
-                        let p = me.getData();
-
-                        p.photo = me.userImageBox
-                            ? me.userImageBox.getImage()
-                            : "";
+                        const p = me.getData();
+                        p.photo = me.empImageBox
+                            ? me.empImageBox.getImage()
+                            : '';
                         vsapi
                             .call(
-                                [main_view.base_url, "/hr/employee/save"].join(
-                                    ""
-                                ),
+                                [main_view.base_url, "/hr/employee/save"].join(""),
                                 p,
                                 btn,
                                 false,
@@ -2996,7 +3041,7 @@ const EmployeeDialog = (() => {
                             .then((res) => {
                                 if (res.status_code == 200) {
                                     me.modal.hide(true, p);
-                                    EmployeeComponent.btnBack.click();
+                                    //EmployeeComponent.btnBack.click();
                                     // EmployeeDialog.show(me.dataOptions);
                                 } else cv_interact.error(res.error_message);
                             });
@@ -3008,10 +3053,7 @@ const EmployeeDialog = (() => {
                 modifyTitle: "Edit Employee",
                 targetProp: "employee",
                 api: {
-                    endpoint: [
-                        main_view.base_url,
-                        "/hr/employee/form-options",
-                    ].join(""),
+                    endpoint:[main_view.base_url,"/hr/employee/form-options"].join(""),
                     params: (op) => {
                         return { id: op.id };
                     },
@@ -3023,38 +3065,8 @@ const EmployeeDialog = (() => {
 
             onPrepareForm: (me, data) => {
                 LocaleManager.translateZone(me.divModal);
-                me.divModal.querySelectorAll(".data-input").forEach((el) => {
-                    const data_member = el.dataset.field;
-                    const salary = me.divModal.querySelector(".salary");
-
-                    let id = op.id;
-                    if (id) {
-                        // salary.classList.remove("d-none");
-                        if (el.tagName.toLowerCase() === "select") {
-                            if (
-                                data_member == "position_id" ||
-                                data_member == "work_shift_id" ||
-                                data_member == "emp_type_id"
-                            ) {
-                                el.setAttribute("disabled", true);
-                                // el.disabled = true;
-                            }
-                        }
-                        if (data_member == "salary" || data_member == "nid") {
-                            el.disabled = true;
-                        }
-
-                        id = null;
-                    }
-                    const emp_type_id = EmployeeComponent.getFilterData().emp_type_id;
-                    console.log(12,emp_type_id);
-
-                    if(emp_type_id) {
-                        me.controls.type.value = emp_type_id;
-                    }
-                });
             },
-            onClose: (canceled) => {},
+            //onClose: (canceled) => {},
         });
 
         dialog.show(op);
