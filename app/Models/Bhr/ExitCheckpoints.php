@@ -25,7 +25,7 @@ class ExitCheckpoints //extends Model
         return DB::table('check_points')->where('id', $id)->selectRaw($cols)->first();
     }
 
-    public function save( $arr = [], $id = null, $ss = null)
+    public function save($emp_exit_check_point, $ss, $arr)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
@@ -45,9 +45,14 @@ class ExitCheckpoints //extends Model
         $emp_id = $arr['emp_id'] ?? null;
 
 
-        $existingBenefitDisbursement = DB::table('check_points')
+        $check_point_cat = DB::table('check_points')
         ->where('check_point_cat_id', $inputs['check_point_cat_id'])
+        ->where('item_name', $inputs['item_name'])
         ->first();
+        if ($check_point_cat) {
+            // Name already exists, return an error message
+            return DV::error('This item already exists in this category.');
+        }
 
         $id = saveData($ss, 'check_points', ['id' => $id], $inputs, [], 1, false);
 
@@ -104,7 +109,7 @@ class ExitCheckpoints //extends Model
             ->first();
     }
 
-    public function deleteExitCheckpoints($id = null)
+    public function delete($id = null)
     {
         $id = $id ?? $this->id;
         $deleted = DB::table('check_points')->where('id', $id)->delete();

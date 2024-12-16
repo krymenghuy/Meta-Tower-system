@@ -20,7 +20,7 @@ class ExitFormItemController extends Controller
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = $this->emp_exit_items->save($req->emp_exit_check_point, $ss, $req->all());
+        $res = $this->emp_exit_items->save($req->form_item, $ss, $req->all());
         return JDV::raw($res);
     }
     public function getExitFormItemPaginate(Request $req)

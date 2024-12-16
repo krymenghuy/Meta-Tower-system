@@ -24,7 +24,7 @@ var ExitFormComponent = new (function () {
                         style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
                     <div>
                         <span style="font-size: 14px; font-weight: bold;">${
-                            data.name ?? ""
+                            data.emp_name ?? ""
                         }</span><br/>
                         <span style="font-size: 12px; color: gray;">${
                             data.email ?? ""
@@ -44,7 +44,7 @@ var ExitFormComponent = new (function () {
             className: "align-middle ",
             data: (data) =>
                 `<span class="text-primary-custom">${
-                    data.form_name ?? "HD"
+                    data.name ?? "HD"
                 }</span>`,
         },
         {
@@ -262,7 +262,7 @@ const ExitFormDialog = (() => {
                         name: "employee",
                         data: "employees",
                         textField: (me, d) =>
-                            `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`,
+                            `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.emp_name} </span>  <span>${d.position}</span></div></div>`,
                         valueField: "id",
                     },
                 ],

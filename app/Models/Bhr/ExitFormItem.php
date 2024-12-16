@@ -26,13 +26,14 @@ class ExitFormItem
         return DB::table('exit_form_items')->where('id', $id)->selectRaw($cols)->first();
     }
 
-    public function save($arr = [], $id = null, $ss = null)
+    public function save($form_item,$ss,$arr)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [
+            'id' => '0|identity=1',
             'emp_id' => '1|number',
             'form_id' => '1|number',
             'check_point_id' => '1|number',

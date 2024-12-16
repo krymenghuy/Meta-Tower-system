@@ -51,13 +51,13 @@ class ExitCheckpointsController extends Controller
         return JDV::result($this->emp_exit_check_points->getFormOptions($req->id, $ss));
     }
 
-    public function deleteExitCheckpoints(Request $req)
+    public function delete(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
 
-        return JDV::result($this->emp_exit_check_points->deleteExitCheckpoints($req->id, $ss));
+        return JDV::result($this->emp_exit_check_points->delete($req->id, $ss));
     }
 }
