@@ -17,7 +17,7 @@ class Dashboard
     }
     public function getData($arr,$ss=null){
         $ss = $ss ?? $this->userInfo;
-        $cards = self::getCards($arr,$ss);
+        $cards = self::getDashboardCards($arr,$ss);
         return (object)[
             'doughnutChart'=>self::countEmployeeByType(0,$ss),
             'cards'=>$cards,
@@ -25,7 +25,6 @@ class Dashboard
             'pieCharts'=>self::getTotalStaffComparison($ss),
             'onLeave'=>self::getOnLevels($arr,$ss),
             'benefits'=>self::getBenefits($arr,$ss),
-            'warning'=>self::getStaffInWarningCounts($arr,$ss),
             'accounts'=>self::getTotalWalletAndPayrollData($arr,$ss)
 
         ];
@@ -33,76 +32,69 @@ class Dashboard
 
     
     
-    static function getStaffInWarningCounts($arr, $ss) {
+    public static function getDashboardCards($arr, $ss) {
         $d = (object) $arr;
         $back_days = isset($d->back_days) ? $d->back_days : -90;
         $from_date = convertDate(Carbon::now()->addDays($back_days));
-        $dateField = DBX::convertToDate('ew.warning_date');
-        $moreWhere = $dateField . " >= '" . $from_date . "'";
+        $to_date = convertDate(Carbon::now());
+        $moreWheres = "emp.joining_date >= '$from_date' AND emp.joining_date <= '$to_date'";
     
-        $rows = DB::table('emp_warnings AS ew')
+        // Employee data query
+        $employee_rows = DB::table('employees AS emp')
+            ->whereRaw($moreWheres)
+            ->select('emp.id', 'emp.status_id', 'emp.emp_type_id', 'emp.joining_date')
+            ->orderBy('emp.joining_date', 'ASC')
+            ->get();
+    
+        // Initialize counts
+        $new_staff_count = 0;
+        $new_probation_count = 0;
+        $new_intern_count = 0;
+        $terminated_staff_count = 0;
+    
+        foreach ($employee_rows as $emp) {
+            if ($emp->status_id == 10) { // Active employees
+                switch ($emp->emp_type_id) {
+                    case 1:
+                        $new_intern_count++;
+                        break;
+                    case 2:
+                        $new_probation_count++;
+                        break;
+                    case 3:
+                        $new_staff_count++;
+                        break;
+                }
+            } elseif ($emp->status_id == 30) { // Terminated employees
+                $terminated_staff_count++;
+            }
+        }
+    
+        // Resignations
+        $resigned_staff_count = DB::table('resignations')
+            ->whereBetween('resign_date', [$from_date, $to_date])
+            ->count();
+    
+        $resigning_staff_count = DB::table('resignations')
+            ->where('resign_date', '>=', $from_date)
+            ->where('effective_date', '>', $to_date)
+            ->count();
+    
+        // Staff in warnings
+        $warning_rows = DB::table('emp_warnings AS ew')
             ->leftJoin('employees AS e', 'ew.emp_id', '=', 'e.id')
-            ->whereRaw($moreWhere)
+            ->whereBetween('ew.warning_date', [$from_date, $to_date])
             ->select('ew.warning_type', DB::raw('COUNT(ew.emp_id) as total_warnings'))
             ->groupBy('ew.warning_type')
             ->orderByRaw("MIN(ew.warning_date) ASC")
             ->get();
     
         $warning_staff_count = DB::table('emp_warnings AS ew')
-            ->whereRaw($moreWhere)
+            ->whereBetween('ew.warning_date', [$from_date, $to_date])
             ->distinct('ew.emp_id')
             ->count('ew.emp_id');
-       
-        return (object) [
-            'warning_counts' => $rows,
-            'warning_staff_count' => (object) [
-                'count' => $warning_staff_count,
-                'title' => 'Warning Staff',
-                'subTitle' => 'Last ' . abs($back_days) . ' days'
-            ]
-        ];
-    }
- 
     
-  
-    static function getCards($arr, $ss) {
-        $d = (object) $arr;
-        $back_days = isset($d->back_days) ? $d->back_days : -90;
-        $from_date = convertDate(Carbon::now()->addDays($back_days));
-        $dateField = DBX::convertToDate('e.joining_date');
-        $moreWhere = $dateField . " >= '" . $from_date . "'";
-    
-        $rows = DB::table('employees AS e')
-            ->join('resignations AS r', 'e.id', '=', 'r.emp_id')  
-            ->whereRaw($moreWhere)
-            ->select('e.status_id', 'e.emp_type_id', 'e.branch_id', 'e.joining_date', 'r.resign_date', 'r.effective_date')
-            ->orderByRaw("e.joining_date ASC")
-            ->get();
-    
-        $new_staff_count = 0;
-        $resigned_staff_count = 0;
-        $resigning_staff_count = 0;  
-        $probation_staff_count = 0;
-    
-        foreach ($rows as $row) {
-            // New staff
-            if ($row->status_id == 10) {
-                $new_staff_count++;
-            }
-            // Resigned staff (check if the resign_date is less than or equal to today)
-            elseif ($row->status_id == 20 && $row->resign_date <= Carbon::now()) {
-                $resigned_staff_count++;
-            }
-            // Resigning staff (check if the resign_date is in the future)
-            elseif ($row->status_id == 20 && $row->resign_date > Carbon::now()) {
-                $resigning_staff_count++;
-            }
-            // Probation staff
-            if ($row->emp_type_id == 2) {
-                $probation_staff_count++;
-            }
-        }
-    
+        // Prepare the dashboard data
         return (object) [
             'new_staff_count' => (object) [
                 'count' => $new_staff_count,
@@ -111,21 +103,36 @@ class Dashboard
             ],
             'resigned_staff_count' => (object) [
                 'count' => $resigned_staff_count,
-                'title' => 'Resigned',
+                'title' => 'Resigned Staff',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
             'resigning_staff_count' => (object) [
                 'count' => $resigning_staff_count,
-                'title' => 'Resigning',
+                'title' => 'Resigning Staff',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
             'probation_staff_count' => (object) [
-                'count' => $probation_staff_count,
-                'title' => 'Probation',
+                'count' => $new_probation_count,
+                'title' => 'Probation Staff',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
+            'intern_staff_count' => (object) [
+                'count' => $new_intern_count,
+                'title' => 'Intern Staff',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ],
+            'warning_counts' => $warning_rows,
+            'warning_staff_count' => (object) [
+                'count' => $warning_staff_count,
+                'title' => 'Staff in Warnings',
+                'subTitle' => 'Last ' . abs($back_days) . ' days'
+            ]
         ];
     }
+    
+    
+    
+    
     static function countEmployeeByType($arr, $ss){
         $branch_id = $ss->branch_id;
         $back_days = -90;
