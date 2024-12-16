@@ -554,10 +554,10 @@ class Employee //extends Model
                 emp.sex,
                 emp.nationality_id,
                 emp.passport_number,
-                emp.date_of_birth,
+                '. DBX::formatDate('emp.date_of_birth','date_of_birth') .',
                 emp.address,
                 emp.photo_file_name,
-                emp.joining_date,
+                '.DBX::formatDate('emp.joining_date','joining_date').', 
                 emp.nssf_id,
                 emp.nid,
                 emp.position_id,
@@ -581,7 +581,9 @@ class Employee //extends Model
             ->first();
 
         if ($row) {
-            $row->image_url = self::profilePicture($id);
+            $img = self::profilePicture($id);
+            $row->image_url = $img;
+            $row->photo = $img;
             $row->nationality = Country::nationality($row->nationality_id, null);
         } else {
             $row = null; // Or handle the case where employee is not found

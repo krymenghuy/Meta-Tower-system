@@ -241,7 +241,6 @@ public static function formatTimeOnly($column, $alias_name = null)
         }
     }
 
-
     static function updateForeignKeyRows($fk_tables, $old_value, $new_value){
         foreach($fk_tables as $table_name => $fk_name){
            DB::table($table_name)->where($fk_name,$old_value)->update([$fk_name=>$new_value]);

@@ -115,6 +115,10 @@
     color:#fff;
     cursor:pointer;
 }
+.vs-login .vs-form-group .vs-d-flex-btn .btn-login:hover{
+    background-color: #fff;
+    color: #cab54a;
+}
 
 .vs-login .vs-d-flex-copyright{
     width:100%;
