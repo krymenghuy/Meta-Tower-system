@@ -75,6 +75,10 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->g
     Route::post('/list-paginate', [EmployeeController::class, 'getListPaginate']);
     Route::post('/find', [EmployeeController::class, 'findEmployee']);
     Route::post('/details', [EmployeeController::class, 'getDetails']);
+    Route::post('/profile/photo', [EmployeeController::class, 'getProfilePhoto']);
+    Route::post('/profile/photo/delete', [EmployeeController::class, 'deleteProfilePhoto']);
+    Route::post('/profile/photo/save', [EmployeeController::class, 'saveProfilePhoto']);
+
     Route::post('/delete', [EmployeeController::class, 'deleteEmployee']);
     Route::post('/filter-options', [EmployeeController::class, 'getFilterOptions']);
     Route::post('/form-options', [EmployeeController::class, 'getFormOptions']);
