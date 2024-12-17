@@ -167,12 +167,7 @@ class Payroll
             if($check){
                 return DV::error('Already Authorized');
             }
-            $x = DB::table('payrolls')->where('id', $id)->update([
-                'authorized' => 1,
-                'update_user'=>$ss->full_name,
-                'update_date'=>getNowTime(),
-                'update_uid'=>$ss->user_id
-            ]);
+
             $total = DB::table('payrolls as p')
                 ->where('id', $id)
                 ->selectRaw('total as amount')->first();
@@ -182,6 +177,7 @@ class Payroll
             if($total){
 
                 $total->trx_type = "1";
+                $total->account_id =1;
                 $total->from_account_id = 1;
             }
 
@@ -189,6 +185,13 @@ class Payroll
             $new_balance = $total['transaction']['amount'] + $default_account->amount;
             $query = DB::table('accounts')
             ->where('id', 1)->update(['balance'=> $new_balance, 'trx_id' => hex2bin($total['trx_id'])]);
+
+            $x = DB::table('payrolls')->where('id', $id)->update([
+                'authorized' => 1,
+                'update_user'=>$ss->full_name,
+                'update_date'=>getNowTime(),
+                'update_uid'=>$ss->user_id
+            ]);
             return DV::depends($x, ['Payroll  authorize', 'updated']);
 
     }
