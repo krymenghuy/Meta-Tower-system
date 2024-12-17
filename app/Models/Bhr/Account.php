@@ -190,51 +190,110 @@ class Account
         $trx = $d;
         $trx->trx_type=3;
         $trx->transfer_acc_id = $account_id;
-        $trx->from_acc_num = $trx->w_account_number;
-        $trx->to_acc_num = $trx->w_account_number;
+        $trx->from_account_id = $trx->w_account_number;
+        $trx->to_account_id = $trx->w_account_number;
         $trx->amount = $trx->w_balance;
         $trx->account_id = $w_account_id;
         $trx->remarks = 'From Payroll to Wallet';
         if($trx->balance < $trx->amount){
             return DV::error('Insufficient Balance');
         }
-
-        $trx = Transaction::transfer((array)$trx, $ss);
+        $trx = Transaction::createTransaction((array)$trx, $ss);
+        if(isset($trx['error'])){
+            return DV::error($trx['error']);
+        }
         $transfer_amount = 0;
 
-        if($trx){
-            $transfer_amount = $trx['transactions']['amount'];
-            $account_id = DB::table('wallet_accounts')->where('emp_id', $trx['transactions']['emp_id'])->value('id');
-            $updateBalance_acc = PayrollAccount::updateBalance($account_id,'wallet_accounts','in',  $trx['transactions']['amount'], $trx['trx_id'], $ss);
+        if(isset($trx['transaction'])){
+            $transfer_amount = $trx['transaction']['amount'];
+            $account_id = DB::table('accounts')->where('emp_id', $trx['transaction']['emp_id'])->value('id');
+            $updateBalance_acc = Account::updateBalance($account_id,'accounts','in',  $trx['transaction']['amount'], $trx['trx_id'], $ss);
         }
 
         $payroll_account = DB::table('accounts as a')
             ->where('a.account_number', $d->account_number)
+            ->where('account_type','Payroll')
             ->selectRaw(' a.id as account_id,a.account_number,a.emp_id')->first();
-        $wallet_account = DB::table('wallet_accounts as wa')
+        if(!$payroll_account){
+            return DV::error('Payroll Account not found!');
+        }
+        $wallet_account = DB::table('accounts as wa')
             ->where('wa.account_number', $d->w_account_number)
+            ->where('account_type','Wallet')
             ->selectRaw(' wa.id as w_account_id,wa.account_number as w_account_number,wa.emp_id')->first();
-
+        if(!$wallet_account){
+            return DV::error('Wallet Account not found!');
+        }
         $payroll_account->trx_type=2;
         $payroll_account->emp_id = $payroll_account->emp_id;
-        $payroll_account->from_acc_num = $payroll_account->account_number;
-        $payroll_account->to_acc_num = $wallet_account->w_account_number;
+        $payroll_account->from_account_id = $payroll_account->account_number;
+        $payroll_account->to_account_id = $wallet_account->w_account_number;
         $payroll_account->remarks = 'Payroll to Wallet';
         $payroll_account->amount = $transfer_amount;
         $account_id = $payroll_account->account_id;
         $last_balance = $payroll_account->amount;
+        \Log::info((array)$payroll_account);
 
         $payroll_account = Transaction::withdrawal((array)$payroll_account, $ss);
-
-        if($payroll_account){
-            $updateBalance_def = PayrollList::updateBalance($account_id,'accounts','out',  $payroll_account['transactions']['amount'], $payroll_account['trx_id'], $ss);
+        if($payroll_account->status_code == 405){
+            return DV::error($payroll_account->error_message);
+        }
+        if($payroll_account->status_code == 200){
+            \Log::info(json_encode($payroll_account));
+            $payroll_account = $payroll_account->data;
+            $updateBalance_def = Account::updateBalance($account_id,'accounts','out',  $payroll_account['transaction']['amount'], $payroll_account['trx_id'], $ss);
         }
 
         if($updateBalance_acc && $updateBalance_def){
-
             return DV::depends(1, ['Transferred Successfully' => '']);
         }
         return DV::error('Error transferring account');
 
     }
+
+    static function updateBalance($account_id,$table_name,$status, $amount, $trx_id, $ss = null)
+    {
+        if(!$account_id || !$trx_id){
+            return DV::error('Invalid account id');
+        }
+        if(!$amount){
+            $amount = 0;
+        }
+        $lastBalance = DB::table($table_name)->where('id', $account_id)->value('balance');
+        if($status==='in'){
+            $newBalance = (float)$lastBalance + (float)$amount;
+        }else if($status==='out'){
+            $newBalance = (float)$lastBalance - (float)$amount;
+        }else{
+            $newBalance = (float)$amount;
+        }
+        $lastBalanceDate = date('Y-m-d');
+        $query = DB::table($table_name)
+            ->where('id', $account_id)
+            ->update(['balance' => $newBalance, 'last_balance_date' => $lastBalanceDate, 'trx_id' => hex2bin($trx_id)]);
+        return $query;
+    }
+
+    static function withdraw($arr,$ss){
+        $v_rule = [
+            'emp_id' => '0|number',
+            'payroll_id' => '0|number',
+            'amount' => '1|number',
+            'remarks' => '0|string|250',
+            'trx_type' => '1|number',
+            'status'=>'0|string|10',
+            'to_account_id' => '1|number',
+        ];
+
+        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        if ($res->error) return DV::error($res->error);
+        $inputs = $res->values;
+        $inputs['status'] = 'out';
+
+        $id = saveData($ss,'transactions', ['id' =>null], $inputs, [], 1,false, 'binary');
+        $hex_trx_id = bin2hex($id);
+        return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id],'Failed to save transaction');
+    }
+
+    
 }
