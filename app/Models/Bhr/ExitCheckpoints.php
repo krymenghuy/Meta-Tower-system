@@ -27,16 +27,18 @@ class ExitCheckpoints //extends Model
 
     public function save($emp_exit_check_point, $ss, $arr)
     {
-        $id = $id ?? $this->id;
+        $id = $this->id ?? ($arr['id'] ?? null);
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [
+            'id' => '0|identity=1',
             'item_name' => '0|string',
             'check_point_cat_id' => '1|number'
         ];
+        $check_point = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        $res = validateObject($arr, $v_rule, true, ['item_name' => $check_point], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -49,14 +51,25 @@ class ExitCheckpoints //extends Model
         ->where('check_point_cat_id', $inputs['check_point_cat_id'])
         ->where('item_name', $inputs['item_name'])
         ->first();
-        if ($check_point_cat) {
-            // Name already exists, return an error message
-            return DV::error('This item already exists in this category.');
+        if ($id) {
+            $updated = DB::table('check_points')
+            ->where('id', $id)
+                ->update($inputs);
+
+            if ($updated) {
+                return DV::depends($id, ['id' => $id], 'Update successful');
+            } else {
+                return DV::error('Update failed item name already exist!.');
+            }
+        } else {
+            $newId = DB::table('check_points')->insertGetId($inputs);
+
+            if ($newId) {
+                return DV::depends($newId, ['id' => $newId], 'Create successful');
+            } else {
+                return DV::error('Create failed.');
+            }
         }
-
-        $id = saveData($ss, 'check_points', ['id' => $id], $inputs, [], 1, false);
-
-        return DV::depends($id, ['id' => $id], 'Save failed');
     }
 
     public function getExitCheckpointsPaginate($arr, $ss = null)

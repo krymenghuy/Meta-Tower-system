@@ -59,16 +59,16 @@ var ExitCheckpiontsComponent = new (function () {
             el.onchange = () =>
                 mThis.ExitCheckpointsListView.showPage(mThis.getFilterData());
         });
-        mThis.btnAdd.onclick = function (e) {
+        mThis.btnAdd.onclick = (e) => {
             e.preventDefault();
-            let op = {
+            ExitCheckpointsDialog.show({
                 id: null,
                 btn: e.target,
                 onClose: () => {
+                    cv_interact.success("Added Exit Form successfully");
                     mThis.ExitCheckpointsListView.showPage();
                 },
-            };
-            ExitCheckpointsDialog.show(op);
+            });
         };
         const pr_tbl = mThis.ExitCheckpointsListView.getListContainer();
         const sh_parent = pr_tbl;
@@ -81,6 +81,7 @@ var ExitCheckpiontsComponent = new (function () {
             e.preventDefault();
             mThis.ExitCheckpointsListView.showPage(mThis.getFilterData());
         });
+        mThis.initDropdownMenus();
         mThis.initAlready = true;
     };
     mThis.elSearch.addEventListener("keyup", (e) => {
@@ -212,7 +213,7 @@ const ExitCheckpointsDialog = (() => {
                             </div>
                             <div class="form-group col-md-12">
                                 <label for="category_name" class="form-label" vslang="titles.check point category"></label>
-                                <select name="category_name" class="form-control data-input" data-field="check_point_cat_id" id="check_point_cat_id"></select>
+                                <select name="category_name" class="form-control data-input" data-field="check_point_cat_id" id="category_name"></select>
                             </div>
                         </div>`,
                     ].join("");
