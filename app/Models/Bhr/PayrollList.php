@@ -637,6 +637,7 @@ class PayrollList
             return DV::error('Employee does not have payroll account');
         }
         $trx->trx_type=3;
+        $trx->account_id = $to_account->account_id;
         $trx->from_account_id = 1;
         $trx->to_account_id = $to_account->account_id;
 
@@ -644,7 +645,7 @@ class PayrollList
             return DV::error($trx->remarks.' is not authorized ');
         }
 
-        $trx = Transaction::transfer((array)$trx, $ss);
+        return $trx = Transaction::transfer((array)$trx, $ss);
         $transfer_amount = 0;
 
         if($trx){

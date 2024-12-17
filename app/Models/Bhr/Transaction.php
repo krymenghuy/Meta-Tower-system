@@ -26,7 +26,9 @@ class Transaction
             'remarks' => '0|string|250',
             'trx_type' => '1|number',
             'status'=>'0|string|10',
+            'account_id' => '1|number',
             'from_account_id' => '1|number',
+
 
         ];
 
