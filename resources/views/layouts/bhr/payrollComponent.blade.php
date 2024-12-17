@@ -1,8 +1,7 @@
 <style>
     #_payroll_list{
-        height: 440px;
-        padding-bottom: 100px;
-        overflow-y: scroll;
+        height: 600px;
+        overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
     }

@@ -258,7 +258,7 @@
 
                 <div class="row mt-3 p-3">
 
-                    <div class="col-md-4" id="tax_allownce_card"></div>
+                    <div class="col-md-4" id="tax_allowance_card"></div>
                     <div class="col-md-4" id="emp_documents_card"></div>
 
                 </div>
