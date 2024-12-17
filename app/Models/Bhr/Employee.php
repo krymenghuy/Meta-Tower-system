@@ -167,6 +167,7 @@ class Employee //extends Model
     //     }
     //     return PublicStorage::saveImage(['subs_id'=>$ss->subs_id,'dir'=> self::$img_dir] ,null,$photo_data,null,['id'=>$id,'store'=>'employees.photo_file_name']);
     //   }
+
     static function saveProfilePicture($photo_data, $file_type = null, $id = null, $ss = null)
     {
         $id = $id ?? $id; // Remove the reference to $this->id
@@ -181,7 +182,10 @@ class Employee //extends Model
             PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $employee->photo_file_name);
             DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
         }
-        return PublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'employees.photo_file_name']);
+        $res = PublicStorage::saveImage(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], null, $photo_data, null, ['id' => $id, 'store' => 'employees.photo_file_name']);
+        if($res->status ==='Error') return $res;
+        $img = self::profilePicture($id);
+        return DV::depends(1,['image_url'=>$img]);
     }
 
     static function isOnLeave($id)
@@ -315,10 +319,10 @@ class Employee //extends Model
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $sender = DB::table('employees as s')->where('id', $id)->selectRaw('id,branch_id,photo_file_name')->first();
-        if (!$sender) return DV::error('Employee identity is not correct!');
-        PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $sender->photo_file_name);
-        DB::table('sender')->where('id', $id)->update(['photo_file_name' => null]);
+        $emp = DB::table('employees as s')->where('id', $id)->selectRaw('id,photo_file_name')->first();
+        if (!$emp) return DV::error('Employee identity is not correct!');
+        PublicStorage::delete(['subs_id' => $ss->subs_id, 'dir' => self::$img_dir], 'image', $emp->photo_file_name);
+        DB::table('employees')->where('id', $id)->update(['photo_file_name' => null]);
         return DV::success();
     }
 
@@ -554,10 +558,10 @@ class Employee //extends Model
                 emp.sex,
                 emp.nationality_id,
                 emp.passport_number,
-                emp.date_of_birth,
+                '. DBX::formatDate('emp.date_of_birth','date_of_birth') .',
                 emp.address,
                 emp.photo_file_name,
-                emp.joining_date,
+                '.DBX::formatDate('emp.joining_date','joining_date').', 
                 emp.nssf_id,
                 emp.nid,
                 emp.position_id,
@@ -581,7 +585,9 @@ class Employee //extends Model
             ->first();
 
         if ($row) {
-            $row->image_url = self::profilePicture($id);
+            $img = self::profilePicture($id);
+            $row->image_url = $img;
+            $row->photo = $img;
             $row->nationality = Country::nationality($row->nationality_id, null);
         } else {
             $row = null; // Or handle the case where employee is not found
@@ -636,6 +642,10 @@ class Employee //extends Model
         if ($id) {
             $employee = self::getDetails($id, $ss);
         }
+
+        $firstElement = ['id' => 0, 'name' => '(None)', 'name_kh'=>'(None)', 'sex'=>'','phone_number'=>'','image_url'=>'', 'position_id'=>'','email'=>''];
+ 
+        $emps = GeneralSettings::options_employee(10, $ss)->prepend($firstElement);
         return (object) [
             'nationalities' => GeneralSettings::options_nationality($ss),
             'cities' => GeneralSettings::loc_options_city($ss),
@@ -646,7 +656,7 @@ class Employee //extends Model
             'types' => DB::table('emp_types')->selectRaw('id,name')->get(),
             'work_shifts' => DB::table('work_shifts')->selectRaw('id,name')->get(),
             'employee' => $employee,
-            'spouse_employee' => GeneralSettings::options_employee(10, $ss),
+            'employees' => $emps,
         ];
     }
     function setTerminateStatus($status_id, $id = null, $ss = null)

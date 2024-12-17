@@ -2,8 +2,10 @@
 const PusherClient = new function(){
     const mThis = this;
  
-    this.branch_id = $('meta[name="sess_branch_id"]').attr('content');
-    this.user_id = $('meta[name="sess_user_id"]').attr('content');
+    this.branch_id = document.querySelector('meta[name="sess_branch_id"]').getAttribute('content');
+    this.user_id = document.querySelector('meta[name="sess_user_id"]').getAttribute('content');
+    // this.branch_id = $('meta[name="sess_branch_id"]').attr('content');
+    // this.user_id = $('meta[name="sess_user_id"]').attr('content');
     this.base_url = main_view.base_url || document.querySelector('meta[name="base_url"]').getAttribute('content');
     this.current_view_name = '';
 
@@ -18,13 +20,13 @@ const PusherClient = new function(){
     //cookie_name are set in main.js, app.js, vsapi.js, loginController.php, Master.blade.php, "login/index.blade.php" 
     
     //*** For Demo DMS */
-    const pusher_app_key = 'e9f577722070bbc52ec2'; //process.env.PUSHER_APP_KEY 
+    const pusher_app_key = 'e71b395ef6f9326086ca'; //process.env.PUSHER_APP_KEY 
 
     //** For HOUExpress */
     //let pusher_app_key = '105a036ea697941d67d1'; //process.env.PUSHER_APP_KEY
 
-    let pusher = new Pusher(pusher_app_key,{
-        cluster: 'mt1',
+    const pusher = new Pusher(pusher_app_key,{
+        cluster: 'ap1',
         useTLS:true,
         disableStats:true,
         // authEndpoint:"/dms/broadcast/auth",
@@ -32,17 +34,22 @@ const PusherClient = new function(){
         authorizer: function authorizer(channel, options){
             return {
                 authorize: function authorize(socketId, callback) {
-                    let p = {"socket_id":socketId,"channel_name":channel.name};
-                    vsapi.call(`${mThis.base_url}/api/broadcast/auth`,p).then(res=>{
+                    const p = {"socket_id":socketId,"channel_name":channel.name};
+                    vsapi.call(`${main_view.base_url}/api/broadcast/auth`,p,false,false).then(d =>{
                         console.log('Pusher authorization succeeded!');
+                        const auth_data = d.data || d;
                         //NOTE: @auth_data ={"auth":"app_key:sig"} . For example,  @auth_data = {"auth":"b7351506ee87f3eec932:3c27d88c6944726d39052efd50770468b23b0e9987e981acbc5ed58ba4bb1d51"}
-                        callback(null, res.data);
+                        callback(null, auth_data);
                     });
                 }
             };
         }
     });
  
+    pusher.connection.bind('error', function(err) {
+        console.error("Pusher error:", err);
+    });
+    
     pusher.connection.bind('connected',(payload)=>{
         console.info('Web socket connection successful :)');
     });

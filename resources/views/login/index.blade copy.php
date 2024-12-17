@@ -190,15 +190,15 @@
     <body onload="checkDevice()">
         <div class="vs-container-login">
             <div>
-                <img class="img-background" src="{{ asset('assets/images/bhr/bg-merchant_portal.png') }}"/>
-                <!-- <div class="overlay-blur"></div> -->
+                <img class="img-background" src="{{ asset('assets/images/bhr/bg-login.png') }}"/>
+                <div class="overlay-blur"></div>
             </div>
             <div class="login-frame">
                 <div class="vs-container-front-img">
-                    <img class="img-front" src="{{ asset('assets/images/bhr/app_login.png') }}"/>
+                    <img class="img-front" src="{{ asset('assets/images/bhr/frame-login.png') }}"/>
                     <div class="vs-login">
                         <div class="vs-form-login">
-                            <h3 class="vs-title">Merchant Access</h3>
+                            <h3 class="vs-title">Sign in to your account</h3>
                             <div class="vs-form-group">
                             <form action="{{ url('/processLogin') }}" method="POST">
 
@@ -224,7 +224,7 @@
                             </div>
                         </div>
                         <div class="vs-d-flex-copyright">
-                            <p>Hou Express Co.,LTD.</p>
+                            <p>Vectorasoft Co.,LTD.</p>
                             <p>Copyright &copy 2023. All rights reserved</p>
                         </div>
                     </div>

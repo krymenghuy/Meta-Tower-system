@@ -19,7 +19,7 @@
     background-size: cover;
     background-repeat: no-repeat;
     overflow: hidden;
-    filter:blur(2px);
+    /* filter:blur(2px); */
 }
 
 .login-frame{
@@ -34,7 +34,7 @@
 .login-frame .vs-container-front-img{
     width:70vw;
     height:70vh;
-    /* background-color:#4a57c1; */
+    /* background-color:#whu; */
     display:flex;
     align-items:center;
     justify-content:center;
@@ -44,25 +44,29 @@
 
 .login-frame .vs-container-front-img .img-front{
     height:100%;
-    width:50%;
+    width:60%;
     /* border-radius:60px 0 0 60px;
     padding: 50px; */
 }
 
 .login-frame .vs-container-front-img .vs-login{
     height:100%;
-    width:50%;
-    border-radius:0 10px 10px 0;
+    width:40%;
+    /* border-color:  5px solid #fff; */
+    border-radius:25px;
     display:flex;
-    background-color: #2b3991;
+    background-image: url('../images/bhr/bg-red.png');
     align-items:center;
     justify-content:center;
     flex-direction:column;
+    background-size: cover; /* Ensure the image covers the entire area */
+    background-position: center; /* Center the image */
+    background-repeat: no-repeat; /* Avoid repeating the image */
 }
 .vs-login .vs-title{
     font-size:30px;
     margin-bottom:3vh;
-    color:#cab54a;
+    color:#FFF;
 }
 
 .vs-login .vs-form-group{
@@ -76,7 +80,7 @@
 }
 
 .vs-login .vs-form-group .vs-d-flex .vs-form-label{
-    color:#cab54a;
+    color:#fff;
     font-size:20px;
     padding:25px 10px  10px;
 }
@@ -109,15 +113,15 @@
     width:60%;
     height:45px;
     border-radius:15px;
-    border:2px solid #cab54a;
-    background-color:#cab54a;
+    border:2px solid #fff;
+    background-color:#fff;
     font-size:20px;
-    color:#fff;
+    color:#ff0000;
     cursor:pointer;
 }
 .vs-login .vs-form-group .vs-d-flex-btn .btn-login:hover{
     background-color: #fff;
-    color: #cab54a;
+    color: #ff0000;
 }
 
 .vs-login .vs-d-flex-copyright{
@@ -128,7 +132,7 @@
     align-items:center;
     justify-content:center;
     flex-direction: column;
-    color:#cab54a;
+    color:#fff;
     font-size:14px;
 }
 
