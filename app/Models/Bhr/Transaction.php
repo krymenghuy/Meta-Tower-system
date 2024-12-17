@@ -43,28 +43,7 @@ class Transaction
         return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id]);
     }
 
-    static function withdrawal($arr,$ss){
-        $v_rule = [
-            'emp_id' => '0|number',
-            'payroll_id' => '0|number',
-            'amount' => '1|number',
-            'remarks' => '0|string|250',
-            'trx_type' => '1|number',
-            'status'=>'0|string|10',
-            'to_account_id' => '1|number',
-        ];
-
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
-        if ($res->error) return DV::error($res->error);
-        $inputs = $res->values;
-        $inputs['status'] = 'out';
-
-        $id = saveData($ss,'transactions', ['id' =>null], $inputs, [], 1,false, 'binary');
-        $hex_trx_id = bin2hex($id);
-        return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id],'Failed to save transaction');
-    }
-
-    static function transfer($arr,$ss = null,$status='in'){
+    static function createTransaction($arr,$ss = null,$status='in'){
         $ss = $ss ?? Transaction::$userInfo;
         $branch_id = $ss->branch_id;
         $v_rule = [

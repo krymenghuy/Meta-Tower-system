@@ -681,28 +681,7 @@ class PayrollList
 
     }
 
-    static function updateBalance($account_id,$table_name,$status, $amount, $trx_id, $ss = null)
-    {
-        if(!$account_id || !$trx_id){
-            return DV::error('Invalid account id');
-        }
-        if(!$amount){
-            $amount = 0;
-        }
-        $lastBalance = DB::table($table_name)->where('id', $account_id)->value('balance');
-        if($status==='in'){
-            $newBalance = (float)$lastBalance + (float)$amount;
-        }else if($status==='out'){
-            $newBalance = (float)$lastBalance - (float)$amount;
-        }else{
-            $newBalance = (float)$amount;
-        }
-        $lastBalanceDate = date('Y-m-d');
-        $query = DB::table($table_name)
-            ->where('id', $account_id)
-            ->update(['balance' => $newBalance, 'last_balance_date' => $lastBalanceDate, 'trx_id' => hex2bin($trx_id)]);
-        return $query;
-    }
+    
 
     function disburseAllPayrollList($payroll_id, $ss = null)
     {
