@@ -43,7 +43,7 @@
              foreach($apps as $app){
               if(!$app->is_mobile_app){
                 echo '<div class="col-sm-12 mt-3">
-                          <div class="card p-1 border shadow rounded-4">
+                          <div class="card  p-1 border shadow rounded-4" style="background-color:";>
                             <div class="d-flex flex-row">
                               <img src="'.url('/assets/images/bhr/'. ($app->icon_file_name?? 'book1.png') ) . '"width="70"/>
                               <div class="d-flex  flex-column ml-2">
@@ -62,39 +62,7 @@
               
              }  
            ?>
-            <!-- <div class="col-sm-12 mt-3">
-                <div class="card p-3 border shadow rounded-4">
-                  <div class="d-flex flex-row ">
-                    <img src="{{asset('assets/images/logo/logo.png')}}" width="70" />
-                    <div class="d-flex  flex-column ml-2">
-                      <h4 class="text-primary link-view-app">Delivery Management</h4>
-                      <span class="ratings"><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-                          class="fa fa-star"></i></span>
-                    </div>
-                  </div>
-                    <div class="d-flex justify-content-between install mt-3">
-                      <span class="text-primary link-view-app">View&nbsp;<i class="fa fa-angle-right"></i></span>
-                      <h6 style="font-size:15px;" class="text-primary text-capitalize">Last login : <span class="text-muted" >01-03-2024</span></h6>
-                    </div>
-                </div>
-            </div> -->
-            <!-- <div class="col-sm-12 mt-3">
-                <div class="card p-3 border shadow rounded-4">
-                  <div class="d-flex flex-row ">
-                    <img src="{{asset('assets/images/logo/logo.png')}}" width="70" />
-                    <div class="d-flex  flex-column ml-2">
-                      <h4 class="text-primary link-view-app">Airway Bill Management</h4>
-                      <span class="ratings"><i class="fa fa-star"></i><i class="fa fa-star"></i><i
-                          class="fa fa-star"></i></span>
-                    </div>
-                  </div>
-                    <div class="d-flex justify-content-between install mt-3">
-                      <span class="text-primary link-view-app">View&nbsp;<i class="fa fa-angle-right"></i></span>
-                      <h6 style="font-size:15px;" class="text-primary text-capitalize">Last login : <span class="text-muted" >01-03-2024</span></h6>
-                      
-                    </div>
-                </div>
-            </div> -->
+            
         </div>
         <div class="vs-d-flex-copyright">
             <span class="fs-6">Advanced Business Solutions</span>
