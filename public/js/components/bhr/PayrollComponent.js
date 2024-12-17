@@ -168,8 +168,10 @@ var PayrollComponent = new (function () {
         console.log(555, mThis.self.querySelectorAll('.table-test tr td'));
 
         const pr_tbl = mThis.PayrollListView.getListContainer();
-        // pr_tbl.style.height = `${window.innerHeight - 225}px`;
-        pr_tbl.classList.add('overflow-y-auto', 'overflow-x-hidden');
+        const sh_parent = pr_tbl;
+        // sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = () => mThis.PayrollListView.showPage(mThis.getDataFormFilter());

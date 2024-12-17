@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
 use App\Models\Bhr\employee;
+use App\Models\Bhr\Account;
 // use App\Models\Bhr\PayrollListSettings;
 
 class PayrollList
@@ -637,30 +638,24 @@ class PayrollList
             return DV::error('Employee does not have payroll account');
         }
         $trx->trx_type=3;
-        $trx->from_account_id = 1;
+        $trx->account_id = $to_account->account_id;
+        $trx->from_account_id = $master_account_id;
         $trx->to_account_id = $to_account->account_id;
 
         if(!$trx->authorized){
             return DV::error($trx->remarks.' is not authorized ');
         }
 
-        $trx = Transaction::transfer((array)$trx, $ss);
+        $transfer = Transaction::createTransaction((array)$trx, $ss);
         $transfer_amount = 0;
 
-        if($trx){
-            $transfer_amount = $trx['transaction']['amount'];
-            // $account_id = DB::table('accounts')->where('emp_id', $trx['transaction']['emp_id'])->value('id');
-            return$updateBalance_acc = PayrollList::updateBalance($account_id,'accounts','in',  $trx['transaction']['amount'], $trx['trx_id'], $ss);
+        if($transfer){
+            $transfer_amount = $transfer['transaction']['amount'];
+            $updateBalance_acc = PayrollList::updateBalance($transfer['transaction']['account_id'],'accounts','in', $transfer_amount, $transfer['trx_id'], $ss);
         }
 
-        // $default_account = DB::table('accounts as a')
-        //         ->where('a.id', $master_account_id)
-        //         ->selectRaw(' a.id as account_id,a.account_number,a.balance')->first();
-
-        // $default_account->trx_type='2';
-        // $default_account->from_account_id = 1;
-        // $last_balance = $default_account->balance;
-        $res = Transaction::withdrawal((array)$trx, $ss);
+        return $trx;
+        return $res = Account::withdraw((array)$trx, $ss);
 
         if($res->status == 'Error'){
             return $res;
@@ -680,7 +675,28 @@ class PayrollList
 
     }
 
-    
+    static function updateBalance($account_id,$table_name,$status, $amount, $trx_id, $ss = null)
+    {
+        if(!$account_id || !$trx_id){
+            return DV::error('Invalid account id');
+        }
+        if(!$amount){
+            $amount = 0;
+        }
+        $lastBalance = DB::table($table_name)->where('id', $account_id)->value('balance');
+        if($status==='in'){
+            $newBalance = (float)$lastBalance + (float)$amount;
+        }else if($status==='out'){
+            $newBalance = (float)$lastBalance - (float)$amount;
+        }else{
+            $newBalance = (float)$amount;
+        }
+        $lastBalanceDate = date('Y-m-d');
+        $query = DB::table($table_name)
+            ->where('id', $account_id)
+            ->update(['balance' => $newBalance, 'last_balance_date' => $lastBalanceDate, 'trx_id' => hex2bin($trx_id)]);
+        return $query;
+    }
 
     function disburseAllPayrollList($payroll_id, $ss = null)
     {
@@ -734,7 +750,7 @@ class PayrollList
                 $default_account->amount = $transfer_amount;
                 $account_id = $default_account->account_id;
                 $last_balance = $default_account->amount;
-                $res = Transaction::withdrawal((array) $default_account, $ss);
+                $res = Account::withdrawal((array) $default_account, $ss);
 
                 if($res->status == 'Error'){
                     return $res;

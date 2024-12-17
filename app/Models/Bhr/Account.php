@@ -34,8 +34,8 @@ class Account
             'emp_id' => '1|number',
             'account_number' => '0|string|0-30',
             'balance' => '0|number|default=0',
-            'currency' => '1|choice|USD,KHR',
-            'account_type' => '1|Choice|Payroll,Wallet',
+            'currency' => '1|choice|KHR,USD',
+            'account_type' => '1|choice|Payroll,Wallet',
         ];
         $res = validateObject($arr, $v_rule, true, ['balance'=>['.']], $ss->lang);
         if ($res->error) return DV::error($res->error);
@@ -52,6 +52,7 @@ class Account
             $existingAccount = DB::table('accounts')
                 ->where('branch_id', $branch_id)
                 ->where('emp_id', $inputs['emp_id'])
+                ->where('account_type', $inputs['account_type'])
                 ->first();
 
             if ($existingAccount) {
@@ -60,73 +61,133 @@ class Account
         }
 
         $id = saveData($ss,'accounts', ['id' => $id], $inputs, [], 1);
-     
+
         return DV::depends($id, ['id' => $id], 'Failed to save account information');
     }
 
-   static function accountNumberExists($account_number,$id = null){
-      $str_id = $id > 0 ? 'id <> '.$id : '1=1';
-      $id = DB::table('accounts')->where('account_number',$account_number)->whereRaw($str_id)->value('id');
-      return $id? true:false;
+    static function accountNumberExists($account_number, $account_type, $id = null) {
+        $str_id = $id > 0 ? 'id <> '.$id : '1=1';
+
+        $exists = DB::table('accounts')
+            ->where('account_number', $account_number)
+            ->where('account_type', $account_type)
+            ->whereRaw($str_id)
+            ->exists();
+
+        return $exists;
+    }
+
+
+   function PayrollList($arr, $ss)
+   {
+       $d = (object) $arr;
+       $branch_id = $ss->branch_id;
+
+       $current_page = $d->current_page ?? 1;
+       $per_page = $d->per_page ?? 10;
+       if (!is_numeric($current_page))  $current_page = 1;
+       $skip_rows = ($current_page - 1) * $per_page;
+
+       $search_value = $d->search_value ?? null;
+       $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
+
+       $str_search = '1=1';
+
+       $query = DB::table('accounts as a')
+           ->join('employees as e', 'e.id', '=', 'a.emp_id')
+           ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+           ->selectRaw('
+               a.id,
+               a.emp_id,
+               e.name as emp_name,
+               pos.title as position,
+               a.account_type,
+               a.account_number,
+               a.balance,
+               a.currency,
+               ' . $balance_date . ',
+               e.photo_file_name as emp_photo
+           ')
+           ->where('a.branch_id', $branch_id)
+           ->where('a.account_type', 'Payroll'); // Filter only Payroll accounts
+
+       if ($search_value) {
+           $search_value = escape_like_str($search_value);
+           $str_search = "a.account_number LIKE '%" . $search_value . "%'
+                      OR e.name LIKE '%" . $search_value . "%'
+                      OR pos.title LIKE '%" . $search_value . "%'";
+           $query->whereRaw($str_search);
+       }
+
+       $count = $query->count('a.id');
+       $rows = $query->skip($skip_rows)->take($per_page)->get();
+
+       foreach ($rows as $row) {
+           $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
+           unset($row->emp_photo);
+       }
+
+       return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
    }
 
-    function getList($arr, $ss)
-    {
-        $d = (object) $arr;
-        $branch_id = $ss->branch_id;
+   function WalletList($arr, $ss)
+   {
+       $d = (object) $arr;
+       $branch_id = $ss->branch_id;
 
-        $current_page = $d->current_page ?? 1;
-        $per_page = $d->per_page ?? 10;
-        if (!is_numeric($current_page))  $current_page = 1;
-        $skip_rows = ($current_page - 1) * $per_page;
+       $current_page = $d->current_page ?? 1;
+       $per_page = $d->per_page ?? 10;
+       if (!is_numeric($current_page))  $current_page = 1;
+       $skip_rows = ($current_page - 1) * $per_page;
 
-        $search_value = $d->search_value ?? null;
-        $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
+       $search_value = $d->search_value ?? null;
+       $balance_date = DBX::formatDate('a.last_balance_date', 'last_balance_date');
 
-        $str_search = '1=1';
+       $str_search = '1=1';
 
-        $query = DB::table('accounts as a')
-            ->join('employees as e', 'e.id', '=', 'a.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->selectRaw('
-                a.id,
-                a.emp_id,
-                e.name as emp_name,
-                pos.title as position,
-                a.account_type,
-                a.account_number,
-                a.balance,
-                a.currency,
-                ' . $balance_date . ',
-                e.photo_file_name as emp_photo
-            ')
-            ->where('a.branch_id', $branch_id);
+       $query = DB::table('accounts as a')
+           ->join('employees as e', 'e.id', '=', 'a.emp_id')
+           ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+           ->selectRaw('
+               a.id,
+               a.emp_id,
+               e.name as emp_name,
+               pos.title as position,
+               a.account_type,
+               a.account_number,
+               a.balance,
+               a.currency,
+               ' . $balance_date . ',
+               e.photo_file_name as emp_photo
+           ')
+           ->where('a.branch_id', $branch_id)
+           ->where('a.account_type', 'Wallet');
 
-        if ($search_value) {
-            $search_value = escape_like_str($search_value);
-            $str_search = "a.account_number LIKE '%" . $search_value . "%'
-                       OR e.name LIKE '%" . $search_value . "%'
-                       OR pos.title LIKE '%" . $search_value . "%'";
-            $query->whereRaw($str_search);
-        }
+       if ($search_value) {
+           $search_value = escape_like_str($search_value);
+           $str_search = "a.account_number LIKE '%" . $search_value . "%'
+                      OR e.name LIKE '%" . $search_value . "%'
+                      OR pos.title LIKE '%" . $search_value . "%'";
+           $query->whereRaw($str_search);
+       }
 
-        $count = $query->count('a.id');
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
+       $count = $query->count('a.id');
+       $rows = $query->skip($skip_rows)->take($per_page)->get();
 
-        foreach ($rows as $row) {
-            $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
-            unset($row->emp_photo);
-        }
+       foreach ($rows as $row) {
+           $row->image_url = $row->emp_photo ? Employee::profilePicture($row->emp_id) : '';
+           unset($row->emp_photo);
+       }
 
-        return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
-    }
+       return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
+   }
+
 
     function getDetails($id, $ss)
     {
         $row = DB::table('accounts as a')
             ->join('employees as e', 'e.id', '=', 'a.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->join('wallet_accounts as wa', 'wa.emp_id', '=', 'a.emp_id')
             ->selectRaw('
                 a.id,
                 a.emp_id,
@@ -135,9 +196,7 @@ class Account
                 a.account_type,
                 a.account_number,
                 a.currency,
-                a.balance,
-                wa.account_number as w_account_number,
-                wa.account_type as w_account_type
+                a.balance
             ')
             ->where('a.id', $id)->first();
 
@@ -282,6 +341,7 @@ class Account
             'remarks' => '0|string|250',
             'trx_type' => '1|number',
             'status'=>'0|string|10',
+            'account_id' => '1|number',
             'to_account_id' => '1|number',
         ];
 
@@ -295,5 +355,5 @@ class Account
         return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id],'Failed to save transaction');
     }
 
-    
+
 }

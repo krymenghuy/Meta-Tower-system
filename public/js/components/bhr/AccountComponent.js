@@ -227,7 +227,7 @@ var AccountMenagmentComponent = new (function () {
         if (mThis.initAlready) return;
 
         mThis.AccountListView = new ListView("_account_list", {
-            fetchApi: `${main_view.base_url}/hr/account/list-paginate`,
+            fetchApi: `${main_view.base_url}/hr/account/payroll-account-list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -501,6 +501,7 @@ const AccountDialog = (() => {
                         <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
                         <select class="modal-select data-input" name="account_type" data-field="account_type">
                             <option value="Payroll">Payroll</option>
+                            <option value="Wallet">Wallet</option>
                         </select>
                     </div>
                     <div class="form-group col-6">
@@ -527,7 +528,7 @@ const AccountDialog = (() => {
                 contentCreated: (me) => {
                     const currencyField = me.controls.currency;
                     if (currencyField && !currencyField.value) {
-                        currencyField.value = "USD";
+                        currencyField.value = "KHR";
                     }
                     const accountField = me.controls.account_type;
                     if (accountField && !accountField.value) {
