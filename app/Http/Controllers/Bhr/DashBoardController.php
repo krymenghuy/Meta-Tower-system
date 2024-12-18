@@ -7,7 +7,7 @@ use App\Models\Bhr\Dashboard;
 use Illuminate\Http\Request;
 use App\Services\Umt\AuthService;
 use App\Models\JDV;
-class DashBoardController extends Controller
+class DashboardController extends Controller
 {
     protected $dashboard;
 

@@ -63,7 +63,7 @@
     }
 
     .card_container span {
-        font-size: 1.2em;
+        font-size: 1.1em;
     }
 
     .container_top {

@@ -114,18 +114,18 @@ class Dashboard
             ],
             'probation_staff_count' => (object) [
                 'count' => $new_probation_count,
-                'title' => 'Probation Staff',
+                'title' => 'Probations',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
             'intern_staff_count' => (object) [
                 'count' => $new_intern_count,
-                'title' => 'Intern Staff',
+                'title' => 'Interns',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
             'warning_counts' => $warning_rows,
             'warning_staff_count' => (object) [
                 'count' => $warning_staff_count,
-                'title' => 'Staff in Warnings',
+                'title' => 'Warnings',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ]
         ];
@@ -180,7 +180,7 @@ static function countEmployee($arr, $ss)
     }
 
     return (object)[
-        'title' => 'Total ' . $total . ' Staffs',
+        'title' => 'Total Staff : ' . $total . '',
         'total' => $total,
         'staff_total' => $staff_total,
         'intern_total' => $intern_total,
@@ -222,43 +222,28 @@ static function countEmployee($arr, $ss)
             'colors' => ['#1E90FF', '#32CD32', '#FF4500'] 
         ];
     }
-    function getBenefits($arr, $ss)
+    public static function getBenefits($arr, $ss)
     {
-    $d = (object) $arr;
-    $current_year = $d->year ?? date('Y');
-
-    $query = DB::table('emp_benefits as b')
-        ->selectRaw('
-            SUM(b.amount) as total_amount,
-            SUM(CASE WHEN b.benefit_type_id = 1 THEN b.amount ELSE 0 END) as total_bonuses,
-            SUM(CASE WHEN b.benefit_type_id = 2 THEN b.amount ELSE 0 END) as total_seniority,
-            SUM(CASE WHEN b.benefit_type_id = 3 THEN b.amount ELSE 0 END) as total_life_insurance,
-            SUM(CASE WHEN b.benefit_type_id = 4 THEN b.amount ELSE 0 END) as total_other,
-            MAX(CASE WHEN b.benefit_type_id = 1 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_bonuses,
-            MAX(CASE WHEN b.benefit_type_id = 2 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_seniority,
-            MAX(CASE WHEN b.benefit_type_id = 3 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_life_insurance,
-            MAX(CASE WHEN b.benefit_type_id = 4 THEN DATE_FORMAT(b.update_date, "%d %b %Y") ELSE NULL END) as lud_other
-        ')
-        ->whereYear('b.update_date', '=', $current_year)
-        ->first();
-
-    $result = (object) [
-        'total_amount' => $query->total_amount ?? 0,
-        'total_bonuses' => $query->total_bonuses ?? 0,
-        'total_seniority' => $query->total_seniority ?? 0,
-        'total_life_insurance' => $query->total_life_insurance ?? 0,
-        'total_other' => $query->total_other ?? 0,
-        'lud_bonuses' => $query->lud_bonuses ?? null,
-        'lud_seniority' => $query->lud_seniority ?? null,
-        'lud_life_insurance' => $query->lud_life_insurance ?? null,
-        'lud_other' => $query->lud_other ?? null,
-    ];
-
-    return $result;
+        
+        $data = DB::table('emp_benefits as eb')
+            ->join('benefits as b', 'eb.benefit_id', '=', 'b.id')
+            ->selectRaw('
+                b.name AS benefit_name,
+                eb.update_user AS updated_by,
+                eb.benefit_type_id AS benefit_type,
+                SUM(eb.amount) AS total_amount
+            ')
+            ->groupBy('b.name', 'eb.benefit_type_id', 'eb.update_user')
+            ->orderBy('b.name')
+            ->get();
+    
+        return $data;
     }
+    
+    
     public static function getEmployeeDataForBarChart($ss)
     {
-        $start_date = Carbon::now()->subMonths(6)->startOfMonth()->format('Y-m-d');
+        $start_date = Carbon::now()->subMonths(12)->startOfMonth()->format('Y-m-d');
         $end_date = Carbon::now()->endOfMonth()->format('Y-m-d');
     
         $data = DB::table('employees AS e')
@@ -283,16 +268,16 @@ static function countEmployee($arr, $ss)
             $employee_counts[] = $item->employee_count;
             $total_salaries[] = $item->total_salary;
         }
-        
     
         // Return the data for the bar chart
         return (object)[
-            'title' => 'Employee Count and Total Salary Paid in the Last 6 Months',
+            'title' => 'Employee Count and Total Salary Paid in the Last 12 Months',
             'labels' => $labels,
             'employee_counts' => $employee_counts,
             'total_salaries' => $total_salaries
         ];
     }
+    
     function getOnLevels($arr, $ss)
     {
         $subs_id = $ss->subs_id ?? null;
