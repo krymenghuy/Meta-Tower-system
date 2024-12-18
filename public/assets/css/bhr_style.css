@@ -1813,6 +1813,7 @@ ul.list-filter-um li:not(li:last-child) {
     font-weight: 300 !important;
     text-align: left !important;
     text-align: center !important;
+    border-radius: 15px;
 }
 
 .table--white thead th {
@@ -1821,6 +1822,9 @@ ul.list-filter-um li:not(li:last-child) {
     background-color: #2b3991 !important;
     font-size: 14px !important;
     padding: 10px !important;
+}
+.table--white thead th, .table--white thead th{
+    border: none;
 }
 tbody,
 td,

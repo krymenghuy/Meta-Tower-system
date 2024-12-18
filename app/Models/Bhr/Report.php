@@ -156,7 +156,7 @@ class Report {
         if($branch_id) $str_branch_id = 'emp.branch_id = ' . $branch_id;
         $query = DB::table('employees as emp')
         ->join('positions as pos', 'emp.position_id', '=', 'pos.id')
-        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality,emp.address,emp.joining_date')
+        ->selectRaw('emp.id, emp.work_shift_id, pos.title as position_id, emp.salary, emp.emp_type_id, emp.name, emp.code, emp.sex, emp.email, emp.nationality_id,emp.address,emp.joining_date')
         ->whereRaw($str_branch_id);
         $rows = $query->get();
 
