@@ -37,7 +37,8 @@ class Dashboard
         $back_days = isset($d->back_days) ? $d->back_days : -90;
         $from_date = convertDate(Carbon::now()->addDays($back_days));
         $to_date = convertDate(Carbon::now());
-        $moreWheres = "emp.joining_date >= '$from_date' AND emp.joining_date <= '$to_date'";
+        $dateCheck = [$from_date, $to_date];
+        $moreWheres = "emp.joining_date >= '$from_date' AND emp.joining_date <= '$to_date'"; //"emp.joining_date >= '2024-09-19' AND emp.joining_date <= '2024-12-18'"
     
         $employee_rows = DB::table('employees AS emp')
             ->whereRaw($moreWheres)
@@ -68,17 +69,22 @@ class Dashboard
             }
         }
     
-        $resigned_staff_count = DB::table('resignations')
-            ->whereBetween('resign_date', [$from_date, $to_date])
-            ->count();
+        
+
+        $staff_counts = DB::table('employees as emp')
+        ->join('resignations as res', 'emp.id', '=', 'res.emp_id')
+        ->where('emp.status_id', 20)
+        ->selectRaw("
+            SUM(CASE WHEN res.effective_date >= '$from_date' AND res.effective_date <= '$to_date' THEN 1 ELSE 0 END) as resigned_count,
+            SUM(CASE WHEN res.effective_date >= '$from_date' AND res.effective_date > '$to_date' THEN 1 ELSE 0 END) as resigning_count")
+        ->first();
     
-        $resigning_staff_count = DB::table('resignations')
-            ->where('resign_date', '>=', $from_date)
-            ->where('effective_date', '>', $to_date)
-            ->count();
+        $resigned_staff_count = $staff_counts->resigned_count;
+        $resigning_staff_count = $staff_counts->resigning_count;
+    
     
         $warning_rows = DB::table('emp_warnings AS ew')
-            ->Join('employees AS emp', 'ew.emp_id', '=', 'emp.id')
+            ->join('employees AS emp', 'ew.emp_id', '=', 'emp.id')
             ->whereBetween('ew.warning_date', [$from_date, $to_date])
             ->select('ew.warning_type', DB::raw('COUNT(ew.emp_id) as total_warnings'))
             ->groupBy('ew.warning_type')
@@ -86,7 +92,7 @@ class Dashboard
             ->get();
     
         $warning_staff_count = DB::table('emp_warnings AS ew')
-            ->whereBetween('ew.warning_date', [$from_date, $to_date])
+            
             ->distinct('ew.emp_id')
             ->count('ew.emp_id');
     
