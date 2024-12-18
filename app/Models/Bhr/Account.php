@@ -246,7 +246,7 @@ class Account
                 ['id' => 'a.balance', 'name' => 'By  Balance'],
             ],
 
-            'employees' => GeneralSettings::options_employee(10, $ss),
+            'employees' => GeneralSettings::options_employee([10, 20],$ss),
             'accounts' => $account,
         ];
     }
