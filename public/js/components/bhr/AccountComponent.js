@@ -674,7 +674,7 @@ const TransferDialog = (() => {
                     </div>
                     <div class="form-group col-4">
                         <label for="w_balance" class="form-label" vslang="titles.Amount"></label>
-                        <input name="w_balance" class="form-control data-input" data-field="w_balance" />
+                        <input name="w_balance" class="form-control data-input" data-field="amount" />
                     </div>
                     </div>
 

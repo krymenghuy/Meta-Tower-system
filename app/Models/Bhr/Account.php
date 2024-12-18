@@ -194,31 +194,48 @@ class Account
    }
 
 
-    function getDetails($id, $ss)
-    {
-        $row = DB::table('accounts as a')
-            ->join('employees as e', 'e.id', '=', 'a.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'e.position_id')
-            ->selectRaw('
-                a.id,
-                a.emp_id,
-                e.name as emp_name,
-                pos.title as position,
-                a.account_type,
-                a.account_number,
-                a.currency,
-                a.balance
-            ')
-            ->where('a.id', $id)->first();
+   function getDetails($id, $ss)
+   {
+       $primaryAccount = DB::table('accounts as a')
+           ->join('employees as e', 'e.id', '=', 'a.emp_id')
+           ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+           ->selectRaw('
+               a.id,
+               a.emp_id,
+               e.name as emp_name,
+               pos.title as position,
+               a.account_type,
+               a.account_number,
+               a.currency,
+               a.balance
+           ')
+           ->where('a.id', $id)
+           ->first();
 
-        if ($row) {
-            $row->image_url = Employee::profilePicture($row->emp_id);
-            return $row;
-        } else {
-             return null;
-        }
+       if ($primaryAccount) {
+           $primaryAccount->image_url = Employee::profilePicture($primaryAccount->emp_id);
 
-    }
+           $otherAccount = DB::table('accounts as a')
+               ->select('id', 'account_type', 'account_number', 'currency', 'balance')
+               ->where('a.emp_id', $primaryAccount->emp_id)
+               ->where('a.id', '<>', $id)
+               ->first();
+
+           if ($otherAccount) {
+               $primaryAccount->w_id = $otherAccount->id;
+               $primaryAccount->w_account_type = $otherAccount->account_type;
+               $primaryAccount->w_account_number = $otherAccount->account_number;
+               $primaryAccount->w_currency = $otherAccount->currency;
+               $primaryAccount->w_balance = $otherAccount->balance;
+           }
+
+           return $primaryAccount;
+       }
+
+       return null;
+   }
+
+
 
     function delete($id = null, $ss = null)
     {
@@ -254,12 +271,11 @@ class Account
     /** $arr = [from_account_id, to_account_id, amount, currency_code, remarks] */
     function transfer($arr, $ss) {
         $d = (object) $arr;
-        $account_id = DB::table('accounts')->where('emp_id', $d->emp_id)->value('id');
-        $w_account_id = DB::table('wallet_accounts')->where('emp_id', $d->emp_id)->value('id');
+        $p_account_id = DB::table('accounts')->where('emp_id', $d->emp_id)->where('account_type', 'Payroll')->value('id');
+        $w_account_id = DB::table('accounts')->where('emp_id', $d->emp_id)->where('account_type', 'Wallet')->value('id');
 
-        $trx = $d;
+        return$trx = $d;
         $trx->trx_type=3;
-        $trx->transfer_acc_id = $account_id;
         $trx->from_account_id = $trx->w_account_number;
         $trx->to_account_id = $trx->w_account_number;
         $trx->amount = $trx->w_balance;
@@ -365,6 +381,5 @@ class Account
         $hex_trx_id = bin2hex($id);
         return DV::depends($hex_trx_id, ['transaction' => $inputs,'trx_id'=>$hex_trx_id],'Failed to save transaction');
     }
-
 
 }

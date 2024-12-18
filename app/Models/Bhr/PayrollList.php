@@ -57,7 +57,6 @@ class PayrollList
     }
 
 
-
     function getPayrollListPaginate($arr, $ss)
     {
         $d = (object) $arr;
@@ -707,6 +706,15 @@ class PayrollList
         $branch_id = $ss->branch_id;
         $master_account_id = 1;
 
+        $authorized = DB::table('payrolls')
+            ->where('id', $payroll_id)
+            ->where('authorized', 1)
+            ->take(1)
+            ->value('authorized');
+        if (!$authorized) {
+            return DV::error('Payroll not authorized');
+        }
+
         $undisbursed = DB::table('payroll_list')
             ->where('payroll_id', $payroll_id)
             ->where('disburse', 0)
@@ -718,28 +726,48 @@ class PayrollList
 
         $payrollEntries = DB::table('payroll_list as pl')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
-            ->join('accounts as a', function ($join) {
-                $join->on('a.emp_id', '=', 'pl.emp_id')
-                     ->where('a.account_type', 'Payroll');
-            })
+
             ->where('pl.payroll_id', $payroll_id)
             ->where('pl.disburse', 0)
-            ->selectRaw('pl.id, total_salary as amount, pl.emp_id, pl.payroll_id, p.name as remarks, a.id as account_id, p.authorized, a.account_number, pl.disburse')
+            ->selectRaw('pl.id, total_salary as amount, pl.emp_id, pl.payroll_id, p.name as remarks, p.authorized, pl.disburse')
             ->get();
 
+
+            $account_count = 0;
+            $emp_ids = [];
+            foreach ($payrollEntries as $trx_index=>$trx){
+                $emp_ids [] = $trx->emp_id;
+                $account_count = $trx_index + 1 ;
+            }
+            $emp_id_no_account =[];
+            $has = 0;
+            $non = 0;
+            foreach ($emp_ids as $i=>$emp_id){
+                $payroll_account = Employee::getPayrollAccount($emp_id);
+                \Log::info((array)$payroll_account);
+                if(isset($payroll_account->account_id)) {
+                    $has ++;
+                }
+                if(!isset($payroll_account->account_id)) {
+                    $emp_id_no_account [$i+3] = $emp_id;
+                    $non ++;
+                }
+            }
+            if($non > 0){
+                // $mesege = 'System dont have Shipment or Supplyer QR code yet ! Please Enter Supplyer QR code in Shipment: '."\n";
+                $data = [];
+                foreach ($emp_id_no_account as $i=>$emp_id){
+                    $data [] = $emp_id;
+                }
+                return (object)['status'=>'error','status_code'=>405,'error_message'=>'The following Shipment Numbers were not found in the system yet.','data'=>$data];
+            }
         $results = [];
 
         foreach ($payrollEntries as $trx) {
             $to_account = Employee::getPayrollAccount($trx->emp_id);
 
-            if (!$to_account) {
-                $results[] = DV::error('Employee ID ' . $trx->emp_id . ' does not have a Payroll account');
-                continue;
-            }
 
-            if (!$trx->authorized) {
-                return DV::error($trx->remarks . ' is not authorized');
-            }
+
 
             $trx->trx_type = 3;
             $trx->from_account_id = $master_account_id;
