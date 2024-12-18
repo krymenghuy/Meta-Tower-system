@@ -350,19 +350,29 @@ class GeneralSettings //extends Model
         return DB::table('organizations')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS organization')->get();
     }
 
-    /** $emp_status_id = {1o: Active, 20: Resigned, 21: Terminiated}*/
-    static function options_employee($emp_status_id, $ss){
-       $q = DB::table('employees as e')->where('e.subs_id',hex2bin($ss->subs_id))->selectRaw('id,name, sex, name_kh,phone_number,email,position_id,photo_file_name');
-       if($emp_status_id) $q->where('e.status_id',$emp_status_id);
-       $rows = $q->get();
-       foreach($rows as $row){
-         $row->image_url = Employee::profilePicture($row->id);
-         $position_title = DB::table('positions')->where('id',$row->position_id)->value('title');
-         $row->position = $position_title;
-         unset($row->photo_file_name);
-       }
-       return $rows;
+    /** $emp_status_id = {10: Active, 20: Resigned, 21: Terminiated}*/
+    static function options_employee($emp_status_ids, $ss)
+    {
+        $q = DB::table('employees as e')
+            ->where('e.subs_id', hex2bin($ss->subs_id))
+            ->selectRaw('id, name, sex, name_kh, phone_number, email, position_id, photo_file_name');
+
+        if (!empty($emp_status_ids)) {
+            $q->whereIn('e.status_id', (array) $emp_status_ids);
+        }
+
+        $rows = $q->get();
+
+        foreach ($rows as $row) {
+            $row->image_url = Employee::profilePicture($row->id);
+            $position_title = DB::table('positions')->where('id', $row->position_id)->value('title');
+            $row->position = $position_title;
+            unset($row->photo_file_name);
+        }
+
+        return $rows;
     }
+
     static function options_skill($ss){
         return DB::table('skills')->selectRaw('id,title AS skill')->get();
     }
@@ -380,7 +390,7 @@ class GeneralSettings //extends Model
     }
 
     static function options_payroll($ss){
-        return DB::table('payrolls')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS payroll_name')->get();
+        return DB::table('payrolls')->where('subs_id',hex2bin($ss->subs_id))->selectRaw('id,name AS payroll_name,month,year')->get();
     }
 
     static function options_employees($ss,$emp_status_id = null){

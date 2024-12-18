@@ -114,22 +114,22 @@ Route::get('test-count',function(){
     return response()->json($rows);
 });
 
-Route::get('reset-merchant-code',function(){
-   $res = \App\Models\Dms\Sender::resetCodes(1,'HM');
-   echo response()->json($res);
-});
+// Route::get('reset-merchant-code',function(){
+//    $res = \App\Models\Dms\Sender::resetCodes(1,'HM');
+//    echo response()->json($res);
+// });
 
-Route::get('reset-driver-code',function(){
-    $res = \App\Models\Dms\Driver::resetCodes(1,'HD');
-    echo response()->json($res);
-});
+// Route::get('reset-driver-code',function(){
+//     $res = \App\Models\Dms\Driver::resetCodes(1,'HD');
+//     echo response()->json($res);
+// });
 
 Route::get('/', function () {
-    return view('login.index');
+    return view('login.hr_login');
 });
 
 Route::get('logout',function(){
-    return view('login.index');
+    return view('login.hr_login');
 });
 
 Route::get('package_barcode/{id}', [WebReportController::class, 'package_barcode']);

@@ -8,7 +8,7 @@ use App\Models\Bhr\PayrollList;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Pagination\LengthAwarePaginator;
 use App\Models\DBX;
-use App\Models\Bhr\employee;
+use App\Models\Bhr\Employee;
 use App\Models\Bhr\Account;
 // use App\Models\Bhr\PayrollListSettings;
 
@@ -56,6 +56,8 @@ class PayrollList
         return DV::error('Error saving payroll');
     }
 
+
+
     function getPayrollListPaginate($arr, $ss)
     {
         $d = (object) $arr;
@@ -98,7 +100,6 @@ class PayrollList
                         pl.bias,
                         pl.tax_base,
                         pl.benefit_tax,
-                        pl.benefit_tax,
                         pl.total_salary,
                         pl.disburse,
                         e.photo_file_name as emp_photo')
@@ -109,16 +110,22 @@ class PayrollList
         }
         if ($search_value) {
             $search_value = escape_like_str($search_value);
-            $query->whereRaw("e.name like '%{$search_value}%' or pos.title like '%{$search_value}%' or el.name like '%{$search_value}%'");
+            $query->whereRaw("e.name like '%{$search_value}%' or pos.title like '%{$search_value}%'");
         }
         if ($filter_by) {
             $query->where('pl.payroll_id', $filter_by);
         }
+        //  else {
+        //     $current_month_start = now()->startOfMonth()->toDateString();
+        //     $current_month_end = now()->endOfMonth()->toDateString();
+        //     $query->whereBetween('p.start_date', [$current_month_start, $current_month_end])
+        //         ->orWhereBetween('p.end_date', [$current_month_start, $current_month_end]);
+        // }
         if ($search_branch) {
             $query->where('e.branch_id', $search_branch);
         }
 
-        if (!is_null($search_disburse)) { // Ensure the condition applies for both 0 and 1
+        if (!is_null($search_disburse)) {
             $query->where('pl.disburse', $search_disburse);
         }
 
@@ -147,6 +154,7 @@ class PayrollList
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
 
     function getDetails($id, $ss)
     {
@@ -639,7 +647,7 @@ class PayrollList
                 ->where('pl.id', $id)
                 ->selectRaw('total_salary as amount,pl.emp_id,pl.payroll_id,p.name as remarks,a.id as account_id,p.authorized,a.account_number')->first();
         if (!$trx) {
-            return DV::error('Payroll List not found');
+            return DV::error('Payroll List not have account');
         }
         if(!$trx->authorized){
             return DV::error($trx->remarks.' is not authorized ');
@@ -662,7 +670,7 @@ class PayrollList
 
         if($transfer){
             $transfer_amount = $transfer['transaction']['amount'];
-            $updateBalance_acc = PayrollList::updateBalance($transfer['transaction']['account_id'],'accounts','in', $transfer_amount, $transfer['trx_id'], $ss);
+            $updateBalance_acc = Account::updateBalance($transfer['transaction']['account_id'],'accounts','in', $transfer_amount, $transfer['trx_id'], $ss);
         }
 
         $withdrawData = (array)$trx;
@@ -675,7 +683,7 @@ class PayrollList
         }
         $trx = (object)$res->data;
         if($trx){
-            $updateBalance_def = PayrollList::updateBalance($master_account_id,'accounts','out',  $trx->transaction['amount'], $trx->trx_id, $ss);
+            $updateBalance_def = Account::updateBalance($master_account_id,'accounts','out',  $trx->transaction['amount'], $trx->trx_id, $ss);
         }
 
         if($updateBalance_acc && $updateBalance_def){
@@ -692,28 +700,6 @@ class PayrollList
 
     }
 
-    static function updateBalance($account_id,$table_name,$status, $amount, $trx_id, $ss = null)
-    {
-        if(!$account_id || !$trx_id){
-            return DV::error('Invalid account id');
-        }
-        if(!$amount){
-            $amount = 0;
-        }
-        $lastBalance = DB::table($table_name)->where('id', $account_id)->value('balance');
-        if($status==='in'){
-            $newBalance = (float)$lastBalance + (float)$amount;
-        }else if($status==='out'){
-            $newBalance = (float)$lastBalance - (float)$amount;
-        }else{
-            $newBalance = (float)$amount;
-        }
-        $lastBalanceDate = date('Y-m-d');
-        $query = DB::table($table_name)
-            ->where('id', $account_id)
-            ->update(['balance' => $newBalance, 'last_balance_date' => $lastBalanceDate, 'trx_id' => hex2bin($trx_id)]);
-        return $query;
-    }
 
     function disburseAllPayrollList($payroll_id, $ss = null)
     {
@@ -767,7 +753,7 @@ class PayrollList
 
             $transfer_amount = $transfer['transaction']['amount'];
 
-            $updateBalance_acc = PayrollList::updateBalance(
+            $updateBalance_acc = Account::updateBalance(
                 $transfer['transaction']['account_id'], 'accounts', 'in',
                 $transfer_amount, $transfer['trx_id'], $ss
             );
@@ -783,7 +769,7 @@ class PayrollList
 
             $trx_result = (object) $res->data;
 
-            $updateBalance_def = PayrollList::updateBalance(
+            $updateBalance_def = Account::updateBalance(
                 $master_account_id, 'accounts', 'out',
                 $trx_result->transaction['amount'], $trx_result->trx_id, $ss
             );
@@ -804,10 +790,6 @@ class PayrollList
 
         return DV::depends(1, ['Payroll Disbursement Results' => $results]);
     }
-
-
-
-
 
     function paySlip($id, $ss)
     {
