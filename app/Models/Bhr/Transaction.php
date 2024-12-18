@@ -109,9 +109,10 @@ class Transaction
         $query = DB::table('transactions as t')
             ->join('employees as e', 'e.id', 't.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
+            ->join('accounts as a', 'a.id', '=', 't.account_id')
             ->whereRaw($str_emp_id)
             ->whereRaw($str_account_id)
-            ->selectRaw(' hex(t.id) as id, t.emp_id, e.name as emp_name, pos.title as position, t.amount, t.remarks, t.trx_type,t.payroll_id,t.account_id,t.transfer_acc_id,t.status,'.$date.',t.from_acc_num,t.to_acc_num')
+            ->selectRaw(' hex(t.id) as id, t.emp_id, e.name as emp_name, pos.title as position, t.amount, t.remarks, t.trx_type, t.payroll_id, t.account_id, t.status, '.$date.', t.from_account_id, t.to_account_id,a.account_number')
             ->where('t.branch_id', $branch_id);
 
         if ($search_value) {
