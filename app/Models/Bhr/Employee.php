@@ -318,6 +318,20 @@ class Employee //extends Model
             ])
             ->first();
     }
+    public static function getWalletAccount($emp_id)
+    {
+        return DB::table('employees as e')
+            ->join('accounts as a', 'a.emp_id', '=', 'e.id')
+            ->where('e.id', $emp_id)
+            ->where('a.account_type', 'Wallet')
+            ->select([
+                'e.id',
+                'e.name',
+                'a.id as account_id',
+                'a.account_number'
+            ])
+            ->first();
+    }
 
 
     function deleteProfilePicture($id = null, $ss = null)

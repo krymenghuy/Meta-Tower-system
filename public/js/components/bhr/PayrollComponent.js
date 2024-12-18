@@ -54,7 +54,7 @@ var PayrollComponent = new (function () {
         {
             title: "Total",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${formattedNumber(data.total) ?? 0.00}</p>`
+            data: (data) => `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.total ?? '0.00')}</p>`
         },
         {
             title: "Currency",
@@ -466,9 +466,8 @@ const AddPayRollListDailog = (() => {
                         <div class="form-group col-6">
                             <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
                             <select name="currency_code" class="modal-select data-input form_input" data-field="currency_code">
-                                <option value="">(Select Currency)</option>
-                                <option value="USD">USD</option>
                                 <option value="KHR">KHR</option>
+                                <option value="USD">USD</option>
                             </select>
                         </div>
                         <div class="form-group col-6">
