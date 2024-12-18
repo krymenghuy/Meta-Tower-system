@@ -48,7 +48,6 @@ var EmployeeComponent = new (function () {
 
             apiCluster: main_view.apiCluster,
             processResponse: (res) => {
-                // console.log(1234, res.data.data);
 
                 return res.data;
             },
@@ -101,7 +100,6 @@ var EmployeeComponent = new (function () {
         };
 
         this.listContainer = mThis.EmployeeListView.getListContainer();
-        // console.log(12, mThis.listContainer);
 
         mThis.initDropdownMenus(div);
         const sh_parent = mThis.listContainer.parentElement;
@@ -294,13 +292,13 @@ var EmployeeComponent = new (function () {
 
                 switch (status) {
                     case "Terminated":
-                        statusColor = "background-color: #dc3545;";
+                        statusColor = "background-color: #24315b; color: #fff; border:1px solid rgb(201, 38, 17);";
                         break;
                     case "Resigned":
-                        statusColor = "background-color: #cab54a;";
+                        statusColor = "background-color: #24315b; color: #fff; border:1px solid rgb(225, 225, 14);";
                         break;
                     default:
-                        statusColor = "background-color:#24315b;color:#fff;border:1px solid blue;";
+                        statusColor = "background-color:#24315b; color: #fff; border:1px solid #fffbff;";
                         break;
                 }
 
@@ -309,13 +307,13 @@ var EmployeeComponent = new (function () {
                         d.id
                     }">`,
                         `<div class="card d-flex">`,
-                            `<div class="card-header">`,
+                            `<div class="card-header px-3">`,
                                 `<div class="status_employee" style="${statusColor}; padding: 3px; border-radius: 20px;">`,
                                     `<span>${status}</span>`,
                                 `</div>`,
                                 `<div class="dropdown">`,
                                     `<a href="javascript:void(0)" class="btn_employee_action" data-id="${ d.id}" data-statusid="${d.status_id}" data-typeid="${d.emp_type_id}" aria-haspopup="true" aria-expanded="false">`,
-                                      `<i class="fa-solid fa-ellipsis-vertical text-white fs-4"></i>`,
+                                      `<i class="fa-solid fa-ellipsis-vertical text-white fs-5"></i>`,
                                     `</a>`,
                                 `</div>`,
                             `</div>`,
@@ -353,8 +351,8 @@ var EmployeeComponent = new (function () {
                                         </div>
                                     </div>
                                 </div>
-                                <div class="card_bottom pt-3">
-                                    <div class="text-muted" style="font-size:1.1em;">Joining Date : <span class="text-dark">${
+                                <div class="card_bottom pt-3 pe-3">
+                                    <div class="text-dark">Joining Date : <span class="text-muted">${
                                         d.joining_date || "?"
                                     }</span></div>
                                     <a href="javascript:void(0)" class="see-detail text-primary-custom" data-id="${
@@ -420,6 +418,7 @@ var EmployeeComponent = new (function () {
                                     <img src="${
                                         data.image_url ||
                                         "../uploads/public/1_data/default/images/mr.avif"
+                                        
                                     }" alt="Employee Image">
                                 </div>
                                 <div class="d-flex mt-3 ms-5 justify-content-start">
@@ -3019,7 +3018,7 @@ const EmployeeDialog = (() => {
                     const id = me.dataOptions.id;
                     const fields = me.fields;
                     //fields to be reasOnly or disabled when Editing employee
-                    const disabled_fields = ['salary','position_id','work_shift_id','department_id','joining_date'];
+                    const disabled_fields = ['salary','position_id','work_shift_id','department_id','emp_type_id'];
                     for(const name in fields){
                         const el = fields[name];
                         if (id > 0){
