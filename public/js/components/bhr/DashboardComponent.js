@@ -1,5 +1,6 @@
 "use strict";
 
+
 var DashboardComponent = new (function () {
     const mThis = this;
     this.title_prop = "Dashboard";
@@ -11,7 +12,6 @@ var DashboardComponent = new (function () {
     this.db_card_bottom = mThis.self.querySelector('#_db_card_bottom');
     this.dashboard_Bottom_left = mThis.self.querySelector('#_dashboard_bottom_left');
     this.dbCardOnLeave = mThis.self.querySelector('#_db_card_onLeave');
-    this.barchart = mThis.self.querySelector('#barchart');
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -30,7 +30,7 @@ var DashboardComponent = new (function () {
         const divTitle = main_view.divTitle;
         let btn = divTitle.querySelector('.btn-db-fitler');
         if (btn) return;
-        divTitle.insertAdjacentHTML('beforeend', '<div class="div-db-filter w-100 text-end"><button class="btn-db-fitler btn btn-sm btn-primary-custom rounded-circle p-2"><i class="fa-solid text-white fa-paper-plane"></i></button></div>');
+        divTitle.insertAdjacentHTML('beforeend', '<div class="d-none div-db-filter w-100 text-end"><button class="btn-db-fitler btn btn-sm btn-primary-custom rounded-circle p-2"><i class="fa-solid text-white fa-paper-plane"></i></button></div>');
         btn = divTitle.querySelector('.btn-db-fitler');
         mThis.createFilterButton(btn);
     };
@@ -202,7 +202,14 @@ var DashboardComponent = new (function () {
                         text: 'Current Employee Count',
                     },
                     tooltip: {
-                        enabled: true
+                        enabled: true,
+                        callbacks: {
+                            label: function (tooltipItem){
+                                const label = tooltipItem.label || '';
+                                const value = tooltipItem.raw;
+                                return `${label} : ${value} នាក់`;
+                            }
+                        }
                     },
                     datalabels: {
                         color: '#000',
@@ -211,7 +218,7 @@ var DashboardComponent = new (function () {
                             weight: 'bold'
                         },
                         formatter: function (value, context) {
-                            return `${context.chart.data.labels[context.dataIndex]}\n${value}`;
+                            return `${context.chart.data.labels[context.dataIndex]}\n${value} នាក់`;
                         }
                     }
                 }
@@ -305,13 +312,12 @@ var DashboardComponent = new (function () {
                                 <path class="circle" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
                                     a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="#ecdb5e" stroke-width="4" 
+                                    fill="none" stroke="#00ff00" stroke-width="4" 
                                     stroke-dasharray="50, 100" stroke-linecap="round" />
                             </svg>
                             <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
-                                style="color: #2b3991; font-size: 1rem; font-weight: bold;">
-                               <span class="p-1">${data.cards.warning_staff_count.count}</span>
-                                <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
+                                style="color:rgb(26, 232, 47); font-size: 1rem; font-weight: bold;">
+                               <span class="p-1">4</span>
                             </div>
                         </div>
                         <span class="fw-semibold fs-6 text-primary-custom text-start" 
@@ -330,17 +336,17 @@ var DashboardComponent = new (function () {
                                 <path class="circle" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
                                     a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="#ecdb5e" stroke-width="4" 
+                                    fill="none" stroke="#00ffff" stroke-width="4" 
                                     stroke-dasharray="50, 100" stroke-linecap="round" />
                             </svg>
                             <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
                                 style="color: #2b3991; font-size: 1rem; font-weight: bold;">
-                               <span class="p-1">${data.cards.warning_staff_count.count}</span>
+                               <span class="p-1">${data.cards.intern_staff_count.count}</span>
                                 <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
                             </div>
                         </div>
                         <span class="fw-semibold fs-6 text-primary-custom text-start" 
-                            style="color: #2b3991; font-size: 1.2rem;">Staff Exist Form</span>
+                            style="color: #2b3991; font-size: 1.2rem;">${data.cards.intern_staff_count.title}</span>
                     </div>
 
             </div>`,
@@ -355,7 +361,7 @@ var DashboardComponent = new (function () {
                       <path class="circle" d="M18 2.0845
                           a 15.9155 15.9155 0 0 1 0 31.831
                           a 15.9155 15.9155 0 0 1 0 -31.831" 
-                          fill="none" stroke="#ecdb5e" stroke-width="4" 
+                          fill="none" stroke="#ff00ff" stroke-width="4" 
                           stroke-dasharray="50, 100" stroke-linecap="round" />
                   </svg>
                   <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
@@ -365,7 +371,7 @@ var DashboardComponent = new (function () {
                   </div>
               </div>
               <span class="fw-semibold fs-6 text-primary-custom text-start" 
-                  style="color: #2b3991; font-size: 1.2rem;">Staff Exist Form</span>
+                  style="color: #2b3991; font-size: 1.2rem;">Warning Staff</span>
           </div>
 
             </div>`,
@@ -380,17 +386,17 @@ var DashboardComponent = new (function () {
                       <path class="circle" d="M18 2.0845
                           a 15.9155 15.9155 0 0 1 0 31.831
                           a 15.9155 15.9155 0 0 1 0 -31.831" 
-                          fill="none" stroke="#ecdb5e" stroke-width="4" 
+                          fill="none" stroke="#9900ff" stroke-width="4" 
                           stroke-dasharray="50, 100" stroke-linecap="round" />
                   </svg>
                   <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
                       style="color: #2b3991; font-size: 1rem; font-weight: bold;">
-                     <span class="p-1">${data.cards.warning_staff_count.count}</span>
+                     <span class="p-1">${data.cards.probation_staff_count.count}</span>
                       <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
                   </div>
               </div>
               <span class="fw-semibold fs-6 text-primary-custom text-start" 
-                  style="color: #2b3991; font-size: 1.2rem;">Staff Exist Form</span>
+                  style="color: #2b3991; font-size: 1.2rem;">Probation Staff</span>
           </div>
 
             </div>`,].join('');

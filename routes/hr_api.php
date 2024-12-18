@@ -1,13 +1,13 @@
 <?php
 
 use App\Http\Controllers\Bhr\EmployeeBenefitController;
-use App\Http\controllers\Bhr\DashboardController;
-use App\Http\controllers\Bhr\EmployeeController;
+use App\Http\Controllers\Bhr\DashboardController;
+use App\Http\Controllers\Bhr\EmployeeController;
 use App\Http\Controllers\Bhr\JobLevelController;
 use App\Http\Controllers\Bhr\PayrollController;
 use App\Http\Controllers\Bhr\PayrollListController;
-use App\Http\controllers\Bhr\SkillController;
-use App\Http\controllers\Bhr\LeaveController;
+use App\Http\Controllers\Bhr\SkillController;
+use App\Http\Controllers\Bhr\LeaveController;
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Middleware\CustomRateLimiter;
@@ -66,7 +66,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->gr
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
-
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->group(function () {
 
@@ -312,14 +311,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('holiday')->gr
     Route::post('/form-options', [HolidayController::class, 'getFormOptions']);
     Route::post('/list', [HolidayController::class, 'getHolidayList']);
 });
-
-
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('dashboard')->group(function () {
-    Route::post('/count-employees', [DashboardController::class, 'countEmployees']);
-    Route::post('/get-departments', [DashboardController::class, 'getDepartments']);
-    Route::post('/get-levels', [DashboardController::class, 'getLevels']);
-    Route::post('/get-benefits', [DashboardController::class, 'getBenefits']);
-});
+ 
 Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
     Route::post('/form-option',[GeneralSettingsController::class,'select_options']);
 });
