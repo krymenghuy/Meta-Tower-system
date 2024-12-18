@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <link rel="icon" type="image/png" href="{{'assets/images/logo/lc_logo.svg'}}"/>
         <?php StyleManager::render('login-styles',1); ?>
-        <title>BHR System</title>
+        <title>Merchant Access</title>
         <script>
             function checkDevice(){
                 if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
@@ -34,7 +34,6 @@
                 }
             }
 
-            
         </script>
           <!-- <style type="text/css">
             *{
