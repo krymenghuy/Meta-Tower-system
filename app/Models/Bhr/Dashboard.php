@@ -19,7 +19,7 @@ class Dashboard
         $ss = $ss ?? $this->userInfo;
         $cards = self::getDashboardCards($arr,$ss);
         return (object)[
-            'doughnutChart'=>self::countEmployeeByType(0,$ss),
+            'doughnutChart'=>self::countEmployee(0,$ss),
             'cards'=>$cards,
             'barCharts'=>self::getEmployeeDataForBarChart($ss),
             'pieCharts'=>self::getTotalStaffComparison($ss),
@@ -39,21 +39,19 @@ class Dashboard
         $to_date = convertDate(Carbon::now());
         $moreWheres = "emp.joining_date >= '$from_date' AND emp.joining_date <= '$to_date'";
     
-        // Employee data query
         $employee_rows = DB::table('employees AS emp')
             ->whereRaw($moreWheres)
             ->select('emp.id', 'emp.status_id', 'emp.emp_type_id', 'emp.joining_date')
             ->orderBy('emp.joining_date', 'ASC')
             ->get();
     
-        // Initialize counts
         $new_staff_count = 0;
         $new_probation_count = 0;
         $new_intern_count = 0;
         $terminated_staff_count = 0;
     
         foreach ($employee_rows as $emp) {
-            if ($emp->status_id == 10) { // Active employees
+            if ($emp->status_id == 10) {
                 switch ($emp->emp_type_id) {
                     case 1:
                         $new_intern_count++;
@@ -65,12 +63,11 @@ class Dashboard
                         $new_staff_count++;
                         break;
                 }
-            } elseif ($emp->status_id == 30) { // Terminated employees
+            } elseif ($emp->status_id == 30) {
                 $terminated_staff_count++;
             }
         }
     
-        // Resignations
         $resigned_staff_count = DB::table('resignations')
             ->whereBetween('resign_date', [$from_date, $to_date])
             ->count();
@@ -80,9 +77,8 @@ class Dashboard
             ->where('effective_date', '>', $to_date)
             ->count();
     
-        // Staff in warnings
         $warning_rows = DB::table('emp_warnings AS ew')
-            ->leftJoin('employees AS e', 'ew.emp_id', '=', 'e.id')
+            ->Join('employees AS emp', 'ew.emp_id', '=', 'emp.id')
             ->whereBetween('ew.warning_date', [$from_date, $to_date])
             ->select('ew.warning_type', DB::raw('COUNT(ew.emp_id) as total_warnings'))
             ->groupBy('ew.warning_type')
@@ -94,7 +90,6 @@ class Dashboard
             ->distinct('ew.emp_id')
             ->count('ew.emp_id');
     
-        // Prepare the dashboard data
         return (object) [
             'new_staff_count' => (object) [
                 'count' => $new_staff_count,
@@ -132,41 +127,64 @@ class Dashboard
     
     
     
-    
-    static function countEmployeeByType($arr, $ss){
-        $branch_id = $ss->branch_id;
-        $back_days = -90;
-        $start_date = convertDate(Carbon::now()->addDays($back_days));
-        $rows = DB::table('employees AS e')
-            ->join('emp_types AS t', 'e.emp_type_id', '=', 't.id')
-            ->whereRaw("DATE(e.joining_date) >= ?", [$start_date])
-            ->selectRaw("t.name AS category,COUNT(e.id) AS count")
-            ->groupBy('t.name')
-            ->get();
-    
-        $labels = [];
-        $values = [];
-        $colors = [];
-        $base_colors = ['#cab54a', '#2b3991','#32BCD3', '#3795E0', '#ECF140'];
-    
-        $total = 0;
-    
-        foreach ($rows as $index => $row) {
-            $labels[] = $row->category;  
-            $values[] = $row->count;    
-            $colors[] = $base_colors[$index % count($base_colors)];
-    
-            $total += $row->count; 
+
+static function countEmployee($arr, $ss)
+{
+    $branch_id = $ss->branch_id;
+    $back_days = -90;
+    $start_date = convertDate(Carbon::now()->addDays($back_days));
+
+    $rows = DB::table('employees AS emp')
+        ->join('emp_types AS t', 'emp.emp_type_id', '=', 't.id') // Join with emp_types table
+        // ->where('emp.branch_id', $branch_id) // Filter by branch
+        ->whereRaw("DATE(emp.joining_date) >= ?", [$start_date]) // Filter by joining date
+        ->selectRaw("t.name AS category, COUNT(emp.id) AS count") // Group by employment type
+        ->groupBy('t.name')
+        ->get();
+
+    $labels = [];
+    $values = [];
+    $colors = [];
+    $base_colors = ['#2b3991', '#cab54a', '#32BCD3', '#cab54a', '#ECF140'];
+
+    $total = 0;
+    $staff_total = 0;
+    $intern_total = 0;
+    $probation_total = 0;
+
+    foreach ($rows as $index => $row) {
+        $labels[] = $row->category;
+        $values[] = $row->count;
+        $colors[] = $base_colors[$index % count($base_colors)];
+
+        // Categorize counts
+        switch (strtolower($row->category)) {
+            case 'staff':
+                $staff_total += $row->count;
+                break;
+            case 'intern':
+                $intern_total += $row->count;
+                break;
+            case 'probation':
+                $probation_total += $row->count;
+                break;
         }
-    
-        return (object)[
-            'title' => 'Total '.$total.' Employees',
-            'total' => $total,
-            'labels' => $labels,
-            'values' => $values,
-            'colors' => $colors
-        ];
+
+        $total += $row->count;
     }
+
+    return (object)[
+        'title' => 'Total ' . $total . ' Staffs',
+        'total' => $total,
+        'staff_total' => $staff_total,
+        'intern_total' => $intern_total,
+        'probation_total' => $probation_total,
+        'labels' => $labels,
+        'values' => $values,
+        'colors' => $colors
+    ];
+}
+
     public static function getTotalStaffComparison($ss = null) {
         $ss = $ss ?? auth()->user();
         $currentDate = Carbon::now();

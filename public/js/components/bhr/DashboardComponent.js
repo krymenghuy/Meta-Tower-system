@@ -1,5 +1,6 @@
 "use strict";
 
+
 var DashboardComponent = new (function () {
     const mThis = this;
     this.title_prop = "Dashboard";
@@ -202,7 +203,14 @@ var DashboardComponent = new (function () {
                         text: 'Current Employee Count',
                     },
                     tooltip: {
-                        enabled: true
+                        enabled: true,
+                        callbacks: {
+                            label: function (tooltipItem){
+                                const label = tooltipItem.label || '';
+                                const value = tooltipItem.raw;
+                                return `${label} : ${value} នាក់`;
+                            }
+                        }
                     },
                     datalabels: {
                         color: '#000',
@@ -211,7 +219,7 @@ var DashboardComponent = new (function () {
                             weight: 'bold'
                         },
                         formatter: function (value, context) {
-                            return `${context.chart.data.labels[context.dataIndex]}\n${value}`;
+                            return `${context.chart.data.labels[context.dataIndex]}\n${value} នាក់`;
                         }
                     }
                 }
@@ -309,7 +317,7 @@ var DashboardComponent = new (function () {
                                     stroke-dasharray="50, 100" stroke-linecap="round" />
                             </svg>
                             <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
-                                style="color: #2b3991; font-size: 1rem; font-weight: bold;">
+                                style="color:rgb(26, 232, 70); font-size: 1rem; font-weight: bold;">
                                <span class="p-1">${data.cards.warning_staff_count.count}</span>
                                 <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
                             </div>
@@ -340,7 +348,7 @@ var DashboardComponent = new (function () {
                             </div>
                         </div>
                         <span class="fw-semibold fs-6 text-primary-custom text-start" 
-                            style="color: #2b3991; font-size: 1.2rem;">Staff Exist Form</span>
+                            style="color: #2b3991; font-size: 1.2rem;">Intern Staff</span>
                     </div>
 
             </div>`,
@@ -365,7 +373,7 @@ var DashboardComponent = new (function () {
                   </div>
               </div>
               <span class="fw-semibold fs-6 text-primary-custom text-start" 
-                  style="color: #2b3991; font-size: 1.2rem;">Staff Exist Form</span>
+                  style="color: #2b3991; font-size: 1.2rem;">Warning Staff</span>
           </div>
 
             </div>`,
@@ -390,7 +398,7 @@ var DashboardComponent = new (function () {
                   </div>
               </div>
               <span class="fw-semibold fs-6 text-primary-custom text-start" 
-                  style="color: #2b3991; font-size: 1.2rem;">Staff Exist Form</span>
+                  style="color: #2b3991; font-size: 1.2rem;">Probation Staff</span>
           </div>
 
             </div>`,].join('');
