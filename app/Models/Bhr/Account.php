@@ -45,6 +45,17 @@ class Account
         if (!$emp) return DV::error('Employee ID does not exist');
         $inputs['balance'] = (float) str_replace(',', '', $inputs['balance']) ;
         $account_number = $inputs['account_number'];
+        if (!$account_number) {
+            if ($inputs['account_type'] === 'Payroll') {
+                $account_number = 'P_' . $emp->code;
+            } elseif ($inputs['account_type'] === 'Wallet') {
+                $account_number = 'W_' . $emp->code;
+            } else {
+                $account_number = $emp->code;
+            }
+        }
+        $inputs['account_number'] = $account_number;
+
         if(!$account_number) $account_number = $emp->code;
         $inputs['account_number'] = $account_number;
         if(self::accountNumberExists($account_number,$id)) return DV::error('Account number ?? already exists::'.$account_number);
@@ -235,7 +246,7 @@ class Account
                 ['id' => 'a.balance', 'name' => 'By  Balance'],
             ],
 
-            'employees' => GeneralSettings::options_employee(10, $ss),
+            'employees' => GeneralSettings::options_employee([10, 20],$ss),
             'accounts' => $account,
         ];
     }
@@ -341,7 +352,7 @@ class Account
             'remarks' => '0|string|250',
             'trx_type' => '1|number',
             'status'=>'0|string|10',
-            'account_id' => '1|number',
+            // 'account_id' => '0|number',
             'to_account_id' => '1|number',
         ];
 

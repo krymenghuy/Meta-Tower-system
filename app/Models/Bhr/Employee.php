@@ -304,16 +304,21 @@ class Employee //extends Model
         return DV::error('Error saving payroll list benefit!');
     }
 
-    static function getPayrollAccount($emp_id)
+    public static function getPayrollAccount($emp_id)
     {
-        $emp = DB::table('employees as e')
+        return DB::table('employees as e')
             ->join('accounts as a', 'a.emp_id', '=', 'e.id')
             ->where('e.id', $emp_id)
-            ->selectRaw('e.id,e.name,a.id as account_id,a.account_number')
+            ->where('a.account_type', 'Payroll')
+            ->select([
+                'e.id',
+                'e.name',
+                'a.id as account_id',
+                'a.account_number'
+            ])
             ->first();
-        return $emp;
-
     }
+
 
     function deleteProfilePicture($id = null, $ss = null)
     {
@@ -561,7 +566,7 @@ class Employee //extends Model
                 '. DBX::formatDate('emp.date_of_birth','date_of_birth') .',
                 emp.address,
                 emp.photo_file_name,
-                '.DBX::formatDate('emp.joining_date','joining_date').', 
+                '.DBX::formatDate('emp.joining_date','joining_date').',
                 emp.nssf_id,
                 emp.nid,
                 emp.position_id,
@@ -644,7 +649,7 @@ class Employee //extends Model
         }
 
         $firstElement = ['id' => 0, 'name' => '(None)', 'name_kh'=>'(None)', 'sex'=>'','phone_number'=>'','image_url'=>'', 'position_id'=>'','email'=>''];
- 
+
         $emps = GeneralSettings::options_employee(10, $ss)->prepend($firstElement);
         return (object) [
             'nationalities' => GeneralSettings::options_nationality($ss),
