@@ -115,55 +115,55 @@ var DashboardComponent = new (function () {
                         <canvas id="employeeSalaryChart"></canvas>
                     </div>
                 </div>`,
-                `<div class="col-md-3">
-                <div class="chart-container dashboard_chart bg-white shadow-sm">
-                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #ededed;">
-                        <div class="d-flex align-items-center p-2 mb-1">
-                            <div class="bg--icon  bg--icon-new-employee-count">
-                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="Icon">
-                            </div>
-                            <div class="ms-3 text-center flex-fill">
-                                <span class="fw-semibold fs-4 text-primary-custom">${data.cards.new_staff_count.count}</span>
-                                <div class="text-success" style="">${data.cards.new_staff_count.title}</div>
-                            </div>
-                        </div>
-                        <div class="text-center mt-auto">
-                            <small class="text-muted">Last 90 days</small>
-                        </div>
-                    </div>
+                `<div class="col-md-3">`,
+                `<div class="chart-container dashboard_chart bg-white shadow-sm">`,
+                    `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 mb-2" style="background-color: #ededed;">`,
+                        `<div class="d-flex align-items-center p-2 mb-1">`,
+                            `<div class="bg--icon  bg--icon-new-employee-count">`,
+                                `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/new_staff.svg" alt="Icon">`,
+                            `</div>`,
+                            `<div class="ms-3 text-center flex-fill">`,
+                                `<span class="fw-semibold fs-4 text-primary-custom">${data.cards.new_staff_count.count}</span>`,
+                                `<div class="text-success" style="">${data.cards.new_staff_count.title}</div>`,
+                            `</div>`,
+                        `</div>`,
+                        `<div class="text-center mt-auto">`,
+                            `<small class="text-muted">Last 90 days</small>`,
+                        `</div>`,
+                    `</div>`,
 
-                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #ededed;">
-                        <div class="d-flex align-items-center p-2 mb-1">
-                            <div class="bg--icon bg--icon-new-employee-resigning">
-                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">
-                            </div>
-                            <div class="ms-3 text-center flex-fill">
-                                <span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigning_staff_count.count}</span>
-                                <div class="text-warning">${data.cards.resigning_staff_count.title}</div>
-                            </div>
-                        </div>
-                        <div class="text-center mt-auto">
-                            <small class="text-muted">Last 90 days</small>
-                        </div>
-                    </div>
+                    `<div class="d-flex w-100 flex-column justify-content-between rounded-3 mb-2 h-100" style="background-color: #ededed;">`,
+                        `<div class="d-flex align-items-center p-2 mb-1">`,
+                            `<div class="bg--icon bg--icon-new-employee-resigning">`,
+                                `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/probation.svg" alt="Icon">`,
+                            `</div>`,
+                            `<div class="ms-3 text-center flex-fill">`,
+                                `<span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigning_staff_count.count}</span>`,
+                                `<div class="text-warning">${data.cards.resigning_staff_count.title}</div>`,
+                            `</div>`,
+                        `</div>`,
+                        `<div class="text-center mt-auto">`,
+                            `<small class="text-muted">Last 90 days</small>`,
+                        `</div>`,
+                    `</div>`,
 
-                    <div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 " style="background-color: #ededed;">
-                        <div class="d-flex align-items-center p-2 mb-1">
-                            <div class="bg--icon bg--icon-new-employee-resigned">
-                                <img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/stop.svg" alt="Icon">
-                            </div>
-                            <div class="ms-3 text-center flex-fill">
-                                <span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigned_staff_count.count}</span>
-                                <div class="text-danger">${data.cards.resigned_staff_count.title}</div>
-                            </div>
-                        </div>
-                        <div class="text-center mt-auto">
-                            <small class="text-muted">Last 90 days</small>
-                        </div>
-                    </div>
+                    `<div class="d-flex w-100 flex-column justify-content-between rounded-3 h-100 " style="background-color: #ededed;">`,
+                        `<div class="d-flex align-items-center p-2 mb-1">`,
+                            `<div class="bg--icon bg--icon-new-employee-resigned">`,
+                                `<img class="img--size" src="${main_view.base_url}/assets/images/bhr/dashboard/stop.svg" alt="Icon">`,
+                            `</div>`,
+                            `<div class="ms-3 text-center flex-fill">`,
+                                `<span class="fw-semibold fs-4 text-primary-custom">${data.cards.resigned_staff_count.count}</span>`,
+                                `<div class="text-danger">${data.cards.resigned_staff_count.title}</div>`,
+                            `</div>`,
+                        `</div>`,
+                        `<div class="text-center mt-auto">`,
+                            `<small class="text-muted">Last 90 days</small>`,
+                        `</div>`,
+                    `</div>`,
 
-                </div>
-                </div>`,
+                `</div>`,
+                `</div>`,
               
             `</div>`].join('');
         mThis.dbChartAll.innerHTML = html;
@@ -197,10 +197,7 @@ var DashboardComponent = new (function () {
                     legend: {
                         position: 'top',
                     },
-                    title: {
-                        display: true,
-                        text: 'Current Employee Count',
-                    },
+               
                     tooltip: {
                         enabled: true,
                         callbacks: {
@@ -227,7 +224,23 @@ var DashboardComponent = new (function () {
     };
     this.employeeSalaryChart = (data) => {
         const ctx = document.getElementById('employeeSalaryChart').getContext('2d');
-
+    
+       
+        if (!data.labels || data.labels.length < 12) {
+            const defaultCount = 12 - (data.labels ? data.labels.length : 0);
+            const placeholders = Array(defaultCount).fill('N/A');
+            const placeholderEmployeeCounts = Array(defaultCount).fill(0);
+            const placeholderSalaries = Array(defaultCount).fill(0);
+    
+            data.labels = data.labels ? [...data.labels, ...placeholders] : placeholders;
+            data.employee_counts = data.employee_counts
+                ? [...data.employee_counts, ...placeholderEmployeeCounts]
+                : placeholderEmployeeCounts;
+            data.total_salaries = data.total_salaries
+                ? [...data.total_salaries, ...placeholderSalaries]
+                : placeholderSalaries;
+        }
+    
         const employeeSalaryData = {
             labels: data.labels,
             datasets: [
@@ -249,7 +262,7 @@ var DashboardComponent = new (function () {
                 },
             ],
         };
-
+    
         const config = {
             type: 'bar',
             data: employeeSalaryData,
@@ -259,10 +272,10 @@ var DashboardComponent = new (function () {
                     legend: {
                         position: 'top',
                     },
-                    title: {
-                        display: true,
-                        text: 'Employee Count and Total Salary Paid in the Last 12 Months',
-                    },
+                    // title: {
+                    //     display: true,
+                    //     text: 'Employee Count and Total Salary Paid in the Last 12 Months',
+                    // },
                 },
                 scales: {
                     y: {
@@ -278,7 +291,7 @@ var DashboardComponent = new (function () {
                         position: 'right',
                         title: {
                             display: true,
-                            text: 'Salary in USD ($)',
+                            text: 'Salary in KHR (រៀល)',
                             color: '#cab54a',
                         },
                         ticks: {
@@ -291,9 +304,10 @@ var DashboardComponent = new (function () {
                 },
             },
         };
-
+    
         new Chart(ctx, config);
     };
+    
 
 
 

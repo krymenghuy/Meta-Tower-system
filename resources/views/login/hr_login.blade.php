@@ -195,9 +195,13 @@
             </div>
             <div class="login-frame">
                 <div class="vs-container-front-img">
-                    <img class="img-front" src="{{ asset('assets/images/bhr/frame-login.png') }}"/>
+                    <img class="img-front"  src="{{ asset('assets/images/bhr/new_staff.jpg') }}"/>
                     <div class="vs-login">
                         <div class="vs-form-login">
+                            <div class="vs--logo">
+                                <img class="w-100" src="{{ asset('assets/images/bhr/merchant-logo.png') }}"/>
+
+                            </div>
                             <h3 class="vs-title">Sign in to your account</h3>
                             <div class="vs-form-group">
                             <form action="{{ url('/processLogin') }}" method="POST">
