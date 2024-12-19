@@ -402,7 +402,8 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check_points')
 });
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form-item')->group(function(){
     Route::post('/save', [ExitFormItemController::class, 'saveExitFormItem']);
-    Route::post('/list-paginate', [ExitFormItemController::class, 'getExitFormItemPaginate']);
+    Route::post('/list-paginate', [ExitFormItemController::class, 'getList']);
+    Route::post('/list-all', [ExitFormItemController::class, 'getAllList']);
     Route::post('/details', [ExitFormItemController::class, 'getDetails']);
     Route::post('/delete', [ExitFormItemController::class, 'deleteExitFormItem']);
     Route::post('/form-options', [ExitFormItemController::class, 'getExitFormItemOptions']);
@@ -413,4 +414,5 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form')->g
     Route::post('/details', [ExitFormController::class, 'getDetails']);
     Route::post('/delete', [ExitFormController::class, 'delete']);
     Route::post('/form-options', [ExitFormController::class, 'getExitFormOptions']);
+    Route::post('/list-all', [ExitFormController::class, 'getAllList']);
 });

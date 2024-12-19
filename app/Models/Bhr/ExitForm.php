@@ -49,7 +49,6 @@ class ExitForm //extends Model
         $inputs = $res->values;
         $emp_id = $arr['emp_id'] ?? null;
 
-        // Check for existing name only if it's a new record (not an update)
         if (!$id) {
             $existingExitForm = DB::table('exit_forms')
             ->where('name', $inputs['name'])
@@ -61,7 +60,6 @@ class ExitForm //extends Model
         }
         
         if ($id) {
-            // Update existing exit form
             $updated = DB::table('exit_forms')
             ->where('id', $id)
                 ->update($inputs);
@@ -72,7 +70,6 @@ class ExitForm //extends Model
                 return DV::error('Update failed. Record may not exist or data is unchanged.');
             }
         } else {
-            // Insert a new exit form
             $newId = DB::table('exit_forms')->insertGetId($inputs);
 
             if ($newId) {
@@ -231,6 +228,8 @@ class ExitForm //extends Model
 
         return DV::depends($deleted, ['action' => 'deleted']);
     }
+
+    
 
     public static function getFormOptions($id, $ss)
     {

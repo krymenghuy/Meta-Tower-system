@@ -23,13 +23,21 @@ class ExitFormItemController extends Controller
         $res = $this->emp_exit_items->save($req->form_item, $ss, $req->all());
         return JDV::raw($res);
     }
-    public function getExitFormItemPaginate(Request $req)
+    public function getList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->emp_exit_items->getExitFormItemPaginate($req->all(), $ss));
+        return JDV::result($this->emp_exit_items->getList($req->all(), $ss));
+    }
+    public function getAllList(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->emp_exit_items->getAllList($req->all(), $ss));
     }
     public function getDetails(Request $req)
     {

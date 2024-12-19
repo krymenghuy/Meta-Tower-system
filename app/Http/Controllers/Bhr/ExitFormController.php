@@ -31,6 +31,14 @@ class ExitFormController extends Controller
         }
         return JDV::result($this->exit_form->getList($req->all(), $ss));
     }
+    public function getAllList(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->exit_form->getExitFormList($req->all(), $ss));
+    }
     public function getDetails(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);

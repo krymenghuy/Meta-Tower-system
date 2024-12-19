@@ -19,6 +19,27 @@
     <div id="_exit_form_list" class="mt-4 p-4">
     </div>
     <div class="d-none container mt-4" id="view_exit_form_">
-        
     </div>
 </div>
+<style>
+    .custom-modal-size {
+        max-width: 80%;
+        margin: 20px auto;
+    }
+
+
+    .employee-info-section {
+        padding: 15px;
+        background-color: #f7f7f7;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+
+    .form-check-input {
+        margin-top: 4px;
+    }
+
+    .ms-2 {
+        margin-left: 8px;
+    }
+</style>
