@@ -47,9 +47,9 @@ class Account
         $account_number = $inputs['account_number'];
         if (!$account_number) {
             if ($inputs['account_type'] === 'Payroll') {
-                $account_number = 'P_' . $emp->code;
+                $account_number = $emp->code.'-P';
             } elseif ($inputs['account_type'] === 'Wallet') {
-                $account_number = 'W_' . $emp->code;
+                $account_number = $emp->code.'-W';
             } else {
                 $account_number = $emp->code;
             }
@@ -120,7 +120,8 @@ class Account
                e.photo_file_name as emp_photo
            ')
            ->where('a.branch_id', $branch_id)
-           ->where('a.account_type', 'Payroll'); // Filter only Payroll accounts
+           ->where('a.account_type', 'Payroll')
+           ->orderBy('id', 'ASC');
 
        if ($search_value) {
            $search_value = escape_like_str($search_value);
@@ -172,7 +173,8 @@ class Account
                e.photo_file_name as emp_photo
            ')
            ->where('a.branch_id', $branch_id)
-           ->where('a.account_type', 'Wallet');
+           ->where('a.account_type', 'Wallet')
+           ->orderBy('a.id', 'ASC');
 
        if ($search_value) {
            $search_value = escape_like_str($search_value);
@@ -241,12 +243,8 @@ class Account
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        if (!$id) return DV::error('Account ID is not valid');
 
-        $x = DB::table('accounts')
-            ->where('id', $id)
-            ->delete();
-        DBX::deleteForeignKeyRows(self::$fk_tables,$id,false);
+        return DB::table('accounts')->where('id', $id)->delete();
     }
 
     function getFormOptions($id, $ss)
@@ -271,16 +269,16 @@ class Account
     /** $arr = [from_account_id, to_account_id, amount, currency_code, remarks] */
     function transfer($arr, $ss) {
         $d = (object) $arr;
-        $p_account_id = DB::table('accounts')->where('emp_id', $d->emp_id)->where('account_type', 'Payroll')->value('id');
-        $w_account_id = DB::table('accounts')->where('emp_id', $d->emp_id)->where('account_type', 'Wallet')->value('id');
+       $account_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('id');
+       $to_account_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('id');
 
-        return$trx = $d;
+        $trx = $d;
         $trx->trx_type=3;
-        $trx->from_account_id = $trx->w_account_number;
-        $trx->to_account_id = $trx->w_account_number;
-        $trx->amount = $trx->w_balance;
-        $trx->account_id = $w_account_id;
-        $trx->remarks = 'From Payroll to Wallet';
+        $trx->from_account_id = $account_id;
+        $trx->to_account_id = $to_account_id;
+        $trx->amount = $trx->amount;
+        $trx->account_id = $account_id;
+        $trx->remarks = 'From $d->account_number to Wallet';
         if($trx->balance < $trx->amount){
             return DV::error('Insufficient Balance');
         }

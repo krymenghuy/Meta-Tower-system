@@ -302,7 +302,7 @@ var EmployeeComponent = new (function () {
                         break;
                 }
 
-                html =[html, 
+                html =[html,
                     `<div class="col-md-3 mt-2 mb-3 employee-card" data-employee-id="${
                         d.id
                     }">`,
@@ -418,7 +418,7 @@ var EmployeeComponent = new (function () {
                                     <img src="${
                                         data.image_url ||
                                         "../uploads/public/1_data/default/images/mr.avif"
-                                        
+
                                     }" alt="Employee Image">
                                 </div>
                                 <div class="d-flex mt-3 ms-5 justify-content-start">
@@ -459,6 +459,13 @@ var EmployeeComponent = new (function () {
                                         data.nationality || ""
                                     }</p>
                                 </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Date of Birth</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${
+                                        data.date_of_birth || ""
+                                    }</p>
+                                </div>
                                  <div class="d-flex">
                                     <p class="text-nowrap    width-p" vslang="titles.Identity Card">Identity Card</p>
                                     <p class="px-2">:</p>
@@ -467,17 +474,18 @@ var EmployeeComponent = new (function () {
                                     }</p>
                                 </div>
                                 <div class="d-flex">
-                                    <p class="text-nowrap  width-p">Date of Birth</p>
+                                    <p class="text-nowrap  width-p">NID Expiry Date</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${
-                                        data.date_of_birth || ""
+                                        data.nid_expiry_date || ""
                                     }</p>
                                 </div>
+
                                 <div class="d-flex">
-                                    <p class="text-nowrap    width-p" vslang="titles.Joining Date">Joining Date</p>
+                                    <p class="text-nowrap width-p" vslang="titles.NSSF">NSSF</p>
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap text-capitalize">${
-                                        data.joining_date
+                                        data.nssf_id
                                     }</p>
                                 </div>
 
@@ -503,6 +511,13 @@ var EmployeeComponent = new (function () {
                                     <p class="px-2">:</p>
                                     <p class="text-nowrap">${
                                         data.type || ""
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap    width-p" vslang="titles.Joining Date">Joining Date</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.joining_date
                                     }</p>
                                 </div>
                                  <div class="d-flex">
@@ -536,18 +551,19 @@ var EmployeeComponent = new (function () {
                             </div>
 
                             <div class="col-md-3 mt-3">
-                                 <div class="d-flex">
-                                    <p class="text-nowrap width-p" vslang="titles.NSSF">NSSF</p>
-                                    <p class="pl-5 pr-2">:</p>
-                                    <p class="text-nowrap text-capitalize">${
-                                        data.nssf_id
-                                    }</p>
-                                </div>
+
                                 <div class="d-flex">
                                     <p class="text-nowrap width-p" vslang="titles.Passport">Passport</p>
                                     <p class="pl-5 pr-2">:</p>
                                     <p class="text-nowrap text-capitalize">${
                                         data.passport_number
+                                    }</p>
+                                </div>
+                                 <div class="d-flex">
+                                    <p class="text-nowrap width-p" vslang="titles.Passport">Passport Expiry Date</p>
+                                    <p class="pl-5 pr-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.passport_expiry_date
                                     }</p>
                                 </div>
                                 <div class="d-flex">
@@ -2719,7 +2735,7 @@ const EmployeeDialog = (() => {
                             `<div class="col-3">`,
                                 `<div style="height:165px;" class="data-input border border-secondary rouded-3 justify-items-center align-items-center">`,
                                     `<div name="div_emp_photo" data-field="photo" class="h-100"></div>`,
-                                `</div>`, 
+                                `</div>`,
                             `</div>`,
                             `<div class="col-9">`,
                                 `<div class="row">`,
@@ -2734,14 +2750,13 @@ const EmployeeDialog = (() => {
                                         <input name="name_kh" class="form-control  data-input" data-field="name_kh" />
                                     </div>
                                     <div class="form-group col-4">
-                                        <label for="nid" class="form-label text-primary-custom" vslang="titles.Identity Card"></label>
-                                        <span class="text-danger" >*</span>
-                                        <input name="nid" class="form-control  data-input" data-field="nid" />
+                                        <label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>
+                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
                                     </div>
                                     <div class="form-group col-4">
-                                        <label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>
+                                        <label for="date_of_birth" class="form-label text-primary-custom" vslang="titles.Date Of Birth"></label>
                                         <span class="text-danger" >*</span>
-                                        <select name="nationality_id" class="data-input" data-field="nationality_id"></select>
+                                        <input name="date_of_birth" class="form-control  data-input" data-field="date_of_birth" />
                                     </div>
                                     <div class="form-group col-4">
                                        <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
@@ -2752,42 +2767,51 @@ const EmployeeDialog = (() => {
                                                 <option value="O">Other</option>
                                             </select>
                                     </div>
+
                                     <div class="form-group col-4">
-                                        <label for="date_of_birth" class="form-label text-primary-custom" vslang="titles.Date Of Birth"></label>
+                                        <label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>
                                         <span class="text-danger" >*</span>
-                                        <input name="date_of_birth" class="form-control  data-input" data-field="date_of_birth" />
+                                        <select name="nationality_id" class="data-input" data-field="nationality_id"></select>
                                     </div>
 
                                 </div>
                             </div>
-                                <div class="row">
-                                    <div class="form-group col-4">
+                                    <div class="form-group col-3">
+                                        <label for="nid" class="form-label text-primary-custom" vslang="titles.Identity Card"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="nid" class="form-control  data-input" data-field="nid" />
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="nid_expiry_date" class="form-label text-primary-custom" vslang="titles.Identity Card Expiry"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="nid_expiry_date" class="form-control  data-input" data-field="nid_expiry_date" />
+                                    </div>
+                                    <div class="form-group col-3">
                                         <label for="phone_number" class="form-label text-primary-custom" vslang="titles.Phone"></label>
                                         <span class="text-danger" >*</span>
                                         <input name="phone_number" class="form-control data-input" data-field="phone_number" />
                                     </div>
-                                    <div class="form-group col-4">
+                                    <div class="form-group col-3">
                                         <label for="email" class="form-label text-primary-custom" vslang="titles.Email"></label>
                                         <span class="text-danger" >*</span>
                                         <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
                                     </div>
 
-                                     <div class="form-group col-4">
-                                        <label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>
-                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
-                                    </div>
-
-                                     <div class="form-group col-4">
+                                     <div class="form-group col-3">
                                         <label for="passport_number" class="form-label text-primary-custom" vslang="titles.Passport Number"></label>
                                         <input name="passport_number" class="form-control data-input" placeholder="" data-field="passport_number" />
                                     </div>
-
-                                    <div class="form-group col-4">
+                                    <div class="form-group col-3">
+                                        <label for="passport_expiry_date" class="form-label text-primary-custom" vslang="titles.Passport Expiry"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="passport_expiry_date" class="form-control  data-input" data-field="passport_expiry_date" />
+                                    </div>
+                                    <div class="form-group col-3">
                                         <label for="birth_city_id" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>
                                         <select name="birth_city_id" class="modal-select2 data-input" placeholder="" data-field="birth_city_id"></select>
                                     </div>
 
-                                    <div class="form-group col-4">
+                                    <div class="form-group col-3">
                                         <label for="marital_status" class="form-label text-primary-custom" vslang="titles.Marital Status"></label>
                                         <span class="text-danger" >*</span>
                                         <select name="marital_status" class="modal-select2 data-input" placeholder="" data-field="marital_status">
@@ -2843,7 +2867,6 @@ const EmployeeDialog = (() => {
                                         <textarea name="address" id="address" class="form-control  data-input" data-field="address"></textarea>
                                     </div>
 
-                                </div>
 
                         </div>`,
                 ].join("");
@@ -2854,6 +2877,8 @@ const EmployeeDialog = (() => {
                 //Convert field to be DatePicker : start_date and end_date
                 DateTimePicker.init(me.controls.date_of_birth);
                 DateTimePicker.init(me.controls.joining_date);
+                DateTimePicker.init(me.controls.nid_expiry_date);
+                DateTimePicker.init(me.controls.passport_expiry_date);
                 LocaleManager.translateZone(me.divModal);
                 const div_emp_photo = me.controls.div_emp_photo;
 
@@ -2871,7 +2896,7 @@ const EmployeeDialog = (() => {
                                 return true;
                            } else return false;
 
-                       } 
+                       }
                        return true;
                     },
                     //When user browse new photo and loads it in
@@ -2887,8 +2912,8 @@ const EmployeeDialog = (() => {
                     //             if(res.status_code == 200){
                     //             cv_interact.info('Profile photo was deleted!');
                     //             }else cv_interact.error(res.error_message);
-                    //         });  
-                    //    } 
+                    //         });
+                    //    }
                     // }
                 });
 
@@ -2896,7 +2921,7 @@ const EmployeeDialog = (() => {
                     const p = {"id":emp_id};
                     vsapi.call([main_view.base_url,'/hr/employee/profile/photo/delete'].join(''),p,false,false).then(res =>{
                         if(res.status_code == 200){
-                          me.empImageBox.setImage(null);   
+                          me.empImageBox.setImage(null);
                           cv_interact.info('Profile photo was deleted!');
                         }else cv_interact.error(res.error_message);
                     });
@@ -2909,7 +2934,7 @@ const EmployeeDialog = (() => {
                           me.empImageBox.setImage(res.data.image_url);
                           cv_interact.success('Profile photo was deleted!');
                         }else cv_interact.error(res.error_message);
-                   });  
+                   });
                 };
 
                 // me.showProfile = (code) => {
@@ -2943,7 +2968,7 @@ const EmployeeDialog = (() => {
                 //                 });
                 //         });
                 // };
-                
+
                 // me.deleteImage = (div) => {
                 //     const btnDelete = div; //.querySelector('[role=\'button\']');
                 //     btnDelete.onclick = function (e) {
@@ -3048,6 +3073,8 @@ const EmployeeDialog = (() => {
                     cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const p = me.getData();
+                        // console.log(1234,JSON.stringify(p));
+
                         p.photo = me.empImageBox
                             ? me.empImageBox.getImage()
                             : '';
