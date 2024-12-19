@@ -151,23 +151,37 @@ var PayrollListComponent = new (function () {
             listContainerClass: null
         });
         mThis.btnCalculate.onclick = function (e) {
-
             e.preventDefault();
-
-
-
             let op = {
-                payroll_id : mThis.getFilterData().payroll_id,
+                payroll_id: mThis.getFilterData().payroll_id,
+            };
 
-            }
-            console.log(444, op);
-            vsapi.call( [main_view.base_url,'/hr/payroll-list/calculate'].join(''), op,null,null).then(res=>{
-               if(res.status_code ==200){
-                 mThis.PayrollList_ListView.showPage(mThis.getFilterData());
-                 alert(res.data);
-               }else cv_interact.error(res.error_message);
+            cv_interact.confirm('Calculate this Payroll List?', {
+                title: 'Calculate Payroll List',
+                context: 'calculate',
+                confirmButtonText: "Calculate"
+            }, function (confirmation) {
+                if (confirmation) {
+                    vsapi.call([main_view.base_url, '/hr/payroll-list/calculate'].join(''), op, null, null).then(res => {
+                        if (res.status_code === 200) {
+                            if (res.data && res.data.message === 'Payroll List Already Calculated') {
+                                cv_interact.error('Payroll List Already Disbursed');
+                            } else {
+                                let formattedData = `
+                                    On Calculate: ${res.data[1]}
+                                    Calculated: ${res.data[5]}
+                                `;
+                                cv_interact.success(formattedData);
+                                mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+                            }
+                        } else {
+                            cv_interact.error(res.error_message);
+                        }
+                    });
+                }
             });
         };
+
         mThis.btnDisburse.onclick = function (e) {
             e.preventDefault();
 
@@ -191,7 +205,7 @@ var PayrollListComponent = new (function () {
                             }
                         } else {
                             cv_interact.error(res.error_message);
-                            alert(res.data);
+                            // alert(res.data);
                         }
                     });
                 }
