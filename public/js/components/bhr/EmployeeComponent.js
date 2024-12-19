@@ -302,7 +302,7 @@ var EmployeeComponent = new (function () {
                         break;
                 }
 
-                html =[html, 
+                html =[html,
                     `<div class="col-md-3 mt-2 mb-3 employee-card" data-employee-id="${
                         d.id
                     }">`,
@@ -2828,6 +2828,8 @@ const EmployeeDialog = (() => {
                 //Convert field to be DatePicker : start_date and end_date
                 DateTimePicker.init(me.controls.date_of_birth);
                 DateTimePicker.init(me.controls.joining_date);
+                DateTimePicker.init(me.controls.nid_expiry_date);
+                DateTimePicker.init(me.controls.passport_expiry_date);
                 LocaleManager.translateZone(me.divModal);
                 const div_emp_photo = me.controls.div_emp_photo;
 
@@ -2845,7 +2847,7 @@ const EmployeeDialog = (() => {
                                 return true;
                            } else return false;
 
-                       } 
+                       }
                        return true;
                     },
                     //When user browse new photo and loads it in
@@ -2861,8 +2863,8 @@ const EmployeeDialog = (() => {
                     //             if(res.status_code == 200){
                     //             cv_interact.info('Profile photo was deleted!');
                     //             }else cv_interact.error(res.error_message);
-                    //         });  
-                    //    } 
+                    //         });
+                    //    }
                     // }
                 });
 
@@ -2870,7 +2872,7 @@ const EmployeeDialog = (() => {
                     const p = {"id":emp_id};
                     vsapi.call([main_view.base_url,'/hr/employee/profile/photo/delete'].join(''),p,false,false).then(res =>{
                         if(res.status_code == 200){
-                          me.empImageBox.setImage(null);   
+                          me.empImageBox.setImage(null);
                           cv_interact.info('Profile photo was deleted!');
                         }else cv_interact.error(res.error_message);
                     });
@@ -2883,7 +2885,7 @@ const EmployeeDialog = (() => {
                           me.empImageBox.setImage(res.data.image_url);
                           cv_interact.success('Profile photo was deleted!');
                         }else cv_interact.error(res.error_message);
-                   });  
+                   });
                 };
 
                 // me.showProfile = (code) => {
@@ -2917,7 +2919,7 @@ const EmployeeDialog = (() => {
                 //                 });
                 //         });
                 // };
-                
+
                 // me.deleteImage = (div) => {
                 //     const btnDelete = div; //.querySelector('[role=\'button\']');
                 //     btnDelete.onclick = function (e) {
@@ -3022,6 +3024,8 @@ const EmployeeDialog = (() => {
                     cssClass: "btn btn-sm btn-primary",
                     click: (me, btn) => {
                         const p = me.getData();
+                        // console.log(1234,JSON.stringify(p));
+
                         p.photo = me.empImageBox
                             ? me.empImageBox.getImage()
                             : '';

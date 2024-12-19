@@ -67,7 +67,7 @@ var PositionComponent = new (function () {
                     <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_position_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                         <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
                     </a>
-                </div>
+                </div>x
             </div>`,
         },
 

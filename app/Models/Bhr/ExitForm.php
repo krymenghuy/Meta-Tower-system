@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
-class ExitForm
+class ExitForm //extends Model
 {
     protected $id = null;
     protected $userInfo = null;
@@ -25,19 +25,23 @@ class ExitForm
         return DB::table('exit_forms')->where('id', $id)->selectRaw($cols)->first();
     }
 
-    public function save( $arr = [], $id = null, $ss = null)
+    public function save($exit_form, $ss, $arr)
     {
-        $id = $id ?? $this->id;
+        $id = $this->id ?? ($arr['id'] ?? null);
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [
+            'id' => '0|identity=1',
+            'name' => '1|string',
             'emp_id' => '1|number',
-            'name' => '1|string'
+            'amount' => '0|number',
+            'remarks' => '0|number',
+            'status' => '1|choice|1,2|default=1',
         ];
-        $item = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
+        $name = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $res = validateObject($arr, $v_rule, true, ['item' => $item], $ss->lang, false);
+        $res = validateObject($arr, $v_rule, true, ['name' => $name], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -45,65 +49,98 @@ class ExitForm
         $inputs = $res->values;
         $emp_id = $arr['emp_id'] ?? null;
 
-        $isValidEmployee = DB::table('employees')->where('id', $emp_id)->where('status_id', 20)->exists();
-        if (!$isValidEmployee) {
-            return DV::error("Employee ID {$emp_id} is not stay in resign.");
-        }
-
-        $existingBenefitDisbursement = DB::table('exit_forms')
-            ->where('emp_id', $emp_id)
+        if (!$id) {
+            $existingExitForm = DB::table('exit_forms')
             ->where('name', $inputs['name'])
             ->first();
 
-        $id = saveData($ss, 'exit_forms', ['id' => $id], $inputs, [], 1, false);
-        if ($id > 0) {
-            // return DV::depends(1, ['exit_forms' => $inputs, 'id' => $id]);
+            if ($existingExitForm) {
+                return DV::error('The name already exists. Please choose a different name.');
+            }
         }
+        
+        if ($id) {
+            $updated = DB::table('exit_forms')
+            ->where('id', $id)
+                ->update($inputs);
 
-        return DV::depends($id, ['id' => $id], 'Save failed');
+            if ($updated) {
+                return DV::depends($id, ['id' => $id], 'Update successful');
+            } else {
+                return DV::error('Update failed. Record may not exist or data is unchanged.');
+            }
+        } else {
+            $newId = DB::table('exit_forms')->insertGetId($inputs);
+
+            if ($newId) {
+                return DV::depends($newId, ['id' => $newId], 'Create successful');
+            } else {
+                return DV::error('Create failed.');
+            }
+        }
     }
 
-    public function getExitFormPaginate($arr, $ss = null)
+
+
+    public function getList($arr, $ss = null)
     {
         $d = (object) $arr;
-        $branch_id = $ss->branch_id;
+        $branch_id = $ss->branch_id ?? null;
         $current_page = $d->current_page ?? 1;
         $per_page = $d->per_page ?? 10;
         $skip_rows = ($current_page - 1) * $per_page;
-        $search_item = $d->item ?? null;
+        $search_name = $d->name ?? null;
+
+        $employeesWithStatus = DB::table('employees')
+        ->where('status_id', 20)
+        ->pluck('id');
+
+        if ($employeesWithStatus->isEmpty()) {
+            return new LengthAwarePaginator([], 0, $per_page, $current_page);
+        }
+        $resignations = DB::table('resignations')
+        ->whereIn('emp_id', $employeesWithStatus)
+            ->get()
+            ->keyBy('emp_id');
+
+        $currentDate = date('Y-m-d');
 
         $query = DB::table('exit_forms as ef')
-            ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
-            ->where('emp.status_id', 20) // Filter employees with status_id 20
-            ->select(
-                'ef.id',
-                'ef.emp_id',
-                'ef.name as form_name',
-                'emp.id as emp_id',
-                'emp.name',
-                'emp.email',
-                'emp.position_id',
-                'pos.title as position',
-                'emp.photo_file_name as emp_photo'
-            )
+        ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
+        ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
+        ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
+        ->where('emp.status_id', 20)
+        ->select(
+            'ef.emp_id',
+            'ef.id',
+            'ef.name as name',
+            'ef.amount',
+            'ef.remarks',
+            'ef.status',
+            'emp.id as emp_id',
+            'emp.name as emp_name',
+            'br.name as branch_name',
+            'emp.email',
+            'emp.position_id',
+            'pos.title as position',
+            'emp.photo_file_name as emp_photo'
+        )
             ->orderBy('ef.id', 'desc');
 
-        if ($search_item) {
-            $query->where('ef.name', $search_item);
+        if ($search_name) {
+            $query->where('ef.name', $search_name);
         }
+
         if (!empty($d->search_value)) {
             $search_value = $d->search_value;
             $query->where(function ($q) use ($search_value) {
                 $q->where('emp.name', 'LIKE', "%{$search_value}%")
-                    ->orWhere('ef.name', 'LIKE', "%{$search_value}%");
+                ->orWhere('ef.name', 'LIKE', "%{$search_value}%");
             });
         }
-        $count = $query->count();
 
-        $rows = $query->skip($skip_rows)
-            ->take($per_page)
-            ->get();
+        $count = $query->count();
+        $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
             $row->image_url = '';
@@ -111,40 +148,88 @@ class ExitForm
                 $row->image_url = Employee::profilePicture($row->emp_id);
             }
             unset($row->emp_photo);
+
+            $resignation = $resignations->get($row->emp_id);
+            $row->effective_date = $resignation->effective_date ?? null;
+
+            if ($resignation && $resignation->effective_date < $currentDate) {
+                $row->can_edit_exit_item = false;
+                $row->error_message = "Resignation effective date has expired.";
+            } else {
+                $row->can_edit_exit_item = true;
+            }
         }
 
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
+
     public static function getDetails($id, $ss)
     {
-        return DB::table('exit_forms as ef')
-            ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
-            ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
-            ->where('emp.status_id', 20)
+        $details = DB::table('exit_forms as ef')
+        ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
+        ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
+        ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
+        ->where('emp.status_id', 20)
+        ->where('ef.id', $id)
             ->select(
                 'ef.id',
                 'ef.emp_id',
                 'ef.name as name',
+                'ef.amount',
+                'ef.status',
+                'ef.remarks',
                 'emp.id as emp_id',
                 'emp.name as emp_name',
                 'emp.email',
+                'emp.joining_date as start_date',
                 'emp.position_id',
+                'emp.branch_id',
+                'br.name as branch_name',
+                'emp.code',
                 'pos.title as position',
                 'emp.photo_file_name as emp_photo'
             )
             ->orderBy('ef.id', 'desc')
-            ->where('ef.id', $id)
             ->first();
+
+        if (!$details) {
+            return null;
+        }
+
+        $resignation = DB::table('resignations as res')
+        ->where('emp_id', $details->emp_id)
+            ->select('effective_date')
+            ->first();
+
+        $details->effective_date = $resignation->effective_date ?? null;
+
+        $details->image_url = '';
+        if (!empty($details->emp_id) && $details->emp_photo) {
+            $details->image_url = Employee::profilePicture($details->emp_id);
+        }
+
+        unset($details->emp_photo);
+        $currentDate = date('Y-m-d');
+        $details->can_edit_exit_item = true;
+        if ($resignation && $resignation->effective_date < $currentDate) {
+            $details->can_edit_exit_item = false;
+            $details->error_message = "Resignation effective date has expired.";
+        }
+
+        return $details;
     }
 
-    public function deleteExitForm($id = null)
+
+    public function delete($id = null)
     {
         $id = $id ?? $this->id;
         $deleted = DB::table('exit_forms')->where('id', $id)->delete();
 
         return DV::depends($deleted, ['action' => 'deleted']);
     }
+
+    
 
     public static function getFormOptions($id, $ss)
     {
