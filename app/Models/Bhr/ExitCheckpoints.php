@@ -25,18 +25,20 @@ class ExitCheckpoints //extends Model
         return DB::table('check_points')->where('id', $id)->selectRaw($cols)->first();
     }
 
-    public function save( $arr = [], $id = null, $ss = null)
+    public function save($emp_exit_check_point, $ss, $arr)
     {
-        $id = $id ?? $this->id;
+        $id = $this->id ?? ($arr['id'] ?? null);
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
 
         $v_rule = [
+            'id' => '0|identity=1',
             'item_name' => '0|string',
             'check_point_cat_id' => '1|number'
         ];
+        $check_point = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang, false, null);
+        $res = validateObject($arr, $v_rule, true, ['item_name' => $check_point], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
@@ -45,13 +47,29 @@ class ExitCheckpoints //extends Model
         $emp_id = $arr['emp_id'] ?? null;
 
 
-        $existingBenefitDisbursement = DB::table('check_points')
+        $check_point_cat = DB::table('check_points')
         ->where('check_point_cat_id', $inputs['check_point_cat_id'])
+        ->where('item_name', $inputs['item_name'])
         ->first();
+        if ($id) {
+            $updated = DB::table('check_points')
+            ->where('id', $id)
+                ->update($inputs);
 
-        $id = saveData($ss, 'check_points', ['id' => $id], $inputs, [], 1, false);
+            if ($updated) {
+                return DV::depends($id, ['id' => $id], 'Update successful');
+            } else {
+                return DV::error('Update failed item name already exist!.');
+            }
+        } else {
+            $newId = DB::table('check_points')->insertGetId($inputs);
 
-        return DV::depends($id, ['id' => $id], 'Save failed');
+            if ($newId) {
+                return DV::depends($newId, ['id' => $newId], 'Create successful');
+            } else {
+                return DV::error('Create failed.');
+            }
+        }
     }
 
     public function getExitCheckpointsPaginate($arr, $ss = null)
@@ -104,7 +122,7 @@ class ExitCheckpoints //extends Model
             ->first();
     }
 
-    public function deleteExitCheckpoints($id = null)
+    public function delete($id = null)
     {
         $id = $id ?? $this->id;
         $deleted = DB::table('check_points')->where('id', $id)->delete();

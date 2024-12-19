@@ -16,3 +16,11 @@
     <div id="_exitCheckpoints_list" class="mt-4 p-4">
     </div>
 </div>
+<style>
+    #_exitCheckpoints_list {
+        height: 520px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+    }
+</style>

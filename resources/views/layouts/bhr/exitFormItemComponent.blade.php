@@ -6,7 +6,10 @@
                     placeholder="Search exit form items ...">
             </div>
         </div>
-        <div class="d-flex align-items-center justify-content-end w-100">
+        <div class="d-flex align-items-center justify-content-end w-100 gap-2">
+            <button type="button" class="btn_add" id="_btnPrintExitFormItem">
+                <span vslang="titles.Print Exit Form"></span>
+            </button>
             <button type="button" class="btn_add" id="_btnAddExitFormItem">
                 <span vslang="titles.Create Exit Form Item"></span>
             </button>
@@ -16,3 +19,11 @@
     <div id="_exit_form_item_list" class="mt-4 p-4">
     </div>
 </div>
+<style>
+    #_exit_form_item_list {
+        height: 520px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
+    }
+</style>
