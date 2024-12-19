@@ -17,12 +17,10 @@ class Payroll
         $this->id = $id;
         $this->userInfo = $userInfo;
     }
-
-    function save($arr = [], $ss = null, $id = null)
+    function save($arr = [],$id = null, $ss = null)
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        $branch_id = $ss->branch_id;
         $v_rule = [
             'name' => '1|string',
             'month' => '1|number',

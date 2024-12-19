@@ -117,7 +117,7 @@ var PayrollListComponent = new (function () {
             title: "Total",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.total_salary ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0 ${data.disburse == '1' ? 'text-success' : ''}">${main_view.currency.symbol + formattedNumber(data.total_salary ?? '0.00')}</p>`;
             }
         },
         {
@@ -191,6 +191,7 @@ var PayrollListComponent = new (function () {
                             }
                         } else {
                             cv_interact.error(res.error_message);
+                            alert(res.data);
                         }
                     });
                 }
