@@ -148,14 +148,14 @@ var AccountMenagmentComponent = new (function () {
             title: "From Account",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.from_acc_num ?? ""}</p>`;
+                return `<p class="p-0 m-0">${data.from_account_id ?? ""}</p>`;
             },
         },
         {
             title: "To Account",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.to_acc_num ?? ""}</p>`;
+                return `<p class="p-0 m-0">${data.account_number ?? ""}</p>`;
             },
         },
         {
@@ -227,7 +227,7 @@ var AccountMenagmentComponent = new (function () {
         if (mThis.initAlready) return;
 
         mThis.AccountListView = new ListView("_account_list", {
-            fetchApi: `${main_view.base_url}/hr/account/list-paginate`,
+            fetchApi: `${main_view.base_url}/hr/account/payroll-account-list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -501,6 +501,7 @@ const AccountDialog = (() => {
                         <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
                         <select class="modal-select data-input" name="account_type" data-field="account_type">
                             <option value="Payroll">Payroll</option>
+                            <option value="Wallet">Wallet</option>
                         </select>
                     </div>
                     <div class="form-group col-6">
@@ -527,7 +528,7 @@ const AccountDialog = (() => {
                 contentCreated: (me) => {
                     const currencyField = me.controls.currency;
                     if (currencyField && !currencyField.value) {
-                        currencyField.value = "USD";
+                        currencyField.value = "KHR";
                     }
                     const accountField = me.controls.account_type;
                     if (accountField && !accountField.value) {
@@ -673,7 +674,7 @@ const TransferDialog = (() => {
                     </div>
                     <div class="form-group col-4">
                         <label for="w_balance" class="form-label" vslang="titles.Amount"></label>
-                        <input name="w_balance" class="form-control data-input" data-field="w_balance" />
+                        <input name="w_balance" class="form-control data-input" data-field="amount" />
                     </div>
                     </div>
 

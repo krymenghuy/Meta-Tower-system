@@ -3,7 +3,7 @@
   /* .tr-disallowed td.prn-name {
     color: #000;
   } */
-  .card:hover{
+  .card-content.card:hover{
     cursor: pointer;
     border:1px solid #ffb822 !important;
     

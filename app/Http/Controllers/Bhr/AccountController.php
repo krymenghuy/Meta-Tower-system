@@ -28,13 +28,22 @@ class AccountController extends Controller
         return JDV::raw($res);
     }
 
-    public function getList(Request $req)
+    public function getPayrollAccountListPaginate(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->account->getList($req->all(), $ss));
+        return JDV::result($this->account->PayrollList($req->all(), $ss));
+    }
+
+    public function getWalletAccountListPaginate(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->account->WalletList($req->all(), $ss));
     }
 
     public function getDetails(Request $req)

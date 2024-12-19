@@ -231,7 +231,7 @@ var WalletAccountComponent = new (function () {
         if (mThis.initAlready) return;
 
         mThis.WalletAccountListView = new ListView("_wallet_account_list", {
-            fetchApi: `${main_view.base_url}/hr/wallet-account/list-paginate`,
+            fetchApi: `${main_view.base_url}/hr/account/wallet-account-list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -269,10 +269,13 @@ var WalletAccountComponent = new (function () {
 
         mThis.initDropdownMenus(pr_tbl);
 
-        mThis.divFilter.addEventListener("change", (e) => {
-            e.preventDefault();
-            mThis.WalletAccountListView.showPage(mThis.getDataFormFilter());
-        });
+        mThis.divFilter.querySelectorAll('.filter-field').forEach(el =>{
+
+            el.onchange =  (e) => {
+           e.preventDefault();
+           mThis.WalletAccountListView.showPage(mThis.getDataFormFilter());
+            }
+       });
 
         mThis.initAlready = true;
     };
@@ -412,20 +415,24 @@ var WalletAccountComponent = new (function () {
 
     this.getDataFormFilter = () => {
         let p = {};
+        // p.search_value = mThis.elSearch.value;
+        // p.sort_by = mThis.elSortBy.value;
 
-        let main_filters = mThis.divFilter.querySelectorAll(".filter-field");
-        main_filters.forEach((el) => {
+
+
+        let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
+        main_filters.forEach(el => {
             const f = el.dataset.field;
             p[f] = el.value;
         });
-        console.log(222, p);
+        console.log(222, main_filters);
 
         return p;
     };
     this.prepareFormOptions = () => {
         vsapi
             .call(
-                `${main_view.base_url}/hr/wallet-account/form-options`,
+                `${main_view.base_url}/hr/account/form-options`,
                 null,
                 null,
                 null
@@ -434,15 +441,9 @@ var WalletAccountComponent = new (function () {
                 const d = res.status_code == 200 ? res.data : {};
                 console.log(1111, this.elSortBy);
 
-                VSUtil.setComboItems(
-                    mThis.elSortBy,
-                    d.sort_by,
-                    "id",
-                    "name",
-                    true,
-                    "Default",
-                    null
-                );
+            VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
+
+
             });
     };
 
@@ -476,19 +477,20 @@ const WalletAccountDialog = (() => {
                     <div class="form-group  col-12 d.none">
                         <div id="info"></div>
                     </div>
-                  <div class="form-group col-6">
+                    <div class="form-group col-6">
                         <label for="account_type" class="form-label" vslang="titles.Account Type"></label>
                         <select class="modal-select data-input" name="account_type" data-field="account_type">
+                            <option value="Payroll">Payroll</option>
                             <option value="Wallet">Wallet</option>
                         </select>
                     </div>
                     <div class="form-group col-6">
-                        <label for="w_account_number" class="form-label" vslang="titles.Account Number"></label>
-                        <input name="w_account_number" class="form-control data-input" data-field="account_number" />
+                        <label for="account_number" class="form-label" vslang="titles.Account Number"></label>
+                        <input name="account_number" class="form-control data-input" data-field="account_number" />
                     </div>
                     <div class="form-group col-6">
-                        <label for="w_balance" class="form-label" vslang="titles.Balance"></label>
-                        <input name="w_balance" class="form-control data-input" data-field="balance" />
+                        <label for="ballance" class="form-label" vslang="titles.Balance"></label>
+                        <input name="ballance" class="form-control data-input" data-field="balance"  />
                     </div>
                     <div class="form-group col-6">
                         <label for="currency" class="form-label" vslang="titles.Currency"></label>
@@ -506,7 +508,7 @@ const WalletAccountDialog = (() => {
                 contentCreated: (me) => {
                     const currencyField = me.controls.currency;
                     if (currencyField && !currencyField.value) {
-                        currencyField.value = "USD";
+                        currencyField.value = "KHR";
                     }
                     const accountField = me.controls.account_type;
                     if (accountField && !accountField.value) {
@@ -520,7 +522,6 @@ const WalletAccountDialog = (() => {
                         textField: (me, d) => {
                             return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`;
                         },
-                        // textField:"name",
                         valueField: "id",
                     },
                 ],
@@ -539,13 +540,14 @@ const WalletAccountDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
 
-                            p.id = me.dataOptions.id; //get "id" from op
+                            p.id = me.dataOptions.id;
+                            console.log(555,p);
 
                             vsapi
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/hr/wallet-account/save",
+                                        "/hr/account/save",
                                     ].join(""),
                                     p,
                                     btn,
@@ -562,11 +564,11 @@ const WalletAccountDialog = (() => {
                 prepareFormOptions: {
                     createTitle: "Add Account",
                     modifyTitle: "Edit Account",
-                    targetProp: "wallet_account",
+                    targetProp: "accounts",
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/hr/wallet-account/form-options",
+                            "/hr/account/form-options",
                         ].join(""),
                         params: (op) => {
                             return { id: op.id };
@@ -590,7 +592,6 @@ const WalletAccountDialog = (() => {
                             balanceField.disabled = false;
                         }
                     }
-
                 },
             });
 

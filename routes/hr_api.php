@@ -1,13 +1,13 @@
 <?php
 
 use App\Http\Controllers\Bhr\EmployeeBenefitController;
-use App\Http\controllers\Bhr\DashboardController;
-use App\Http\controllers\Bhr\EmployeeController;
+use App\Http\Controllers\Bhr\DashboardController;
+use App\Http\Controllers\Bhr\EmployeeController;
 use App\Http\Controllers\Bhr\JobLevelController;
 use App\Http\Controllers\Bhr\PayrollController;
 use App\Http\Controllers\Bhr\PayrollListController;
-use App\Http\controllers\Bhr\SkillController;
-use App\Http\controllers\Bhr\LeaveController;
+use App\Http\Controllers\Bhr\SkillController;
+use App\Http\Controllers\Bhr\LeaveController;
 use App\Http\Controllers\CompanyProfileController;
 use App\Http\Controllers\Login\LoginController;
 use App\Http\Middleware\CustomRateLimiter;
@@ -33,7 +33,6 @@ use App\Http\Controllers\Bhr\HolidayController;
 use App\Http\Controllers\Bhr\TaxAllowanceController;
 use App\Http\Controllers\Bhr\TaxBracketController;
 use App\Http\Controllers\Bhr\TransactionController;
-use App\Http\Controllers\Bhr\WalletAccountController;
 use App\Http\Controllers\Bhr\PromoteEmployeeController;
 use App\Http\Controllers\Bhr\ShiftDetailsController;
 use App\Http\Controllers\Bhr\GeneralSettingsController;
@@ -67,7 +66,6 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('company')->gr
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('dashboard')->group(function () {
     Route::post('/data', [DashboardController::class, 'getDashboardData']);
     Route::post('/overview-data', [DashboardController::class, 'getOverviewData']);
-
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('employee')->group(function () {
 
@@ -225,7 +223,8 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('salary-histor
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->group(function () {
 
     Route::post('/save', [AccountController::class, 'saveAccount']);
-    Route::post('/list-paginate', [AccountController::class, 'getList']);
+    Route::post('/payroll-account-list-paginate', [AccountController::class, 'getPayrollAccountListPaginate']);
+    Route::post('/wallet-account-list-paginate', [AccountController::class, 'getWalletAccountListPaginate']);
     Route::post('/details', [AccountController::class, 'getDetails']);
     Route::post('/delete', [AccountController::class, 'deleteAccount']);
     Route::post('/form-options', [AccountController::class, 'getFormOptions']);
@@ -256,14 +255,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('transaction')
     Route::post('/delete', [TransactionController::class, 'deleteTransaction']);
     Route::post('/form-options', [TransactionController::class, 'getFormOptions']);
 });
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('wallet-account')->group(function () {
 
-    Route::post('/save', [WalletAccountController::class, 'saveWalletAccount']);
-    Route::post('/list-paginate', [WalletAccountController::class, 'getWalletAccountListPaginate']);
-    Route::post('/details', [WalletAccountController::class, 'getDetails']);
-    Route::post('/delete', [WalletAccountController::class, 'deleteWalletAccount']);
-    Route::post('/form-options', [WalletAccountController::class, 'getFormOptions']);
-});
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('department')->group(function () {
     Route::post('/save', [DepartmentController::class, 'saveDepartment']);
     Route::post('/list-paginate', [DepartmentController::class, 'getDepartmentListPaginate']);
@@ -319,14 +311,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('holiday')->gr
     Route::post('/form-options', [HolidayController::class, 'getFormOptions']);
     Route::post('/list', [HolidayController::class, 'getHolidayList']);
 });
-
-
-Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('dashboard')->group(function () {
-    Route::post('/count-employees', [DashboardController::class, 'countEmployees']);
-    Route::post('/get-departments', [DashboardController::class, 'getDepartments']);
-    Route::post('/get-levels', [DashboardController::class, 'getLevels']);
-    Route::post('/get-benefits', [DashboardController::class, 'getBenefits']);
-});
+ 
 Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
     Route::post('/form-option',[GeneralSettingsController::class,'select_options']);
 });

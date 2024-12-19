@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <link rel="icon" type="image/png" href="{{'assets/images/logo/lc_logo.svg'}}"/>
         <?php StyleManager::render('login-styles',1); ?>
-        <title>BHR System</title>
+        <title>Merchant Access</title>
         <script>
             function checkDevice(){
                 if (/Android|webOS|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) && !window.MSStream && !navigator.userAgent.match(/iPad/i)) {
@@ -19,8 +19,23 @@
                 }
                 //return true;
             }
+            function togglePasswordVisibility() {
+                const passwordInput = document.getElementById('password');
+                const passwordIcon = document.getElementById('password-icon');
+
+                if (passwordInput.type === 'password') {
+                    passwordInput.type = 'text';
+                    passwordIcon.classList.add('fa-eye');
+                    passwordIcon.classList.remove('fa-eye-slash');
+                } else {
+                    passwordInput.type = 'password';
+                    passwordIcon.classList.add('fa-eye-slash');
+                    passwordIcon.classList.remove('fa-eye');
+                }
+            }
+
         </script>
-        <!-- <style type="text/css">
+          <!-- <style type="text/css">
             *{
                 padding:0;
                 margin:0;
@@ -64,7 +79,7 @@
                 position: absolute;
             }
 
-            .login-frame .vs-container-front-img .img-front{
+            .login-frame .vs-container-front-img .img-back{
                 height:100%;
                 width:50%;
                 border-radius:60px 0 0 60px;
@@ -189,15 +204,23 @@
     </head>
     <body onload="checkDevice()">
         <div class="vs-container-login">
-            <div>
-                <img class="img-background" src="{{ asset('assets/images/bhr/bg-merchant_portal.png') }}"/>
-                <!-- <div class="overlay-blur"></div> -->
+            <div class="">
+                <img class="img-background" src="{{ asset('assets/images/bhr/backform.png') }}"/>
             </div>
             <div class="login-frame">
                 <div class="vs-container-front-img">
-                    <img class="img-front" src="{{ asset('assets/images/bhr/app_login.png') }}"/>
+                    <div class="image-frame">
+                        <img class="img-back" src="{{ asset('assets/images/bhr/backposition.png') }}"/>
+                        <div class="img-front">
+                            <img class="" style="width:200%;" src="{{ asset('assets/images/bhr/bannerform.png') }}"/>
+                        </div>
+                    </div>
                     <div class="vs-login">
                         <div class="vs-form-login">
+                            <div class="vs--logo">
+                                <img class="w-100" src="{{ asset('assets/images/bhr/merchant-logo.png') }}"/>
+
+                            </div>
                             <h3 class="vs-title">Merchant Access</h3>
                             <div class="vs-form-group">
                             <form action="{{ url('/processLogin') }}" method="POST">
@@ -211,11 +234,13 @@
                                     </div>
                                     <div class="vs-d-flex">
                                         <label for="username" class="vs-form-label">Username</label>
-                                        <input type="text" class="vs-form-control" name="login_name" placeholder="Please enter username"/>
+                                        <input type="text" class="vs-form-control" name="login_name" placeholder="Enter phone number"/>
                                     </div>
                                     <div class="vs-d-flex">
                                         <label for="username" class="vs-form-label">Password</label>
-                                        <input type="password" class="vs-form-control" name="password" placeholder="Pleace enter password"/>
+                                        <input type="password" class="vs-form-control " id="password" required name="password" placeholder="Enter password"/>
+                                        <i class="fa-solid fa-eye-slash text-white fs-6 position-absolute mt-5 pt-1 end-0 pe-5 me-3" onclick="togglePasswordVisibility()" id="password-icon"></i>
+                                        
                                     </div>
                                     <div class="vs-d-flex-btn">
                                         <button class="btn-login" type="submit">LOGIN</button>

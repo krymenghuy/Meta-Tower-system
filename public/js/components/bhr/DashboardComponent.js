@@ -1,5 +1,6 @@
 "use strict";
 
+
 var DashboardComponent = new (function () {
     const mThis = this;
     this.title_prop = "Dashboard";
@@ -11,7 +12,6 @@ var DashboardComponent = new (function () {
     this.db_card_bottom = mThis.self.querySelector('#_db_card_bottom');
     this.dashboard_Bottom_left = mThis.self.querySelector('#_dashboard_bottom_left');
     this.dbCardOnLeave = mThis.self.querySelector('#_db_card_onLeave');
-    this.barchart = mThis.self.querySelector('#barchart');
 
     const formattedNumber = (number) => {
         number = Number(number) || 0;
@@ -30,7 +30,7 @@ var DashboardComponent = new (function () {
         const divTitle = main_view.divTitle;
         let btn = divTitle.querySelector('.btn-db-fitler');
         if (btn) return;
-        divTitle.insertAdjacentHTML('beforeend', '<div class="div-db-filter w-100 text-end"><button class="btn-db-fitler btn btn-sm btn-primary-custom rounded-circle p-2"><i class="fa-solid text-white fa-paper-plane"></i></button></div>');
+        divTitle.insertAdjacentHTML('beforeend', '<div class="d-none div-db-filter w-100 text-end"><button class="btn-db-fitler btn btn-sm btn-primary-custom rounded-circle p-2"><i class="fa-solid text-white fa-paper-plane"></i></button></div>');
         btn = divTitle.querySelector('.btn-db-fitler');
         mThis.createFilterButton(btn);
     };
@@ -202,7 +202,14 @@ var DashboardComponent = new (function () {
                         text: 'Current Employee Count',
                     },
                     tooltip: {
-                        enabled: true
+                        enabled: true,
+                        callbacks: {
+                            label: function (tooltipItem){
+                                const label = tooltipItem.label || '';
+                                const value = tooltipItem.raw;
+                                return `${label} : ${value} នាក់`;
+                            }
+                        }
                     },
                     datalabels: {
                         color: '#000',
@@ -211,7 +218,7 @@ var DashboardComponent = new (function () {
                             weight: 'bold'
                         },
                         formatter: function (value, context) {
-                            return `${context.chart.data.labels[context.dataIndex]}\n${value}`;
+                            return `${context.chart.data.labels[context.dataIndex]}\n${value} នាក់`;
                         }
                     }
                 }
@@ -254,7 +261,7 @@ var DashboardComponent = new (function () {
                     },
                     title: {
                         display: true,
-                        text: 'Employee Count and Total Salary Paid in the Last 6 Months',
+                        text: 'Employee Count and Total Salary Paid in the Last 12 Months',
                     },
                 },
                 scales: {
@@ -295,7 +302,7 @@ var DashboardComponent = new (function () {
     this.renderDBCards = (data) => {
         let html =
             [`<div class="col-md-3">
-                 <div class="card w-100 d-flex flex-row align-items-center mb-2">
+                 <div class="card-db bg-white shadow rounded-3 w-100 d-flex flex-row align-items-center mb-2">
                         <div class="position-relative m-3" style="width: 60px; height: 60px;">
                             <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
                                 <path class="circle-bg" d="M18 2.0845
@@ -305,22 +312,21 @@ var DashboardComponent = new (function () {
                                 <path class="circle" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
                                     a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="#ecdb5e" stroke-width="4" 
-                                    stroke-dasharray="50, 100" stroke-linecap="round" />
+                                    fill="none" stroke="orange" stroke-width="4" 
+                                    stroke-dasharray="75, 100" stroke-linecap="round" />
                             </svg>
                             <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
-                                style="color: #2b3991; font-size: 1rem; font-weight: bold;">
-                               <span class="p-1">${data.cards.warning_staff_count.count}</span>
-                                <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
+                                style="color:orange; font-size: 1rem; font-weight: bold;">
+                               <span class="p-1">4</span>
                             </div>
                         </div>
                         <span class="fw-semibold fs-6 text-primary-custom text-start" 
-                            style="color: #2b3991; font-size: 1.2rem;">Staff Exist Form</span>
+                            style="color: #2b3991; font-size: 1.2rem;">Exist Forms <small class="text-danger">(unfinished)</small></span>
                     </div>
 
             </div>`,
             `<div class="col-md-3">
-                      <div class="card w-100 d-flex flex-row align-items-center mb-2">
+                      <div class="card-db bg-white shadow rounded-3 w-100 d-flex flex-row align-items-center mb-2">
                         <div class="position-relative m-3" style="width: 60px; height: 60px;">
                             <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
                                 <path class="circle-bg" d="M18 2.0845
@@ -330,22 +336,22 @@ var DashboardComponent = new (function () {
                                 <path class="circle" d="M18 2.0845
                                     a 15.9155 15.9155 0 0 1 0 31.831
                                     a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                    fill="none" stroke="#ecdb5e" stroke-width="4" 
+                                    fill="none" stroke="#cab54a" stroke-width="4" 
                                     stroke-dasharray="50, 100" stroke-linecap="round" />
                             </svg>
                             <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
                                 style="color: #2b3991; font-size: 1rem; font-weight: bold;">
-                               <span class="p-1">${data.cards.warning_staff_count.count}</span>
+                               <span class="p-1">${data.cards.intern_staff_count.count}</span>
                                 <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
                             </div>
                         </div>
                         <span class="fw-semibold fs-6 text-primary-custom text-start" 
-                            style="color: #2b3991; font-size: 1.2rem;">Staff Exist Form</span>
+                            style="color: #2b3991; font-size: 1.2rem;">${data.cards.intern_staff_count.title}</span>
                     </div>
 
             </div>`,
             `<div class="col-md-3">
-            <div class="card w-100 d-flex flex-row align-items-center mb-2">
+            <div class="card-db bg-white shadow rounded-3 w-100 d-flex flex-row align-items-center mb-2">
               <div class="position-relative m-3" style="width: 60px; height: 60px;">
                   <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
                       <path class="circle-bg" d="M18 2.0845
@@ -355,22 +361,22 @@ var DashboardComponent = new (function () {
                       <path class="circle" d="M18 2.0845
                           a 15.9155 15.9155 0 0 1 0 31.831
                           a 15.9155 15.9155 0 0 1 0 -31.831" 
-                          fill="none" stroke="#ecdb5e" stroke-width="4" 
+                          fill="none" stroke="#f44336" stroke-width="4" 
                           stroke-dasharray="50, 100" stroke-linecap="round" />
                   </svg>
                   <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
-                      style="color: #2b3991; font-size: 1rem; font-weight: bold;">
+                      style="color: #f44336; font-size: 1rem; font-weight: bold;">
                      <span class="p-1">${data.cards.warning_staff_count.count}</span>
                       <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
                   </div>
               </div>
               <span class="fw-semibold fs-6 text-primary-custom text-start" 
-                  style="color: #2b3991; font-size: 1.2rem;">Staff Exist Form</span>
+                  style="color: #2b3991; font-size: 1.2rem;">${data.cards.warning_staff_count.title}</span>
           </div>
 
             </div>`,
             `<div class="col-md-3">
-            <div class="card w-100 d-flex flex-row align-items-center mb-2">
+            <div class="card-db bg-white shadow rounded-3 w-100 d-flex flex-row align-items-center mb-2">
               <div class="position-relative m-3" style="width: 60px; height: 60px;">
                   <svg viewBox="0 0 36 36" class="circular-chart" style="width: 100%; height: 100%;">
                       <path class="circle-bg" d="M18 2.0845
@@ -380,17 +386,17 @@ var DashboardComponent = new (function () {
                       <path class="circle" d="M18 2.0845
                           a 15.9155 15.9155 0 0 1 0 31.831
                           a 15.9155 15.9155 0 0 1 0 -31.831" 
-                          fill="none" stroke="#ecdb5e" stroke-width="4" 
+                          fill="none" stroke="#32bcd3" stroke-width="4" 
                           stroke-dasharray="50, 100" stroke-linecap="round" />
                   </svg>
                   <div class="d-flex justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
-                      style="color: #2b3991; font-size: 1rem; font-weight: bold;">
-                     <span class="p-1">${data.cards.warning_staff_count.count}</span>
+                      style="color: #32bcd3; font-size: 1rem; font-weight: bold;">
+                     <span class="p-1">${data.cards.probation_staff_count.count}</span>
                       <small style="color: #2b3991; font-size: 0.5rem; font-weight: bold;">staff</small>
                   </div>
               </div>
               <span class="fw-semibold fs-6 text-primary-custom text-start" 
-                  style="color: #2b3991; font-size: 1.2rem;">Staff Exist Form</span>
+                  style="color: #2b3991; font-size: 1.2rem;">${data.cards.probation_staff_count.title}</span>
           </div>
 
             </div>`,].join('');
@@ -402,8 +408,8 @@ var DashboardComponent = new (function () {
         data = data ? data : {};
         
         const tableLeave = this.renderDBCardOnLeave(data.onLeave);
-        const tableBenefit = this.renderDBCardBenefit(data.onLeave);
-        let html = [`<div class="card-row py-3">`,
+        const tableBenefit = this.renderDBCardBenefit(data.benefits);
+        let html = [`<div class="card-row  py-3">`,
             `<div class="col-md-3">
                     <div class="card-container dashboard_chart">
                         <span class="fw-semibold fs-6 text-primary-custom text-capitalize">
@@ -421,12 +427,12 @@ var DashboardComponent = new (function () {
                                     <path class="circle-bg" d="M18 2.0845
                                         a 15.9155 15.9155 0 0 1 0 31.831
                                         a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                        fill="none" stroke="#2b3991" stroke-width="4" />
+                                        fill="none" stroke="#08b9d5" stroke-width="4" />
                                     <path class="circle" d="M18 2.0845
                                         a 15.9155 15.9155 0 0 1 0 31.831
                                         a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                        fill="none" stroke="#07D1ED" stroke-width="4" 
-                                        stroke-dasharray="100, 100" stroke-linecap="round" />
+                                        fill="none" stroke="#9219ff" stroke-width="4" 
+                                        stroke-dasharray="75, 100" stroke-linecap="round" />
                                 </svg>
                                 <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
                                     style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
@@ -449,12 +455,12 @@ var DashboardComponent = new (function () {
                                     <path class="circle-bg" d="M18 2.0845
                                         a 15.9155 15.9155 0 0 1 0 31.831
                                         a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                        fill="none" stroke="#2b3991" stroke-width="4" />
+                                        fill="none" stroke="#eee" stroke-width="4" />
                                     <path class="circle" d="M18 2.0845
                                         a 15.9155 15.9155 0 0 1 0 31.831
                                         a 15.9155 15.9155 0 0 1 0 -31.831" 
-                                        fill="none" stroke="#cab54a" stroke-width="4" 
-                                        stroke-dasharray="90, 100" stroke-linecap="round" />
+                                        fill="none" stroke="#00e5ff" stroke-width="4" 
+                                        stroke-dasharray="75, 100" stroke-linecap="round" />
                                 </svg>
                                 <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
                                     style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
@@ -480,9 +486,9 @@ var DashboardComponent = new (function () {
     
 
             `<div class="col-md-6">
-                <div class="chart-container dashboard_chart">
+                <div class="card-container dashboard_chart">
                     <span class="fw-semibold fs-6 text-primary-custom text-capitalize">
-                        Overview last 10 days 
+                        Overview Total Benefits 
                     </span>
                     ${tableBenefit}
                 </div>
@@ -521,7 +527,7 @@ var DashboardComponent = new (function () {
             <table class="table bg-white rounded-4 mb-0" style="font-size: 0.8rem;">
                 <thead style="position: sticky; top: 0; background: #fff; z-index: 1;">
                     <tr>
-                        <th class="text-start" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Leave Date</th>
+                        <th class="text-start" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Date</th>
                         <th class="text-start" style="font-size: 0.85rem; color: #2b3991cc; font-weight: bold;">Staff Count</th>
                     </tr>
                 </thead>
@@ -534,48 +540,51 @@ var DashboardComponent = new (function () {
     
    };
    this.renderDBCardBenefit = (data) => {
-    
+    console.log(123456,data);
     
     const rowsHtml = (data || [])
         .map(
             (item) => `
                 <tr>
-                    <td class="align-middle">
-                        <div class="text-primary-custom text-center" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            Bonus
+                   <td class="align-middle">
+                        <div class="text-primary-custom " style="width: 20px;font-size: 0.75rem; font-weight: bold;">
                         </div>
                     </td>
                     <td class="align-middle">
-                        <span class="text-primary-custom text-center" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            Bonus
+                        <div class="text-primary-custom " style="width: 100px;font-size: 0.75rem; font-weight: bold;">
+                            ${item.benefit_name}
+                        </div>
+                    </td>
+                    <td class="align-middle">
+                        <span class="text-primary-custom " style="width: 100px;font-size: 0.75rem; font-weight: bold;">
+                            ${item.benefit_type ==1 ? 'Remuneration' : ''} ${item.benefit_type ==2 ? 'Fringe' : ''}
                         </span>
                     </td>
                     <td class="align-middle">
-                        <span class="text-primary-custom text-center" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            1 000,000.00 KHR
+                        <span class="text-primary-custom" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
+                            ${item.total_amount} <span class="text-danger">KHR</span>
                         </span>
                     </td>
                     <td class="align-middle">
-                        <span class="text-primary-custom text-center" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            Admin
+                        <span class="text-primary " style="width: 100px;font-size: 0.75rem; font-weight: bold;">
+                            ${item.updated_by}
                         </span>
                     </td>
                 </tr>
             `
         ).join(""); 
 
-        return `
+    return `
         <div class="w-100 mt-2" style="max-height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 8px; scroll-behavior: smooth; scrollbar-width: thin;">
             <table class="table bg-white rounded-4 mb-0" style="font-size: 0.8rem;">
                 <thead style="position: sticky; top: 0; background: #fff; z-index: 1;">
                     <tr>
-                        <th class="text-center" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Benefit</th>
-                        <th class="text-center" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Category</th>
-                        <th class="text-center" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Total</th>
-                        <th class="text-center" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Last Updated</th>
+                        <th class="" style="font-size: 0.85rem; color: #2b3991; font-weight: bold;"></th>
 
-
-
+                        <th class="" style="font-size: 0.85rem; color: #2b3991; font-weight: bold;">Benefit </th>
+                        <th class="" style="font-size: 0.85rem; color: #2b3991; font-weight: bold;">Category</th>
+                        <th class="" style="font-size: 0.85rem; color: #2b3991; font-weight: bold;">Total</th>
+                        <th class="" style="font-size: 0.85rem; color: #2b3991; font-weight: bold;">Last Updated</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -584,8 +593,8 @@ var DashboardComponent = new (function () {
             </table>
         </div>
     `;
-    
-   };
+};
+
 
     
     this.loadCards = (onFinish) => {

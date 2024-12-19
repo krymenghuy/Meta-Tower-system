@@ -54,7 +54,7 @@ var PayrollComponent = new (function () {
         {
             title: "Total",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${formattedNumber(data.total) ?? 0.00}</p>`
+            data: (data) => `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.total ?? '0.00')}</p>`
         },
         {
             title: "Currency",
@@ -168,8 +168,10 @@ var PayrollComponent = new (function () {
         console.log(555, mThis.self.querySelectorAll('.table-test tr td'));
 
         const pr_tbl = mThis.PayrollListView.getListContainer();
-        // pr_tbl.style.height = `${window.innerHeight - 225}px`;
-        pr_tbl.classList.add('overflow-y-auto', 'overflow-x-hidden');
+        const sh_parent = pr_tbl;
+        // sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
             el.onchange = () => mThis.PayrollListView.showPage(mThis.getDataFormFilter());
@@ -464,9 +466,8 @@ const AddPayRollListDailog = (() => {
                         <div class="form-group col-6">
                             <label for="currency_code" class="form-label" vslang="titles.Currency"></label>
                             <select name="currency_code" class="modal-select data-input form_input" data-field="currency_code">
-                                <option value="">(Select Currency)</option>
-                                <option value="USD">USD</option>
                                 <option value="KHR">KHR</option>
+                                <option value="USD">USD</option>
                             </select>
                         </div>
                         <div class="form-group col-6">

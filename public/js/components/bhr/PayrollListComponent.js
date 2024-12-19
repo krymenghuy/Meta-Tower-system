@@ -117,7 +117,7 @@ var PayrollListComponent = new (function () {
             title: "Total",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.total_salary ?? '0.00')}</p>`;
+                return `<p class="p-0 m-0 ${data.disburse == '1' ? 'text-success' : ''}">${main_view.currency.symbol + formattedNumber(data.total_salary ?? '0.00')}</p>`;
             }
         },
         {
@@ -191,6 +191,7 @@ var PayrollListComponent = new (function () {
                             }
                         } else {
                             cv_interact.error(res.error_message);
+                            alert(res.data);
                         }
                     });
                 }
@@ -643,7 +644,6 @@ var PayrollListComponent = new (function () {
         let p = {};
         p.payroll_id = mThis.elFilter.value;
         p.branch_id = mThis.elFilterBranch.value;
-        // p.sort_by = mThis.elSortBy.value;
         p.disburse = mThis.elFilterDisburse.value;
 
         let main_filters = mThis.divFilter.querySelectorAll('.filter-field');
@@ -655,40 +655,46 @@ var PayrollListComponent = new (function () {
 
         return p;
     };
-    this.prepareFormOptions = () => {
 
-        vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`,null,null,null).then(res => {
+    this.prepareFormOptions = (onFinish) => {
+        vsapi.call(`${main_view.base_url}/hr/payroll-list/form-options`, null, null, null).then(res => {
             const d = res.status_code == 200 ? res.data : {};
             const today = new Date();
-            const year = today.getFullYear();
-            const month = today.toLocaleString('default', { month: 'long' }); // "October"
-            const formattedDate = `${month} ${year}`;
+            const currentMonth = today.getMonth() + 1;
+            const currentYear = today.getFullYear();
             let payroll_id = null;
 
+
             d.payrolls.forEach(payroll => {
-                if(payroll.payroll_name == formattedDate){
+                if (payroll.month === currentMonth && payroll.year === currentYear) {
                     payroll_id = payroll.id;
                 }
-            })
+            });
+            console.log(333, payroll_id);
+
+
 
             VSUtil.setComboItems(mThis.elFilter,d.payrolls,'id','payroll_name',false,null,payroll_id);
-            VSUtil.setComboItems(mThis.elFilterBranch,d.branches,'id','branch_name',true,'All Branch',null);
-            // VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
-            VSUtil.setComboItems(mThis.elFilterDisburse, d.disburse, 'id', 'name',  true, 'Default', null);
+            VSUtil.setComboItems(mThis.elFilterBranch, d.branches, 'id', 'branch_name', true, 'All Branch', null);
+            VSUtil.setComboItems(mThis.elFilterDisburse, d.disburse, 'id', 'name', true, 'Default', null);
+            onFinish(d);
+        });
+    };
 
-        })
-    }
 
 
     this.show = function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
-        mThis.prepareFormOptions();
-            mThis.PayrollList_ListView.showPage();
-                $(mThis.self).siblings().hide();
-                $(mThis.self).fadeIn(200);
-            };
+        mThis.prepareFormOptions(() => {
+            console.log(444,mThis.getFilterData());
 
+            mThis.PayrollList_ListView.showPage(mThis.getFilterData());
+            $(mThis.self).siblings().hide();
+            $(mThis.self).fadeIn(200);
+        });
+
+    };
 
 });
 
@@ -770,7 +776,7 @@ const PayRollListDialog = (()=>{
             prepareFormOptions:{
                createTitle:'Insert Payroll ',
                modifyTitle:'Edit Payroll',
-               targetProp: 'payroll_lists',
+               targetProp: 'payroll_list',
                api:{
                  endpoint: [main_view.base_url,'/hr/payroll-list/form-options'].join(''),
                  params:(op)=>{
@@ -850,7 +856,7 @@ console.log(999,op);
             prepareFormOptions:{
                createTitle:'Add Payroll By Import Employee',
                modifyTitle:'Edit Payroll By Import Payroll',
-               targetProp: 'payroll_lists',
+               targetProp: 'payroll_list',
                api:{
                  endpoint: [main_view.base_url,'/hr/payroll-list/form-options'].join(''),
                  params:(op)=>{
