@@ -190,7 +190,7 @@
     <body onload="checkDevice()">
         <div class="vs-container-login">
             <div>
-                <img class="img-background" src="{{ asset('assets/images/bhr/bg-login.png') }}"/>
+                <img class="img-background" src=""/>
                 <div class="overlay-blur"></div>
             </div>
             <div class="login-frame">
@@ -199,10 +199,9 @@
                     <div class="vs-login">
                         <div class="vs-form-login">
                             <div class="vs--logo">
-                                <img class="w-100" src="{{ asset('assets/images/bhr/merchant-logo.png') }}"/>
-
+                                <img class="w-100" src="{{ asset('assets/images/logo/lc_logo.svg') }}"/>
                             </div>
-                            <h3 class="vs-title">Sign in to your account</h3>
+                            <h3 class="vs-title mt-4">Sign in to your account</h3>
                             <div class="vs-form-group">
                             <form action="{{ url('/processLogin') }}" method="POST">
 
