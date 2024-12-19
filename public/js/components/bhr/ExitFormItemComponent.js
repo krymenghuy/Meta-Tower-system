@@ -9,6 +9,8 @@ var ExitFormItemComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnAddExitFormItem");
     this.elSearch = this.self.querySelector("#_exit_form_item_search");
     this.divFilter = this.self.querySelector("#container_exit_form_item");
+    this.btnPrint = this.self.querySelector("#_btnPrintExitFormItem");
+
     this.cols = [
         {
             title: "Name",
@@ -42,7 +44,7 @@ var ExitFormItemComponent = new (function () {
             className: "align-middle ",
             data: (data) =>
                 `<span class="text-primary-custom">${
-                    data.form_name ?? "HD"
+                    data.form_name ?? "NULL"
                 }</span>`,
         },
         {
@@ -50,7 +52,7 @@ var ExitFormItemComponent = new (function () {
             className: "align-middle ",
             data: (data) =>
                 `<span class="text-primary-custom">${
-                    data.item_name ?? "HD"
+                    data.item_name ?? "NULL"
                 }</span>`,
         },
         {
@@ -58,7 +60,7 @@ var ExitFormItemComponent = new (function () {
             className: "align-middle ",
             data: (data) =>
                 `<span class="text-primary-custom">${
-                    data.remarks ?? "HD"
+                    data.remarks ?? "NULL"
                 }</span>`,
         },
         {
@@ -68,10 +70,10 @@ var ExitFormItemComponent = new (function () {
                 return `
                 <div class="d-flex justify-content-start align-items-center">
                     <div class="text-center align-center gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary-custom btn-exit_form-modify" data-id="${data.id}">
+                        <button class="btn rounded-3 p-1 btn-primary-custom btn-exit_form_item-modify" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
                         </button>
-                        <button class="btn rounded-3 p-1 btn-warning btn-exit_form-delete" data-id="${data.id}">
+                        <button class="btn rounded-3 p-1 btn-warning btn-exit_form_item-delete" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
                         </button>
                     </div>
@@ -108,6 +110,10 @@ var ExitFormItemComponent = new (function () {
                 },
             };
             ExitFormItemDialog.show(op);
+        };
+        mThis.btnPrint.onclick = function (e) {
+            e.preventDefault();
+            window.print();
         };
         const pr_tbl = mThis.ExitFormListView.getListContainer();
         const sh_parent = pr_tbl;
@@ -149,11 +155,14 @@ var ExitFormItemComponent = new (function () {
     };
     this.initDropdownMenus = () => {
         addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn-exit_form-modify");
+            let btn = VSUtil.closestLimited(
+                e.target,
+                ".btn-exit_form_item-modify"
+            );
             if (btn) {
                 mThis.edit_exit_form(btn.dataset.id, btn);
             }
-            btn = VSUtil.closestLimited(e.target, ".btn-exit_form-delete");
+            btn = VSUtil.closestLimited(e.target, ".btn-exit_form_item-delete");
             if (btn) {
                 mThis.delete_exit_form(btn.dataset.id, btn);
             }
