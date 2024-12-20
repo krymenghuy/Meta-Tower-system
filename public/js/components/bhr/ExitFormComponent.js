@@ -44,15 +44,15 @@ var ExitFormComponent = new (function () {
             className: "align-middle ",
             data: (data) =>
                 `<span class="text-primary-custom">${
-                    data.name ?? "Null"
+                    data.form_name ?? "Null"
                 }</span>`,
         },
         {
             title: "Amount",
             className: "align-middle ",
             data: (data) =>
-                `<span class="text-primary-custom">${
-                    data.amount ?? "Null"
+                `<span class="text-primary-custom">
+                    ${main_view.currency.symbol +' '+ (data.amount ?? '0.00')
                 }</span>`,
         },
         {
@@ -60,29 +60,29 @@ var ExitFormComponent = new (function () {
             className: "align-middle ",
             data: (data) =>
                 `<span class="text-primary-custom">${
-                    data.remarks ?? "Null"
+                    data.remarks ?? "N/A"
                 }</span>`,
         },
         {
-            title: "Status",
-            className: "status text-nowrap align-middle",
+            title: "Settled",
+            className: "settled text-nowrap align-middle",
             data: (data) => {
-                let statusText = "text-white text-center border rounded-5";
-                let statusClass = "";
+                let settledText = "text-white text-center border rounded-5";
+                let settledClass = "";
 
-                if (data.status == "1") {
-                    statusText = "Done";
-                    statusClass =
+                if (data.settled == "1") {
+                    settledText = "Done";
+                    settledClass =
                         "text-white text-center bg-success border border-info rounded-5 p-1";
-                } else if (data.status == "2") {
-                    statusText = "Not Yet";
-                    statusClass =
+                } else if (data.settled == "2") {
+                    settledText = "Not Yet";
+                    settledClass =
                         "text-white text-center bg-warning border border-info rounded-5 p-1";
                 }
 
                 return `
-            <p class="p-0 m-0 text-white ${statusClass}" style="border-radius: 5px; padding: 5px;">
-                ${statusText}
+            <p class="p-0 m-0 text-white ${settledClass}" style="border-radius: 5px; padding: 5px;">
+                ${settledText}
             </p>
         `;
             },
@@ -285,11 +285,15 @@ const ExitFormDialog = (() => {
                         `<div class="row">
                             <div class="form-group col-12">
                                 <label for="employee" class="form-label" vslang="titles.Employee"></label>
-                                <select name="employee" class="form-control data-input"  data-field="emp_id"></select>
+                                <select name="employee" class="form-control data-input" data-field="emp_id"></select>
                             </div>
-                            <div class="form-group col-md-12">
-                                <label for="form_name" class="form-label" vslang="titles.Form Name"></label>
-                                <input name="form_name" class="form-control data-input" data-field="name" id="form_name">
+                            <div class="form-group col-12">
+                                <label for="form_name" class="form-label" vslang="titles.Form"></label>
+                                <select name="form_name" class="form-control data-input" data-field="form_id"></select>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="item_name" class="form-label" vslang="titles.Item"></label>
+                                <select name="item_name" class="form-control data-input" data-field="item_id"></select>
                             </div>
                             <div class="form-group col-md-12">
                                 <label for="amount" class="form-label" vslang="titles.amount"></label>
@@ -300,8 +304,8 @@ const ExitFormDialog = (() => {
                                 <input name="remarks" class="form-control data-input" data-field="remarks" id="amount">
                             </div>
                             <div class="form-group col-md-12">
-                                <label for="status" class="form-label" vslang="titles.Status"></label>
-                                <select name="status" class="modal-select data-input" data-field="status" id="amount">
+                                <label for="settled" class="form-label" vslang="titles.settled"></label>
+                                <select name="settled" class="modal-select data-input" data-field="settled" id="amount">
                                     <option value="1">Done</option>
                                     <option value="2">Not Yet</option>
                                 </select>
@@ -318,13 +322,24 @@ const ExitFormDialog = (() => {
                             `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`,
                         valueField: "id",
                     },
+                    {
+                        name: "item_name",
+                        data: "exit_items",
+                        textField: "name",
+                        valueField: "id",
+                    },
+                    {
+                        name: "form_name",
+                        data: "forms",
+                        textField: "name",
+                        valueField: "id",
+                    }
                 ],
                 buttons: [
                     {
                         label: '<span class=""><i class="fa-solid text-danger fa-xmark"></i></span>',
                         cssClass: "btn btn-sm-outline rounded-3",
                         click: (me, btn) => {
-                            //Close with Cancel button
                             me.hide(false);
                         },
                     },
@@ -334,7 +349,7 @@ const ExitFormDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
 
-                            p.id = me.dataOptions.id; //get "id" from op
+                            p.id = me.dataOptions.id;
 
                             vsapi
                                 .call(
@@ -429,7 +444,7 @@ const ViewExitFormDialog = (() => {
                                     const itemName =
                                         typeof item === "object" &&
                                         item !== null
-                                            ? item.item_name ?? ""
+                                            ? item.name ?? ""
                                             : item;
 
                                     return `
@@ -498,7 +513,7 @@ const ViewExitFormDialog = (() => {
     };
     self.show = (op) => {
         vsapi
-            .call(`${main_view.base_url}/hr/exit-form-item/list-all`, {
+            .call(`${main_view.base_url}/hr/exit-form/list-all`, {
                 emp_id: op.id,
             })
             .then((res) => {

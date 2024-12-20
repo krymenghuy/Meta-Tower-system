@@ -283,7 +283,7 @@ echo $user->lang ?? 'en'; ?>">
                             @include('layouts.bhr.benefitDisbursementComponent')
                             @include('layouts.bhr.benefitDisbursePolicyComponent')
                             @include('layouts.bhr.benefitComponent')
-                            @include('layouts.bhr.exitCheckpointsComponent')
+                            @include('layouts.bhr.formComponent')
                             @include('layouts.bhr.exitFormComponent')
                             @include('layouts.bhr.exitFormItemComponent')
                             @include('layouts.common.locationComponent')
