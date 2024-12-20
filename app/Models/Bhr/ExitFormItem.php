@@ -2,6 +2,7 @@
 
 namespace App\Models\Bhr;
 
+use App\Models\DBX;
 use App\Models\DV;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -298,39 +299,38 @@ class ExitFormItem
         $start_date = isset($d->start_date) ? convertDate($d->start_date) : date('Y-m-01');
         $end_date = isset($d->end_date) ? convertDate($d->end_date) : date('Y-m-t');
         $str_between_date = $start_date && $end_date ? "DATE(emp.created_at) BETWEEN '$start_date' AND '$end_date'" : '';
+        $col_start_date = DBX::formatDate('emp.joining_date', 'joining_date');
+        $col_effective_date = DBX::formatDate('r.effective_date', 'effective_date');
 
-        // Modify the query to join the 'resignations' table and select 'effective_date'
         $query = DB::table('exit_form_items as efi')
         ->join('employees as emp', 'emp.id', '=', 'efi.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
         ->join('check_points as cp', 'cp.id', '=', 'efi.check_point_id')
         ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
         ->join('exit_forms as ef', 'ef.id', '=', 'efi.form_id')
-        // Join the 'resignations' table to get the 'effective_date'
         ->leftJoin('resignations as r', 'r.emp_id', '=', 'efi.emp_id')
         ->where('emp.status_id', 20)
-        ->select(
-            'efi.id',
-            'efi.emp_id',
-            'efi.check_point_id',
-            'efi.form_id',
-            'ef.name as form_name',
-            'efi.amount',
-            'efi.remarks',
-            'efi.settled',
-            'cp.item_name as item_name',
-            'cp.check_point_cat_id',
-            'emp.id as emp_id',
-            'emp.name as employee_name',
-            'emp.code',
-            'emp.joining_date as start_date',
-            'emp.position_id',
-            'emp.branch_id',
-            'br.name as branch_name',
-            'pos.title as position',
-            'emp.photo_file_name as emp_photo',
-            // Add the effective_date from the 'resignations' table
-            'r.effective_date'
+        ->selectRaw(
+            'efi.id,
+            efi.emp_id,
+            efi.check_point_id,
+            efi.form_id,
+            ef.name as form_name,
+            efi.amount,
+            efi.remarks,
+            efi.settled,
+            cp.item_name as item_name,
+            cp.check_point_cat_id,
+            emp.id as emp_id,
+            emp.name as employee_name,
+            emp.code,
+            '.$col_start_date.',
+            emp.position_id,
+            emp.branch_id,
+            br.name as branch_name,
+            pos.title as position,
+            emp.photo_file_name as emp_photo,
+            '.$col_effective_date.''
         )
             ->where('efi.emp_id', $emp_id);
 
@@ -373,7 +373,7 @@ class ExitFormItem
                 'emp_name' => $efi->employee_name,
                 'position' => $efi->position,
                 'code' => $efi->code,
-                'start_date' => $efi->start_date,
+                'joining_date' => $efi->joining_date,
                 'branch_name' => $efi->branch_name,
                 'effective_date' => $efi->effective_date,  // Include the effective_date
             ];

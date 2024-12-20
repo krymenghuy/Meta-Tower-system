@@ -542,21 +542,21 @@ function v_display($mod_id, $module_ids = null)
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
-                            <a href="ExitCheckpiontsComponent" modid="105" class="menu-item kt-menu__link">
+                            <a href="FormComponent" modid="105" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
+                                        src="{{ asset('assets/images/icons/form.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Exit Checkpoints"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Form"></span>
                             </a>
                         </li>
                         <li class="kt-menu__item" aria-haspopup="true" <?php v_display(105); ?>>
                             <a href="ExitFormItemComponent" modid="105" class="menu-item kt-menu__link">
                                 <span class="kt-menu__link-icon">
                                     <img class="icons opacity-icons"
-                                        src="{{ asset('assets/images/bhr/code_scan.svg') }}" />
+                                        src="{{ asset('assets/images/icons/item.svg') }}" />
                                 </span>
-                                <span class="kt-menu__link-text font-color " vslang="menus.Exit Form Items"></span>
+                                <span class="kt-menu__link-text font-color " vslang="menus.Exit Items"></span>
                             </a>
                         </li>
                         

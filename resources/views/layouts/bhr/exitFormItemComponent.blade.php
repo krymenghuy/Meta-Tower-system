@@ -7,9 +7,6 @@
             </div>
         </div>
         <div class="d-flex align-items-center justify-content-end w-100 gap-2">
-            <button type="button" class="btn_add" id="_btnPrintExitFormItem">
-                <span vslang="titles.Print Exit Form"></span>
-            </button>
             <button type="button" class="btn_add" id="_btnAddExitFormItem">
                 <span vslang="titles.Create Exit Form Item"></span>
             </button>

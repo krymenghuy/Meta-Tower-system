@@ -7,9 +7,6 @@
             </div>
         </div>
         <div class="d-flex align-items-center justify-content-end w-100 gap-2">
-            {{-- <button type="button" class="btn_add" id="_btnPrintExitForm">
-                <span vslang="titles.Print Exit Form"></span>
-            </button> --}}
             <button type="button" class="btn_add" id="_btnAddExitForm">
                 <span vslang="titles.Create Exit Form"></span>
             </button>
@@ -23,14 +20,13 @@
 </div>
 <style>
     .custom-modal-size {
-        max-width: 80%;
+        max-width: 60%;
         margin: 20px auto;
     }
 
 
     .employee-info-section {
         padding: 15px;
-        background-color: #f7f7f7;
         border-radius: 8px;
         margin-bottom: 20px;
     }
