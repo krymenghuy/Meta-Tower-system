@@ -62,7 +62,6 @@ class Workshift
             $current_page = 1;
         }
         $skip_rows = ($current_page - 1) * $per_page;
-
         $search_value = $d->search_value ?? null;
         $str_search = '1=1';
         $updated = DBX::formatTime('ws.update_date','update_date');

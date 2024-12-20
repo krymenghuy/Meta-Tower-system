@@ -196,6 +196,9 @@
         object-fit: contain;
         margin-right: 10px;
     }
+    .form-group{
+        margin-bottom: 1rem;
+    }
 </style>
 
 <div id="_main_employeeComponent" style="display:none;padding:20px 0 0">

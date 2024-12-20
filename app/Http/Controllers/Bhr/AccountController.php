@@ -69,7 +69,7 @@ class AccountController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->account->deleteAccount($req->id, $ss));
+        return JDV::result($this->account->delete($req->id, $ss));
     }
 
     public function getFormOptions(Request $req)
