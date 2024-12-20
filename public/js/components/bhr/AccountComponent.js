@@ -148,14 +148,14 @@ var AccountMenagmentComponent = new (function () {
             title: "From Account",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.from_account_id ?? ""}</p>`;
+                return `<p class="p-0 m-0">${data.from_account_number ?? ""}</p>`;
             },
         },
         {
             title: "To Account",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.account_number ?? ""}</p>`;
+                return `<p class="p-0 m-0">${data.to_account_number ?? ""}</p>`;
             },
         },
         {
@@ -457,7 +457,7 @@ var AccountMenagmentComponent = new (function () {
             )
             .then((res) => {
                 const d = res.status_code == 200 ? res.data : {};
-                console.log(1111, this.elSortBy);
+                // console.log(1111, this.elSortBy);
 
             VSUtil.setComboItems(mThis.elSortBy, d.sort_by, 'id', 'name', true, 'Default', null);
 
@@ -624,131 +624,142 @@ const AccountDialog = (() => {
 const TransferDialog = (() => {
     const self = {};
     let dialog = null;
+
     self.show = (op) => {
-        dialog =
-        dialog ||
-        new GeneralDialog({
-            cssClass: "modal-lg",
-            backdrop: "static",
-            keyboard: true,
-            createContent: () => {
-                return [
-                `<div class="row">
-                    <div class="form-group col-4">
-                        <label for="account_type" class="form-label" vslang="titles.From Account "></label>
-                        <select class="modal-select data-input" name="account_type" data-field="account_type" disabled >
-                            <option value="Payroll">Payroll</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="account_number" class="form-label" vslang="titles.From Account Number"></label>
-                        <input name="account_number" class="form-control data-input" data-field="account_number"disabled />
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="ballance" class="form-label" vslang="titles.Payroll Balance"></label>
-                        <input name="ballance" class="form-control data-input" data-field="balance"disabled />
-                    </div>
+        dialog = dialog ||
+            new GeneralDialog({
+                cssClass: "modal-lg",
+                backdrop: "static",
+                keyboard: true,
+                createContent: () => {
+                    return `
+                        <div class="row">
+                            <div class="text-center fs-5 mb-2 border rounded-4 bg-primary-subtle">From Account</div>
 
-                    <div class="form-group col-4">
-                        <label for="to_account_type" class="form-label" vslang="titles.To Account "></label>
-                        <select class="modal-select data-input" name="to_account_type" data-field="to_account_type" >
-                            <option value="Wallet">Wallet</option>
-                            <option value="Payroll">Payroll</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="to_account_number" class="form-label" vslang="titles.To Account Number"></label>
-                        <input name="to_account_number" class="form-control data-input" data-field="to_account_number"  />
-                    </div>
-                    <div class="form-group col-4">
-                        <label for="amount" class="form-label" vslang="titles.Amount"></label>
-                        <input name="amount" class="form-control data-input" data-field="amount" />
-                    </div>
-                    <div class="form-group col-6">
-                        <label for="currency" class="form-label" vslang="titles.Currency"></label>
-                        <select class="modal-select data-input" data-field="currency" >
-                            <option value="KHR">KHR</option>
-                            <option value="USD">USA</option>
-                        </select>
-                    </div>
-                    <div class="form-group col-6">
-                        <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
-                        <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
-                    </div>
+                            <div class="form-group col-4">
+                                <label for="account_number" class="form-label" vslang="titles.Account Number"></label>
+                                <input name="account_number" class="form-control data-input" data-field="account_number" disabled />
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="balance" class="form-label" vslang="titles.Balance"></label>
+                                <input name="balance" class="form-control data-input" data-field="balance" disabled />
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="currency" class="form-label" vslang="titles.Currency"></label>
+                                <select class="modal-select data-input" data-field="currency">
+                                    <option value="KHR">KHR</option>
+                                    <option value="USD">USD</option>
+                                </select>
+                            </div>
 
-                </div>`,
-                        ].join("");
-                    },
+                             <div class="form-group  col-12 d.none">
+                                <div id="info"></div>
+                             </div>
 
-            configSelect: [
-                {
-                    name: "employee",
-                    data: "employees",
-                    textField: "name",
-                    valueField: "id",
+                            <div class="text-center fs-5 mb-2 border rounded-4 bg-primary-subtle">To Account</div>
+
+                            <div class="form-group col-4">
+                                <label for="to_account_number" class="form-label" vslang="titles.Account Number"></label>
+                                <input name="to_account_number" class="form-control data-input" data-field="to_account_number" />
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="amount" class="form-label" vslang="titles.Amount"></label>
+                                <input name="amount" class="form-control data-input" data-field="amount" />
+                            </div>
+                            <div class="form-group col-4">
+                                <label for="currency" class="form-label" vslang="titles.Currency"></label>
+                                <select class="modal-select data-input" data-field="currency">
+                                    <option value="KHR">KHR</option>
+                                    <option value="USD">USD</option>
+                                </select>
+                            </div>
+                            <div class="form-group  col-8 d.none">
+                                <div id="info"></div>
+                             </div>
+                            <div class="form-group col-4 d-none">
+                                <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
+                                <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
+                            </div>
+
+
+
+                        </div>
+                    `;
                 },
-            ],
-            buttons: [
-                {
-                    label: '<span class="text-warning">Cancel</span>',
-                    cssClass: "btn btn-default",
-                    click: (me, btn) => {
-                        //Close with Cancel button
-                        me.hide(false);
+
+                buttons: [
+                    {
+                        label: '<span class="text-warning">Cancel</span>',
+                        cssClass: "btn btn-default",
+                        click: (me, btn) => {
+                            me.hide(false);
+                        },
+                    },
+                    {
+                        label: "<span>Transfer</span>",
+                        cssClass: "btn btn-primary",
+                        click: (me, btn) => {
+                            const p = me.getData();
+                            p.id = me.dataOptions.id;
+                            console.log(1234, p);
+
+                            // Perform the API call to get confirmation data
+                            vsapi.call([main_view.base_url, '/hr/account/transfer'].join(''), p, null, null).then(res => {
+                                if (res.status_code === 200 && res.data) {
+                                    const confirmationMessage = `Are you sure to transfer? To '${res.data.to_account_number} (${res.data.to_account_type}) - ${res.data.emp_name}'`;
+
+                                    cv_interact.confirm(confirmationMessage, {
+                                        title: 'Confirm or Cancel Transfer',
+                                        context: 'Cancel',
+                                        confirmButtonText: "Transfer"
+                                    }, function (confirmation) {
+                                        if (confirmation) {
+                                            console.log(222,p);
+
+                                            vsapi.call([main_view.base_url, '/hr/account/transfer'].join(''), p, null, null).then(res => {
+                                                if (res.status_code === 200 && res.data && res.data.message === 'Transfer Success') {
+                                                    cv_interact.error('Transfer successful');
+                                                } else {
+                                                    let formattedData = `
+                                                        From: ${res.data.from_account_number}
+                                                        To: ${res.data.to_account_number}
+                                                    `;
+                                                    cv_interact.success(formattedData);
+                                                    AccountMenagmentComponent.AccountListView.showPage();
+                                                    me.hide(false);
+                                                }
+                                            });
+                                        }
+                                    });
+                                } else {
+                                    cv_interact.error(res.error_message);
+                                }
+                            });
+                        }
+
+                    },
+                ],
+                prepareFormOptions: {
+                    createTitle: "Add Account",
+                    modifyTitle: "Transfer",
+                    targetProp: "accounts",
+                    api: {
+                        endpoint: `${main_view.base_url}/hr/account/form-options`,
+                        params: (op) => {
+                            return { id: op.id };
+                        },
                     },
                 },
-                {
-                    label: "<span>Transfer</span>",
-                    cssClass: "btn btn-primary",
-                    click: (me, btn) => {
-                        const p = me.getData();
 
-                        p.id = me.dataOptions.id;
-                        console.log(123, p);
-
-                        // vsapi
-                        //     .call(
-                        //         [
-                        //             main_view.base_url,
-                        //             "/hr/account/transfer",
-                        //         ].join(""),
-                        //         p,
-                        //         btn,
-                        //         null
-                        //     )
-                        //     .then((res) => {
-                        //         if (res.status_code == 200) {
-                        //             me.hide(true, p);
-                        //         } else cv_interact.error(res.error_message);
-                        //     });
-                    },
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
                 },
-            ],
-            prepareFormOptions: {
-                createTitle: "Add Account",
-                modifyTitle: "Transfer",
-                targetProp: "accounts",
-                api: {
-                    endpoint: [
-                        main_view.base_url,
-                        "/hr/account/form-options",
-                    ].join(""),
-                    params: (op) => {
-                        return { id: op.id };
-                    },
-                },
-                //    onResponse: (me, res)=>{
-                //      console.log('result from api "/form-options": ', res);
-                //    }
-            },
-
-            onPrepareForm: (me, data) => {
-                LocaleManager.translateZone(me.divModal);
-            },
-        });
+            });
 
         dialog.show(op);
     };
 
     return self;
 })();
+
+

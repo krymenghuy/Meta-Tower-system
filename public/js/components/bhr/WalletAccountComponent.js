@@ -154,14 +154,14 @@ var WalletAccountComponent = new (function () {
             title: "From Account",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.from_acc_num ?? ""}</p>`;
+                return `<p class="p-0 m-0">${data.from_account_number ?? ""}</p>`;
             },
         },
         {
             title: "To Account",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${data.to_acc_num ?? ""}</p>`;
+                return `<p class="p-0 m-0">${data.to_account_number ?? ""}</p>`;
             },
         },
         {

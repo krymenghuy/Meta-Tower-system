@@ -229,6 +229,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->gr
     Route::post('/delete', [AccountController::class, 'deleteAccount']);
     Route::post('/form-options', [AccountController::class, 'getFormOptions']);
     Route::post('/transfer', [AccountController::class, 'transfer']);
+    Route::post('/get-confirm', [AccountController::class, 'getConfirm']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance')->group(function () {
 
@@ -311,7 +312,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('holiday')->gr
     Route::post('/form-options', [HolidayController::class, 'getFormOptions']);
     Route::post('/list', [HolidayController::class, 'getHolidayList']);
 });
- 
+
 Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
     Route::post('/form-option',[GeneralSettingsController::class,'select_options']);
 });

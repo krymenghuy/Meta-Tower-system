@@ -89,4 +89,13 @@ class AccountController extends Controller
         }
         return ($this->account->transfer($req->all(), $ss));
     }
+
+    public function getConfirm(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return ($this->account->getConfirm($req->all(), $ss));
+    }
 }
