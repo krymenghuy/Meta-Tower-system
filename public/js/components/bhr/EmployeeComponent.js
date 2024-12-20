@@ -307,7 +307,7 @@ var EmployeeComponent = new (function () {
                         d.id
                     }">`,
                         `<div class="card d-flex">`,
-                            `<div class="card-header p-3 px-3">`,
+                            `<div class="card-header px-3">`,
                                 `<div class="status_employee" style="${statusColor}; padding: 3px; border-radius: 20px;">`,
                                     `<span>${status}</span>`,
                                 `</div>`,
@@ -318,7 +318,7 @@ var EmployeeComponent = new (function () {
                                 `</div>`,
                             `</div>`,
                             `<div class="card-body text-center" style="">`,
-                                `<img src="${ d.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" class="rounded-circle mb-3" alt="Profile Picture" style="width: 100px; height: 100px;">`,
+                                `<img src="${ d.image_url || (main_view.asset_url + "/images/logo/default_image_user.avif")}" class="rounded-circle mb-3" alt="Profile Picture" style="width: 100px; height: 100px;">`,
                                 `<div class="card-title">`,
                                     `<h5 class="text-black text-nowrap truncated-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px">${d.name}</h5>`,
                                 `</div>`,
@@ -410,204 +410,249 @@ var EmployeeComponent = new (function () {
     };
 
     this.renderProfile = (data) => {
-        let html = [`<div class="employee-card d-flex p-3 bg-primary-custom h-info-student mb-2" data-id="">`,
-                    `<div class="d-block ms-3 w-100">`,
-                        `<div class="row text-white mb-0">`,
-                            `<div class="col-md-3">`,
-                                `<div class="div-img ms-2 mt-5">`,
-                                    `<img src="${data.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" alt="Employee Image">`,
-                                `</div>`,
-                                `<div class="d-flex mt-3 ms-5 justify-content-start">`,
-                                    `<span class="text-white">ID : ${data.code}</span>`,
-                                `</div>`,
+        let html = `<div class="employee-card d-flex p-3 bg-primary-custom h-info-student mb-2" data-id="">
+                    <div class="d-block ms-3 w-100">
+                        <div class="row text-white mb-0">
+                            <div class="col-md-3">
+                                <div class="div-img ms-2 mt-5">
+                                    <img src="${
+                                        data.image_url ||
+                                        "../uploads/public/1_data/default/images/mr.avif"
 
-                            `</div>`,
-                            `<div class="col-md-3 mt-3">`,
-                                `<div class="d-flex">`,
-                                    `<p class="text-nowrap  width-p">Name</p>`,
-                                    `<p class="px-2">:</p>`,
-                                    `<p class="text-nowrap text-capitalize">${
+                                    }" alt="Employee Image">
+                                </div>
+                                <div class="d-flex mt-3 ms-5 justify-content-start">
+                                    <span class="text-white">ID : ${
+                                        data.code || ""
+                                    }</span>
+                                </div>
+
+                            </div>
+                            <div class="col-md-3 mt-3">
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Name</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
                                         data.name
-                                    }</p>`,
-                                `</div>`,
-                                 `<div class="d-flex">`,
-                                    `<p class="text-nowrap  width-p">Name KH</p>`,
-                                    `<p class="px-2">:</p>`,
-                                    `<p class="text-nowrap text-capitalize">${
+                                    }</p>
+                                </div>
+                                 <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Name KH</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
                                         data.name_kh
-                                    }</p>`,
-                                `</div>`,
+                                    }</p>
+                                </div>
 
-                                `<div class="d-flex">`,
-                                    `<p class="text-nowrap  width-p">Sex</p>`,
-                                    `<p class="px-2">:</p>`,
-                                    `<p class="text-nowrap">
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Sex</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">
                                     ${data.sex == "M" ? "Male" : ""}${
-                                        data.sex == "F" ? "Female" : ""
-                                    }${data.sex == "O" ? "Other" : ""}</p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<p class="text-nowrap  width-p">Nationality</p>`,
-                                    `<p class="px-2">:</p>`,
-                                    `<p class="text-nowrap">${
+            data.sex == "F" ? "Female" : ""
+        }${data.sex == "O" ? "Other" : ""}</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Nationality</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${
                                         data.nationality || ""
-                                    }</p>`,
-                                `</div>`,
-                                 `<div class="d-flex">`,
-                                    `<p class="text-nowrap    width-p" vslang="titles.Identity Card">Identity Card</p>`,
-                                    `<p class="px-2">:</p>`,
-                                    `<p class="text-nowrap text-capitalize">${
-                                        data.nid
-                                    }</p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<p class="text-nowrap  width-p">Date of Birth</p>`,
-                                    `<p class="px-2">:</p>`,
-                                    `<p class="text-nowrap">${
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Date of Birth</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${
                                         data.date_of_birth || ""
-                                    }</p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<p class="text-nowrap    width-p" vslang="titles.Joining Date">Joining Date</p>`,
-                                    `<p class="px-2">:</p>`,
-                                    `<p class="text-nowrap text-capitalize">`,
-                                        data.joining_date,
-                                    `</p>`,
-                                `</div>`,
+                                    }</p>
+                                </div>
+                                 <div class="d-flex">
+                                    <p class="text-nowrap    width-p" vslang="titles.Identity Card">Identity Card</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.nid
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">NID Expiry Date</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${
+                                        data.nid_expiry_date || ""
+                                    }</p>
+                                </div>
 
-                            `</div>`,
-                            `<div class="col-md-3 mt-3">`,
-
-                                `<div class="d-flex">`,
-                                    `<P class="text-nowrap  width-p">Position</p>`,
-                                    `<P class="px-2">:</p>`,
-                                    `<P class="text-nowrap">${
-                                        data.position || ""
-                                    }</p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<P class="text-nowrap  width-p">Work Shift</p>`,
-                                    `<P class="px-2">:</p>`,
-                                    `<P class="text-nowrap">${
-                                        data.work_shift || ""
-                                    }</p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<P class="text-nowrap width-p">Employee Type</p>`,
-                                    `<P class="px-2">:</p>`,
-                                    `<P class="text-nowrap">${
-                                        data.type || ""
-                                    }</p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<P class="text-nowrap width-p">salary</p>`,
-                                    `<P class="px-2">:</p>`,
-                                    `<P class="text-nowrap">​${
-                                        data.salary || "0.00"
-                                    }(KHR)</p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<P class="text-nowrap  width-p">Payroll Tax</p>`,
-                                    `<P class="px-2">:</p>`,
-                                    `<P class="text-nowrap">
-                                    ${data.apply_payroll_tax == "0"? "Have Tax": ""}${ data.apply_payroll_tax == "1" ? "Non Tax" : ""}
-                                    </p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<P class="text-nowrap width-p">Tel</p>`,
-                                    `<P class="px-2">:</p>`,
-                                    `<P class="text-nowrap">${
-                                        data.phone_number || ""
-                                    }</p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<P class="text-nowrap  width-p">Email</p>`,
-                                    `<P class="px-2">:</p>`,
-                                    `<P class="text-">${data.email || ""}</p>`,
-                                `</div>`,
-
-
-                            `</div>`,
-
-                            `<div class="col-md-3 mt-3">`,
-                                 `<div class="d-flex">`,
-                                    `<P class="text-nowrap width-p" vslang="titles.NSSF">NSSF</p>`,
-                                    `<P class="pl-5 pr-2">:</p>`,
-                                    `<P class="text-nowrap text-capitalize">${
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p" vslang="titles.NSSF">NSSF</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
                                         data.nssf_id
-                                    }</p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<P class="text-nowrap width-p" vslang="titles.Passport">Passport</p>`,
-                                    `<P class="pl-5 pr-2">:</p>`,
-                                    `<P class="text-nowrap text-capitalize">${
+                                    }</p>
+                                </div>
+
+                            </div>
+                            <div class="col-md-3 mt-3">
+
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Position</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${
+                                        data.position || ""
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Work Shift</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${
+                                        data.work_shift || ""
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p">Employee Type</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${
+                                        data.type || ""
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap    width-p" vslang="titles.Joining Date">Joining Date</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.joining_date
+                                    }</p>
+                                </div>
+                                 <div class="d-flex">
+                                    <p class="text-nowrap width-p">salary</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">​${
+                                        data.salary || "0.00"
+                                    }(KHR)</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Payroll Tax</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">
+                                    ${data.apply_payroll_tax == "0"? "Have Tax": ""}${ data.apply_payroll_tax == "1" ? "Non Tax" : ""}
+                                    </p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p">Tel</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-nowrap">${
+                                        data.phone_number || ""
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap  width-p">Email</p>
+                                    <p class="px-2">:</p>
+                                    <p class="text-">${data.email || ""}</p>
+                                </div>
+
+
+                            </div>
+
+                            <div class="col-md-3 mt-3">
+
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p" vslang="titles.Passport">Passport</p>
+                                    <p class="pl-5 pr-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
                                         data.passport_number
-                                    }</p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<P class="text-nowrap width-p" vslang="titles.Marital Status">Marital Status</p>`,
-                                    `<P class="pl-5 pr-2">:</p>`,
-                                    `<P class="text-nowrap text-capitalize">${
+                                    }</p>
+                                </div>
+                                 <div class="d-flex">
+                                    <p class="text-nowrap width-p" vslang="titles.Passport">Passport Expiry Date</p>
+                                    <p class="pl-5 pr-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.passport_expiry_date
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p" vslang="titles.Marital Status">Marital Status</p>
+                                    <p class="pl-5 pr-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
                                         data.marital_status
-                                    }</p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<P class="text-nowrap width-p" vslang="titles.Spouse Name">Spouse Name</p>`,
-                                    `<P class="pl-5 pr-2">:</p>`,
-                                    `<P class="text-nowrap text-capitalize">${
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p" vslang="titles.Spouse Name">Spouse Name</p>
+                                    <p class="pl-5 pr-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
                                         data.spouse_name
-                                    }</p>`,
-                                `</div>`,
+                                    }</p>
+                                </div>
 
-                                `<div class="d-flex">`,
-                                    `<P class="text-nowrap width-p " vslang="titles.Spouse Occupation">Spouse Occupation</p>`,
-                                    `<P class="pl-5 pr-2">:</p>`,
-                                    `<P class="text-nowrap text-capitalize">`,data.spouse_occ_code,`</p>`,
-                                `</div>`,
-                                `<div class="d-flex">`,
-                                    `<P class="text-nowrap width-p" vslang="titles.Address">Address</p>`,
-                                    `<P class="pl-5 pr-2">:</p>`,
-                                    `<P class="text-nowrap text-capitalize" style="overflow: hidden; text-overflow: ellipsis;">`,data.address,`</p>`,
-                                `</div>`,
-                            `</div>`,
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p " vslang="titles.Spouse Occupation">Spouse Occupation</p>
+                                    <p class="pl-5 pr-2">:</p>
+                                    <p class="text-nowrap text-capitalize">${
+                                        data.spouse_occ_code
+                                    }</p>
+                                </div>
+                                <div class="d-flex">
+                                    <p class="text-nowrap width-p" vslang="titles.Address">Address</p>
+                                    <p class="pl-5 pr-2">:</p>
+                                    <p class="text-nowrap text-capitalize" style="overflow: hidden; text-overflow: ellipsis;">${
+                                        data.address
+                                    }</p>
+                                </div>
 
 
-                        `</div>`,
+                            </div>
 
-                        `<div class="d-flex justify-content-between w-100 px-2 pt-1">`,
-                            `<div class="social-icons d-flex w-25 justify-content-start">`,
-                                `<a href="https://www.facebook.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>`,
-                                `<a href="https://www.linkedin.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>`,
-                                `<a href="https://web.telegram.org/a/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>`,
-                            `</div>`,
 
-                            `<div class="d-flex justify-content-end gap-3 px-5 w-75">`,
-                                `<a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${
+                        </div>
+                        <div class="d-flex justify-content-between w-100 px-2 pt-1">
+                            <div class="social-icons d-flex w-25 justify-content-start">
+                                <a href="https://www.facebook.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/facebook.svg" alt="Facebook"></a>
+                                <a href="https://www.linkedin.com/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/linkedin.svg" alt="Linkedin"></a>
+                                <a href="https://web.telegram.org/a/" class="bg-white rounded-5 mx-2"><img src="assets/images/bhr/telegram.svg" alt="Telegram"></a>
+                            </div>
+
+                            <div class="d-flex justify-content-end gap-3 px-5 w-75">
+                                <a href="javascript:void(0)" class="edit_emp_profile_info" data-id="${
                                     data.id
-                                }" data-status ="${data.status_id}">`,
-                                    `<i class="fa-regular fa-pen-to-square text-success fs-5 tool-tip"><span class="tool-tiptext fs-6">Edit Profile</span></i>`,
-                                `</a>`,
-                                `<a href="javascript:void(0)" class="delete_employee" data-id="${
+                                }" data-status ="${data.status_id}">
+                                    <i class="fa-regular fa-pen-to-square text-success fs-5 tool-tip"><span class="tool-tiptext fs-6">Edit Profile</span></i>
+                                </a>
+                                <a href="javascript:void(0)" class="delete_employee" data-id="${
                                     data.id
-                                }" data-status ="${data.status_id}">`,
-                                    `<i class="fa-solid text-danger fa-user-xmark fs-5 tool-tip"><span class="tool-tiptext fs-6">Delete</span></i>`,
-                                `</a>`,
-                                `<a href="javascript:void(0)" class="set_resign" data-id="${
+                                }" data-status ="${data.status_id}">
+                                    <i class="fa-solid text-danger fa-user-xmark fs-5 tool-tip"><span class="tool-tiptext fs-6">Delete</span></i>
+                                </a>
+                                <a href="javascript:void(0)" class="set_resign" data-id="${
                                     data.id
-                                }" data-status ="${data.status_id}">`,
-                                    `<i class="fa-solid fa-triangle-exclamation text-warning tool-tip fs-5"><span class="tool-tiptext fs-6">Set Resign</span></i>`,
-                                `</a>`,
-                                `<a href="javascript:void(0)" class="movement" data-id="${
+                                }" data-status ="${data.status_id}">
+                                    <i class="fa-solid fa-triangle-exclamation text-warning tool-tip fs-5"><span class="tool-tiptext fs-6">Set Resign</span></i>
+                                </a>
+                                <a href="javascript:void(0)" class="movement" data-id="${
                                     data.id
-                                }" data-status ="${data.status_id}">`,
-                                    `<i class="fa-brands fa-stack-exchange text-white tool-tip fs-5"><span class="tool-tiptext fs-6">movement</span></i>`,
-                                `</a>`,
+                                }" data-status ="${data.status_id}">
+                                    <i class="fa-brands fa-stack-exchange text-white tool-tip fs-5"><span class="tool-tiptext fs-6">movement</span></i>
+                                </a>
+                                 <!--
+                                <a href="javascript:void(0)" class="btn_movement_action" data-id="${
+                                    data.id
+                                }" data-statusid="${
+            data.status_id
+        }" data-typeid="${
+            data.emp_type_id
+        }" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa-solid fa-ellipsis-vertical text-secondary fs-5 tool-tip"><span class="tool-tiptext fs-6">Actions</span></i>
+                                </a>
+                               <button class="btn_movement_action btn btn-light rounded-3 mx-3 btn-options position-relative text-nowrap" data-id="${
+                                   data.id
+                               }"  data-status ="${
+            data.status_id
+        }" type="button">
+                                    <span class="text-nowrap text-primary-custom" vslang="buttons.Movement">Movement</span>
+                                    <i class="fa-solid text-primary-custom fa-caret-down ps-2"></i>
+                                </button> -->
+                            </div>
+                        </div>
+                    </div>
 
-                           `</div>`,
-                        `</div>`,
-                    `</div>`,
-
-                    `</div>`].join('');
+                    </div>
+        `;
 
         this.profile_info_emp.innerHTML = html;
         // mThis.initDropdownMenusInfo(mThis.profile_info_emp);
@@ -2687,144 +2732,148 @@ const EmployeeDialog = (() => {
             createContent: () => {
                 return [
                     `<div class="row">`,
-                        `<div class="col-3">`,
-                            `<div style="height:165px;" class="data-input border border-secondary rounded-3 justify-content-center align-items-center">`,
-                                `<div name="div_emp_photo" data-field="photo" class="h-100"></div>`,
-                            `</div>`, 
-                        `</div>`,
-                        `<div class="col-9">`,
-                            `<div class="row">`,
-                                `<div class="form-group col-4">
-                                    <label for="name" class="form-label text-primary-custom" vslang="titles.Name"></label>
-                                    <span class="text-danger">*</span>
-                                    <input name="name" class="form-control data-input" data-field="name" />
-                                </div>`,
-                                `<div class="form-group col-4">
-                                    <label for="name_kh" class="form-label text-primary-custom" vslang="titles.Khmer Name"></label>
-                                    <span class="text-danger">*</span>
-                                    <input name="name_kh" class="form-control data-input" data-field="name_kh" />
-                                </div>`,
-                                `<div class="form-group col-4">
-                                    <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
-                                    <select class="form-control data-input" data-field="sex">
-                                        <option value="">(Select Sex)</option>
-                                        <option value="M">Male</option>
-                                        <option value="F">Female</option>
-                                        <option value="O">Other</option>
-                                    </select>
-                                </div>`,
-                                
-                                `<div class="form-group col-4">
-                                    <label for="nid" class="form-label text-primary-custom" vslang="titles.Identity Card"></label>
-                                    <span class="text-danger">*</span>
-                                    <input name="nid" class="form-control data-input" data-field="nid" placeholder="CAM100001" />
-                                </div>`,
-                               
-                                `<div class="form-group col-4">
-                                    <label for="date_of_birth" class="form-label text-primary-custom" vslang="titles.Date Of Birth"></label>
-                                    <span class="text-danger">*</span>
-                                    <input name="date_of_birth"  class="form-control data-input" data-field="date_of_birth" />
-                                </div>`,
-                               `<div class="form-group col-4">
-                                    <label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>
-                                    <span class="text-danger">*</span>
-                                    <select name="nationality_id" class="form-control data-input" data-field="nationality_id"></select>
-                                </div>`,
-                        `<hr style="border: none; border-top: 5px solid #6e7272;"></hr>`,
-
+                            `<div class="col-3">`,
+                                `<div style="height:165px;" class="data-input border border-secondary rouded-3 justify-items-center align-items-center">`,
+                                    `<div name="div_emp_photo" data-field="photo" class="h-100"></div>`,
+                                `</div>`,
                             `</div>`,
+                            `<div class="col-9">`,
+                                `<div class="row">`,
+                                    `<div class="form-group col-4">
+                                        <label for="name" class="form-label text-primary-custom" vslang="titles.Name"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="name" class="form-control  data-input" data-field="name" />
+                                    </div>
+                                     <div class="form-group col-4">
+                                        <label for="name_kh" class="form-label text-primary-custom" vslang="titles.Khmer Name"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="name_kh" class="form-control  data-input" data-field="name_kh" />
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>
+                                        <input name="nssf_id" class="form-control data-input" data-field="nssf_id" />
+                                    </div>
+                                    <div class="form-group col-4">
+                                        <label for="date_of_birth" class="form-label text-primary-custom" vslang="titles.Date Of Birth"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="date_of_birth" class="form-control  data-input" data-field="date_of_birth" />
+                                    </div>
+                                    <div class="form-group col-4">
+                                       <label for="sex" class="form-label text-primary-custom" vslang="titles.Sex"></label>
+                                            <select class="modal-select data-input" data-field="sex">
+                                                <option value="">(Select Sex)</option>
+                                                <option value="M">Male</option>
+                                                <option value="F">Female</option>
+                                                <option value="O">Other</option>
+                                            </select>
+                                    </div>
 
-                        `</div>`,
+                                    <div class="form-group col-4">
+                                        <label for="nationality" class="form-label text-primary-custom" vslang="titles.Nationality"></label>
+                                        <span class="text-danger" >*</span>
+                                        <select name="nationality_id" class="data-input" data-field="nationality_id"></select>
+                                    </div>
 
-                        `<div class="row">`,
-                            `<div class="form-group col-4">
-                                <label for="phone_number" class="form-label text-primary-custom" vslang="titles.Phone"></label>
-                                <span class="text-danger">*</span>
-                                <input name="phone_number" class="form-control data-input" data-field="phone_number" />
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="type" class="form-label text-primary-custom" vslang="titles.Employee Type"></label>
-                                <span class="text-danger">*</span>
-                                <select name="type" class="form-control data-input" data-field="emp_type_id"></select>
-                            </div>`,
-                           
-                            `<div class="form-group col-4">
-                                <label for="nssf_id" class="form-label text-primary-custom" vslang="titles.NSSF ID"></label>
-                                <span class="text-danger">(*​ប័ណ្ណ បសស)</span>
-                                <input name="nssf_id" class="form-control data-input" data-field="nssf_id" placeholder="NSSF100001" />
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="email" class="form-label text-primary-custom" vslang="titles.Email"></label>
-                                <span class="text-danger">*</span>
-                                <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="position" class="form-label text-primary-custom" vslang="titles.Position"></label>
-                                <span class="text-danger">*</span>
-                                <select name="position" class="form-control data-input" data-field="position_id"></select>
-                            </div>`,
-                            `<div class="form-group salary col-4">
-                                <label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>
-                                <span class="text-danger"><small>"Based on Employee Position"</small></span>
-                                <input name="salary" id="salary" class="form-control  data-input" disabled data-field="salary" />
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="spouse_name" class="form-label text-primary-custom" vslang="titles.Spouse Name"></label>
-                                <input name="spouse_name" class="form-control data-input" data-field="spouse_name" />
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="work_shift" class="form-label text-primary-custom" vslang="titles.Work Shift"></label>
-                                <span class="text-danger">*</span>
-                                <select name="work_shift" class="form-control data-input" data-field="work_shift_id"></select>
-                            </div>`,
-                            
-                           
-                           `<div class="form-group col-4">
-                                <label for="joining_date" class="form-label text-primary-custom" vslang="titles.Joining Date"></label>
-                                <span class="text-danger">*</span>
-                                <input name="joining_date"  class="form-control data-input" data-field="joining_date" />
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="spouse_occ_code" class="form-label text-primary-custom" vslang="titles.Spouse Occupation"></label>
-                                <input name="spouse_occ_code" id="spouse_occ_code" class="form-control data-input" data-field="spouse_occ_code" />
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="spouse_emp_id" class="form-label text-primary-custom" vslang="titles.Spouse Employee"></label>
-                                <select name="spouse_emp_id" class="form-control data-input" data-field="spouse_emp_id"></select>
-                            </div>`,
-                            `<div class="form-group col-4">
-                                <label for="passport_number" class="form-label text-primary-custom" vslang="titles.Passport Number"></label>
-                                <input name="passport_number" class="form-control data-input" data-field="passport_number" />
-                            </div>`,
-                            `<div class="form-group col-6">
-                                <label for="birth_city_id" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>
-                                <select name="birth_city_id" class="form-control data-input" data-field="birth_city_id"></select>
-                            </div>`,
-                         
-                            `<div class="form-group col-4">
-                                <label for="marital_status" class="form-label text-primary-custom" vslang="titles.Marital Status"></label>
-                                <span class="text-danger">*</span>
-                                <select name="marital_status" class="form-control data-input" data-field="marital_status">
-                                    <option value="Single">Single</option>
-                                    <option value="Married">Married</option>
-                                    <option value="Divorced">Divorced</option>
-                                    <option value="Not Disclosed">Not Disclosed</option>
-                                </select>
-                            </div>`,
-                            
-                            `<div class="form-group col-12">
-                                <label for="address" class="form-label text-primary-custom" vslang="titles.Address">Address</label>
-                                <textarea name="address" id="address" class="form-control data-input" data-field="address"></textarea>
-                            </div>`,
-                        `</div>`,
-                    `</div>`,
+                                </div>
+                            </div>
+                                    <div class="form-group col-3">
+                                        <label for="nid" class="form-label text-primary-custom" vslang="titles.Identity Card"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="nid" class="form-control  data-input" data-field="nid" />
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="nid_expiry_date" class="form-label text-primary-custom" vslang="titles.Identity Card Expiry"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="nid_expiry_date" class="form-control  data-input" data-field="nid_expiry_date" />
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="phone_number" class="form-label text-primary-custom" vslang="titles.Phone"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="phone_number" class="form-control data-input" data-field="phone_number" />
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="email" class="form-label text-primary-custom" vslang="titles.Email"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input type="email" class="form-control data-input" placeholder="example@gmail.com" data-field="email" />
+                                    </div>
+
+                                     <div class="form-group col-3">
+                                        <label for="passport_number" class="form-label text-primary-custom" vslang="titles.Passport Number"></label>
+                                        <input name="passport_number" class="form-control data-input" placeholder="" data-field="passport_number" />
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="passport_expiry_date" class="form-label text-primary-custom" vslang="titles.Passport Expiry"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="passport_expiry_date" class="form-control  data-input" data-field="passport_expiry_date" />
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="birth_city_id" class="form-label text-primary-custom" vslang="titles.Place of Birth"></label>
+                                        <select name="birth_city_id" class="modal-select2 data-input" placeholder="" data-field="birth_city_id"></select>
+                                    </div>
+
+                                    <div class="form-group col-3">
+                                        <label for="marital_status" class="form-label text-primary-custom" vslang="titles.Marital Status"></label>
+                                        <span class="text-danger" >*</span>
+                                        <select name="marital_status" class="modal-select2 data-input" placeholder="" data-field="marital_status">
+                                          <option value="Single">Single</option>
+                                          <option value="Married">Married</option>
+                                          <option value="Divorced">Divorced</option>
+                                          <option value="Not Disclosed">Not Disclosed</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group col-3">
+                                        <label for="spouse_name" class="form-label text-primary-custom" vslang="titles.Spouse Name"></label>
+                                        <input name="spouse_name" class="form-control data-input" placeholder="" data-field="spouse_name" />
+                                    </div>
+
+                                    <div class="form-group col-3">
+                                        <label for="spouse_occ_code" class="form-label text-primary-custom" vslang="titles.Spouse Occupation"></label>
+                                        <input name="spouse_occ_code" id="spouse_occ_code" class="form-control data-input"  data-field="spouse_occ_code" />
+                                    </div>
+
+                                    <div class="form-group col-3">
+                                        <label for="spouse_emp_id" class="form-label text-primary-custom" vslang="titles.Spouse Employee"></label>
+                                         <select name="spouse_emp_id" class=" data-input"  data-field="spouse_emp_id"></select>
+                                    </div>
+                                    <div class="form-group col-3">
+                                        <label for="type" class="form-label text-primary-custom " vslang="titles.Employee Type"></label>
+                                        <span class="text-danger" >*</span>
+                                        <select name="type" class="data-input"  data-field="emp_type_id"></select>
+                                    </div>
+                                    <div class="form-group salary col-4">
+                                        <label for="salary" class="form-label text-primary-custom" vslang="titles.salary"></label>
+                                        <input name="salary" id="salary" class="form-control data-input"  data-field="salary" />
+                                    </div>
+
+                                    <div class="form-group col-4">
+                                        <label for="position" class="form-label text-primary-custom " vslang="titles.Position"></label>
+                                        <span class="text-danger" >*</span>
+                                        <select name="position" class="data-input" data-field="position_id"></select>
+                                    </div>
+
+                                    <div class="form-group col-4">
+                                        <label for="work_shift" class="form-label text-primary-custom " vslang="titles.Work Shift"></label>
+                                        <span class="text-danger" >*</span>
+                                        <select name="work_shift" class="work_shift data-input"  data-field="work_shift_id"></select>
+                                    </div>
+                                      <div class="form-group col-4">
+                                        <label for="joining_date" class="form-label text-primary-custom " vslang="titles.Joining Date"></label>
+                                        <span class="text-danger" >*</span>
+                                        <input name="joining_date" class="form-control data-input " data-field="joining_date" />
+                                    </div>
+                                    <div class="form-group col-12">
+                                        <label for="address" class="form-label text-primary-custom" vslang="titles.Address">Address</label>
+                                        <textarea name="address" id="address" class="form-control  data-input" data-field="address"></textarea>
+                                    </div>
+
+
+                        </div>`,
                 ].join("");
             },
             contentCreated: (me) => {
-                // const salary = me.divModal.querySelector(".salary");
-                // console.log(123,salary);
-                
-                // salary.classList.add("d-none");
+                const salary = me.divModal.querySelector(".salary");
+                salary.classList.add("d-none");
                 //Convert field to be DatePicker : start_date and end_date
                 DateTimePicker.init(me.controls.date_of_birth);
                 DateTimePicker.init(me.controls.joining_date);
@@ -3012,8 +3061,8 @@ const EmployeeDialog = (() => {
             },
             buttons: [
                 {
-                    label: '<span class="text-white">Cancel</span>',
-                    cssClass: "btn btn-sm btn-danger",
+                    label: '<span class="text-warning">Cancel</span>',
+                    cssClass: "btn btn-default",
                     click: (me, btn) => {
                         //Close with Cancel button
                         me.hide(false);
@@ -3021,7 +3070,7 @@ const EmployeeDialog = (() => {
                 },
                 {
                     label: "<span>Save</span>",
-                    cssClass: "btn btn-sm btn-primary",
+                    cssClass: "btn btn-primary",
                     click: (me, btn) => {
                         const p = me.getData();
                         // console.log(1234,JSON.stringify(p));
@@ -3048,7 +3097,7 @@ const EmployeeDialog = (() => {
                 },
             ],
             prepareFormOptions: {
-                createTitle: "Create Employee",
+                createTitle: "Add Employee",
                 modifyTitle: "Edit Employee",
                 targetProp: "employee",
                 api: {
