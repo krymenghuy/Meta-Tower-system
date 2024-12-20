@@ -631,6 +631,7 @@ class PayrollList
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $master_account_id = 1;
+        $transfer_amount = 0;
 
         $existingDisbursement = DB::table('payroll_list')
             ->where('id', $id)
@@ -665,11 +666,13 @@ class PayrollList
             return DV::error($trx->remarks.' is not authorized ');
         }
         $transfer = Transaction::createTransaction((array)$trx, $ss);
-        $transfer_amount = 0;
+
 
         if($transfer){
             $transfer_amount = $transfer['transaction']['amount'];
             $updateBalance_acc = Account::updateBalance($transfer['transaction']['account_id'],'accounts','in', $transfer_amount, $transfer['trx_id'], $ss);
+        }else{
+            return DV::error('Disbursement failed');
         }
 
         $withdrawData = (array)$trx;

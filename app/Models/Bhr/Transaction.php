@@ -107,13 +107,21 @@ class Transaction
         $str_search = '3 = 3';
 
         $query = DB::table('transactions as t')
-            ->join('employees as e', 'e.id', 't.emp_id')
+            ->join('employees as e', 'e.id', '=', 't.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('accounts as a', 'a.id', '=', 't.account_id')
+            ->leftJoin('accounts as fa', 'fa.id', '=', 't.from_account_id') // Join for from_account_id
+            ->leftJoin('accounts as ta', 'ta.id', '=', 't.to_account_id')   // Join for to_account_id
             ->whereRaw($str_emp_id)
             ->whereRaw($str_account_id)
-            ->selectRaw(' hex(t.id) as id, t.emp_id, e.name as emp_name, pos.title as position, t.amount, t.remarks, t.trx_type, t.payroll_id, t.account_id, t.status, '.$date.', t.from_account_id, t.to_account_id,a.account_number')
-            ->where('t.branch_id', $branch_id);
+            ->selectRaw(
+                'hex(t.id) as id, t.emp_id, e.name as emp_name, pos.title as position, t.amount,
+                t.remarks, t.trx_type, t.payroll_id, t.account_id, t.status, ' . $date . ',
+                t.from_account_id, t.to_account_id, a.account_number,
+                fa.account_number as from_account_number, ta.account_number as to_account_number'
+            )
+            ->where('t.branch_id', $branch_id)
+            ->orderBy('t.created_at', 'desc');
 
         if ($search_value) {
             $search_value = escape_like_str($search_value);
@@ -123,11 +131,12 @@ class Transaction
 
         $count = $query->count('t.id');
         $rows = $query->skip($skip_rows)->take($per_page)->get();
-        foreach($rows as $row){
-            $row->payroll_name = DB::table('payrolls')->where('id',$row->payroll_id)->value('name');
+        foreach ($rows as $row) {
+            $row->payroll_name = DB::table('payrolls')->where('id', $row->payroll_id)->value('name');
         }
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
+
 
     function getDetails($id = null) {
         $id = $id ?? $this->id;
