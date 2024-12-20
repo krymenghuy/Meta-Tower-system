@@ -104,12 +104,12 @@ class Dashboard
             ],
             'resigned_staff_count' => (object) [
                 'count' => $resigned_staff_count,
-                'title' => 'Resigned Staff',
+                'title' => 'Resigned',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
             'resigning_staff_count' => (object) [
                 'count' => $resigning_staff_count,
-                'title' => 'Resigning Staff',
+                'title' => 'Resigning',
                 'subTitle' => 'Last ' . abs($back_days) . ' days'
             ],
             'probation_staff_count' => (object) [
