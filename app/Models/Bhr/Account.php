@@ -269,8 +269,10 @@ class Account
     /** $arr = [from_account_id, to_account_id, amount, currency_code, remarks] */
     function transfer($arr, $ss) {
         $d = (object) $arr;
-       $account_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('id');
-       $to_account_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('id');
+        $account_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('id');
+        $emp_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('emp_id');
+        $to_account_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('id');
+
 
         $trx = $d;
         $trx->trx_type=3;
@@ -278,11 +280,12 @@ class Account
         $trx->to_account_id = $to_account_id;
         $trx->amount = $trx->amount;
         $trx->account_id = $account_id;
-        $trx->remarks = 'From $d->account_number to Wallet';
+        $trx->remarks = "Transfer from $d->account_type $d->account_number to $d->to_account_type $d->to_account_number";
         if($trx->balance < $trx->amount){
             return DV::error('Insufficient Balance');
         }
-        $trx = Transaction::createTransaction((array)$trx, $ss);
+        // return $trx;
+        return $trx = Transaction::createTransaction((array)$trx, $ss);
         if(isset($trx['error'])){
             return DV::error($trx['error']);
         }

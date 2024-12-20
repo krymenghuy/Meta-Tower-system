@@ -706,21 +706,21 @@ const TransferDialog = (() => {
                         p.id = me.dataOptions.id;
                         console.log(123, p);
 
-                        vsapi
-                            .call(
-                                [
-                                    main_view.base_url,
-                                    "/hr/account/transfer",
-                                ].join(""),
-                                p,
-                                btn,
-                                null
-                            )
-                            .then((res) => {
-                                if (res.status_code == 200) {
-                                    me.hide(true, p);
-                                } else cv_interact.error(res.error_message);
-                            });
+                        // vsapi
+                        //     .call(
+                        //         [
+                        //             main_view.base_url,
+                        //             "/hr/account/transfer",
+                        //         ].join(""),
+                        //         p,
+                        //         btn,
+                        //         null
+                        //     )
+                        //     .then((res) => {
+                        //         if (res.status_code == 200) {
+                        //             me.hide(true, p);
+                        //         } else cv_interact.error(res.error_message);
+                        //     });
                     },
                 },
             ],
