@@ -1764,6 +1764,49 @@ function windowPrint(html=null)
     else
         cv_interact.warning('Select Run Report Before Print!');
 }
+function windowPrintExitForm(html=null)
+{
+    HtmlString = html ? html : HtmlString;
+    if(HtmlString)
+    {
+        let myWindow = window.open('','PRINT');
+        myWindow.document.write(`<!DOCTYPE html>
+        <html>
+            <head>
+                <title>Exit Form</title>
+                <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/ksm_style.css"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/vsstyle.css"/>
+                <link rel="stylesheet" type="text/css" href="${main_view.base_url}/assets/css/css_for_print.css"/>
+                <style>
+                     *{
+                        margin:0;
+                        padding:0;
+                        box-sizing: border-box;
+                        font-size:11px;
+                    }
+                    .table tbody>tr>td {
+                        max-height: 150px;
+                        max-width: 300px;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+                </style>
+
+            </head>
+            <body>${HtmlString.replace(/table-responsive\s+/g,'')}</body>
+        </html>`);
+        //${HtmlString.replace(/table-responsive\s+/g,'')}
+        myWindow.document.close();
+        setTimeout(() => {
+            myWindow.focus();
+            myWindow.print();
+            myWindow.close();
+        },500);
+    }
+    else
+        cv_interact.warning('Select Run Report Before Print!');
+}
 
 function windowPrintRole(html=null,style=null)
 {

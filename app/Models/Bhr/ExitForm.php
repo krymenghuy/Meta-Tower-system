@@ -2,13 +2,14 @@
 
 namespace App\Models\Bhr;
 
+use App\Models\DBX;
 use App\Models\DV;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 
-class ExitForm //extends Model
+class ExitForm
 {
     protected $id = null;
     protected $userInfo = null;
@@ -33,32 +34,36 @@ class ExitForm //extends Model
 
         $v_rule = [
             'id' => '0|identity=1',
-            'name' => '1|string',
             'emp_id' => '1|number',
+            'form_id' => '1|number',
+            'item_id' => '1|number',
             'amount' => '0|number',
-            'remarks' => '0|number',
-            'status' => '1|choice|1,2|default=1',
+            'remarks' => '0|text|0-250',
+            'settled' => '1|choice|1,2|default=1',
         ];
-        $name = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
+        $remark = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
-        $res = validateObject($arr, $v_rule, true, ['name' => $name], $ss->lang, false);
+        $res = validateObject($arr, $v_rule, true, ['remarks' => $remark], $ss->lang, false);
         if ($res->error) {
             return DV::error($res->error);
         }
 
         $inputs = $res->values;
-        $emp_id = $arr['emp_id'] ?? null;
+        $emp_id = $inputs['emp_id'];
+        $item_id = $inputs['item_id'];
 
         if (!$id) {
             $existingExitForm = DB::table('exit_forms')
-            ->where('name', $inputs['name'])
-            ->first();
+            ->where('form_id', $inputs['form_id'])
+            ->where('item_id', $item_id)
+                ->where('emp_id', $emp_id)
+                ->first();
 
             if ($existingExitForm) {
-                return DV::error('The name already exists. Please choose a different name.');
+                return DV::error('This item already exists for the same employee. Please choose a different item.');
             }
         }
-        
+
         if ($id) {
             $updated = DB::table('exit_forms')
             ->where('id', $id)
@@ -79,8 +84,6 @@ class ExitForm //extends Model
             }
         }
     }
-
-
 
     public function getList($arr, $ss = null)
     {
@@ -109,33 +112,38 @@ class ExitForm //extends Model
         ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
         ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
+        ->join('forms as f', 'f.id', '=', 'ef.form_id')
+        ->join('exit_items as ei', 'ei.id', '=', 'ef.item_id')
         ->where('emp.status_id', 20)
-        ->select(
-            'ef.emp_id',
-            'ef.id',
-            'ef.name as name',
-            'ef.amount',
-            'ef.remarks',
-            'ef.status',
-            'emp.id as emp_id',
-            'emp.name as emp_name',
-            'br.name as branch_name',
-            'emp.email',
-            'emp.position_id',
-            'pos.title as position',
-            'emp.photo_file_name as emp_photo'
+        ->selectRaw(
+            'ef.emp_id,
+            ef.id,
+            f.id,
+            ei.id,
+            f.name as form_name,
+            ei.name as item_name,
+            ef.amount,
+            ef.remarks,
+            ef.settled,
+            emp.id as emp_id,
+            emp.name as emp_name,
+            br.name as branch_name,
+            emp.email,
+            emp.position_id,
+            pos.title as position,
+            emp.photo_file_name as emp_photo'
         )
             ->orderBy('ef.id', 'desc');
 
         if ($search_name) {
-            $query->where('ef.name', $search_name);
+            $query->where('ei.name', $search_name);
         }
 
         if (!empty($d->search_value)) {
             $search_value = $d->search_value;
             $query->where(function ($q) use ($search_value) {
                 $q->where('emp.name', 'LIKE', "%{$search_value}%")
-                ->orWhere('ef.name', 'LIKE', "%{$search_value}%");
+                ->orWhere('ei.name', 'LIKE', "%{$search_value}%");
             });
         }
 
@@ -163,32 +171,32 @@ class ExitForm //extends Model
         return new LengthAwarePaginator($rows, $count, $per_page, $current_page);
     }
 
-
     public static function getDetails($id, $ss)
     {
         $details = DB::table('exit_forms as ef')
-        ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
-        ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
-        ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
-        ->where('emp.status_id', 20)
-        ->where('ef.id', $id)
-            ->select(
-                'ef.id',
-                'ef.emp_id',
-                'ef.name as name',
-                'ef.amount',
-                'ef.status',
-                'ef.remarks',
-                'emp.id as emp_id',
-                'emp.name as emp_name',
-                'emp.email',
-                'emp.joining_date as start_date',
-                'emp.position_id',
-                'emp.branch_id',
-                'br.name as branch_name',
-                'emp.code',
-                'pos.title as position',
-                'emp.photo_file_name as emp_photo'
+            ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
+            ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
+            ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
+            ->join('forms as f', 'f.id', '=', 'ef.form_id')
+            ->join('exit_items as ei', 'ei.id', '=', 'ef.item_id')
+            ->where('emp.status_id', 20)
+            ->selectRaw(
+                'ef.emp_id,
+            ef.id,
+            f.id,
+            ei.id,
+            f.name as form_name,
+            ei.name as item_name,
+            ef.amount,
+            ef.remarks,
+            ef.settled,
+            emp.id as emp_id,
+            emp.name as emp_name,
+            br.name as branch_name,
+            emp.email,
+            emp.position_id,
+            pos.title as position,
+            emp.photo_file_name as emp_photo'
             )
             ->orderBy('ef.id', 'desc')
             ->first();
@@ -229,33 +237,178 @@ class ExitForm //extends Model
         return DV::depends($deleted, ['action' => 'deleted']);
     }
 
-    
-
     public static function getFormOptions($id, $ss)
     {
         $exit_forms = $id ? self::getDetails($id, $ss) : null;
 
         return (object) [
             'employees' => GeneralSettings::options_employee(20, $ss),
+            'forms' => DB::table('forms as f')->selectRaw('id,name')->get(),
+            'exit_items' => DB::table('exit_items as ei')->selectRaw('id,name')->get(),
             'exit_forms' => $exit_forms,
         ];
     }
 
     public function getExitFormList($arr, $ss = null)
     {
-        $d = (object) $arr;
-        $branch_id = $ss->branch_id;
+        $header_list = ['អ្នកទទួល ខុសត្រូវ', 'បរិយាយព័ត៌មានលំអិត', 'កាលបរិច្ឆេទត្រូវបានជម្រះ', 'ទឹកប្រាក់ទូទាត់', 'ចំណាំ'];
+        $key_list = ['name', 'item', 'description', 'effective_date', 'amount', 'remarks'];
+        $key_props = $this->createKeyValue('key', self::stringToKeyCase($key_list));
+        $headers = $this->createMulKeyValue('name', $header_list, $key_props);
+
+        $data = (object) $arr;
+        $campus_id = $data->campus_id ?? null;
+        $branch_id = $data->branch_id ?? $campus_id;
+        $emp_id = $data->emp_id ?? null;
+        $branch_ids = getAccessBranches($ss, $branch_id);
+        $start_date = isset($data->start_date) ? convertDate($data->start_date) : date('Y-m-01');
+        $end_date = isset($data->end_date) ? convertDate($data->end_date) : date('Y-m-t');
+        $date_condition = $start_date && $end_date ? "DATE(emp.created_at) BETWEEN '$start_date' AND '$end_date'" : '';
+
+        $col_start_date = DBX::formatDate('emp.joining_date', 'joining_date');
+        $col_effective_date = DBX::formatDate('r.effective_date', 'effective_date');
 
         $query = DB::table('exit_forms as ef')
-            ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
-            ->where('emp.status_id', 20)
-            ->select('ef.id', 'ef.name', 'emp.name as emp_name')
-            ->where('ef.branch_id', $branch_id);
+        ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
+        ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
+        ->join('exit_items as ei', 'ei.id', '=', 'ef.item_id')
+        ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
+        ->join('forms as f', 'f.id', '=', 'ef.form_id')
+        ->leftJoin('resignations as r', 'r.emp_id', '=', 'ef.emp_id')
+        ->where('emp.status_id', 20)
+        ->selectRaw("
+            ef.id,
+            ef.emp_id,
+            ef.item_id,
+            ef.form_id,
+            ef.amount,
+            ef.remarks,
+            ef.settled,
+            f.name as form_name,
+            ei.name as item_name,
+            ei.check_point_cat_id,
+            emp.id as emp_id,
+            emp.name as employee_name,
+            emp.code,
+            $col_start_date,
+            emp.position_id,
+            emp.branch_id,
+            br.name as branch_name,
+            pos.title as position,
+            emp.photo_file_name as emp_photo,
+            $col_effective_date
+        ")
+        ->where('ef.emp_id', $emp_id);
 
-        if (!empty($d->search_value)) {
-            $query->where('ef.name', 'LIKE', "%{$d->search_value}%");
+        if (!empty($data->search_value)) {
+            $query->where(function ($q) use ($data) {
+                $q->where('ef.remarks', 'LIKE', "%{$data->search_value}%")
+                ->orWhere('emp.name', 'LIKE', "%{$data->search_value}%");
+            });
         }
 
-        return $query->get();
+        $exitFormItems = $query->get();
+
+        $check_point_categories = DB::table('check_point_categories')->select('id', 'name')->get();
+        $exit_items = DB::table('exit_items')->select('id', 'name', 'check_point_cat_id')->get();
+        $form_items = DB::table('exit_forms')->select('id', 'item_id', 'emp_id')->where('emp_id', $emp_id)->get();
+
+        $groupedData = [];
+        $number_cat = [];
+
+        foreach ($check_point_categories as $category) {
+            foreach ($exit_items as $item) {
+                if ($item->check_point_cat_id == $category->id) {
+                    foreach ($form_items as $form_item) {
+                        if ($form_item->item_id == $item->id) {
+                            $groupedData[$category->id]['name'] = $category->name;
+                            $groupedData[$category->id]['item'][] = $item;
+
+                            if (!in_array($category->id, $number_cat)) {
+                                $number_cat[] = $category->id;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        $employeeData = $exitFormItems->map(function ($ef) {
+            return [
+                'emp_name' => $ef->employee_name,
+                'position' => $ef->position,
+                'code' => $ef->code,
+                'joining_date' => $ef->joining_date,
+                'branch_name' => $ef->branch_name,
+                'effective_date' => $ef->effective_date,
+            ];
+        });
+
+        $title = 'ទម្រង់ជម្រះបញ្ជីនៃការចាកចេញ';
+
+        return (object) [
+            'title' => $title,
+            'header' => $headers,
+            'num_cat' => $number_cat,
+            'list' => $groupedData,
+            'employee' => $employeeData,
+        ];
+    }
+    function createKeyValue($key_name, $arr)
+    {
+        $result = [];
+        foreach ($arr as $d) {
+            $result[] = [$key_name => $d];
+        }
+        return $result;
+    }
+    static function stringToKeyCase($cnvtString, $exit_form_string = null, $front = 1)
+    {
+
+        $removeSpecialChars = function ($str) {
+            $pattern = '/[^a-zA-Z0-9\s' . preg_quote('_', '/') . ']/u';
+            return preg_replace($pattern, '', $str);
+        };
+        $exit_form_string = $removeSpecialChars(strtolower($exit_form_string));
+        if (is_array($cnvtString)) {
+
+            $result = [];
+            foreach ($cnvtString as $string) {
+                $string = $removeSpecialChars($string);
+                $convertedString = strtolower(str_replace(' ', '_', $string));
+
+                if ($exit_form_string) {
+                    $result[] = $front == 1 ? $exit_form_string . '_' . $convertedString : $convertedString . '_' . $exit_form_string;
+                } else {
+                    $result[] = $convertedString;
+                }
+            }
+            return $result;
+        }
+        $cnvtString = $removeSpecialChars($cnvtString);
+        $convertedString = strtolower(str_replace(' ', '_', $cnvtString));
+
+        if ($exit_form_string) {
+            return $front == 1 ? $exit_form_string . '_' . $convertedString : $convertedString . '_' . $exit_form_string;
+        }
+        return $convertedString;
+    }
+    function createMulKeyValue($key_name, $arr, $bonus_data = null)
+    {
+        $result = [];
+        $count = count($arr);
+
+        foreach ($arr as $index => $header) {
+            $headerData = [$key_name => $header];
+
+            if (isset($bonus_data[$index])) {
+                foreach ($bonus_data[$index] as $bonus_key => $bonus_value) {
+                    $headerData[$bonus_key] = $bonus_value;
+                }
+            }
+
+            $result[] = $headerData;
+        }
+        return $result;
     }
 }
