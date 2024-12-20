@@ -9,7 +9,6 @@ var ExitFormItemComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnAddExitFormItem");
     this.elSearch = this.self.querySelector("#_exit_form_item_search");
     this.divFilter = this.self.querySelector("#container_exit_form_item");
-    this.btnPrint = this.self.querySelector("#_btnPrintExitFormItem");
 
     this.cols = [
         {
@@ -110,10 +109,6 @@ var ExitFormItemComponent = new (function () {
                 },
             };
             ExitFormItemDialog.show(op);
-        };
-        mThis.btnPrint.onclick = function (e) {
-            e.preventDefault();
-            window.print();
         };
         const pr_tbl = mThis.ExitFormListView.getListContainer();
         const sh_parent = pr_tbl;

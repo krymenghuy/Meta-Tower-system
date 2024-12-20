@@ -138,10 +138,7 @@ var ExitFormComponent = new (function () {
             };
             ExitFormDialog.show(op);
         };
-        // mThis.btnPrint.onclick = function (e) {
-        //     e.preventDefault();
-        //     window.print();
-        // };
+        
         const pr_tbl = mThis.ExitFormListView.getListContainer();
         const sh_parent = pr_tbl;
         sh_parent.classList.add("overflow-y-auto");
@@ -194,7 +191,6 @@ var ExitFormComponent = new (function () {
             if (btn) {
                 mThis.view_exit_form(btn.dataset.emp_id, btn);
             }
-            console.log(123, btn);
         });
     };
     this.edit_exit_form = (id, menulink) => {
@@ -205,7 +201,6 @@ var ExitFormComponent = new (function () {
                 mThis.ExitFormListView.showPage();
             },
         };
-        console.log(20020, op);
 
         ExitFormDialog.show(op);
     };
@@ -393,297 +388,6 @@ const ExitFormDialog = (() => {
     return self;
 })();
 
-const renderExitForm = (data) => {
-    //  return [
-    //      `<h5 class="text-center justify-center mb-4">ឯកសារដែលត្រូវនាំមកជូន</h5>
-    //                     <div class="row mb-3">
-    //                         <div class="form-group col-md-12">
-    //                             <label for="employee" class="form-label" vslang="titles.ឈ្មោះបុគ្គលិក"></label>
-    //                             <div name="employee" class="form-control data-input"  data-field="emp_id"></div>
-    //                         </div>
-    //                         <div>
-    //                             <label>អត្តលេខ:</label>
-    //                             <div type="text" class="form-control data-input" data-field="code"></div>
-    //                         </div>
-    //                         <div class="form-group col-6">
-    //                             <label for="start_date" class="form-label" vslang="titles.កាលបរិច្ឆេទចូលធ្វើការ៖"></label>
-    //                             <div name="start_date" class="form-control data-input form_input" data-field="start_date"></div>
-    //                         </div>
-    //                     </div>
-    //                     <div class="row mb-3">
-    //                         <div class="col-md-6">
-    //                             <label>នាយកដ្ឋាន ឬសាខា៖</label>
-    //                             <div type="text" class="form-control data-input" data-field="branch_name"></div>
-    //                         </div>
-    //                         <div class="form-group col-6">
-    //                             <label for="effective_date" class="form-label" vslang="titles.កាលបរិច្ឆេទបិទការងារ៖"></label>
-    //                             <div name="effective_date" class="form-control data-input form_input" data-field="effective_date" <div/>
-    //                         </div>
-    //                     </div>
-    //                     <div class="row mb-3 justify-center">
-    //                         <div class="col-md-12">
-    //                             <label>គោលបំណង:</label>
-    //                             <div class="form-check form-check-inline">
-    //                                 <input class="form-check-input data-input" data-field="status_id" type="checkbox" id="status_id">
-    //                                 <label class="form-check-label" for="status_id">ការលាលែងពីតំណែង</label>
-    //                             </div>
-    //                             <div class="form-check form-check-inline">
-    //                                 <input class="form-check-input data-input" data-field="terminate" type="checkbox" id="terminate">
-    //                                 <label class="form-check-label" for="terminate">ការបញ្ចប់</label>
-    //                             </div>
-    //                             <div class="form-check form-check-inline">
-    //                                 <input class="form-check-input" type="checkbox" id="purpose3">
-    //                                 <label class="form-check-label" for="purpose3">ផ្សេងៗ  (សូមបញ្ជាក់)៖</label>
-    //                             </div>
-    //                         </div>
-    //                     </div>
-    //                     <table class="table table-bordered">
-    //                         <thead>
-    //                             <tr>
-    //                                 <th>អ្នកទទួលខុសត្រូវ</th>
-    //                                 <th class="col-4">បរិយាយព័ត៌មានលំអិត</th>
-    //                                 <th>កាលបរិច្ឆេទត្រូវបានជម្រះ</th>
-    //                                 <th>ទឹកប្រាក់ទូទាត់</th>
-    //                                 <th>ចំណាំ</th>
-    //                             </tr>
-    //                         </thead>
-    //                         <tbody>
-    //                             <tr>
-    //                                 <td rowspan="2" class="text-center justify-center align-center">បេឡាធិការ</td>
-    //                                 <td>
-    //                                     <div class="form-check">
-    //                                         <label class="form-check-label text-dark" for="doc1">ប្រគល់សម្ភារៈ និងបរិក្ខារផ្សេងៗ៖ </label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc1">
-    //                                         <label class="form-check-label" for="doc1">កាតាប </label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc1">
-    //                                         <label class="form-check-label" for="doc2">មួកសុវត្តិភាព</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc1">
-    //                                         <label class="form-check-label" for="doc2">សៀវភៅកត់ត្រា</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc1">
-    //                                         <label class="form-check-label" for="doc2">ID Card</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc1">
-    //                                         <label class="form-check-label" for="doc2">អាវយឺត</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc1">
-    //                                         <label class="form-check-label" for="doc2">អាវក្រៅ</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc1">
-    //                                         <label class="form-check-label" for="doc2">ត្រាឈ្មោះ</label>
-    //                                     </div>
-    //                                 </td>
-    //                                 <td></td>
-    //                                 <td></td>
-    //                             </tr>
-    //                             <tr>
-    //                                 <td>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc2">
-    //                                         <label class="form-check-label" for="doc2">ប្រគល់ស៊ីមកាត</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc2">
-    //                                         <label class="form-check-label" for="doc2">ឯកសារកម្ចី</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc2">
-    //                                         <label class="form-check-label" for="doc2">ផ្សេងៗ ចូររៀបរាប់៖ </label>
-    //                                     </div>
-    //                                 </td>
-    //                                 <td></td>
-    //                                 <td></td>
-    //                             </tr>
-    //                             <tr>
-    //                                 <td rowspan="2" class="text-center justify-center align-center">នាយកសាខា/ថ្នាក់គ្រប់គ្រងផ្ទាល់</td>
-    //                                 <td>
-    //                                     <div class="form-check">
-    //                                         <label class="form-check-label" for="doc3">កូនសោដែលជំពាក់៖</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ការិយាល័យ</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ទូដែក</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ទូដាក់ឯកសារ ។ល។</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ទូដាក់ឯកសារ ។ល។</label>
-    //                                     </div>
-    //                                 </td>
-    //                                 <td></td>
-    //                                 <td></td>
-    //                             </tr>
-    //                             <tr>
-    //                                 <td>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc4">
-    //                                         <label class="form-check-label" for="doc4">កុំព្យូទ័រ Laptop</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc4">
-    //                                         <label class="form-check-label" for="doc4">ការទូទាត់ប្រាក់កម្ចី</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc4">
-    //                                         <label class="form-check-label" for="doc4">ការផាកពិន័យលើកិច្ចសន្យាការងារ</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc4">
-    //                                         <label class="form-check-label" for="doc4">ប្រាក់សំណងលើការកេងបន្លំ</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc4">
-    //                                         <label class="form-check-label" for="doc4">ផ្សេងៗ ចូររៀបរាប់៖</label>
-    //                                     </div>
-    //                                 </td>
-    //                                 <td></td>
-    //                                 <td></td>
-    //                             </tr>
-    //                             <tr>
-    //                                 <td class="text-center justify-center align-center">មន្រ្តីធនធានមនុស្ស</td>
-    //                                 <td>
-    //                                     <label class="form-check-label" for="doc3">គណនីអ៊ីមែលត្រូវបានដកចេញ</label>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ការលុបចោលធានារ៉ាប់រង និងកាត</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ការឈប់សម្រាកប្រចាំឆ្នាំ (សល់ ឬជំពាក់)</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ប្រាក់សោធននិវត្តន៍៣%</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ប្រាក់សោធននិវត្តន៍៥%</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ប្រាក់បៀវត្ស (ចំនួនថ្ងៃការងារ)/label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ប្រាក់ជួលម៉ូតូ</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ប្រាក់លើកទឹកចិត្ត</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ជាប់កិច្ចសន្យាវគ្គបណ្តុះបណ្តាល</label>
-    //                                     </div>
-    //                                     <div class="form-check">
-    //                                         <input class="form-check-input" type="checkbox" id="doc3">
-    //                                         <label class="form-check-label" for="doc3">ផ្សេងៗ ចូររៀបរាប់៖</label>
-    //                                     </div>
-    //                                 </td>
-    //                                 <td></td>
-    //                                 <td></td>
-    //                             </tr>
-    //                             <tr>
-    //                                 <td class="text-center justify-center align-center">
-    //                                     <label class=" form-check-label text-center justify-center align-center" for="doc5">យោបល់ផ្សេងទៀត៖</label>
-    //                                 </td>
-    //                                 <td colspan="4">
-    //                                     <input class="form-check-label" style="width:100%; padding:10px; border:none; outline:none; color:grey; font-width:normal" for="doc5" placeholder="បញ្ចេញមតិយោបលនៅទីនេះ...">
-    //                                 </td>
-    //                             </tr>
-    //                             <hr />
-    //                             </tbody>
-    //                         </table>
-    //                         <table class="table table-bordered">
-    //                             <thead>
-    //                                 <th>បុគ្គលិក</th>
-    //                                 <th>បញ្ជាក់ដោយ</th>
-    //                                 <th>បញ្ជាក់ដោយ</th>
-    //                                 <th>បញ្ជាក់ដោយ</th>
-    //                                 <th>អនុម័តដោយ</th>
-    //                             </thead>
-    //                             <tbody>
-    //                             <tr>
-    //                                 <td><span>.........................................</span></td>
-    //                                 <td><span>.........................................</span></td>
-    //                                 <td><span>.........................................</span></td>
-    //                                 <td><span>.........................................</span></td>
-    //                                 <td><span>.........................................</span></td>
-    //                             </tr>
-    //                             <tr>
-    //                                 <td>ហត្ថលេខា</td>
-    //                                 <td>ហត្ថលេខា</td>
-    //                                 <td>ហត្ថលេខា</td>
-    //                                 <td>ហត្ថលេខា</td>
-    //                                 <td>ហត្ថលេខា</td>
-    //                             </tr>
-    //                             <tr>
-    //                                 <td>ឈ្មោះ ................................</td>
-    //                                 <td>ឈ្មោះ ................................</td>
-    //                                 <td>ឈ្មោះ ................................</td>
-    //                                 <td>ឈ្មោះ ................................</td>
-    //                                 <td>ឈ្មោះ ................................</td>
-    //                             </tr>
-    //                             <tr>
-    //                                 <td>តំណែង ..............................</td>
-    //                                 <td>តំណែង ..............................</td>
-    //                                 <td>តំណែង ..............................</td>
-    //                                 <td>តំណែង ..............................</td>
-    //                                 <td>តំណែង ..............................</td>
-    //                             </tr>
-    //                             <tr>
-    //                                 <td>
-    //                                     <div class="align-left">
-    //                                         <label for="date" class="form-label" vslang="titles.កាលបរិច្ឆេទ"></label>
-    //                                         <input name="date" class="form-control data-input" data-field="date" />
-    //                                     </div>
-    //                                 </td>
-    //                                 <td>
-    //                                     <div class="align-left">
-    //                                         <label for="date" class="form-label" vslang="titles.កាលបរិច្ឆេទ"></label>
-    //                                         <input name="date" class="form-control data-input" data-field="date" />
-    //                                     </div>
-    //                                 </td>
-    //                                 <td>
-    //                                     <div class="align-left">
-    //                                         <label for="date" class="form-label" vslang="titles.កាលបរិច្ឆេទ"></label>
-    //                                         <input name="date" class="form-control data-input" data-field="date" />
-    //                                     </div>
-    //                                 </td>
-    //                                 <td>
-    //                                     <div class="align-left">
-    //                                         <label for="date" class="form-label" vslang="titles.កាលបរិច្ឆេទ"></label>
-    //                                         <input name="date" class="form-control data-input" data-field="date" />
-    //                                     </div>
-    //                                 </td>
-    //                                 <td>
-    //                                     <div class="align-left">
-    //                                         <label for="date" class="form-label" vslang="titles.កាលបរិច្ឆេទ"></label>
-    //                                         <input name="date" class="form-control data-input" data-field="date" />
-    //                                     </div>
-    //                                 </td>
-    //                             </tr>
-    //                         </tbody>
-    //                     </table>`,
-    //  ].join("");
-};
 
 const ViewExitFormDialog = (() => {
     const self = {};
@@ -729,8 +433,8 @@ const ViewExitFormDialog = (() => {
                                             : item;
 
                                     return `
-                                    <div class="d-flex align-items-center justify-center">
-                                        <input type="checkbox" class="form-check-input disabled" checked />
+                                    <div class="d-flex ml-1">
+                                        <i class="fa fa-check-circle"></i>
                                         <span class="ms-2">${itemName}</span>
                                     </div>`;
                                 })
@@ -746,51 +450,52 @@ const ViewExitFormDialog = (() => {
             })
             .join("");
     };
-const generateEmployeeInfo = (employeeInfo) => {
-    console.log(123, employeeInfo);
-    
-    const {
-        emp_name = "",
-        position = "",
-        code = "",
-        start_date = "",
-        branch_name = "",
-        effective_date = "",
-        purpose = "resignation",
-    } = employeeInfo[0];
+    const generateEmployeeInfo = (employeeInfo) => {
+        const {
+            emp_name = "",
+            position = "",
+            code = "",
+            joining_date = "",
+            branch_name = "",
+            effective_date = "",
+            purpose = "resignation",
+        } = employeeInfo[0];
 
-    return `
-                <div class="employee-info-section d-block">
-                    <div class="d-flex" style="justify-content:space-between; width:100%">
-                        <div style="width:33%; justify-content:flex-start; align-self:left">ឈ្មោះបុគ្គលិក៖ ${emp_name}</div>
-                        <div style="width:33%; justify-content:flex-start; align-self:left">អត្តលេខ៖ ${code}</div>
-                        <div style="width:33%; justify-content:flex-start; align-self:left">កាលបរិច្ឆេទចូលធ្វើការ៖ ${start_date}</div>
-                    </div>
-                    <div class="d-flex mt-4" style="justify-content:space-between; width:100%">
-                        <div style="width:33%; justify-content:flex-start; align-self:left">ផ្នែក៖ ${position}</div>
-                        <div style="width:33%; justify-content:flex-start; align-self:left">នាយកដ្ឋាន ឬសាខា៖ ${branch_name}</div>
-                        <div style="width:33%; justify-content:flex-start; align-self:left">កាលបរិច្ឆេទបិទការងារ៖ ${effective_date}</div>
-                    </div>
-                    
-                    <div class="d-flex mt-4 text-center gap-5">
-                        <span>គោលបំណង៖</span>
-                        <div class="d-flex disabled">
-                            <div class="form-check me-3">
-                                <input class="form-check-input" type="checkbox" id="resignation" checked />
-                                <label class="form-check-label" for="resignation">ការលាលែងពីតំណែង</label>
+        return `
+                <table class="employee-info-section table">
+                    <tr>
+                        <td style="width:33%; text-align:left;">ឈ្មោះបុគ្គលិក៖ ${emp_name}</td>
+                        <td style="width:33%; text-align:left;">អត្តលេខ៖ ${code}</td>
+                        <td style="width:33%; text-align:left;">កាលបរិច្ឆេទចូលធ្វើការ៖ ${joining_date}</td>
+                    </tr>
+                    <tr>
+                        <td style="width:33%; text-align:left;">ផ្នែក៖ ${position}</td>
+                        <td style="width:33%; text-align:left;">នាយកដ្ឋាន ឬសាខា៖ ${branch_name}</td>
+                        <td style="width:33%; text-align:left;">កាលបរិច្ឆេទបិទការងារ៖ ${effective_date}</td>
+                    </tr>
+                    <tr>
+                        <td colspan="3" style="text-align:left;">
+                            <div class="d-flex text-center gap-4 ml-2">
+                                <span>គោលបំណង៖</span>
+                                <div class="d-flex disabled">
+                                    <div class="form-check me-3">
+                                        <i class="fa fa-check-circle"></i>
+                                        <label class="form-check-label" for="resignation">ការលាលែងពីតំណែង</label>
+                                    </div>
+                                    <div class="form-check me-3">
+                                        <i class="fa fa-circle"></i>
+                                        <label class="form-check-label" for="terminate">ការបញ្ចប់</label>
+                                    </div>
+                                    <div class="form-check">
+                                        <i class="fa fa-circle"></i>
+                                        <label class="form-check-label" for="other">ផ្សេងៗ  (សូមបញ្ជាក់)៖</label>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-check me-3">
-                                <input class="form-check-input" type="checkbox" id="terminate" />
-                                <label class="form-check-label" for="terminate">ការបញ្ចប់</label>
-                            </div>
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" id="other" />
-                                <label class="form-check-label" for="other">ផ្សេងៗ  (សូមបញ្ជាក់)៖</label>
-                            </div>
-                        </div>
-                    </div>
-            </div>`;
-};
+                        </td>
+                    </tr>
+                </table>`;
+    };
     self.show = (op) => {
         vsapi
             .call(`${main_view.base_url}/hr/exit-form-item/list-all`, {
@@ -803,12 +508,11 @@ const generateEmployeeInfo = (employeeInfo) => {
                         header: thead = [],
                         list: tbody = [],
                         title = "",
-                        
                     } = d;
                     const employee = d.employee ?? {};
                     let htmlString = `
                         <div class="d-block position-relative min-height-top">
-                            <div class="d-flex flex-column gap-2 justify-content-center align-items-center">
+                            <div class="d-flex flex-column gap-2">
                                 <h4 class="text-center text-uppercase">${title}</h4>
                             </div>
                             <div class="employee-info-section mt-4">
@@ -903,7 +607,7 @@ const generateEmployeeInfo = (employeeInfo) => {
                                         )
                                         .then((res) => {
                                             if (res.status_code === 200) {
-                                                windowPrint(htmlString);
+                                                windowPrintExitForm(htmlString);
                                             } else {
                                                 cv_interact.error(
                                                     res.error_message
