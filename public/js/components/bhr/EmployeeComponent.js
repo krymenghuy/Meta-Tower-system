@@ -1087,7 +1087,7 @@ var EmployeeComponent = new (function () {
                         <div style="display:flex; width:350px; justify-content:space-between">
                             <div class="date_join text-muted" style="width:230px;display:flex;align-items:start;">
                                 <img class="bhr-icons" src="${main_view.asset_url}/images/icons/calender.svg" />
-                                <p>(${d.start_date}</p><p class="text-danger ml-2 mr-2">-</p><p>${d.end_date})</p>
+                                <p>${d.start_date}</p><p class="text-danger ml-2 mr-2">-</p><p>${d.end_date}</p>
                             </div>
                             <p class="text-primary-custom text-nowrap" style="width:120px; justify-content:start;text-overflow: ellipsis;word-wrap: break-word;">
                                 <img class="bhr-icons" src="${main_view.asset_url}/images/icons/bag.svg" /> ${d.position}
