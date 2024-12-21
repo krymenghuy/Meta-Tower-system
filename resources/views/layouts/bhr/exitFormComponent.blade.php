@@ -20,7 +20,7 @@
 </div>
 <style>
     .custom-modal-size {
-        max-width: 60%;
+        max-width: 70%;
         margin: 20px auto;
     }
 

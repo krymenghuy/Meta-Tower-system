@@ -10,8 +10,8 @@
         display: flex;
         position: fixed;
     }
-    th,
-    td {
+   #_main_payrollComponent th,
+    #_main_payrollComponent td {
         padding: 10px;
         vertical-align: middle;
         text-align: left;

@@ -27,8 +27,8 @@
         bottom: 0;
     }
 
-    th,
-    td {
+   #_main_employee_benefit_component th,
+   #_main_employee_benefit_component td {
         padding: 10px;
         vertical-align: middle;
         text-align: left;

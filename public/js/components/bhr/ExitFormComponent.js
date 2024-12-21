@@ -534,7 +534,7 @@ const ViewExitFormDialog = (() => {
                                 ${generateEmployeeInfo(employee)}
                             </div>
                         </div>
-                        <div class="table-responsive mt-3 pt-3 pb-3 bg-white">
+                        <div class="table- mt-3 pt-3 pb-3 bg-white">
                             <table class="table table-bordered">
                                 <thead>
                                     <tr>${generateTableHeaders(thead)}</tr>

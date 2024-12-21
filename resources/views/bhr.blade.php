@@ -73,7 +73,7 @@ echo $user->lang ?? 'en'; ?>">
     ScriptManager::render('priority-one', 1, 3);
     ScriptManager::render('primary', 1, 6);
     ScriptManager::render('bhr-primary-defer', 1, 6);
-    ScriptManager::render('bhr-components', 1, 8);
+    ScriptManager::render('bhr-components', 1, 10);
     //ScriptManager::render('pdfmake', 1);
     ?>
 </head>

@@ -108,7 +108,7 @@ class ExitForm
         ->where('emp.status_id', 20)
         ->selectRaw(
             'ef.emp_id,
-            ef.id,
+            ef.id,'.'
             ef.is_finished,
             emp.id as emp_id,
             emp.name as emp_name,
