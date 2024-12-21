@@ -35,11 +35,12 @@ class ExitFormItem
         $branch_id = $ss->branch_id;
         $v_rule = [
             'id' => '0|identity=1',
-            'emp_id' => '1|number',
             'form_id' => '1|number',
             'check_point_id' => '1|number',
             'amount' => '1|number',
-            'remarks' => '0|string'
+            'remarks' => '0|string',
+            'is_settled' =>'1|choice|1,2,3|default=1',
+            'item_type' =>'1|choice|1,2,3|default=1'
         ];
 
         $remarks = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
@@ -50,42 +51,40 @@ class ExitFormItem
         }
 
         $inputs = $res->values;
-        $emp_id = $arr['emp_id'] ?? null;
+        // $emp_id = $arr['emp_id'] ?? null;
         $form_id = $arr['form_id'] ?? null;
         $subs_id = $arr['subs_id'] ?? null;
         $inputs['subs_id'] = $subs_id;
         $inputs['branch_id'] = $branch_id;
 
-        $resignation = DB::table('resignations')
-        ->where('emp_id', $emp_id)
-            ->first();
+        // $resignation = DB::table('resignations')
+        // ->where('emp_id', $emp_id)
+        //     ->first();
 
-        if (!$resignation) {
-            return DV::error("Resignation record not found for Employee ID {$emp_id}.");
-        }
+        // if (!$resignation) {
+        //     return DV::error("Resignation record not found for Employee ID {$emp_id}.");
+        // }
 
-        $isValidEmployee = DB::table('employees')->where('id', $emp_id)->where('status_id', 20)->exists();
-        if (!$isValidEmployee) {
-            return DV::error("Employee ID {$emp_id} is not active for resignation.");
-        }
+        // $isValidEmployee = DB::table('employees')->where('id', $emp_id)->where('status_id', 20)->exists();
+        // if (!$isValidEmployee) {
+        //     return DV::error("Employee ID {$emp_id} is not active for resignation.");
+        // }
 
         $currentDate = date('Y-m-d');
-        if ($resignation->effective_date < $currentDate) {
-            return DV::error("Employee ID {$emp_id} cannot create or edit an exit item because their resignation effective date has expired.");
-        }
+        // if ($resignation->effective_date < $currentDate) {
+        //     return DV::error("Employee ID {$emp_id} cannot create or edit an exit item because their resignation effective date has expired.");
+        // }
 
         if (!$id) {
             $existingExitItem = DB::table('exit_form_items')
-            ->where('emp_id', $emp_id)
+            // ->where('emp_id', $emp_id)
                 ->where('check_point_id', $inputs['check_point_id'])
                 ->first();
 
-            if ($existingExitItem) {
-                return DV::error("An exit form item already exists for Employee ID {$emp_id}.");
-            }
+            // if ($existingExitItem) {
+            //     return DV::error("An exit form item already exists for Employee ID {$emp_id}.");
+            // }
         }
-
-        // If id exists, update the existing record
         if ($id) {
             $updated = DB::table('exit_form_items')
             ->where('id', $id)
@@ -97,7 +96,6 @@ class ExitFormItem
                 return DV::error('Update failed. Record may not exist or data is unchanged.');
             }
         } else {
-            // If id doesn't exist, create a new record
             $newId = DB::table('exit_form_items')->insertGetId($inputs);
 
             if ($newId) {
@@ -133,31 +131,31 @@ class ExitFormItem
         $currentDate = date('Y-m-d');
 
         $query = DB::table('exit_form_items as efi')
-        ->leftJoin('employees as emp', 'emp.id', '=', 'efi.emp_id')
+        ->join('employees as emp', 'emp.id', '=', 'efi.emp_id')
         ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
-        ->leftJoin('positions as pos', 'pos.id', '=', 'emp.position_id')
-        ->leftJoin('check_points as cp', 'cp.id', '=', 'efi.check_point_id')
-        ->leftJoin('exit_forms as ef', 'ef.id', '=', 'efi.form_id')
+        ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
+        ->join('check_points as cp', 'cp.id', '=', 'efi.check_point_id')
+        ->join('exit_forms as ef', 'ef.id', '=', 'efi.form_id')
         ->where('emp.status_id', 20)
-        ->select(
-            'efi.id',
-            'efi.emp_id',
-            'efi.check_point_id',
-            'efi.form_id',
-            'ef.name as form_name',
-            'efi.amount',
-            'efi.remarks',
-            'cp.item_name as item_name',
-            'cp.check_point_cat_id',
-            'emp.id as emp_id',
-            'emp.name',
-            'emp.code',
-            'emp.branch_id',
-            'br.name as branch_name',
-            'emp.email',
-            'emp.position_id',
-            'pos.title as position',
-            'emp.photo_file_name as emp_photo'
+        ->selectRaw(
+            'efi.id,
+            efi.emp_id,
+            efi.check_point_id,
+            efi.form_id,
+            ef.name as form_name,
+            efi.amount,
+            efi.remarks,
+            cp.name as item_name,
+            cp.check_point_cat_id,
+            emp.id as emp_id,
+            emp.name,
+            emp.code,
+            emp.branch_id,
+            br.name as branch_name,
+            emp.email,
+            emp.position_id,
+            pos.title as position,
+            emp.photo_file_name as emp_photo'
         )
             ->orderBy('efi.id', 'desc');
 
@@ -173,7 +171,7 @@ class ExitFormItem
             $search_value = $d->search_value;
             $query->where(function ($q) use ($search_value) {
                 $q->where('emp.name', 'LIKE', "%{$search_value}%")
-                ->orWhere('cp.item_name', 'LIKE', "%{$search_value}%");
+                ->orWhere('cp.name', 'LIKE', "%{$search_value}%");
             });
         }
 
@@ -209,29 +207,29 @@ class ExitFormItem
             ->join('employees as emp', 'emp.id', '=', 'efi.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
             ->join('check_points as cp', 'cp.id', '=', 'efi.check_point_id')
-            -> join('um_branches as br', 'br.id', '=', 'emp.branch_id')
+            ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
             ->join('exit_forms as ef', 'ef.id', '=', 'efi.form_id')
             ->where('emp.status_id', 20)
             ->where('efi.id', $id)
-            ->select(
-                'efi.id',
-                'efi.emp_id',
-                'efi.check_point_id',
-                'efi.form_id',
-                'ef.name as form_name',
-                'efi.amount',
-                'efi.remarks',
-                'cp.item_name as item_name',
-                'cp.check_point_cat_id',
-                'emp.id as emp_id',
-                'emp.joining_date as start_date',
-                'emp.name',
-                'emp.email',
-                'emp.code',
-                'emp.position_id',
-                'br.name as branch_name',
-                'pos.title as position',
-                'emp.photo_file_name as emp_photo'
+            ->selectRaw(
+                'efi.id,
+                efi.emp_id,
+                efi.check_point_id,
+                efi.form_id,
+                ef.name as form_name,
+                efi.amount,
+                efi.remarks,
+                cp.name as item_name,
+                cp.check_point_cat_id,
+                emp.id as emp_id,
+                emp.joining_date as start_date,
+                emp.name,
+                emp.email,
+                emp.code,
+                emp.position_id,
+                br.name as branch_name,
+                pos.title as position,
+                emp.photo_file_name as emp_photo'
             )
             ->orderBy('efi.id', 'desc')
             ->first();
@@ -277,7 +275,7 @@ class ExitFormItem
 
         return (object) [
             'employees' => GeneralSettings::options_employee(20, $ss),
-            'check_points' => DB::table('check_points')->select('id', 'item_name')->get(),
+            'check_points' => DB::table('check_points')->select('id', 'name')->get(),
             'exit_forms' => DB::table('exit_forms')->select('id', 'name')->get(),
             'check_point_categories' => DB::table('check_point_categories')->select('id', 'name')->get(),
             'exit_form_items' => $exit_form_items,
@@ -308,7 +306,7 @@ class ExitFormItem
         ->join('check_points as cp', 'cp.id', '=', 'efi.check_point_id')
         ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
         ->join('exit_forms as ef', 'ef.id', '=', 'efi.form_id')
-        ->leftJoin('resignations as r', 'r.emp_id', '=', 'efi.emp_id')
+        ->join('resignations as r', 'r.emp_id', '=', 'efi.emp_id')
         ->where('emp.status_id', 20)
         ->selectRaw(
             'efi.id,
@@ -344,7 +342,7 @@ class ExitFormItem
         $exitFormItems = $query->get();
 
         $check_point_category = DB::table('check_point_categories')->selectRaw('id, name')->get();
-        $check_point = DB::table('check_points')->selectRaw('id, item_name, check_point_cat_id')->get();
+        $check_point = DB::table('check_points')->selectRaw('id, name, check_point_cat_id')->get();
         $form_item = DB::table('exit_form_items')->selectRaw('id, check_point_id, emp_id')->get()->where('emp_id', $emp_id);
 
         $groupedData = [];

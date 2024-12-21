@@ -3,32 +3,32 @@
 namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bhr\Form;
+use App\Models\Bhr\CheckPoint;
 use App\Models\JDV;
 use App\Services\Umt\AuthService;
 use Illuminate\Http\Request;
 
-class FormController extends Controller
+class CheckPointController extends Controller
 {
-    protected $forms;
+    protected $check_points;
     public function __construct()
     {
-        $this->forms = new Form();
+        $this->check_points = new CheckPoint();
     }
-    function saveForm(Request $req)
+    function save(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = $this->forms->save($req->forms, $ss, $req->all());
+        $res = $this->check_points->save($req->check_point, $ss, $req->all());
         return JDV::raw($res);
     }
-    public function getFormPaginate(Request $req)
+    public function getList(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->forms->getFormPaginate($req->all(), $ss));
+        return JDV::result($this->check_points->getList($req->all(), $ss));
     }
     public function getDetails(Request $req)
     {
@@ -40,7 +40,7 @@ class FormController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->forms->getDetails($req->id, $ss));
+        return JDV::result($this->check_points->getDetails($req->id, $ss));
     }
     public function getFormOptions(Request $req)
     {
@@ -48,7 +48,7 @@ class FormController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->forms->getFormOptions($req->id, $ss));
+        return JDV::result($this->check_points->getFormOptions($req->id, $ss));
     }
 
     public function delete(Request $req)
@@ -58,14 +58,6 @@ class FormController extends Controller
             return JDV::raw($ss);
         }
 
-        return JDV::result($this->forms->delete($req->id, $ss));
-    }
-    public function getAllList(Request $req)
-    {
-        $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code !== 200) {
-            return JDV::raw($ss);
-        }
-        return JDV::result($this->forms->getFormList($req->all(), $ss));
+        return JDV::result($this->check_points->delete($req->id, $ss));
     }
 }
