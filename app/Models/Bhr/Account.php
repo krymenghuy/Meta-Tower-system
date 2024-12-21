@@ -47,9 +47,9 @@ class Account
         $account_number = $inputs['account_number'];
         if (!$account_number) {
             if ($inputs['account_type'] === 'Payroll') {
-                $account_number = 'P_' . $emp->code;
+                $account_number = $emp->code.'-P';
             } elseif ($inputs['account_type'] === 'Wallet') {
-                $account_number = 'W_' . $emp->code;
+                $account_number = $emp->code.'-W';
             } else {
                 $account_number = $emp->code;
             }
@@ -120,7 +120,8 @@ class Account
                e.photo_file_name as emp_photo
            ')
            ->where('a.branch_id', $branch_id)
-           ->where('a.account_type', 'Payroll'); // Filter only Payroll accounts
+           ->where('a.account_type', 'Payroll')
+           ->orderBy('id', 'ASC');
 
        if ($search_value) {
            $search_value = escape_like_str($search_value);
@@ -172,7 +173,8 @@ class Account
                e.photo_file_name as emp_photo
            ')
            ->where('a.branch_id', $branch_id)
-           ->where('a.account_type', 'Wallet');
+           ->where('a.account_type', 'Wallet')
+           ->orderBy('a.id', 'ASC');
 
        if ($search_value) {
            $search_value = escape_like_str($search_value);
@@ -241,12 +243,8 @@ class Account
     {
         $id = $id ?? $this->id;
         $ss = $ss ?? $this->userInfo;
-        if (!$id) return DV::error('Account ID is not valid');
 
-        $x = DB::table('accounts')
-            ->where('id', $id)
-            ->delete();
-        DBX::deleteForeignKeyRows(self::$fk_tables,$id,false);
+        return DB::table('accounts')->where('id', $id)->delete();
     }
 
     function getFormOptions($id, $ss)
@@ -271,71 +269,129 @@ class Account
     /** $arr = [from_account_id, to_account_id, amount, currency_code, remarks] */
     function transfer($arr, $ss) {
         $d = (object) $arr;
-        $p_account_id = DB::table('accounts')->where('emp_id', $d->emp_id)->where('account_type', 'Payroll')->value('id');
-        $w_account_id = DB::table('accounts')->where('emp_id', $d->emp_id)->where('account_type', 'Wallet')->value('id');
-
-        return$trx = $d;
-        $trx->trx_type=3;
-        $trx->from_account_id = $trx->w_account_number;
-        $trx->to_account_id = $trx->w_account_number;
-        $trx->amount = $trx->w_balance;
-        $trx->account_id = $w_account_id;
-        $trx->remarks = 'From Payroll to Wallet';
-        if($trx->balance < $trx->amount){
-            return DV::error('Insufficient Balance');
-        }
-        $trx = Transaction::createTransaction((array)$trx, $ss);
-        if(isset($trx['error'])){
-            return DV::error($trx['error']);
-        }
         $transfer_amount = 0;
 
-        if(isset($trx['transaction'])){
-            $transfer_amount = $trx['transaction']['amount'];
-            $account_id = DB::table('accounts')->where('emp_id', $trx['transaction']['emp_id'])->value('id');
-            $updateBalance_acc = Account::updateBalance($account_id,'accounts','in',  $trx['transaction']['amount'], $trx['trx_id'], $ss);
+        $from_account_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('id');
+        $emp_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('emp_id');
+        $to_account_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('id');
+
+        if (!$from_account_id || !$to_account_id) {
+            return DV::error('Account not found');
         }
 
-        $payroll_account = DB::table('accounts as a')
-            ->where('a.account_number', $d->account_number)
-            ->where('account_type','Payroll')
-            ->selectRaw(' a.id as account_id,a.account_number,a.emp_id')->first();
-        if(!$payroll_account){
-            return DV::error('Payroll Account not found!');
-        }
-        $wallet_account = DB::table('accounts as wa')
-            ->where('wa.account_number', $d->w_account_number)
-            ->where('account_type','Wallet')
-            ->selectRaw(' wa.id as w_account_id,wa.account_number as w_account_number,wa.emp_id')->first();
-        if(!$wallet_account){
-            return DV::error('Wallet Account not found!');
-        }
-        $payroll_account->trx_type=2;
-        $payroll_account->emp_id = $payroll_account->emp_id;
-        $payroll_account->from_account_id = $payroll_account->account_number;
-        $payroll_account->to_account_id = $wallet_account->w_account_number;
-        $payroll_account->remarks = 'Payroll to Wallet';
-        $payroll_account->amount = $transfer_amount;
-        $account_id = $payroll_account->account_id;
-        $last_balance = $payroll_account->amount;
-        \Log::info((array)$payroll_account);
-
-        $payroll_account = Transaction::withdrawal((array)$payroll_account, $ss);
-        if($payroll_account->status_code == 405){
-            return DV::error($payroll_account->error_message);
-        }
-        if($payroll_account->status_code == 200){
-            \Log::info(json_encode($payroll_account));
-            $payroll_account = $payroll_account->data;
-            $updateBalance_def = Account::updateBalance($account_id,'accounts','out',  $payroll_account['transaction']['amount'], $payroll_account['trx_id'], $ss);
+        if ($d->currency === 'USD') {
+            $d->amount *= $d->exchange_rate;
+        } elseif ($d->currency === 'KHR') {
+            $d->amount = $d->amount;
         }
 
-        if($updateBalance_acc && $updateBalance_def){
-            return DV::depends(1, ['Transferred Successfully' => '']);
+        $trx = $d;
+        $trx->trx_type = 3;
+        $trx->emp_id = $emp_id;
+        $trx->from_account_id = $from_account_id;
+        $trx->to_account_id = $to_account_id;
+        $trx->account_id = $to_account_id;
+        $trx->remarks = "$d->account_type $d->account_number to $d->to_account_type $d->to_account_number";
+
+        if ($trx->balance < $trx->amount) {
+            return DV::error('Insufficient Balance');
+        }
+
+        $transfer = Transaction::createTransaction((array)$trx, $ss);
+
+        if ($transfer) {
+            $transfer_amount = $transfer['transaction']['amount'];
+            $updateBalance_acc = Account::updateBalance($to_account_id, 'accounts', 'in', $transfer_amount, $transfer['trx_id'], $ss);
+        } else {
+            return DV::error('Error saving transaction');
+        }
+
+        $withdrawData = (array)$trx;
+        unset($withdrawData['account_id']);
+        unset($withdrawData['emp_id']);
+
+        $emp_id = DB::table('accounts')->where('account_type', $d->account_type)->where('account_number', $d->account_number)->value('emp_id');
+
+        $withdrawData['emp_id'] = $emp_id;
+        $withdrawData['account_id'] = $from_account_id;
+
+        $res = Account::withdraw($withdrawData, $ss);
+
+        if ($res->status == 'Error') {
+            return $res;
+        }
+
+        $trx = (object)$res->data;
+
+        if ($trx) {
+            $updateBalance_def = Account::updateBalance($from_account_id, 'accounts', 'out', $trx->transaction['amount'], $trx->trx_id, $ss);
+        }
+
+        if ($updateBalance_acc && $updateBalance_def) {
+            return DV::depends(1, [
+                'from_account_type' => $d->account_type,
+                'from_account_number' => $d->account_number,
+                'to_account_type' => $d->to_account_type,
+                'to_account_number' => $d->to_account_number,
+                'amount' => $d->amount
+            ]);
         }
         return DV::error('Error transferring account');
-
     }
+
+    function getConfirm($arr, $ss) {
+        $requiredFields = ['account_type', 'account_number', 'to_account_type', 'to_account_number', 'currency', 'amount'];
+        foreach ($requiredFields as $field) {
+            if (!isset($arr[$field])) {
+                return DV::error("Missing required field: {$field}");
+            }
+        }
+
+        $d = (object) $arr;
+
+        $from_account_id = DB::table('accounts')
+            ->where('account_type', $d->account_type)
+            ->where('account_number', $d->account_number)
+            ->value('id');
+
+        $to_account_id = DB::table('accounts')
+            ->where('account_type', $d->to_account_type)
+            ->where('account_number', $d->to_account_number)
+            ->value('id');
+
+        if (!$from_account_id) {
+            return DV::error("From account not found: {$d->account_number}");
+        }
+
+        if (!$to_account_id) {
+            return DV::error("To account not found: {$d->to_account_number}");
+        }
+
+        $emp_id = DB::table('accounts')
+            ->where('account_type', $d->to_account_type)
+            ->where('account_number', $d->to_account_number)
+            ->value('emp_id');
+
+        $emp_name = $emp_id ? DB::table('employees')->where('id', $emp_id)->value('name') : null;
+
+        if ($d->currency === 'USD' && isset($d->exchange_rate) && is_numeric($d->exchange_rate)) {
+            $d->amount *= $d->exchange_rate;
+        } elseif ($d->currency !== 'KHR') {
+            return DV::error("Unsupported currency: {$d->currency}");
+        }
+
+        return DV::depends(1, [
+            'emp_name' => $emp_name,
+            'from_account_type' => $d->account_type,
+            'from_account_number' => $d->account_number,
+            'to_account_type' => $d->to_account_type,
+            'to_account_number' => $d->to_account_number,
+            'amount' => $d->amount
+        ]);
+    }
+
+
+
 
     static function updateBalance($account_id,$table_name,$status, $amount, $trx_id, $ss = null)
     {
@@ -368,7 +424,8 @@ class Account
             'remarks' => '0|string|250',
             'trx_type' => '1|number',
             'status'=>'0|string|10',
-            // 'account_id' => '0|number',
+            'account_id' => '0|number',
+            'from_account_id' => '1|number',
             'to_account_id' => '1|number',
         ];
 

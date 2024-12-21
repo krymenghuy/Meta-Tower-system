@@ -9,56 +9,22 @@ var ExitFormItemComponent = new (function () {
     this.btnAdd = this.self.querySelector("#_btnAddExitFormItem");
     this.elSearch = this.self.querySelector("#_exit_form_item_search");
     this.divFilter = this.self.querySelector("#container_exit_form_item");
+
     this.cols = [
-        {
-            title: "Name",
-            className: "align-middle text-start w-25",
-            data: (data) => {
-                return `
-                <div style="display: flex; align-items: center;">
-                    <img class="image-student-tbl" src="${
-                        data.image_url
-                    }" alt=""
-                        style="width: 40px; height: 40px; border-radius: 50%; margin-right: 10px;"/>
-                    <div>
-                        <span style="font-size: 14px; font-weight: bold;">${
-                            data.name ?? ""
-                        }</span><br/>
-                        <span style="font-size: 12px; color: gray;">${
-                            data.email ?? ""
-                        }</span>
-                    </div>
-                </div>`;
-            },
-        },
-        {
-            title: "Postion",
-            className: "align-middle ",
-            data: (data) =>
-                `<span class="text-primary-custom">${data.position}</span>`,
-        },
-        {
-            title: "Form Name",
-            className: "align-middle ",
-            data: (data) =>
-                `<span class="text-primary-custom">${
-                    data.form_name ?? "HD"
-                }</span>`,
-        },
         {
             title: "Item",
             className: "align-middle ",
             data: (data) =>
                 `<span class="text-primary-custom">${
-                    data.item_name ?? "HD"
+                    data.name ?? "NULL"
                 }</span>`,
         },
         {
-            title: "remarks",
+            title: "category",
             className: "align-middle ",
             data: (data) =>
                 `<span class="text-primary-custom">${
-                    data.remarks ?? "HD"
+                    data.category_name ?? "NULL"
                 }</span>`,
         },
         {
@@ -68,10 +34,10 @@ var ExitFormItemComponent = new (function () {
                 return `
                 <div class="d-flex justify-content-start align-items-center">
                     <div class="text-center align-center gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary-custom btn-exit_form-modify" data-id="${data.id}">
+                        <button class="btn rounded-3 p-1 btn-primary-custom btn-exit_form_item-modify" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
                         </button>
-                        <button class="btn rounded-3 p-1 btn-warning btn-exit_form-delete" data-id="${data.id}">
+                        <button class="btn rounded-3 p-1 btn-warning btn-exit_form_item-delete" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
                         </button>
                     </div>
@@ -82,7 +48,7 @@ var ExitFormItemComponent = new (function () {
     this.init = function () {
         if (mThis.initAlready) return;
         mThis.ExitFormListView = new ListView("_exit_form_item_list", {
-            fetchApi: `${mThis.base_url}/hr/exit-form-item/list-paginate`,
+            fetchApi: `${mThis.base_url}/hr/exit-item/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -149,11 +115,14 @@ var ExitFormItemComponent = new (function () {
     };
     this.initDropdownMenus = () => {
         addEventListener("click", (e) => {
-            let btn = VSUtil.closestLimited(e.target, ".btn-exit_form-modify");
+            let btn = VSUtil.closestLimited(
+                e.target,
+                ".btn-exit_form_item-modify"
+            );
             if (btn) {
                 mThis.edit_exit_form(btn.dataset.id, btn);
             }
-            btn = VSUtil.closestLimited(e.target, ".btn-exit_form-delete");
+            btn = VSUtil.closestLimited(e.target, ".btn-exit_form_item-delete");
             if (btn) {
                 mThis.delete_exit_form(btn.dataset.id, btn);
             }
@@ -189,7 +158,7 @@ var ExitFormItemComponent = new (function () {
                 if (e) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/hr/exit-form-item/delete`,
+                            `${main_view.base_url}/hr/exit-item/delete`,
                             op,
                             false,
                             false,
@@ -210,7 +179,7 @@ var ExitFormItemComponent = new (function () {
 
     this.prepareFormOptions = () => {
         vsapi.call(
-            `${main_view.base_url}/hr/exit-form-item/form-options`,
+            `${main_view.base_url}/hr/exit-item/form-options`,
             null,
             null,
             null
@@ -239,46 +208,21 @@ const ExitFormItemDialog = (() => {
                 createContent: () => {
                     return [
                         `<div class="row">
-                            <div class="form-group col-12">
-                                <label for="employee" class="form-label" vslang="titles.Employee"></label>
-                                <select name="employee" class="form-control data-input"  data-field="emp_id"></select>
+                            <div class="form-group col-md-12">
+                                <label for="category_name" class="form-label" vslang="titles.Category"></label>
+                                <select name="category_name" class="form-control data-input" data-field="check_point_cat_id" id="category_name"></select>
                             </div>
                             <div class="form-group col-md-12">
-                                <label for="check_point_id" class="form-label" vslang="titles.Items"></label>
-                                <select name="check_point_id" class="form-control data-input" data-field="check_point_id" id="check_point_id"></select>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label for="form_id" class="form-label" vslang="titles.Form Name"></label>
-                                <select name="form_id" class="form-control data-input" data-field="form_id" id="form_id"></select>
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label for="amount" class="form-label" vslang="titles.Amount"></label>
-                                <input name="amount" class="form-control data-input" data-field="amount" id="amount">
-                            </div>
-                            <div class="form-group col-md-12">
-                                <label for="remarks" class="form-label" vslang="titles.Remarks"></label>
-                                <input name="remarks" class="form-control data-input" data-field="remarks" id="remarks">
+                                <label for="name" class="form-label" vslang="titles.name"></label>
+                                <input name="name" class="form-control data-input" data-field="name" id="remarks">
                             </div>                           
                         </div>`,
                     ].join("");
                 },
                 configSelect: [
                     {
-                        name: "employee",
-                        data: "employees",
-                        textField: (me, d) =>
-                            `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column"><span> ${d.name} </span>  <span>${d.position}</span></div></div>`,
-                        valueField: "id",
-                    },
-                    {
-                        name: "check_point_id",
-                        data: "check_points",
-                        textField: "item_name",
-                        valueField: "id",
-                    },
-                    {
-                        name: "form_id",
-                        data: "exit_forms",
+                        name: "category_name",
+                        data: "check_point_categories",
                         textField: "name",
                         valueField: "id",
                     },
@@ -303,7 +247,7 @@ const ExitFormItemDialog = (() => {
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/hr/exit-form-item/save",
+                                        "/hr/exit-item/save",
                                     ].join(""),
                                     jl,
                                     btn,
@@ -325,11 +269,11 @@ const ExitFormItemDialog = (() => {
                 prepareFormOptions: {
                     createTitle: "Add Exit Form Item",
                     modifyTitle: "Edit Exit Form Item",
-                    targetProp: "exit_form_items",
+                    targetProp: "exit_items",
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/hr/exit-form-item/form-options",
+                            "/hr/exit-item/form-options",
                         ].join(""),
                         params: (op) => {
                             return { id: op.id };

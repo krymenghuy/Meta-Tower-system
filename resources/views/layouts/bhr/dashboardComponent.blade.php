@@ -173,8 +173,8 @@ canvas {
    
 /* Icon size control */
 .img--size {
-    width: 40px;
-    height: 40px;
+    width: 60px;
+    height: 50px;
 }
 
 /* Card body adjustments */

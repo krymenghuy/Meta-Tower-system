@@ -64,7 +64,7 @@ class Employee //extends Model
             'name_kh' => '0|string|0-100',
             'email' => '1|email',
             'phone_number' => '1|phone|0-20',
-            'sex' => '1|choice|f,F,m,M,o',
+            'sex' => '1|choice|f,F,m,M,o,O',
             'nationality_id' => '1|number',
             'date_of_birth' => '1|date',
             'birth_city_id'=>'0|number',
@@ -77,6 +77,7 @@ class Employee //extends Model
             'joining_date' => '1|date',
             'nssf_id' => '0|string|0-100',
             'nid' => '1|string|1-100',
+            'nid_expiry_date' => '1|date',
             'apply_payroll_tax' => '1|number|default = 0',
             'status_id' => '1|number|default = 10',
             'photo' => '0|image',
@@ -85,6 +86,7 @@ class Employee //extends Model
             'spouse_emp_id' => '0|number',
             'spouse_occ_code' => '0|string|0-100',
             'passport_number' => '0|string|0-100',
+            'passport_expiry_date' => '1|date',
 
         ];
 
@@ -126,7 +128,6 @@ class Employee //extends Model
 
             $inputs['salary'] = null;
         }
-
         //error_log('Saving data: ' . json_encode($inputs)); //Please remove uused log
         $save = !$emp_id;
         $id = saveData($ss, 'employees', ['id' => $emp_id], $inputs, [], 1);
@@ -405,6 +406,8 @@ class Employee //extends Model
         $countries = Country::listAll($ss);
         $col_date_of_birth = DBX::formatDate('emp.date_of_birth', 'date_of_birth');
         $col_joining_date = DBX::formatDate('emp.joining_date', 'joining_date');
+        $nid_expiry_date = DBX::formatDate('emp.nid_expiry_date', 'nid_expiry_date');
+        $passport_expiry_date = DBX::formatDate('emp.passport_expiry_date', 'passport_expiry_date');
         $query = DB::table('employees as emp')
             ->join('positions as p', 'p.id', '=', 'emp.position_id')
             ->join('departments as d', 'd.id', '=', 'p.department_id')
@@ -428,6 +431,7 @@ class Employee //extends Model
             emp.spouse_name,
             emp.spouse_occ_code,
             emp.passport_number,
+            '.$passport_expiry_date.',
             emp.spouse_emp_id,
             emp.sex,
             '.$col_date_of_birth.',
@@ -436,6 +440,7 @@ class Employee //extends Model
             '.$col_joining_date.',
             emp.nssf_id,
             emp.nid,
+           '.$nid_expiry_date.',
             emp.position_id,
             p.title as position,
             emp.salary,
@@ -447,7 +452,8 @@ class Employee //extends Model
             emp.marital_status,
             emp.status_id,
             b.name as branch_name,
-            es.name as status
+            es.name as status,
+            emp.birth_city_id
         ')
             ->orderBy('emp.id', 'DESC');
 
@@ -577,12 +583,14 @@ class Employee //extends Model
                 emp.sex,
                 emp.nationality_id,
                 emp.passport_number,
+                '. DBX::formatDate('emp.passport_expiry_date','passport_expiry_date') .',
                 '. DBX::formatDate('emp.date_of_birth','date_of_birth') .',
                 emp.address,
                 emp.photo_file_name,
                 '.DBX::formatDate('emp.joining_date','joining_date').',
                 emp.nssf_id,
                 emp.nid,
+                '.DBX::formatDate('nid_expiry_date','nid_expiry_date').',
                 emp.position_id,
                 p.title as position,
                 emp.salary,

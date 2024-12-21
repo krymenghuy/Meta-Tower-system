@@ -34,7 +34,7 @@
 .login-frame .vs-container-front-img{
     width:70vw;
     height:70vh;
-    /* background-color:#4a57c1; */
+    /* background-color:#f5f5f6; */
     display:flex;
     align-items:center;
     justify-content:center;
@@ -44,29 +44,35 @@
 
 .login-frame .vs-container-front-img .img-front{
     height:100%;
-    width:50%;
+    width:65%;
+    border-radius: 20px 0  0 20px;
     /* border-radius:60px 0 0 60px;
     padding: 50px; */
 }
 
 .login-frame .vs-container-front-img .vs-login{
+    width:35%;
     height:100%;
-    width:50%;
-    border-radius:0 10px 10px 0;
+    border-radius:0 20px 20px 0;
     display:flex;
     background-color: #2b3991;
     align-items:center;
     justify-content:center;
     flex-direction:column;
 }
+.vs-login .vs--logo{
+   width: 100px;
+   height: 80px;
+
+}
 .vs-login .vs-title{
-    font-size:30px;
-    margin-bottom:3vh;
+    font-size:16px;
+    /* margin-bottom:3vh; */
     color:#cab54a;
 }
 
 .vs-login .vs-form-group{
-    width:80%;
+    width:70%;
 }
 
 .vs-login .vs-form-group .vs-d-flex{
@@ -77,28 +83,28 @@
 
 .vs-login .vs-form-group .vs-d-flex .vs-form-label{
     color:#cab54a;
-    font-size:20px;
-    padding:25px 10px  10px;
+    font-size:14px;
+    padding:15px 5px  5px;
 }
 
 .vs-login .vs-form-group .vs-d-flex .vs-form-control{
     width:100%;
-    height:50px;
-    border-radius:13px;
-    border:none;
+    height:40px;
+    border-radius:5px 40px 5px 40px;
+    border:2px solid #cab54a;
     outline:none;
     padding:5px 15px;
-    font-size:16px;
-    /* background: #F4F4F4; */
+    font-size:14px;
+    background: #FFF;
 }
 
 ::placeholder{
-    font-size:18px;
+    font-size:14px;
     padding:5px 10px;
 }
 
 .vs-login .vs-form-group .vs-d-flex-btn{
-    padding:10px;
+    /* padding:10px; */
     width:100%;
     margin-top:20px;
     display:flex;
@@ -107,17 +113,20 @@
 
 .vs-login .vs-form-group .vs-d-flex-btn .btn-login{
     width:60%;
-    height:45px;
-    border-radius:15px;
-    border:2px solid #cab54a;
+    height:35px;
+    /* border-radius: 10px; */
+    border-radius:5px 40px 5px 40px;
+    border:2px solid #fff;
     background-color:#cab54a;
-    font-size:20px;
+    font-size:16px;
     color:#fff;
     cursor:pointer;
 }
 .vs-login .vs-form-group .vs-d-flex-btn .btn-login:hover{
     background-color: #fff;
     color: #cab54a;
+    border:2px solid #cab54a;
+
 }
 
 .vs-login .vs-d-flex-copyright{
@@ -133,7 +142,7 @@
 }
 
 .vs-login .vs-form-login{
-    height:80%;
+    /* height:100%; */
     width:100%;
     display:flex;
     align-items:center;
@@ -141,13 +150,13 @@
     flex-direction: column;
 }
 
-.vs-container-front-img .vs-d-flex-copyright p{
-    padding:5px 0;
+.vs-container-front-img .vs-d-flex-copyright{
+    padding:3px 0;
 }
 
 .error_text{
     color:#ff0000;
-    font-size:18px;
+    font-size:12px;
 }
 
 .overlay-blur{

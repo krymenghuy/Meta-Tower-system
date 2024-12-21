@@ -73,15 +73,19 @@ class ShiftDetails
         $per_page = $d->per_page ?? 100;
         $skip_rows = ($current_page - 1) * $per_page;
 
-        $search_value = $d->search_value ?? null;
-        $work_shift_id = $d->work_shift_id ?? null;
-
+        $work_shift_id = $d->work_shift_id ?? 1;
+        $str_where = '1=1';
+        if($work_shift_id) {
+            $str_where = 'sd.work_shift_id=\'' .$work_shift_id. '\'';
+        }
         $days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
         $rows = DB::table('shift_details as sd')
             ->join('work_shifts as ws', 'ws.id', '=', 'sd.work_shift_id')
+            ->whereRaw($str_where)
             ->selectRaw('sd.id, sd.work_shift_id, sd.day, sd.time, sd.action')
-            ->where('ws.id', $work_shift_id)->get();
+            // ->where('ws.id', $work_shift_id)
+            ->get();
 
         $data = [];
         foreach ($days as $day) {

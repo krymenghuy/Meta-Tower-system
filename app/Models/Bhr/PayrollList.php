@@ -631,6 +631,7 @@ class PayrollList
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $master_account_id = 1;
+        $transfer_amount = 0;
 
         $existingDisbursement = DB::table('payroll_list')
             ->where('id', $id)
@@ -646,10 +647,10 @@ class PayrollList
                 ->where('pl.id', $id)
                 ->selectRaw('total_salary as amount,pl.emp_id,pl.payroll_id,p.name as remarks,a.id as account_id,p.authorized,a.account_number')->first();
         if (!$trx) {
-            return DV::error('Payroll List not have account');
+            return DV::error('This Employee does not have Payroll account');
         }
         if(!$trx->authorized){
-            return DV::error($trx->remarks.' is not authorized ');
+            return DV::error('Payroll '.$trx->remarks.' is not authorized ');
         }
         $to_account = Employee::getPayrollAccount($trx->emp_id);
 
@@ -665,11 +666,13 @@ class PayrollList
             return DV::error($trx->remarks.' is not authorized ');
         }
         $transfer = Transaction::createTransaction((array)$trx, $ss);
-        $transfer_amount = 0;
+
 
         if($transfer){
             $transfer_amount = $transfer['transaction']['amount'];
             $updateBalance_acc = Account::updateBalance($transfer['transaction']['account_id'],'accounts','in', $transfer_amount, $transfer['trx_id'], $ss);
+        }else{
+            return DV::error('Disbursement failed');
         }
 
         $withdrawData = (array)$trx;
@@ -699,20 +702,20 @@ class PayrollList
 
     }
 
-
     function disburseAllPayrollList($payroll_id, $ss = null)
     {
         $ss = $ss ?? $this->userInfo;
         $branch_id = $ss->branch_id;
         $master_account_id = 1;
 
-        $authorized = DB::table('payrolls')
+        $payroll = DB::table('payrolls')
             ->where('id', $payroll_id)
-            ->where('authorized', 1)
-            ->take(1)
-            ->value('authorized');
-        if (!$authorized) {
-            return DV::error('Payroll not authorized');
+            ->select('authorized', 'name')
+            ->first();
+
+        if (!$payroll || !$payroll->authorized) {
+            $payrollName = $payroll ? $payroll->name : 'Unknown Payroll';
+            return DV::error("Payroll {$payrollName} is not authorized");
         }
 
         $undisbursed = DB::table('payroll_list')
@@ -726,54 +729,59 @@ class PayrollList
 
         $payrollEntries = DB::table('payroll_list as pl')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
-
             ->where('pl.payroll_id', $payroll_id)
             ->where('pl.disburse', 0)
-            ->selectRaw('pl.id, total_salary as amount, pl.emp_id, pl.payroll_id, p.name as remarks, p.authorized, pl.disburse')
+            ->selectRaw('pl.id, total_salary as amount, pl.emp_id, pl.payroll_id, p.name as remarks')
             ->get();
 
+        $emp_ids = $payrollEntries->pluck('emp_id')->toArray();
 
-            $account_count = 0;
-            $emp_ids = [];
-            foreach ($payrollEntries as $trx_index=>$trx){
-                $emp_ids [] = $trx->emp_id;
-                $account_count = $trx_index + 1 ;
+        $emp_id_no_account = [];
+        foreach ($emp_ids as $emp_id) {
+            $payroll_account = Employee::getPayrollAccount($emp_id);
+            if (!isset($payroll_account->account_id)) {
+                $emp_id_no_account[] = $emp_id;
             }
-            $emp_id_no_account =[];
-            $has = 0;
-            $non = 0;
-            foreach ($emp_ids as $i=>$emp_id){
-                $payroll_account = Employee::getPayrollAccount($emp_id);
-                \Log::info((array)$payroll_account);
-                if(isset($payroll_account->account_id)) {
-                    $has ++;
-                }
-                if(!isset($payroll_account->account_id)) {
-                    $emp_id_no_account [$i+3] = $emp_id;
-                    $non ++;
-                }
+        }
+
+        if (!empty($emp_id_no_account)) {
+            $employees = DB::table('employees')
+                ->whereIn('id', $emp_id_no_account)
+                ->pluck('name', 'id');
+
+            $names = $employees->values()->all();
+            $first_name = $names[0] ?? 'Unknown';
+            $second_name = $names[1] ?? null;
+            $count = count($emp_id_no_account) - 2;
+
+            if ($count > 0) {
+                $error_message = $second_name
+                    ? "Employees [$first_name, $second_name] and $count other" . ($count > 1 ? 's' : '') . " do not have  Payroll account."
+                    : "Employees [$first_name] and $count other" . ($count > 1 ? 's' : '') . " do not have a payroll account.";
+            } else {
+                $error_message = $second_name
+                    ? "Employees [$first_name, $second_name] do not have a payroll account."
+                    : "Employee [$first_name] does not have a payroll account.";
             }
-            if($non > 0){
-                // $mesege = 'System dont have Shipment or Supplyer QR code yet ! Please Enter Supplyer QR code in Shipment: '."\n";
-                $data = [];
-                foreach ($emp_id_no_account as $i=>$emp_id){
-                    $data [] = $emp_id;
-                }
-                return (object)['status'=>'error','status_code'=>405,'error_message'=>'The following Shipment Numbers were not found in the system yet.','data'=>$data];
-            }
+
+            return (object)[
+                'status' => 'error',
+                'status_code' => 405,
+                'error_message' => $error_message,
+                'data' => $emp_id_no_account,
+            ];
+        }
+
         $results = [];
-
         foreach ($payrollEntries as $trx) {
             $to_account = Employee::getPayrollAccount($trx->emp_id);
 
-
-
-
             $trx->trx_type = 3;
+            $trx->account_id = $to_account->account_id;
             $trx->from_account_id = $master_account_id;
             $trx->to_account_id = $to_account->account_id;
 
-            $transfer = Transaction::createTransaction((array) $trx, $ss);
+            $transfer = Transaction::createTransaction((array)$trx, $ss);
             if (!$transfer) {
                 $results[] = DV::error('Transfer failed for Employee ID ' . $trx->emp_id);
                 continue;
@@ -786,7 +794,7 @@ class PayrollList
                 $transfer_amount, $transfer['trx_id'], $ss
             );
 
-            $withdrawData = (array) $trx;
+            $withdrawData = (array)$trx;
             unset($withdrawData['account_id']);
             $res = Account::withdraw($withdrawData, $ss);
 
@@ -795,7 +803,7 @@ class PayrollList
                 continue;
             }
 
-            $trx_result = (object) $res->data;
+            $trx_result = (object)$res->data;
 
             $updateBalance_def = Account::updateBalance(
                 $master_account_id, 'accounts', 'out',
@@ -818,6 +826,8 @@ class PayrollList
 
         return DV::depends(1, ['Payroll Disbursement Results' => $results]);
     }
+
+
 
     function paySlip($id, $ss)
     {

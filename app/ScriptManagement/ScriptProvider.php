@@ -131,7 +131,7 @@ class ScriptProvider
                 'js/components/bhr/BenefitComponent.js',
                 'js/components/common/LocationComponent.js',
                 'js/components/common/CompanyComponent.js',
-                'js/components/bhr/ExitCheckpointsComponent.js',
+                'js/components/bhr/FormComponent.js',
                 'js/components/bhr/ExitFormComponent.js',
                 'js/components/bhr/ExitFormItemComponent.js',
                 'js/components/umt/ChangeRoleDialog.js',

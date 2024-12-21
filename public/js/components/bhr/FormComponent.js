@@ -1,34 +1,42 @@
 "use strict";
 
-var ExitCheckpiontsComponent = new (function () {
+var FormComponent = new (function () {
     let mThis = this;
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_exitCheckpoints_component");
     this.self = this.jm[0];
-    this.title_prop = "Exit Checkpoints";
+    this.title_prop = "Form";
     this.btnAdd = this.self.querySelector("#_btnAddExitCheckpoints");
     this.elSearch = this.self.querySelector("#_exitCheckpoints_search");
     this.divFilter = this.self.querySelector("#container_exitCheckpoints");
     this.cols = [
         {
-            title: "Item",
+            title: "Name",
             className: "align-middle ",
             data: (data) =>
-                `<span class="text-primary-custom">${data.item_name}</span>`,
+                `<span class="text-primary-custom">${data.name}</span>`,
         },
         {
-            title: "Category",
+            title: "Total Amount",
             className: "align-middle ",
             data: (data) =>
-                `<span class="text-primary-custom">${data.category_name}</span>`,
+                `<span class="text-primary-custom">${
+                    main_view.currency.symbol + " " + data.total_amount
+                }</span>`,
         },
         {
-            title: "Action",
-            className: "col_action align-middle",
+            title: "Remarks",
+            className: "align-middle ",
+            data: (data) =>
+                `<span class="text-primary-custom">${data.remarks}</span>`,
+        },
+        {
+            title: "",
+            className: "col_action align-end",
             data: (data) => {
                 return `
-                <div class="d-flex justify-content-start align-items-center">
-                    <div class="text-center align-center gap-2 d-flex flex-wrap">
+                <div class="d-flex justify-content-end align-items-end">
+                    <div class="text-end align-end gap-2 d-flex flex-wrap">
                         <button class="btn rounded-3 p-1 btn-primary-custom btn-check_points-modify" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
                         </button>
@@ -43,7 +51,7 @@ var ExitCheckpiontsComponent = new (function () {
     this.init = function () {
         if (mThis.initAlready) return;
         mThis.ExitCheckpointsListView = new ListView("_exitCheckpoints_list", {
-            fetchApi: `${mThis.base_url}/hr/check_points/list-paginate`,
+            fetchApi: `${mThis.base_url}/hr/form/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -59,16 +67,16 @@ var ExitCheckpiontsComponent = new (function () {
             el.onchange = () =>
                 mThis.ExitCheckpointsListView.showPage(mThis.getFilterData());
         });
-        mThis.btnAdd.onclick = function (e) {
+        mThis.btnAdd.onclick = (e) => {
             e.preventDefault();
-            let op = {
+            ExitCheckpointsDialog.show({
                 id: null,
                 btn: e.target,
                 onClose: () => {
+                    cv_interact.success("Added Exit Form successfully");
                     mThis.ExitCheckpointsListView.showPage();
                 },
-            };
-            ExitCheckpointsDialog.show(op);
+            });
         };
         const pr_tbl = mThis.ExitCheckpointsListView.getListContainer();
         const sh_parent = pr_tbl;
@@ -81,6 +89,7 @@ var ExitCheckpiontsComponent = new (function () {
             e.preventDefault();
             mThis.ExitCheckpointsListView.showPage(mThis.getFilterData());
         });
+        mThis.initDropdownMenus();
         mThis.initAlready = true;
     };
     mThis.elSearch.addEventListener("keyup", (e) => {
@@ -153,7 +162,7 @@ var ExitCheckpiontsComponent = new (function () {
                 if (e) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/hr/check_points/delete`,
+                            `${main_view.base_url}/hr/form/delete`,
                             op,
                             false,
                             false,
@@ -175,7 +184,7 @@ var ExitCheckpiontsComponent = new (function () {
     this.prepareFormOptions = () => {
         vsapi
             .call(
-                `${main_view.base_url}/hr/check_points/form-options`,
+                `${main_view.base_url}/hr/form/form-options`,
                 null,
                 null,
                 null
@@ -201,30 +210,26 @@ const ExitCheckpointsDialog = (() => {
             dialog ||
             new GeneralDialog({
                 cssClass: "modal-md",
-                backdrop: "static", //User click outside form, do not close form
-                keyboard: true, //prevent user from using ESC key
+                backdrop: "static",
+                keyboard: true,
                 createContent: () => {
                     return [
                         `<div class="row">
                             <div class="form-group col-12">
-                                <label for="item_name" class="form-label" vslang="titles.Items"></label>
-                                <input name="item_name" class="form-control data-input"  data-field="item_name"></input>
+                                <label for="name" class="form-label" vslang="titles.Name"></label>
+                                <input name="name" class="form-control data-input"  data-field="name"></input>
                             </div>
-                            <div class="form-group col-md-12">
-                                <label for="category_name" class="form-label" vslang="titles.check point category"></label>
-                                <select name="category_name" class="form-control data-input" data-field="check_point_cat_id" id="check_point_cat_id"></select>
+                            <div class="form-group col-12">
+                                <label for="total_amount" class="form-label" vslang="titles.Total Amount"></label>
+                                <input name="total_amount" type="number" class="form-control data-input"  data-field="total_amount"></input>
+                            </div>
+                            <div class="form-group col-12">
+                                <label for="remarks" class="form-label" vslang="titles.Remarks"></label>
+                                <input name="remarks" class="form-control data-input"  data-field="remarks"></input>
                             </div>
                         </div>`,
                     ].join("");
                 },
-                configSelect: [
-                    {
-                        name: "category_name",
-                        data: "check_point_categories",
-                        textField: "name",
-                        valueField: "id",
-                    },
-                ],
                 buttons: [
                     {
                         label: '<span class="text-warning">Cancel</span>',
@@ -245,7 +250,7 @@ const ExitCheckpointsDialog = (() => {
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/hr/check_points/save",
+                                        "/hr/form/save",
                                     ].join(""),
                                     jl,
                                     btn,
@@ -271,7 +276,7 @@ const ExitCheckpointsDialog = (() => {
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/hr/check_points/form-options",
+                            "/hr/form/form-options",
                         ].join(""),
                         params: (op) => {
                             return { id: op.id };

@@ -43,7 +43,8 @@ use App\Http\Controllers\Bhr\ExitFormController;
 use App\Http\Controllers\Bhr\ExitFormItemController;
 use App\Http\Controllers\Bhr\ExitStatusController;
 use App\Http\Controllers\Bhr\EmployeeDocumentController;
-
+use App\Http\Controllers\Bhr\ExitItemController;
+use App\Http\Controllers\Bhr\FormController;
 
 //begin:: api without Authentication
 Route::middleware([CustomRateLimiter::class])->group(function () {
@@ -229,6 +230,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->gr
     Route::post('/delete', [AccountController::class, 'deleteAccount']);
     Route::post('/form-options', [AccountController::class, 'getFormOptions']);
     Route::post('/transfer', [AccountController::class, 'transfer']);
+    Route::post('/get-confirm', [AccountController::class, 'getConfirm']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance')->group(function () {
 
@@ -311,7 +313,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('holiday')->gr
     Route::post('/form-options', [HolidayController::class, 'getFormOptions']);
     Route::post('/list', [HolidayController::class, 'getHolidayList']);
 });
- 
+
 Route::middleware(['auth.api', CustomRateLimiter::class])->group( function (){
     Route::post('/form-option',[GeneralSettingsController::class,'select_options']);
 });
@@ -378,24 +380,34 @@ Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('emp-document')
     Route::post('/form-options', [EmployeeDocumentController::class, 'getFormOptions']);
     Route::post('/download', [EmployeeDocumentController::class, 'downloadDocument']);
 });
-Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('check_points')->group(function(){
-    Route::post('/save', [ExitCheckpointsController::class, 'saveExitCheckPointPoints']);
-    Route::post('/list-paginate', [ExitCheckpointsController::class, 'getExitCheckpointsPaginate']);
-    Route::post('/details', [ExitCheckpointsController::class, 'getDetails']);
-    Route::post('/delete', [ExitCheckpointsController::class, 'deleteCheckpoints']);
-    Route::post('/form-options', [ExitCheckpointsController::class, 'getFormOptions']);
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-item')->group(function(){
+    Route::post('/save', [ExitItemController::class, 'saveExitCheckPointPoints']);
+    Route::post('/list-paginate', [ExitItemController::class, 'getExitItemPaginate']);
+    Route::post('/details', [ExitItemController::class, 'getDetails']);
+    Route::post('/delete', [ExitItemController::class, 'delete']);
+    Route::post('/form-options', [ExitItemController::class, 'getFormOptions']);
 });
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form-item')->group(function(){
     Route::post('/save', [ExitFormItemController::class, 'saveExitFormItem']);
-    Route::post('/list-paginate', [ExitFormItemController::class, 'getExitFormItemPaginate']);
+    Route::post('/list-paginate', [ExitFormItemController::class, 'getList']);
+    Route::post('/list-all', [ExitFormItemController::class, 'getAllList']);
     Route::post('/details', [ExitFormItemController::class, 'getDetails']);
     Route::post('/delete', [ExitFormItemController::class, 'deleteExitFormItem']);
     Route::post('/form-options', [ExitFormItemController::class, 'getExitFormItemOptions']);
 });
 Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('exit-form')->group(function(){
     Route::post('/save', [ExitFormController::class, 'saveExitForm']);
-    Route::post('/list-paginate', [ExitFormController::class, 'getExitFormPaginate']);
+    Route::post('/list-paginate', [ExitFormController::class, 'getList']);
     Route::post('/details', [ExitFormController::class, 'getDetails']);
-    Route::post('/delete', [ExitFormController::class, 'deleteExitForm']);
+    Route::post('/delete', [ExitFormController::class, 'delete']);
     Route::post('/form-options', [ExitFormController::class, 'getExitFormOptions']);
+    Route::post('/list-all', [ExitFormController::class, 'getAllList']);
+});
+Route::middleware(['auth.api',CustomRateLimiter::class])->prefix('form')->group(function(){
+    Route::post('/save', [FormController::class, 'saveForm']);
+    Route::post('/list-paginate', [FormController::class, 'getFormPaginate']);
+    Route::post('/details', [FormController::class, 'getDetails']);
+    Route::post('/delete', [FormController::class, 'delete']);
+    Route::post('/form-options', [FormController::class, 'getFormOptions']);
+    Route::post('/list-all', [FormController::class, 'getAllList']);
 });
