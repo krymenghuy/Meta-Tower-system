@@ -3,32 +3,32 @@
 namespace App\Http\Controllers\Bhr;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bhr\ExitItem;
+use App\Models\Bhr\CheckPointCategory;
 use App\Models\JDV;
 use App\Services\Umt\AuthService;
 use Illuminate\Http\Request;
 
-class ExitItemController extends Controller
+class CheckPointCategoryController extends Controller
 {
-    protected $exit_items;
+    protected $check_point_categories;
     public function __construct()
     {
-        $this->exit_items = new ExitItem();
+        $this->check_point_categories = new CheckPointCategory();
     }
-    function saveExitCheckPointPoints(Request $req)
+    function save(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) return JDV::raw($ss);
-        $res = $this->exit_items->save($req->exit_item, $ss, $req->all());
+        $res = $this->check_point_categories->save($req->check_point_category, $ss, $req->all());
         return JDV::raw($res);
     }
-    public function getExitItemPaginate(Request $req)
+    public function getListPaginate(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->exit_items->getExitItemPaginate($req->all(), $ss));
+        return JDV::result($this->check_point_categories->getListPaginate($req->all(), $ss));
     }
     public function getDetails(Request $req)
     {
@@ -40,7 +40,7 @@ class ExitItemController extends Controller
         if (!isset($req->id) || !is_numeric($req->id)) {
             return JDV::error('Invalid ID');
         }
-        return JDV::result($this->exit_items->getDetails($req->id, $ss));
+        return JDV::result($this->check_point_categories->getDetails($req->id, $ss));
     }
     public function getFormOptions(Request $req)
     {
@@ -48,7 +48,7 @@ class ExitItemController extends Controller
         if ($ss->status_code !== 200) {
             return JDV::raw($ss);
         }
-        return JDV::result($this->exit_items->getFormOptions($req->id, $ss));
+        return JDV::result($this->check_point_categories->getFormOptions($req->id, $ss));
     }
 
     public function delete(Request $req)
@@ -58,6 +58,14 @@ class ExitItemController extends Controller
             return JDV::raw($ss);
         }
 
-        return JDV::result($this->exit_items->delete($req->id, $ss));
+        return JDV::result($this->check_point_categories->delete($req->id, $ss));
+    }
+    public function getAllList(Request $req)
+    {
+        $ss = AuthService::verifyAuth($req, -1);
+        if ($ss->status_code !== 200) {
+            return JDV::raw($ss);
+        }
+        return JDV::result($this->check_point_categories->getList($req->all(), $ss));
     }
 }
