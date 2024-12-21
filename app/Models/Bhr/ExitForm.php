@@ -72,7 +72,7 @@ class ExitForm
             if ($updated) {
                 return DV::depends($id, ['id' => $id], 'Update successful');
             } else {
-                return DV::error('Update failed. Record may not exist or data is unchanged.');
+                return DV::error('Upda  te failed. Record may not exist or data is unchanged.');
             }
         } else {
             $newId = DB::table('exit_forms')->insertGetId($inputs);
