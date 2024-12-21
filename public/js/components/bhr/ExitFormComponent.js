@@ -435,7 +435,7 @@ const ViewExitFormDialog = (() => {
                         const cellData = d[k.key] ?? "";
 
                         if (k.key === "name") {
-                            return `<td class="text-capitalize">${cellData}</td>`;
+                            return `<td class="text-capitalize align-middle">${cellData}</td>`;
                         }
 
                         if (Array.isArray(cellData)) {
@@ -449,7 +449,7 @@ const ViewExitFormDialog = (() => {
 
                                     return `
                                     <div class="d-flex ml-1">
-                                        <i class="fa fa-check-circle"></i>
+                                        <div>${item.check}</div>
                                         <span class="ms-2">${itemName}</span>
                                     </div>`;
                                 })
@@ -479,14 +479,14 @@ const ViewExitFormDialog = (() => {
         return `
                 <table class="employee-info-section table">
                     <tr>
-                        <td style="width:33%; text-align:left;">ឈ្មោះបុគ្គលិក៖ ${emp_name}</td>
-                        <td style="width:33%; text-align:left;">អត្តលេខ៖ ${code}</td>
-                        <td style="width:33%; text-align:left;">កាលបរិច្ឆេទចូលធ្វើការ៖ ${joining_date}</td>
+                        <td style="width:40%; text-align:left;">ឈ្មោះបុគ្គលិក៖ ${emp_name}</td>
+                        <td style="width:30%; text-align:left;">អត្តលេខ៖ ${code}</td>
+                        <td style="width:30%; text-align:left;">កាលបរិច្ឆេទចូលធ្វើការ៖ ${joining_date}</td>
                     </tr>
                     <tr>
-                        <td style="width:33%; text-align:left;">ផ្នែក៖ ${position}</td>
-                        <td style="width:33%; text-align:left;">នាយកដ្ឋាន ឬសាខា៖ ${branch_name}</td>
-                        <td style="width:33%; text-align:left;">កាលបរិច្ឆេទបិទការងារ៖ ${effective_date}</td>
+                        <td style="width:40%; text-align:left;">ផ្នែក៖ ${position}</td>
+                        <td style="width:30%; text-align:left;">នាយកដ្ឋាន ឬសាខា៖ ${branch_name}</td>
+                        <td style="width:30%; text-align:left;">កាលបរិច្ឆេទបិទការងារ៖ ${effective_date}</td>
                     </tr>
                     <tr>
                         <td colspan="3" style="text-align:left;">

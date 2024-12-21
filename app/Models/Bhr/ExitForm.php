@@ -35,11 +35,7 @@ class ExitForm
         $v_rule = [
             'id' => '0|identity=1',
             'emp_id' => '1|number',
-            'form_id' => '1|number',
-            'item_id' => '1|number',
-            'amount' => '0|number',
-            'remarks' => '0|text|0-250',
-            'settled' => '1|choice|1,2|default=1',
+            'is_finished' => '1|choice|1,2|default=1',
         ];
         $remark = ['$', "'", '#', '@', '!', '&', '.', '-', '_', '=', '?', ','];
 
@@ -50,12 +46,9 @@ class ExitForm
 
         $inputs = $res->values;
         $emp_id = $inputs['emp_id'];
-        $item_id = $inputs['item_id'];
 
         if (!$id) {
             $existingExitForm = DB::table('exit_forms')
-            ->where('form_id', $inputs['form_id'])
-            ->where('item_id', $item_id)
                 ->where('emp_id', $emp_id)
                 ->first();
 
@@ -112,19 +105,11 @@ class ExitForm
         ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
         ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
-        ->join('forms as f', 'f.id', '=', 'ef.form_id')
-        ->join('exit_items as ei', 'ei.id', '=', 'ef.item_id')
         ->where('emp.status_id', 20)
         ->selectRaw(
             'ef.emp_id,
             ef.id,
-            f.id,
-            ei.id,
-            f.name as form_name,
-            ei.name as item_name,
-            ef.amount,
-            ef.remarks,
-            ef.settled,
+            ef.is_finished,
             emp.id as emp_id,
             emp.name as emp_name,
             br.name as branch_name,
@@ -142,8 +127,7 @@ class ExitForm
         if (!empty($d->search_value)) {
             $search_value = $d->search_value;
             $query->where(function ($q) use ($search_value) {
-                $q->where('emp.name', 'LIKE', "%{$search_value}%")
-                ->orWhere('ei.name', 'LIKE', "%{$search_value}%");
+                $q->where('emp.name', 'LIKE', "%{$search_value}%");
             });
         }
 
@@ -177,19 +161,11 @@ class ExitForm
             ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
             ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
-            ->join('forms as f', 'f.id', '=', 'ef.form_id')
-            ->join('exit_items as ei', 'ei.id', '=', 'ef.item_id')
             ->where('emp.status_id', 20)
             ->selectRaw(
                 'ef.emp_id,
             ef.id,
-            f.id,
-            ei.id,
-            f.name as form_name,
-            ei.name as item_name,
-            ef.amount,
-            ef.remarks,
-            ef.settled,
+            ef.is_finished,
             emp.id as emp_id,
             emp.name as emp_name,
             br.name as branch_name,
@@ -243,8 +219,6 @@ class ExitForm
 
         return (object) [
             'employees' => GeneralSettings::options_employee(20, $ss),
-            'forms' => DB::table('forms as f')->selectRaw('id,name')->get(),
-            'exit_items' => DB::table('exit_items as ei')->selectRaw('id,name')->get(),
             'exit_forms' => $exit_forms,
         ];
     }
@@ -271,22 +245,13 @@ class ExitForm
         $query = DB::table('exit_forms as ef')
         ->join('employees as emp', 'emp.id', '=', 'ef.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'emp.position_id')
-        ->join('exit_items as ei', 'ei.id', '=', 'ef.item_id')
         ->join('um_branches as br', 'br.id', '=', 'emp.branch_id')
-        ->join('forms as f', 'f.id', '=', 'ef.form_id')
-        ->leftJoin('resignations as r', 'r.emp_id', '=', 'ef.emp_id')
+        ->join('resignations as r', 'r.emp_id', '=', 'ef.emp_id')
         ->where('emp.status_id', 20)
         ->selectRaw("
             ef.id,
             ef.emp_id,
-            ef.item_id,
-            ef.form_id,
-            ef.amount,
-            ef.remarks,
-            ef.settled,
-            f.name as form_name,
-            ei.name as item_name,
-            ei.check_point_cat_id,
+            ef.is_finished,
             emp.id as emp_id,
             emp.name as employee_name,
             emp.code,
@@ -302,16 +267,24 @@ class ExitForm
 
         if (!empty($data->search_value)) {
             $query->where(function ($q) use ($data) {
-                $q->where('ef.remarks', 'LIKE', "%{$data->search_value}%")
-                ->orWhere('emp.name', 'LIKE', "%{$data->search_value}%");
+
+                $q->where('emp.name', 'LIKE', "%{$data->search_value}%");
             });
         }
 
         $exitFormItems = $query->get();
+        $check_point_categories = DB::table('check_point_categories')->selectRaw('id, name')->get();
+        $exit_items = DB::table('check_points')->selectRaw('id, name, check_point_cat_id')->get();
+        $forms = DB::table('exit_forms')->selectRaw('id, is_finished, emp_id')->where('emp_id', $emp_id)->first();
 
-        $check_point_categories = DB::table('check_point_categories')->select('id', 'name')->get();
-        $exit_items = DB::table('exit_items')->select('id', 'name', 'check_point_cat_id')->get();
-        $form_items = DB::table('exit_forms')->select('id', 'item_id', 'emp_id')->where('emp_id', $emp_id)->get();
+        // Ensure $forms is not null before proceeding
+        $form_items = [];
+        if ($forms) {
+            $form_items = DB::table('exit_form_items')
+            ->selectRaw('id, form_id, check_point_id as item_id')
+            ->where('form_id', $forms->id)
+            ->get();
+        }
 
         $groupedData = [];
         $number_cat = [];
@@ -319,19 +292,27 @@ class ExitForm
         foreach ($check_point_categories as $category) {
             foreach ($exit_items as $item) {
                 if ($item->check_point_cat_id == $category->id) {
+                    $check = '<svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M464 256A208 208 0 1 0 48 256a208 208 0 1 0 416 0zM0 256a256 256 0 1 1 512 0A256 256 0 1 1 0 256z"/></svg>'; 
+
                     foreach ($form_items as $form_item) {
                         if ($form_item->item_id == $item->id) {
-                            $groupedData[$category->id]['name'] = $category->name;
-                            $groupedData[$category->id]['item'][] = $item;
-
-                            if (!in_array($category->id, $number_cat)) {
-                                $number_cat[] = $category->id;
-                            }
+                            $check = '<svg style="width:10px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM369 209L241 337c-9.4 9.4-24.6 9.4-33.9 0l-64-64c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l47 47L335 175c9.4-9.4 24.6-9.4 33.9 0s9.4 24.6 0 33.9z"/></svg>'; 
+                            break;
                         }
+                    }
+
+                    $item->check = $check;
+                    $groupedData[$category->id]['item'][] = $item;
+                    $groupedData[$category->id]['name'] = $category->name;
+
+                    if (!in_array($category->id, $number_cat)) {
+                        $number_cat[] = $category->id;
                     }
                 }
             }
         }
+
+
 
         $employeeData = $exitFormItems->map(function ($ef) {
             return [

@@ -5,6 +5,7 @@ namespace App\Models\Bhr;
 use App\Models\DV;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
+use App\Models\DBX;
 
 class Experience //extends Model
 {
@@ -43,11 +44,9 @@ class Experience //extends Model
 
         $inputs = $res->values;
 
-        // Check if a new ID is needed
         if ($id === null) {
             $id = DB::table('emp_experiences')->insertGetId(array_merge($inputs, ['branch_id' => $branch_id]));
         } else {
-            // Update existing record
             $updated = DB::table('emp_experiences')->where('id', $id)->update($inputs);
             if (!$updated) {
                 return DV::error('Failed to update experience.');
@@ -73,12 +72,14 @@ class Experience //extends Model
 
         $skip_rows = ($current_page - 1) * $per_page;
 
-        $str_search = '1=1'; // Default condition (returns all results if no search value is provided)
+        $str_search = '1=1';
 
         if ($search_value) {
-            $skip_rows = 0; // Reset pagination if search is applied
+            $skip_rows = 0;
             $str_search = "(exp.emp_id LIKE '%" . $search_value . "%' OR exp.description LIKE '%" . $search_value . "%')";
         }
+        $start_date = DBX::formatDate('exp.start_date', 'start_date');
+        $end_date = DBX::formatDate('exp.end_date', 'end_date');
 
         $query = DB::table('emp_experiences as exp')
             ->join('employees as emp', 'emp.id', '=', 'exp.emp_id')
@@ -88,7 +89,7 @@ class Experience //extends Model
             ->where('exp.branch_id', $branch_id)
             ->whereRaw($str_search)
             ->where('exp.emp_id', $emp_id)
-            ->selectRaw('exp.id, exp.description, pos.title as position,pos.department_id,d.name as department,org.id as organization_id, org.name as organization_id, exp.period_type,exp.end_date as end_date,exp.start_date as start_date')
+            ->selectRaw('exp.id, exp.description, pos.title as position,pos.department_id,d.name as department,org.id as organization_id, org.name as organization_id, exp.period_type,'.$start_date.','.$end_date.'' )
             ->orderBy('exp.id', 'DESC');
 
         $clone_query = clone $query;

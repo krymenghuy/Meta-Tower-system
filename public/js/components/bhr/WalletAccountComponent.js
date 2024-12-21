@@ -71,7 +71,13 @@ var WalletAccountComponent = new (function () {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol} ${formattedNumber(data.balance ?? 0)}</p>`;
+                let currencySymbol = "";
+                if (data.currency === "USD") {
+                    currencySymbol = "$";
+                } else if (data.currency === "KHR") {
+                    currencySymbol = "៛";
+                }
+                return `<p class="p-0 m-0">${currencySymbol} ${formattedNumber(data.balance ?? 0)}</p>`;
             },
         },
         {
@@ -496,7 +502,7 @@ const WalletAccountDialog = (() => {
                         <label for="currency" class="form-label" vslang="titles.Currency"></label>
                         <select class="modal-select data-input" name="currency" data-field="currency">
                             <option value="KHR">KHR</option>
-                            <option value="USD">USA</option>
+                            <option value="USD">USD</option>
                         </select>
                     </div>
                     </div>

@@ -69,7 +69,13 @@ var AccountMenagmentComponent = new (function () {
             title: "Balance",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol} ${formattedNumber(data.balance ?? 0)}</p>`;
+                let currencySymbol = "";
+                if (data.currency === "USD") {
+                    currencySymbol = "$";
+                } else if (data.currency === "KHR") {
+                    currencySymbol = "៛";
+                }
+                return `<p class="p-0 m-0">${currencySymbol} ${formattedNumber(data.balance ?? 0)}</p>`;
             },
         },
 
@@ -162,7 +168,7 @@ var AccountMenagmentComponent = new (function () {
             title: "Amount",
             className: "align-middle",
             data: (data, index, tr) => {
-                return `<p class="p-0 m-0">${main_view.currency.symbol + formattedNumber(data.amount ?? 0.00)}</p>`;
+                return `<p class="p-0 m-0">${formattedNumber(data.amount ?? 0.00)}</p>`;
             },
         },
         {
@@ -516,7 +522,7 @@ const AccountDialog = (() => {
                         <label for="currency" class="form-label" vslang="titles.Currency"></label>
                         <select class="modal-select data-input" name="currency" data-field="currency">
                             <option value="KHR">KHR</option>
-                            <option value="USD">USA</option>
+                            <option value="USD">USD</option>
                         </select>
                     </div>
                     </div>
@@ -558,9 +564,11 @@ const AccountDialog = (() => {
                         label: "<span>Save</span>",
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
+
                             const p = me.getData();
 
                             p.id = me.dataOptions.id;
+
                             console.log(555,p);
 
                             vsapi
@@ -636,55 +644,138 @@ const TransferDialog = (() => {
                         <div class="row">
                             <div class="text-center fs-5 mb-2 border rounded-4 bg-primary-subtle">From Account</div>
 
-                            <div class="form-group col-4">
-                                <label for="account_number" class="form-label" vslang="titles.Account Number"></label>
-                                <input name="account_number" class="form-control data-input" data-field="account_number" disabled />
+                            <div class="form-group col-6">
+                                <label for="account_number" class="form-label" vslang="titles.Account Number" ></label>
+                                <input name="account_number" class="form-control data-input" data-field="account_number"disabled  />
                             </div>
-                            <div class="form-group col-4">
-                                <label for="balance" class="form-label" vslang="titles.Balance"></label>
-                                <input name="balance" class="form-control data-input" data-field="balance" disabled />
-                            </div>
-                            <div class="form-group col-4">
-                                <label for="currency" class="form-label" vslang="titles.Currency"></label>
-                                <select class="modal-select data-input" data-field="currency">
-                                    <option value="KHR">KHR</option>
-                                    <option value="USD">USD</option>
-                                </select>
+                            <div class="form-group col-6">
+                                <label for="balance" class="form-label" vslang="titles.Balance" ></label>
+                                <input name="balance" class="form-control data-input" data-field="balance" disabled/>
                             </div>
 
-                             <div class="form-group  col-12 d.none">
-                                <div id="info"></div>
+                             <div class="form-group  col-12 ">
+                                <div name="from_account_info" id="info"></div>
                              </div>
 
                             <div class="text-center fs-5 mb-2 border rounded-4 bg-primary-subtle">To Account</div>
 
-                            <div class="form-group col-4">
+                            <div class="form-group col-6">
                                 <label for="to_account_number" class="form-label" vslang="titles.Account Number"></label>
                                 <input name="to_account_number" class="form-control data-input" data-field="to_account_number" />
                             </div>
-                            <div class="form-group col-4">
+                            <div class="form-group col-6">
                                 <label for="amount" class="form-label" vslang="titles.Amount"></label>
                                 <input name="amount" class="form-control data-input" data-field="amount" />
                             </div>
-                            <div class="form-group col-4">
-                                <label for="currency" class="form-label" vslang="titles.Currency"></label>
-                                <select class="modal-select data-input" data-field="currency">
-                                    <option value="KHR">KHR</option>
-                                    <option value="USD">USD</option>
-                                </select>
-                            </div>
-                            <div class="form-group  col-8 d.none">
-                                <div id="info"></div>
+
+                            <div class="form-group  col-12 ">
+                                <div id="info" name="to_account_info"></div>
                              </div>
-                            <div class="form-group col-4 d-none">
+                            <div class="form-group exchange_rate col-6">
                                 <label for="exchange_rate" class="form-label" vslang="titles.Exchange Rate"></label>
                                 <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
                             </div>
-
-
-
                         </div>
                     `;
+                },
+                contentCreated: (me) => {
+                },
+                prepareFormOptions: {
+                    createTitle: "Add Account",
+                    modifyTitle: "Transfer",
+                    targetProp: "accounts",
+                    api: {
+                        endpoint: `${main_view.base_url}/hr/account/form-options`,
+                        params: (op) => {
+                            return { id: op.id };
+                        },
+                    },
+                },
+                onPrepareForm: (me, data) => {
+                    LocaleManager.translateZone(me.divModal);
+                    let account = me.controls.account_number;
+                    let to_account = me.controls.to_account_number;
+                    let from_account_info = me.controls.from_account_info;
+                    let to_account_info = me.controls.to_account_info;
+                    const exchange_rate = me.divModal.querySelector(".exchange_rate");
+                    exchange_rate.classList.add('d-none');
+
+                    // account.onchange = (e) => {
+                        // console.log(1111,e);
+
+                        let p ={'account_number': account.value};
+                        vsapi.call([main_view.base_url, '/hr/account/get-info'].join(''), p, null, null).then(res => {
+                            if (res.status_code == 200) {
+                                let d = res.data;
+                                me.account_type = d.account_type;
+                                me.currency = d.currency;
+                                let div = '';
+                                div = `<div class = "d-flex justify-content-between border rounded-4 p-2">
+                                            <div>
+                                                <label for="account_type" class="form-label">Account Type</label>
+                                                <span class = "mx-2">:</span>
+                                                <span class = "text-primary">${d.account_type}</span>
+                                            </div>
+                                            <div>
+                                                <label for="emp_name" class="form-label">Employee</label>
+                                                <span class = "mx-2">:</span>
+                                                <span class = "text-primary">${d.emp_name}</span>
+                                            </div>
+                                            <div>
+                                                <label for="emp_name" class="form-label">Currency</label>
+                                                <span class = "mx-2">:</span>
+                                                <span class = "text-primary">${d.currency}</span>
+                                            </div>
+
+                                        </div>`;
+                                from_account_info.innerHTML = div;
+                            }
+
+                        });
+
+                    // };
+
+                    to_account.onchange = (e) => {
+                        let p ={'account_number': to_account.value};
+                        vsapi.call([main_view.base_url, '/hr/account/get-info'].join(''), p, null, null).then(res => {
+                            if (res.status_code == 200) {
+                                let d = res.data;
+                                me.to_account_type = d.account_type;
+                                me.to_account_currency = d.currency;
+                                let div = '';
+                                div = `<div class = "d-flex justify-content-between border rounded-4 p-2">
+                                            <div>
+                                                <label for="account_type" class="form-label">Account Type</label>
+                                                <span class = "mx-2">:</span>
+                                                <span class = "text-primary">${d.account_type}</span>
+                                            </div>
+                                            <div>
+                                                <label for="emp_name" class="form-label">Employee</label>
+                                                <span class = "mx-2">:</span>
+                                                <span class = "text-primary">${d.emp_name}</span>
+                                            </div>
+                                            <div>
+                                                <label for="emp_name" class="form-label">Currency</label>
+                                                <span class = "mx-2">:</span>
+                                                <span class = "text-primary">${d.currency}</span>
+                                            </div>
+                                        </div>`;
+                                to_account_info.innerHTML = div;
+                                if(me.to_account_currency == me.currency){
+                                    exchange_rate.classList.add('d-none');
+                                }
+                                else{
+                                    exchange_rate.classList.remove('d-none');
+
+                                }
+                            }
+
+                        });
+                    };
+
+
+
+
                 },
 
                 buttons: [
@@ -700,10 +791,13 @@ const TransferDialog = (() => {
                         cssClass: "btn btn-primary",
                         click: (me, btn) => {
                             const p = me.getData();
+                            p.account_type = me.account_type;
+                            p.currency = me.currency;
+                            p.to_account_type = me.to_account_type;
+                            p.to_account_currency = me.to_account_currency;
                             p.id = me.dataOptions.id;
                             console.log(1234, p);
 
-                            // Perform the API call to get confirmation data
                             vsapi.call([main_view.base_url, '/hr/account/transfer'].join(''), p, null, null).then(res => {
                                 if (res.status_code === 200 && res.data) {
                                     const confirmationMessage = `Are you sure to transfer? To '${res.data.to_account_number} (${res.data.to_account_type}) - ${res.data.emp_name}'`;
@@ -739,21 +833,9 @@ const TransferDialog = (() => {
 
                     },
                 ],
-                prepareFormOptions: {
-                    createTitle: "Add Account",
-                    modifyTitle: "Transfer",
-                    targetProp: "accounts",
-                    api: {
-                        endpoint: `${main_view.base_url}/hr/account/form-options`,
-                        params: (op) => {
-                            return { id: op.id };
-                        },
-                    },
-                },
 
-                onPrepareForm: (me, data) => {
-                    LocaleManager.translateZone(me.divModal);
-                },
+
+
             });
 
         dialog.show(op);
