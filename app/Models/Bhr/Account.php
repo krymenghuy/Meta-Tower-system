@@ -37,7 +37,7 @@ class Account
             'currency' => '1|choice|KHR,USD',
             'account_type' => '1|choice|Payroll,Wallet',
         ];
-        $res = validateObject($arr, $v_rule, true, ['balance'=>['.']], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, ['balance'=>['.'],'account_number'=>['-']], $ss->lang);
         if ($res->error) return DV::error($res->error);
         $inputs = $res->values;
         $emp_id = $inputs['emp_id'];
@@ -58,8 +58,11 @@ class Account
 
         if(!$account_number) $account_number = $emp->code;
         $inputs['account_number'] = $account_number;
-        if(self::accountNumberExists($account_number,$id)) return DV::error('Account number ?? already exists::'.$account_number);
+
+
         if (empty($id)) {
+            if(self::accountNumberExists($account_number,$id)) return DV::error('Account number ?? already exists::'.$account_number);
+
             $existingAccount = DB::table('accounts')
                 ->where('branch_id', $branch_id)
                 ->where('emp_id', $inputs['emp_id'])
@@ -81,7 +84,6 @@ class Account
 
         $exists = DB::table('accounts')
             ->where('account_number', $account_number)
-            ->where('account_type', $account_type)
             ->whereRaw($str_id)
             ->exists();
 
@@ -275,14 +277,20 @@ class Account
         $emp_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('emp_id');
         $to_account_id = DB::table('accounts')->where('account_type', $d->to_account_type)->where('account_number', $d->to_account_number)->value('id');
 
+        $emp_name = DB::table('employees')->where('id', $emp_id)->value('name');
+
         if (!$from_account_id || !$to_account_id) {
             return DV::error('Account not found');
         }
 
-        if ($d->currency === 'USD') {
+        if ($d->currency === 'KHR' && $d->to_account_currency === 'USD') {
             $d->amount *= $d->exchange_rate;
-        } elseif ($d->currency === 'KHR') {
+        } elseif ($d->currency === 'KHR' && $d->to_account_currency === 'KHR') {
             $d->amount = $d->amount;
+        } elseif ($d->currency === 'USD' && $d->to_account_currency === 'USD') {
+            $d->amount = $d->amount;
+        }elseif ($d->currency === 'USD' && $d->to_account_currency === 'KHR') {
+            $d->amount /= $d->exchange_rate;
         }
 
         $trx = $d;
@@ -333,61 +341,30 @@ class Account
                 'from_account_number' => $d->account_number,
                 'to_account_type' => $d->to_account_type,
                 'to_account_number' => $d->to_account_number,
+                'emp_name' => $emp_name,
                 'amount' => $d->amount
             ]);
         }
         return DV::error('Error transferring account');
     }
 
-    function getConfirm($arr, $ss) {
-        $requiredFields = ['account_type', 'account_number', 'to_account_type', 'to_account_number', 'currency', 'amount'];
-        foreach ($requiredFields as $field) {
-            if (!isset($arr[$field])) {
-                return DV::error("Missing required field: {$field}");
-            }
-        }
-
+    function getAccountInfo($arr, $ss) {
         $d = (object) $arr;
 
-        $from_account_id = DB::table('accounts')
-            ->where('account_type', $d->account_type)
-            ->where('account_number', $d->account_number)
-            ->value('id');
+        $account_type = DB::table('accounts')->where('account_number', $d->account_number)->value('account_type');
 
-        $to_account_id = DB::table('accounts')
-            ->where('account_type', $d->to_account_type)
-            ->where('account_number', $d->to_account_number)
-            ->value('id');
+        $emp_id = DB::table('accounts')->where('account_number', $d->account_number)->value('emp_id');
 
-        if (!$from_account_id) {
-            return DV::error("From account not found: {$d->account_number}");
-        }
-
-        if (!$to_account_id) {
-            return DV::error("To account not found: {$d->to_account_number}");
-        }
-
-        $emp_id = DB::table('accounts')
-            ->where('account_type', $d->to_account_type)
-            ->where('account_number', $d->to_account_number)
-            ->value('emp_id');
-
-        $emp_name = $emp_id ? DB::table('employees')->where('id', $emp_id)->value('name') : null;
-
-        if ($d->currency === 'USD' && isset($d->exchange_rate) && is_numeric($d->exchange_rate)) {
-            $d->amount *= $d->exchange_rate;
-        } elseif ($d->currency !== 'KHR') {
-            return DV::error("Unsupported currency: {$d->currency}");
-        }
+        $emp_name = DB::table('employees')->where('id', $emp_id)->value('name');
+        $currency = DB::table('accounts')->where('account_number', $d->account_number)->value('currency');
 
         return DV::depends(1, [
+            'account_type' => $account_type,
             'emp_name' => $emp_name,
-            'from_account_type' => $d->account_type,
-            'from_account_number' => $d->account_number,
-            'to_account_type' => $d->to_account_type,
-            'to_account_number' => $d->to_account_number,
-            'amount' => $d->amount
+            'currency' => $currency
+
         ]);
+
     }
 
 
