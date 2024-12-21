@@ -1,14 +1,14 @@
 "use strict";
 
-var ExitFormItemComponent = new (function () {
+var CheckPointComponent = new (function () {
     let mThis = this;
     this.base_url = main_view.base_url;
-    this.jm = main_view.appContent.children("#_main_exit_form_item_component");
+    this.jm = main_view.appContent.children("#_main_check_point_component");
     this.self = this.jm[0];
-    this.title_prop = "Exit Form Items";
-    this.btnAdd = this.self.querySelector("#_btnAddExitFormItem");
-    this.elSearch = this.self.querySelector("#_exit_form_item_search");
-    this.divFilter = this.self.querySelector("#container_exit_form_item");
+    this.title_prop = "Check Points";
+    this.btnAdd = this.self.querySelector("#_btnAddCheckPoint");
+    this.elSearch = this.self.querySelector("#_check_point_search");
+    this.divFilter = this.self.querySelector("#container_check_point");
 
     this.cols = [
         {
@@ -34,10 +34,10 @@ var ExitFormItemComponent = new (function () {
                 return `
                 <div class="d-flex justify-content-start align-items-center">
                     <div class="text-center align-center gap-2 d-flex flex-wrap">
-                        <button class="btn rounded-3 p-1 btn-primary-custom btn-exit_form_item-modify" data-id="${data.id}">
+                        <button class="btn rounded-3 p-1 btn-primary-custom btn-check_point-modify" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 fa-pen-to-square"></i>
                         </button>
-                        <button class="btn rounded-3 p-1 btn-warning btn-exit_form_item-delete" data-id="${data.id}">
+                        <button class="btn rounded-3 p-1 btn-warning btn-check_point-delete" data-id="${data.id}">
                             <i class="fa-regular fs-6 ml-2 text-white fa-trash-can"></i>
                         </button>
                     </div>
@@ -47,8 +47,8 @@ var ExitFormItemComponent = new (function () {
     ];
     this.init = function () {
         if (mThis.initAlready) return;
-        mThis.ExitFormListView = new ListView("_exit_form_item_list", {
-            fetchApi: `${mThis.base_url}/hr/exit-item/list-paginate`,
+        mThis.CheckPointListView = new ListView("_check_point_list", {
+            fetchApi: `${mThis.base_url}/hr/check-point/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -58,11 +58,11 @@ var ExitFormItemComponent = new (function () {
         });
         mThis.divFilter.addEventListener("change", (e) => {
             e.preventDefault();
-            mThis.ExitFormListView.showPage(mThis.getFilterData());
+            mThis.CheckPointListView.showPage(mThis.getFilterData());
         });
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
-                mThis.ExitFormListView.showPage(mThis.getFilterData());
+                mThis.CheckPointListView.showPage(mThis.getFilterData());
         });
         mThis.btnAdd.onclick = function (e) {
             e.preventDefault();
@@ -70,12 +70,12 @@ var ExitFormItemComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    mThis.ExitFormListView.showPage();
+                    mThis.CheckPointListView.showPage();
                 },
             };
             ExitFormItemDialog.show(op);
         };
-        const pr_tbl = mThis.ExitFormListView.getListContainer();
+        const pr_tbl = mThis.CheckPointListView.getListContainer();
         const sh_parent = pr_tbl;
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
@@ -84,15 +84,15 @@ var ExitFormItemComponent = new (function () {
 
         mThis.divFilter.addEventListener("change", (e) => {
             e.preventDefault();
-            mThis.ExitFormListView.showPage(mThis.getFilterData());
+            mThis.CheckPointListView.showPage(mThis.getFilterData());
         });
         mThis.initAlready = true;
     };
     mThis.elSearch.addEventListener("keyup", (e) => {
         clearTimeout(mThis.search_timeout);
         mThis.search_timeout = setTimeout(() => {
-            if (mThis.ExitFormListView) {
-                mThis.ExitFormListView.showPage(mThis.getFilterData());
+            if (mThis.CheckPointListView) {
+                mThis.CheckPointListView.showPage(mThis.getFilterData());
             } else {
                 console.error("Exit Form is not defined");
             }
@@ -117,12 +117,12 @@ var ExitFormItemComponent = new (function () {
         addEventListener("click", (e) => {
             let btn = VSUtil.closestLimited(
                 e.target,
-                ".btn-exit_form_item-modify"
+                ".btn-check_point-modify"
             );
             if (btn) {
                 mThis.edit_exit_form(btn.dataset.id, btn);
             }
-            btn = VSUtil.closestLimited(e.target, ".btn-exit_form_item-delete");
+            btn = VSUtil.closestLimited(e.target, ".btn-check_point-delete");
             if (btn) {
                 mThis.delete_exit_form(btn.dataset.id, btn);
             }
@@ -134,7 +134,7 @@ var ExitFormItemComponent = new (function () {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.ExitFormListView.showPage();
+                mThis.CheckPointListView.showPage();
             },
         };
         ExitFormItemDialog.show(op);
@@ -144,7 +144,7 @@ var ExitFormItemComponent = new (function () {
             id: id,
             btn: menulink,
             onClose: () => {
-                mThis.ExitFormListView.showPage();
+                mThis.CheckPointListView.showPage();
             },
         };
         cv_interact.confirm(
@@ -158,7 +158,7 @@ var ExitFormItemComponent = new (function () {
                 if (e) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/hr/exit-item/delete`,
+                            `${main_view.base_url}/hr/check-point/delete`,
                             op,
                             false,
                             false,
@@ -169,7 +169,7 @@ var ExitFormItemComponent = new (function () {
                                 cv_interact.success(
                                     "Item Status Delete Successfully"
                                 );
-                                mThis.ExitFormListView.showPage();
+                                mThis.CheckPointListView.showPage();
                             }
                         });
                 }
@@ -179,7 +179,7 @@ var ExitFormItemComponent = new (function () {
 
     this.prepareFormOptions = () => {
         vsapi.call(
-            `${main_view.base_url}/hr/exit-item/form-options`,
+            `${main_view.base_url}/hr/check-point/form-options`,
             null,
             null,
             null
@@ -189,7 +189,7 @@ var ExitFormItemComponent = new (function () {
         mThis.init();
         main_view.setTitle(mThis.title_prop);
         mThis.prepareFormOptions();
-        mThis.ExitFormListView.showPage();
+        mThis.CheckPointListView.showPage();
         $(mThis.self).siblings().hide();
         $(mThis.self).fadeIn(200);
     };
@@ -247,7 +247,7 @@ const ExitFormItemDialog = (() => {
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/hr/exit-item/save",
+                                        "/hr/check-point/save",
                                     ].join(""),
                                     jl,
                                     btn,
@@ -267,13 +267,13 @@ const ExitFormItemDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add Exit Form Item",
-                    modifyTitle: "Edit Exit Form Item",
-                    targetProp: "exit_items",
+                    createTitle: "Add Check Point",
+                    modifyTitle: "Edit Check Point",
+                    targetProp: "check_points",
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/hr/exit-item/form-options",
+                            "/hr/check-point/form-options",
                         ].join(""),
                         params: (op) => {
                             return { id: op.id };
