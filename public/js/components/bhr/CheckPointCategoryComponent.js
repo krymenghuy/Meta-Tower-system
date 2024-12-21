@@ -1,11 +1,11 @@
 "use strict";
 
-var FormComponent = new (function () {
+var CheckPointCategoryComponent = new (function () {
     let mThis = this;
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_exitCheckpoints_component");
     this.self = this.jm[0];
-    this.title_prop = "Form";
+    this.title_prop = "Check Point Category";
     this.btnAdd = this.self.querySelector("#_btnAddExitCheckpoints");
     this.elSearch = this.self.querySelector("#_exitCheckpoints_search");
     this.divFilter = this.self.querySelector("#container_exitCheckpoints");
@@ -15,20 +15,6 @@ var FormComponent = new (function () {
             className: "align-middle ",
             data: (data) =>
                 `<span class="text-primary-custom">${data.name}</span>`,
-        },
-        {
-            title: "Total Amount",
-            className: "align-middle ",
-            data: (data) =>
-                `<span class="text-primary-custom">${
-                    main_view.currency.symbol + " " + data.total_amount
-                }</span>`,
-        },
-        {
-            title: "Remarks",
-            className: "align-middle ",
-            data: (data) =>
-                `<span class="text-primary-custom">${data.remarks}</span>`,
         },
         {
             title: "",
@@ -51,7 +37,7 @@ var FormComponent = new (function () {
     this.init = function () {
         if (mThis.initAlready) return;
         mThis.ExitCheckpointsListView = new ListView("_exitCheckpoints_list", {
-            fetchApi: `${mThis.base_url}/hr/form/list-paginate`,
+            fetchApi: `${mThis.base_url}/hr/check-point-category/list-paginate`,
             perPage: 10,
             apiCluster: main_view.apiCluster,
             columns: mThis.cols,
@@ -73,7 +59,9 @@ var FormComponent = new (function () {
                 id: null,
                 btn: e.target,
                 onClose: () => {
-                    cv_interact.success("Added Exit Form successfully");
+                    cv_interact.success(
+                        "Added Exit exit check point successfully"
+                    );
                     mThis.ExitCheckpointsListView.showPage();
                 },
             });
@@ -98,7 +86,7 @@ var FormComponent = new (function () {
             if (mThis.ExitCheckpointsListView) {
                 mThis.ExitCheckpointsListView.showPage(mThis.getFilterData());
             } else {
-                console.error("Exit Form is not defined");
+                console.error("Exit exit check point is not defined");
             }
         }, 200);
     });
@@ -152,9 +140,9 @@ var FormComponent = new (function () {
             },
         };
         cv_interact.confirm(
-            "Delete this Exit Form?",
+            "Delete this Exit check point?",
             {
-                title: "Delete this Exit Form?",
+                title: "Delete this Exit exit check point?",
                 context: "delete",
                 confirmButtonText: "Delete",
             },
@@ -162,7 +150,7 @@ var FormComponent = new (function () {
                 if (e) {
                     vsapi
                         .call(
-                            `${main_view.base_url}/hr/form/delete`,
+                            `${main_view.base_url}/hr/check-point-category/delete`,
                             op,
                             false,
                             false,
@@ -171,7 +159,7 @@ var FormComponent = new (function () {
                         .then((res) => {
                             if (res.status_code == 200) {
                                 cv_interact.success(
-                                    "Exit Form Delete Successfully"
+                                    "Exit check point Delete Successfully"
                                 );
                                 mThis.ExitCheckpointsListView.showPage();
                             }
@@ -184,7 +172,7 @@ var FormComponent = new (function () {
     this.prepareFormOptions = () => {
         vsapi
             .call(
-                `${main_view.base_url}/hr/form/form-options`,
+                `${main_view.base_url}/hr/check-point-category/form-options`,
                 null,
                 null,
                 null
@@ -219,14 +207,6 @@ const ExitCheckpointsDialog = (() => {
                                 <label for="name" class="form-label" vslang="titles.Name"></label>
                                 <input name="name" class="form-control data-input"  data-field="name"></input>
                             </div>
-                            <div class="form-group col-12">
-                                <label for="total_amount" class="form-label" vslang="titles.Total Amount"></label>
-                                <input name="total_amount" type="number" class="form-control data-input"  data-field="total_amount"></input>
-                            </div>
-                            <div class="form-group col-12">
-                                <label for="remarks" class="form-label" vslang="titles.Remarks"></label>
-                                <input name="remarks" class="form-control data-input"  data-field="remarks"></input>
-                            </div>
                         </div>`,
                     ].join("");
                 },
@@ -250,7 +230,7 @@ const ExitCheckpointsDialog = (() => {
                                 .call(
                                     [
                                         main_view.base_url,
-                                        "/hr/form/save",
+                                        "/hr/check-point-category/save",
                                     ].join(""),
                                     jl,
                                     btn,
@@ -270,13 +250,13 @@ const ExitCheckpointsDialog = (() => {
                     };
                 },
                 prepareFormOptions: {
-                    createTitle: "Add Checkpoints",
-                    modifyTitle: "Edit Checkpoints",
-                    targetProp: "check_points",
+                    createTitle: "Add Checkpoints Category",
+                    modifyTitle: "Edit Checkpoints Category",
+                    targetProp: "check_point_categories",
                     api: {
                         endpoint: [
                             main_view.base_url,
-                            "/hr/form/form-options",
+                            "/hr/check-point-category/form-options",
                         ].join(""),
                         params: (op) => {
                             return { id: op.id };
