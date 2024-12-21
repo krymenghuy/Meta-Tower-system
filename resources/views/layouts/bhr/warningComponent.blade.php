@@ -27,8 +27,8 @@
         overflow-x: hidden;
         scrollbar-width: none;
     }
-    th,
-    td {
+   #_main_warningComponent th,
+   #_main_warningComponent td {
         padding: 10px;
         vertical-align: middle;
         text-align: left;

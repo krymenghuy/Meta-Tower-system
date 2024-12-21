@@ -32,8 +32,8 @@
         bottom: 0;
     }
 
-    th,
-    td {
+   #_main_departmentComponent th,
+   #_main_departmentComponent td {
         padding: 10px;
         vertical-align: middle;
         text-align: left;

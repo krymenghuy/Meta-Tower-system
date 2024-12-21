@@ -34,8 +34,8 @@
         bottom: 0;
     }
 
-    th,
-    td {
+   #_main_bonusComponent th,
+   #_main_bonusComponent td {
         padding: 10px;
         vertical-align: middle;
         text-align: left;

@@ -460,7 +460,7 @@ class Employee //extends Model
         $clone_query = clone $query;
         $count = $clone_query->count('emp.id');
 
-        $rows = $query->skip($skip_rows)->take($per_page)->get();
+            $rows = $query->skip($skip_rows)->take($per_page)->get();
 
         foreach ($rows as $row) {
             $row->image_url = '';

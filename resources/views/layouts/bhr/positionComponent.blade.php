@@ -29,8 +29,8 @@
         scrollbar-width: none;
     }
 
-    th,
-    td {
+    #_main_positionComponent th,
+    #_main_positionComponent td {
         padding: 10px;
         vertical-align: middle;
         text-align: left;

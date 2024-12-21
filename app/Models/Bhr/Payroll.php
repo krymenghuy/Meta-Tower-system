@@ -43,6 +43,11 @@ class Payroll
 
         $inputs = $res->values;
 
+        $checkExist = DB::table('payrolls')->where('month',$inputs['month'])->where('year',$inputs['year'])->where('start_date',$inputs['start_date'])->where('end_date',$inputs['end_date'])->take(1)->value('id');
+        if($checkExist){
+            return DV::error($inputs['name'].' is already exist!');
+        }
+
         $id = saveData($ss, 'payrolls', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
             return DV::depends(1, ['payrolls' => $inputs, 'id' => $id]);
@@ -102,8 +107,10 @@ class Payroll
 
     function getDetails($id, $ss)
     {
+        $start_date = DBX::formatDate('p.start_date', 'start_date');
+        $end_date = DBX::formatDate('p.end_date', 'end_date');
         $row = DB::table('payrolls as p')
-            ->selectRaw('p.id, p.name, p.month, p.year, p.start_date, p.end_date, p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
+            ->selectRaw('p.id, p.name, p.month, p.year,' . $start_date . ', ' . $end_date . ', p.p_number, p.total, p.authorized, p.disbursed, p.currency_code, p.exchange_rate')
             ->where('p.branch_id', $ss->branch_id)
             ->where('p.id', $id)
             ->first();

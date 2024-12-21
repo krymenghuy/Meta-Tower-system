@@ -179,7 +179,7 @@ class CompanyProfile //extends Model
 
      $row = DB::table('um_customers')->where('id', $bin_customer_id)->selectRaw('logo_file_name')->first();
      if($row) PublicStorage::delete(['subs_id'=>$ss->subs_id,'branch_id'=>$branch_id,'dir_name'=>self::$logo_dir],'image',$row->logo_file_name); 
-     DB::table('um_customers')->where('id',$bin_customer_id)->update(array('logo_file_type'=>null,'logo_file_name'=>null));
+     DB::table('um_customers')->where('id',$bin_customer_id)->update(['logo_file_name'=>null]);
      return DV::depends(1); 
   }
 }
