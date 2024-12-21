@@ -414,7 +414,7 @@ const AddPayRollListDailog = (() => {
     self.show = (op) => {
         console.log(999, op);
 
-        dialogAdd = dialogAdd || new GeneralDialog({
+        dialogAdd = new GeneralDialog({
             cssClass: 'modal-lg',
             backdrop: 'static',
             keyboard: true,
@@ -475,10 +475,10 @@ const AddPayRollListDailog = (() => {
                             <input name="exchange_rate" class="form-control data-input" data-field="exchange_rate" />
                         </div>
                         <div class="form-group col-6">
-                            <label for="p_number" class="form-label" vslang="titles.Payroll Number"></label>
+                            <label for="p_number" class="form-label" vslang="titles.Payroll As"></label>
                             <select name="p_number" class="modal-select data-input form_input" data-field="p_number">
-                                <option value="1">1</option>
-                                <option value="2">2</option>
+                                <option value="1">One Time</option>
+                                <option value="2">Two Time</option>
                             </select>
                         </div>
                         <div class="form-group col-6">
@@ -512,7 +512,7 @@ const AddPayRollListDailog = (() => {
                     click: (me, btn) => {
                         const p = me.getData();
                         p.id = me.dataOptions.id;
-
+                        // console.log(JSON.stringify(p,null,2));
                         vsapi.call([main_view.base_url, '/hr/payroll/save'].join(''), p, btn, null).then(res => {
                             if (res.status_code == 200) {
                                 me.hide(true, p);
