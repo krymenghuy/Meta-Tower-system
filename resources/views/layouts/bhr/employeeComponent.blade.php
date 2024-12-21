@@ -1,26 +1,5 @@
 <style>
-    .progress-bar {
-        background-color: #6c63ff;
-    }
-
-    .progress {
-        background-color: #e0e0ff;
-        height: 6px;
-    }
-
-    .card-body p {
-        margin: 0;
-    }
-
-    .ellipsis {
-        font-size: 18px;
-    }
-
-    .experience-company {
-        font-weight: bold;
-        font-size: 16px;
-    }
-
+  
     .card {
         border-radius: 5px;
         box-shadow: 0px 0px 3px 0px grey;
@@ -29,7 +8,7 @@
     .card-header {
         display: flex;
         justify-content: space-between;
-        padding: 5px;
+        padding: 8px 16px;
         border: none;
         align-items: center;
         background-color: #323f6a;
@@ -131,9 +110,7 @@
 
     }
 
-    .bg-secondary-custom {
-        background-color: red;
-    }
+    
 
     .social-icons a {
         display: inline-block;

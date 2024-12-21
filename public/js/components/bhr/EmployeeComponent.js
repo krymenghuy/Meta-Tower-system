@@ -699,7 +699,7 @@ var EmployeeComponent = new (function () {
                 let data = res.status_code === 200 ? res.data.data : [];
 
                 let html = `
-                    <div class="card" style="height:390px;">
+                    <div class="card" style="height:260px;">
                         <div class="card-header bg-primary-custom text-white">
                             <h5 class="mt-1">Skill</h5>
                             <div class="d-flex gap-2">
@@ -744,15 +744,14 @@ var EmployeeComponent = new (function () {
                     `].join('');
                     cmt++;
                 });
-                if(cmt == 0){
-                    html += `<div class="w-100 text-center bg-white"><small>no</small></div>`;
+                if(cmt === 0){
+                    html += `<div class="w-100  text-center"><small class="rounded-5 bg-white p-1 px-3" >No data available.</small></div><hr class="bg-dark">`;
 
                 }
 
                 html += `</div></div>`;
                 this.profile_card_left.innerHTML = html;
 
-                // Add event listener for "Add" button
                 document
                     .querySelector(".lnk-add-skill")
                     .addEventListener("click", function (e) {
@@ -776,7 +775,6 @@ var EmployeeComponent = new (function () {
                         AddSkillDialog.show(op);
                     });
 
-                // Add event listeners for all "Edit" buttons
                 document
                     .querySelectorAll(".lnk-edit-skill")
                     .forEach((btn) => {
@@ -856,7 +854,7 @@ var EmployeeComponent = new (function () {
         let p = {
             emp_id: employeeId,
         };
-
+        let cmt = 0;
         vsapi
             .call(
                 `${main_view.base_url}/hr/education/list-all`,
@@ -867,7 +865,7 @@ var EmployeeComponent = new (function () {
             )
             .then((res) => {
                 let data = res.status_code === 200 ? res.data.data : [];
-                let html = `<div class="card" style="height:390px;">
+                let html = `<div class="card" style="height:260px;">
                 <div class="card-header text-white bg-primary-custom">
                     <h5 class="mt-1">Education</h5>
                     <div class="d-flex gap-2">
@@ -880,32 +878,34 @@ var EmployeeComponent = new (function () {
             `;
 
                 data.forEach((d) => {
-                    html += `
-                <div class="experience_item py-2 border-bottom border-white" style="display:flex">
-                    <div class="col-md-6">
-                        <h6 class="text-" style="width:180px; height:22px; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap">${d.period}</h6>
-                        <p class="text-primary-custom" style="width:170px; height:20px"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/graduate.svg" /> ${d.edu_level}</p>
-                        <p class="text-muted" style="width:160px; height:20px; overflow: hidden; text-overflow: ellipsis; word-wrap: break-word; white-space: nowrap"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/radio.svg" /> ${d.major}</p>
+                    html =[html,`
+                <div class="experience_item pt-2 border-bottom border-white" style="display:flex">
+                    <div class="col-md-12">
+                        <div class="d-flex justify-content-between">
+                            <h6 style="color:#2b3991;">${d.period}</h6>
+                            <span class="text-nowrap text-dark" style="color:#2b3991;">${d.school}</span>
+                        </div>
+                        <span class="text-muted d-block"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/graduate.svg" /> ${d.edu_level}</span>
+                        <small class="text-primary " ><img class="bhr-icons" src="${main_view.asset_url}/images/icons/radio.svg" />${d.major}</small>
+                        <div class="d-flex justify-content-end gap-3">
+                            <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-modify">
+                                <i class="fa-solid text-warning fa-check tool-tip"><span class="tool-tiptext text-warning border border-warning fs-10">edit</span></i>
+                            </a>
+                            <a href="javascript:void(0)" data-id="${d.id}" data-empid="{employeeId}" class="btn-education-delete">
+                                <i class="fa-solid text-danger fa-xmark tool-tip"><span class="tool-tiptext text-danger border border-danger fs-10">delete</span></i>
+                            </a>
+                        </div> 
                     </div>
 
-                    <div class="col-md-6">
-                        <div class="d-flex justify-content-start">
-                            <div class="d-flex gap-2 mt-4" style="overflow-y: auto; overflow-x: hidden; scrollbar-width: none;">
-                                <span>${d.school}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="education_actions align-items-center gap-3 mr-2" style="display:flex; flex-direction:column; justify-content:center">
-                        <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-modify">
-                            <i class="fa-regular fa-pen-to-square text-warning fs-10"></i>
-                        </a>
-                        <a href="javascript:void(0)" data-id="${d.id}" data-empid="{employeeId}" class="btn-education-delete">
-                            <i class="fa-solid fa-trash-can text-danger fs-10"></i>
-                        </a>
-                    </div>
+                   
                 </div>
-                `;
+                `].join('');
+                cmt++;
                 });
+                if(cmt === 0){
+                    html += `<div class="w-100  text-center"><small class="rounded-5 bg-white p-1 px-3" >No data available.</small></div><hr class="bg-dark">`;
+
+                }
 
                 html += `</div></div>`;
                 this.profile_card_center.innerHTML = html;
@@ -1048,6 +1048,7 @@ var EmployeeComponent = new (function () {
         let p = {
             emp_id: employeeId,
         };
+        let cmt = 0;
 
         vsapi
             .call(
@@ -1059,7 +1060,7 @@ var EmployeeComponent = new (function () {
             )
             .then((res) => {
                 let data = res.status_code === 200 ? res.data.data : [];
-                let html = `<div class="card" style="height:390px;">
+                let html = `<div class="card" style="height:260px;">
                 <div class="card-header text-white bg-primary-custom">
                     <h5 class="mt-1">Experience</h5>
                     <div class="d-flex gap-2">
@@ -1072,9 +1073,9 @@ var EmployeeComponent = new (function () {
                 `;
 
                 data.forEach((d) => {
-                    html += `
-                <div class="row py-3 border-bottom border-white">
-                    <div class="col-md-6" style="display: flex; flex-direction: column; gap:10px">
+                    html =[html,`
+                <div class="row pt-2 border-bottom border-white">
+                    <div class="col-md-12">
                         <div class="experience-toggle" data-experience-id="${d.id}"
                             style="display:flex; justify-content:space-between; width:350px; cursor: pointer;">
                             <div style="display:flex; width:350px; justify-content:space-between">
@@ -1107,8 +1108,13 @@ var EmployeeComponent = new (function () {
                         </div>
                     </div>
                 </div>
-                    `;
+                    `].join('');
+                    cmt++;
                 });
+                if(cmt === 0){
+                    html += `<div class="w-100  text-center"><small class="rounded-5 bg-white p-1 px-3" >No data available.</small></div><hr class="bg-dark">`;
+
+                }
 
                 html += `</div></div>`;
                 this.profile_card_right.innerHTML = html;
@@ -1239,7 +1245,7 @@ var EmployeeComponent = new (function () {
 
     this.renderCardTaxAllowance = (employeeId) => {
         let p = { emp_id: employeeId };
-
+        let cmt = 0;
         vsapi
             .call(
                 `${main_view.base_url}/hr/tax-allowance/list-paginate`,
@@ -1252,7 +1258,7 @@ var EmployeeComponent = new (function () {
                 let data = res.status_code === 200 ? res.data.data : [];
 
                 let html = `
-                    <div class="card" style="height:390px;">
+                    <div class="card" style="height:260px;">
                         <div class="card-header bg-primary-custom text-white">
                             <h5 class="mt-1">Tax Allowance</h5>
                             <div class="d-flex gap-2">
@@ -1312,7 +1318,12 @@ var EmployeeComponent = new (function () {
                             </div>
                         </div>
                     `].join('');
+                    cmt++;
                 });
+                if(cmt === 0){
+                    html += `<div class="w-100  text-center"><small class="rounded-5 bg-white p-1 px-3" >No data available.</small></div><hr class="bg-dark">`;
+
+                }
 
                 html += `</div></div>`;
                 this.tax_allowance_card.innerHTML = html;
@@ -1418,6 +1429,7 @@ var EmployeeComponent = new (function () {
     };
     this.renderEmpDocuments = (employeeId) => {
         let p = { emp_id: employeeId };
+        let cmt = 0 ;
 
         vsapi
             .call(
@@ -1431,7 +1443,7 @@ var EmployeeComponent = new (function () {
                 let data = res.status_code === 200 ? res.data.data : [];
 
                 let html = `
-                    <div class="card" style="height:390px;">
+                    <div class="card" style="height:260px;">
                         <div class="card-header bg-primary-custom text-white">
                             <h5 class="mt-1">Employee Documents</h5>
                             <div class="d-flex gap-2">
@@ -1476,7 +1488,12 @@ var EmployeeComponent = new (function () {
                             </div>
                         </div>
                     `].join('');
+                    cmt++;
                 });
+                if(cmt === 0){
+                    html += `<div class="w-100  text-center"><small class="rounded-5 bg-white p-1 px-3" >No data available.</small></div><hr class="bg-dark">`;
+
+                }
 
                 html += `</div></div>`;
                 this.emp_documents_card.innerHTML = html;
@@ -2332,7 +2349,7 @@ const AddEducation = (() => {
                 createContent: () => {
                     return [
                         `<div class="row">
-                        <div class=" form-group col-md-6">
+                        <div class=" form-group col-md-12">
                             <label class="form-label" vslang="titles.School">School</label>
                             <span class="text-danger" >*</span>
                             <div><select name="school_id" class="data-input" data-field="school_id"></select></div>
@@ -2360,7 +2377,7 @@ const AddEducation = (() => {
                             <div><input name="finish_year" class="form-control data-input" data-field="finish_year"/></div>
                         </div>
 
-                        <div class="form-group col-md-12">
+                        <div class="form-group col-md-6">
                             <label class="form-label" vslang="titles.Diploma">Diploma</label>
                             <div><input name="diploma" class="form-control data-input" data-field="diploma"/></div>
                         </div>
@@ -2369,15 +2386,15 @@ const AddEducation = (() => {
                 },
                 buttons: [
                     {
-                        label: "<span>Cancel</span>",
-                        cssClass: "btn btn-warning text-white",
+                        label: '<span><i class="fa-solid text-danger fa-xmark"></i></span>' ,
+                        cssClass: "btn btn-sm btn-outline",
                         click: (me) => {
                             me.hide(false);
                         },
                     },
                     {
-                        label: "<span>Save</span>",
-                        cssClass: "btn btn-primary",
+                        label: '<span><i class="fa-solid text-success fa-check"></i></span>',
+                        cssClass: "btn btn-sm btn-outline",
                         click: (me) => {
                             let p = me.getData();
                             p.emp_id = me.dataOptions.emp_id;
@@ -2715,11 +2732,6 @@ const EmployeeDialog = (() => {
                                     </select>
                                 </div>`,
                                 `<div class="form-group col-4">
-                                    <label for="date_of_birth" class="form-label text-primary-custom" vslang="titles.Date Of Birth"></label>
-                                    <span class="text-danger">*</span>
-                                    <input name="date_of_birth"  class="form-control data-input" data-field="date_of_birth" />
-                                </div>`,
-                                `<div class="form-group col-4">
                                     <label for="marital_status" class="form-label text-primary-custom" vslang="titles.Marital Status"></label>
                                     <span class="text-danger">*</span>
                                     <select name="marital_status" class="form-control data-input" data-field="marital_status">
@@ -2729,8 +2741,12 @@ const EmployeeDialog = (() => {
                                         <option value="Not Disclosed">Not Disclosed</option>
                                     </select>
                                 </div>`,
-                               
-                                `<hr style="border: none; border-top: 5px solid #6e7272;"></hr>`,
+                                `<div class="form-group col-4">
+                                    <label for="date_of_birth" class="form-label text-primary-custom" vslang="titles.Date Of Birth"></label>
+                                    <span class="text-danger">*</span>
+                                    <input name="date_of_birth"  class="form-control data-input" data-field="date_of_birth" />
+                                </div>`,
+                                `<hr style="border: none; border-top: 2px solid #6e7272;"></hr>`,
 
                             `</div>`,
 
@@ -2799,12 +2815,12 @@ const EmployeeDialog = (() => {
                             </div>`,
                           
                             
-                            `<div class="form-group col-4">
+                            `<div class="form-group col-6">
                                 <label for="work_shift" class="form-label text-primary-custom" vslang="titles.Work Shift"></label>
                                 <span class="text-danger">*</span>
                                 <select name="work_shift" class="form-control data-input" data-field="work_shift_id"></select>
                             </div>`,
-                           `<div class="form-group col-4">
+                           `<div class="form-group col-6">
                                 <label for="joining_date" class="form-label text-primary-custom" vslang="titles.Joining Date"></label>
                                 <span class="text-danger">*</span>
                                 <input name="joining_date"  class="form-control data-input" data-field="joining_date" />
