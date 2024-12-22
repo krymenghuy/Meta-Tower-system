@@ -110,7 +110,7 @@ var DashboardComponent = new (function () {
                 `<div class="col-md-6">
                     <div class="chart-container dashboard_chart">
                         <span class="fw-semibold fs-5 text-primary-custom text-capitalize">
-                            Monthly Employee Salary Overview
+                            Monthly Payroll Expenses (last 12 months)
                         </span>
                         <canvas id="employeeSalaryChart"></canvas>
                     </div>
@@ -339,7 +339,7 @@ var DashboardComponent = new (function () {
                             </div>
                         </div>
                         <span class="fw-semibold fs-6 text-primary-custom text-start" 
-                            style="color: #2b3991; font-size: 1.2rem;">Exist Forms <small class="text-danger">(unfinished)</small></span>
+                            style="color: #2b3991; font-size: 1.2rem;">Exit Forms <small class="text-danger">(Pending)</small></span>
                     </div>
 
             </div>`,
@@ -431,7 +431,7 @@ var DashboardComponent = new (function () {
             `<div class="col-md-3">
                     <div class="card-container dashboard_chart">
                         <span class="fw-semibold fs-6 text-primary-custom text-capitalize">
-                            Overview last 10 days 
+                            Absences over last 10 days 
                         </span>
                         ${tableLeave}
                     </div>
@@ -454,7 +454,7 @@ var DashboardComponent = new (function () {
                                 </svg>
                                 <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
                                     style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
-                                    <p class="fs-6 m-0">${data.accounts.payrolls.total_count}</p>
+                                    <p class="fs-6 m-0">${data.accounts.payrolls.total_count || 0}</p>
                                     <small>Payrolls</small>
                                 </div>
                             </div>
@@ -462,7 +462,7 @@ var DashboardComponent = new (function () {
                                 <div class="w-100">
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                    <p class="fs-6" style="color: #2b3991;">$ ${data.accounts.payrolls.total_count}</p>
+                                    <p class="fs-6" style="color: #2b3991;">$ ${data.accounts.payrolls.total_count || 0}</p>
                                 </div>
                             </div>
 
@@ -482,7 +482,7 @@ var DashboardComponent = new (function () {
                                 </svg>
                                 <div class="d-flex flex-column justify-content-center align-items-center position-absolute top-50 start-50 translate-middle" 
                                     style="color: #2b3991; font-size: 0.75rem; font-weight: bold; text-align: center;">
-                                    <p class="fs-6 m-0">${data.accounts.wallets.total_count}</p>
+                                    <p class="fs-6 m-0">${data.accounts.wallets.total_count || 0}</p>
                                     <small>Wallets</small>
                                 </div>
                             </div>
@@ -490,7 +490,7 @@ var DashboardComponent = new (function () {
                                 <div class="w-100">
                                     <p class="fs-6 text-muted m-0" style="color: #cab54a;">Total</p>
                                     <hr style="margin: 4px 0; border: 0; border-top: 2px solid #2b3991; width: 80%;">
-                                    <p class="fs-6" style="color: #2b3991;">$ ${data.accounts.wallets.total_balance}</p>
+                                    <p class="fs-6" style="color: #2b3991;">$ ${data.accounts.wallets.total_balance || 0.00}</p>
                                 </div>
                             </div>
                         </div>
@@ -506,7 +506,7 @@ var DashboardComponent = new (function () {
             `<div class="col-md-6">
                 <div class="card-container dashboard_chart">
                     <span class="fw-semibold fs-6 text-primary-custom text-capitalize">
-                        Overview Total Benefits 
+                        Benefit Overview As of Now
                     </span>
                     ${tableBenefit}
                 </div>
@@ -519,21 +519,18 @@ var DashboardComponent = new (function () {
     };
     
    this.renderDBCardOnLeave = (data) => {
-    console.log(49,data);
-    
-    
     const rowsHtml = (data || [])
         .map(
             (item) => `
                 <tr>
                     <td class="align-middle">
                         <div class="text-primary-custom text-center border rounded-5 d-block p-1" style="width: 100px; background: #d1b54a;font-size: 0.75rem; font-weight: bold;">
-                            ${item.formatted_date}
+                            ${item.formatted_date || ''}
                         </div>
                     </td>
                     <td class="align-middle" style="font-size: 0.75rem;">
                         <span class="p-1 text-white text-center border d-block rounded-5 p-1" style="width: 100px; background: #2b3991cc; font-size: 0.75rem; font-weight: bold;">
-                            ${item.staff_count} staff
+                            ${item.staff_count || 0}
                         </span>
                     </td>
                 </tr>
@@ -546,7 +543,7 @@ var DashboardComponent = new (function () {
                 <thead style="position: sticky; top: 0; background: #fff; z-index: 1;">
                     <tr>
                         <th class="text-start" style="font-size: 0.85rem; color: #d1b54a; font-weight: bold;">Date</th>
-                        <th class="text-start" style="font-size: 0.85rem; color: #2b3991cc; font-weight: bold;">Staff Count</th>
+                        <th class="text-start" style="font-size: 0.85rem; color: #2b3991cc; font-weight: bold;">Absence Count</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -580,12 +577,12 @@ var DashboardComponent = new (function () {
                     </td>
                     <td class="align-middle">
                         <span class="text-primary-custom" style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            ${item.total_amount} <span class="text-danger">KHR</span>
+                            ${item.total_amount || 0.00} <span class="text-danger">KHR</span>
                         </span>
                     </td>
                     <td class="align-middle">
                         <span class="text-primary " style="width: 100px;font-size: 0.75rem; font-weight: bold;">
-                            ${item.updated_by}
+                            ${item.update_date || ''}
                         </span>
                     </td>
                 </tr>

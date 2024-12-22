@@ -97,54 +97,10 @@ class GeneralSettings //extends Model
           (object)['trx_type'=>'receipt','name'=>'Money In'],
         ];
     }
-    static function options_sender($ss){
-        return  DB::table('sender as s')->join('sender_classes as sc','s.id','=','sc.sender_id')->where('sc.sender_class','oversea')->where('s.branch_id',$ss->branch_id)->whereRaw('s.status_code =\'active\'')->selectRaw('CONCAT(s.name,\': \',code) AS sender_name,s.id')->orderBy('s.name','ASC')->get();
+    static function options_exit_form($ss){
+        return DB::table('forms as f')->selectRaw('id,name')->get();
     }
-    static function options_zone_type($ss){
-        return [
-           (object)['zone_type'=>'Local'],
-           (object)['zone_type'=>'International']
-        ];
-    }
-    static function options_vehicle_type($ss){
-        return  DB::table('vehicle_type')->where('branch_id',$ss->branch_id)->selectRaw('id,code,name as vehicle_type')->get();
-    }
-
-    static function options_zone($ss){
-        return  DB::table('zones')->where('branch_id',$ss->branch_id)->select('zone_code','zone_name')->orderBy('zone_name','ASC')->get();
-    }
-
-    //For report filter => so need to include (All) option.
-    //Used in backend ReportCenter component
-    static function options_delivery_status($ss){
-       $rows = DB::table('package_statuses as ps')->whereIn('id',[6,8,9,11])->select('name as delivery_status','id')->orderBy('id','ASC')->get();
-       $rows->prepend((object)['id'=>null,'delivery_status'=>'(All)']); // ("{'id':'','delivery_status':'(All)'}");
-       return $rows;
-    }
-
-    //Used by Mobile apps (Merchant and Driver). NOTE that "status_id" must be of type string so that dart/flutter will process it correctly in mobile app
-    static function options_package_status($ss=null){
-        $rows[] = (object)['status'=>'All','status_id'=>null];
-        $rows =DB::table("package_statuses AS ps")->whereRaw("ps.id IN (6,8,9,11)")->selectRaw('ps.name AS status, CONCAT(ps.id,\'\') as status_id')->orderBy("ps.id","ASC")->get();
-        $rows[] = (object)['status'=>'(All)','status_id'=>''];
-        //array_unshift($rows,(object)['status'=>'(All)','status_id'=>null]);
-        return $rows;
-    }
-
-   static function options_driver_remark($ss=null){
-     $branch_id = $ss?$ss->branch_id:1;
-     return DB::table('remarks AS r')->where('r.branch_id',$branch_id)->selectRaw('r.remarks AS code,r.remarks')->get();
-   }
-
-   static function options_delivery_remark($category,$ss){
-     $branch_id = $ss?$ss->branch_id:1;
-     return DB::table('remarks AS r')->where('r.branch_id',$branch_id)->where('r.category',$category)->selectRaw('r.remarks AS code,r.remarks')->get();
-   }
-    static function options_product_type($ss){
-      $branch_id =$ss?$ss->branch_id:1;
-      return DB::table('product_types as p')->where('p.branch_id',$branch_id)->selectRaw('p.id,p.name AS product_type,p.name as code')->orderBy('p.name','ASC')->get();
-    }
-
+   
     static function options_pmt_status($ss=null){
        return [
         (object)['id'=>-1,'pmt_status'=>'(All)','status'=>'(All)'],
@@ -152,109 +108,7 @@ class GeneralSettings //extends Model
         (object)['id'=>1,'pmt_status'=>'Paid','status'=>'Paid']
        ];
     }
-    static function options_driver($ss){
-       $branch_id = $ss->branch_id;
-       $str_status_code ="d.status_code ='Active'";
-       $rows = DB::table('driver as d')->whereRaw($str_status_code)->where('branch_id',$branch_id)->select('id','name AS driver_name')->orderBy('d.name','ASC')->get();
-       $rows->prepend((object)['id'=>null,'driver_name'=>'(All Drivers)']);
-       return $rows;
-     }
-
-    static function options_driver_active($ss){
-        $branch_id = $ss->branch_id;
-        $str_status_code ="d.status_code ='Active'";
-        $rows = DB::table('driver as d')->whereRaw($str_status_code)->where('branch_id',$branch_id)->select('id','name AS driver_name')->orderBy('d.name','ASC')->get();
-        $rows->prepend((object)['id'=>null,'driver_name'=>'(All Drivers)']);
-        return $rows;
-    }
-
-
-    //getReportFilterOptions_abm
-    static function getReportFilterOptions_abm($ss){
-        //$sender_statuses = [(object)['sender_status'=>'Active'], (object)['sender_status'=>'Inactive']];
-        return (object)[
-          //'users'=>DB::select("SELECT id as `user_id`,  full_name As `user_name` FROM um_users AS u WHERE u.branch_id = '$branch_id' ORDER BY u.full_name asc"),
-          'customers'=>GeneralSettings::options_customer($ss),
-          'suppliers'=>GeneralSettings::options_supplier($ss),
-          'pmt_statuses'=>GeneralSettings::options_pmt_status($ss),
-          'primary_cps'=>GeneralSettings::options_primary_cp($ss),
-          'secondary_cps'=>GeneralSettings::options_secondary_cp($ss),
-        ];
-    }
-
-    static function options_complete_status($ss){
-        return [
-            (object)['id'=>'-1','c_status'=>'(All)'],
-            (object)['id'=>'1','c_status'=>'Completed'],
-            (object)['id'=>'0','c_status'=>'Outstanding']
-        ];
-    }
-
-    static function options_sales_affiliate($ss,$include_all =false,$active_only=true){
-        $str_active = $active_only? 'a.status_code =\'active\'':'2=2';
-        $rows = DB::table("os_affiliates as a")->where('branch_id',$ss->branch_id)->whereRaw($str_active)->selectRaw('a.id,CONCAT(a.name,\'(\',a.code,\')\') AS agent_name,a.code')->get();
-        if($include_all){
-           $rows->prepend((object)['id'=>null,'agent_name'=>'(All Agents)']);
-        }
-        return $rows;
-    }
-
-    static function options_shipment_code($ss,$include_all =false,$shipping_only=true){
-        $str_status = $shipping_only? 's.status_id =\'2\'':'2=2';
-        $rows = DB::table("os_shipments as s")->where('branch_id',$ss->branch_id)->whereRaw($str_status)->selectRaw('s.id, s.code AS shipment_code')->get();
-        if($include_all){
-           $rows->prepend((object)['id'=>null,'shipment_code'=>'(Select JTO shipment No.)']);
-        }
-        return $rows;
-    }
-    static function options_primary_cp($ss,$include_all =false,$active_only=true){
-        $str_active = $active_only? 'a.status_code =\'active\'':'2=2';
-        $rows = DB::table("os_affiliates as a")
-        ->join('os_contact_persons as cp','cp.affiliate_id','=','a.id')
-        ->where('a.branch_id',$ss->branch_id)
-        ->where('cp.cp_type_id',1)
-        ->whereRaw($str_active)
-        ->selectRaw('cp.id,CONCAT(a.name,\' (\',a.code,\')\') AS primary_cp_name,a.code')->get();
-        if($include_all){
-           $rows->prepend((object)['id'=>null,'primary_cp_name'=>'(Select Contact Person)']);
-        }
-        return $rows;
-    }
-    static function options_secondary_cp($ss,$include_all =false,$active_only=true){
-        $str_active = $active_only? 'a.status_code =\'active\'':'2=2';
-        $rows = DB::table("os_affiliates as a")
-        ->join('os_contact_persons as cp','cp.affiliate_id','=','a.id')
-        ->where('a.branch_id',$ss->branch_id)
-        ->where('cp.cp_type_id',2)
-        ->whereRaw($str_active)
-        ->selectRaw('cp.id,CONCAT(a.name,\' (\',a.code,\')\') AS secondary_cp_name,a.code')->get();
-        if($include_all){
-           $rows->prepend((object)['id'=>null,'secondary_cp_name'=>'(Select Contact Person)']);
-        }
-        return $rows;
-    }
-    static function options_supplier($ss,$include_all =false,$active_only=true){
-        $str_active = $active_only? 's.status_code =\'active\'':'2=2';
-        $rows = DB::table("os_suppliers as s")
-        ->where('s.branch_id',$ss->branch_id)
-        ->whereRaw($str_active)
-        ->selectRaw('s.id,CONCAT(s.name,\' (\',s.code,\')\') AS supplier_name,s.code')->get();
-        if($include_all){
-           $rows->prepend((object)['id'=>null,'supplier_name'=>'(Select Supplier)']);
-        }
-        return $rows;
-    }
-    static function options_country_zone($ss){
-        $rows = DB::table('loc_countries as c')
-        ->join('os_zone_countries as zc','zc.country_id','=','c.id')
-        ->where('c.branch_id',$ss->branch_id)
-        // ->select('c.id','c.standard_zone',DB::raw("CONCAT(c.name,' (',c.standard_zone,')') as country_name"))
-        ->selectRaw('c.id,CONCAT(c.name,\'(\',zc.zone_code,\')\') As country_name')
-        ->get();
-
-        return $rows;
-    }
-
+   
     static function options_calendar_month($ss=null)
     {
         $months = [

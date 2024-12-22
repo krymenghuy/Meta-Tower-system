@@ -11,7 +11,7 @@ use App\Services\Umt\AuthService;
 use App\Models\Umt\Report;
 use App\Models\Umt\Permission;
 use DB;
-use Sanitizer;
+//use Sanitizer;
 
 class Role //extends Model
 {
@@ -348,6 +348,9 @@ class Role //extends Model
      return DV::depends($m_id,['role_id'=>$role_id,'user_count'=>$user_count],'Failed to add user to the given role');
  }
  
+  static function getUserIdsByName($roleName){
+    return DB::table('um_roles as r')->join('um_user_roles as ur','r.id','=','ur.role_id')->where('r.name', $roleName)->pluck('ur.user_id')->toArray();
+  }
 
   //  /** $arr = [user_id,is_primary] */
   //  function addMember($arr,$id=null,$user = null){
@@ -378,6 +381,7 @@ class Role //extends Model
   function getRoleModules($app_id, $role_id = null,$ss = null){
     $role_id = $role_id ?? $this->id;
     $ss = $ss ?? $this->user_info;
+    if($app_id =='') $app_id = null;
     $str_app_id = DBX::getHEX('app.id','app_id');
     $access_mods = self::getAccessibleModules_internal($role_id,$app_id);
     $query = DB::table('um_app_modules as m')->join('um_applications as app','app.id','=','m.app_id')->selectRaw('m.id, CONCAT(m.name,\' (\',m.id,\')\') AS name ,m.id AS module_id, app.name AS app_name,'.$str_app_id)->orderByRaw('m.name ASC');
@@ -424,7 +428,7 @@ class Role //extends Model
   }
 
   protected static function getAccessibleApps_sql($role_id){ 
-    $apps = DB::table('um_role_apps as ra')->join('um_applications as app','app.id','=','ra.app_id')->where('ra.role_id',$role_id)->pluck('app.id');
+    $apps = DB::table('um_role_apps as ra')->join('um_applications as app','app.id','=','ra.app_id')->where('ra.role_id',$role_id)->pluck('app.id')->toArray();
     return $apps;
   }
 
@@ -444,7 +448,7 @@ class Role //extends Model
   ->join('um_permissions as p','p.id','=','rp.permission_id')
   ->where('rp.action_name','primary')
   ->where('rp.role_id',$role_id)->where('p.category','Report')->selectRaw($cols)->get();
-}
+ }
 
   /** return all avaialable permissions with status as 1 = allowed, and 0 = Denied */
   function getRolePermissions($arr, $role_id = null,$ss = null){
@@ -452,6 +456,7 @@ class Role //extends Model
     $ss = $ss ?? $this->user_info;
     $d = (object)$arr;
     $app_id =   $d->app_id ?? null;
+    if($app_id =='') $app_id = null;
     $search_value =  $d->search_value ?? null;
     $str_app_id = DBX::getHEX('app.id','app_id');
     $query = DB::table('um_permissions as p')->join('um_applications as app','app.id','=','p.app_id')->join('um_app_modules as am','am.id','=','p.module_id')->where('p.category','<>','report')->selectRaw('p.id,am.name AS module_name, CONCAT(p.name,\' (\',p.id,\')\') AS permission_name,p.category,p.module_id,app.name AS app_name,'.$str_app_id)->orderByRaw('p.name ASC');
@@ -495,11 +500,13 @@ class Role //extends Model
     $ss = $ss ?? $this->user_info;
     $d = (object)$arr;
     $app_id = $d->app_id ?? null;
+    if($app_id =='') $app_id = null; 
     $search_value = $d->search_value ?? null;
     $str_app_id = DBX::getHEX('app.id','app_id');
     $query = DB::table('um_permissions as p')->join('um_applications as app','app.id','=','p.app_id')->join('reports as rpt','rpt.permission_id','=','p.id')->where('p.category','Report')->selectRaw('p.id,CONCAT(p.name,\' (\',p.id,\')\') AS permission_name,p.category,p.module_id,app.name AS app_name, rpt.export_excel, rpt.export_pdf, rpt.export_csv,rpt.category AS report_group,'.$str_app_id)->orderByRaw('rpt.category ASC, p.name ASC');
     if($search_value){
-      $str_search = '(p.name LIKE \'%'.escape_like_str($search_value).'%\' )';
+      $search_value = escape_like_str($search_value);
+      $str_search = '(p.name LIKE \'%'.$search_value.'%\' )';
       if( is_numeric($search_value) && $search_value > 0) $str_search = 'p.id = '.$search_value.'';
       $query->whereRaw($str_search);
     }else{

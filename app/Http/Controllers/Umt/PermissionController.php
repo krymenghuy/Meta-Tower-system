@@ -10,6 +10,11 @@ use App\Models\Umt\Permission;
 
 class PermissionController extends Controller
 {
+    function getNextPermissionId(Request $req){
+        $next_prn_id = Permission::nextPermissionId();
+        return JDV::result($next_prn_id); 
+    }
+
     function getPermissionList(Request $req){
         $ss = AuthService::verifyAuth($req,-1);
         if($ss->status_code !==200) return JDV::raw($ss);

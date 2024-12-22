@@ -1,7 +1,7 @@
 "use strict";
 
 var ExitFormComponent = new (function () {
-    let mThis = this;
+    const mThis = this;
     this.base_url = main_view.base_url;
     this.jm = main_view.appContent.children("#_main_exit_form_component");
     this.self = this.jm[0];
@@ -44,7 +44,7 @@ var ExitFormComponent = new (function () {
             className: "align-middle ",
             data: (data) =>
                 `<span class="text-primary-custom">${
-                    data.form_name ?? "Null"
+                    data.name ?? ""
                 }</span>`,
         },
         {
@@ -67,24 +67,19 @@ var ExitFormComponent = new (function () {
             title: "Settled",
             className: "settled text-nowrap align-middle",
             data: (data) => {
-                let settledText = "text-white text-center border rounded-5";
+                let settledText = "Pending";
                 let settledClass = "";
 
-                if (data.settled == "1") {
+                if (data.settled == 1) {
                     settledText = "Done";
-                    settledClass =
-                        "text-white text-center bg-success border border-info rounded-5 p-1";
-                } else if (data.settled == "2") {
-                    settledText = "Not Yet";
-                    settledClass =
-                        "text-white text-center bg-warning border border-info rounded-5 p-1";
+                    settledClass ="text-white text-center bg-success border border-info rounded-5 p-1";
+                } 
+                else {
+                    //settledText = "Not Yet";
+                    settledClass = "text-white text-center bg-warning border border-info rounded-5 p-1";
                 }
 
-                return `
-            <p class="p-0 m-0 text-white ${settledClass}" style="border-radius: 5px; padding: 5px;">
-                ${settledText}
-            </p>
-        `;
+                return `<p class="p-0 m-0 text-white ${settledClass}" style="border-radius: 5px; padding: 5px;">${settledText}</p>`;
             },
         },
         {

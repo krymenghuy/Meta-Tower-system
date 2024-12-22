@@ -1015,7 +1015,8 @@ const RoleTabView = new function(){
 this.ModulePanel = new function(){
     const that = this;
     this.elAppFilter = mThis.self.querySelector('#mod_app_chooser');
-    this.elAppFilter.onchange = e=>{
+
+    this.elAppFilter.onchange = e => {
       e.preventDefault();
       that.def_app_id = e.target.value;
       that.displayModules(mThis.selected_role.role_id, that.def_app_id);
@@ -1030,10 +1031,14 @@ this.ModulePanel = new function(){
             label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
         }));
         that.def_app_id = that.def_app_id || (icon_apps[0]? icon_apps[0].value : "");
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",true,"(All Apps)",(that.def_app_id || ""));
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'',"(All Apps)",(that.def_app_id || ''));
+        if(!that.elAppFilter.value) that.elAppFilter.value ='';
+        that.elAppFilter.dispatchEvent(new Event('change'));
     }
 
     this.displayModules = (role_id,app_id)=>{
+            if (!that.elAppFilter.value) that.elAppFilter.value = ''; // (All Applications)
+            role_id = RoleManagementComponent.selected_role?.role_id || RoleManagementComponent.selected_role?.id;
             mThis.div_modules = mThis.div_modules || mThis.self.querySelector('#_um_role_mod_list');
             let div = mThis.div_modules.parentElement?.querySelector('.mod_action_buttons');
             if(!div){
@@ -1147,7 +1152,7 @@ this.ModulePanel = new function(){
          }
 
          this.exportModules= (app_id) =>{
-            let d = that.getModuleList();
+            const d = that.getModuleList();
             RoleManagementComponent.exportData(d,"modules");
           }
        
@@ -1276,13 +1281,18 @@ this.PermissionPanel = new function(){
     }
 
     this.loadAppChoices = async ()=>{
-        let apps =  await getAccessibleApps();
-        let icon_apps = apps.map(x =>({
+        const apps =  await getAccessibleApps();
+        const icon_apps = apps.map(x =>({
             value: x.id,
             label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
         }));
         that.def_app_id = that.def_app_id || (apps[0]?.id);
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",true,"All Applications",(that.def_app_id || ""));
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'',"All Applications",(that.def_app_id || ""));
+        console.log('ggh: ',that.elAppFilter.value );
+        if(!that.elAppFilter.value){
+            that.elAppFilter.value = '';
+        }
+        that.elAppFilter.dispatchEvent(new Event('change'));
     }
 
     this.displayPermissionList = (role_id, app_id,search_value)=>{
@@ -1369,7 +1379,8 @@ this.PermissionPanel = new function(){
     }
 
     this.deletePermission = (id)=>{
-       let p = {id:id};
+       const p = {id:id};
+       if (!that.elAppFilter.value) that.elAppFilter.value = ''; // (All Applications)
        cv_interact.confirm("Delete this module?",{title:"Delete Module",context:'delete'}, e=>{
          if(e){
             vsapi.call(`${main_view.base_url}/api/module/delete`,p,false,false).then(res=>{
@@ -1616,7 +1627,9 @@ this.ReportPanel = new function(){
             label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
         }));
         that.def_app_id = that.def_app_id || (icon_apps[0]? icon_apps[0].value:"");
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",false,null,that.def_app_id);
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'','(All Apps)',that.def_app_id || '');
+        if(!that.elAppFilter.value) that.elAppFilter.value = '';
+        that.elAppFilter.dispatchEvent(new Event('change'));
     }
 
     this.displayReportList = async (role_id,app_id,search_value) => {

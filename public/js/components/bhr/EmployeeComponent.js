@@ -318,7 +318,7 @@ var EmployeeComponent = new (function () {
                                 `</div>`,
                             `</div>`,
                             `<div class="card-body text-center" style="">`,
-                                `<img src="${ d.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" class="rounded-circle mb-3" alt="Profile Picture" style="width: 100px; height: 100px;">`,
+                                `<img src="${ d.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" class="rounded-circle mb-3" alt="Profile Picture" style="width: 100px; height: 100px;object-fit:cover">`,
                                 `<div class="card-title">`,
                                     `<h5 class="text-black text-nowrap truncated-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px">${d.name}</h5>`,
                                 `</div>`,
@@ -372,9 +372,9 @@ var EmployeeComponent = new (function () {
         }
 
         if (cmt === 0) {
-            html += `<div class="w-100 rounded-3  text-center mt-3 mb-3 position-relative">
-                    <div class="d-flex bg-grey shadow rounded-5 p-3"><span class="d-flex align-items-center justify-content-center p-2 w-100 text-danger">Employee not found! </span></div>
-            </div>`;
+            html = [`<div class="w-100 rounded-3  text-center mt-3 mb-3 position-relative">`,
+                    `<div class="d-flex bg-grey shadow rounded-5 p-3"><span class="d-flex align-items-center justify-content-center p-2 w-100 text-danger">Employee not found! </span></div>`,
+            `</div>`].join('');
         }
 
         html += `</div>`;
@@ -3015,7 +3015,7 @@ const EmployeeDialog = (() => {
                 {
                     name: "spouse_emp_id",
                     data: "employees",
-                    //firstOption: {"value": 0,"label":"None"},
+                    firstOption: {"id": '',"name":"None"},
                     textField: (me, d) => {
                         return `<div class="d-flex gap-2"><span> ${d.name} </span></div>`;
                     },

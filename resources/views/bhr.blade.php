@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="<?php $user = App\Services\Umt\AuthService::user();
-echo $user->lang ?? 'en'; ?>">
+  echo $user->lang ?? 'en'; 
+?>">
 <head>
     <base href="../">
     <meta charset="utf-8" />
@@ -190,7 +191,7 @@ echo $user->lang ?? 'en'; ?>">
                                             <span class="app-menu-header"></span>
                                             <div class="main-app-menus">
                                                 <?php
-                                                $user = App\Services\Umt\AuthService::user();
+                                                //$user = App\Services\Umt\AuthService::user();
                                                 if (!$user) {
                                                     return redirect('/');
                                                 }
@@ -217,10 +218,10 @@ echo $user->lang ?? 'en'; ?>">
                                     <div class="dropdown shadow-lg rounded-5 bg-white user--info">
                                         <button id="_main_btn_user" class="btn-dropdown main-menu-button"
                                             data-menu="user">
-                                            <img class="mr-1" src="{{ asset('assets/images/bhr/junior.png') }}" style="height:30px" />
+                                            <img class="mr-1" src="<?php echo $user->image_url; ?>" style="height:30px" />
                                                 <span class="text-primary-custom">
                                                     <?php
-                                                        $user = App\Services\Umt\AuthService::user();
+                                                        //$user = App\Services\Umt\AuthService::user();
                                                         echo $user ? $user->full_name : '';
                                                     ?>
                                                 </span>
