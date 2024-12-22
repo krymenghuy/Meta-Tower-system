@@ -223,10 +223,6 @@ class User //extends Model
     static function getPrimaryRole($user_id){
        return DB::table('um_user_roles as ur')->join('um_roles as r','r.id','=','ur.role_id')->where('ur.user_id',$user_id)->where('ur.is_primary_role',1)->selectRaw('r.id,r.name')->take(1)->first();
     }
-
-    static function geDefaultPhoto($ss = null){
-        return PublicStorage::getUrl($ss,'default','image').'default-user.png';
-    }
     static function getProps($user_id = null,$cols = 'id,login_name,user_class,full_name,official_id'){
        return DB::table('um_users as u')->where('u.id',$user_id)->selectRaw($cols)->first();
     }
@@ -309,8 +305,22 @@ class User //extends Model
         return $q->first();
     }
 
-    /** $byCol = id,login_name, official_id */
+ static function geDefaultPhoto($ss = null){
+    return  base_url('assets/images/default/').'default-user.png';
+ }
+
+ function profilePicture($id){
+    $id = $id ?? $this->id;
+    return self::getPhoto($id,'id');
+ }
+
+ function photo($id){
+    $id = $id ?? $this->id;
+    return self::getPhoto($id,'id');
+ }
+
  /** $byCol = id,login_name, official_id */
+/** $byCol = id,login_name, official_id */
  static function getPhoto($value, $byCol = 'id', $user_class = null){
     $user = null;
     //$branch_id = User::getDefaultBranchId($value,15);

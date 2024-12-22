@@ -196,9 +196,9 @@ div.role-card.selected > div.card-content {
                  <div id="mod_list" class="d-flex flex-column gap-2">
                     
                   <form action="">
-                      <div class="w-50 d-flex flex-row justify-content-between">
-                          <div style="min-width:350px"> <select class="modal-select2" id="rpt_app_chooser"></select></div>
-                          <div><input id="rpt_search" type="text" class="form-control" placeholder="Search by code or name"></div>
+                      <div class="w-50 d-flex flex-row justify-content-between gap-2">
+                          <div class="w-100"> <select class="modal-select2" id="rpt_app_chooser"></select></div>
+                          <div class="w-100"><input id="rpt_search" type="text" class="form-control" placeholder="Search by code or name"></div>
                       </div>
                   </form>
 

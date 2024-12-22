@@ -669,10 +669,10 @@ class Employee //extends Model
         if ($id) {
             $employee = self::getDetails($id, $ss);
         }
+        
+        //$firstElement = ['id' => 0, 'name' => '(None)', 'name_kh'=>'(None)', 'sex'=>'','phone_number'=>'','image_url'=>'', 'position_id'=>'','email'=>''];
 
-        $firstElement = ['id' => 0, 'name' => '(None)', 'name_kh'=>'(None)', 'sex'=>'','phone_number'=>'','image_url'=>'', 'position_id'=>'','email'=>''];
-
-        $emps = GeneralSettings::options_employee(10, $ss)->prepend($firstElement);
+        $emps = GeneralSettings::options_employee(10, $ss); //->prepend($firstElement);
         return (object) [
             'nationalities' => GeneralSettings::options_nationality($ss),
             'cities' => GeneralSettings::loc_options_city($ss),

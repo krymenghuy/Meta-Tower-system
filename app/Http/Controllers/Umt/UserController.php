@@ -96,11 +96,11 @@ class UserController extends Controller
     function getUserDetails(Request $req)
     {
         $ss = AuthService::verifyAuth($req, -1);
-        if ($ss->status_code != 200) return $ss; //user not authenticated
-        $user_id = $req->user_id ? $req->user_id : $req->id;
-        $role = new User($user_id,$ss);
-        $roles = $role->getDetails($user_id, $ss);
-        return JDV::result($roles);
+        if ($ss->status_code != 200) return $ss;
+        $user_id = $req->user_id ?? $req->id;
+        $user = new User($user_id,$ss);
+        $data = $user->getDetails($user_id, $ss);
+        return JDV::result($data);
     }
 
     function setPassword(Request $req)
