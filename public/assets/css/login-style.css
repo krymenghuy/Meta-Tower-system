@@ -29,6 +29,7 @@
     display:flex;
     align-items:center;
     justify-content:center;
+
 }
 
 .login-frame .vs-container-front-img{
@@ -38,14 +39,15 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    border-radius:10px;
     position: absolute;
+    box-shadow: 8px 8px 6px 0 #b4cfd780;
+
 }
 
 .login-frame .vs-container-front-img .img-front{
     height:100%;
     width:60%;
-    border-radius: 20px 0  0 20px;
+    border-radius: 8px 0  0 8px;
     /* border-radius:60px 0 0 60px;
     padding: 50px; */
 }
@@ -53,7 +55,7 @@
 .login-frame .vs-container-front-img .vs-login{
     width:40%;
     height:100%;
-    border-radius:0 20px 20px 0;
+    border-radius:0 8px 8px 0;
     display:flex;
     background-color: #2b3991;
     align-items:center;
