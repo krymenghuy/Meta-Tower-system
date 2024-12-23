@@ -26,7 +26,7 @@
 
 
     .employee-info-section {
-        padding: 15px;
+        margin-top: 10px;
         border-radius: 8px;
         margin-bottom: 20px;
     }
@@ -37,5 +37,11 @@
 
     .ms-2 {
         margin-left: 8px;
+    }
+    #_exit_form_list {
+        height: 520px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        scrollbar-width: none;
     }
 </style>

@@ -12,9 +12,9 @@ var CheckPointCategoryComponent = new (function () {
     this.cols = [
         {
             title: "Name",
-            className: "align-middle ",
+            className: "align-left text-start w-10",
             data: (data) =>
-                `<span class="text-primary-custom">${data.name}</span>`,
+                `<span class="text-primary-custom text-start">${data.name}</span>`,
         },
         {
             title: "",
