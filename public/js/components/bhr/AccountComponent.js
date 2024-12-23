@@ -263,7 +263,7 @@ var AccountMenagmentComponent = new (function () {
 
         const pr_tbl = mThis.AccountListView.getListContainer();
         const sh_parent = pr_tbl;
-        // sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 

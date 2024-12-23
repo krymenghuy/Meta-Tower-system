@@ -503,7 +503,7 @@ class Role //extends Model
     if($app_id =='') $app_id = null; 
     $search_value = $d->search_value ?? null;
     $str_app_id = DBX::getHEX('app.id','app_id');
-    $query = DB::table('um_permissions as p')->join('um_applications as app','app.id','=','p.app_id')->join('reports as rpt','rpt.permission_id','=','p.id')->where('p.category','Report')->selectRaw('p.id,CONCAT(p.name,\' (\',p.id,\')\') AS permission_name,p.category,p.module_id,app.name AS app_name, rpt.export_excel, rpt.export_pdf, rpt.export_csv,rpt.category AS report_group,'.$str_app_id)->orderByRaw('rpt.category ASC, p.name ASC');
+    $query = DB::table('um_permissions as p')->join('um_applications as app','app.id','=','p.app_id')->join('reports as rpt','rpt.permission_id','=','p.id')->where('p.category','Report')->selectRaw('p.id,CONCAT(p.name,\' (\',p.id,\')\') AS permission_name,p.category,p.module_id,app.name AS app_name,rpt.category AS report_group,'.$str_app_id)->orderByRaw('rpt.category ASC, p.name ASC');
     if($search_value){
       $search_value = escape_like_str($search_value);
       $str_search = '(p.name LIKE \'%'.$search_value.'%\' )';

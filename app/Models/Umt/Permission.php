@@ -249,9 +249,11 @@ static function changePermissionId($new_permission_id, $old_id)
 
     function delete($id,$ss=null){
         $ss = $ss?? $this->userInfo;
+        $id = $id ?? $this->id;
         foreach(self::$foreign_tables as $table =>$info){
             DB::table($table)->where($info['fk_name'],$id)->delete();
         }
+        DB::table('um_permissions')->where('id',$id)->delete();
         DB::table('reports')->where('permission_id',$id)->update(['permission_id'=>null]);
         return DV::depends(1);
     }

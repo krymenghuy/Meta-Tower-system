@@ -24,13 +24,13 @@ var PositionComponent = new (function () {
         {
             title: "Job Level",
             className: "align-middle text-capitalize",
-            data:(data)=>`<span class="text-capitalize">${data.level}</span>`,
+            data:(data)=>`<span class="text-capitalize text-primary-custom">${data.level}</span>`,
         },
         
         {
             title: "Department",
             className: "align-middle text-capitalize text-nowrap text-left",
-            data: "department",
+            data:(data)=>`<span class="text-primary-custom ">${data.department}</span>`
         },
         {
             title: "Salary",
@@ -55,8 +55,8 @@ var PositionComponent = new (function () {
             className: "align-middle text-capitalize text-nowrap text-left",
             data: (data) => `
             <div style="display: block; align-items: center;">
-                <span style="font-size: 14px; font-weight: bold;">${data.update_user ?? ""}</span><br/>
-                <span style="font-size: 12px; color: #2b3991;">${data.updated_at ?? ""}</span>
+                <span class='text-primary-custom' >${data.update_user ?? ""}</span><br/>
+                <small >${data.updated_at ?? ""}</small>
             </div>`,
         },
         {
@@ -102,7 +102,7 @@ var PositionComponent = new (function () {
         };
         const listContainer = mThis.PositionListView.getListContainer();
         const sh_parent = listContainer;
-        // sh_parent.style.height = window.innerHeight - 275 + "px";
+        sh_parent.style.height = window.innerHeight - 225 + "px";
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
 
