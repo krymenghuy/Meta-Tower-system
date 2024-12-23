@@ -774,14 +774,16 @@ this.ModulePanel = new function(){
 
     //loadAppOptions
     this.loadAppChoices = async ()=>{
-        let apps = await getAccessibleApps();
+        const apps = await getAccessibleApps();
        
-        let icon_apps = apps.map(x =>({
+        const icon_apps = apps.map(x =>({
             value: x.id,
             label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
         }));
         that.def_app_id = that.def_app_id || (icon_apps[0]? icon_apps[0].value : "");
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",true,"(All Apps)",(that.def_app_id || ""));
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'',"(All Apps)",(that.def_app_id || ""));
+        if(!that.elAppFilter.value) that.elAppFilter.value = ''; 
+        that.elAppFilter.dispatchEvent(new Event('change'));
     }
 
     this.displayModules = (role_id,app_id)=>{ 
@@ -830,9 +832,9 @@ this.ModulePanel = new function(){
             }
         });
 
-        let p = {"role_id":role_id,"app_id":app_id};
+        const p = {"role_id":role_id,"app_id":app_id};
         vsapi.call(`${main_view.base_url}/api/role/modules`,p,false,false,false).then(res =>{
-            let data = res.status_code ==200 ? res.data : [];
+            const data = res.status_code ==200 ? res.data : [];
             mThis.modulesList.setData(data);
         });
        
@@ -888,7 +890,9 @@ this.PermissionPanel = new function(){
             label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
         }));
         that.def_app_id = that.def_app_id || "";
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",true,"All Applications",(that.def_app_id || ""));
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'',"All Applications",(that.def_app_id || ""));
+        if(!that.elAppFilter.value) that.elAppFilter.value = '';
+        that.elAppFilter.dispatchEvent(new Event('change'));
     }
 
     this.displayPermissionList = (role_id, app_id,search_value)=>{
@@ -983,14 +987,15 @@ this.ReportPanel = new function(){
     }
 
     this.loadAppChoices = async ()=>{
-        let apps =  await getAccessibleApps();; 
-      
-        let icon_apps = apps.map(x =>({
+        const apps =  await getAccessibleApps();; 
+        const icon_apps = apps.map(x =>({
             value: x.id,
             label:`<i class="fas fa-volleyball-ball text-muted"></i>  <span>${x.name}</span>`
         }));
         that.def_app_id = that.def_app_id || (icon_apps[0]? icon_apps[0].value:"");
-        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",false,null,that.def_app_id);
+        VSUtil.setComboItems(that.elAppFilter,icon_apps,"value","label",'','(All Apps)',that.def_app_id || '');
+        if(!that.elAppFilter.value) that.elAppFilter.value = '';
+        that.elAppFilter.dispatchEvent(new Event('change'));
     }
 
     function hasMoreThanOneKey(obj) {

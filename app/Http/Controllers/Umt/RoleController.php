@@ -64,8 +64,8 @@ class RoleController extends Controller
         if ($ss->status_code != 200) return $ss; //user not authenticated
         $role_id = $req->role_id ? $req->role_id : $req->id;
         $role = new Role($role_id,$ss);
-        $roles = $role->getUserDetails($role_id);
-        return JDV::result($role);
+        $data = $role->getUserDetails($role_id,$ss);
+        return JDV::result($data);
     }
 
     function addRoleMembers(Request $req){
