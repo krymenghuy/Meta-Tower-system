@@ -509,7 +509,7 @@ const RoleTabView = new function(){
      cv_interact.info('Swap Item feature is not yet available');
   }
 
-  mThis.deleteItem = (type,div_item, item_id, onFinish = null)=>{
+  mThis.deleteItem = (type,tr, item_id, onFinish = null)=>{
      let msg = `delete this ${type}?`;
      cv_interact.confirm(msg, {title:`Delete ${type}`, context:'delete'}, e=>{
          if(e){
@@ -534,10 +534,10 @@ const RoleTabView = new function(){
               }
             }
 
-            let p = {id:item_id};
+            const p = {id:item_id};
             vsapi.call(endpoint,p,false,false,false).then(res=>{
                 if(res.status_code ===200){
-                    div_item?.closest('.item-wrapper').remove();
+                    tr?.remove();
                     if(onFinish) onFinish();
                 }else cv_interact.warning(res.error_message);
             });
@@ -1022,6 +1022,10 @@ this.ModulePanel = new function(){
       that.displayModules(mThis.selected_role.role_id, that.def_app_id);
     }
 
+    this.refreshModuleList = ()=>{
+        that.elAppFilter.dispatchEvent(new Event("change"));
+    };
+
     //loadAppOptions
     this.loadAppChoices = async ()=>{
         let apps = await getAccessibleApps();
@@ -1075,9 +1079,16 @@ this.ModulePanel = new function(){
             }
 
             mThis.modulesList = mThis.modulesList || new  UMExpandItemView(mThis.div_modules,{
+                showDeveloperTools:true,
                 emptyInfoText:"No module control list",
                 headerClass:"mod-category",
                 itemName:"Module",
+                onEditItem: (id,tr,itemName) =>{
+                    mThis.ModulePanel.createOrUpdateModule({app_id: app_id, id:id, onClose: mThis.ModulePanel.refreshModuleList} );
+                },
+                onDeleteItem:(id ,tr,itemName) =>{
+                    mThis.deleteItem(itemName,tr,id, mThis.ModulePanel.refreshModuleList);
+                },
                 statuses:{
                     1: {
                     name:'Allowed',  
@@ -1269,6 +1280,10 @@ this.PermissionPanel = new function(){
         that.displayPermissionList(mThis.selected_role.role_id, that.def_app_id, that.elSearchPrn.value);
     }
 
+    this.refreshPermissionList = ()=>{
+        that.elAppFilter.dispatchEvent(new Event("change"));
+    };
+
     this.elSearchPrn.onkeyup = e =>{
        e.preventDefault();
        setTimeout(()=>{
@@ -1335,10 +1350,17 @@ this.PermissionPanel = new function(){
 
         that.prnAttributes = ['category','module_id'];
         mThis.permissionList = mThis.permissionList || new UMExpandItemView( mThis.div_permissions,{
+            showDeveloperTools:true,
             emptyInfoText:"No permission control",
             headerClass:"prn-category",
             itemDataset: that.prnAttributes,
             itemName:"Permission",
+            onEditItem: (id,tr,itemName) =>{
+                mThis.PermissionPanel.createOrUpdatePermission({app_id: app_id, id:id, onClose: mThis.PermissionPanel.refreshPermissionList} );
+            },
+            onDeleteItem:(id ,tr,itemName) =>{
+                mThis.deleteItem(itemName,tr,id, mThis.PermissionPanel.refreshPermissionList);
+            },
             statuses:{
                 1: {name:'Allowed',  
                   signClass:'fa fa-check text-success fs-5', 
@@ -1616,8 +1638,12 @@ this.ReportPanel = new function(){
                  that.elAppFilter.value = "";
             }
             that.elAppFilter.dispatchEvent(new Event("change"));
-        },250);
+        },200);
     }
+
+    this.refreshReportList = ()=>{
+        that.elAppFilter.dispatchEvent(new Event("change"));
+    };
 
     this.loadAppChoices = async ()=>{
         let apps =  await getAccessibleApps();; 
@@ -1687,11 +1713,18 @@ this.ReportPanel = new function(){
         //ReportAttributes is only used for collecting report list when user Export report list to .json file, and used for Editing existing report.
         that.reportAttributes = ['report_id','category','module_id','report_group','code','params','export_pdf','export_excel','export_csv','display_order'];
         mThis.reportList = mThis.reportList || new  UMExpandItemView(mThis.div_reports,{
+            showDeveloperTools:true,
             emptyInfoText:"No controlled reports",
             headerClass:"rpt-category",
             permissionActions: that.reportActions,
             itemDataset: that.reportAttributes,
             itemName:"Report",
+            onEditItem: (id,tr,itemName) =>{
+                mThis.ReportPanel.createOrUpdateReport({app_id: app_id, id:id, onClose: mThis.ReportPanel.refreshReportList} );
+            },
+            onDeleteItem:(id ,tr,itemName) =>{
+                mThis.deleteItem(itemName,tr,id, mThis.ReportPanel.refreshReportList);
+            },
             statuses:{
                 1: {name:'Allowed',  
                   signClass:'fa fa-check text-success fs-5', 
