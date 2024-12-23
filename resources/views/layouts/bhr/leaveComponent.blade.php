@@ -2,7 +2,7 @@
     <div id="_divFilter_leave" class="px-3">
         <div class="d-flex w-100 gap-2 bg-white shadow rounded-3 p-3">
             <div class="d-flex w-50">
-                <button type="button" style="width:200px;background-color:#2b3991; color:white;" class="btn_add" id="_btnAddLeave">
+                <button type="button"  class="btn_add" id="_btnAddLeave">
                     <!-- <i class="fas fa-plus"></i> -->
                     <span>Leave Request</span>
                 </button>

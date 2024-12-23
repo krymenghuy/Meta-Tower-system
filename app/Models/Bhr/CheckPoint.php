@@ -88,7 +88,8 @@ class CheckPoint
         $query = DB::table('check_points as ei')
             ->join('check_point_categories as cpc', 'cpc.id', '=', 'ei.check_point_cat_id')
             ->selectRaw('ei.id, ei.name, cpc.name as category_name')
-            ->orderBy('ei.id', 'desc');
+            // ->orderBy('ei.id', 'desc');
+            ->orderBy('cpc.id', 'asc');
 
         if (!empty($params->check_point_cat_id)) {
             $query->where('ei.check_point_cat_id', $params->check_point_cat_id);

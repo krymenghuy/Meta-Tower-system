@@ -318,7 +318,7 @@ var EmployeeComponent = new (function () {
                                 `</div>`,
                             `</div>`,
                             `<div class="card-body text-center" style="">`,
-                                `<img src="${ d.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" class="rounded-circle mb-3" alt="Profile Picture" style="width: 100px; height: 100px;">`,
+                                `<img src="${ d.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" class="rounded-circle border border-primary-custom mb-3" alt="Profile Picture" style="width: 100px; height: 100px;">`,
                                 `<div class="card-title">`,
                                     `<h5 class="text-black text-nowrap truncated-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px">${d.name}</h5>`,
                                 `</div>`,

@@ -17,16 +17,16 @@
         </div>
 
     </div>
-    <div id="_dep_list" class="pt-3 px-3"></div>
+    <div id="_dep_list" class="px-4"></div>
 </div>
 <style>
-    #_dep_list {
+    /* #_dep_list {
         height: 500px;
         overflow-y: auto;
         overflow-x: hidden;
         scrollbar-width: none;
 
-    }
+    } */
 
     #_dep_list_paginator {
         bottom: 0;
