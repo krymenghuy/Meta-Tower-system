@@ -28,6 +28,12 @@ var PayrollComponent = new (function () {
 
     this.cols = [
         {
+            title: "",
+            className: 'align-middle text-capitalize text-nowrap',
+            data: ''
+
+        },
+        {
             title: "Name",
             className: "align-middle",
             data: (data) => `<p class="p-0 m-0">${data.name ?? ''}</p>`
@@ -49,7 +55,7 @@ var PayrollComponent = new (function () {
         {
             title: "Payroll Number",
             className: "align-middle",
-            data: (data) => `<p class="p-0 m-0">${data.p_number ?? ''}</p>`
+            data: (data) => `<p class="p-0 m-0">${data.p_number ? data.p_number == 1 ? 'One Time' : 'Two Time' : ''}</p>`
         },
         {
             title: "Total",
@@ -64,7 +70,7 @@ var PayrollComponent = new (function () {
         {
             title: "Exchange Rate",
             className: "align-middle w-12",
-            data: (data) => `<p class="p-0 m-0">${data.exchange_rate ?? ''}</p>`
+            data: (data) => `<p class="p-0 m-0">${main_view.currency.symbol + data.exchange_rate ?? ''}</p>`
         },
         {
             title: "Authorize",

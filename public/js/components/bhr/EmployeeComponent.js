@@ -318,9 +318,11 @@ var EmployeeComponent = new (function () {
                                 `</div>`,
                             `</div>`,
                             `<div class="card-body text-center" style="">`,
-                                `<img src="${ d.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" class="rounded-circle mb-3" alt="Profile Picture" style="width: 100px; height: 100px;object-fit:cover">`,
+                                `<div class="overflow-hidden rounded-circle mx-auto p-auto d-flex justify-content-center border bg-white border-4 mb-3 " style="width: 120px; height: 120px;"> `,
+                                    `<img src="${ d.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" class="h-100" alt="Profile Picture" >`,
+                                `</div>`,
                                 `<div class="card-title">`,
-                                    `<h5 class="text-black text-nowrap truncated-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px">${d.name}</h5>`,
+                                    `<h5 class=" text-nowrap truncated-text text-primary-custom text-capitalize" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px">${d.name}</h5>`,
                                 `</div>`,
                                 `<div class="card_container gap-2 p-4 text-white">
                                     <div class="employee_id">#: <span class="ms-2">${

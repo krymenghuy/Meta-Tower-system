@@ -103,7 +103,12 @@ var DepartmentComponent = new (function () {
         });
 
       
-        const listContainer = mThis.DepartmentListView.getListContainer();
+        const pr_tbl = mThis.DepartmentListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+
         mThis.setActionListeners();
         mThis.initAlready = true;
     };

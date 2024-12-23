@@ -10,6 +10,12 @@ var CheckPointCategoryComponent = new (function () {
     this.elSearch = this.self.querySelector("#_exitCheckpoints_search");
     this.divFilter = this.self.querySelector("#container_exitCheckpoints");
     this.cols = [
+        
+        {
+            title: "",
+            className: "align-middle ",
+            data: ''
+        },
         {
             title: "Name",
             className: "align-middle ",
