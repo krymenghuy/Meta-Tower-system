@@ -143,7 +143,7 @@
     #profile_card_right {
         display: flex;
         flex-direction: column;
-        margin-bottom: 20px;
+        /* margin-bottom: 20px; */
     }
 
     #_employee_list {
@@ -224,22 +224,20 @@
             </button>
         </div>
         <div id="_view_profile_container">
-            <div class="px-2 overflow-y-auto overflow-x-hidden " style="height:550px;" id="sub_view_profile">
+            <div class="px-2 overflow-y-auto overflow-x-hidden mb-5" style="height:550px;" id="sub_view_profile">
                 <div id="profile_info_emp">
 
                 </div>
-                <div class="row mt-3 p-3">
-
+                <div class="row mt-3 px-3">
                     <div class="col-md-4" id="profile_card_left"></div>
                     <div class="col-md-4" id="profile_card_center"></div>
                     <div class="col-md-4" id="profile_card_right"></div>
 
                 </div>
 
-                <div class="row mt-3 p-3">
-
-                    <div class="col-md-4" id="tax_allowance_card"></div>
+                <div class="row mt-3 px-3 mb-3">
                     <div class="col-md-4" id="emp_documents_card"></div>
+                    <div class="col-md-4" id="tax_allowance_card"></div>
 
                 </div>
 
