@@ -318,9 +318,11 @@ var EmployeeComponent = new (function () {
                                 `</div>`,
                             `</div>`,
                             `<div class="card-body text-center" style="">`,
-                                `<img src="${ d.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" class="rounded-circle mb-3" alt="Profile Picture" style="width: 100px; height: 100px;object-fit:cover">`,
+                                `<div class="overflow-hidden rounded-circle mx-auto p-auto d-flex justify-content-center border bg-white border-4 mb-3 " style="width: 120px; height: 120px;"> `,
+                                    `<img src="${ d.image_url || (main_view.asset_url + "/images/default/default-staff.png")}" class="h-100" alt="Profile Picture" >`,
+                                `</div>`,
                                 `<div class="card-title">`,
-                                    `<h5 class="text-black text-nowrap truncated-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px">${d.name}</h5>`,
+                                    `<h5 class=" text-nowrap truncated-text text-primary-custom text-capitalize" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px">${d.name}</h5>`,
                                 `</div>`,
                                 `<div class="card_container gap-2 p-4 text-white">
                                     <div class="employee_id">#: <span class="ms-2">${
@@ -879,14 +881,14 @@ var EmployeeComponent = new (function () {
 
                 data.forEach((d) => {
                     html =[html,`
-                <div class="experience_item pt-2 border-bottom border-white" style="display:flex">
+                <div class="row pt-2 border-bottom border-white">
                     <div class="col-md-12">
                         <div class="d-flex justify-content-between">
                             <h6 style="color:#2b3991;">${d.period}</h6>
                             <span class="text-nowrap text-dark" style="color:#2b3991;">${d.school}</span>
                         </div>
-                        <span class="text-muted d-block"><img class="bhr-icons" src="${main_view.asset_url}/images/icons/graduate.svg" /> ${d.edu_level}</span>
-                        <small class="text-primary " ><img class="bhr-icons" src="${main_view.asset_url}/images/icons/radio.svg" />${d.major}</small>
+                        <span class="text-muted pb-1 d-block"><img class="bhr-icons" src="${main_view.asset_url}/images/bhr/graduation.svg" /> ${d.edu_level}</span>
+                        <small class="text-primary" ><img class="bhr-icons" src="${main_view.asset_url}/images/bhr/books.svg" />${d.major}</small>
                         <div class="d-flex justify-content-end gap-3">
                             <a href="javascript:void(0)" data-id="${d.id}" class="btn-education-modify">
                                 <i class="fa-solid text-warning fa-check tool-tip"><span class="tool-tiptext text-warning border border-warning fs-10">edit</span></i>
@@ -1076,35 +1078,21 @@ var EmployeeComponent = new (function () {
                     html =[html,`
                 <div class="row pt-2 border-bottom border-white">
                     <div class="col-md-12">
-                        <div class="experience-toggle" data-experience-id="${d.id}"
-                            style="display:flex; justify-content:space-between; width:350px; cursor: pointer;">
-                            <div style="display:flex; width:350px; justify-content:space-between">
-                                <p class="text-primary-custom" style="font-size:14px;width:195px;display:flex;justify-content:start; overflow-x: auto;scrollbar-width: none; text-overflow: ellipsis; white-space: nowrap;">
-                                    📢 ${d.department}
-                                </p>
-                            </div>
+                        <div class="d-flex justify-content-between">
+                            <h6 style="color:#2b3991;">${d.department}</h6>
+                            <span class="text-dark text-nowrap">Company : ${d.organization_id}</span>
+
                         </div>
-                        <div style="display:flex; width:350px; justify-content:space-between">
-                            <div class="date_join text-muted" style="width:230px;display:flex;align-items:start;">
-                                <img class="bhr-icons" src="${main_view.asset_url}/images/icons/calender.svg" />
-                                <p>${d.start_date}</p><p class="text-danger ml-2 mr-2">-</p><p>${d.end_date}</p>
-                            </div>
-                            <p class="text-primary-custom text-nowrap" style="width:120px; justify-content:start;text-overflow: ellipsis;word-wrap: break-word;">
-                                <img class="bhr-icons" src="${main_view.asset_url}/images/icons/bag.svg" /> ${d.position}
-                            </p>
-                        </div>
-                        <div class="experience-details" id="details_${d.id}" style="display:none;flex-direction:column; gap:10px; transition: all 0.3s ease;">
-                            <div class="experience-details-dropdown" style="display:flex;width:350px; justify-content:space-between">
-                                <p class="text-primary-custom text-nowrap" style="width:230px;">Company: ${d.organization_id}</p>
-                                <div class="d-flex gap-3" style="width:120px;justify-content:start;">
-                                    <a href="javascript:void(0)" data-id="${d.id}" class="btn-experience-modify">
-                                        <i class="fa-regular fa-pen-to-square text-success fs-10"></i>
-                                    </a>
-                                    <a href="javascript:void(0)" data-id="${d.id}" data-empid="${employeeId}" class="btn-experience-delete">
-                                        <i class="fa-solid fa-trash-can text-info fs-10"></i>
-                                    </a>
-                                </div>
-                            </div>
+
+                        <small class="text-nowrap pb-1 d-block" style="color:#cab54a;"><img class="bhr-icons" src="${main_view.asset_url}/images/bhr/alarm-clock.svg" />${d.start_date} ~ ${d.end_date}</small>
+                        <span class="text-primary" ><img class="bhr-icons" src="${main_view.asset_url}/images/bhr/office-block.svg" />${d.position}</span>
+                        <div class="d-flex justify-content-end gap-3">
+                            <a href="javascript:void(0)" data-id="${d.id}" class="btn-experience-modify">
+                                <i class="fa-regular fa-pen-to-square text-warning fs-10 tool-tip"><span class="tool-tiptext text-warning border border-warning fs-10">edit</span></SPAN></i>
+                            </a>
+                            <a href="javascript:void(0)" data-id="${d.id}" data-empid="${employeeId}" class="btn-experience-delete">
+                                <i class="fa-solid fa-trash-can text-danger tool-tip fs-10"><span class="tool-tiptext text-danger border border-danger fs-10">delete</span></i>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -1118,29 +1106,29 @@ var EmployeeComponent = new (function () {
 
                 html += `</div></div>`;
                 this.profile_card_right.innerHTML = html;
-                document
-                    .querySelectorAll(".experience-toggle")
-                    .forEach((toggle) => {
-                        toggle.addEventListener("click", function () {
-                            const experienceId =
-                                this.getAttribute("data-experience-id");
-                            const detailsDiv = document.getElementById(
-                                `details_${experienceId}`
-                            );
-                            const isVisible =
-                                detailsDiv.style.display === "flex";
-                            if (isVisible) {
-                                detailsDiv.style.display = "none"; // Hide dropdown
-                            } else {
-                                document
-                                    .querySelectorAll(".experience-details")
-                                    .forEach((el) => {
-                                        el.style.display = "none";
-                                    });
-                                detailsDiv.style.display = "flex"; // Show dropdown
-                            }
-                        });
-                    });
+                // document
+                //     .querySelectorAll(".experience-toggle")
+                //     .forEach((toggle) => {
+                //         toggle.addEventListener("click", function () {
+                //             const experienceId =
+                //                 this.getAttribute("data-experience-id");
+                //             const detailsDiv = document.getElementById(
+                //                 `details_${experienceId}`
+                //             );
+                //             const isVisible =
+                //                 detailsDiv.style.display === "flex";
+                //             if (isVisible) {
+                //                 detailsDiv.style.display = "none"; // Hide dropdown
+                //             } else {
+                //                 document
+                //                     .querySelectorAll(".experience-details")
+                //                     .forEach((el) => {
+                //                         el.style.display = "none";
+                //                     });
+                //                 detailsDiv.style.display = "flex"; // Show dropdown
+                //             }
+                //         });
+                //     });
                 document
                     .getElementById("lnk_add_experience")
                     .addEventListener("click", function (e) {

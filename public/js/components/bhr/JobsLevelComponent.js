@@ -45,9 +45,9 @@ var JobsLevelComponent = new (function () {
         },
         {
             title: "Description",
-            className: "align-middle ",
+            className: "align-middle",
             data: (data)=>
-                `<span class="text-nowrap">${data.description}</span>`,
+                `<div  class="text-remark" >${data.description}</div>`,
         },
     
         {
