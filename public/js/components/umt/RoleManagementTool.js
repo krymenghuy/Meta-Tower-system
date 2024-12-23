@@ -535,6 +535,7 @@ const RoleTabView = new function(){
             }
 
             const p = {id:item_id};
+            console.log('del: ',p);
             vsapi.call(endpoint,p,false,false,false).then(res=>{
                 if(res.status_code ===200){
                     tr?.remove();
@@ -589,13 +590,13 @@ const RoleTabView = new function(){
                                 let d = lnk.closest('.item-wrapper')?.dataset;
                                  d =d || {};
                                 let item_id = d.id;
-                                let ds = {
+                                const ds = {
                                   report_id: d.reportid,
                                   code: d.code,
                                   params: d.params,
-                                  export_pdf: d.export_pdf,
-                                  export_excel : d.export_excel,
-                                  export_csv: d.export_csv,
+                                  //pdf: d.export_pdf,
+                                  //excel : d.export_excel,
+                                  //export_csv: d.export_csv,
                                   display_order : d.displayorder
                                 }
                                 if(!item_id){
@@ -603,12 +604,11 @@ const RoleTabView = new function(){
                                     return;
                                 }
                                 /** NOTE that the api/report/save() will handling saving or creating new report in both tables, first in "um_permissions" and then in table "reports" */ 
-                                let op = {
+                                const op = {
                                     id:item_id,
                                     app_id : app_id,
                                     ...ds // This variable "ds" contains all necessary report's attributes such as report_group, code, params,export_excel, export_pdf, 
                                 }
-                                console.log('gg: ',op);
                                 //Modify module, permission, and report
                                 mThis.editItem(type, op); 
                                 return;
@@ -1359,7 +1359,7 @@ this.PermissionPanel = new function(){
                 mThis.PermissionPanel.createOrUpdatePermission({app_id: app_id, id:id, onClose: mThis.PermissionPanel.refreshPermissionList} );
             },
             onDeleteItem:(id ,tr,itemName) =>{
-                mThis.deleteItem(itemName,tr,id, mThis.PermissionPanel.refreshPermissionList);
+                mThis.deleteItem(itemName,tr, id, mThis.PermissionPanel.refreshPermissionList);
             },
             statuses:{
                 1: {name:'Allowed',  
@@ -1593,9 +1593,9 @@ this.PermissionPanel = new function(){
               me.controls.category.onchange = e =>{
                  const cat = (e.target.value || '').toLowerCase();
                  if(cat ==='report'){
-                    me.actions.value = 'view|print|export_pdf|export_excel|export_csv'; 
+                    me.actions.value = 'view|print|excel'; 
                  }else{
-                    me,actions.value = me.org_actions;
+                    me.actions.value = me.org_actions || '';
                  } 
               };
            },
@@ -1711,7 +1711,7 @@ this.ReportPanel = new function(){
         }
        
         //ReportAttributes is only used for collecting report list when user Export report list to .json file, and used for Editing existing report.
-        that.reportAttributes = ['report_id','category','module_id','report_group','code','params','export_pdf','export_excel','export_csv','display_order'];
+        that.reportAttributes = ['report_id','category','module_id','report_group','code','params','excel','pdf','display_order'];
         mThis.reportList = mThis.reportList || new  UMExpandItemView(mThis.div_reports,{
             showDeveloperTools:true,
             emptyInfoText:"No controlled reports",
@@ -1890,7 +1890,7 @@ this.ReportPanel = new function(){
            ],
            extendMethod:{
               "setData":(me,data)=>{
-                  if(!me.dataOptions.id || me.dataOptions.id ==0) me.controls.actions.value = 'view|print|export_excel|export_pdf|export_csv';
+                  if(!me.dataOptions.id || me.dataOptions.id ==0) me.controls.actions.value = 'view|print|excel|csv';
               }
            },
            prepareFormOptions:{

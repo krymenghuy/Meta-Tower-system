@@ -139,7 +139,6 @@ class DataImportController extends Controller
       $app_id = $req->app_id;
       $bin_app_id = $app_id ? hex2bin($app_id): null;
       $query = DB::table('reports as rpt')->selectRaw('id,name, permission_id,module_id');
-      
       $sync_count = 0;
       $create_count = 0;
       $missing_module_count =0;
@@ -199,10 +198,15 @@ class DataImportController extends Controller
           
           }
          
+         //self::syncToPermissions();
       }
 
       return JDV::result(['create_count'=>$create_count,'sync_count'=>$sync_count,'missing_module_count'=> $missing_module_count]);
   }
+
+   // static function syncToPermissions(){
+   //     return null;
+   // }
 
    static function addReport($inputs){
 
