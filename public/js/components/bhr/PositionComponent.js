@@ -60,14 +60,14 @@ var PositionComponent = new (function () {
             </div>`,
         },
         {
-            className: "col_action align-middle",
+            className: "col_action align-end",
             data: (data) => `
-            <div class="d-flex justify-content-start align-items-center">
+            <div class="d-flex justify-content-end align-items-end">
                 <div class="text-end gap-2 d-flex flex-wrap">
                     <a href="javascript:void(0)" class="${data.action_id > 1 ? "d-none" : "btn_position_action"}" data-id="${data.id}" data-statusid="${data.status_id}" aria-haspopup="true" aria-expanded="false">
                         <img src="${main_view.asset_url}/images/icons/more_vert (3).svg" />
                     </a>
-                </div>x
+                </div>
             </div>`,
         },
 

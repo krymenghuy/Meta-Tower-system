@@ -29,7 +29,7 @@ class EmployeeDocument
 
         $v_rule = [
             'emp_id' => '1|number',
-            'name' => '0|string',
+            'name' => '0|string|0-150',
             'ext' => '0|string',
             'file_name' => '1|string',
         ];

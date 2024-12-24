@@ -25,7 +25,7 @@ class EmployeeSkillController extends Controller
             return JDV::raw($ss);
         }
 
-        return $this->employee_skill->save($req, $ss);
+        return $this->employee_skill->save($req, $ss,$req->id ?? null);
     }
 
     public function getEmployeeSkillListPaginate(Request $req)

@@ -48,21 +48,23 @@ var ExitFormItemComponent = new (function () {
         },
         {
             title: "Settled",
-            className: "settled text-nowrap align-middle",
+            className: "IsSettled text-nowrap align-middle",
             data: (data) => {
-                let settledText = "Pending";
-                let settledClass = "";
+                let IsSettledText = "Not Yet";
+                let IsSettledClass =
+                    "text-white text-center bg-warning border border-info rounded-5 p-1";
 
-                if (data.settled == 1) {
-                    settledText = "Done";
-                    settledClass =
+                if (data.is_settled == 1) {
+                    IsSettledText = "Done";
+                    IsSettledClass =
                         "text-white text-center bg-success border border-info rounded-5 p-1";
-                } else {
-                    settledClass =
+                }
+                else {
+                    IsSettledClass =
                         "text-white text-center bg-warning border border-info rounded-5 p-1";
                 }
 
-                return `<p class="p-0 m-0 text-white ${settledClass}" style="border-radius: 5px; padding: 5px;">${settledText}</p>`;
+                return `<p class="p-0 m-0 text-white ${IsSettledClass}" style="border-radius: 5px; padding: 5px;">${IsSettledText}</p>`;
             },
         },
         {
@@ -70,21 +72,22 @@ var ExitFormItemComponent = new (function () {
             className: "ItemType text-nowrap align-middle",
             data: (data) => {
                 let ItemTypeText = "no type";
-                let ItemTypeClass = "";
+                let ItemTypeClass =
+                    "text-white text-center bg-warning border border-info rounded-5 p-1";
 
-                if (data.ItemType == 1) {
+                if (data.item_type == 1) {
                     ItemTypeText = "Item";
                     ItemTypeClass =
                         "text-white text-center bg-success border border-info rounded-5 p-1";
-                } else if (data.ItemType == 2) {
+                } else if (data.item_type == 2) {
                     ItemTypeText = "Loan";
                     ItemTypeClass =
                         "text-white text-center bg-success border border-info rounded-5 p-1";
-                } else if (data.ItemType == 3) {
+                } else if (data.item_type == 3) {
                     ItemTypeText = "Document";
                     ItemTypeClass =
                         "text-white text-center bg-success border border-info rounded-5 p-1";
-                } else if (data.ItemType == 4) {
+                } else if (data.item_type == 4) {
                     ItemTypeText = "General";
                     ItemTypeClass =
                         "text-white text-center bg-success border border-info rounded-5 p-1";
@@ -304,10 +307,10 @@ const FormItemDialog = (() => {
                                 <select name="item_name" class="form-control data-input" data-field="check_point_id"></select>
                             </div>
                             <div class="form-group col-md-12">
-                                <label for="settled" class="form-label" vslang="titles.settled"></label>
-                                <select name="settled" class="modal-select data-input" data-field="settled" id="settled">
-                                    <option value="0">Done</option>
-                                    <option value="1">Not Yet</option>
+                                <label for="is_settled" class="form-label" vslang="titles.settled"></label>
+                                <select name="is_settled" class="modal-select data-input" data-field="is_settled" id="is_settled">
+                                    <option value="1">Done</option>
+                                    <option value="2">Not Yet</option>
                                 </select>
                             </div>
                             <div class="form-group col-12">
@@ -318,7 +321,15 @@ const FormItemDialog = (() => {
                                 <label for="amount" class="form-label" vslang="titles.amount"></label>
                                 <input name="amount" class="form-control data-input" data-field="amount" />
                             </div>
-                            
+                            <div class="form-group col-md-12">
+                                <label for="item_type" class="form-label" vslang="titles.item type"></label>
+                                <select name="item_type" class="modal-select data-input" data-field="item_type" id="item_type">
+                                    <option value="1">item</option>
+                                    <option value="2">loan</option>
+                                    <option value="3">document </option>
+                                    <option value="4">general</option>
+                                </select>
+                            </div>
                         </div>`,
                     ].join("");
                 },
