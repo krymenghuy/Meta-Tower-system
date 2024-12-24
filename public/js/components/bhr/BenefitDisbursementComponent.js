@@ -133,8 +133,12 @@ var BenefitDisbursementComponent = new (function () {
         };
         const pr_tbl = mThis.BenefitDisburseListView.getListContainer();
         const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 260) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 260) + 'px';
+        }
 
         mThis.initDropdownMenus(pr_tbl);
 

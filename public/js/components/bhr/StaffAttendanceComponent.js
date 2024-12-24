@@ -66,7 +66,7 @@ var StaffAttendanceComponent = new function () {
                         const ampm = hours >= 12 ? 'PM' : 'AM';
                         hours = hours % 12 || 12;
                         const formattedTime = `${hours}:${minutes} ${ampm}`;
-                        
+
                         return `
                             <div class="d-flex flex-column mb-1">
                                 <div class="d-flex justify-content-between align-items-center">
@@ -81,12 +81,12 @@ var StaffAttendanceComponent = new function () {
                     .join("");
             },
         }
-        
-        
-        
-       
-        
-        
+
+
+
+
+
+
     ];
 
     this.init = function () {
@@ -114,10 +114,16 @@ var StaffAttendanceComponent = new function () {
         };
 
         const pr_tbl = mThis.StaffAttendanceListView.getListContainer();
-        pr_tbl.classList.add("overflow-y-auto");
-        pr_tbl.classList.add("overflow-x-hidden");
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 320) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 320) + 'px';
+        }
 
-       
+
+
 
         mThis.containerFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = (e) => {
@@ -138,7 +144,7 @@ var StaffAttendanceComponent = new function () {
     };
     this.prepareFormOptions = () => {
         vsapi.call(`${main_view.base_url}/hr/employee/form-options`,null,null,null).then((res) => {
-            
+
             let d = res.status_code === 200 ? res.data : {};
 
             if(d)
@@ -176,7 +182,7 @@ var StaffAttendanceComponent = new function () {
             p[f] = el.value;
         });
         console.log(12,JSON.stringify(p));
-        
+
         return p;
     };
     this.show = function () {
@@ -195,8 +201,8 @@ const StaffAttendanceDialog = (() => {
     self.show = (op) => {
         dialog = new GeneralDialog({
                 cssClass: "modal-lg",
-                backdrop: "static", 
-                keyboard: true, 
+                backdrop: "static",
+                keyboard: true,
                 createContent: () => {
                     return [
                         `<div class="row">
@@ -232,7 +238,7 @@ const StaffAttendanceDialog = (() => {
                          </div>`,
                     ].join("");
                 },
-                
+
                 configSelect: [
                     {
                         name: "employee",
@@ -261,7 +267,7 @@ const StaffAttendanceDialog = (() => {
 
                             p.id = me.dataOptions.id;
                             console.log(90,p);
-                            
+
 
                             vsapi
                                 .call(
@@ -287,7 +293,7 @@ const StaffAttendanceDialog = (() => {
                 contentCreated: (me, divModal) => {
                     console.log(123,me);
                     DateTimePicker.init(me.controls.attendance_date);
-                        
+
                     me.saveStaffAttendance = (p) => {
                         alert("Data saved.");
                     };

@@ -26,7 +26,7 @@ var PositionComponent = new (function () {
             className: "align-middle text-capitalize",
             data:(data)=>`<span class="text-capitalize text-primary-custom">${data.level}</span>`,
         },
-        
+
         {
             title: "Department",
             className: "align-middle text-capitalize text-nowrap text-left",
@@ -102,9 +102,12 @@ var PositionComponent = new (function () {
         };
         const listContainer = mThis.PositionListView.getListContainer();
         const sh_parent = listContainer;
-        sh_parent.style.height = window.innerHeight - 225 + "px";
+        sh_parent.style.height = (window.innerHeight - 210) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 210) + 'px';
+        }
 
         mThis.elSearch.addEventListener("keyup", (e) => {
             clearTimeout(mThis.search_timeout);

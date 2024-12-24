@@ -9,7 +9,7 @@
                 </button>
             </div>
             <div class="d-flex align-items-center justify-content-end gap-2 w-75 gap-3">
-          
+
                 <div class="d-flex w-50 gap-3">
                     <div class="d-flex align-items-end w-100">
                         <input type="text" class="form-control btn_search filter-field" id="_sdl_search_holiday"
@@ -22,10 +22,4 @@
     <div class="m-4" id="_holiday_list"></div>
 </div>
 <style>
-    #_holiday_list {
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-        max-height: 500px;
-    }
 </style>

@@ -9,11 +9,4 @@
     <div id="_taxBracket_list" class="mt-4"></div>
 </div>
 <style>
-
-    #_taxBracket_list{
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-        max-height: 500px;
-    }
 </style>

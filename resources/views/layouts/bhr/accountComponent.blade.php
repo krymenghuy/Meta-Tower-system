@@ -37,12 +37,4 @@
     </div>
 </div>
 <style>
-    #_account_list{
-        height: 600px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
-
-
 </style>

@@ -42,11 +42,14 @@ class Payroll
         }
 
         $inputs = $res->values;
-
-        $checkExist = DB::table('payrolls')->where('month',$inputs['month'])->where('year',$inputs['year'])->where('start_date',$inputs['start_date'])->where('end_date',$inputs['end_date'])->take(1)->value('id');
-        if($checkExist){
-            return DV::error($inputs['name'].' is already exist!');
+        if(!$id)
+        {
+            $checkExist = DB::table('payrolls')->where('month',$inputs['month'])->where('year',$inputs['year'])->where('start_date',$inputs['start_date'])->where('end_date',$inputs['end_date'])->take(1)->value('id');
+            if($checkExist){
+                return DV::error($inputs['name'].' is already exist!');
+            }
         }
+
 
         $id = saveData($ss, 'payrolls', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {

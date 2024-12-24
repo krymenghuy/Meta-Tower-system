@@ -81,9 +81,12 @@ var BenefitComponent = new (function () {
         };
         const pr_tbl = mThis.BenefitListView.getListContainer();
         const sh_parent = pr_tbl;
-        // sh_parent.style.height = window.innerHeight - 200 + "px";
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 225) + 'px';
+        }
 
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
             el.onchange = () =>
@@ -164,7 +167,7 @@ var BenefitComponent = new (function () {
     this.getDataFormFilter = () => {
         let filters = {
             search_value: mThis.elSearch.value,
-            
+
         };
         console.log(39292,mThis.elSearch);
         mThis.divFilter.querySelectorAll(".filter-field").forEach((el) => {
