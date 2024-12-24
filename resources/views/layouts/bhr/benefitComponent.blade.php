@@ -13,11 +13,4 @@
     <div id="_benefit_list" class="mt-4"></div>
 </div>
 <style>
-
-    #_benefit_list{
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-        max-height: 500px;
-    }
 </style>

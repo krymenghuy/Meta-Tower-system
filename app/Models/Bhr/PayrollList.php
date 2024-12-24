@@ -48,9 +48,9 @@ class PayrollList
 
         $inputs = $res->values;
 
-        $id = saveData($ss,'payroll_lists', ['id' => $id], $inputs, [], 1);
+        $id = saveData($ss,'payroll_list', ['id' => $id], $inputs, [], 1);
         if ($id > 0) {
-            return DV::depends(1, ['payroll_lists' => $inputs, 'id' => $id]);
+            return DV::depends(1, ['payroll_list' => $inputs, 'id' => $id]);
         }
 
         return DV::error('Error saving payroll');
@@ -79,7 +79,7 @@ class PayrollList
         $search_disburse = $d->disburse ?? null;
         $str_search = '1=1';
 
-        $query = DB::table('payroll_lists as pl')
+        $query = DB::table('payroll_list as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
@@ -161,7 +161,7 @@ class PayrollList
         $branch_id = $ss->branch_id;
         $joining_date = DBX::formatDate('e.joining_date','joining_date');
 
-        $row =DB::table('payroll_lists as pl')
+        $row =DB::table('payroll_list as pl')
         ->join('employees as e', 'e.id', '=', 'pl.emp_id')
         ->join('positions as pos', 'pos.id', '=', 'e.position_id')
         ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
@@ -199,7 +199,7 @@ class PayrollList
     function deletePayrollList($id = null)
     {
         $id = $id ?? $this->id;
-        $query = DB::table('payroll_lists')
+        $query = DB::table('payroll_list')
             ->where('id', $id)
             ->delete();
         return $query;
@@ -226,7 +226,7 @@ class PayrollList
           'employees' => GeneralSettings::options_employee(10,$ss),
           'payrolls' => GeneralSettings::options_payroll($ss),
           'branches' => GeneralSettings::options_branch($ss),
-            'payroll_lists' => $payroll_list,
+            'payroll_list' => $payroll_list,
         ];
 
     }
@@ -240,7 +240,6 @@ class PayrollList
             return JDV::error('Payroll not found');
         }
 
-        // Get payroll period
         $payroll = DB::table('payrolls')->where('id', $payroll_id)->first();
         if (!$payroll) {
             return JDV::error('Payroll period not found');
@@ -277,7 +276,7 @@ class PayrollList
         $error = 0;
 
         foreach ($get_employee as $emp) {
-            $payroll_list = DB::table('payroll_lists')
+            $payroll_list = DB::table('payroll_list')
                 ->where('emp_id', $emp->emp_id)
                 ->where('payroll_id', $payroll_id)
                 ->first();
@@ -333,7 +332,7 @@ class PayrollList
 
             $inputs = $res->values;
 
-            $checkExist = DB::table('payroll_lists')
+            $checkExist = DB::table('payroll_list')
                 ->where('emp_id', $inputs['emp_id'])
                 ->where('payroll_id', $inputs['payroll_id'])
                 ->first();
@@ -345,7 +344,7 @@ class PayrollList
             $save_payroll_list_benefit = Employee::savePayrollListBenefit((array)$payroll_list_benefit, $ss);
             $inputs['benefit'] = $payroll_list_benefit->used_amount;
 
-            $payroll_list_id = $checkExist ? $checkExist->id : saveData($ss, 'payroll_lists', ['id' => null], $inputs, [], 1);
+            $payroll_list_id = $checkExist ? $checkExist->id : saveData($ss, 'payroll_list', ['id' => null], $inputs, [], 1);
 
             if ($payroll_list_id > 0) {
                 $success++;
@@ -369,7 +368,7 @@ class PayrollList
         $start_date = DBX::formatDate('p.start_date', 'start_date');
         $end_date = DBX::formatDate('p.end_date', 'end_date');
 
-        $payrolls = DB::table('payroll_lists as pl')
+        $payrolls = DB::table('payroll_list as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
             ->leftJoin('resignations as r', 'r.emp_id', '=', 'e.id')
             ->leftJoin('rejoins as rej', 'rej.emp_id', '=', 'e.id')
@@ -599,7 +598,7 @@ class PayrollList
                 }
             }
 
-            $row = DB::table('payroll_lists')->where('id', $payroll->id)->update([
+            $row = DB::table('payroll_list')->where('id', $payroll->id)->update([
                 'tax_base' => $payroll->tax_base,
                 'benefit_tax' => $benefit_tax,
                 'count_day' => $count_date,
@@ -633,7 +632,15 @@ class PayrollList
         $master_account_id = 1;
         $transfer_amount = 0;
 
-        $existingDisbursement = DB::table('payroll_lists')
+        $master_account_balance = DB::table('accounts')
+            ->where('id', $master_account_id)
+            ->value('balance');
+
+        if (!$master_account_balance) {
+            return DV::error('Master account not found');
+        }
+
+        $existingDisbursement = DB::table('payroll_list')
             ->where('id', $id)
             ->value('disburse');
 
@@ -641,7 +648,7 @@ class PayrollList
             return DV::error('Payroll has already been disbursed');
         }
 
-        $trx = DB::table('payroll_lists as pl')
+        $trx = DB::table('payroll_list as pl')
                 ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
                 ->join('accounts as a', 'a.emp_id', '=', 'pl.emp_id')
                 ->where('pl.id', $id)
@@ -664,6 +671,9 @@ class PayrollList
 
         if(!$trx->authorized){
             return DV::error($trx->remarks.' is not authorized ');
+        }
+        if($master_account_balance < $trx->amount){
+            return DV::error('Insufficient balance');
         }
         $transfer = Transaction::createTransaction((array)$trx, $ss);
 
@@ -689,7 +699,7 @@ class PayrollList
         }
 
         if($updateBalance_acc && $updateBalance_def){
-            $query = DB::table('payroll_lists')
+            $query = DB::table('payroll_list')
                 ->where('id', $id)
                 ->update([
                     'disburse' => 1,
@@ -708,6 +718,14 @@ class PayrollList
         $branch_id = $ss->branch_id;
         $master_account_id = 1;
 
+        $master_account_balance = DB::table('accounts')
+            ->where('id', $master_account_id)
+            ->value('balance');
+
+        if (!$master_account_balance) {
+            return DV::error('Master account not found');
+        }
+
         $payroll = DB::table('payrolls')
             ->where('id', $payroll_id)
             ->select('authorized', 'name')
@@ -718,7 +736,7 @@ class PayrollList
             return DV::error("Payroll {$payrollName} is not authorized");
         }
 
-        $undisbursed = DB::table('payroll_lists')
+        $undisbursed = DB::table('payroll_list')
             ->where('payroll_id', $payroll_id)
             ->where('disburse', 0)
             ->first();
@@ -727,7 +745,7 @@ class PayrollList
             return DV::error('Payroll List Already Disbursed');
         }
 
-        $payrollEntries = DB::table('payroll_lists as pl')
+        $payrollEntries = DB::table('payroll_list as pl')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')
             ->where('pl.payroll_id', $payroll_id)
             ->where('pl.disburse', 0)
@@ -772,6 +790,10 @@ class PayrollList
             ];
         }
 
+        if($master_account_balance < $payrollEntries->sum('amount')){
+            return DV::error('Insufficient Balance');
+        }
+
         $results = [];
         foreach ($payrollEntries as $trx) {
             $to_account = Employee::getPayrollAccount($trx->emp_id);
@@ -811,7 +833,7 @@ class PayrollList
             );
 
             if ($updateBalance_acc && $updateBalance_def) {
-                DB::table('payroll_lists')
+                DB::table('payroll_list')
                     ->where('id', $trx->id)
                     ->update([
                         'disburse' => 1,
@@ -837,7 +859,7 @@ class PayrollList
         $start_date = DBX::formatDate('p.start_date', 'start_date');
         $end_date = DBX::formatDate('p.end_date', 'end_date');
 
-        $row = DB::table('payroll_lists as pl')
+        $row = DB::table('payroll_list as pl')
             ->join('employees as e', 'e.id', '=', 'pl.emp_id')
             ->join('positions as pos', 'pos.id', '=', 'e.position_id')
             ->join('payrolls as p', 'p.id', '=', 'pl.payroll_id')

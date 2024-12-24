@@ -29,13 +29,4 @@
     <div class="m-4" id="_emp_movement_list"></div>
 </div>
 <style>
-    #_emp_movement_list {
-        height: 600px;
-        overflow-y: auto;
-        overflow-x: hidden;
-        scrollbar-width: none;
-    }
-    #_emp_movement_list_paginator {
-        bottom: 0;
-    }
 </style>

@@ -82,11 +82,13 @@ var WorkShiftListComponent = new (function () {
         };
         const listContainer = mThis.WorkShiftListsView.getListContainer();
         const sh_parent = listContainer;
-        // sh_parent.style.height = window.innerHeight - 275 + "px";
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 225) + 'px';
+        }
 
-       
         mThis.initDropdownMenus(listContainer);
         mThis.initAlready = true;
     };
@@ -205,7 +207,7 @@ const WorkShiftListDialog = (() => {
         dialog = new GeneralDialog({
             cssClass: "modal-md",
             backdrop: "static",
-            keyboard: true, 
+            keyboard: true,
             createContent: () => {
                 return [
                     `<div class="row">
@@ -213,7 +215,7 @@ const WorkShiftListDialog = (() => {
                             <label for="name" class="form-label" vslang="titles.Name"></label>
                             <span class="text-danger"*</span>
                             <input type="text" class="form-control data-input" name="shifts" data-field="name">
-                        </div>                                                                         
+                        </div>
                     </div>`,
                 ].join("");
             },
@@ -239,7 +241,7 @@ const WorkShiftListDialog = (() => {
                     click: (me, btn) => {
                         const p = me.getData();
 
-                        p.id = me.dataOptions.id; 
+                        p.id = me.dataOptions.id;
 
                         vsapi
                             .call(

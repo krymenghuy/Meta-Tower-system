@@ -30,7 +30,7 @@ var WarningComponent = new (function () {
                         <span style="font-size: 14px; font-weight: bold;">${
                             data.name ?? ""
                         }</span><br/>
-                       
+
                     </div>
                 </div>`,
         },
@@ -107,9 +107,13 @@ var WarningComponent = new (function () {
         };
         const pr_tbl = mThis.WarningListView.getListContainer();
         const sh_parent = pr_tbl;
-        // sh_parent.style.height = window.innerHeight - 225 + "px";
+        sh_parent.style.height = (window.innerHeight - 205) + 'px';
         sh_parent.classList.add("overflow-y-auto");
         sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 205) + 'px';
+        }
+
 
         mThis.initDropdownMenus(pr_tbl);
 
@@ -132,7 +136,7 @@ var WarningComponent = new (function () {
         }, 200);
     });
 
-   
+
     this.setFilterPeriod = (p, name, start_date, end_date) => {
         return p;
     };
@@ -192,7 +196,7 @@ var WarningComponent = new (function () {
     };
 
     this.editWarning = (id, menulink) => {
-        
+
         let op = {
             id: id,
             btn: menulink,
@@ -271,8 +275,8 @@ const WarningDialog = (() => {
             dialog ||
             new GeneralDialog({
                 cssClass: "modal-md",
-                backdrop: "static", 
-                keyboard: true, 
+                backdrop: "static",
+                keyboard: true,
                 createContent: () => {
                     return [
                         `<div class="row">
@@ -295,17 +299,17 @@ const WarningDialog = (() => {
                                 <span class="text-danger" >*</span>
                                 <input name="warning_date" class="form-control form_input data-input" data-field="warning_date">
                             </div>
-                            
+
                             <div class="form-group col-md-12">
                                 <label for="reason" class="form-label">reason</label>
-                                <input class="form-control data-input" data-field="reason" id="reason"></input>                            
+                                <input class="form-control data-input" data-field="reason" id="reason"></input>
                             </div>
-                           
+
                              <div class="form-group col-md-12">
                                 <label for="remarks" class="form-label">Remarks</label>
                                 <textarea class="form-control data-input" data-field="remarks" id="remarks"></textarea>
                             </div>
-                           
+
                          </div>`,
                     ].join("");
                 },
@@ -316,7 +320,7 @@ const WarningDialog = (() => {
                         textField: (me, d) => {
                             return `<div class="d-flex gap-2"><img class="img_select" src="${d.image_url}" /> <div class="d-flex flex-column" style="color:#2b3991;font-size:11px;"><span> ${d.name} </span> <span> ${d.position} </span> </div></div>`;
                         },
-                    
+
                         valueField: "id",
                     },
                 ],
@@ -325,7 +329,7 @@ const WarningDialog = (() => {
                         label: '<span class="text-warning">Cancel</span>',
                         cssClass: "btn btn-default",
                         click: (me, btn) => {
-                          
+
                             me.hide(false);
                         },
                     },
@@ -335,7 +339,7 @@ const WarningDialog = (() => {
                         click: (me, btn) => {
                             const p = me.getData();
 
-                            p.id = me.dataOptions.id; 
+                            p.id = me.dataOptions.id;
 
                             vsapi
                                 .call(
@@ -370,7 +374,7 @@ const WarningDialog = (() => {
                             main_view.base_url,
                             "/hr/warning/form-options",
                         ].join(""),
-                        params: (op) => {                           
+                        params: (op) => {
                             return { id: op.id };
                         },
                     },

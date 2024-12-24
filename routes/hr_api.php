@@ -233,6 +233,7 @@ Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('account')->gr
     Route::post('/form-options', [AccountController::class, 'getFormOptions']);
     Route::post('/transfer', [AccountController::class, 'transfer']);
     Route::post('/get-info', [AccountController::class, 'getAccountInfo']);
+    Route::post('/get-confirm', [AccountController::class, 'getConfirmTransfer']);
 });
 Route::middleware(['auth.api', CustomRateLimiter::class])->prefix('tax-allowance')->group(function () {
 

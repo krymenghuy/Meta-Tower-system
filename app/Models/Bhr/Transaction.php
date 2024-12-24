@@ -32,7 +32,7 @@ class Transaction
 
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, ['remarks'=>['-']], $ss->lang);
         if ($res->error) return DV::error($res->error);
 
         $inputs = $res->values;
@@ -59,7 +59,7 @@ class Transaction
             'to_account_id' => '1|number',
         ];
 
-        $res = validateObject($arr, $v_rule, true, [], $ss->lang);
+        $res = validateObject($arr, $v_rule, true, ['remarks'=>['-']], $ss->lang);
         if ($res->error) {
             return ['error' => $res->error];
         }

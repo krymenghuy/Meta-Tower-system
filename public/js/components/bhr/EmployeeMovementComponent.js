@@ -85,7 +85,7 @@ var EmployeeMovementComponent = new (function () {
             }
         },
 
-      
+
     ];
 
     this.init = () => {
@@ -115,10 +115,14 @@ var EmployeeMovementComponent = new (function () {
         mThis.initDropdownMenus(mThis.tblMovement);
         this.sh_container  = mThis.MovementListView.getListContainer();
 
-        const sh_parent = mThis.sh_container.parentElement;
-        sh_parent.style.height = (window.innerHeight - 200) + 'px';
-        sh_parent.classList.add('overflow-y-auto');
-        sh_parent.classList.add('overflow-x-hidden');
+        const pr_tbl = mThis.MovementListView.getListContainer();
+        const sh_parent = pr_tbl;
+        sh_parent.style.height = (window.innerHeight - 225) + 'px';
+        sh_parent.classList.add("overflow-y-auto");
+        sh_parent.classList.add("overflow-x-hidden");
+        window.onresize = () => {
+            sh_parent.style.maxHeight = (window.innerHeight - 225) + 'px';
+        }
 
 
         mThis.divFilter.querySelectorAll('.filter-field').forEach(el => {
